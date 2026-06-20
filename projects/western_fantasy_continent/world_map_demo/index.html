@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 巡逻刷怪</title>
+    <link rel="stylesheet" href="/world_map_demo/styles.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="topbar">
+        <div class="brand">
+          <span class="brand-mark">✦</span>
+          <div>
+            <h1>西幻大陆远征</h1>
+            <p>三人小队巡逻、遭遇怪群、拾取掉落、换装成长。</p>
+          </div>
+        </div>
+        <div id="playerStats" class="player-stats"></div>
+        <div class="actions">
+          <button id="fightBtn" class="primary-action" type="button">开始巡逻</button>
+          <button id="autoBtn" type="button">加速 x1</button>
+          <button type="button" data-open-panel="characters">角色</button>
+          <button type="button" data-open-panel="inventory">背包</button>
+          <button type="button" data-open-panel="tower">爬塔</button>
+          <button type="button" data-open-panel="tavern">酒馆</button>
+          <button id="resetBtn" type="button">重置</button>
+        </div>
+      </section>
+
+      <section class="layout">
+        <aside class="command-panel">
+          <div class="panel-head">
+            <h2>三人小队</h2>
+            <span>点击角色换装</span>
+          </div>
+          <div id="squadPanel" class="squad-panel"></div>
+        </aside>
+
+        <section class="map-panel">
+          <div class="map-frame">
+            <div class="map-titlebar">
+              <div>
+                <strong>大地图</strong>
+                <span>左键拖拽 · 滚轮缩放 · 小队自动巡逻</span>
+              </div>
+              <button type="button" data-open-panel="inventory">整理装备</button>
+            </div>
+            <div id="worldMap" class="world-map" aria-label="可拖拽大地图">
+              <div id="mapContent" class="map-content">
+                <div class="river"></div>
+                <div class="road r1"></div>
+                <div class="road r2"></div>
+                <div class="road r3"></div>
+                <div class="deco tree t1"></div>
+                <div class="deco tree t2"></div>
+                <div class="deco tree t3"></div>
+                <div class="deco rock k1"></div>
+                <div class="deco tower w1"></div>
+                <div class="deco crystal c1"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="intel-panel">
+          <section class="zone-card">
+            <div class="panel-head">
+              <h2 id="zoneName">区域</h2>
+              <span>威胁与奖励</span>
+            </div>
+            <div id="monsterPreview" class="monster-preview"></div>
+            <div id="zoneInfo" class="zone-info"></div>
+          </section>
+
+          <section class="drop-card">
+            <div class="panel-head">
+              <h2>最近装备</h2>
+              <span>高价值优先</span>
+            </div>
+            <div id="dropList" class="drop-list"></div>
+          </section>
+
+          <section class="log-card">
+            <div class="panel-head">
+              <h2>战报</h2>
+              <span>节奏断点</span>
+            </div>
+            <div id="logList" class="log-list"></div>
+          </section>
+        </aside>
+      </section>
+
+      <section id="systemModal" class="modal-backdrop" aria-hidden="true">
+        <div class="modal-window">
+          <div class="modal-head">
+            <h2 id="modalTitle">界面</h2>
+            <button id="modalCloseBtn" type="button">关闭</button>
+          </div>
+
+          <div id="gearView" class="modal-view">
+            <div class="empty-panel">装备管理已合并到背包界面左侧。</div>
+          </div>
+
+          <div id="charactersView" class="modal-view">
+            <div class="characters-layout">
+              <section class="party-column">
+                <div class="panel-head">
+                  <h2>出战队伍</h2>
+                  <span>最多 3 人</span>
+                </div>
+                <div id="partyList" class="party-list"></div>
+              </section>
+              <section class="roster-column">
+                <div class="panel-head">
+                  <h2>角色池</h2>
+                  <span>按战力排序</span>
+                </div>
+                <div id="characterGrid" class="character-grid"></div>
+              </section>
+              <section class="character-detail">
+                <div class="panel-head">
+                  <h2>角色详情</h2>
+                  <span>入队 / 出队 / 装备</span>
+                </div>
+                <div id="characterDetail" class="character-detail-body"></div>
+              </section>
+            </div>
+          </div>
+
+          <div id="inventoryView" class="modal-view">
+            <div class="inventory-layout">
+              <section class="inventory-roster-strip">
+                <div class="panel-head">
+                  <h2>选择角色</h2>
+                  <span>横向滚动 · 出战优先 · 高战力优先</span>
+                </div>
+                <div id="inventoryHeroStrip" class="inventory-hero-strip"></div>
+              </section>
+              <section class="inventory-heroes">
+                <div class="panel-head">
+                  <h2>角色装备</h2>
+                  <span>当前角色</span>
+                </div>
+                <div id="gearPanel" class="gear-panel"></div>
+              </section>
+              <section class="inventory-bag">
+                <div class="panel-head">
+                  <h2>背包</h2>
+                  <span>图标 · 稀有度 · 词条</span>
+                </div>
+                <div id="inventoryList" class="inventory-list"></div>
+              </section>
+              <section class="inventory-detail">
+                <div class="panel-head">
+                  <h2>装备详情</h2>
+                  <span>对比当前角色</span>
+                </div>
+                <div id="inventoryDetail" class="inventory-detail-body"></div>
+              </section>
+            </div>
+          </div>
+
+          <div id="tavernView" class="modal-view">
+            <div class="card-head">
+              <h2>酒馆招募</h2>
+              <button id="recruitBtn" type="button">招募</button>
+            </div>
+            <div id="tavernPanel" class="tavern-panel"></div>
+          </div>
+
+          <div id="towerView" class="modal-view">
+            <div id="towerPanel" class="tower-panel"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script src="/world_map_demo/world-map.js"></script>
+  </body>
+</html>

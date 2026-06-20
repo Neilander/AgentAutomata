@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 特效实验室</title>
+    <link rel="stylesheet" href="/effect_lab/styles.css">
+  </head>
+  <body>
+    <main class="lab-shell">
+      <section class="lab-topbar">
+        <div>
+          <h1>特效实验室</h1>
+          <p>同一套刀挥击、爆炸、冰冻、护盾，用四种技术方案横向比较。</p>
+        </div>
+        <a href="/workbench/">返回工作台</a>
+      </section>
+
+      <section class="lab-layout">
+        <aside class="control-panel">
+          <div class="panel-head">
+            <h2>渲染方案</h2>
+            <span>先选技术，再点特效</span>
+          </div>
+          <div class="mode-list" id="modeList">
+            <button class="active" data-mode="css" type="button">
+              <strong>CSS 特效</strong>
+              <span>滤镜、渐变、阴影、关键帧</span>
+            </button>
+            <button data-mode="canvas" type="button">
+              <strong>Canvas 粒子</strong>
+              <span>火星、冰晶、冲击波、叠加发光</span>
+            </button>
+            <button data-mode="js" type="button">
+              <strong>JS 调度层</strong>
+              <span>统一 playEffect API 组合多段效果</span>
+            </button>
+            <button data-mode="pixi" type="button">
+              <strong>PixiJS / 高级渲染</strong>
+              <span>WebGL 舞台，失败时自动降级</span>
+            </button>
+          </div>
+
+          <div class="panel-head spaced">
+            <h2>四个特效</h2>
+            <span>灰机被刀打爆</span>
+          </div>
+          <div class="effect-buttons" id="effectButtons">
+            <button data-effect="slash" type="button">刀挥击</button>
+            <button data-effect="explosion" type="button">爆炸</button>
+            <button data-effect="freeze" type="button">冰冻</button>
+            <button data-effect="shield" type="button">护盾</button>
+            <button class="primary" data-effect="combo" type="button">播放整套</button>
+          </div>
+
+          <div class="panel-head spaced">
+            <h2>高质量斩击</h2>
+            <span>两条路线单独比较</span>
+          </div>
+          <div class="effect-buttons premium-buttons" id="premiumButtons">
+            <button class="primary" data-premium="noiseSlash" type="button">Noise 3D 斩击</button>
+            <button class="primary violet" data-premium="sheetSlash" type="button">Sheet 2D 斩击</button>
+          </div>
+        </aside>
+
+        <section class="stage-panel">
+          <div class="stage-head">
+            <div>
+              <strong id="modeTitle">CSS 特效</strong>
+              <span id="modeNote">轻量、好接入 DOM 战斗，适合护盾、闪光、斩击这种短反馈。</span>
+            </div>
+            <button id="clearBtn" type="button">清空舞台</button>
+          </div>
+
+          <div id="stage" class="battle-stage" aria-label="特效演示舞台">
+            <canvas id="particleCanvas" width="960" height="560"></canvas>
+            <div id="pixiLayer" class="pixi-layer"></div>
+            <div id="domLayer" class="dom-layer"></div>
+            <div id="caster" class="unit caster">
+              <span class="shadow"></span>
+              <span class="body"></span>
+              <span class="head"></span>
+              <span class="weapon"></span>
+              <b>剑士</b>
+            </div>
+            <div id="target" class="unit target">
+              <span class="shadow"></span>
+              <span class="body"></span>
+              <span class="head"></span>
+              <span class="wing left"></span>
+              <span class="wing right"></span>
+              <b>灰机</b>
+            </div>
+          </div>
+
+          <div class="readout">
+            <div>
+              <strong>当前方案</strong>
+              <span id="readoutMode">CSS</span>
+            </div>
+            <div>
+              <strong>最后播放</strong>
+              <span id="readoutEffect">等待输入</span>
+            </div>
+            <div>
+              <strong>接入建议</strong>
+              <span id="readoutAdvice">适合先接小战斗，成本最低。</span>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@8.8.1/dist/pixi.min.js"></script>
+    <script src="/effect_lab/effect-lab.js"></script>
+  </body>
+</html>

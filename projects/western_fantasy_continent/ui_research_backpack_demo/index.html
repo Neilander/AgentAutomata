@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>中世纪地牢背包换装 UI 对照</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #10130f;
+      --stone: #1a201b;
+      --stone-2: #252a23;
+      --line: rgba(238, 229, 205, .15);
+      --line-strong: rgba(238, 229, 205, .28);
+      --text: #f0eadc;
+      --muted: #a7ad9d;
+      --gold: #d2ad55;
+      --teal: #6ac7bb;
+      --red: #d86d5f;
+      --blue: #72aee8;
+      --purple: #b38bea;
+      --green: #8cc66f;
+      --common: #bcb6a8;
+      --rare: #68aee8;
+      --epic: #a783ee;
+      --legendary: #e3b24f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 26% 18%, rgba(106, 199, 187, .1), transparent 28%),
+        linear-gradient(135deg, #0d100d, #191611 52%, #10161a);
+      color: var(--text);
+    }
+    button {
+      font: inherit;
+      color: inherit;
+      border: 1px solid var(--line);
+      background: #22291f;
+      cursor: pointer;
+    }
+    .app {
+      width: min(1480px, 100vw);
+      margin: 0 auto;
+      padding: 18px;
+    }
+    .topbar {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 14px;
+    }
+    h1 {
+      margin: 0 0 5px;
+      font-size: 24px;
+      letter-spacing: 0;
+    }
+    .topbar p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .rules {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      max-width: 660px;
+    }
+    .rules span {
+      padding: 6px 8px;
+      border: 1px solid rgba(210, 173, 85, .28);
+      border-radius: 4px;
+      background: rgba(210, 173, 85, .08);
+      color: #ead6a4;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .compare {
+      display: grid;
+      grid-template-columns: 430px minmax(760px, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      background: rgba(20, 25, 19, .93);
+      box-shadow: 0 18px 45px rgba(0,0,0,.3);
+      min-height: 760px;
+    }
+    .panel-head {
+      min-height: 54px;
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+    }
+    .panel-head h2 {
+      margin: 0 0 4px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    .panel-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .bad-demo {
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+    .bad-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      font-size: 11px;
+    }
+    .bad-stats div,
+    .bad-list button,
+    .bad-log div {
+      border: 1px solid rgba(255,255,255,.09);
+      background: rgba(255,255,255,.04);
+      padding: 6px;
+    }
+    .bad-block-title {
+      font-size: 13px;
+      color: var(--gold);
+      margin: 3px 0;
+    }
+    .bad-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+    .bad-list button {
+      width: 100%;
+      text-align: left;
+      font-size: 11px;
+      color: #ded7c5;
+    }
+    .bad-log {
+      display: grid;
+      gap: 4px;
+      max-height: 140px;
+      overflow: auto;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .good-demo {
+      display: grid;
+      grid-template-columns: 275px 1fr 310px;
+      gap: 12px;
+      padding: 12px;
+    }
+    .hero-column,
+    .bag-column,
+    .detail-column {
+      min-height: 682px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.14);
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 42px;
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      color: #ead6a4;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .section-title small {
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .portrait {
+      position: relative;
+      height: 172px;
+      margin: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(210, 173, 85, .32);
+      background:
+        linear-gradient(180deg, rgba(92, 75, 48, .34), rgba(30, 43, 39, .45)),
+        linear-gradient(135deg, #25352e, #1b1f20);
+    }
+    .portrait::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -22px;
+      width: 132px;
+      height: 132px;
+      transform: translateX(-50%);
+      border-radius: 50% 50% 42% 42%;
+      background: linear-gradient(#d5aa7d, #a96f52);
+      box-shadow: 0 -48px 0 -18px #45322d, 0 18px 0 22px #405b72;
+    }
+    .portrait::after {
+      content: "⚔";
+      position: absolute;
+      right: 36px;
+      top: 33px;
+      color: var(--gold);
+      font-size: 58px;
+      transform: rotate(26deg);
+      text-shadow: 0 4px 8px rgba(0,0,0,.45);
+    }
+    .hero-name {
+      position: absolute;
+      left: 12px;
+      bottom: 10px;
+      z-index: 1;
+    }
+    .hero-name strong {
+      display: block;
+      font-size: 20px;
+    }
+    .hero-name span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .power-row {
+      display: grid;
+      grid-template-columns: 1fr 72px;
+      gap: 8px;
+      margin: 0 12px 12px;
+      align-items: center;
+    }
+    .power-bar {
+      height: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(210, 173, 85, .35);
+      background: rgba(0,0,0,.22);
+    }
+    .power-bar i {
+      display: block;
+      width: 68%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--teal));
+    }
+    .power-row strong {
+      text-align: right;
+      color: var(--gold);
+    }
+    .equip-slots {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 0 12px 12px;
+    }
+    .slot {
+      min-height: 76px;
+      padding: 7px;
+      border: 1px solid color-mix(in srgb, var(--r), var(--line-strong) 58%);
+      background: rgba(255,255,255,.035);
+      text-align: left;
+    }
+    .slot.active {
+      outline: 2px solid var(--gold);
+      background: rgba(210, 173, 85, .08);
+    }
+    .slot-icon {
+      display: inline-grid;
+      width: 29px;
+      height: 29px;
+      place-items: center;
+      margin-right: 5px;
+      border-radius: 4px;
+      background: color-mix(in srgb, var(--r), #0d0f0c 45%);
+      color: #111;
+      font-size: 18px;
+    }
+    .slot strong,
+    .slot span {
+      display: block;
+    }
+    .slot strong { margin-top: 5px; font-size: 12px; }
+    .slot span { color: var(--muted); font-size: 11px; }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 0 12px 12px;
+    }
+    .stat {
+      padding: 6px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.14);
+    }
+    .stat b {
+      display: block;
+      color: var(--text);
+      font-size: 13px;
+    }
+    .stat span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .bag-toolbar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .bag-toolbar button {
+      height: 32px;
+      border-radius: 4px;
+      color: var(--muted);
+      background: rgba(255,255,255,.045);
+    }
+    .bag-toolbar button.active {
+      color: var(--text);
+      border-color: rgba(210, 173, 85, .48);
+      background: rgba(210, 173, 85, .12);
+    }
+    .bag-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 72px);
+      grid-auto-rows: 72px;
+      gap: 9px;
+      padding: 12px;
+      align-content: start;
+      max-height: 490px;
+      overflow: auto;
+    }
+    .item-cell {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 72px;
+      height: 72px;
+      padding: 0;
+      border: 2px solid color-mix(in srgb, var(--r), #1a1c17 30%);
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--r), #0f130f 72%), rgba(255,255,255,.02));
+    }
+    .item-cell.selected {
+      outline: 2px solid var(--gold);
+      box-shadow: 0 0 18px rgba(210, 173, 85, .35);
+    }
+    .item-cell .icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--r), #f4e8cd 40%);
+      color: #181713;
+      font-size: 27px;
+    }
+    .item-cell .tier {
+      position: absolute;
+      right: 4px;
+      top: 4px;
+      color: #fff6da;
+      font-size: 10px;
+    }
+    .item-cell .equipped {
+      position: absolute;
+      left: -2px;
+      top: -2px;
+      padding: 2px 4px;
+      background: var(--gold);
+      color: #18130a;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .bag-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .detail-card {
+      padding: 12px;
+    }
+    .detail-hero {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .detail-icon {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border: 2px solid color-mix(in srgb, var(--r), #1a1c17 30%);
+      background: color-mix(in srgb, var(--r), #111 55%);
+      font-size: 34px;
+    }
+    .detail-hero h3 {
+      margin: 0 0 4px;
+      color: var(--r);
+      font-size: 19px;
+    }
+    .detail-hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .compare-line {
+      display: grid;
+      grid-template-columns: 1fr 72px;
+      gap: 8px;
+      padding: 8px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .compare-line strong {
+      color: var(--text);
+      font-size: 13px;
+    }
+    .gain { color: var(--green); }
+    .loss { color: var(--red); }
+    .affixes {
+      display: grid;
+      gap: 7px;
+      margin: 12px 0;
+    }
+    .affix {
+      padding: 8px;
+      border: 1px solid rgba(255,255,255,.09);
+      background: rgba(255,255,255,.04);
+      color: #eadfc8;
+      font-size: 13px;
+    }
+    .equip-action {
+      width: 100%;
+      height: 42px;
+      margin-top: 8px;
+      border-color: rgba(210, 173, 85, .55);
+      background: linear-gradient(180deg, #72572b, #49371d);
+      color: #fff3cf;
+      font-weight: 700;
+    }
+    .mini-log {
+      margin-top: 12px;
+      padding: 8px;
+      border: 1px solid rgba(106, 199, 187, .25);
+      background: rgba(106, 199, 187, .07);
+      color: #bfe9e2;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    @media (max-width: 1280px) {
+      .compare { grid-template-columns: 1fr; }
+      .good-demo { grid-template-columns: 275px minmax(520px, 1fr) 300px; overflow: auto; }
+      .panel { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>中世纪地牢背包换装 UI 对照</h1>
+        <p>左边是没有信息规划的堆功能版本；右边是按游戏 UI 信息层级重排后的版本。</p>
+      </div>
+      <div class="rules" aria-label="设计原则">
+        <span>先目标后数据</span>
+        <span>主决策路径单一</span>
+        <span>图标表达类别</span>
+        <span>颜色只表达状态</span>
+        <span>详情按需展开</span>
+        <span>反馈必须即时</span>
+      </div>
+    </header>
+    <section class="compare">
+      <aside class="panel">
+        <div class="panel-head">
+          <h2>未看资料版本</h2>
+          <p>所有信息都在，但没有优先级，玩家要自己从文字里找答案。</p>
+        </div>
+        <div class="bad-demo">
+          <div class="bad-stats">
+            <div>角色: 艾兰</div><div>职业: 战士</div><div>等级: 12</div>
+            <div>生命 620</div><div>攻击 88</div><div>防御 42</div>
+            <div>火焰 12</div><div>暴击 8%</div><div>战力 1432</div>
+          </div>
+          <div class="bad-block-title">装备槽</div>
+          <div class="bad-list">
+            <button>武器: 精良铁剑 攻击+18 火焰+8 战力+104</button>
+            <button>头盔: 旧铁盔 生命+70 战力+35</button>
+            <button>胸甲: 地牢胸甲 防御+14 生命+120 战力+126</button>
+            <button>靴子: 探路靴 移速+6% 闪避+3% 战力+42</button>
+            <button>戒指: 无</button>
+            <button>护手: 无</button>
+          </div>
+          <div class="bad-block-title">背包</div>
+          <div class="bad-list">
+            <button>传说 地火斩剑 武器 Lv12 Tier3 攻击+28 火焰+22 暴击+5% 战力+282 可以装备</button>
+            <button>普通 破旧皮靴 鞋子 Lv8 Tier1 移速+3% 战力+18 可以装备</button>
+            <button>史诗 回声胸甲 胸甲 Lv11 Tier3 防御+20 魔抗+11 战力+190 可以装备</button>
+            <button>稀有 银纹头盔 头盔 Lv10 Tier2 生命+92 战力+68 可以装备</button>
+            <button>史诗 毒牙戒指 饰品 Lv12 Tier3 剧毒+18 暴伤+12% 战力+166 可以装备</button>
+            <button>普通 生锈护手 护手 Lv7 Tier1 攻击+7 战力+22 可以装备</button>
+            <button>稀有 暖炉护符 饰品 Lv9 Tier2 治疗+14 战力+58 可以装备</button>
+          </div>
+          <div class="bad-block-title">日志</div>
+          <div class="bad-log">
+            <div>获得装备 传说地火斩剑，战力+282。</div>
+            <div>获得金币 18。</div>
+            <div>击败骷髅队长。</div>
+            <div>角色经验增加。</div>
+          </div>
+        </div>
+      </aside>
+      <section class="panel">
+        <div class="panel-head">
+          <h2>按资料原则重做版本</h2>
+          <p>先告诉玩家“当前角色是谁、能换哪个槽、换了会怎样”，再给完整数值。</p>
+        </div>
+        <div class="good-demo">
+          <aside class="hero-column">
+            <div class="section-title">角色与装备 <small>当前: 艾兰</small></div>
+            <div class="portrait">
+              <div class="hero-name"><strong>艾兰</strong><span>Lv.12 地牢先锋</span></div>
+            </div>
+            <div class="power-row">
+              <div class="power-bar"><i></i></div>
+              <strong id="powerValue">1432</strong>
+            </div>
+            <div class="equip-slots" id="slots"></div>
+            <div class="stat-grid" id="stats"></div>
+          </aside>
+          <section class="bag-column">
+            <div class="section-title">背包 <small>高稀有度和当前槽优先</small></div>
+            <div class="bag-toolbar">
+              <button class="active" data-filter="all">全部</button>
+              <button data-filter="weapon">武器</button>
+              <button data-filter="armor">防具</button>
+              <button data-filter="trinket">饰品</button>
+            </div>
+            <div class="bag-grid" id="bagGrid"></div>
+            <div class="bag-footer">
+              <span>36 格容量 · 超出时保留高稀有度</span>
+              <span>点击装备查看差异</span>
+            </div>
+          </section>
+          <aside class="detail-column">
+            <div class="section-title">装备详情 <small>只显示当前决策</small></div>
+            <div class="detail-card" id="detail"></div>
+          </aside>
+        </div>
+      </section>
+    </section>
+  </main>
+  <script>
+    const rarity = {
+      common: ["普通", "var(--common)", 1],
+      rare: ["稀有", "var(--rare)", 2],
+      epic: ["史诗", "var(--epic)", 3],
+      legendary: ["传说", "var(--legendary)", 4],
+    };
+    const slotIcons = { weapon: "⚔️", helm: "🪖", chest: "🛡️", gloves: "🧤", boots: "🥾", ring: "💍" };
+    const slotNames = { weapon: "武器", helm: "头盔", chest: "胸甲", gloves: "护手", boots: "靴子", ring: "戒指" };
+    const typeMap = { weapon: "weapon", helm: "armor", chest: "armor", gloves: "armor", boots: "armor", ring: "trinket" };
+    const items = [
+      { id: "flame", name: "地火斩剑", slot: "weapon", rarity: "legendary", tier: 3, power: 282, stats: [["攻击", 28], ["火焰伤害", 22], ["暴击", "5%"]] },
+      { id: "echo", name: "回声胸甲", slot: "chest", rarity: "epic", tier: 3, power: 190, stats: [["防御", 20], ["魔抗", 11]] },
+      { id: "fang", name: "毒牙戒指", slot: "ring", rarity: "epic", tier: 3, power: 166, stats: [["剧毒伤害", 18], ["暴伤", "12%"]] },
+      { id: "silver", name: "银纹头盔", slot: "helm", rarity: "rare", tier: 2, power: 68, stats: [["生命", 92]] },
+      { id: "hearth", name: "暖炉护符", slot: "ring", rarity: "rare", tier: 2, power: 58, stats: [["治疗", 14]] },
+      { id: "boots", name: "破旧皮靴", slot: "boots", rarity: "common", tier: 1, power: 18, stats: [["移速", "3%"]] },
+      { id: "rust", name: "生锈护手", slot: "gloves", rarity: "common", tier: 1, power: 22, stats: [["攻击", 7]] },
+      { id: "storm", name: "雷纹短剑", slot: "weapon", rarity: "epic", tier: 2, power: 142, stats: [["攻击", 18], ["雷电伤害", 15]] },
+      { id: "warden", name: "守夜重盔", slot: "helm", rarity: "epic", tier: 3, power: 128, stats: [["生命", 130], ["魔抗", 9]] },
+      { id: "ember", name: "余烬护手", slot: "gloves", rarity: "rare", tier: 2, power: 74, stats: [["攻速", "7%"]] },
+    ];
+    const equipped = {
+      weapon: { id: "old-sword", name: "精良铁剑", slot: "weapon", rarity: "rare", tier: 2, power: 104, stats: [["攻击", 18], ["火焰伤害", 8]] },
+      helm: { id: "old-helm", name: "旧铁盔", slot: "helm", rarity: "common", tier: 1, power: 35, stats: [["生命", 70]] },
+      chest: { id: "old-chest", name: "地牢胸甲", slot: "chest", rarity: "rare", tier: 2, power: 126, stats: [["防御", 14], ["生命", 120]] },
+      gloves: null,
+      boots: { id: "old-boots", name: "探路靴", slot: "boots", rarity: "common", tier: 1, power: 42, stats: [["移速", "6%"], ["闪避", "3%"]] },
+      ring: null,
+    };
+    let selectedId = "flame";
+    let filter = "all";
+    function itemColor(item) { return rarity[item.rarity][1]; }
+    function itemLabel(item) { return `${rarity[item.rarity][0]} ${item.name}`; }
+    function renderSlots() {
+      document.querySelector("#slots").innerHTML = Object.keys(slotNames).map((slot) => {
+        const item = equipped[slot];
+        const active = selected().slot === slot;
+        return `<button class="slot ${active ? "active" : ""}" style="--r:${item ? itemColor(item) : "var(--line-strong)"}" data-slot="${slot}">
+          <span class="slot-icon">${slotIcons[slot]}</span>
+          <strong>${slotNames[slot]}</strong>
+          <span>${item ? itemLabel(item) : "空槽"}</span>
+        </button>`;
+      }).join("");
+    }
+    function renderStats() {
+      const total = { 生命: 620, 攻击: 88, 防御: 42, 火焰: 12, 暴击: "8%", 战力: 1432 };
+      document.querySelector("#stats").innerHTML = Object.entries(total).map(([name, value]) => `<div class="stat"><b>${value}</b><span>${name}</span></div>`).join("");
+    }
+    function selected() { return items.find((item) => item.id === selectedId) || items[0]; }
+    function renderBag() {
+      const visible = items
+        .filter((item) => filter === "all" || typeMap[item.slot] === filter)
+        .sort((a, b) => rarity[b.rarity][2] - rarity[a.rarity][2] || b.power - a.power);
+      document.querySelector("#bagGrid").innerHTML = Array.from({ length: 35 }, (_, index) => {
+        const item = visible[index];
+        if (!item) return `<button class="item-cell" disabled style="--r:rgba(255,255,255,.08)"></button>`;
+        const isEquipped = Object.values(equipped).some((gear) => gear && gear.id === item.id);
+        return `<button class="item-cell ${item.id === selectedId ? "selected" : ""}" data-id="${item.id}" style="--r:${itemColor(item)}" title="${itemLabel(item)}">
+          ${isEquipped ? `<span class="equipped">已装</span>` : ""}
+          <span class="tier">T${item.tier}</span>
+          <span class="icon">${slotIcons[item.slot]}</span>
+        </button>`;
+      }).join("");
+    }
+    function renderDetail() {
+      const item = selected();
+      const old = equipped[item.slot];
+      const diff = item.power - (old ? old.power : 0);
+      document.querySelector("#detail").innerHTML = `
+        <div class="detail-hero" style="--r:${itemColor(item)}">
+          <div class="detail-icon">${slotIcons[item.slot]}</div>
+          <div>
+            <h3>${itemLabel(item)}</h3>
+            <p>${slotNames[item.slot]} · Tier ${item.tier} · ${diff >= 0 ? "预计提升" : "预计下降"}</p>
+          </div>
+        </div>
+        <div class="compare-line"><span>当前槽位</span><strong>${old ? itemLabel(old) : "空槽"}</strong></div>
+        <div class="compare-line"><span>战力变化</span><strong class="${diff >= 0 ? "gain" : "loss"}">${diff >= 0 ? "+" : ""}${diff}</strong></div>
+        <div class="affixes">${item.stats.map(([name, value]) => `<div class="affix">${name} +${value}</div>`).join("")}</div>
+        <button class="equip-action" id="equipBtn">装备到${slotNames[item.slot]}</button>
+        <div class="mini-log">反馈预览：装备后角色战力数字会上跳，${slotNames[item.slot]}槽高亮，背包格显示“已装”。</div>
+      `;
+    }
+    function renderAll() {
+      renderSlots();
+      renderStats();
+      renderBag();
+      renderDetail();
+    }
+    document.addEventListener("click", (event) => {
+      const filterBtn = event.target.closest("[data-filter]");
+      if (filterBtn) {
+        filter = filterBtn.dataset.filter;
+        document.querySelectorAll("[data-filter]").forEach((button) => button.classList.toggle("active", button === filterBtn));
+        renderBag();
+      }
+      const itemBtn = event.target.closest("[data-id]");
+      if (itemBtn) {
+        selectedId = itemBtn.dataset.id;
+        renderAll();
+      }
+      if (event.target.id === "equipBtn") {
+        const item = selected();
+        equipped[item.slot] = item;
+        const power = 1432 + Object.values(equipped).reduce((sum, gear) => sum + (gear ? gear.power : 0), 0) - 307;
+        document.querySelector("#powerValue").textContent = power;
+        renderAll();
+      }
+    });
+    renderAll();
+  </script>
+</body>
+</html>

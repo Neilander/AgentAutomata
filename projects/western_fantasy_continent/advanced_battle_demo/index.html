@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 · 装备藏品 3v3</title>
+    <link rel="stylesheet" href="/advanced_battle_demo/styles.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="topbar">
+        <div>
+          <h1>装备藏品 3v3 战斗</h1>
+          <p>每个角色可换职业、装备套装，并携带最多 6 个机制类藏品。</p>
+        </div>
+        <div class="actions">
+          <button id="startBtn" type="button">开始</button>
+          <button id="pauseBtn" type="button">暂停</button>
+          <button id="resetBtn" type="button">重置</button>
+        </div>
+      </section>
+
+      <section class="main-grid">
+        <aside class="team-panel">
+          <div class="panel-title">
+            <h2>我方 3 人</h2>
+            <button id="leftPresetBtn" type="button">随机</button>
+          </div>
+          <div id="leftRoster" class="roster"></div>
+        </aside>
+
+        <section class="battle-wrap">
+          <div class="scoreboard">
+            <div><span>我方存活</span><strong id="leftAlive">0</strong></div>
+            <div><span id="battleState">加载中</span><strong id="timer">0.0s</strong></div>
+            <div><span>敌方存活</span><strong id="rightAlive">0</strong></div>
+          </div>
+          <div id="battlefield" class="battlefield">
+            <div class="lane-label left">我方</div>
+            <div class="lane-label right">敌方</div>
+            <div class="midline"></div>
+            <div id="fxLayer" class="fx-layer"></div>
+            <div id="unitLayer" class="unit-layer"></div>
+          </div>
+          <div class="below">
+            <div id="selectedStats" class="stats-panel"></div>
+            <div id="combatLog" class="combat-log"></div>
+          </div>
+        </section>
+
+        <aside class="team-panel">
+          <div class="panel-title">
+            <h2>敌方 3 人</h2>
+            <button id="rightPresetBtn" type="button">随机</button>
+          </div>
+          <div id="rightRoster" class="roster"></div>
+        </aside>
+      </section>
+    </main>
+    <script src="/advanced_battle_demo/advanced-battle.js"></script>
+  </body>
+</html>

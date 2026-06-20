@@ -1,0 +1,396 @@
+:root {
+  color-scheme: dark;
+  --bg: #15120f;
+  --panel: #221d18;
+  --panel-soft: #2b251f;
+  --line: #4a4036;
+  --text: #f4eadb;
+  --muted: #baa98f;
+  --left: #5fb7d4;
+  --right: #df7468;
+  --grass: #33412c;
+  --field: #293421;
+  --gold: #d7b35a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1060px;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, "Microsoft YaHei", sans-serif;
+}
+
+button,
+select {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  background: #1e1a16;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 16px;
+}
+
+p {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.battle-actions {
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  min-width: 72px;
+  height: 36px;
+  border: 1px solid #6e5d46;
+  border-radius: 6px;
+  background: #3a3026;
+  color: var(--text);
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--gold);
+}
+
+#startBtn {
+  background: #465f34;
+}
+
+#pauseBtn {
+  background: #3a4a61;
+}
+
+#resetBtn {
+  background: #684036;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 250px minmax(540px, 1fr) 250px;
+  gap: 14px;
+  flex: 1;
+  min-height: 620px;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 12px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+select {
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: #171411;
+  color: var(--text);
+  padding: 0 8px;
+}
+
+.roster {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.unit-card {
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+  padding: 10px;
+}
+
+.unit-card strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.unit-card select {
+  width: 100%;
+}
+
+.class-note {
+  margin-top: 7px;
+  min-height: 34px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.battlefield-wrap {
+  display: grid;
+  grid-template-rows: auto minmax(420px, 1fr) 140px;
+  gap: 10px;
+}
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--line);
+  background: #1e1a16;
+}
+
+.scoreboard div {
+  min-height: 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-right: 1px solid var(--line);
+}
+
+.scoreboard div:last-child {
+  border-right: 0;
+}
+
+.scoreboard span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.scoreboard strong {
+  font-size: 20px;
+}
+
+.battlefield {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #596348;
+  background:
+    linear-gradient(90deg, rgba(95, 183, 212, 0.08), transparent 34%, transparent 66%, rgba(223, 116, 104, 0.08)),
+    repeating-linear-gradient(0deg, transparent 0 34px, rgba(255, 255, 255, 0.035) 35px 36px),
+    repeating-linear-gradient(90deg, transparent 0 58px, rgba(255, 255, 255, 0.03) 59px 60px),
+    var(--field);
+}
+
+.midline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: rgba(244, 234, 219, 0.25);
+}
+
+.side-label {
+  position: absolute;
+  top: 10px;
+  font-size: 12px;
+  color: rgba(244, 234, 219, 0.58);
+}
+
+.side-label.left {
+  left: 14px;
+}
+
+.side-label.right {
+  right: 14px;
+}
+
+.unit-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.fighter {
+  position: absolute;
+  width: 72px;
+  height: 104px;
+  transform: translate(-50%, -50%);
+  transition: left 120ms linear, top 120ms linear;
+}
+
+.fighter.attacking .body {
+  transform: translateX(var(--lunge));
+}
+
+.fighter.dead {
+  opacity: 0.32;
+  filter: grayscale(0.8);
+}
+
+.body {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  width: 48px;
+  height: 72px;
+  transition: transform 90ms ease-out;
+}
+
+.part {
+  position: absolute;
+  border: 2px solid rgba(0, 0, 0, 0.38);
+}
+
+.head {
+  left: 14px;
+  top: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e8c49b;
+}
+
+.torso {
+  left: 10px;
+  top: 22px;
+  width: 28px;
+  height: 34px;
+  border-radius: 6px;
+  background: var(--class-color);
+}
+
+.arm {
+  top: 26px;
+  width: 11px;
+  height: 28px;
+  background: #d7a97c;
+}
+
+.arm.left {
+  left: 0;
+  transform: rotate(16deg);
+}
+
+.arm.right {
+  right: 0;
+  transform: rotate(-16deg);
+}
+
+.leg {
+  top: 56px;
+  width: 12px;
+  height: 25px;
+  background: #5f5148;
+}
+
+.leg.left {
+  left: 12px;
+  transform: rotate(6deg);
+}
+
+.leg.right {
+  right: 12px;
+  transform: rotate(-6deg);
+}
+
+.weapon {
+  position: absolute;
+  left: var(--weapon-left);
+  top: var(--weapon-top);
+  width: var(--weapon-width);
+  height: var(--weapon-height);
+  border-radius: var(--weapon-radius);
+  background: var(--weapon-color);
+  transform: rotate(var(--weapon-rotate));
+  transform-origin: center;
+}
+
+.hp {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 8px;
+  height: 7px;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.hp-fill {
+  display: block;
+  height: 100%;
+  background: #57c56b;
+  width: 100%;
+}
+
+.nameplate {
+  position: absolute;
+  left: -12px;
+  right: -12px;
+  bottom: -13px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.combat-log {
+  overflow: auto;
+  border: 1px solid var(--line);
+  background: #171411;
+  padding: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.combat-log div {
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 1180px) {
+  body {
+    min-width: 960px;
+  }
+
+  .layout {
+    grid-template-columns: 220px minmax(500px, 1fr) 220px;
+  }
+}
+

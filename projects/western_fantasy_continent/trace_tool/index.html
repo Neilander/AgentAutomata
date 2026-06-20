@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 · 角色描图工具</title>
+    <link rel="stylesheet" href="/trace_tool/styles.css">
+  </head>
+  <body>
+    <main class="tool-shell">
+      <section class="topbar">
+        <div>
+          <h1>角色描图工具</h1>
+          <p>战斗小人参考 · 骨骼点 · 部件轮廓 · JSON</p>
+        </div>
+        <div class="top-actions">
+          <label class="file-button">
+            换图
+            <input id="imageInput" type="file" accept="image/*">
+          </label>
+          <button id="resetViewBtn" type="button">居中</button>
+          <button id="saveBtn" type="button">保存</button>
+          <button id="loadBtn" type="button">读取</button>
+          <button id="copyBtn" type="button">复制</button>
+          <span id="serverStatus" class="server-status">后端检测中</span>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="panel">
+          <div class="panel-head">
+            <h2>模式</h2>
+          </div>
+          <div class="segmented" role="group" aria-label="编辑模式">
+            <button id="jointModeBtn" class="active" type="button">骨骼</button>
+            <button id="partModeBtn" type="button">部件</button>
+            <button id="allModeBtn" type="button">全部</button>
+          </div>
+
+          <div class="field-stack">
+            <label>
+              底图
+              <input id="opacityRange" type="range" min="20" max="100" value="82">
+            </label>
+            <label>
+              整体缩放
+              <input id="scaleRange" type="range" min="80" max="800" value="160">
+            </label>
+          </div>
+
+          <div class="panel-head spaced">
+            <h2>骨骼点</h2>
+          </div>
+          <div id="jointList" class="list"></div>
+        </aside>
+
+        <section class="canvas-panel">
+          <div id="traceStage" class="trace-stage">
+            <div id="traceContent" class="trace-content">
+              <img id="referenceImage" class="reference-image" alt="" src="/picref/战斗小人参考.png">
+              <svg id="traceSvg" class="trace-svg" viewBox="0 0 800 560" aria-label="描图画布">
+                <g id="boneLayer"></g>
+                <g id="partLayer"></g>
+                <g id="pointLayer"></g>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <div class="panel-head">
+            <h2>部件</h2>
+            <button id="clearPartBtn" type="button">清空</button>
+          </div>
+          <select id="partSelect"></select>
+          <div id="partList" class="list part-list"></div>
+
+          <div class="panel-head spaced">
+            <h2>数据</h2>
+          </div>
+          <label>
+            存档名
+            <input id="traceNameInput" class="text-input" value="battle_chibi_trace_v1">
+          </label>
+          <textarea id="jsonOutput" spellcheck="false"></textarea>
+        </aside>
+      </section>
+    </main>
+    <script src="/trace_tool/trace-tool.js"></script>
+  </body>
+</html>

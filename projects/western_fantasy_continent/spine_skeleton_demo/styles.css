@@ -1,0 +1,832 @@
+:root {
+  color-scheme: dark;
+  --bg: #111411;
+  --panel: #1d211b;
+  --panel-2: #24291f;
+  --line: #4d5a40;
+  --text: #f1ebda;
+  --muted: #b7ad95;
+  --gold: #d8b65b;
+  --skin: #d8ad7e;
+  --skin-dark: #a6724e;
+  --armor: #6e8291;
+  --armor-dark: #3d4b56;
+  --cloth: #533e79;
+  --weapon: #d8dadd;
+  --fx: #74d7ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1120px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(216, 182, 91, 0.12), transparent 34%),
+    var(--bg);
+  color: var(--text);
+  font-family: Arial, "Microsoft YaHei", sans-serif;
+}
+
+button,
+select {
+  font: inherit;
+}
+
+.stage-shell {
+  min-height: 100vh;
+  padding: 18px;
+  display: grid;
+  grid-template-rows: auto minmax(520px, 1fr) auto;
+  gap: 14px;
+}
+
+.toolbar,
+.variants {
+  border: 1px solid var(--line);
+  background: rgba(29, 33, 27, 0.95);
+}
+
+.toolbar {
+  min-height: 78px;
+  padding: 13px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 21px;
+}
+
+h2 {
+  font-size: 15px;
+  margin-bottom: 11px;
+}
+
+p {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+label {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+select,
+button {
+  height: 34px;
+  border: 1px solid #667254;
+  border-radius: 5px;
+  background: #171b15;
+  color: var(--text);
+  padding: 0 10px;
+}
+
+button {
+  align-self: end;
+  min-width: 64px;
+  background: #394a36;
+  cursor: pointer;
+}
+
+button:hover,
+select:hover {
+  border-color: var(--gold);
+}
+
+.showcase {
+  display: grid;
+  grid-template-columns: 220px minmax(600px, 1fr) 220px;
+  gap: 14px;
+  min-height: 0;
+}
+
+.system-panel {
+  border: 1px solid var(--line);
+  background: rgba(29, 33, 27, 0.94);
+  padding: 13px;
+  overflow: hidden;
+}
+
+.slot-list,
+.bone-list {
+  display: grid;
+  gap: 8px;
+}
+
+.system-row {
+  min-height: 38px;
+  padding: 8px;
+  border: 1px solid rgba(241, 235, 218, 0.1);
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.system-row strong {
+  display: block;
+  color: var(--text);
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+
+.stage {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #53623f;
+  background:
+    linear-gradient(180deg, #1b241f 0%, #20281c 62%, #1a1f17 100%),
+    #20281c;
+}
+
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 70px, rgba(255, 255, 255, 0.04) 71px 72px),
+    repeating-linear-gradient(0deg, transparent 0 44px, rgba(255, 255, 255, 0.025) 45px 46px);
+  opacity: 0.75;
+}
+
+.floor {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 72px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.32);
+  filter: blur(1px);
+}
+
+.actor-mount {
+  position: absolute;
+  left: 50%;
+  bottom: 91px;
+  width: 260px;
+  height: 360px;
+  transform: translateX(-50%);
+}
+
+.actor {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 220px;
+  height: 330px;
+  transform: translateX(-50%) scaleX(var(--facing));
+  transform-origin: 50% 90%;
+}
+
+.actor[data-animation="idle"] {
+  animation: rootIdle 1.8s ease-in-out infinite;
+}
+
+.actor[data-animation="walk"] {
+  animation: rootWalk 0.72s ease-in-out infinite;
+}
+
+.actor[data-animation="attack"] {
+  animation: rootAttack 0.72s ease-in-out infinite;
+}
+
+.actor[data-animation="celebrate"] {
+  animation: rootCelebrate 0.9s ease-in-out infinite;
+}
+
+.actor[data-animation="drink"] {
+  animation: rootDrink 1.3s ease-in-out infinite;
+}
+
+.actor[data-animation="talk"] {
+  animation: rootTalk 1.1s ease-in-out infinite;
+}
+
+.actor[data-animation="dance"] {
+  animation: rootDance 0.95s ease-in-out infinite;
+}
+
+.actor[data-animation="mine"] {
+  animation: rootMine 0.9s ease-in-out infinite;
+}
+
+.bone {
+  position: absolute;
+  transform-origin: var(--origin-x, 50%) var(--origin-y, 50%);
+}
+
+.root {
+  left: 88px;
+  bottom: 58px;
+  width: 44px;
+  height: 44px;
+}
+
+.hip {
+  left: -8px;
+  bottom: 4px;
+  width: 62px;
+  height: 44px;
+}
+
+.spine {
+  left: -4px;
+  bottom: 34px;
+  width: 70px;
+  height: 92px;
+  --origin-x: 50%;
+  --origin-y: 90%;
+  transform: rotate(-5deg);
+}
+
+.chest {
+  left: 2px;
+  bottom: 54px;
+  width: 78px;
+  height: 82px;
+  --origin-x: 48%;
+  --origin-y: 86%;
+}
+
+.neck {
+  left: 34px;
+  bottom: 127px;
+  width: 20px;
+  height: 30px;
+  --origin-y: 92%;
+}
+
+.head-bone {
+  left: -13px;
+  bottom: 20px;
+  width: 58px;
+  height: 70px;
+  --origin-x: 50%;
+  --origin-y: 78%;
+}
+
+.upper-arm {
+  top: 42px;
+  width: 30px;
+  height: 68px;
+  --origin-x: 50%;
+  --origin-y: 10%;
+}
+
+.upper-arm.front {
+  right: -16px;
+  transform: rotate(-22deg);
+}
+
+.upper-arm.back {
+  left: -19px;
+  transform: rotate(28deg);
+}
+
+.forearm {
+  left: 4px;
+  top: 51px;
+  width: 25px;
+  height: 62px;
+  --origin-x: 50%;
+  --origin-y: 10%;
+}
+
+.hand {
+  left: 4px;
+  top: 52px;
+  width: 26px;
+  height: 24px;
+}
+
+.leg {
+  top: 20px;
+  width: 31px;
+  height: 80px;
+  --origin-y: 8%;
+}
+
+.leg.front {
+  right: 2px;
+  transform: rotate(-9deg);
+}
+
+.leg.back {
+  left: 5px;
+  transform: rotate(14deg);
+}
+
+.shin {
+  left: 3px;
+  top: 64px;
+  width: 26px;
+  height: 75px;
+  --origin-y: 8%;
+}
+
+.foot {
+  left: -2px;
+  top: 65px;
+  width: 38px;
+  height: 20px;
+}
+
+.slot {
+  position: absolute;
+  inset: 0;
+}
+
+.attachment {
+  position: absolute;
+  display: block;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.28));
+}
+
+.pelvis {
+  left: 3px;
+  top: 9px;
+  width: 56px;
+  height: 34px;
+  border-radius: 10px 10px 15px 15px;
+  background: var(--cloth);
+  transform: skewX(-7deg);
+}
+
+.torso-plate {
+  left: 5px;
+  top: 2px;
+  width: 66px;
+  height: 86px;
+  border-radius: 16px 13px 18px 16px;
+  background: linear-gradient(110deg, var(--armor) 0 62%, var(--armor-dark) 63% 100%);
+  clip-path: polygon(16% 0, 86% 5%, 100% 46%, 82% 100%, 22% 94%, 0 42%);
+}
+
+.chest-mark {
+  left: 28px;
+  top: 18px;
+  width: 17px;
+  height: 46px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.18);
+  transform: rotate(-6deg);
+}
+
+.shoulder {
+  top: 31px;
+  width: 35px;
+  height: 26px;
+  border-radius: 16px 16px 8px 8px;
+  background: var(--armor-dark);
+}
+
+.shoulder.front {
+  right: -20px;
+}
+
+.shoulder.back {
+  left: -21px;
+  filter: brightness(0.7);
+}
+
+.neck-piece {
+  left: 5px;
+  top: 6px;
+  width: 14px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--skin-dark);
+}
+
+.head-piece {
+  left: 7px;
+  top: 2px;
+  width: 47px;
+  height: 56px;
+  background: var(--skin);
+  clip-path: polygon(28% 0, 78% 8%, 100% 38%, 80% 91%, 42% 100%, 7% 70%, 0 24%);
+}
+
+.face-plane {
+  left: 30px;
+  top: 13px;
+  width: 19px;
+  height: 31px;
+  background: rgba(255, 255, 255, 0.16);
+  clip-path: polygon(0 0, 100% 16%, 72% 100%, 12% 82%);
+}
+
+.hair {
+  left: 4px;
+  top: -3px;
+  width: 48px;
+  height: 29px;
+  border-radius: 18px 18px 8px 12px;
+  background: #34271c;
+  transform: rotate(4deg);
+}
+
+.eye {
+  left: 35px;
+  top: 23px;
+  width: 8px;
+  height: 3px;
+  border-radius: 3px;
+  background: #201a13;
+}
+
+.nose {
+  left: 43px;
+  top: 26px;
+  width: 8px;
+  height: 13px;
+  background: var(--skin-dark);
+  clip-path: polygon(0 0, 100% 52%, 4% 100%);
+}
+
+.arm-piece {
+  left: 6px;
+  top: 3px;
+  width: 18px;
+  height: 61px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--skin) 0 55%, var(--skin-dark) 56% 100%);
+}
+
+.forearm-piece {
+  left: 4px;
+  top: 2px;
+  width: 17px;
+  height: 55px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--skin) 0 58%, var(--skin-dark) 59% 100%);
+}
+
+.hand-piece {
+  left: 4px;
+  top: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50% 50% 45% 45%;
+  background: var(--skin);
+}
+
+.leg-piece {
+  left: 4px;
+  top: 4px;
+  width: 23px;
+  height: 74px;
+  border-radius: 12px;
+  background: #50473f;
+}
+
+.shin-piece {
+  left: 3px;
+  top: 3px;
+  width: 20px;
+  height: 68px;
+  border-radius: 10px;
+  background: #393632;
+}
+
+.foot-piece {
+  left: 0;
+  top: 4px;
+  width: 42px;
+  height: 15px;
+  border-radius: 16px 6px 8px 8px;
+  background: #24221f;
+}
+
+.weapon-piece {
+  left: 12px;
+  top: -18px;
+  width: var(--weapon-width);
+  height: var(--weapon-height);
+  border-radius: var(--weapon-radius);
+  background: var(--weapon-color);
+  clip-path: var(--weapon-shape);
+  transform: rotate(var(--weapon-rotate));
+}
+
+.offhand-piece {
+  left: -8px;
+  top: 10px;
+  width: var(--offhand-width);
+  height: var(--offhand-height);
+  border-radius: var(--offhand-radius);
+  background: var(--offhand-color);
+  clip-path: var(--offhand-shape);
+}
+
+.cape-piece {
+  left: -12px;
+  top: 30px;
+  width: 76px;
+  height: 128px;
+  border-radius: 22px 12px 35px 18px;
+  background: var(--cape);
+  clip-path: polygon(20% 0, 100% 4%, 82% 100%, 0 86%);
+  filter: brightness(0.78);
+}
+
+.fx-piece {
+  left: -15px;
+  top: -31px;
+  width: 46px;
+  height: 46px;
+  border: 2px solid var(--fx);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.variant-strip {
+  padding: 11px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.variant-card {
+  min-height: 88px;
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 9px;
+  border: 1px solid rgba(241, 235, 218, 0.12);
+  background: var(--panel-2);
+}
+
+.mini {
+  position: relative;
+  width: 58px;
+  height: 72px;
+}
+
+.mini div {
+  position: absolute;
+  background: var(--mini-color);
+}
+
+.mini-head {
+  left: 22px;
+  top: 3px;
+  width: 19px;
+  height: 22px;
+  clip-path: polygon(30% 0, 86% 14%, 100% 51%, 72% 100%, 20% 86%, 0 34%);
+  background: var(--skin) !important;
+}
+
+.mini-body {
+  left: 18px;
+  top: 25px;
+  width: var(--mini-body-width);
+  height: 34px;
+  border-radius: 8px;
+}
+
+.mini-weapon {
+  left: var(--mini-weapon-left);
+  top: var(--mini-weapon-top);
+  width: var(--mini-weapon-width);
+  height: var(--mini-weapon-height);
+  transform: rotate(var(--mini-weapon-rotate));
+  background: var(--weapon) !important;
+}
+
+.variant-card strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.variant-card span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.actor[data-animation="idle"] .chest {
+  animation: chestIdle 1.8s ease-in-out infinite;
+}
+
+.actor[data-animation="idle"] .head-bone {
+  animation: headIdle 1.8s ease-in-out infinite;
+}
+
+.actor[data-animation="walk"] .leg.front {
+  animation: frontLegWalk 0.72s ease-in-out infinite;
+}
+
+.actor[data-animation="walk"] .leg.back {
+  animation: backLegWalk 0.72s ease-in-out infinite;
+}
+
+.actor[data-animation="walk"] .upper-arm.front {
+  animation: frontArmWalk 0.72s ease-in-out infinite;
+}
+
+.actor[data-animation="walk"] .upper-arm.back {
+  animation: backArmWalk 0.72s ease-in-out infinite;
+}
+
+.actor[data-animation="attack"] .chest {
+  animation: chestAttack 0.72s ease-in-out infinite;
+}
+
+.actor[data-animation="attack"] .upper-arm.front {
+  animation: attackArm 0.72s ease-in-out infinite;
+}
+
+.actor[data-animation="attack"] .forearm.front {
+  animation: attackForearm 0.72s ease-in-out infinite;
+}
+
+.actor[data-animation="attack"] .fx-piece {
+  animation: attackFx 0.72s ease-in-out infinite;
+}
+
+.actor[data-animation="celebrate"] .upper-arm.front,
+.actor[data-animation="celebrate"] .upper-arm.back {
+  animation: celebrateArm 0.9s ease-in-out infinite;
+}
+
+.actor[data-animation="drink"] .upper-arm.front {
+  animation: drinkArm 1.3s ease-in-out infinite;
+}
+
+.actor[data-animation="talk"] .head-bone {
+  animation: talkHead 1.1s ease-in-out infinite;
+}
+
+.actor[data-animation="talk"] .upper-arm.front {
+  animation: talkArm 1.1s ease-in-out infinite;
+}
+
+.actor[data-animation="dance"] .chest {
+  animation: danceChest 0.95s ease-in-out infinite;
+}
+
+.actor[data-animation="dance"] .upper-arm.front {
+  animation: danceFrontArm 0.95s ease-in-out infinite;
+}
+
+.actor[data-animation="dance"] .upper-arm.back {
+  animation: danceBackArm 0.95s ease-in-out infinite;
+}
+
+.actor[data-animation="mine"] .chest {
+  animation: mineChest 0.9s ease-in-out infinite;
+}
+
+.actor[data-animation="mine"] .upper-arm.front {
+  animation: mineArm 0.9s ease-in-out infinite;
+}
+
+@keyframes rootIdle {
+  50% { transform: translateX(-50%) scaleX(var(--facing)) translateY(-4px); }
+}
+
+@keyframes rootWalk {
+  50% { transform: translateX(-47%) scaleX(var(--facing)) translateY(-7px); }
+}
+
+@keyframes rootAttack {
+  20% { transform: translateX(-54%) scaleX(var(--facing)); }
+  45% { transform: translateX(-40%) scaleX(var(--facing)); }
+  100% { transform: translateX(-50%) scaleX(var(--facing)); }
+}
+
+@keyframes rootCelebrate {
+  50% { transform: translateX(-50%) scaleX(var(--facing)) translateY(-12px); }
+}
+
+@keyframes rootDrink {
+  50% { transform: translateX(-50%) scaleX(var(--facing)) rotate(-2deg); }
+}
+
+@keyframes rootTalk {
+  50% { transform: translateX(-50%) scaleX(var(--facing)) rotate(1.5deg); }
+}
+
+@keyframes rootDance {
+  25% { transform: translateX(-56%) scaleX(var(--facing)) rotate(-4deg); }
+  75% { transform: translateX(-44%) scaleX(var(--facing)) rotate(4deg); }
+}
+
+@keyframes rootMine {
+  35% { transform: translateX(-45%) scaleX(var(--facing)) translateY(4px); }
+}
+
+@keyframes chestIdle {
+  50% { transform: rotate(-2deg); }
+}
+
+@keyframes headIdle {
+  50% { transform: rotate(4deg); }
+}
+
+@keyframes frontLegWalk {
+  50% { transform: rotate(22deg); }
+}
+
+@keyframes backLegWalk {
+  50% { transform: rotate(-18deg); }
+}
+
+@keyframes frontArmWalk {
+  50% { transform: rotate(22deg); }
+}
+
+@keyframes backArmWalk {
+  50% { transform: rotate(-27deg); }
+}
+
+@keyframes chestAttack {
+  35% { transform: rotate(12deg); }
+  58% { transform: rotate(-10deg); }
+}
+
+@keyframes attackArm {
+  30% { transform: rotate(-70deg); }
+  54% { transform: rotate(62deg); }
+}
+
+@keyframes attackForearm {
+  30% { transform: rotate(-48deg); }
+  54% { transform: rotate(26deg); }
+}
+
+@keyframes attackFx {
+  42% { opacity: 0; transform: scale(0.35); }
+  58% { opacity: 0.75; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(1.55); }
+}
+
+@keyframes celebrateArm {
+  50% { transform: rotate(-130deg); }
+}
+
+@keyframes drinkArm {
+  35%, 70% { transform: rotate(-112deg); }
+}
+
+@keyframes talkHead {
+  30% { transform: rotate(-6deg); }
+  68% { transform: rotate(5deg); }
+}
+
+@keyframes talkArm {
+  50% { transform: rotate(-58deg); }
+}
+
+@keyframes danceChest {
+  25% { transform: rotate(-11deg); }
+  75% { transform: rotate(12deg); }
+}
+
+@keyframes danceFrontArm {
+  25% { transform: rotate(-92deg); }
+  75% { transform: rotate(36deg); }
+}
+
+@keyframes danceBackArm {
+  25% { transform: rotate(50deg); }
+  75% { transform: rotate(-94deg); }
+}
+
+@keyframes mineChest {
+  38% { transform: rotate(24deg); }
+  70% { transform: rotate(-8deg); }
+}
+
+@keyframes mineArm {
+  35% { transform: rotate(-118deg); }
+  62% { transform: rotate(68deg); }
+}
+

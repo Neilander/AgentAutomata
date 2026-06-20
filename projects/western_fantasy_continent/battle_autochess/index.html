@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 · 自走器战斗原型</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-label="战斗控制">
+        <div>
+          <h1>西幻大陆 · 自走器战斗</h1>
+          <p>配置两侧小队，观察职业定位、移动、攻击和胜负结算。</p>
+        </div>
+        <div class="battle-actions">
+          <button id="startBtn" type="button">开始</button>
+          <button id="pauseBtn" type="button">暂停</button>
+          <button id="resetBtn" type="button">重置</button>
+        </div>
+      </section>
+
+      <section class="layout">
+        <aside class="panel" aria-label="我方设置">
+          <div class="panel-heading">
+            <h2>我方</h2>
+            <label>
+              数量
+              <select id="leftCount"></select>
+            </label>
+          </div>
+          <div id="leftRoster" class="roster"></div>
+        </aside>
+
+        <section class="battlefield-wrap" aria-label="战场">
+          <div class="scoreboard">
+            <div>
+              <span>我方存活</span>
+              <strong id="leftAlive">0</strong>
+            </div>
+            <div>
+              <span id="battleState">待命</span>
+              <strong id="battleTimer">0.0s</strong>
+            </div>
+            <div>
+              <span>敌方存活</span>
+              <strong id="rightAlive">0</strong>
+            </div>
+          </div>
+          <div id="battlefield" class="battlefield">
+            <div class="side-label left">我方阵线</div>
+            <div class="side-label right">敌方阵线</div>
+            <div class="midline"></div>
+            <div id="unitLayer" class="unit-layer"></div>
+          </div>
+          <div id="combatLog" class="combat-log" aria-label="战斗日志"></div>
+        </section>
+
+        <aside class="panel" aria-label="敌方设置">
+          <div class="panel-heading">
+            <h2>敌方</h2>
+            <label>
+              数量
+              <select id="rightCount"></select>
+            </label>
+          </div>
+          <div id="rightRoster" class="roster"></div>
+        </aside>
+      </section>
+    </main>
+    <script src="battle.js"></script>
+  </body>
+</html>
+

@@ -98,57 +98,17 @@ const BRACKEYS_IMAGES = {
   effect02: imageAsset("particles/alpha/effect_02_a.png"),
 };
 
-const SKILL_EFFECTS = [
-  { id: "iron_cleave", name: "铁卫横斩", group: "attack", element: "physical", style: "cleave", icon: "⚔" },
-  { id: "silver_lunge", name: "银锋突刺", group: "attack", element: "physical", style: "pierce", icon: "🗡" },
-  { id: "double_cut", name: "双连切", group: "attack", element: "physical", style: "doubleSlash", icon: "⚔" },
-  { id: "whirl_blade", name: "旋风刃", group: "attack", element: "wind", style: "spinSlash", icon: "🌀" },
-  { id: "execution_arc", name: "处决弧光", group: "attack", element: "physical", style: "heavySlash", icon: "✦" },
-  { id: "bleeding_mark", name: "裂伤印记", group: "attack", element: "blood", style: "bleedSlash", icon: "♦" },
-  { id: "shadow_step", name: "影步背刺", group: "attack", element: "shadow", style: "blinkSlash", icon: "☾" },
-  { id: "ranger_shot", name: "游侠穿云", group: "attack", element: "wind", style: "projectile", icon: "➶" },
-  { id: "piercing_bolt", name: "破甲飞矢", group: "attack", element: "physical", style: "projectileHit", icon: "➶" },
-  { id: "hammer_shock", name: "战锤震击", group: "attack", element: "earth", style: "impact", icon: "◆" },
-  { id: "fireball", name: "火球术", group: "magic", element: "fire", style: "fireball", icon: "🔥" },
-  { id: "flame_ring", name: "烈焰环", group: "magic", element: "fire", style: "ringBlast", icon: "🔥" },
-  { id: "meteor_burst", name: "陨火爆裂", group: "magic", element: "fire", style: "explosion", icon: "☄" },
-  { id: "burning_ground", name: "燃烧地面", group: "magic", element: "fire", style: "groundFire", icon: "🔥" },
-  { id: "ember_rain", name: "余烬雨", group: "magic", element: "fire", style: "rain", icon: "✹" },
-  { id: "frost_nova", name: "冰霜新星", group: "magic", element: "ice", style: "nova", icon: "❄" },
-  { id: "ice_lance", name: "寒冰枪", group: "magic", element: "ice", style: "projectile", icon: "❄" },
-  { id: "frozen_prison", name: "冰封牢笼", group: "magic", element: "ice", style: "controlRing", icon: "❄" },
-  { id: "blizzard_cut", name: "雪刃斩", group: "magic", element: "ice", style: "slashMagic", icon: "❄" },
-  { id: "glacial_burst", name: "冰川爆破", group: "magic", element: "ice", style: "burst", icon: "❄" },
-  { id: "chain_lightning", name: "连锁闪电", group: "magic", element: "lightning", style: "chain", icon: "⚡" },
-  { id: "thunder_clap", name: "雷鸣震荡", group: "magic", element: "lightning", style: "impact", icon: "⚡" },
-  { id: "storm_ring", name: "风暴电环", group: "magic", element: "lightning", style: "ringBlast", icon: "⚡" },
-  { id: "static_mark", name: "静电标记", group: "magic", element: "lightning", style: "mark", icon: "⚡" },
-  { id: "lightning_spear", name: "雷矛", group: "magic", element: "lightning", style: "projectileHit", icon: "⚡" },
-  { id: "poison_cloud", name: "毒雾", group: "magic", element: "poison", style: "cloud", icon: "☠" },
-  { id: "venom_spike", name: "毒刺", group: "magic", element: "poison", style: "projectile", icon: "☠" },
-  { id: "corrosion_pool", name: "腐蚀池", group: "magic", element: "poison", style: "groundCloud", icon: "☠" },
-  { id: "plague_pop", name: "瘟疫爆", group: "magic", element: "poison", style: "burst", icon: "☠" },
-  { id: "toxic_slash", name: "淬毒斩", group: "attack", element: "poison", style: "slashMagic", icon: "☠" },
-  { id: "holy_smite", name: "圣裁", group: "magic", element: "holy", style: "smite", icon: "✚" },
-  { id: "sun_burst", name: "日耀爆发", group: "magic", element: "holy", style: "burst", icon: "☀" },
-  { id: "healing_light", name: "治疗光", group: "support", element: "holy", style: "heal", icon: "✚" },
-  { id: "guardian_aegis", name: "守护屏障", group: "support", element: "shield", style: "shield", icon: "◎" },
-  { id: "battle_banner", name: "战旗鼓舞", group: "support", element: "holy", style: "buff", icon: "⚑" },
-  { id: "arcane_orb", name: "奥术球", group: "magic", element: "arcane", style: "orb", icon: "✦" },
-  { id: "mana_burst", name: "魔力爆", group: "magic", element: "arcane", style: "burst", icon: "✦" },
-  { id: "void_pull", name: "虚空牵引", group: "magic", element: "shadow", style: "vortex", icon: "☾" },
-  { id: "night_bloom", name: "夜幕绽放", group: "magic", element: "shadow", style: "burst", icon: "☾" },
-  { id: "curse_mark", name: "诅咒印", group: "magic", element: "shadow", style: "mark", icon: "☾" },
-  { id: "stone_spike", name: "岩刺", group: "magic", element: "earth", style: "projectileHit", icon: "▲" },
-  { id: "earth_quake", name: "地震波", group: "magic", element: "earth", style: "impact", icon: "◆" },
-  { id: "dust_blast", name: "尘爆", group: "magic", element: "earth", style: "cloudBurst", icon: "◆" },
-  { id: "wind_dash", name: "疾风步", group: "support", element: "wind", style: "dashBuff", icon: "➤" },
-  { id: "gale_cut", name: "风压斩", group: "attack", element: "wind", style: "slashMagic", icon: "🌀" },
-  { id: "water_pulse", name: "水波冲击", group: "magic", element: "water", style: "wave", icon: "≈" },
-  { id: "mist_veil", name: "雾幕", group: "support", element: "water", style: "cloud", icon: "≈" },
-  { id: "blood_burst", name: "血爆", group: "magic", element: "blood", style: "burst", icon: "♦" },
-  { id: "life_steal", name: "汲魂", group: "magic", element: "blood", style: "drain", icon: "♦" },
-  { id: "revive_spark", name: "复苏火花", group: "support", element: "holy", style: "healBurst", icon: "✚" },
+const REPLICA_EFFECTS = [
+  { id: "impact_white", name: "Impact White", group: "impact", note: "CodeManu 6x4 命中闪", sheet: "impactWhite", scale: 0.34, x: 0, y: -4 },
+  { id: "big_hit", name: "Big Hit", group: "impact", note: "CodeManu 6x5 重击", sheet: "bigHit", scale: 0.34, x: 2, y: 0 },
+  { id: "blood_impact", name: "Blood Impact", group: "impact", note: "CodeManu 6x5 血击", sheet: "bloodImpact", scale: 0.72, x: 0, y: 6 },
+  { id: "explosion", name: "Explosion", group: "predrawn", note: "CodeManu 6x5 爆炸", sheet: "explosion", scale: 0.48, x: 0, y: 4 },
+  { id: "star_explosion", name: "Star Explosion", group: "predrawn", note: "CodeManu 6x5 星爆", sheet: "starExplosion", scale: 1.05, x: 0, y: 0 },
+  { id: "electric_ring", name: "Electric Ring", group: "predrawn", note: "CodeManu 6x5 电环", sheet: "electricRing", scale: 0.58, x: 0, y: 0 },
+  { id: "fire_ring", name: "Fire Ring", group: "predrawn", note: "CodeManu 6x5 火环", sheet: "fireRing", scale: 0.48, x: 0, y: 4 },
+  { id: "charge", name: "Charge", group: "predrawn", note: "CodeManu 7x6 充能", sheet: "charge", scale: 0.36, x: 0, y: -6 },
+  { id: "vortex", name: "Vortex", group: "predrawn", note: "CodeManu 6x5 旋涡", sheet: "vortex", scale: 0.4, x: 0, y: 0 },
+  { id: "slash_particles", name: "Slash Textures", group: "particle", note: "Picster/Kenney 斩击贴图", images: ["slash01", "slash02", "slash03", "slash04"], scale: 0.66, x: 0, y: -8 },
 ];
 
 function sheet(path, cols, rows, frames) {
@@ -177,7 +137,7 @@ const els = {
   effectButtons: document.querySelector("#effectButtons"),
   premiumButtons: document.querySelector("#premiumButtons"),
   assetButtons: document.querySelector("#assetButtons"),
-  skillGrid: document.querySelector("#skillGrid"),
+  replicaGrid: document.querySelector("#replicaGrid"),
   stage: document.querySelector("#stage"),
   domLayer: document.querySelector("#domLayer"),
   pixiLayer: document.querySelector("#pixiLayer"),
@@ -198,7 +158,7 @@ function setup() {
   bindEvents();
   resizeCanvas();
   preloadBrackeysSheets();
-  renderSkillGrid("all");
+  renderReplicaGrid("all");
   window.addEventListener("resize", resizeCanvas);
   requestAnimationFrame(tick);
   updateModeUi();
@@ -237,11 +197,11 @@ function bindEvents() {
     playBrackeysEffect(button.dataset.assetEffect);
   });
 
-  els.skillGrid?.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-skill-id]");
+  els.replicaGrid?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-replica-id]");
     if (!button) return;
-    playSkillPreset(button.dataset.skillId);
-    els.skillGrid.querySelectorAll("[data-skill-id]").forEach((item) => {
+    playReplicaEffect(button.dataset.replicaId);
+    els.replicaGrid.querySelectorAll("[data-replica-id]").forEach((item) => {
       item.classList.toggle("active", item === button);
     });
   });
@@ -251,50 +211,19 @@ function bindEvents() {
       document.querySelectorAll("[data-skill-filter]").forEach((item) => {
         item.classList.toggle("active", item === button);
       });
-      renderSkillGrid(button.dataset.skillFilter);
+      renderReplicaGrid(button.dataset.skillFilter);
     });
   });
 
   els.clearBtn.addEventListener("click", clearStage);
 }
 
-function renderSkillGrid(filter) {
-  if (!els.skillGrid) return;
-  const items = SKILL_EFFECTS.filter((skill) => filter === "all" || skill.group === filter);
-  els.skillGrid.innerHTML = items.map((skill) => (
-    `<button data-skill-id="${skill.id}" type="button"><strong>${skill.icon} ${skill.name}</strong><span>${skillTag(skill)}</span></button>`
+function renderReplicaGrid(filter) {
+  if (!els.replicaGrid) return;
+  const items = REPLICA_EFFECTS.filter((effect) => filter === "all" || effect.group === filter);
+  els.replicaGrid.innerHTML = items.map((effect) => (
+    `<button data-replica-id="${effect.id}" type="button"><strong>${effect.name}</strong><span>${effect.note}</span></button>`
   )).join("");
-}
-
-function skillTag(skill) {
-  const group = ({ attack: "攻击", magic: "魔法", support: "辅助" })[skill.group] || skill.group;
-  const element = ({
-    physical: "物理",
-    fire: "火焰",
-    ice: "冰霜",
-    lightning: "雷电",
-    poison: "剧毒",
-    holy: "圣光",
-    shadow: "暗影",
-    earth: "大地",
-    wind: "疾风",
-    water: "水雾",
-    arcane: "奥术",
-    blood: "血术",
-    shield: "护盾",
-  })[skill.element] || skill.element;
-  return `${group} · ${element}`;
-}
-
-function updateModeUi() {
-  const meta = MODE_META[state.mode];
-  els.modeList.querySelectorAll("[data-mode]").forEach((button) => {
-    button.classList.toggle("active", button.dataset.mode === state.mode);
-  });
-  els.modeTitle.textContent = meta.title;
-  els.modeNote.textContent = meta.note;
-  els.readoutMode.textContent = meta.title;
-  els.readoutAdvice.textContent = meta.advice;
 }
 
 function resizeCanvas() {
@@ -465,137 +394,33 @@ function playAdvancedCanvasFallback(effect) {
   }
 }
 
-function playSkillPreset(skillId) {
-  const skill = SKILL_EFFECTS.find((item) => item.id === skillId);
-  if (!skill) return;
+function playReplicaEffect(replicaId) {
+  const effect = REPLICA_EFFECTS.find((item) => item.id === replicaId);
+  if (!effect) return;
   clearStage();
-  els.readoutEffect.textContent = skill.name;
-  els.readoutMode.textContent = "技能特效库";
-  els.readoutAdvice.textContent = `${skillTag(skill)} · ${skill.style}`;
+  els.readoutEffect.textContent = effect.name;
+  els.readoutMode.textContent = "Brackeys 原素材复现";
+  els.readoutAdvice.textContent = effect.note;
   resetUnitState();
+  const { source, impact } = slashAimPoints();
 
-  const points = slashAimPoints();
-  const target = skill.group === "support" ? stagePoint("caster") : points.impact;
-  const source = points.source;
-  if (skill.group === "attack" || skill.style.includes("slash") || skill.style.includes("Slash")) {
+  if (effect.sheet) {
+    state.premium = brackeysTimeline(effect.id, [
+      clip(effect.sheet, 0, effect.sheet === "charge" ? 980 : 760, impact.x + effect.x, impact.y + effect.y, effect.scale, 0, 0.95, "screen"),
+    ], source, impact);
+    if (effect.group === "impact") setTimeout(hitTarget, 120);
+    if (effect.id === "explosion" || effect.id === "big_hit") setTimeout(() => emitAssetSparks(impact.x, impact.y, 16, 0.9), 160);
+  }
+
+  if (effect.images) {
     swingCaster();
+    state.premium = brackeysTimeline(effect.id, effect.images.map((asset, index) => (
+      imageClip(asset, index * 58, 360, impact.x - 26 + index * 16, impact.y - 12 + index * 5, effect.scale - index * 0.07, -0.62 + index * 0.1, 0.88 - index * 0.12, "screen", { sx: 0.78, sy: 0.42, driftX: 22 - index * 4, driftY: -6 + index * 3 })
+    )).concat([
+      clip("impactWhite", 160, 360, impact.x, impact.y, 0.22, 0, 0.7, "screen"),
+    ]), source, impact);
+    setTimeout(hitTarget, 145);
   }
-
-  state.premium = brackeysTimeline(skill.id, buildSkillClips(skill, source, target), source, target);
-  const impactDelay = skill.group === "support" ? 80 : 160;
-  setTimeout(() => applySkillFeedback(skill, target), impactDelay);
-}
-
-function buildSkillClips(skill, source, target) {
-  const element = elementLook(skill.element);
-  const clips = [];
-  const travelX = target.x - source.x;
-  const travelY = target.y - source.y;
-  const slashRotation = skill.element === "wind" ? -0.34 : -0.6;
-
-  if (["cleave", "pierce", "heavySlash", "bleedSlash", "slashMagic"].includes(skill.style)) {
-    clips.push(imageClip(element.slash || "slash01", 0, 300, target.x - 28, target.y - 14, 0.74, slashRotation, 0.9, "screen", { sx: 0.82, sy: 0.44, driftX: 26, driftY: -8 }));
-    clips.push(imageClip(element.spark, 80, 320, target.x + 8, target.y + 4, 0.18, 0.4, 0.55, "screen", { sx: 1.1, sy: 0.9 }));
-    clips.push(clip(element.impact, 130, 420, target.x, target.y, skill.style === "heavySlash" ? 0.3 : 0.22, 0, 0.78, "screen"));
-    if (skill.style === "bleedSlash") clips.push(clip("bloodImpact", 120, 520, target.x - 2, target.y + 6, 0.42, 0, 0.85, "screen"));
-  } else if (skill.style === "doubleSlash") {
-    clips.push(imageClip("slash01", 0, 260, target.x - 30, target.y - 18, 0.62, -0.58, 0.9, "screen", { sx: 0.78, sy: 0.38, driftX: 24 }));
-    clips.push(imageClip("slash02", 110, 270, target.x - 12, target.y + 10, 0.58, 0.62, 0.78, "screen", { sx: 0.78, sy: 0.38, driftX: 20 }));
-    clips.push(clip("impactWhite", 170, 360, target.x, target.y, 0.2, 0, 0.78, "screen"));
-  } else if (skill.style === "spinSlash") {
-    clips.push(clip("vortex", 0, 700, target.x - 4, target.y, 0.28, 0, 0.62, "screen"));
-    clips.push(imageClip("slash03", 80, 420, target.x, target.y, 0.72, 0.15, 0.7, "screen", { sx: 0.9, sy: 0.42, driftX: 10 }));
-    clips.push(imageClip("slash04", 180, 420, target.x + 2, target.y, 0.6, 2.3, 0.48, "screen", { sx: 0.9, sy: 0.42, driftX: -10 }));
-  } else if (skill.style === "blinkSlash") {
-    clips.push(imageClip("smokeStrong", 0, 460, source.x - 20, source.y + 2, 0.22, 0, 0.55, "screen"));
-    clips.push(imageClip("slash04", 95, 280, target.x - 18, target.y - 8, 0.62, -0.85, 0.86, "screen", { sx: 0.74, sy: 0.36, driftX: 26 }));
-    clips.push(clip("wavyPurple", 120, 560, target.x, target.y, 0.24, 0, 0.45, "screen"));
-  } else if (["projectile", "projectileHit", "fireball", "orb"].includes(skill.style)) {
-    clips.push(imageClip(element.projectile, 0, 560, source.x + 8, source.y - 16, 0.2, 0, 0.88, "screen", { sx: 1.1, sy: 1.1, driftX: travelX - 18, driftY: travelY + 4 }));
-    clips.push(imageClip(element.trail, 80, 520, source.x + travelX * 0.5, source.y + travelY * 0.5 - 6, 0.18, 0.1, 0.42, "screen", { sx: 1.7, sy: 0.65, driftX: travelX * 0.22 }));
-    clips.push(clip(element.impact, 360, 560, target.x, target.y, 0.28, 0, 0.9, "screen"));
-  } else if (["explosion", "burst", "cloudBurst", "impact", "smite"].includes(skill.style)) {
-    clips.push(clip(element.precast, 0, 520, target.x, target.y, 0.28, 0, 0.55, "screen"));
-    clips.push(clip(element.impact, 180, 760, target.x, target.y, 0.48, 0, 0.95, "screen"));
-    clips.push(imageClip(element.spark, 260, 560, target.x, target.y, 0.24, 0, 0.5, "screen", { sx: 1.6, sy: 1.6 }));
-  } else if (["ringBlast", "nova", "controlRing", "shield"].includes(skill.style)) {
-    clips.push(clip(element.ring, 0, 900, target.x, target.y, skill.style === "shield" ? 0.42 : 0.5, 0, 0.9, "screen"));
-    clips.push(clip(element.precast, 80, 760, target.x, target.y, 0.24, 0, 0.5, "screen"));
-    clips.push(imageClip(element.spark, 140, 680, target.x, target.y, 0.18, 0, 0.52, "screen", { sx: 1.8, sy: 1.8 }));
-  } else if (["groundFire", "groundCloud", "cloud"].includes(skill.style)) {
-    clips.push(imageClip(element.cloud, 0, 1050, target.x, target.y + 24, 0.42, 0, 0.68, "screen", { sx: 1.7, sy: 0.8 }));
-    clips.push(clip(element.precast, 140, 900, target.x, target.y + 18, 0.3, 0, 0.48, "screen"));
-  } else if (skill.style === "rain") {
-    for (let i = 0; i < 5; i += 1) {
-      clips.push(imageClip(element.projectile, i * 70, 620, target.x - 90 + i * 42, target.y - 150, 0.15, 1.24, 0.75, "screen", { sx: 0.8, sy: 1.2, driftX: 30, driftY: 135 }));
-    }
-    clips.push(clip(element.impact, 430, 560, target.x, target.y + 6, 0.36, 0, 0.78, "screen"));
-  } else if (["heal", "healBurst", "buff", "dashBuff"].includes(skill.style)) {
-    clips.push(clip(skill.style === "dashBuff" ? "lightstreaks" : "charge", 0, 850, target.x, target.y - 4, 0.22, skill.style === "dashBuff" ? -0.15 : 0, 0.62, "screen"));
-    clips.push(imageClip(element.spark, 120, 820, target.x, target.y - 20, 0.2, 0, 0.65, "screen", { sx: 1.6, sy: 1.6, driftY: -18 }));
-    clips.push(imageClip("star06", 220, 760, target.x, target.y - 58, 0.16, 0, 0.82, "screen", { sx: 1.2, sy: 1.2, driftY: -20 }));
-  } else if (skill.style === "vortex") {
-    clips.push(clip("vortex", 0, 1050, target.x, target.y, 0.42, 0, 0.82, "screen"));
-    clips.push(imageClip("twirl04", 80, 920, target.x, target.y, 0.38, 0, 0.55, "screen", { sx: 1.2, sy: 1.2 }));
-  } else if (skill.style === "mark") {
-    clips.push(imageClip(element.mark, 0, 850, target.x, target.y - 60, 0.18, 0, 0.85, "screen", { sx: 1.15, sy: 1.15, driftY: 18 }));
-    clips.push(clip(element.precast, 160, 720, target.x, target.y, 0.2, 0, 0.45, "screen"));
-  } else if (skill.style === "wave") {
-    clips.push(clip("wavyBlue", 0, 900, source.x + travelX * 0.5, target.y, 0.42, 0, 0.78, "screen"));
-    clips.push(imageClip("trace04", 160, 700, source.x + 30, source.y - 8, 0.28, 0, 0.56, "screen", { sx: 2.2, sy: 0.7, driftX: travelX - 20 }));
-  } else if (skill.style === "drain") {
-    clips.push(imageClip("trace02", 0, 880, target.x, target.y, 0.24, 2.9, 0.75, "screen", { sx: 2.0, sy: 0.58, driftX: source.x - target.x, driftY: source.y - target.y }));
-    clips.push(clip("bloodImpact", 120, 650, target.x, target.y, 0.42, 0, 0.78, "screen"));
-    clips.push(imageClip("star03", 320, 650, source.x - 4, source.y - 34, 0.12, 0, 0.74, "screen"));
-  } else {
-    clips.push(clip(element.impact, 0, 760, target.x, target.y, 0.35, 0, 0.86, "screen"));
-  }
-  return clips;
-}
-
-function applySkillFeedback(skill, point) {
-  if (skill.group !== "support") hitTarget();
-  if (skill.element === "ice") freezeTarget(1000);
-  if (skill.style === "shield") shieldTarget(1200);
-  emitSkillParticles(point.x, point.y, skill.element, skill.group === "support" ? 18 : 26);
-}
-
-function emitSkillParticles(x, y, element, count) {
-  const look = elementLook(element);
-  for (let i = 0; i < count; i += 1) {
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 50 + Math.random() * 220;
-    particle(x, y, {
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed - 20,
-      life: 360 + Math.random() * 520,
-      size: 14 + Math.random() * 26,
-      color: look.color,
-      type: "assetImage",
-      asset: look.particles[i % look.particles.length],
-      spin: Math.random() * Math.PI,
-      gravity: look.float ? -20 : 100,
-    });
-  }
-}
-
-function elementLook(element) {
-  const looks = {
-    physical: { color: "#fff0b6", slash: "slash01", projectile: "trace01", trail: "scratch01", spark: "spark01", particles: ["spark01", "spark02", "scratch01"], impact: "impactWhite", ring: "impactWhite", precast: "charge", cloud: "smoke02", mark: "star01" },
-    fire: { color: "#ff7a2b", slash: "slash02", projectile: "fire01", trail: "flame02", spark: "flame01", particles: ["flame01", "flame02", "spark04"], impact: "explosion", ring: "fireRing", precast: "firePoint", cloud: "flame03", mark: "star01" },
-    ice: { color: "#8defff", slash: "slash03", projectile: "magic02", trail: "trace04", spark: "spark06", particles: ["spark06", "magic02", "star02"], impact: "starExplosion", ring: "wavyBlue", precast: "electricRing", cloud: "smoke03", mark: "window01" },
-    lightning: { color: "#a8f6ff", slash: "slash04", projectile: "light03", trail: "trace01", spark: "spark07", particles: ["spark07", "light01", "star06"], impact: "electricRing", ring: "electricRing", precast: "charge", cloud: "smoke01", mark: "effect02" },
-    poison: { color: "#9cff5d", slash: "slash03", projectile: "magic05", trail: "smoke07", spark: "effect03", particles: ["magic05", "smoke07", "effect03"], impact: "wavyPurple", ring: "vortex", precast: "wavyPurple", cloud: "smokeStrong", mark: "circle03" },
-    holy: { color: "#fff4a8", slash: "slash01", projectile: "star06", trail: "spotlight01", spark: "star01", particles: ["star01", "star02", "spotlight03"], impact: "impactWhite", ring: "charge", precast: "charge", cloud: "spotlight01", mark: "star06", float: true },
-    shadow: { color: "#d7a7ff", slash: "slash04", projectile: "magic04", trail: "trace02", spark: "twirl04", particles: ["twirl04", "magic04", "smokeStrong"], impact: "wavyPurple", ring: "vortex", precast: "vortex", cloud: "smokeStrong", mark: "twirl02" },
-    earth: { color: "#d7b06a", slash: "scratch01", projectile: "scorch02", trail: "smoke02", spark: "scorch01", particles: ["scorch01", "scorch02", "smoke02"], impact: "bigHit", ring: "bigHit", precast: "bloodImpact", cloud: "smoke07", mark: "circle01" },
-    wind: { color: "#bbffe4", slash: "slash03", projectile: "trace04", trail: "trace01", spark: "trace01", particles: ["trace01", "trace04", "spark06"], impact: "impactWhite", ring: "wavyBlue", precast: "lightstreaks", cloud: "smoke01", mark: "twirl01", float: true },
-    water: { color: "#83dfff", slash: "slash03", projectile: "magic03", trail: "trace04", spark: "circle03", particles: ["circle03", "magic03", "smoke03"], impact: "wavyBlue", ring: "wavyBlue", precast: "wavyBlue", cloud: "smoke03", mark: "circle03", float: true },
-    arcane: { color: "#d7b7ff", slash: "slash04", projectile: "magic01", trail: "trace02", spark: "magic03", particles: ["magic01", "magic03", "star03"], impact: "wavyPurple", ring: "vortex", precast: "charge", cloud: "twirl04", mark: "effect01", float: true },
-    blood: { color: "#ff6f8a", slash: "slash02", projectile: "magic04", trail: "trace02", spark: "star03", particles: ["star03", "spark05", "magic04"], impact: "bloodImpact", ring: "wavyPurple", precast: "bloodImpact", cloud: "smokeStrong", mark: "star03" },
-    shield: { color: "#72f0c9", slash: "slash01", projectile: "magic03", trail: "spotlight03", spark: "circle03", particles: ["circle03", "star02", "spotlight03"], impact: "electricRing", ring: "electricRing", precast: "charge", cloud: "spotlight03", mark: "circle03", float: true },
-  };
-  return looks[element] || looks.arcane;
 }
 
 function playBrackeysEffect(effect) {

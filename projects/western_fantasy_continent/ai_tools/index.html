@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - AI 工具管理</title>
+    <link rel="stylesheet" href="/ai_tools/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <a class="back-link" href="/workbench/">返回工作台</a>
+          <h1>AI 工具管理</h1>
+          <p>本地 Key、AI 模块列表、API 调用统计都集中在这里。</p>
+        </div>
+        <div class="status-card">
+          <strong id="totalCalls">0</strong>
+          <span>已记录调用</span>
+        </div>
+      </header>
+
+      <section class="layout">
+        <section class="panel key-panel">
+          <div class="panel-head">
+            <div>
+              <h2>API Key</h2>
+              <p>只保存到本地 env/.env，不会进入 Git。</p>
+            </div>
+            <button id="saveKeysButton" type="button">保存</button>
+          </div>
+          <div id="keyList" class="key-list"></div>
+          <p id="keyMessage" class="message"></p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>用量统计</h2>
+              <p>来自 logs/api_calls.jsonl。</p>
+            </div>
+            <button id="refreshButton" type="button">刷新</button>
+          </div>
+          <div class="usage-grid">
+            <div><strong id="totalUnits">0</strong><span>图片/单位</span></div>
+            <div><strong id="inputTokens">0</strong><span>输入 tokens</span></div>
+            <div><strong id="outputTokens">0</strong><span>输出 tokens</span></div>
+          </div>
+          <div id="recentCalls" class="call-list"></div>
+        </section>
+      </section>
+
+      <section class="panel module-panel">
+        <div class="panel-head">
+          <div>
+            <h2>AI Tool List</h2>
+            <p>当前工程登记的 AI module 和自动化能力。</p>
+          </div>
+        </div>
+        <div id="moduleList" class="module-list"></div>
+      </section>
+    </main>
+    <script src="/ai_tools/ai-tools.js"></script>
+  </body>
+</html>

@@ -11,6 +11,89 @@ const GAME_DATA_DIR = path.join(PROJECT_ROOT, "game_data");
 const ART_RECORD_DIR = path.join(PROJECT_ROOT, "art_lab", "records");
 const ART_IMAGE_DIR = path.join(ART_RECORD_DIR, "images");
 const ART_RECORD_FILE = path.join(ART_RECORD_DIR, "records.json");
+const ENV_FILE = path.join(REPO_ROOT, "env", ".env");
+const API_LOG_FILE = path.join(REPO_ROOT, "logs", "api_calls.jsonl");
+
+const KEY_DEFINITIONS = [
+  { key: "OPENAI_API_KEY", label: "OpenAI API Key", secret: true },
+  { key: "OPENAI_IMAGE_MODEL", label: "OpenAI Image Model", secret: false, defaultValue: "gpt-image-2" },
+  { key: "OPENAI_TEXT_MODEL", label: "OpenAI Text Model", secret: false, defaultValue: "gpt-5-mini" },
+  { key: "GEMINI_API_KEY", label: "Gemini API Key", secret: true },
+  { key: "GOOGLE_API_KEY", label: "Google API Key", secret: true },
+  { key: "GEMINI_IMAGE_MODEL", label: "Gemini Image Model", secret: false, defaultValue: "gemini-2.5-flash-image" },
+  { key: "ANTHROPIC_API_KEY", label: "Anthropic API Key", secret: true },
+  { key: "ANTHROPIC_TEXT_MODEL", label: "Anthropic Text Model", secret: false },
+  { key: "LEONARDO_API_KEY", label: "Leonardo API Key", secret: true },
+  { key: "LEONARDO_MODEL_ID", label: "Leonardo Model ID", secret: false },
+  { key: "MIDJOURNEY_API_KEY", label: "MidJourney API Key", secret: true },
+];
+
+const AI_MODULES = [
+  {
+    key: "openai_image",
+    name: "OpenAI GPT Image",
+    kind: "image",
+    status: "ready",
+    envKeys: ["OPENAI_API_KEY", "OPENAI_IMAGE_MODEL"],
+    notes: "Art Lab image generation and reference-image edits.",
+  },
+  {
+    key: "gemini_image",
+    name: "Gemini Image",
+    kind: "image",
+    status: "ready",
+    envKeys: ["GEMINI_API_KEY", "GEMINI_IMAGE_MODEL"],
+    notes: "Art Lab secondary image generation path.",
+  },
+  {
+    key: "openai_llm",
+    name: "OpenAI Text/Reasoning",
+    kind: "llm",
+    status: "ready",
+    envKeys: ["OPENAI_API_KEY", "OPENAI_TEXT_MODEL"],
+    notes: "Planning, summaries, prompt expansion, and future automation tasks.",
+  },
+  {
+    key: "anthropic_llm",
+    name: "Anthropic Claude",
+    kind: "llm",
+    status: "optional",
+    envKeys: ["ANTHROPIC_API_KEY", "ANTHROPIC_TEXT_MODEL"],
+    notes: "Optional comparison model for planning and writing.",
+  },
+  {
+    key: "leonardo_image",
+    name: "Leonardo.ai",
+    kind: "image",
+    status: "optional",
+    envKeys: ["LEONARDO_API_KEY", "LEONARDO_MODEL_ID"],
+    notes: "Optional external image batch provider.",
+  },
+  {
+    key: "midjourney_manual",
+    name: "MidJourney Manual Import",
+    kind: "manual",
+    status: "manual",
+    envKeys: [],
+    notes: "No direct official API assumed; Art Lab can import external results.",
+  },
+  {
+    key: "stats_logger",
+    name: "API Call Logger",
+    kind: "stats",
+    status: "ready",
+    envKeys: [],
+    notes: "Append-only JSONL usage log in logs/api_calls.jsonl.",
+  },
+  {
+    key: "art_workflows",
+    name: "Art Department Workflows",
+    kind: "workflow",
+    status: "ready",
+    envKeys: ["OPENAI_API_KEY", "GEMINI_API_KEY"],
+    notes: "Local Python helpers for style prompt building and concept workflows.",
+  },
+];
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -27,12 +110,11 @@ const MIME_TYPES = {
 loadLocalEnv();
 
 function loadLocalEnv() {
-  const envPath = path.join(REPO_ROOT, "env", ".env");
-  if (!fs.existsSync(envPath)) {
+  if (!fs.existsSync(ENV_FILE)) {
     return;
   }
 
-  const lines = fs.readFileSync(envPath, "utf8").split(/\r?\n/);
+  const lines = fs.readFileSync(ENV_FILE, "utf8").split(/\r?\n/);
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) {
@@ -50,6 +132,80 @@ function loadLocalEnv() {
   }
 }
 
+function readLocalEnv() {
+  if (!fs.existsSync(ENV_FILE)) {
+    return {};
+  }
+  const values = {};
+  for (const line of fs.readFileSync(ENV_FILE, "utf8").split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) continue;
+    const index = trimmed.indexOf("=");
+    const key = trimmed.slice(0, index).trim();
+    let value = trimmed.slice(index + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    values[key] = value;
+  }
+  return values;
+}
+
+function writeLocalEnv(updates) {
+  const allowed = new Set(KEY_DEFINITIONS.map((item) => item.key));
+  const current = readLocalEnv();
+  for (const [key, value] of Object.entries(updates || {})) {
+    if (!allowed.has(key)) continue;
+    const normalized = String(value || "").trim();
+    if (normalized) {
+      current[key] = normalized;
+      process.env[key] = normalized;
+    } else {
+      delete current[key];
+      delete process.env[key];
+    }
+  }
+  fs.mkdirSync(path.dirname(ENV_FILE), { recursive: true });
+  const lines = [
+    "# Local secrets for AgentAutomata. This file is gitignored.",
+    ...KEY_DEFINITIONS.map((item) => `${item.key}=${escapeEnvValue(current[item.key] || item.defaultValue || "")}`),
+    "",
+  ];
+  fs.writeFileSync(ENV_FILE, lines.join("\n"), "utf8");
+}
+
+function escapeEnvValue(value) {
+  const text = String(value || "");
+  if (!text || /^[a-zA-Z0-9_.:/@+-]+$/.test(text)) {
+    return text;
+  }
+  return JSON.stringify(text);
+}
+
+function maskSecret(value) {
+  if (!value) return "";
+  const text = String(value);
+  if (text.length <= 8) return "configured";
+  return `${text.slice(0, 4)}...${text.slice(-4)}`;
+}
+
+function keyStatusList() {
+  const local = readLocalEnv();
+  return KEY_DEFINITIONS.map((item) => {
+    const value = process.env[item.key] || local[item.key] || "";
+    return {
+      key: item.key,
+      label: item.label,
+      secret: item.secret,
+      configured: Boolean(value),
+      value: item.secret ? "" : value,
+      masked: item.secret ? maskSecret(value) : value,
+      source: process.env[item.key] ? "process/env file" : local[item.key] ? "env/.env" : "",
+      defaultValue: item.defaultValue || "",
+    };
+  });
+}
+
 function send(res, status, body, headers = {}) {
   res.writeHead(status, {
     "Access-Control-Allow-Origin": "*",
@@ -64,6 +220,63 @@ function sendJson(res, status, value) {
   send(res, status, JSON.stringify(value, null, 2), {
     "Content-Type": "application/json; charset=utf-8",
   });
+}
+
+function logApiCall(record) {
+  fs.mkdirSync(path.dirname(API_LOG_FILE), { recursive: true });
+  const payload = {
+    timestamp: new Date().toISOString(),
+    ...record,
+  };
+  fs.appendFileSync(API_LOG_FILE, `${JSON.stringify(payload)}\n`, "utf8");
+}
+
+function readApiCalls() {
+  if (!fs.existsSync(API_LOG_FILE)) {
+    return [];
+  }
+  return fs.readFileSync(API_LOG_FILE, "utf8")
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map((line) => {
+      try {
+        return JSON.parse(line);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
+}
+
+function apiUsageSummary() {
+  const calls = readApiCalls();
+  const byProvider = {};
+  const byModel = {};
+  let totalUnits = 0;
+  let totalInputTokens = 0;
+  let totalOutputTokens = 0;
+  for (const call of calls) {
+    const provider = call.provider || "unknown";
+    const model = call.model || "unknown";
+    const usage = call.usage || {};
+    const units = Number(call.image_count || usage.units || 0);
+    const inputTokens = Number(call.input_tokens || usage.input_tokens || 0);
+    const outputTokens = Number(call.output_tokens || usage.output_tokens || 0);
+    totalUnits += units;
+    totalInputTokens += inputTokens;
+    totalOutputTokens += outputTokens;
+    byProvider[provider] = (byProvider[provider] || 0) + 1;
+    byModel[model] = (byModel[model] || 0) + 1;
+  }
+  return {
+    totalCalls: calls.length,
+    totalUnits,
+    totalInputTokens,
+    totalOutputTokens,
+    byProvider,
+    byModel,
+    recent: calls.slice(-30).reverse(),
+  };
 }
 
 function errorMessage(error) {
@@ -117,6 +330,7 @@ function routeStatic(req, res, url) {
     "/spine_skeleton_demo",
     "/effect_lab",
     "/art_lab",
+    "/ai_tools",
   ]);
 
   if (slashRoutes.has(url.pathname)) {
@@ -138,6 +352,7 @@ function routeStatic(req, res, url) {
     "spine_skeleton_demo",
     "effect_lab",
     "art_lab",
+    "ai_tools",
   ];
 
   const root = staticRoots.find((item) => url.pathname === `/${item}/` || url.pathname.startsWith(`/${item}/`));
@@ -499,6 +714,18 @@ async function generateArtRecord(req, res) {
     const result = provider === "gemini"
       ? await generateWithGemini(fields, files)
       : await generateWithOpenAi(fields, files);
+    logApiCall({
+      provider,
+      department: "art",
+      project: "western_fantasy_continent",
+      task: "art_lab_generate",
+      model: result.model,
+      image_count: 1,
+      usage: {
+        units: 1,
+        has_reference_image: Boolean(files.referenceImage),
+      },
+    });
     const referencePath = saveUploadedImage(files.referenceImage, id, "reference");
     const outputPath = saveGeneratedImage(result.base64, id, "output", result.contentType);
     const record = {
@@ -639,6 +866,28 @@ async function handle(req, res) {
   }
   if (req.method === "GET" && url.pathname === "/api/art-lab/status") {
     artStatus(res);
+    return;
+  }
+  if (req.method === "GET" && url.pathname === "/api/ai-tools/keys") {
+    sendJson(res, 200, { keys: keyStatusList() });
+    return;
+  }
+  if (req.method === "POST" && url.pathname === "/api/ai-tools/keys") {
+    try {
+      const body = JSON.parse(await readBody(req));
+      writeLocalEnv(body.updates || {});
+      sendJson(res, 200, { ok: true, keys: keyStatusList() });
+    } catch (error) {
+      sendJson(res, 400, { error: errorMessage(error) });
+    }
+    return;
+  }
+  if (req.method === "GET" && url.pathname === "/api/ai-tools/modules") {
+    sendJson(res, 200, { modules: AI_MODULES });
+    return;
+  }
+  if (req.method === "GET" && url.pathname === "/api/ai-tools/usage") {
+    sendJson(res, 200, apiUsageSummary());
     return;
   }
   if (req.method === "GET" && url.pathname === "/api/art-lab/records") {

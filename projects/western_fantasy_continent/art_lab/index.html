@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 · 美术实验室</title>
+    <link rel="stylesheet" href="/art_lab/styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <a class="back-link" href="/workbench/">返回工作台</a>
+          <h1>美术实验室</h1>
+          <p>参考图、提示词、AI 生成和版本对比都收在这里。</p>
+        </div>
+        <div class="status-panel">
+          <span id="providerStatus">检查本地 key...</span>
+        </div>
+      </header>
+
+      <section class="studio-grid">
+        <form id="artForm" class="control-panel">
+          <div class="field">
+            <label for="provider">生成方式</label>
+            <select id="provider" name="provider">
+              <option value="openai">OpenAI GPT Image 2</option>
+              <option value="gemini">Gemini / Nano Banana</option>
+              <option value="manual">手动导入 MidJourney/外部结果</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="referenceImage">参考图</label>
+            <input id="referenceImage" name="referenceImage" type="file" accept="image/png,image/jpeg,image/webp">
+          </div>
+
+          <div class="field" id="outputField">
+            <label for="outputImage">外部生成图</label>
+            <input id="outputImage" name="outputImage" type="file" accept="image/png,image/jpeg,image/webp">
+          </div>
+
+          <div class="field">
+            <label for="prompt">文字描述</label>
+            <textarea id="prompt" name="prompt" rows="8" placeholder="例：西幻大陆主角，半写实厚涂，旧银盔甲，蓝色符文，冷色环境光，适合作为项目主画风探索。"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="negativePrompt">排除项</label>
+            <textarea id="negativePrompt" name="negativePrompt" rows="3" placeholder="例：低清晰度，多余手指，现代服装，卡通表情"></textarea>
+          </div>
+
+          <div class="row-fields">
+            <div class="field">
+              <label for="styleTag">风格标签</label>
+              <input id="styleTag" name="styleTag" type="text" placeholder="暗黑童话 / 厚涂 / 写实">
+            </div>
+            <div class="field">
+              <label for="sourceLink">外部链接</label>
+              <input id="sourceLink" name="sourceLink" type="url" placeholder="MidJourney 链接，可选">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="notes">备注</label>
+            <textarea id="notes" name="notes" rows="3" placeholder="这版哪里好、哪里需要改，或者下一版想尝试什么。"></textarea>
+          </div>
+
+          <div class="actions">
+            <button id="submitButton" type="submit">生成并存档</button>
+            <button id="saveManualButton" type="button">只保存记录</button>
+          </div>
+          <p id="formMessage" class="form-message" role="status"></p>
+        </form>
+
+        <section class="preview-panel">
+          <div class="preview-head">
+            <div>
+              <h2>当前对比</h2>
+              <p id="activeMeta">上传参考图或选择历史记录。</p>
+            </div>
+            <div class="preview-actions">
+              <button id="markCandidateButton" type="button">标记候选</button>
+              <button id="deleteRecordButton" class="secondary" type="button">删除</button>
+            </div>
+          </div>
+          <div class="comparison">
+            <figure>
+              <div class="image-frame empty" id="referenceFrame">
+                <span>参考图</span>
+                <img id="referencePreview" alt="参考图预览">
+              </div>
+              <figcaption>Reference</figcaption>
+            </figure>
+            <figure>
+              <div class="image-frame empty" id="outputFrame">
+                <span>生成图</span>
+                <img id="outputPreview" alt="生成图预览">
+              </div>
+              <figcaption>Output</figcaption>
+            </figure>
+          </div>
+          <article class="prompt-card">
+            <h3>Prompt</h3>
+            <p id="promptPreview">还没有选择记录。</p>
+          </article>
+        </section>
+      </section>
+
+      <section class="history-panel">
+        <div class="history-head">
+          <div>
+            <h2>版本记录</h2>
+            <p>每一次探索都会保存 prompt、参考图、输出图和备注。</p>
+          </div>
+          <button id="refreshButton" type="button">刷新</button>
+        </div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+    </main>
+    <script src="/art_lab/art-lab.js"></script>
+  </body>
+</html>

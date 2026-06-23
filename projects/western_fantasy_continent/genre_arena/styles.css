@@ -205,6 +205,12 @@ select {
   position: absolute;
   inset: 0;
 }
+.unit-layer { z-index: 2; }
+.fx-layer {
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+}
 
 .unit {
   position: absolute;
@@ -271,7 +277,105 @@ select {
   font-size: 13px;
 }
 .floater.poison { color: var(--poison); }
+.floater.fire { color: #ff9b58; }
 .floater.heal { color: #9fe6c6; }
+.floater.shield { color: #9fd6ff; }
+.skill-label {
+  position: absolute;
+  min-width: 52px;
+  padding: 3px 7px;
+  border: 1px solid rgba(215, 182, 93, 0.48);
+  border-radius: 4px;
+  background: rgba(14, 17, 13, 0.82);
+  color: #ffe8a3;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  transform: translate(-50%, -50%);
+  animation: skillLabel 0.76s ease-out forwards;
+  white-space: nowrap;
+}
+.skill-label.ultimate {
+  min-width: 76px;
+  border-color: rgba(255, 223, 127, 0.85);
+  color: #fff4c7;
+  font-size: 14px;
+  box-shadow: 0 0 22px rgba(215, 182, 93, 0.34);
+  animation-duration: 1.05s;
+}
+.vfx-pulse,
+.vfx-ring,
+.vfx-sheet,
+.vfx-slash,
+.vfx-image,
+.vfx-beam {
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+}
+.vfx-pulse {
+  width: calc(64px * var(--scale, 1));
+  height: calc(64px * var(--scale, 1));
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: #e8d176;
+  animation: castPulse 0.62s ease-out forwards;
+}
+.vfx-ring {
+  width: calc(110px * var(--scale, 1));
+  height: calc(110px * var(--scale, 1));
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  color: #e8d176;
+  box-shadow: inset 0 0 28px currentColor, 0 0 18px currentColor;
+  animation: vfxRing 0.76s ease-out forwards;
+}
+.vfx-sheet {
+  width: calc(154px * var(--scale, 1));
+  height: calc(154px * var(--scale, 1));
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  filter: drop-shadow(0 0 10px currentColor);
+  animation: sheetFade 0.56s linear forwards;
+}
+.vfx-slash {
+  width: calc(170px * var(--scale, 1));
+  height: calc(86px * var(--scale, 1));
+  object-fit: contain;
+  transform: translate(-50%, -50%) rotate(var(--angle, 0rad)) scaleX(1.18);
+  filter: drop-shadow(0 0 10px currentColor) brightness(1.25);
+  animation: slashPop 0.52s ease-out forwards;
+}
+.vfx-image {
+  width: calc(84px * var(--scale, 1));
+  height: calc(84px * var(--scale, 1));
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px currentColor);
+  animation: imageBurst 0.72s ease-out forwards;
+}
+.vfx-beam {
+  height: 4px;
+  transform-origin: left center;
+  background: linear-gradient(90deg, transparent, currentColor, rgba(255,255,255,0.82), transparent);
+  color: #d7b65d;
+  filter: drop-shadow(0 0 8px currentColor);
+  animation: beamFlash 0.36s ease-out forwards;
+}
+.vfx-beam.heavy {
+  height: 7px;
+  animation-duration: 0.52s;
+}
+.vfx-fire { color: #ff7a2f; }
+.vfx-poison { color: #85d15b; }
+.vfx-blood { color: #e45348; }
+.vfx-blue { color: #83b2d9; }
+.vfx-ice { color: #9fe8ff; }
+.vfx-heal { color: #9fe6c6; }
+.vfx-gold { color: #f2d47a; }
+.vfx-shadow { color: #b58cff; }
+.vfx-arcane { color: #d697ff; }
 .pulse {
   position: absolute;
   width: 80px;
@@ -284,6 +388,41 @@ select {
 @keyframes floatUp {
   from { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
   to { opacity: 0; transform: translate(-50%, -50%) translateY(-34px); }
+}
+@keyframes skillLabel {
+  0% { opacity: 0; transform: translate(-50%, -40%) scale(0.82); }
+  18% { opacity: 1; transform: translate(-50%, -78%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -132%) scale(0.96); }
+}
+@keyframes castPulse {
+  from { opacity: 0.7; transform: translate(-50%, -50%) scale(0.24); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(1.65); }
+}
+@keyframes vfxRing {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.34); }
+  18% { opacity: 0.86; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.22); }
+}
+@keyframes sheetFade {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(calc(var(--scale, 1) * 0.72)); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(calc(var(--scale, 1) * 1.04)); }
+}
+@keyframes slashPop {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle, 0rad)) scale(0.7, 0.46); }
+  16% { opacity: 1; }
+  58% { opacity: 0.86; }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle, 0rad)) scale(1.34, 0.88); }
+}
+@keyframes imageBurst {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4) rotate(-16deg); }
+  16% { opacity: 0.96; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.36) rotate(18deg); }
+}
+@keyframes beamFlash {
+  0% { opacity: 0; clip-path: inset(0 100% 0 0); }
+  24% { opacity: 1; clip-path: inset(0 0 0 0); }
+  100% { opacity: 0; clip-path: inset(0 0 0 100%); }
 }
 @keyframes pulse {
   from { opacity: 0.8; transform: translate(-50%, -50%) scale(0.35); }

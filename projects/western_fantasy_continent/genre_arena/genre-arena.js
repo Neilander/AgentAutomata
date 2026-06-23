@@ -1,8 +1,72 @@
 const ICON_BASE = "https://game-icons.net/icons/000000/ffffff/1x1/lorc";
+const VFX_BASE = "/effect_lab/assets/brackeys";
 
 const TYPE = { SMALL: "小技能", PASSIVE: "被动", ULT: "大招" };
 const TEAM_SIZE = 4;
 const MAX_TIME = 75;
+
+const VFX_SHEETS = {
+  impact: sheet("predrawn/impact_white_6x4.png", 6, 4, 24),
+  bigHit: sheet("predrawn/big_hit_6x5.png", 6, 5, 30),
+  blood: sheet("predrawn/blood_impact_6x5.png", 6, 5, 30),
+  explosion: sheet("predrawn/explosion_6x5.png", 6, 5, 30),
+  fireRing: sheet("predrawn/fire_ring_6x5.png", 6, 5, 30),
+  electricRing: sheet("predrawn/electric_ring_6x5.png", 6, 5, 30),
+  charge: sheet("predrawn/charge_7x6.png", 7, 6, 42),
+  vortex: sheet("predrawn/vortex_6x5.png", 6, 5, 30),
+  wavyBlue: sheet("predrawn/wavy_blue_6x5.png", 6, 5, 30),
+  wavyPurple: sheet("predrawn/wavy_purple_6x5.png", 6, 5, 30),
+};
+
+const VFX_IMAGES = {
+  slash01: `${VFX_BASE}/particles/alpha/slash_01_a.png`,
+  slash02: `${VFX_BASE}/particles/alpha/slash_02_a.png`,
+  slash03: `${VFX_BASE}/particles/alpha/slash_03_a.png`,
+  slash04: `${VFX_BASE}/particles/alpha/slash_04_a.png`,
+  fire01: `${VFX_BASE}/particles/alpha/fire_01_a.png`,
+  flame01: `${VFX_BASE}/particles/alpha/flame_01_a.png`,
+  spark01: `${VFX_BASE}/particles/alpha/spark_01_a.png`,
+  magic01: `${VFX_BASE}/particles/alpha/magic_01_a.png`,
+  smoke01: `${VFX_BASE}/particles/alpha/smoke_01_a.png`,
+};
+
+const SKILL_FX = {
+  guard: { kind: "shield", at: "self", sheet: "charge", color: "blue" },
+  tauntLine: { kind: "shield", at: "self", sheet: "electricRing", color: "gold" },
+  powerStrike: { kind: "slash", at: "target", sheet: "bigHit", image: "slash02", color: "gold" },
+  cleave: { kind: "cleave", at: "target", sheet: "impact", image: "slash01", color: "gold" },
+  bloodStrike: { kind: "slash", at: "target", sheet: "blood", image: "slash04", color: "blood" },
+  boneWhirl: { kind: "whirl", at: "self", sheet: "vortex", image: "slash03", color: "blood" },
+  toxicStabs: { kind: "stab", at: "target", sheet: "blood", image: "slash01", color: "poison" },
+  shadowCut: { kind: "dash", at: "target", sheet: "wavyPurple", image: "slash04", color: "shadow" },
+  markShot: { kind: "projectile", at: "target", sheet: "impact", image: "spark01", color: "blue" },
+  pinningArrow: { kind: "projectile", at: "target", sheet: "wavyBlue", image: "spark01", color: "ice" },
+  fireball: { kind: "projectile", at: "target", sheet: "explosion", image: "fire01", color: "fire" },
+  emberSpread: { kind: "aoe", at: "enemyCenter", sheet: "fireRing", image: "flame01", color: "fire" },
+  heal: { kind: "heal", at: "lowestAlly", sheet: "charge", image: "magic01", color: "heal" },
+  bloodCharm: { kind: "shield", at: "lowestAlly", sheet: "charge", color: "blue" },
+  venomBrand: { kind: "aoe", at: "target", sheet: "wavyPurple", image: "smoke01", color: "poison" },
+  bloodContract: { kind: "buff", at: "carryAlly", sheet: "blood", image: "magic01", color: "blood" },
+  tempoSong: { kind: "teamBuff", at: "teamCenter", sheet: "electricRing", image: "magic01", color: "gold" },
+  courageChord: { kind: "buff", at: "carryAlly", sheet: "charge", image: "magic01", color: "gold" },
+  miasmaFlask: { kind: "aoe", at: "enemyCenter", sheet: "wavyPurple", image: "smoke01", color: "poison" },
+  volatileBottle: { kind: "aoe", at: "target", sheet: "explosion", image: "fire01", color: "fire" },
+  frostNova: { kind: "aoe", at: "enemyCenter", sheet: "wavyBlue", color: "ice" },
+  bannerWall: { kind: "teamBuff", at: "teamCenter", sheet: "electricRing", color: "gold", ultimate: true },
+  warBanner: { kind: "cleave", at: "enemyCenter", sheet: "bigHit", image: "slash02", color: "gold", ultimate: true },
+  undyingRoar: { kind: "buff", at: "self", sheet: "blood", color: "blood", ultimate: true },
+  shadowHarvest: { kind: "dash", at: "target", sheet: "wavyPurple", image: "slash04", color: "shadow", ultimate: true },
+  arrowStorm: { kind: "rain", at: "enemyCenter", sheet: "impact", image: "spark01", color: "blue", ultimate: true },
+  meteorRain: { kind: "rain", at: "enemyCenter", sheet: "explosion", image: "fire01", color: "fire", ultimate: true },
+  sanctuary: { kind: "teamBuff", at: "teamCenter", sheet: "charge", color: "heal", ultimate: true },
+  plagueOffering: { kind: "aoe", at: "enemyCenter", sheet: "vortex", image: "smoke01", color: "poison", ultimate: true },
+  crescendo: { kind: "teamBuff", at: "teamCenter", sheet: "electricRing", image: "magic01", color: "gold", ultimate: true },
+  grandMixture: { kind: "aoe", at: "enemyCenter", sheet: "vortex", image: "magic01", color: "arcane", ultimate: true },
+};
+
+function sheet(path, cols, rows, frames) {
+  return { src: `${VFX_BASE}/${path}`, cols, rows, frames };
+}
 
 const state = {
   running: false,
@@ -329,7 +393,7 @@ function tickTimers(unit, dt) {
 }
 function tickStatuses(unit, dt, visual) {
   tickDot(unit, unit.poison, dt, 2.1, "poison", visual);
-  tickDot(unit, unit.burn, dt, 2.15, "fire", visual);
+  tickDot(unit, unit.burn, dt, 2.15, "burn", visual);
 }
 function tickDot(unit, dot, dt, perStack, type, visual) {
   if (dot.stacks <= 0) return;
@@ -345,6 +409,7 @@ function tickDot(unit, dot, dt, perStack, type, visual) {
 function castSlot(unit, slot, target, visual) {
   const skill = SKILLS[unit[slot]];
   if (!skill) return;
+  if (visual) playSkillFx(unit, target, unit[slot], slot, skill);
   skill.cast({ unit, target, visual });
   unit.skillCd[slot] = skill.cooldown;
   if (slot === "ultimate") triggerEncore(unit);
@@ -380,8 +445,9 @@ function hit(source, target, amount, type, label, visual = true) {
 function takeDamage(source, target, amount, type, visual = true) {
   if (!isAlive(target)) return;
   let remaining = amount;
+  let blocked = 0;
   if (target.shield > 0) {
-    const blocked = Math.min(target.shield, remaining);
+    blocked = Math.min(target.shield, remaining);
     target.shield -= blocked;
     remaining -= blocked;
   }
@@ -391,7 +457,14 @@ function takeDamage(source, target, amount, type, visual = true) {
     source.damageDone += amount;
     if (source.lifeStealTimer > 0 || source.passive === "rageEngine") healUnit(source, amount * (source.lifeStealTimer > 0 ? 0.18 : 0.07), "吸血", visual);
   }
-  if (visual && remaining > 0) floater(target, `-${Math.round(remaining)}`, type === "poison" ? "poison" : type === "fire" ? "fire" : "");
+  if (visual && blocked > 0) floater(target, `护盾-${Math.round(blocked)}`, "shield");
+  if (visual && remaining > 0) {
+    const label = type === "poison" ? `剧毒-${Math.round(remaining)}`
+      : type === "burn" ? `燃烧-${Math.round(remaining)}`
+      : type === "fire" ? `火焰-${Math.round(remaining)}`
+      : `-${Math.round(remaining)}`;
+    floater(target, label, type === "poison" ? "poison" : type === "burn" || type === "fire" ? "fire" : "");
+  }
   if (target.hp <= 0) onDeath(target, source, visual);
 }
 function takeRaw(target, amount, source, type) {
@@ -408,18 +481,21 @@ function healUnit(unit, amount, label = "治疗", visual = true) {
 function shield(unit, amount, label, visual = true) {
   if (!unit || !isAlive(unit)) return;
   const bonus = unit.passive === "fortressStance" ? 1.08 + (1 - hpRatio(unit)) * 0.12 : 1;
-  unit.shield += amount * bonus;
-  if (visual) floater(unit, label, "heal");
+  const value = amount * bonus;
+  unit.shield += value;
+  if (visual) floater(unit, `${label}+${Math.round(value)}`, "shield");
 }
-function addPoison(target, stacks, time, source) {
+function addPoison(target, stacks, time, source, visual = state.running) {
   target.poison.stacks = Math.min(20, target.poison.stacks + stacks);
   target.poison.time = Math.max(target.poison.time, time);
   target.poison.source = source;
+  if (visual && isAlive(target)) floater(target, `剧毒+${stacks}`, "poison");
 }
-function addBurn(target, stacks, time, source) {
-  target.burn.stacks = Math.min(16, target.burn.stacks + stacks);
+function addBurn(target, stacks, time, source, visual = state.running) {
+  target.burn.stacks += stacks;
   target.burn.time = Math.max(target.burn.time, time);
   target.burn.source = source;
+  if (visual && isAlive(target)) floater(target, `燃烧+${stacks}`, "fire");
 }
 function onDeath(unit, killer, visual) {
   if (visual) log(`${unit.name} 倒下。`);
@@ -501,6 +577,162 @@ function renderSkillLibrary() {
     return `<div class="skill-card"><strong>${role.name}</strong><span>${role.fantasy}</span><span>小技：${SKILLS[kit.small1].name} / ${SKILLS[kit.small2].name}</span><span>被动：${SKILLS[kit.passive].name} · 大招：${SKILLS[kit.ultimate].name}</span></div>`;
   }).join("");
 }
+
+function playSkillFx(unit, target, skillId, slot, skill) {
+  const fx = SKILL_FX[skillId] || { kind: "impact", at: "target", sheet: "impact", color: "gold" };
+  const source = pointOf(unit);
+  const impact = resolveFxPoint(unit, target, fx.at);
+  const isUlt = slot === "ultimate" || fx.ultimate;
+  const scale = isUlt ? 1.35 : 1;
+
+  spawnSkillLabel(unit, skill.name, isUlt);
+  spawnCastPulse(source, fx.color, scale);
+
+  if (["projectile", "dash"].includes(fx.kind)) spawnBeam(source, impact, fx.color, fx.kind === "dash");
+  if (["slash", "cleave", "stab", "dash"].includes(fx.kind)) {
+    spawnSlash(source, impact, fx.image || "slash02", fx.color, scale * (fx.kind === "stab" ? 0.72 : 1));
+  }
+  if (fx.kind === "whirl") {
+    spawnSlash(source, { x: source.x + (unit.side === "left" ? 5 : -5), y: source.y - 8 }, fx.image || "slash03", fx.color, scale);
+    spawnSlash(source, { x: source.x + (unit.side === "left" ? -5 : 5), y: source.y + 8 }, "slash01", fx.color, scale * 0.85);
+  }
+  if (fx.kind === "rain") {
+    for (let i = 0; i < 5; i += 1) {
+      const lane = { x: impact.x - 8 + i * 4, y: impact.y - 10 + (i % 2) * 6 };
+      setTimeout(() => spawnBeam({ x: lane.x - 10, y: lane.y - 18 }, lane, fx.color, false), i * 80);
+      setTimeout(() => spawnSprite(fx.sheet, lane, fx.color, scale * 0.7), i * 90);
+    }
+    return;
+  }
+
+  if (fx.sheet) spawnSprite(fx.sheet, impact, fx.color, scale);
+  if (fx.image && ["aoe", "heal", "buff", "teamBuff"].includes(fx.kind)) {
+    spawnImage(fx.image, impact, fx.color, scale);
+  }
+  if (["shield", "heal", "buff", "teamBuff", "aoe"].includes(fx.kind)) {
+    spawnRing(impact, fx.color, scale * (isUlt ? 1.25 : 1));
+  }
+}
+
+function resolveFxPoint(unit, target, mode) {
+  if (mode === "self") return pointOf(unit);
+  if (mode === "lowestAlly") return pointOf(lowestHpAlly(unit) || unit);
+  if (mode === "carryAlly") return pointOf(carryAlly(unit) || unit);
+  if (mode === "teamCenter") return centerOf(alliesOf(unit).filter(isAlive), unit);
+  if (mode === "enemyCenter") return centerOf(enemiesOf(unit).filter(isAlive), target || unit);
+  return pointOf(target || unit);
+}
+
+function pointOf(unit) {
+  return { x: unit?.x ?? 50, y: unit?.y ?? 50 };
+}
+
+function centerOf(units, fallback) {
+  if (!units.length) return pointOf(fallback);
+  return {
+    x: units.reduce((sum, unit) => sum + unit.x, 0) / units.length,
+    y: units.reduce((sum, unit) => sum + unit.y, 0) / units.length,
+  };
+}
+
+function spawnSkillLabel(unit, text, isUlt) {
+  const node = document.createElement("div");
+  node.className = `skill-label ${isUlt ? "ultimate" : ""}`;
+  node.textContent = text;
+  node.style.left = `${unit.x}%`;
+  node.style.top = `${unit.y - 10}%`;
+  els.fxLayer.appendChild(node);
+  setTimeout(() => node.remove(), isUlt ? 1050 : 760);
+}
+
+function spawnCastPulse(point, color, scale = 1) {
+  const node = document.createElement("div");
+  node.className = `vfx-pulse vfx-${color}`;
+  node.style.left = `${point.x}%`;
+  node.style.top = `${point.y}%`;
+  node.style.setProperty("--scale", scale);
+  els.fxLayer.appendChild(node);
+  setTimeout(() => node.remove(), 620);
+}
+
+function spawnRing(point, color, scale = 1) {
+  const node = document.createElement("div");
+  node.className = `vfx-ring vfx-${color}`;
+  node.style.left = `${point.x}%`;
+  node.style.top = `${point.y}%`;
+  node.style.setProperty("--scale", scale);
+  els.fxLayer.appendChild(node);
+  setTimeout(() => node.remove(), 760);
+}
+
+function spawnBeam(source, target, color, heavy) {
+  const dx = target.x - source.x;
+  const dy = target.y - source.y;
+  const length = Math.hypot(dx, dy);
+  const angle = Math.atan2(dy, dx);
+  const node = document.createElement("div");
+  node.className = `vfx-beam vfx-${color} ${heavy ? "heavy" : ""}`;
+  node.style.left = `${source.x}%`;
+  node.style.top = `${source.y}%`;
+  node.style.width = `${length}%`;
+  node.style.transform = `rotate(${angle}rad)`;
+  els.fxLayer.appendChild(node);
+  setTimeout(() => node.remove(), heavy ? 520 : 360);
+}
+
+function spawnSlash(source, target, imageName, color, scale = 1) {
+  const node = document.createElement("img");
+  node.className = `vfx-slash vfx-${color}`;
+  node.src = VFX_IMAGES[imageName] || VFX_IMAGES.slash02;
+  const mid = { x: (source.x + target.x) / 2, y: (source.y + target.y) / 2 };
+  const angle = Math.atan2(target.y - source.y, target.x - source.x);
+  node.style.left = `${mid.x}%`;
+  node.style.top = `${mid.y}%`;
+  node.style.setProperty("--angle", `${angle}rad`);
+  node.style.setProperty("--scale", scale);
+  els.fxLayer.appendChild(node);
+  setTimeout(() => node.remove(), 520);
+}
+
+function spawnImage(imageName, point, color, scale = 1) {
+  const node = document.createElement("img");
+  node.className = `vfx-image vfx-${color}`;
+  node.src = VFX_IMAGES[imageName] || VFX_IMAGES.magic01;
+  node.style.left = `${point.x}%`;
+  node.style.top = `${point.y}%`;
+  node.style.setProperty("--scale", scale);
+  els.fxLayer.appendChild(node);
+  setTimeout(() => node.remove(), 720);
+}
+
+function spawnSprite(sheetName, point, color, scale = 1) {
+  const sheetInfo = VFX_SHEETS[sheetName] || VFX_SHEETS.impact;
+  const node = document.createElement("div");
+  node.className = `vfx-sheet vfx-${color}`;
+  node.style.left = `${point.x}%`;
+  node.style.top = `${point.y}%`;
+  node.style.backgroundImage = `url("${sheetInfo.src}")`;
+  node.style.backgroundSize = `${sheetInfo.cols * 100}% ${sheetInfo.rows * 100}%`;
+  node.style.setProperty("--scale", scale);
+  els.fxLayer.appendChild(node);
+
+  let frame = 0;
+  const duration = 560;
+  const stepMs = Math.max(16, duration / sheetInfo.frames);
+  const timer = setInterval(() => {
+    frame += 1;
+    const col = frame % sheetInfo.cols;
+    const row = Math.floor(frame / sheetInfo.cols);
+    const x = sheetInfo.cols <= 1 ? 0 : (col / (sheetInfo.cols - 1)) * 100;
+    const y = sheetInfo.rows <= 1 ? 0 : (row / (sheetInfo.rows - 1)) * 100;
+    node.style.backgroundPosition = `${x}% ${y}%`;
+    if (frame >= sheetInfo.frames - 1) {
+      clearInterval(timer);
+      node.remove();
+    }
+  }, stepMs);
+}
+
 function floater(unit, text, cls = "") {
   const node = document.createElement("div");
   node.className = `floater ${cls}`;

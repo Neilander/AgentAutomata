@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 · 新狂战木桩</title>
+    <link rel="stylesheet" href="/dps_lab/styles.css">
+  </head>
+  <body>
+    <main class="lab-app">
+      <header class="topbar">
+        <div>
+          <a href="/workbench/" class="back-link">返回工作台</a>
+          <h1>新狂战木桩</h1>
+          <p>左、右两边可以分别调整效果和数值，用来验证“强化普攻流”吃不吃急速、增伤、暴击和技能窗口。</p>
+        </div>
+        <div class="controls">
+          <button id="runBtn" class="primary" type="button">重新测试</button>
+        </div>
+      </header>
+
+      <section class="summary">
+        <div>
+          <span>左侧 DPS</span>
+          <strong id="normalDps">0</strong>
+        </div>
+        <div>
+          <span>右侧 DPS</span>
+          <strong id="hasteDps">0</strong>
+        </div>
+        <div>
+          <span>提升</span>
+          <strong id="gainDps">0%</strong>
+        </div>
+      </section>
+
+      <section class="config-grid">
+        <article class="config-panel" id="leftConfig">
+          <header><strong>左侧参数</strong><button type="button" data-preset="baseline">无效果</button></header>
+          <div class="form-grid"></div>
+        </article>
+        <article class="config-panel" id="rightConfig">
+          <header><strong>右侧参数</strong><button type="button" data-preset="haste">诗人急速</button></header>
+          <div class="form-grid"></div>
+        </article>
+      </section>
+
+      <section class="duel-grid">
+        <article class="lane" id="normalLane">
+          <header>
+            <strong id="normalTitle">左侧狂战</strong>
+            <span id="normalSub">自定义参数</span>
+          </header>
+          <div class="stage">
+            <div class="fighter">🪓</div>
+            <div class="dummy">木桩</div>
+            <div class="fx-layer"></div>
+          </div>
+          <div class="stats" id="normalStats"></div>
+        </article>
+
+        <article class="lane haste" id="hasteLane">
+          <header>
+            <strong id="hasteTitle">右侧狂战</strong>
+            <span id="hasteSub">自定义参数</span>
+          </header>
+          <div class="stage">
+            <div class="fighter">🪓</div>
+            <div class="dummy">木桩</div>
+            <div class="fx-layer"></div>
+          </div>
+          <div class="stats" id="hasteStats"></div>
+        </article>
+      </section>
+
+      <section class="notes">
+        <strong>测试规则</strong>
+        <p>狂战士现在不是靠独立技能砸伤害，而是靠短窗口强化普攻。血怒斩开启 4 秒血怒附伤；裂骨旋风开启 5 秒主目标附伤和溅射；不死战吼开启 6 秒急速、血怒、旋风和额外普攻附伤。木桩动画按前 8 秒真实事件时间轴播放，统计按完整测试秒数计算。</p>
+      </section>
+    </main>
+    <script src="/dps_lab/dps-lab.js"></script>
+  </body>
+</html>

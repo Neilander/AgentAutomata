@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 · 组队模拟器</title>
+    <link rel="stylesheet" href="/team_simulator/styles.css">
+  </head>
+  <body>
+    <main class="sim-app">
+      <header class="topbar">
+        <div>
+          <a href="/workbench/" class="back-link">返回工作台</a>
+          <h1>组队模拟器</h1>
+          <p>招募 8 人，选择 4 人，轮番挑战强度 30 / 60 / 80 / 90 的预设队伍。</p>
+        </div>
+        <div class="top-actions">
+          <button id="recruitBtn" type="button">重新招募</button>
+          <button id="autoPickBtn" type="button">自动选强</button>
+          <button id="tourBtn" type="button" class="primary">开始轮战</button>
+        </div>
+      </header>
+
+      <section class="squad-strip">
+        <div class="strip-head">
+          <strong>当前小队</strong>
+          <span id="squadSummary">0 / 4</span>
+        </div>
+        <div id="squadSlots" class="squad-slots"></div>
+      </section>
+
+      <section class="main-grid">
+        <aside class="panel roster-panel">
+          <div class="panel-head">
+            <h2>候选角色</h2>
+            <span>点击加入 / 移出</span>
+          </div>
+          <div id="rosterGrid" class="roster-grid"></div>
+        </aside>
+
+        <section class="panel battle-panel">
+          <div class="panel-head">
+            <h2>战斗预览</h2>
+            <span id="battleState">待命</span>
+          </div>
+          <div id="battlefield" class="battlefield">
+            <div id="fxLayer" class="fx-layer"></div>
+            <div id="unitLayer" class="unit-layer"></div>
+          </div>
+          <div id="battleLog" class="battle-log"></div>
+        </section>
+
+        <aside class="panel challenge-panel">
+          <div class="panel-head">
+            <h2>挑战阶梯</h2>
+            <span>4v4</span>
+          </div>
+          <div id="challengeList" class="challenge-list"></div>
+          <div class="detail-box">
+            <strong id="selectedName">未选择角色</strong>
+            <p id="selectedDetail">点击候选或小队头像查看技能。</p>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <div id="heroModal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop" data-close-modal></div>
+      <section class="hero-modal" role="dialog" aria-modal="true" aria-labelledby="modalHeroName">
+        <button id="modalCloseBtn" class="modal-close" type="button" aria-label="关闭">×</button>
+        <div class="modal-title">
+          <div id="modalHeroIcon" class="avatar">⚔️</div>
+          <div>
+            <h2 id="modalHeroName">角色详情</h2>
+            <p id="modalHeroMeta">职业 · 定位</p>
+          </div>
+          <strong id="modalHeroPower" class="modal-power">0</strong>
+        </div>
+        <div id="modalSkillGrid" class="modal-skill-grid"></div>
+        <div class="modal-stats" id="modalStats"></div>
+        <button id="modalTeamBtn" class="primary modal-action" type="button">加入小队</button>
+      </section>
+    </div>
+    <script src="/team_simulator/team-simulator.js"></script>
+  </body>
+</html>

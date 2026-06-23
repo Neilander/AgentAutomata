@@ -331,6 +331,7 @@ function routeStatic(req, res, url) {
     "/effect_lab",
     "/art_lab",
     "/ai_tools",
+    "/genre_arena",
   ]);
 
   if (slashRoutes.has(url.pathname)) {
@@ -353,6 +354,7 @@ function routeStatic(req, res, url) {
     "effect_lab",
     "art_lab",
     "ai_tools",
+    "genre_arena",
   ];
 
   const root = staticRoots.find((item) => url.pathname === `/${item}/` || url.pathname.startsWith(`/${item}/`));

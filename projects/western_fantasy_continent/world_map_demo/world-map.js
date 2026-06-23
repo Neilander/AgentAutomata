@@ -19,6 +19,12 @@ const ZONES = [
 ];
 
 const STORAGE_KEY = "western_fantasy_world_demo_v4";
+const SHARED_SKILLS = window.GAME_SKILL_DATA || {};
+const BERSERKER_MODEL = SHARED_SKILLS.berserkerModel || {};
+const BERSERKER_RATIOS = BERSERKER_MODEL.ratios || {};
+const BERSERKER_DURATIONS = BERSERKER_MODEL.durations || {};
+const BERSERKER_COOLDOWNS = BERSERKER_MODEL.cooldowns || {};
+const BERSERKER_PASSIVE = BERSERKER_MODEL.passive || {};
 const SLOTS = ["武器", "头盔", "胸甲", "护手", "鞋子", "饰品"];
 const SLOT_ICONS = { 武器: "⚔️", 头盔: "🪖", 胸甲: "🛡️", 护手: "🧤", 鞋子: "🥾", 饰品: "💍" };
 const RARITY_RANK = { common: 1, rare: 2, epic: 3, legendary: 4, mythic: 5, wonder: 6, phantom: 7 };
@@ -503,9 +509,13 @@ function heroAttack(hero, mob) {
   const crit = Math.random() < (isCaster ? stats.spellCritChance : stats.critChance);
   const markBonus = (mob.markStacks || 0) * (0.08 + stats.markPower);
   const curseBonus = mob.curseTimer > 0 ? (0.12 + stats.vulnerabilityAmp) : 0;
-  const rageBonus = role === "狂战士" ? clamp(1 - hero.hp / hero.maxHp, 0, 0.65) : 0;
+  const missingHp = clamp(1 - hero.hp / hero.maxHp, 0, 0.65);
+  const rageBonus = role === "狂战士" ? missingHp * (BERSERKER_PASSIVE.maxDamageAmp ?? 0.45) : 0;
+  const bloodWindowDamage = role === "狂战士" && hero.bloodrageTimer > 0
+    ? stats.attack * (BERSERKER_RATIOS.blood ?? 0.45) * (1 + missingHp * (BERSERKER_PASSIVE.maxDamageAmp ?? 0.45))
+    : 0;
   const baseDamage = stats.attack * 0.72 + stats.magicPower * 0.28 + elementDamage * 0.32 + randomInt(-2, 3) - mob.defense * (0.52 - Math.min(0.22, stats.resistShred));
-  let damage = Math.max(3, Math.round(baseDamage * (1 + markBonus + curseBonus + rageBonus) * (crit ? 1.5 + stats.critDamage : 1)));
+  let damage = Math.max(3, Math.round((baseDamage + bloodWindowDamage) * (1 + markBonus + curseBonus + rageBonus) * (crit ? 1.5 + stats.critDamage : 1)));
   if (role === "游侠") {
     mob.markStacks = Math.min(5, (mob.markStacks || 0) + 1);
     mob.markTimer = 5;
@@ -520,7 +530,9 @@ function heroAttack(hero, mob) {
   hero.attackLungeX = dx / len;
   hero.attackLungeY = dy / len;
   const bardSpeed = hero.bardBuffTimer > 0 ? 0.22 + (hero.bardBuffPower || 0) : 0;
-  const rageSpeed = role === "狂战士" ? rageBonus * 0.7 : 0;
+  const rageSpeed = role === "狂战士" && hero.bloodrageTimer > 0
+    ? (BERSERKER_MODEL.hasteMultiplier ?? 1.4) - 1 + missingHp * (BERSERKER_PASSIVE.lowHpHaste ?? 0)
+    : 0;
   hero.cooldown = Math.max(0.34, (isCaster ? 0.96 : role === "骑士" ? 0.9 : 0.74) / (1 + stats.attackSpeed + bardSpeed + rageSpeed));
   addFloater(mob.x, mob.y - 2.8, crit ? `暴 ${damage}` : `-${damage}`, crit ? "#ef6f6c" : "#ffd27a");
   if (stats.lifeSteal > 0 && damage > 0) {
@@ -600,15 +612,10 @@ function castHeroSkill(hero, group, target) {
     return;
   }
   if (role === "狂战士") {
-    hero.bloodrageTimer = 4.5;
-    const damage = Math.round(18 + stats.attack * (1.25 + clamp(1 - hero.hp / hero.maxHp, 0, 0.7)));
-    target.hp -= damage;
-    target.hitTimer = 0.28;
-    target.aggroTargetId = hero.id;
-    hero.skillCooldown = 6.1 * cooldownScale;
+    hero.bloodrageTimer = BERSERKER_DURATIONS.bloodFury ?? 4;
+    hero.skillCooldown = (BERSERKER_COOLDOWNS.bloodStrike ?? 5.2) * cooldownScale;
     addEffect(hero.x, hero.y, "rage", "#ef6f6c", "怒");
-    addFloater(target.x, target.y - 3, `怒 ${damage}`, "#ef6f6c");
-    if (target.hp <= 0) killMob(target);
+    addFloater(hero.x, hero.y - 4, "血怒普攻", "#ef6f6c");
     addLog(`[SKILL_BREAKPOINT 技能断点] ${hero.name}进入血怒，低血线时输出窗口更明显。`);
     return;
   }

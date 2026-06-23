@@ -1,3 +1,10 @@
+const SKILL_DATA = window.GAME_SKILL_DATA || {};
+const BERSERKER_MODEL = SKILL_DATA.berserkerModel || {};
+const MODEL_RATIOS = BERSERKER_MODEL.ratios || {};
+const MODEL_DURATIONS = BERSERKER_MODEL.durations || {};
+const MODEL_COOLDOWNS = BERSERKER_MODEL.cooldowns || {};
+const MODEL_OPENERS = BERSERKER_MODEL.openingCooldowns || {};
+
 const DEFAULTS = {
   left: {
     label: "无效果",
@@ -9,10 +16,10 @@ const DEFAULTS = {
     finalDamage: 0,
     critRate: 0,
     critDamage: 150,
-    bloodBonus: 45,
-    whirlwindBonus: 30,
-    whirlwindSplash: 18,
-    roarBonus: 35,
+    bloodBonus: percent(MODEL_RATIOS.blood, 45),
+    whirlwindBonus: percent(MODEL_RATIOS.whirlwind, 30),
+    whirlwindSplash: percent(MODEL_RATIOS.splash, 18),
+    roarBonus: percent(MODEL_RATIOS.roar, 35),
     ultEnabled: 1,
   },
   right: {
@@ -25,10 +32,10 @@ const DEFAULTS = {
     finalDamage: 0,
     critRate: 0,
     critDamage: 150,
-    bloodBonus: 45,
-    whirlwindBonus: 30,
-    whirlwindSplash: 18,
-    roarBonus: 35,
+    bloodBonus: percent(MODEL_RATIOS.blood, 45),
+    whirlwindBonus: percent(MODEL_RATIOS.whirlwind, 30),
+    whirlwindSplash: percent(MODEL_RATIOS.splash, 18),
+    roarBonus: percent(MODEL_RATIOS.roar, 35),
     ultEnabled: 1,
   },
 };
@@ -136,9 +143,9 @@ function run(animate = true) {
 function simulate(config) {
   let time = 0;
   let attackCd = 0;
-  let bloodCd = 1;
-  let whirlwindCd = 2.6;
-  let ultCd = 14;
+  let bloodCd = MODEL_OPENERS.bloodStrike ?? 1;
+  let whirlwindCd = MODEL_OPENERS.boneWhirl ?? 2.6;
+  let ultCd = MODEL_OPENERS.undyingRoar ?? 14;
   let bloodFury = 0;
   let whirlwind = 0;
   let roarFury = 0;
@@ -149,7 +156,7 @@ function simulate(config) {
   const events = [];
 
   while (time < config.seconds) {
-    const attackSpeed = Math.max(0.05, config.attackSpeed) * (hasteWindow > 0 ? 1.4 : 1);
+    const attackSpeed = Math.max(0.05, config.attackSpeed) * (hasteWindow > 0 ? (BERSERKER_MODEL.hasteMultiplier ?? 1.4) : 1);
     attackCd -= dt * attackSpeed;
     bloodCd = Math.max(0, bloodCd - dt);
     whirlwindCd = Math.max(0, whirlwindCd - dt);
@@ -160,27 +167,27 @@ function simulate(config) {
     hasteWindow = Math.max(0, hasteWindow - dt);
 
     if (config.ultEnabled > 0 && ultCd <= 0) {
-      bloodFury = Math.max(bloodFury, 6);
-      whirlwind = Math.max(whirlwind, 6);
-      roarFury = 6;
-      hasteWindow = 6;
+      bloodFury = Math.max(bloodFury, MODEL_DURATIONS.roarFury ?? 6);
+      whirlwind = Math.max(whirlwind, MODEL_DURATIONS.roarFury ?? 6);
+      roarFury = MODEL_DURATIONS.roarFury ?? 6;
+      hasteWindow = MODEL_DURATIONS.haste ?? 6;
       counts.ults += 1;
       events.push({ time, value: 0, type: "不死战吼" });
-      ultCd = 24;
+      ultCd = MODEL_COOLDOWNS.undyingRoar ?? 24;
     } else if (bloodCd <= 0) {
-      bloodFury = 4;
+      bloodFury = MODEL_DURATIONS.bloodFury ?? 4;
       counts.bloods += 1;
       events.push({ time, value: 0, type: "血怒斩" });
-      bloodCd = 5.2 * Math.max(0.05, config.skillCooldown);
+      bloodCd = (MODEL_COOLDOWNS.bloodStrike ?? 5.2) * Math.max(0.05, config.skillCooldown);
     } else if (whirlwindCd <= 0) {
-      whirlwind = 5;
+      whirlwind = MODEL_DURATIONS.whirlwind ?? 5;
       counts.whirls += 1;
       events.push({ time, value: 0, type: "裂骨旋风" });
-      whirlwindCd = 8.4 * Math.max(0.05, config.skillCooldown);
+      whirlwindCd = (MODEL_COOLDOWNS.boneWhirl ?? 8.4) * Math.max(0.05, config.skillCooldown);
     } else if (attackCd <= 0) {
       counts.basics += 1;
       const parts = [];
-      parts.push(addDamage("basic", 10 + config.power * 0.22, config, time, 3, buckets, counts));
+      parts.push(addDamage("basic", (BERSERKER_MODEL.basicFlatDamage ?? 10) + config.power * (BERSERKER_MODEL.basicPowerRatio ?? 0.22), config, time, 3, buckets, counts));
       if (bloodFury > 0) {
         parts.push(addDamage("blood", config.power * config.bloodBonus / 100, config, time, 11, buckets, counts));
       }
@@ -194,7 +201,7 @@ function simulate(config) {
       const total = parts.reduce((sum, item) => sum + item.damage, 0);
       const crit = parts.some((item) => item.crit);
       events.push({ time, value: total, type: crit ? "普攻 暴击" : "普攻" });
-      attackCd = 1.35;
+      attackCd = BERSERKER_MODEL.basicAttackCooldown ?? 1.35;
     }
     time += dt;
   }
@@ -208,6 +215,10 @@ function simulate(config) {
     buckets,
     events,
   };
+}
+
+function percent(value, fallback) {
+  return typeof value === "number" ? value * 100 : fallback;
 }
 
 function addDamage(bucket, raw, config, time, salt, buckets, counts) {

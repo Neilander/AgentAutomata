@@ -334,6 +334,7 @@ function routeStatic(req, res, url) {
     "/genre_arena",
     "/team_simulator",
     "/dps_lab",
+    "/game_data",
   ]);
 
   if (slashRoutes.has(url.pathname)) {
@@ -359,6 +360,7 @@ function routeStatic(req, res, url) {
     "genre_arena",
     "team_simulator",
     "dps_lab",
+    "game_data",
   ];
 
   const root = staticRoots.find((item) => url.pathname === `/${item}/` || url.pathname.startsWith(`/${item}/`));

@@ -4,6 +4,14 @@ const VFX_BASE = "/effect_lab/assets/brackeys";
 const TYPE = { SMALL: "小技能", PASSIVE: "被动", ULT: "大招" };
 const TEAM_SIZE = 4;
 const MAX_TIME = 75;
+const SHARED_SKILLS = window.GAME_SKILL_DATA || {};
+const BERSERKER_SHARED = SHARED_SKILLS.roles?.berserker || {};
+const BERSERKER_MODEL = SHARED_SKILLS.berserkerModel || {};
+const BERSERKER_RATIOS = BERSERKER_MODEL.ratios || {};
+const BERSERKER_DURATIONS = BERSERKER_MODEL.durations || {};
+const BERSERKER_COOLDOWNS = BERSERKER_MODEL.cooldowns || {};
+const BERSERKER_PASSIVE = BERSERKER_MODEL.passive || {};
+const SIGNALS = window.GAME_COMBAT_SIGNALS || {};
 
 const VFX_SHEETS = {
   impact: sheet("predrawn/impact_white_6x4.png", 6, 4, 24),
@@ -76,12 +84,13 @@ const state = {
   teams: { left: null, right: null },
   units: [],
   logs: [],
+  signalBus: SIGNALS.createCombatSignalBus ? SIGNALS.createCombatSignalBus() : null,
   nextId: 1,
   selectedPreset: { left: "poisonBloom", right: "ironWall" },
   balanceRows: [],
 };
 
-const ROLE_KITS = {
+const LOCAL_ROLE_KITS = {
   knight: {
     name: "铁壁骑士", role: "骑士", fantasy: "站住、挡住、反打", hp: 350, power: 34, armor: 13, range: 11, icon: "checked-shield",
     kit: { small1: "guard", small2: "tauntLine", passive: "fortressStance", ultimate: "bannerWall" },
@@ -91,7 +100,14 @@ const ROLE_KITS = {
     kit: { small1: "powerStrike", small2: "cleave", passive: "lineBreaker", ultimate: "warBanner" },
   },
   berserker: {
-    name: "赤狮狂战", role: "狂战士", fantasy: "越残越疯，吸血翻盘", hp: 330, power: 65, armor: 8, range: 12, icon: "axe-swing",
+    name: BERSERKER_SHARED.arenaName || "赤狮狂战",
+    role: BERSERKER_SHARED.name || "狂战士",
+    fantasy: BERSERKER_SHARED.arenaFantasy || "技能开窗口，越砍越疯，吃急速和吸血翻盘",
+    hp: BERSERKER_SHARED.stats?.hp ?? 330,
+    power: BERSERKER_SHARED.stats?.power ?? 66,
+    armor: BERSERKER_SHARED.stats?.armor ?? 8,
+    range: BERSERKER_SHARED.stats?.range ?? 12,
+    icon: BERSERKER_SHARED.icon || "axe-swing",
     kit: { small1: "bloodStrike", small2: "boneWhirl", passive: "rageEngine", ultimate: "undyingRoar" },
   },
   assassin: {
@@ -124,13 +140,13 @@ const ROLE_KITS = {
   },
 };
 
-const SKILLS = {
+const LOCAL_SKILLS = {
   guard: skill("守护", TYPE.SMALL, "骑士", 8, "checked-shield", "给自己护盾，拖慢爆发队。", ({ unit }) => shield(unit, 48 + unit.power * 0.34, "守护")),
   tauntLine: skill("誓卫嘲讽", TYPE.SMALL, "骑士", 10, "shield-reflect", "嘲讽附近敌人并减伤。", ({ unit }) => { unit.guardTimer = 5; shield(unit, 55 + unit.power * 0.35, "誓卫"); }),
   powerStrike: skill("重击", TYPE.SMALL, "战士", 5, "hammer-drop", "稳定单体物理伤害。", ({ unit, target }) => hit(unit, target, 34 + unit.power * 0.48, "physical", "重击")),
   cleave: skill("顺劈", TYPE.SMALL, "战士", 7, "sword-slice", "打前排附近两人。", ({ unit, target }) => enemiesOf(unit).filter(isAlive).sort(byDistance(unit)).slice(0, 2).forEach((enemy) => hit(unit, enemy, 24 + unit.power * 0.32, "physical", "顺劈"))),
-  bloodStrike: skill("血怒斩", TYPE.SMALL, "狂战士", 5, "bloody-sword", "生命越低伤害越高。", ({ unit, target }) => hit(unit, target, (30 + unit.power * 0.42) * (1 + (1 - hpRatio(unit)) * 0.75), "physical", "血怒斩")),
-  boneWhirl: skill("裂骨旋风", TYPE.SMALL, "狂战士", 9, "spinning-sword", "范围物理，敌越近收益越高。", ({ unit }) => enemiesOf(unit).filter(isAlive).sort(byDistance(unit)).slice(0, 3).forEach((enemy) => hit(unit, enemy, 18 + unit.power * 0.28, "physical", "裂骨旋风"))),
+  bloodStrike: skill("血怒斩", TYPE.SMALL, "狂战士", BERSERKER_COOLDOWNS.bloodStrike ?? 5.2, "bloody-sword", sharedSkillDesc("bloodStrike", "进入血怒窗口，强化接下来的普攻。"), ({ unit }) => { unit.bloodFuryTimer = BERSERKER_DURATIONS.bloodFury ?? 4; floater(unit, "血怒普攻", "heal"); }),
+  boneWhirl: skill("裂骨旋风", TYPE.SMALL, "狂战士", BERSERKER_COOLDOWNS.boneWhirl ?? 8.4, "spinning-sword", sharedSkillDesc("boneWhirl", "进入旋风架势，普攻追加主目标附伤和溅射。"), ({ unit }) => { unit.whirlwindTimer = BERSERKER_DURATIONS.whirlwind ?? 5; floater(unit, "旋风架势", "shield"); }),
   toxicStabs: skill("毒刃连刺", TYPE.SMALL, "刺客", 4, "daggers", "快速刺击并叠低额毒。", ({ unit, target }) => { hit(unit, target, 14 + unit.power * 0.24, "physical", "毒刃"); addPoison(target, 2, 6, unit); }),
   shadowCut: skill("影切", TYPE.SMALL, "刺客", 6, "sprint", "跳向低血目标。", ({ unit }) => { const target = lowestEnemy(unit); if (target) hit(unit, target, 24 + unit.power * 0.38 + (1 - hpRatio(target)) * 34, "shadow", "影切"); }),
   markShot: skill("猎标箭", TYPE.SMALL, "游侠", 5, "targeted", "标记并单点增伤。", ({ unit, target }) => { target.mark = Math.min(6, (target.mark || 0) + 1); hit(unit, target, 24 + unit.power * 0.34 + target.mark * 5, "physical", "猎标箭"); }),
@@ -149,7 +165,7 @@ const SKILLS = {
 
   fortressStance: passive("坚守阵线", "骑士", "shield", "护盾效果提高，低血更硬。"),
   lineBreaker: passive("破阵步", "战士", "swordman", "攻击前排时小幅增伤。"),
-  rageEngine: passive("血怒引擎", "狂战士", "rage", "低血提高输出和吸血。"),
+  rageEngine: passive("血怒引擎", "狂战士", "rage", sharedSkillDesc("rageEngine", "低血时强化普攻并吸血。")),
   executionSense: passive("处决嗅觉", "刺客", "death-note", "攻击低血或异常目标增伤。"),
   duelistFocus: passive("决斗专注", "游侠", "bullseye", "同一目标标记越高越强。"),
   kindlingEcho: passive("火种共鸣", "法师", "burning-embers", "燃烧目标死亡时溅射火焰。"),
@@ -160,7 +176,16 @@ const SKILLS = {
 
   bannerWall: ult("王旗不倒", "骑士", 34, "shield-bash", "全队护盾与短暂减伤。", ({ unit }) => alliesOf(unit).filter(isAlive).forEach((ally) => { shield(ally, 58 + unit.power * 0.38, "王旗"); ally.guardTimer = 3; })),
   warBanner: ult("战旗冲锋", "战士", 28, "war-axe", "全队前排输出窗口。", ({ unit }) => { alliesOf(unit).filter(isAlive).forEach((ally) => ally.bonusPowerTimer = 5); enemiesOf(unit).filter(isAlive).sort(byDistance(unit)).slice(0, 3).forEach((enemy) => hit(unit, enemy, 32 + unit.power * 0.34, "physical", "冲锋")); }),
-  undyingRoar: ult("不死战吼", "狂战士", 34, "lion", "狂战士短暂无死亡并强吸血。", ({ unit }) => { unit.undyingTimer = 7; unit.hasteTimer = 7; unit.lifeStealTimer = 7; floater(unit, "不死", "heal"); }),
+  undyingRoar: ult("不死战吼", "狂战士", BERSERKER_COOLDOWNS.undyingRoar ?? 24, "lion", sharedSkillDesc("undyingRoar", "短暂不死，并开启血怒、旋风、急速和战吼普攻窗口。"), ({ unit }) => {
+    unit.undyingTimer = BERSERKER_DURATIONS.immortal ?? 6;
+    unit.hasteTimer = BERSERKER_DURATIONS.haste ?? 6;
+    unit.hasteMultiplier = BERSERKER_MODEL.hasteMultiplier ?? 1.4;
+    unit.lifeStealTimer = BERSERKER_DURATIONS.roarFury ?? 6;
+    unit.bloodFuryTimer = Math.max(unit.bloodFuryTimer || 0, BERSERKER_DURATIONS.roarFury ?? 6);
+    unit.whirlwindTimer = Math.max(unit.whirlwindTimer || 0, BERSERKER_DURATIONS.roarFury ?? 6);
+    unit.roarFuryTimer = BERSERKER_DURATIONS.roarFury ?? 6;
+    floater(unit, "不死", "heal");
+  }),
   shadowHarvest: ult("暗影收割", "刺客", 24, "cloak-dagger", "处决低血目标，击杀刷新。", ({ unit }) => { const target = lowestEnemy(unit); if (target) hit(unit, target, 74 + unit.power * 0.66 + (1 - hpRatio(target)) * 95, "shadow", "收割"); }),
   arrowStorm: ult("箭雨", "游侠", 30, "arrow-cluster", "多段压低敌方后排。", ({ unit }) => enemiesOf(unit).filter(isAlive).forEach((enemy) => hit(unit, enemy, 29 + unit.power * 0.28 + (enemy.line === "后排" ? 16 : 0), "physical", "箭雨"))),
   meteorRain: ult("流星火雨", "法师", 37, "meteor-impact", "群体火焰，对燃烧目标爆燃。", ({ unit }) => enemiesOf(unit).filter(isAlive).forEach((enemy) => { hit(unit, enemy, 22 + unit.power * 0.18 + enemy.burn.stacks * 6, "fire", "流星"); addBurn(enemy, 2, 6, unit); })),
@@ -170,7 +195,7 @@ const SKILLS = {
   grandMixture: ult("终极混剂", "炼金师", 35, "bubbling-flask", "根据敌方异常层数造成混合爆发。", ({ unit }) => enemiesOf(unit).filter(isAlive).forEach((enemy) => hit(unit, enemy, 18 + unit.power * 0.16 + Math.min(8, statusCount(enemy)) * 8, "arcane", "混剂"))),
 };
 
-const PRESETS = {
+const LOCAL_PRESETS = {
   poisonBloom: preset("毒巢滚雪球", "慢启动，死亡扩散，后期毒爆", ["knight", "assassin", "warlock", "priest"], {
     0: { small1: "guard", small2: "bloodCharm", passive: "fortressStance", ultimate: "bannerWall" },
     2: { small1: "venomBrand", small2: "miasmaFlask", passive: "hotbedPact", ultimate: "plagueOffering" },
@@ -195,6 +220,29 @@ const PRESETS = {
   }),
   alchemyChaos: preset("炼金异常", "毒火混合，靠异常层数放大", ["knight", "alchemist", "alchemist", "mage"]),
 };
+
+const ROLE_KITS = SHARED_SKILLS.roleKits || LOCAL_ROLE_KITS;
+const SKILLS = SHARED_SKILLS.createSkillLibrary ? SHARED_SKILLS.createSkillLibrary({
+  iconBase: ICON_BASE,
+  isAlive,
+  hpRatio,
+  statusCount,
+  effectivePower,
+  enemiesOf,
+  alliesOf,
+  lowestEnemy,
+  lowestHpAlly,
+  carryAlly,
+  byDistance,
+  hit,
+  shield,
+  healUnit,
+  addPoison,
+  addBurn,
+  takeRaw,
+  floater,
+}) : LOCAL_SKILLS;
+const PRESETS = SHARED_SKILLS.presets || LOCAL_PRESETS;
 
 const els = {
   leftConfig: document.querySelector("#leftConfig"),
@@ -237,8 +285,12 @@ function passive(name, role, icon, desc) {
 function ult(name, role, cooldown, icon, desc, cast) {
   return skill(name, TYPE.ULT, role, cooldown, icon, desc, cast);
 }
+function sharedSkillDesc(key, fallback) {
+  return SHARED_SKILLS.skills?.[key]?.desc || fallback;
+}
 function preset(name, desc, roles, overrides = {}) {
-  return { name, desc, team: roles.map((role, index) => ({ role, ...ROLE_KITS[role].kit, ...(overrides[index] || {}) })) };
+  const kitSource = SHARED_SKILLS.roleKits || LOCAL_ROLE_KITS;
+  return { name, desc, team: roles.map((role, index) => ({ role, ...kitSource[role].kit, ...(overrides[index] || {}) })) };
 }
 function clonePreset(key) {
   return structuredClone(PRESETS[key].team);
@@ -336,6 +388,7 @@ function resetBattle() {
   state.lastFrame = performance.now();
   state.units = [...makeTeam("left", state.teams.left), ...makeTeam("right", state.teams.right)];
   state.logs = ["战斗已重置。"];
+  state.signalBus?.clear();
   els.startBtn.textContent = "开始";
   els.battleState.textContent = "待命";
   clearFx();
@@ -350,9 +403,14 @@ function makeTeam(side, specs) {
       name: role.name, roleName: role.role, maxHp: role.hp, hp: role.hp, power: role.power,
       armor: role.armor, range: role.range, homeX: slot.x, homeY: slot.y, line: slot.line, x: slot.x, y: slot.y,
       attackCd: 0.6 + index * 0.08,
-      skillCd: { small1: 1 + index * 0.35, small2: 2.2 + index * 0.35, ultimate: 20 + index * 1.8 },
+      skillCd: {
+        small1: 1 + index * 0.35,
+        small2: 2.2 + index * 0.35,
+        ultimate: spec.ultimate === "undyingRoar" ? (BERSERKER_MODEL.openingCooldowns?.undyingRoar ?? 8) : 20 + index * 1.8,
+      },
       shield: 0, poison: status(), burn: status(), slowTimer: 0, guardTimer: 0, hasteTimer: 0,
       dotResistTimer: 0, undyingTimer: 0, lifeStealTimer: 0, bonusPowerTimer: 0, bonusPower: 0,
+      bloodFuryTimer: 0, whirlwindTimer: 0, roarFuryTimer: 0,
       damageDone: 0, mark: 0, icon: `${ICON_BASE}/${role.icon}.svg`,
     };
   });
@@ -384,12 +442,13 @@ function updateBattle(dt, visual = false) {
     else if (unit.skillCd.small2 <= 0) castSlot(unit, "small2", target, visual);
     else if (unit.attackCd <= 0) basicAttack(unit, target, visual);
   }
+  state.signalBus?.emitHealthSnapshots(state.units, state.time);
   checkWinner();
 }
 function tickTimers(unit, dt) {
   for (const key of ["small1", "small2", "ultimate"]) unit.skillCd[key] = Math.max(0, unit.skillCd[key] - dt);
-  unit.attackCd -= dt * (unit.hasteTimer > 0 ? 1.45 : 1);
-  for (const key of ["slowTimer", "guardTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer"]) unit[key] = Math.max(0, unit[key] - dt);
+  unit.attackCd -= dt * (unit.hasteTimer > 0 ? (unit.hasteMultiplier || 1.45) : 1);
+  for (const key of ["slowTimer", "guardTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer"]) unit[key] = Math.max(0, unit[key] - dt);
 }
 function tickStatuses(unit, dt, visual) {
   tickDot(unit, unit.poison, dt, 2.1, "poison", visual);
@@ -402,7 +461,9 @@ function tickDot(unit, dot, dt, perStack, type, visual) {
   if (dot.tick <= 0) {
     dot.tick = 1;
     const resist = unit.dotResistTimer > 0 ? 0.6 : 1;
-    takeDamage(dot.source, unit, dot.stacks * perStack * resist, type, visual);
+    withAction(dot.source, { tags: ["dot", "damage", type], skillName: type === "poison" ? "剧毒" : "燃烧" }, () => {
+      takeDamage(dot.source, unit, dot.stacks * perStack * resist, type, visual);
+    });
   }
   if (dot.time <= 0) Object.assign(dot, status());
 }
@@ -410,13 +471,53 @@ function castSlot(unit, slot, target, visual) {
   const skill = SKILLS[unit[slot]];
   if (!skill) return;
   if (visual) playSkillFx(unit, target, unit[slot], slot, skill);
-  skill.cast({ unit, target, visual });
+  emitSignal({
+    kind: "skill",
+    tags: ["skill", slot === "ultimate" ? "ultimate" : "smallSkill", "cast"],
+    source: unitRef(unit),
+    target: unitRef(target),
+    skillKey: unit[slot],
+    skillName: skill.name,
+    meta: { slot, role: unit.roleName },
+  });
+  withAction(unit, { tags: ["skill", slot === "ultimate" ? "ultimate" : "smallSkill"], skillKey: unit[slot], skillName: skill.name }, () => {
+    skill.cast({ unit, target, visual });
+  });
   unit.skillCd[slot] = skill.cooldown;
   if (slot === "ultimate") triggerEncore(unit);
 }
 function basicAttack(unit, target, visual) {
-  unit.attackCd = 1.45 * (unit.slowTimer > 0 ? 1.25 : 1);
-  hit(unit, target, 11 + effectivePower(unit) * 0.22, "physical", "攻击", visual);
+  const isBerserker = isBerserkerUnit(unit);
+  const missingHp = isBerserker ? 1 - hpRatio(unit) : 0;
+  const lowHpHaste = isBerserker ? 1 + missingHp * (BERSERKER_PASSIVE.lowHpHaste ?? 0) : 1;
+  unit.attackCd = ((isBerserker ? (BERSERKER_MODEL.basicAttackCooldown ?? 1.35) : 1.45) * (unit.slowTimer > 0 ? 1.25 : 1)) / lowHpHaste;
+  const power = effectivePower(unit);
+  let amount = isBerserker ? (BERSERKER_MODEL.basicFlatDamage ?? 10) + power * (BERSERKER_MODEL.basicPowerRatio ?? 0.22) : 11 + power * 0.22;
+  let label = "攻击";
+  if (isBerserker && unit.bloodFuryTimer > 0) {
+    amount += power * (BERSERKER_RATIOS.blood ?? 0.45) * (1 + (1 - hpRatio(unit)) * (BERSERKER_PASSIVE.maxDamageAmp ?? 0.45));
+    label = "血怒普攻";
+  }
+  if (isBerserker && unit.whirlwindTimer > 0) {
+    amount += power * (BERSERKER_RATIOS.whirlwind ?? 0.3);
+    label = label === "攻击" ? "旋风普攻" : label;
+  }
+  if (isBerserker && unit.roarFuryTimer > 0) {
+    amount += power * (BERSERKER_RATIOS.roar ?? 0.35);
+    label = "战吼普攻";
+  }
+  withAction(unit, { tags: ["basic", "attack"], skillName: label, meta: { windows: activeWindows(unit) } }, () => {
+    hit(unit, target, amount, "physical", label, visual);
+  });
+  if (isBerserker && unit.whirlwindTimer > 0) {
+    enemiesOf(unit).filter((enemy) => isAlive(enemy) && enemy.id !== target.id).sort(byDistance(target)).slice(0, BERSERKER_MODEL.splashTargets ?? 2)
+      .forEach((enemy) => withAction(unit, { tags: ["basic", "attack", "area", "splash"], skillName: "旋风溅射", meta: { windows: activeWindows(unit) } }, () => {
+        hit(unit, enemy, power * (BERSERKER_RATIOS.splash ?? 0.18), "physical", "旋风溅射", visual);
+      }));
+  }
+}
+function isBerserkerUnit(unit) {
+  return unit?.role === "berserker" || unit?.roleName === "狂战士" || unit?.passive === "rageEngine";
 }
 function moveToward(unit, target, dt) {
   const distance = getDistance(unit, target);
@@ -433,17 +534,18 @@ function hit(source, target, amount, type, label, visual = true) {
   if (!target) return;
   let value = amount + effectivePower(source) * 0.04;
   if (source.passive === "lineBreaker" && target.line === "前排") value *= 1.12;
-  if (source.passive === "rageEngine") value *= 1 + (1 - hpRatio(source)) * 0.55;
+  if (source.passive === "rageEngine") value *= 1 + (1 - hpRatio(source)) * (BERSERKER_PASSIVE.maxDamageAmp ?? 0.45);
   if (source.passive === "executionSense" && (hpRatio(target) < 0.45 || statusCount(target) > 0)) value *= 1.18;
   if (source.passive === "duelistFocus") value *= 1 + (target.mark || 0) * 0.045;
   if (source.passive === "catalyst" && statusCount(target) > 0) value *= 1.06;
   if (target.guardTimer > 0) value *= 0.72;
   const mitigated = Math.max(1, value - target.armor * (type === "physical" ? 0.72 : 0.38));
-  takeDamage(source, target, mitigated, type, visual);
+  takeDamage(source, target, mitigated, type, visual, label);
   if (visual) log(`${source.name} ${label} ${target.name}。`);
 }
-function takeDamage(source, target, amount, type, visual = true) {
+function takeDamage(source, target, amount, type, visual = true, label = "") {
   if (!isAlive(target)) return;
+  const hpBefore = target.hp;
   let remaining = amount;
   let blocked = 0;
   if (target.shield > 0) {
@@ -453,9 +555,26 @@ function takeDamage(source, target, amount, type, visual = true) {
   }
   if (target.undyingTimer > 0 && target.hp - remaining <= 1) remaining = Math.max(0, target.hp - 1);
   target.hp = Math.max(0, target.hp - remaining);
+  if (remaining > 0) {
+    emitSignal({
+      kind: "damage",
+      tags: actionTags(source, ["damage", type, blocked > 0 ? "blocked" : "", remaining !== amount ? "mitigated" : ""]).filter(Boolean),
+      source: unitRef(source),
+      target: unitRef(target),
+      amount: remaining,
+      skillKey: source?._actionSignal?.skillKey || null,
+      skillName: label || source?._actionSignal?.skillName || "",
+      hpBefore,
+      hpAfter: target.hp,
+      meta: { rawAmount: amount, blocked, shieldAfter: target.shield || 0, ...source?._actionSignal?.meta },
+    });
+  }
   if (source) {
     source.damageDone += amount;
-    if (source.lifeStealTimer > 0 || source.passive === "rageEngine") healUnit(source, amount * (source.lifeStealTimer > 0 ? 0.18 : 0.07), "吸血", visual);
+    if (source.lifeStealTimer > 0 || source.passive === "rageEngine") {
+      const leechRate = source.lifeStealTimer > 0 ? 0.18 : (BERSERKER_PASSIVE.baseLeech ?? 0.06) + (1 - hpRatio(source)) * (BERSERKER_PASSIVE.missingHpLeech ?? 0.08);
+      healUnit(source, amount * leechRate, "吸血", visual);
+    }
   }
   if (visual && blocked > 0) floater(target, `护盾-${Math.round(blocked)}`, "shield");
   if (visual && remaining > 0) {
@@ -468,14 +587,38 @@ function takeDamage(source, target, amount, type, visual = true) {
   if (target.hp <= 0) onDeath(target, source, visual);
 }
 function takeRaw(target, amount, source, type) {
+  const hpBefore = target.hp;
   target.hp = Math.max(1, target.hp - amount);
+  emitSignal({
+    kind: "damage",
+    tags: ["damage", type || "raw", "selfCost"],
+    source: unitRef(source),
+    target: unitRef(target),
+    amount: hpBefore - target.hp,
+    hpBefore,
+    hpAfter: target.hp,
+  });
 }
 function healUnit(unit, amount, label = "治疗", visual = true) {
   if (!unit || !isAlive(unit)) return;
   const before = unit.hp;
   unit.hp = Math.min(unit.maxHp, unit.hp + amount);
+  const healed = unit.hp - before;
   const overflow = Math.max(0, amount - (unit.maxHp - before));
   if (unit.passive === "afterglowGrace" && overflow > 0) unit.shield += overflow * 0.65;
+  if (healed > 0) {
+    emitSignal({
+      kind: "heal",
+      tags: actionTags(null, ["heal"]).filter(Boolean),
+      source: null,
+      target: unitRef(unit),
+      amount: healed,
+      skillName: label,
+      hpBefore: before,
+      hpAfter: unit.hp,
+      meta: { overflow },
+    });
+  }
   if (visual) floater(unit, `+${Math.round(amount)}`, "heal");
 }
 function shield(unit, amount, label, visual = true) {
@@ -483,18 +626,45 @@ function shield(unit, amount, label, visual = true) {
   const bonus = unit.passive === "fortressStance" ? 1.08 + (1 - hpRatio(unit)) * 0.12 : 1;
   const value = amount * bonus;
   unit.shield += value;
+  emitSignal({
+    kind: "shield",
+    tags: actionTags(null, ["shield"]).filter(Boolean),
+    source: null,
+    target: unitRef(unit),
+    amount: value,
+    skillName: label,
+    shield: unit.shield,
+  });
   if (visual) floater(unit, `${label}+${Math.round(value)}`, "shield");
 }
 function addPoison(target, stacks, time, source, visual = state.running) {
   target.poison.stacks = Math.min(20, target.poison.stacks + stacks);
   target.poison.time = Math.max(target.poison.time, time);
   target.poison.source = source;
+  emitSignal({
+    kind: "status",
+    tags: actionTags(source, ["status", "debuff", "poison", "dotStack"]).filter(Boolean),
+    source: unitRef(source),
+    target: unitRef(target),
+    amount: stacks,
+    skillName: source?._actionSignal?.skillName || "剧毒",
+    meta: { stacks: target.poison.stacks, duration: target.poison.time },
+  });
   if (visual && isAlive(target)) floater(target, `剧毒+${stacks}`, "poison");
 }
 function addBurn(target, stacks, time, source, visual = state.running) {
   target.burn.stacks += stacks;
   target.burn.time = Math.max(target.burn.time, time);
   target.burn.source = source;
+  emitSignal({
+    kind: "status",
+    tags: actionTags(source, ["status", "debuff", "burn", "dotStack"]).filter(Boolean),
+    source: unitRef(source),
+    target: unitRef(target),
+    amount: stacks,
+    skillName: source?._actionSignal?.skillName || "燃烧",
+    meta: { stacks: target.burn.stacks, duration: target.burn.time },
+  });
   if (visual && isAlive(target)) floater(target, `燃烧+${stacks}`, "fire");
 }
 function onDeath(unit, killer, visual) {
@@ -546,6 +716,32 @@ function hpRatio(unit) { return unit.hp / unit.maxHp; }
 function getDistance(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
 function byDistance(unit) { return (a, b) => getDistance(unit, a) - getDistance(unit, b); }
 function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+function unitRef(unit) { return SIGNALS.unitRef ? SIGNALS.unitRef(unit) : unit ? { id: unit.id, name: unit.name, side: unit.side, role: unit.roleName } : null; }
+function emitSignal(signal) {
+  if (!state.signalBus) return;
+  state.signalBus.emit({ time: state.time, ...signal });
+}
+function withAction(unit, action, fn) {
+  if (!unit) return fn();
+  const previous = unit._actionSignal;
+  unit._actionSignal = action;
+  try {
+    return fn();
+  } finally {
+    unit._actionSignal = previous;
+  }
+}
+function actionTags(source, tags) {
+  return [...(source?._actionSignal?.tags || []), ...tags];
+}
+function activeWindows(unit) {
+  return [
+    unit.bloodFuryTimer > 0 ? "bloodFury" : "",
+    unit.whirlwindTimer > 0 ? "whirlwind" : "",
+    unit.roarFuryTimer > 0 ? "roarFury" : "",
+    unit.hasteTimer > 0 ? "haste" : "",
+  ].filter(Boolean);
+}
 
 function render() {
   els.unitLayer.innerHTML = state.units.map(renderUnit).join("");

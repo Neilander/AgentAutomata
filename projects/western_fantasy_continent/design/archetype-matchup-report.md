@@ -2,7 +2,7 @@
 
 Generated with `15` deterministic seeds per side, `30` total games per matchup, from `game_data/combat-sim.js`.
 
-Rates are left preset win rates. This is now signal-backed simulation evidence, but it is still a prototype core and should be compared with the browser arena after major changes.
+Rates are left preset win rates. Expectation checks ask whether a matchup follows the intended strong/weak/flex contract; balance health separately checks whether the matrix has too many extreme 0/100-style outcomes.
 
 ## Win Matrix
 
@@ -18,6 +18,33 @@ Rates are left preset win rates. This is now signal-backed simulation evidence, 
 | 急速节奏 | 3% | 100% | 0% | 47% | 50% | 47% | 0% | — | 0% | 93% |
 | 毒巢滚雪球 | 100% | 100% | 97% | 7% | 100% | 100% | 100% | 100% | — | 100% |
 | 暗影处决 | 50% | 100% | 50% | 100% | 100% | 100% | 100% | 7% | 0% | — |
+
+## Balance Health
+
+- Result: fail.
+- Matrix cells checked: 90.
+- Absolute outcomes (0% or 100%): 54/90 (60%), target <= 10%.
+- Hard counters (<= 10% or >= 90%): 66/90 (73%), target <= 25%.
+- Soft band (35%-65%): 24/90 (27%), target >= 45%.
+- Polarization score: 0.73 (0 is all 50/50, 1 is all 0/100).
+- Failed checks:
+  - absolute outcomes are too common (60% > 10%)
+  - hard counters are too common (73% > 25%)
+  - soft-band matchups are too rare (27% < 45%)
+
+Most polarized ordered matchups:
+- `alchemyChaos` vs `crownCarry`: 0% (flex/weak)
+- `alchemyChaos` vs `fireBurst`: 0% (weak/weak)
+- `alchemyChaos` vs `poisonBloom`: 0% (weak/weak)
+- `bloodRage` vs `crownCarry`: 0% (weak/weak)
+- `bloodRage` vs `holySustain`: 100% (favored/favored)
+- `bloodRage` vs `lightningTempo`: 0% (weak/weak)
+- `bloodRage` vs `poisonBloom`: 0% (weak/weak)
+- `bloodRage` vs `shadowExecute`: 0% (weak/weak)
+- `crownCarry` vs `alchemyChaos`: 100% (flex/favored)
+- `crownCarry` vs `bloodRage`: 100% (favored/favored)
+- `crownCarry` vs `fireBurst`: 0% (weak/weak)
+- `crownCarry` vs `frostControl`: 100% (favored/favored)
 
 ## Expectation Mismatches
 

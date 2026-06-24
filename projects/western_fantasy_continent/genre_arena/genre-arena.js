@@ -13,6 +13,10 @@ const BERSERKER_COOLDOWNS = BERSERKER_MODEL.cooldowns || {};
 const BERSERKER_PASSIVE = BERSERKER_MODEL.passive || {};
 const SIGNALS = window.GAME_COMBAT_SIGNALS || {};
 
+if (!SHARED_SKILLS.createSkillLibrary || !SHARED_SKILLS.roleKits || !SHARED_SKILLS.presets) {
+  throw new Error("Skill assets and skill runtime must load before genre-arena.js");
+}
+
 const VFX_SHEETS = {
   impact: sheet("predrawn/impact_white_6x4.png", 6, 4, 24),
   bigHit: sheet("predrawn/big_hit_6x5.png", 6, 5, 30),
@@ -221,8 +225,8 @@ const LOCAL_PRESETS = {
   alchemyChaos: preset("炼金异常", "毒火混合，靠异常层数放大", ["knight", "alchemist", "alchemist", "mage"]),
 };
 
-const ROLE_KITS = SHARED_SKILLS.roleKits || LOCAL_ROLE_KITS;
-const SKILLS = SHARED_SKILLS.createSkillLibrary ? SHARED_SKILLS.createSkillLibrary({
+const ROLE_KITS = SHARED_SKILLS.roleKits;
+const SKILLS = SHARED_SKILLS.createSkillLibrary({
   iconBase: ICON_BASE,
   isAlive,
   hpRatio,
@@ -241,8 +245,8 @@ const SKILLS = SHARED_SKILLS.createSkillLibrary ? SHARED_SKILLS.createSkillLibra
   addBurn,
   takeRaw,
   floater,
-}) : LOCAL_SKILLS;
-const PRESETS = SHARED_SKILLS.presets || LOCAL_PRESETS;
+});
+const PRESETS = SHARED_SKILLS.presets;
 
 const els = {
   leftConfig: document.querySelector("#leftConfig"),
@@ -406,9 +410,9 @@ function makeTeam(side, specs) {
       skillCd: {
         small1: 1 + index * 0.35,
         small2: 2.2 + index * 0.35,
-        ultimate: spec.ultimate === "undyingRoar" ? (BERSERKER_MODEL.openingCooldowns?.undyingRoar ?? 8) : 20 + index * 1.8,
+        ultimate: openingCooldown(spec.ultimate, 20 + index * 1.8),
       },
-      shield: 0, poison: status(), burn: status(), slowTimer: 0, guardTimer: 0, hasteTimer: 0,
+      shield: 0, poison: status(), burn: status(), slowTimer: 0, guardTimer: 0, tauntTimer: 0, hasteTimer: 0,
       dotResistTimer: 0, undyingTimer: 0, lifeStealTimer: 0, bonusPowerTimer: 0, bonusPower: 0,
       bloodFuryTimer: 0, whirlwindTimer: 0, roarFuryTimer: 0,
       damageDone: 0, mark: 0, icon: `${ICON_BASE}/${role.icon}.svg`,
@@ -416,6 +420,10 @@ function makeTeam(side, specs) {
   });
 }
 function status() { return { stacks: 0, time: 0, tick: 1, source: null }; }
+function openingCooldown(skillKey, fallback) {
+  if (skillKey === "undyingRoar") return BERSERKER_MODEL.openingCooldowns?.undyingRoar ?? 8;
+  return SHARED_SKILLS.skills?.[skillKey]?.openingCooldown ?? fallback;
+}
 
 function tick(now) {
   const dt = Math.min(0.05, ((now - state.lastFrame) / 1000 || 0.016)) * state.speed;
@@ -448,7 +456,7 @@ function updateBattle(dt, visual = false) {
 function tickTimers(unit, dt) {
   for (const key of ["small1", "small2", "ultimate"]) unit.skillCd[key] = Math.max(0, unit.skillCd[key] - dt);
   unit.attackCd -= dt * (unit.hasteTimer > 0 ? (unit.hasteMultiplier || 1.45) : 1);
-  for (const key of ["slowTimer", "guardTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer"]) unit[key] = Math.max(0, unit[key] - dt);
+  for (const key of ["slowTimer", "guardTimer", "tauntTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer"]) unit[key] = Math.max(0, unit[key] - dt);
 }
 function tickStatuses(unit, dt, visual) {
   tickDot(unit, unit.poison, dt, 2.1, "poison", visual);
@@ -572,7 +580,7 @@ function takeDamage(source, target, amount, type, visual = true, label = "") {
   if (source) {
     source.damageDone += amount;
     if (source.lifeStealTimer > 0 || source.passive === "rageEngine") {
-      const leechRate = source.lifeStealTimer > 0 ? 0.18 : (BERSERKER_PASSIVE.baseLeech ?? 0.06) + (1 - hpRatio(source)) * (BERSERKER_PASSIVE.missingHpLeech ?? 0.08);
+      const leechRate = source.lifeStealTimer > 0 ? (BERSERKER_PASSIVE.roarLeech ?? 0.18) : (BERSERKER_PASSIVE.baseLeech ?? 0.06) + (1 - hpRatio(source)) * (BERSERKER_PASSIVE.missingHpLeech ?? 0.08);
       healUnit(source, amount * leechRate, "吸血", visual);
     }
   }
@@ -699,6 +707,8 @@ function checkWinner() {
 function chooseTarget(unit) {
   const enemies = enemiesOf(unit).filter(isAlive);
   if (!enemies.length) return null;
+  const taunters = unit.range < 20 ? enemies.filter((enemy) => enemy.tauntTimer > 0) : [];
+  if (taunters.length) return taunters.sort(byDistance(unit))[0];
   if (unit.roleName === "刺客") return lowestEnemy(unit) || enemies[0];
   const front = enemies.filter((enemy) => enemy.line === "前排");
   const candidates = front.length && unit.range < 30 ? front : enemies;
@@ -951,8 +961,7 @@ function runBalanceCheck() {
         row.cells.push({ text: "—", cls: "even" });
         continue;
       }
-      const wins = simulateMatchup(a, b, 7);
-      const rate = wins / 7;
+      const rate = simulateMatchup(a, b, 7);
       row.cells.push({ text: `${Math.round(rate * 100)}%`, cls: rate >= 0.72 ? "favored" : rate <= 0.28 ? "bad" : "even" });
     }
     rows.push(row);
@@ -961,61 +970,18 @@ function runBalanceCheck() {
   renderBalance(keys);
 }
 function simulateMatchup(leftKey, rightKey, games) {
+  const simulator = window.GAME_COMBAT_SIM;
+  if (!simulator?.simulatePresetMatchup) {
+    throw new Error("Shared combat simulator is not loaded.");
+  }
   let wins = 0;
   for (let i = 0; i < games; i += 1) {
-    const result = simulateOnce(clonePreset(leftKey), clonePreset(rightKey), i);
-    if (result === "left") wins += 1;
+    const leftResult = simulator.simulatePresetMatchup(leftKey, rightKey, { seed: i });
+    const rightResult = simulator.simulatePresetMatchup(rightKey, leftKey, { seed: i });
+    if (leftResult.winner === "left") wins += 1;
+    if (rightResult.winner === "right") wins += 1;
   }
-  return wins;
-}
-function simulateOnce(leftTeam, rightTeam, seed) {
-  const oldUnits = state.units;
-  const oldLogs = state.logs;
-  const oldTime = state.time;
-  const oldNextId = state.nextId;
-  state.nextId = 1;
-  state.time = 0;
-  state.logs = [];
-  state.units = [...makeTeam("left", leftTeam), ...makeTeam("right", rightTeam)];
-  const rng = seededRandom(`${leftTeam.map((u) => u.role).join("-")}|${rightTeam.map((u) => u.role).join("-")}|${seed}`);
-  for (const unit of state.units) {
-    const statSwing = 0.94 + rng() * 0.12;
-    unit.maxHp = Math.round(unit.maxHp * statSwing);
-    unit.hp = unit.maxHp;
-    unit.power = Math.round(unit.power * (0.95 + rng() * 0.1));
-    unit.armor = Math.round(unit.armor * (0.96 + rng() * 0.08));
-    unit.skillCd.small1 += rng() * 1.2;
-    unit.skillCd.small2 += rng() * 1.5;
-    unit.skillCd.ultimate += rng() * 3;
-  }
-  while (state.time < MAX_TIME) {
-    updateBattle(0.08, false);
-    const left = state.units.some((unit) => unit.side === "left" && isAlive(unit));
-    const right = state.units.some((unit) => unit.side === "right" && isAlive(unit));
-    if (!left || !right) break;
-  }
-  const leftHp = state.units.filter((u) => u.side === "left").reduce((sum, u) => sum + Math.max(0, u.hp / u.maxHp), 0);
-  const rightHp = state.units.filter((u) => u.side === "right").reduce((sum, u) => sum + Math.max(0, u.hp / u.maxHp), 0);
-  const winner = leftHp >= rightHp ? "left" : "right";
-  state.units = oldUnits;
-  state.logs = oldLogs;
-  state.time = oldTime;
-  state.nextId = oldNextId;
-  return winner;
-}
-function seededRandom(seedText) {
-  let seed = 2166136261;
-  for (let i = 0; i < seedText.length; i += 1) {
-    seed ^= seedText.charCodeAt(i);
-    seed = Math.imul(seed, 16777619);
-  }
-  return () => {
-    seed += 0x6D2B79F5;
-    let t = seed;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+  return wins / (games * 2);
 }
 function renderBalance(keys) {
   els.matchupGrid.innerHTML = `

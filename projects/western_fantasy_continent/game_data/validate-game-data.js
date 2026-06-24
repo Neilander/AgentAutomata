@@ -2,6 +2,8 @@ const { EMPTY_STATS } = require("./stat-schema");
 const { EQUIPMENT_SETS } = require("./equipment");
 const { MAX_RELICS_PER_UNIT, RELICS } = require("./relics");
 const { buildUnitStats, createBasicDamagePacket } = require("./combat-model");
+const { run: validateSkillAssets } = require("./validate-skill-assets");
+const { run: validateCombatSignals } = require("./validate-combat-signals");
 
 function assert(condition, message) {
   if (!condition) {
@@ -61,6 +63,8 @@ function run() {
   validateEquipment();
   validateRelics();
   validateUnitBuild();
+  validateSkillAssets();
+  validateCombatSignals();
   console.log("game data ok");
 }
 
@@ -69,4 +73,3 @@ if (require.main === module) {
 }
 
 module.exports = { run };
-

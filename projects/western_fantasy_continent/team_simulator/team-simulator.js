@@ -15,6 +15,7 @@ const SIGNALS = window.GAME_COMBAT_SIGNALS || {};
 const SHARED_SKILL_KEY_BY_NAME = Object.fromEntries(Object.entries(SHARED_SKILLS.skills || {}).map(([key, skill]) => [skill.name, key]));
 const TEAM_TIMER_ALIASES = {
   guardTimer: "guard",
+  tauntTimer: "taunt",
   slowTimer: "slow",
   hasteTimer: "haste",
   undyingTimer: "immortal",
@@ -23,7 +24,12 @@ const TEAM_TIMER_ALIASES = {
   whirlwindTimer: "whirlwind",
   roarFuryTimer: "roarFury",
 };
-const TEAM_SHARED_SKILLS = SHARED_SKILLS.createSkillLibrary ? SHARED_SKILLS.createSkillLibrary({
+
+if (!SHARED_SKILLS.createSkillLibrary || !SHARED_SKILLS.roleKits || !SHARED_SKILLS.skills) {
+  throw new Error("Skill assets and skill runtime must load before team-simulator.js");
+}
+
+const TEAM_SHARED_SKILLS = SHARED_SKILLS.createSkillLibrary({
   iconBase: "",
   timerAliases: TEAM_TIMER_ALIASES,
   isAlive: alive,
@@ -43,7 +49,7 @@ const TEAM_SHARED_SKILLS = SHARED_SKILLS.createSkillLibrary ? SHARED_SKILLS.crea
   addBurn: teamAddBurn,
   takeRaw: teamTakeRaw,
   floater: teamFloater,
-}) : {};
+});
 
 const ROLES = {
   knight: role("骑士", "守护前排", 360, 34, 14, 12, ["守护", "誓卫嘲讽"], "护卫反击", "王旗不倒"),
@@ -361,6 +367,7 @@ function makeUnits(side, heroes) {
     haste: 0,
     slow: 0,
     guard: 0,
+    taunt: 0,
     immortal: 0,
     lifeSteal: 0,
     bloodFury: 0,
@@ -370,11 +377,17 @@ function makeUnits(side, heroes) {
     bonusPower: 0,
     attackCd: 0.8 + index * 0.12,
     skillCd: [1 + index * 0.3, 2.6 + index * 0.3],
-    ultCd: hero.ult === "不死战吼" ? (BERSERKER_MODEL.openingCooldowns?.undyingRoar ?? 8) : 14 + index * 1.6,
+    ultCd: teamOpeningCooldown(hero.ult, 14 + index * 1.6),
     focusTarget: "",
     focusHits: 0,
     deadTriggered: false,
   }));
+}
+
+function teamOpeningCooldown(skillName, fallback) {
+  if (skillName === "不死战吼") return BERSERKER_MODEL.openingCooldowns?.undyingRoar ?? 8;
+  const skillKey = SHARED_SKILL_KEY_BY_NAME[skillName];
+  return SHARED_SKILLS.skills?.[skillKey]?.openingCooldown ?? fallback;
 }
 
 function tick(now) {
@@ -395,6 +408,7 @@ function updateBattle(dt) {
     unit.haste = Math.max(0, unit.haste - dt);
     unit.slow = Math.max(0, unit.slow - dt);
     unit.guard = Math.max(0, unit.guard - dt);
+    unit.taunt = Math.max(0, unit.taunt - dt);
     unit.immortal = Math.max(0, unit.immortal - dt);
     unit.lifeSteal = Math.max(0, unit.lifeSteal - dt);
     unit.bloodFury = Math.max(0, unit.bloodFury - dt);
@@ -580,7 +594,7 @@ function damage(source, target, amount, type, visible = true) {
       });
     }
     if (source?.lifeSteal > 0 && value > 0) {
-      const leech = value * 0.18;
+      const leech = value * (BERSERKER_PASSIVE.roarLeech ?? 0.18);
       const before = source.hpNow;
       source.hpNow = Math.min(source.maxHp, source.hpNow + leech);
       emitSignal({
@@ -991,6 +1005,8 @@ function renderBattle() {
 function chooseTarget(unit) {
   const foes = enemies(unit).filter(alive);
   if (!foes.length) return null;
+  const taunters = unit.range < 20 ? foes.filter((foe) => foe.taunt > 0) : [];
+  if (taunters.length) return taunters.sort(byDistance(unit))[0];
   if (unit.roleKey === "assassin") return foes.sort((a, b) => a.hpNow / a.maxHp - b.hpNow / b.maxHp)[0];
   const front = foes.filter((foe) => foe.line === "前排");
   return (front.length && unit.range < 30 ? front : foes).sort(byDistance(unit))[0];

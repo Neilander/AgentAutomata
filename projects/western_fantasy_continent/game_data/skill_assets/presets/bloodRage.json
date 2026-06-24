@@ -1,6 +1,92 @@
 {
   "name": "低血狂怒",
   "desc": "低血爆发和吸血翻盘",
+  "design": {
+    "fantasy": "Fall into danger, refuse death, then recover through empowered basic attacks.",
+    "experience": {
+      "start": "The berserker loses health from a safe band.",
+      "transition": "The berserker enters the low-health danger band.",
+      "payoff": "Attack cadence, empowered basics, and lifesteal rise.",
+      "reset": "Health repeatedly dips and recovers instead of immediately dying."
+    },
+    "primaryOutput": "basicAttack",
+    "desiredTags": [
+      "basicWindow",
+      "haste",
+      "sustain",
+      "deathPrevent"
+    ],
+    "watchTags": [
+      "execute",
+      "burst"
+    ],
+    "strongMatchups": [
+      "alchemyChaos",
+      "holySustain"
+    ],
+    "weakMatchups": [
+      "crownCarry",
+      "fireBurst",
+      "lightningTempo",
+      "poisonBloom",
+      "shadowExecute"
+    ],
+    "validationOpponents": [
+      "ironWall",
+      "frostControl"
+    ],
+    "curves": [
+      {
+        "metric": "highHealthDecline",
+        "op": ">=",
+        "value": 0.3
+      },
+      {
+        "metric": "lowHealthSurvivalSeconds",
+        "op": ">=",
+        "value": 3
+      },
+      {
+        "metric": "lowHealthOscillations",
+        "op": ">=",
+        "value": 1
+      },
+      {
+        "metric": "postLowAttackRateRatio",
+        "op": ">=",
+        "value": 1.2
+      },
+      {
+        "metric": "recoveryAfterLow",
+        "op": ">=",
+        "value": 0.08
+      }
+    ],
+    "signalAcceptance": [
+      {
+        "metric": "basicDamageShare",
+        "op": ">=",
+        "value": 0.45
+      },
+      {
+        "metric": "empoweredBasicDamageShare",
+        "op": ">=",
+        "value": 0.3
+      },
+      {
+        "metric": "healingPerSecond",
+        "op": ">=",
+        "value": 1
+      }
+    ],
+    "failureBoundaries": [
+      {
+        "metric": "lowHealthEntryRate",
+        "op": ">=",
+        "value": 0.5
+      }
+    ]
+  },
   "team": [
     {
       "role": "berserker",

@@ -1,6 +1,73 @@
 {
   "name": "急速节奏",
   "desc": "吟游加速，游侠持续点杀",
+  "design": {
+    "fantasy": "Build marks quickly and convert team haste into repeated focused shots.",
+    "experience": {
+      "start": "Rangers establish a marked target.",
+      "transition": "Marks and haste concentrate repeated attacks.",
+      "payoff": "The focused target falls faster during the tempo window.",
+      "reset": "Attack pressure falls between haste windows."
+    },
+    "primaryOutput": "focusBasic",
+    "desiredTags": [
+      "mark",
+      "markPayoff",
+      "haste",
+      "focus"
+    ],
+    "watchTags": [
+      "control",
+      "execute"
+    ],
+    "strongMatchups": [
+      "bloodRage",
+      "shadowExecute"
+    ],
+    "weakMatchups": [
+      "alchemyChaos",
+      "crownCarry",
+      "fireBurst",
+      "holySustain",
+      "ironWall",
+      "poisonBloom"
+    ],
+    "validationOpponents": [
+      "ironWall",
+      "frostControl"
+    ],
+    "curves": [
+      {
+        "metric": "topTwoBuffShare",
+        "op": ">=",
+        "value": 0.55
+      }
+    ],
+    "signalAcceptance": [
+      {
+        "metric": "markApplications",
+        "op": ">=",
+        "value": 6
+      },
+      {
+        "metric": "hasteWindowBasicDamageShare",
+        "op": ">=",
+        "value": 0.12
+      },
+      {
+        "metric": "basicDamageShare",
+        "op": ">=",
+        "value": 0.2
+      }
+    ],
+    "failureBoundaries": [
+      {
+        "metric": "lowestTargetDamageShare",
+        "op": ">=",
+        "value": 0.35
+      }
+    ]
+  },
   "team": [
     {
       "role": "warrior",

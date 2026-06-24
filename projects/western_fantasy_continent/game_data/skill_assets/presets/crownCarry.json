@@ -1,6 +1,81 @@
 {
   "name": "王冠核心",
   "desc": "全队资源养一个狂战/游侠核心",
+  "design": {
+    "fantasy": "Three allies funnel protection and tempo into one visible carry.",
+    "experience": {
+      "start": "Supports begin feeding one designated carry.",
+      "transition": "Buff and haste windows concentrate on that carry.",
+      "payoff": "The carry becomes the visible majority damage source.",
+      "reset": "Team output falls outside the carry window."
+    },
+    "primaryOutput": "basicAttack",
+    "desiredTags": [
+      "support",
+      "carry",
+      "basicWindow",
+      "haste"
+    ],
+    "watchTags": [
+      "execute"
+    ],
+    "strongMatchups": [
+      "bloodRage",
+      "frostControl",
+      "holySustain",
+      "ironWall",
+      "lightningTempo"
+    ],
+    "weakMatchups": [
+      "fireBurst",
+      "poisonBloom"
+    ],
+    "validationOpponents": [
+      "poisonBloom",
+      "shadowExecute"
+    ],
+    "curves": [
+      {
+        "metric": "carryBuffShare",
+        "op": ">=",
+        "value": 0.45
+      }
+    ],
+    "signalAcceptance": [
+      {
+        "metric": "basicDamageShare",
+        "op": ">=",
+        "value": 0.28
+      },
+      {
+        "metric": "hasteWindowBasicDamageShare",
+        "op": ">=",
+        "value": 0.1
+      },
+      {
+        "metric": "shieldPerSecond",
+        "op": ">=",
+        "value": 3
+      }
+    ],
+    "failureBoundaries": [
+      {
+        "metric": "carrySurvives10Seconds",
+        "op": ">=",
+        "value": 0.75
+      },
+      {
+        "metric": "carryDamageShare",
+        "op": ">=",
+        "value": 0.45
+      },
+      {
+        "metric": "carryDamageShare",
+        "op": "<=",
+        "value": 0.75
+      }
+    ]
+  },
   "team": [
     {
       "role": "knight",
@@ -12,7 +87,7 @@
     {
       "role": "priest",
       "small1": "heal",
-      "small2": "bloodCharm",
+      "small2": "crownBloodCharm",
       "passive": "afterglowGrace",
       "ultimate": "sanctuary"
     },

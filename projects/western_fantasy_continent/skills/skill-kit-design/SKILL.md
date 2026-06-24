@@ -10,6 +10,8 @@ Design skills that produce a clear fantasy, a distinct combat role, and measurab
 
 Do not start by writing cool isolated skills. Start by defining the player-facing experience and the output profile.
 
+Before expanding or adding a mechanic keyword, read `references/keyword-mechanics-taxonomy.md`. Classify the keyword as resource, keyword action, timing window, behavior rewrite, basic survival, or rare miracle before deciding whether it should be common, build-around, or scarce. Also check the current keyword workbench data at `game_data/keyword-mechanics.js` so new skills build on existing underused potential instead of inventing disconnected mechanics.
+
 ## Combat Frame
 
 The current game is an auto-battler / idle combat prototype:
@@ -107,6 +109,17 @@ Rules:
 
 Translate the fantasy into functions before naming skills.
 
+Before writing the function list, classify each important keyword using `references/keyword-mechanics-taxonomy.md`.
+
+Do not expand a keyword just because it has low usage count. A low-count keyword may be intentionally rare, such as immortality. A common keyword may be basic glue with little build-around potential, such as plain lifesteal. Resource keywords such as mark, poison stacks, burn stacks, and shield value are usually better expansion candidates.
+
+Check existing keyword usage before proposing new skills:
+
+- Read `game_data/keyword-mechanics.js`.
+- Prefer keywords marked `exploration: "priority"` or `exploration: "moderate"` unless the user asks for a new direction.
+- If a skill adds a new keyword, add it to the keyword workbench data with category, potential, and current usage notes.
+- If a skill uses a rare miracle keyword, explain why rarity is preserved.
+
 Common functions:
 
 - Setup: apply mark, poison, burn, shield, haste, vulnerability, control.
@@ -126,6 +139,17 @@ Avoid overlap:
 Output:
 
 ```text
+Keyword category check:
+Resource keywords:
+Keyword actions:
+Window keywords:
+Behavior rewrite keywords:
+Basic survival keywords:
+Rare miracle keywords:
+Existing keyword usage checked:
+Chosen keyword to expand:
+Why this keyword has build potential:
+
 Function list:
 Setup:
 Payoff:

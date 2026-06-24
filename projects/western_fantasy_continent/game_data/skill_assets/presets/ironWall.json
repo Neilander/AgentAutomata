@@ -1,13 +1,94 @@
 {
   "name": "铁壁反击",
   "desc": "高护盾高减伤，拖时间吃大招",
+  "design": {
+    "fantasy": "Invite melee pressure into shields, then turn blocked damage into counterattacks.",
+    "experience": {
+      "start": "The frontline absorbs pressure behind shields.",
+      "transition": "Blocked melee hits trigger retaliation.",
+      "payoff": "The banner slows team health loss and opens a team counter window.",
+      "reset": "The team returns to ordinary defense after the retaliation window."
+    },
+    "primaryOutput": "counterattack",
+    "desiredTags": [
+      "shield",
+      "heal",
+      "sustain",
+      "counter"
+    ],
+    "watchTags": [
+      "poison",
+      "dotPayoff"
+    ],
+    "strongMatchups": [
+      "lightningTempo"
+    ],
+    "weakMatchups": [
+      "alchemyChaos",
+      "crownCarry",
+      "fireBurst",
+      "frostControl",
+      "poisonBloom",
+      "shadowExecute"
+    ],
+    "validationOpponents": [
+      "shadowExecute",
+      "poisonBloom"
+    ],
+    "curves": [
+      {
+        "metric": "blockedCounterLinkRate",
+        "op": ">=",
+        "value": 0.95
+      },
+      {
+        "metric": "postUltimateHpLossRatio",
+        "op": "<=",
+        "value": 0.8
+      }
+    ],
+    "signalAcceptance": [
+      {
+        "metric": "counterTriggers",
+        "op": ">=",
+        "value": 1
+      },
+      {
+        "metric": "counterDamageShare",
+        "op": ">=",
+        "value": 0.06
+      },
+      {
+        "metric": "counterDamageShare",
+        "op": "<=",
+        "value": 0.18
+      },
+      {
+        "metric": "shieldPerSecond",
+        "op": ">=",
+        "value": 3
+      },
+      {
+        "metric": "ultimateCastsBefore15",
+        "op": ">=",
+        "value": 1
+      }
+    ],
+    "failureBoundaries": [
+      {
+        "metric": "ultimateBeforeFirstDeath",
+        "op": ">=",
+        "value": 0.75
+      }
+    ]
+  },
   "team": [
     {
       "role": "knight",
       "small1": "guard",
       "small2": "tauntLine",
-      "passive": "fortressStance",
-      "ultimate": "bannerWall"
+      "passive": "retaliationStance",
+      "ultimate": "retaliationBanner"
     },
     {
       "role": "warrior",

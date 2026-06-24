@@ -15,6 +15,23 @@ const GAME_SKILL_DATA = (() => {
     for (const effect of effects) executeEffect(effect, context, api);
   }
 
+  function triggerReactiveEffects(event, context, api) {
+    const passive = skills[context.unit?.passiveKey || context.unit?.passive];
+    for (const effect of passive?.effects || []) {
+      if (effect.kind === "counterOnDamageTaken" && event === "afterDamageTaken") {
+        if (effect.requiresBlockedDamage && !(context.blocked > 0)) continue;
+        if (effect.meleeOnly && !(context.source?.range < 20)) continue;
+        api.counterattack?.(context.unit, context.source, effect, context);
+      }
+    }
+    const teamEffect = context.unit?.retaliationTimer > 0 ? context.unit.retaliationEffect : null;
+    if (teamEffect && event === "afterDamageTaken") {
+      if (teamEffect.requiresBlockedDamage && !(context.blocked > 0)) return;
+      if (teamEffect.meleeOnly && !(context.source?.range < 20)) return;
+      api.counterattack?.(context.unit, context.source, teamEffect, context);
+    }
+  }
+
   function executeEffect(effect, context, api) {
     const { unit, target, visual } = context;
     const power = api.effectivePower ? api.effectivePower(unit) : unit.power;
@@ -27,9 +44,25 @@ const GAME_SKILL_DATA = (() => {
 
     if (effect.kind === "timer") {
       setTimer(unit, effect.timer, effect.duration);
+      api.emitEffectSignal?.({
+        kind: "status",
+        tags: ["status", "buff", "timer", effect.timer],
+        source: unit,
+        target: unit,
+        amount: effect.duration,
+        meta: { timer: effect.timer, duration: effect.duration },
+      });
       if (effect.label) api.floater(unit, effect.label, effect.tone || "heal");
     } else if (effect.kind === "targetTimer" && target) {
       setTimer(target, effect.timer, effect.duration);
+      api.emitEffectSignal?.({
+        kind: "status",
+        tags: ["status", "debuff", effect.timer === "slowTimer" ? "slow" : "timer"],
+        source: unit,
+        target,
+        amount: effect.duration,
+        meta: { timer: effect.timer, duration: effect.duration },
+      });
     } else if (effect.kind === "hitTarget" && target) {
       api.hit(unit, target, effect.flat + power * effect.power, effect.type, effect.label, visual);
     } else if (effect.kind === "hitEnemies") {
@@ -40,6 +73,14 @@ const GAME_SKILL_DATA = (() => {
       api.addBurn(target, effect.stacks, effect.time, unit, visual);
     } else if (effect.kind === "markTarget" && target) {
       target.mark = Math.min(effect.max, (target.mark || 0) + effect.stacks);
+      api.emitEffectSignal?.({
+        kind: "status",
+        tags: ["status", "debuff", "mark", "stack"],
+        source: unit,
+        target,
+        amount: effect.stacks,
+        meta: { stacks: target.mark },
+      });
     } else if (effect.kind === "hitMarkedTarget" && target) {
       api.hit(unit, target, effect.flat + power * effect.power + (target.mark || 0) * effect.perMark, effect.type, effect.label, visual);
     } else if (effect.kind === "hitLowestEnemy") {
@@ -54,29 +95,73 @@ const GAME_SKILL_DATA = (() => {
       api.healUnit(api.lowestHpAlly(unit), effect.flat + power * effect.power, effect.label, visual);
     } else if (effect.kind === "shieldLowestAlly") {
       api.shield(api.lowestHpAlly(unit), effect.flat + power * effect.power, effect.label, visual);
+    } else if (effect.kind === "shieldCarryAlly") {
+      api.shield(api.carryAlly(unit), effect.flat + power * effect.power, effect.label, visual);
     } else if (effect.kind === "lowestAllyTimer") {
       const ally = api.lowestHpAlly(unit);
       if (ally) setTimer(ally, effect.timer, effect.duration);
+    } else if (effect.kind === "carryTimer") {
+      const ally = api.carryAlly(unit);
+      if (ally) setTimer(ally, effect.timer, effect.duration);
     } else if (effect.kind === "selfRawDamage") {
-      api.takeRaw(unit, unit.maxHp * effect.maxHp, null, effect.type);
+      api.takeRaw(unit, unit.maxHp * effect.maxHp, unit, effect.type);
     } else if (effect.kind === "buffCarryPower") {
       const ally = api.carryAlly(unit);
       if (ally) {
         ally.bonusPowerTimer = effect.duration;
         ally.bonusPower = Math.max(ally.bonusPower || 0, effect.amount);
+        api.emitEffectSignal?.({
+          kind: "status",
+          tags: ["status", "buff", "carry", "power"],
+          source: unit,
+          target: ally,
+          amount: effect.amount,
+          meta: { duration: effect.duration },
+        });
         api.floater(ally, effect.label, "heal");
       }
     } else if (effect.kind === "teamTimer") {
       allies().forEach((ally) => {
         setTimer(ally, effect.timer, effect.duration);
+        api.emitEffectSignal?.({
+          kind: "status",
+          tags: ["status", "buff", "teamWindow", effect.timer],
+          source: unit,
+          target: ally,
+          amount: effect.duration,
+          meta: { timer: effect.timer, duration: effect.duration },
+        });
         if (effect.label) api.floater(ally, effect.label, effect.tone || "heal");
+      });
+    } else if (effect.kind === "teamRetaliation") {
+      allies().forEach((ally) => {
+        setTimer(ally, "retaliationTimer", effect.duration);
+        ally.retaliationEffect = effect;
+        api.emitEffectSignal?.({
+          kind: "status",
+          tags: ["status", "buff", "teamWindow", "retaliation"],
+          source: unit,
+          target: ally,
+          amount: effect.duration,
+          meta: { duration: effect.duration },
+        });
       });
     } else if (effect.kind === "poisonEnemies") {
       enemies(null).forEach((enemy) => api.addPoison(enemy, effect.stacks, effect.time, unit, visual));
     } else if (effect.kind === "hitTargetWithStatus" && target) {
       api.hit(unit, target, effect.flat + power * effect.power + Math.min(effect.maxStatus, api.statusCount(target)) * effect.perStatus, effect.type, effect.label, visual);
     } else if (effect.kind === "enemyTimers") {
-      enemies(effect.count).forEach((enemy) => setTimer(enemy, effect.timer, effect.duration));
+      enemies(effect.count).forEach((enemy) => {
+        setTimer(enemy, effect.timer, effect.duration);
+        api.emitEffectSignal?.({
+          kind: "status",
+          tags: ["status", "debuff", effect.timer === "slowTimer" ? "slow" : "timer", "area"],
+          source: unit,
+          target: enemy,
+          amount: effect.duration,
+          meta: { timer: effect.timer, duration: effect.duration },
+        });
+      });
     } else if (effect.kind === "teamShield") {
       const targets = effect.selfOnly ? [unit] : allies();
       targets.forEach((ally) => api.shield(ally, effect.flat + power * effect.power, effect.label, visual));
@@ -101,8 +186,9 @@ const GAME_SKILL_DATA = (() => {
     } else if (effect.kind === "plagueOffering") {
       enemies(null).forEach((enemy) => {
         if (enemy.poison.stacks <= 0) return;
-        api.hit(unit, enemy, 22 + enemy.poison.stacks * 9 + power * 0.22, "poison", "万毒", visual);
-        enemy.poison.stacks = Math.ceil(enemy.poison.stacks * 0.45);
+        api.hit(unit, enemy, (effect.flat ?? 22) + enemy.poison.stacks * (effect.perPoison ?? 9) + power * (effect.power ?? 0.22), "poison", "万毒", visual);
+        enemy.poison.stacks = Math.ceil(enemy.poison.stacks * (effect.retain ?? 0.45));
+        if ((effect.reapply || 0) > 0) api.addPoison(enemy, effect.reapply, effect.reapplyTime || 6, unit, visual);
       });
     } else if (effect.kind === "crescendo") {
       allies().forEach((ally) => {
@@ -111,8 +197,29 @@ const GAME_SKILL_DATA = (() => {
         ally.bonusPower = Math.max(ally.bonusPower || 0, 10);
       });
     } else if (effect.kind === "grandMixture") {
-      enemies(null).forEach((enemy) => api.hit(unit, enemy, 18 + power * 0.16 + Math.min(8, api.statusCount(enemy)) * 8, "arcane", "混剂", visual));
+      enemies(null).forEach((enemy) => api.hit(
+        unit,
+        enemy,
+        (effect.flat ?? 18) + power * (effect.power ?? 0.16) + Math.min(effect.maxStatus ?? 8, api.statusCount(enemy)) * (effect.perStatus ?? 8),
+        "arcane",
+        "混剂",
+        visual,
+      ));
     }
+  }
+
+  function passiveDamageMultiplier(source, target, api) {
+    if (!source || !target) return 1;
+    const passive = skills[source.passiveKey || source.passive];
+    let multiplier = 1;
+    for (const effect of passive?.effects || []) {
+      if (effect.kind !== "passiveDamageAmp") continue;
+      if (effect.requiresStatus && !(api.statusCount?.(target) > 0)) continue;
+      if (effect.targetLine && target.line !== effect.targetLine) continue;
+      if (Number.isFinite(effect.targetHpBelow) && !(api.hpRatio?.(target) < effect.targetHpBelow)) continue;
+      multiplier *= 1 + (effect.amp || 0);
+    }
+    return multiplier;
   }
 
   function resolveAssets() {
@@ -142,6 +249,8 @@ const GAME_SKILL_DATA = (() => {
     presets,
     berserkerModel,
     createSkillLibrary,
+    triggerReactiveEffects,
+    passiveDamageMultiplier,
   };
 })();
 

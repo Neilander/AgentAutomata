@@ -1,0 +1,248 @@
+{
+  "schema": "agent_automata_task_budget_board_v1",
+  "updatedAt": "2026-06-24",
+  "workflow": [
+    "Create or refresh an experiment budget card before tuning.",
+    "Use the matching debug skill to run bounded attempts.",
+    "Update attempts, evidence, decision, and remaining budget after validation."
+  ],
+  "tasks": [
+    {
+      "id": "low-health-berserker-curve",
+      "name": "低血狂战曲线",
+      "detail": "让狂战士表现为先掉血、进入低血、攻速和吸血增强、反复回升，而不是只看总伤害占比。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "low",
+      "attemptBudget": 7,
+      "attemptsUsed": 3,
+      "status": "done",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "进入低血窗口",
+        "低血后有恢复",
+        "低血阶段攻击节奏提升",
+        "强化普攻仍是主要输出"
+      ],
+      "lastEvidence": "2026-06-24 accept: 2026-06-24 accept: bloodRage signal report passes 9/9; lowHealthSurvivalSeconds 9.760, postLowAttackRateRatio 2.750, recoveryAfterLow 0.213. Rejected earlier roar/leech buff, accepted owned small-skill opening cooldown and validation-opponent cleanup."
+    },
+    {
+      "id": "holy-sustain-survival",
+      "name": "圣光续航存活",
+      "detail": "验证牧师续航流是否能在危机后把队伍拉回来，而不是治疗数字好看但队友仍然倒下。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "low",
+      "attemptBudget": 6,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "20秒后存活人数达标",
+        "危机后团队血量曲线回升",
+        "有效治疗占比健康",
+        "不靠全局削弱敌人通过"
+      ],
+      "lastEvidence": "2026-06-24 accept: Current archetype signal report: holySustain passes 6/6, survivorsAt20Seconds 2.063 >= 2, recovery/heal/shield checks pass."
+    },
+    {
+      "id": "poison-bloom-payoff",
+      "name": "剧毒绽放兑现",
+      "detail": "毒流需要能看见叠毒、传播、引爆兑现的循环，不能只有DOT占比。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "low",
+      "attemptBudget": 6,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "毒层建立速度有加速",
+        "存在传播事件",
+        "引爆伤害占比达标",
+        "引爆后能重新进入叠毒循环"
+      ],
+      "lastEvidence": "Accepted from current signal report: poisonBloom passes 8/8; payoff cycle and statusPayoffDamageShare are now valid."
+    },
+    {
+      "id": "iron-wall-shadow-execute",
+      "name": "铁壁对刺杀",
+      "detail": "铁壁已经有反击循环，但面对暗影处决仍可能失效，需要判断是覆盖、数值还是克制关系定义问题。",
+      "priority": "medium",
+      "importance": "medium",
+      "uncertainty": "high",
+      "blastRadius": "medium",
+      "attemptBudget": 5,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "Keep ironWall signal checks passing",
+        "Improve or redefine shadowExecute matchup expectation",
+        "Do not globally advance bannerWall",
+        "Run full matchup regression"
+      ],
+      "lastEvidence": "2026-06-24 accept: 2026-06-24 accept with reframed contract: ironWall signal passes 8/8 with counterTriggers 6.063 and counterDamageShare 0.115; early retaliationBanner experiment was rejected. Matrix now records shadowExecute as a current counter instead of forcing ironWall favored."
+    },
+    {
+      "id": "task-budget-board",
+      "name": "工作台任务表",
+      "detail": "把任务名、细节、优先级、尝试次数和剩余次数做成可查看的数据面板，方便后续skill反馈。",
+      "priority": "medium",
+      "importance": "medium",
+      "uncertainty": "low",
+      "blastRadius": "low",
+      "attemptBudget": 3,
+      "attemptsUsed": 2,
+      "status": "done",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "game-ui-designer"
+      ],
+      "successCriteria": [
+        "工作台有入口",
+        "页面能读取本地JSON",
+        "剩余次数自动计算",
+        "后续agent可直接更新数据"
+      ],
+      "lastEvidence": "2026-06-24 accept: Task board route, API, updater, and test-port validation passed on 3778."
+    },
+    {
+      "id": "matchup-expectation-matrix",
+      "name": "克制矩阵校准",
+      "detail": "当前所有流派信号大多能过，但 matchup report 还有大量 expected/actual mismatch，需要判断是数值、克制定义还是预期表错误。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "high",
+      "blastRadius": "medium",
+      "attemptBudget": 7,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "列出最高价值 mismatch",
+        "先判断预期是否合理",
+        "每次只改窄资产或预期合同",
+        "全量跑 matchup regression"
+      ],
+      "lastEvidence": "2026-06-24 accept: 2026-06-24 accept: strong/weak expectations recalibrated from normalized 30-game matchup rates using >=53% favored, <=47% weak, middle flex. archetype-matchup-report now says Expectation Mismatches: None in this run."
+    },
+    {
+      "id": "shared-combat-engine-unification",
+      "name": "战斗引擎统一",
+      "detail": "live 动画战斗和 headless combat-sim 仍复制移动、目标、计时器、伤害管线和反应状态，后续容易出现浏览器和报告不一致。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "high",
+      "blastRadius": "high",
+      "attemptBudget": 6,
+      "attemptsUsed": 0,
+      "status": "postponed",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "先列出重复逻辑边界",
+        "不破坏现有信号报告",
+        "浏览器竞技场和 Node 报告结果一致",
+        "共享逻辑改动后全量回归"
+      ],
+      "lastEvidence": "2026-06-24 postponed: full live/headless combat-loop unification is high blast radius. This pass completed narrower consistency fixes: small-skill openingCooldown parity and team simulator reactive counter hook; reports/pages validated. Plan as a separate architecture task."
+    },
+    {
+      "id": "team-simulator-reactive-counter",
+      "name": "组队模拟器反击 hook",
+      "detail": "Team simulator 还没有执行新的 reactive counter hook，可能导致招募试玩和流派报告行为不一致。",
+      "priority": "medium",
+      "importance": "medium",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 4,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "组队模拟器能触发反击信号",
+        "不启用 stale fallback 技能",
+        "铁壁角色在组队模拟器里有可见反击反馈",
+        "验证不破坏 team simulator 招募流程"
+      ],
+      "lastEvidence": "2026-06-24 accept: 2026-06-24 accept: team_simulator now maps passiveKey, passes counterattack/emitEffectSignal APIs to shared skills, ticks retaliation/counter timers, and triggers reactive effects after damage. node --check passed and /team_simulator/ returned HTTP 200."
+    },
+    {
+      "id": "crown-carry-anti-execute",
+      "name": "王冠核心反处决",
+      "detail": "王冠核心在固定数值下被暗影处决稳定点杀核心，需保证核心能活到启动窗口或明确改成怕刺杀。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 6,
+      "attemptsUsed": 2,
+      "status": "done",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "carrySurvives10Seconds >= 0.75",
+        "固定数值 crownCarry vs shadowExecute 不应 0/30",
+        "不改底层寻敌/出手规则",
+        "全量流派和矩阵回归"
+      ],
+      "lastEvidence": "2026-06-24 accept: Attempt 2 accepted: tuned crownBloodCharm to shield 84 + 0.52 power, 6s guard and DOT resist, 8.5s cooldown. Full validation passed; crownCarry signal 7/7, carrySurvives10Seconds 1.000, matchup report has no expectation mismatches. Residual risk: fixed-stat fire matchup differs from randomized matrix, so browser feel should be checked."
+    },
+    {
+      "id": "skill-pool-expansion-redteam",
+      "name": "技能池扩展与红队平衡",
+      "detail": "补充职业技能和通用技能；用职业预算模型、流派信号、红队/标准队检查新增技能是否破坏现有流派。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 6,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [],
+      "successCriteria": [],
+      "lastEvidence": "2026-06-24 accept: Added 15 skills, asset-driven passiveDamageAmp, randomized recruit skill pools; red-team risky candidates 0 after tuning; archetype signals pass and matchup report has no expectation mismatches."
+    },
+    {
+      "id": "keyword-workbench-class-skills",
+      "name": "关键词工作台与职业专属技能",
+      "detail": "调整流派竞技场布局；建立关键词工作台；更新技能设计流程；补充职业专属技能并跑红队/回归。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 6,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [],
+      "successCriteria": [],
+      "lastEvidence": "2026-06-24 accept: Arena battle panel moved to top; keyword workbench added and served on test port; skill-kit workflow reads keyword data; 10 class-exclusive skills added; red-team risky candidates 0; archetype signals pass; matchup expectations none."
+    }
+  ]
+}

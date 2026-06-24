@@ -71,6 +71,8 @@ class CombatSimulation {
       effectivePower: (unit) => this.effectivePower(unit),
       hpRatio: (unit) => this.hpRatio(unit),
       statusCount: (unit) => this.statusCount(unit),
+      counterattack: (...args) => this.counterattack(...args),
+      emitEffectSignal: (...args) => this.emitEffectSignal(...args),
     };
   }
 
@@ -137,8 +139,8 @@ class CombatSimulation {
         y: slot.y,
         attackCd: 0.6 + index * 0.08,
         skillCd: {
-          small1: 1 + index * 0.35,
-          small2: 2.2 + index * 0.35,
+          small1: this.openingCooldown(spec.small1, 1 + index * 0.35),
+          small2: this.openingCooldown(spec.small2, 2.2 + index * 0.35),
           ultimate: this.openingCooldown(spec.ultimate, 20 + index * 1.8),
         },
         shield: 0,
@@ -156,6 +158,9 @@ class CombatSimulation {
         bloodFuryTimer: 0,
         whirlwindTimer: 0,
         roarFuryTimer: 0,
+        retaliationTimer: 0,
+        retaliationEffect: null,
+        counterCd: 0,
         damageDone: 0,
         mark: 0,
         icon: `${ICON_BASE}/${role.icon}.svg`,
@@ -213,9 +218,10 @@ class CombatSimulation {
   tickTimers(unit, dt) {
     for (const key of ["small1", "small2", "ultimate"]) unit.skillCd[key] = Math.max(0, unit.skillCd[key] - dt);
     unit.attackCd -= dt * (unit.hasteTimer > 0 ? (unit.hasteMultiplier || 1.45) : 1);
-    for (const key of ["slowTimer", "guardTimer", "tauntTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer"]) {
+    for (const key of ["slowTimer", "guardTimer", "tauntTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer"]) {
       unit[key] = Math.max(0, unit[key] - dt);
     }
+    unit.counterCd = Math.max(0, (unit.counterCd || 0) - dt);
   }
 
   tickStatuses(unit, dt) {
@@ -295,6 +301,7 @@ class CombatSimulation {
     if (source.passive === "executionSense" && (this.hpRatio(target) < 0.45 || this.statusCount(target) > 0)) value *= 1.18;
     if (source.passive === "duelistFocus") value *= 1 + (target.mark || 0) * 0.045;
     if (source.passive === "catalyst" && this.statusCount(target) > 0) value *= 1.06;
+    value *= SKILL_DATA.passiveDamageMultiplier?.(source, target, this.api()) || 1;
     if (target.guardTimer > 0) value *= 0.72;
     const mitigated = Math.max(1, value - target.armor * (type === "physical" ? 0.72 : 0.38));
     this.takeDamage(source, target, mitigated, type, label);
@@ -333,7 +340,39 @@ class CombatSimulation {
         this.healUnit(source, amount * leechRate, "吸血");
       }
     }
+    SKILL_DATA.triggerReactiveEffects?.("afterDamageTaken", {
+      unit: target,
+      source,
+      blocked,
+      damageTaken: remaining,
+      rawAmount: amount,
+      type,
+    }, this.api());
     if (target.hp <= 0) this.onDeath(target, source);
+  }
+
+  counterattack(unit, source, effect, context = {}) {
+    if (!this.isAlive(unit) || !this.isAlive(source) || (unit.counterCd || 0) > 0) return;
+    unit.counterCd = effect.cooldown || 0;
+    const amount = (effect.flat || 0)
+      + this.effectivePower(unit) * (effect.power || 0)
+      + (context.blocked || 0) * (effect.blockedRatio || 0);
+    this.withAction(unit, {
+      tags: ["counter", "reactive"],
+      skillKey: unit.passive,
+      skillName: effect.label || "Counter",
+      meta: { blockedTrigger: context.blocked || 0 },
+    }, () => this.hit(unit, source, amount, "physical", effect.label || "Counter"));
+  }
+
+  emitEffectSignal(signal) {
+    this.emitSignal({
+      ...signal,
+      source: SIGNALS.unitRef(signal.source),
+      target: SIGNALS.unitRef(signal.target),
+      skillKey: signal.source?._actionSignal?.skillKey || null,
+      skillName: signal.source?._actionSignal?.skillName || "",
+    });
   }
 
   takeRaw(target, amount, source, type) {
@@ -419,9 +458,27 @@ class CombatSimulation {
   }
 
   onDeath(unit, killer) {
+    this.emitSignal({
+      kind: "death",
+      tags: ["death"],
+      source: SIGNALS.unitRef(killer),
+      target: SIGNALS.unitRef(unit),
+      skillKey: killer?._actionSignal?.skillKey || null,
+      skillName: killer?._actionSignal?.skillName || "",
+      hpBefore: 0,
+      hpAfter: 0,
+      meta: {
+        killerRole: killer?.role || "",
+        targetRole: unit.role || "",
+      },
+    });
     if (unit.poison.stacks > 0) {
       this.alliesOf(killer || unit).filter((ally) => ally.passive === "hotbedPact" && this.isAlive(ally)).slice(0, 1).forEach((source) => {
-        this.alliesOf(unit).filter((ally) => this.isAlive(ally) && ally.id !== unit.id).forEach((enemy) => this.addPoison(enemy, Math.ceil(unit.poison.stacks * 0.18), 6, source));
+        this.alliesOf(unit).filter((ally) => this.isAlive(ally) && ally.id !== unit.id).forEach((enemy) => {
+          this.withAction(source, { tags: ["passive", "poisonSpread"], skillKey: "hotbedPact", skillName: "Poison Spread" }, () => {
+            this.addPoison(enemy, Math.ceil(unit.poison.stacks * 0.18), 6, source);
+          });
+        });
       });
     }
     if (unit.burn.stacks > 0) {

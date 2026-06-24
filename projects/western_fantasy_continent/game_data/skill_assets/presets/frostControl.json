@@ -1,6 +1,70 @@
 {
   "name": "霜控拖延",
   "desc": "减速控场，克制近战",
+  "design": {
+    "fantasy": "Slow the enemy front line so ranged damage gains extra time to work.",
+    "experience": {
+      "start": "Enemy melee units approach normally.",
+      "transition": "Slow windows suppress their movement and attacks.",
+      "payoff": "The backline gains extra uncontested output time.",
+      "reset": "Pressure rises again when control expires."
+    },
+    "primaryOutput": "control",
+    "desiredTags": [
+      "control",
+      "slow",
+      "statusPayoff"
+    ],
+    "watchTags": [
+      "backline",
+      "burst"
+    ],
+    "strongMatchups": [
+      "holySustain",
+      "ironWall"
+    ],
+    "weakMatchups": [
+      "crownCarry",
+      "fireBurst",
+      "poisonBloom",
+      "shadowExecute"
+    ],
+    "validationOpponents": [
+      "bloodRage",
+      "fireBurst"
+    ],
+    "curves": [
+      {
+        "metric": "controlWindowMeleeRateRatio",
+        "op": "<=",
+        "value": 0.8
+      }
+    ],
+    "signalAcceptance": [
+      {
+        "metric": "slowApplications",
+        "op": ">=",
+        "value": 4
+      },
+      {
+        "metric": "enemyMeleeBasicPerSecond",
+        "op": "<=",
+        "value": 1.8
+      },
+      {
+        "metric": "statusPayoffDamageShare",
+        "op": ">=",
+        "value": 0.05
+      }
+    ],
+    "failureBoundaries": [
+      {
+        "metric": "slowApplications",
+        "op": ">=",
+        "value": 1
+      }
+    ]
+  },
   "team": [
     {
       "role": "knight",

@@ -11,6 +11,8 @@ const KNOWN_EFFECT_KINDS = new Set([
   "burningEnemies",
   "burnTarget",
   "crescendo",
+  "counterOnDamageTaken",
+  "carryTimer",
   "enemyTimers",
   "grandMixture",
   "healLowestAlly",
@@ -22,13 +24,16 @@ const KNOWN_EFFECT_KINDS = new Set([
   "lowestAllyTimer",
   "markTarget",
   "meteorRain",
+  "passiveDamageAmp",
   "plagueOffering",
   "poisonEnemies",
   "poisonTarget",
   "selfRawDamage",
   "shieldLowestAlly",
+  "shieldCarryAlly",
   "targetTimer",
   "teamHeal",
+  "teamRetaliation",
   "teamShield",
   "teamTimer",
   "timer",
@@ -82,6 +87,24 @@ function validatePresets() {
   for (const [presetId, preset] of Object.entries(SKILL_ASSETS.presets || {})) {
     assert(preset.name, `${presetId} missing name`);
     assert(preset.desc, `${presetId} missing desc`);
+    assert(preset.design, `${presetId} missing design metadata`);
+    assert(preset.design.fantasy, `${presetId}.design.fantasy missing`);
+    assert(preset.design.primaryOutput, `${presetId}.design.primaryOutput missing`);
+    for (const field of ["desiredTags", "watchTags", "strongMatchups", "weakMatchups", "validationOpponents", "curves", "signalAcceptance", "failureBoundaries"]) {
+      assert(Array.isArray(preset.design[field]), `${presetId}.design.${field} must be an array`);
+    }
+    for (const field of ["start", "transition", "payoff", "reset"]) {
+      assert(preset.design.experience?.[field], `${presetId}.design.experience.${field} missing`);
+    }
+    for (const opponent of [...preset.design.strongMatchups, ...preset.design.weakMatchups, ...preset.design.validationOpponents]) {
+      assert(SKILL_ASSETS.presets[opponent], `${presetId} references missing design opponent: ${opponent}`);
+      assert(opponent !== presetId, `${presetId} cannot reference itself as a design opponent`);
+    }
+    for (const rule of [...preset.design.curves, ...preset.design.signalAcceptance, ...preset.design.failureBoundaries]) {
+      assert(rule.metric, `${presetId} signal rule missing metric`);
+      assert([">=", "<=", ">", "<"].includes(rule.op), `${presetId}.${rule.metric} uses unsupported operator: ${rule.op}`);
+      assert(Number.isFinite(rule.value), `${presetId}.${rule.metric} value must be numeric`);
+    }
     assert(Array.isArray(preset.team) && preset.team.length === 4, `${presetId}.team must include 4 units`);
     for (const [index, unit] of preset.team.entries()) {
       assert(roles[unit.role], `${presetId}[${index}] references missing role: ${unit.role}`);

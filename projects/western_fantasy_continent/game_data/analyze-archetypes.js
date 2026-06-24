@@ -11,6 +11,7 @@ const EFFECT_TAGS = {
   burningEnemies: ["damage", "burn", "area", "statusPayoff"],
   burnTarget: ["burn", "dot", "status"],
   crescendo: ["support", "haste", "power", "teamWindow"],
+  counterOnDamageTaken: ["counter", "reactive", "damage"],
   enemyTimers: ["control", "slow"],
   grandMixture: ["damage", "area", "statusPayoff"],
   healLowestAlly: ["heal", "sustain"],
@@ -29,22 +30,10 @@ const EFFECT_TAGS = {
   shieldLowestAlly: ["shield", "sustain"],
   targetTimer: ["control", "slow"],
   teamHeal: ["heal", "sustain", "team"],
+  teamRetaliation: ["counter", "reactive", "teamWindow"],
   teamShield: ["shield", "sustain", "team"],
   teamTimer: ["support", "teamWindow"],
   timer: ["selfWindow"],
-};
-
-const PRESET_EXPECTATIONS = {
-  poisonBloom: { wants: ["poison", "dot", "dotPayoff", "sustain"], watch: ["burst", "execute"] },
-  fireBurst: { wants: ["burn", "area", "burst"], watch: ["shield", "heal"] },
-  crownCarry: { wants: ["support", "carry", "basicWindow", "haste"], watch: ["execute"] },
-  ironWall: { wants: ["shield", "heal", "sustain"], watch: ["poison", "dotPayoff"] },
-  bloodRage: { wants: ["basicWindow", "haste", "sustain", "deathPrevent"], watch: ["execute", "burst"] },
-  lightningTempo: { wants: ["mark", "markPayoff", "haste", "focus"], watch: ["control", "execute"] },
-  frostControl: { wants: ["control", "slow", "statusPayoff"], watch: ["backline", "burst"] },
-  holySustain: { wants: ["heal", "shield", "sustain"], watch: ["poison", "dotPayoff"] },
-  shadowExecute: { wants: ["execute", "focus", "risk"], watch: ["shield", "deathPrevent"] },
-  alchemyChaos: { wants: ["poison", "burn", "statusPayoff", "area"], watch: ["execute", "burst"] },
 };
 
 function run() {
@@ -67,7 +56,10 @@ function analyzePreset(id, preset, assets) {
     for (const tag of effectTags) tags[tag] = (tags[tag] || 0) + 1;
     return { id: skillId, name: skill.name, type: skill.type, role: skill.role, tags: effectTags };
   });
-  const expectation = PRESET_EXPECTATIONS[id] || { wants: [], watch: [] };
+  const expectation = {
+    wants: preset.design?.desiredTags || [],
+    watch: preset.design?.watchTags || [],
+  };
   const missingWants = expectation.wants.filter((tag) => !tags[tag]);
   const watchHits = expectation.watch.filter((tag) => tags[tag]);
   const status = missingWants.length ? "needs review" : "passes intent";
@@ -94,6 +86,8 @@ function renderMarkdown(rows) {
   for (const row of rows) {
     lines.push(`### \`${row.id}\` ${row.preset.name}`, "");
     lines.push(`- Fantasy: ${row.preset.desc}`);
+    lines.push(`- Design contract: ${row.preset.design?.fantasy || "missing"}`);
+    lines.push(`- Primary output: ${row.preset.design?.primaryOutput || "missing"}`);
     lines.push(`- Expected tags: ${row.expectation.wants.join(", ") || "none"}`);
     lines.push(`- Watch tags: ${row.expectation.watch.join(", ") || "none"}`);
     lines.push(`- Skill mix: ${Object.entries(row.skillTypes).map(([type, count]) => `${type} ${count}`).join(", ")}`);

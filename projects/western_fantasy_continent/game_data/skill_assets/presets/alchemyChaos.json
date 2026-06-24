@@ -1,6 +1,75 @@
 {
   "name": "炼金异常",
   "desc": "毒火混合，靠异常层数放大",
+  "design": {
+    "fantasy": "Mix poison and burn, then cash accumulated statuses into area damage.",
+    "experience": {
+      "start": "Poison and burn begin accumulating together.",
+      "transition": "Both statuses overlap on several targets.",
+      "payoff": "Alchemy skills convert the overlap into area damage.",
+      "reset": "Statuses rebuild after the payoff."
+    },
+    "primaryOutput": "statusPayoff",
+    "desiredTags": [
+      "poison",
+      "burn",
+      "statusPayoff",
+      "area"
+    ],
+    "watchTags": [
+      "execute",
+      "burst"
+    ],
+    "strongMatchups": [
+      "ironWall",
+      "lightningTempo"
+    ],
+    "weakMatchups": [
+      "bloodRage",
+      "fireBurst",
+      "poisonBloom"
+    ],
+    "validationOpponents": [
+      "ironWall",
+      "shadowExecute"
+    ],
+    "curves": [
+      {
+        "metric": "dualStatusOverlapRatio",
+        "op": ">=",
+        "value": 0.25
+      },
+      {
+        "metric": "payoffCycles",
+        "op": ">=",
+        "value": 1
+      }
+    ],
+    "signalAcceptance": [
+      {
+        "metric": "statusStacksApplied",
+        "op": ">=",
+        "value": 20
+      },
+      {
+        "metric": "statusPayoffDamageShare",
+        "op": ">=",
+        "value": 0.12
+      }
+    ],
+    "failureBoundaries": [
+      {
+        "metric": "poisonStacksApplied",
+        "op": ">=",
+        "value": 4
+      },
+      {
+        "metric": "burnStacksApplied",
+        "op": ">=",
+        "value": 4
+      }
+    ]
+  },
   "team": [
     {
       "role": "knight",
@@ -14,7 +83,7 @@
       "small1": "miasmaFlask",
       "small2": "volatileBottle",
       "passive": "catalyst",
-      "ultimate": "grandMixture"
+      "ultimate": "chainReaction"
     },
     {
       "role": "alchemist",

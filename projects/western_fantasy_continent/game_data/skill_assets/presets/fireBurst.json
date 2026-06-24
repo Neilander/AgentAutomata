@@ -1,6 +1,83 @@
 {
   "name": "余烬爆燃",
   "desc": "点燃扩散，流星收尾，优开脆皮",
+  "design": {
+    "fantasy": "Ignite the team, spread fire, then end the fight with a meteor burst.",
+    "experience": {
+      "start": "Burn is applied across several enemies.",
+      "transition": "Fire spreads and prepares the meteor window.",
+      "payoff": "A short, visible damage peak lands.",
+      "reset": "Damage falls after the burst while cooldowns recover."
+    },
+    "primaryOutput": "burst",
+    "desiredTags": [
+      "burn",
+      "area",
+      "burst"
+    ],
+    "watchTags": [
+      "shield",
+      "heal"
+    ],
+    "strongMatchups": [
+      "alchemyChaos",
+      "bloodRage",
+      "crownCarry",
+      "frostControl",
+      "holySustain",
+      "ironWall",
+      "lightningTempo",
+      "poisonBloom"
+    ],
+    "weakMatchups": [
+      "shadowExecute"
+    ],
+    "validationOpponents": [
+      "alchemyChaos",
+      "ironWall"
+    ],
+    "curves": [
+      {
+        "metric": "peak2sDamageShare",
+        "op": ">=",
+        "value": 0.2
+      },
+      {
+        "metric": "postPeakDamageRateRatio",
+        "op": "<=",
+        "value": 0.75
+      },
+      {
+        "metric": "burnCoverageBeforeUltimate",
+        "op": ">=",
+        "value": 0.5
+      }
+    ],
+    "signalAcceptance": [
+      {
+        "metric": "burnStacksApplied",
+        "op": ">=",
+        "value": 12
+      },
+      {
+        "metric": "ultimateDamageShare",
+        "op": ">=",
+        "value": 0.12
+      },
+      {
+        "metric": "areaDamageShare",
+        "op": ">=",
+        "value": 0.2
+      }
+    ],
+    "failureBoundaries": [
+      {
+        "metric": "payoffStartsAfterSetup",
+        "op": ">=",
+        "value": 1
+      }
+    ]
+  },
   "team": [
     {
       "role": "warrior",

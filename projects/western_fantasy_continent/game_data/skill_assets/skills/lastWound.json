@@ -1,0 +1,31 @@
+{
+  "name": "残伤怒砍",
+  "type": "小技能",
+  "role": "狂战士",
+  "roleKeys": ["berserker"],
+  "cooldown": 8.2,
+  "openingCooldown": 5.5,
+  "icon": "bloody-sword",
+  "desc": "狂战士专属。自伤 3%最大生命，进入 4 秒血怒普攻窗口，并造成一次 16+28%攻击物理伤害。低血资源要服务普攻图谱。",
+  "effects": [
+    {
+      "kind": "selfRawDamage",
+      "maxHp": 0.03,
+      "type": "blood"
+    },
+    {
+      "kind": "timer",
+      "timer": "bloodFuryTimer",
+      "duration": 4,
+      "label": "残伤血怒",
+      "tone": "heal"
+    },
+    {
+      "kind": "hitTarget",
+      "flat": 16,
+      "power": 0.28,
+      "type": "physical",
+      "label": "残伤怒砍"
+    }
+  ]
+}

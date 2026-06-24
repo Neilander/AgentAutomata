@@ -47,13 +47,13 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
 .arena-app {
   min-height: 100vh;
   display: grid;
-  grid-template-rows: auto auto minmax(620px, 72vh) auto auto auto;
+  grid-template-rows: auto minmax(460px, 58vh) auto auto auto auto;
   gap: 10px;
   padding: 12px;
   overflow: visible;
 }
 
-.topbar, .preset-strip, .team-panel, .battle-panel, .flow-card, .log-card, .balance-panel {
+.topbar, .preset-dock, .team-panel, .battle-panel, .flow-card, .log-card, .balance-panel {
   border: 1px solid var(--line);
   background: rgba(25, 33, 29, 0.94);
 }
@@ -80,22 +80,77 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
 #resetBtn { background: #5b362f; }
 #speedBtn { background: #31475c; }
 
-.preset-strip {
+.preset-dock {
   display: grid;
-  grid-template-columns: repeat(5, minmax(150px, 1fr));
-  gap: 8px;
-  padding: 8px;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 10px;
 }
-.preset-strip button {
+.preset-side {
   min-width: 0;
-  padding: 0 12px;
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 8px;
+}
+.preset-side-head {
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.preset-side-head strong { font-size: 14px; }
+.preset-side-head span {
+  color: var(--muted);
   font-size: 12px;
+}
+.preset-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.preset-card {
+  min-height: 76px;
+  padding: 8px;
+  text-align: left;
+  background: #171f1a;
+  border-color: rgba(239, 231, 207, 0.16);
+}
+.preset-card.active {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(215, 182, 93, 0.17), rgba(23, 31, 26, 0.94));
+  box-shadow: inset 0 0 0 1px rgba(215, 182, 93, 0.12);
+}
+.preset-card em {
+  display: inline-block;
+  margin-bottom: 5px;
+  color: var(--gold);
+  font-size: 10px;
+  font-style: normal;
+}
+.preset-card strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.preset-card span {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .layout {
   min-height: 0;
   display: grid;
-  grid-template-columns: 310px minmax(560px, 1fr) 310px;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 
@@ -115,10 +170,11 @@ p { color: var(--muted); font-size: 13px; line-height: 1.5; }
 }
 
 .unit-config {
-  max-height: calc(72vh - 44px);
+  max-height: 520px;
   overflow: auto;
   padding: 10px;
   display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
   gap: 10px;
 }
 .config-card {
@@ -167,6 +223,9 @@ select {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   min-width: 0;
+}
+.battle-panel-main {
+  min-height: 460px;
 }
 .scorebar {
   min-height: 54px;
@@ -554,17 +613,22 @@ select {
     grid-template-columns: 1fr;
   }
 
-  .preset-strip,
+  .preset-dock,
   .skill-library {
     grid-template-columns: 1fr;
   }
 
+  .preset-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .battle-panel {
-    min-height: 620px;
+    min-height: 520px;
   }
 
   .unit-config {
     max-height: none;
+    grid-template-columns: 1fr;
   }
 
   .matchup-grid {

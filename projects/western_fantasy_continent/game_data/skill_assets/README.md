@@ -24,6 +24,35 @@ node projects/western_fantasy_continent/game_data/validate-skill-assets.js
 
 3. Pages keep loading `GAME_SKILL_DATA` through `../skill-data.js`; they do not reference individual JSON files directly.
 
+## Preset Design Contract
+
+Every preset owns the metadata used by structural analysis, signal acceptance, and matchup expectations:
+
+```json
+{
+  "design": {
+    "fantasy": "Player-facing combat experience.",
+    "primaryOutput": "counterattack",
+    "desiredTags": ["shield", "counter"],
+    "watchTags": ["poison"],
+    "strongMatchups": ["shadowExecute"],
+    "weakMatchups": ["poisonBloom"],
+    "validationOpponents": ["shadowExecute", "poisonBloom"],
+    "signalAcceptance": [
+      { "metric": "counterDamageShare", "op": ">=", "value": 0.06 }
+    ]
+  }
+}
+```
+
+Do not add a second expectation table to an analyzer. Extend this contract and teach the analyzer to consume it.
+
+Run the signal report after changing a preset:
+
+```sh
+node projects/western_fantasy_continent/game_data/analyze-archetype-signals.js
+```
+
 ## Skill Contract
 
 Each skill asset should include:

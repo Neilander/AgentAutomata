@@ -13,6 +13,10 @@ const BERSERKER_COOLDOWNS = BERSERKER_MODEL.cooldowns || {};
 const BERSERKER_PASSIVE = BERSERKER_MODEL.passive || {};
 const SIGNALS = window.GAME_COMBAT_SIGNALS || {};
 const SHARED_SKILL_KEY_BY_NAME = Object.fromEntries(Object.entries(SHARED_SKILLS.skills || {}).map(([key, skill]) => [skill.name, key]));
+Object.assign(SHARED_SKILL_KEY_BY_NAME, {
+  "护卫反击": "retaliationStance",
+  "王旗不倒": "bannerWall",
+});
 const TEAM_TIMER_ALIASES = {
   guardTimer: "guard",
   tauntTimer: "taunt",
@@ -49,6 +53,8 @@ const TEAM_SHARED_SKILLS = SHARED_SKILLS.createSkillLibrary({
   addBurn: teamAddBurn,
   takeRaw: teamTakeRaw,
   floater: teamFloater,
+  counterattack: teamCounterattack,
+  emitEffectSignal: emitTeamEffectSignal,
 });
 
 const ROLES = {
@@ -188,6 +194,61 @@ function profile(summary, output, survival) {
   return { summary, output, survival };
 }
 
+const ROLE_SKILL_POOLS = buildRoleSkillPools();
+
+function buildRoleSkillPools() {
+  const pools = Object.fromEntries(Object.keys(ROLES).map((roleKey) => [roleKey, { small: [], passive: [], ult: [] }]));
+  for (const [roleKey, roleKit] of Object.entries(SHARED_SKILLS.roleKits || {})) {
+    if (!pools[roleKey]) continue;
+    addUnique(pools[roleKey].small, roleKit.kit?.small1);
+    addUnique(pools[roleKey].small, roleKit.kit?.small2);
+    addUnique(pools[roleKey].passive, roleKit.kit?.passive);
+    addUnique(pools[roleKey].ult, roleKit.kit?.ultimate);
+  }
+  for (const [skillKey, skill] of Object.entries(SHARED_SKILLS.skills || {})) {
+    for (const roleKey of skill.roleKeys || []) {
+      if (!pools[roleKey]) continue;
+      if (skill.type === SHARED_SKILLS.TYPE?.SMALL) addUnique(pools[roleKey].small, skillKey);
+      else if (skill.type === SHARED_SKILLS.TYPE?.PASSIVE) addUnique(pools[roleKey].passive, skillKey);
+      else if (skill.type === SHARED_SKILLS.TYPE?.ULT) addUnique(pools[roleKey].ult, skillKey);
+    }
+  }
+  return pools;
+}
+
+function addUnique(list, value) {
+  if (value && !list.includes(value)) list.push(value);
+}
+
+function randomKit(roleKey, base) {
+  const pool = ROLE_SKILL_POOLS[roleKey] || {};
+  const smallKeys = pickMany(pool.small, 2);
+  while (smallKeys.length < 2) smallKeys.push(SHARED_SKILL_KEY_BY_NAME[base.small[smallKeys.length]] || base.small[smallKeys.length]);
+  return {
+    smallKeys,
+    passiveKey: pickOne(pool.passive) || SHARED_SKILL_KEY_BY_NAME[base.passive] || base.passive,
+    ultKey: pickOne(pool.ult) || SHARED_SKILL_KEY_BY_NAME[base.ult] || base.ult,
+  };
+}
+
+function pickOne(list = []) {
+  return list.length ? list[Math.floor(Math.random() * list.length)] : null;
+}
+
+function pickMany(list = [], count) {
+  const pool = [...list];
+  const picked = [];
+  while (pool.length && picked.length < count) {
+    const index = Math.floor(Math.random() * pool.length);
+    picked.push(pool.splice(index, 1)[0]);
+  }
+  return picked;
+}
+
+function skillNameByKey(key) {
+  return SHARED_SKILLS.skills?.[key]?.name || key;
+}
+
 function setup() {
   recruit();
   bind();
@@ -242,6 +303,7 @@ function makeHero(index) {
   const keys = Object.keys(ROLES);
   const roleKey = keys[Math.floor(Math.random() * keys.length)];
   const base = ROLES[roleKey];
+  const kit = randomKit(roleKey, base);
   const quality = 0.88 + Math.random() * 0.28;
   const powerScore = Math.round((base.hp * 0.11 + base.power * 4.2 + base.armor * 7) * quality);
   return {
@@ -255,9 +317,12 @@ function makeHero(index) {
     power: Math.round(base.power * quality),
     armor: Math.round(base.armor * quality),
     range: base.range,
-    small: [...base.small],
-    passive: base.passive,
-    ult: base.ult,
+    smallKeys: kit.smallKeys,
+    small: kit.smallKeys.map(skillNameByKey),
+    passiveKey: kit.passiveKey,
+    passive: skillNameByKey(kit.passiveKey),
+    ultKey: kit.ultKey,
+    ult: skillNameByKey(kit.ultKey),
     score: powerScore,
   };
 }
@@ -341,6 +406,7 @@ function makeEnemy(roleKey, strength, index) {
     armor: Math.round(base.armor * quality),
     range: base.range,
     small: [...base.small],
+    passiveKey: SHARED_SKILL_KEY_BY_NAME[base.passive] || base.passive,
     passive: base.passive,
     ult: base.ult,
     score: strength * 10,
@@ -373,10 +439,16 @@ function makeUnits(side, heroes) {
     bloodFury: 0,
     whirlwind: 0,
     roarFury: 0,
+    retaliationTimer: 0,
+    retaliationEffect: null,
+    counterCd: 0,
     bonusPowerTimer: 0,
     bonusPower: 0,
     attackCd: 0.8 + index * 0.12,
-    skillCd: [1 + index * 0.3, 2.6 + index * 0.3],
+    skillCd: [
+      teamOpeningCooldown(hero.small[0], 1 + index * 0.3),
+      teamOpeningCooldown(hero.small[1], 2.6 + index * 0.3),
+    ],
     ultCd: teamOpeningCooldown(hero.ult, 14 + index * 1.6),
     focusTarget: "",
     focusHits: 0,
@@ -414,6 +486,8 @@ function updateBattle(dt) {
     unit.bloodFury = Math.max(0, unit.bloodFury - dt);
     unit.whirlwind = Math.max(0, unit.whirlwind - dt);
     unit.roarFury = Math.max(0, unit.roarFury - dt);
+    unit.retaliationTimer = Math.max(0, unit.retaliationTimer - dt);
+    unit.counterCd = Math.max(0, unit.counterCd - dt);
     unit.bonusPowerTimer = Math.max(0, unit.bonusPowerTimer - dt);
 
     const target = chooseTarget(unit);
@@ -563,6 +637,10 @@ function damage(source, target, amount, type, visible = true) {
   if (source?.passive === "血怒引擎") value *= 1 + (1 - source.hpNow / source.maxHp) * (BERSERKER_PASSIVE.maxDamageAmp ?? 0.45);
   if (source?.passive === "破绽毒刃" && (target.poison.stacks > 0 || target.burn.stacks > 0)) value *= 1.18;
   if (source?.passive === "催化剂" && (target.poison.stacks > 0 || target.burn.stacks > 0 || target.mark > 0)) value *= 1.12;
+  value *= SHARED_SKILLS.passiveDamageMultiplier?.(source, target, {
+    statusCount: teamStatusCount,
+    hpRatio: teamHpRatio,
+  }) || 1;
   if (target.guard > 0) value *= 0.72;
   let blocked = 0;
   if (target.shield > 0) {
@@ -614,6 +692,17 @@ function damage(source, target, amount, type, visible = true) {
     if (visible) floater(target, `${prefix}${Math.round(value)}`, cls);
     if (target.hpNow <= 0) onDeath(target, source);
   }
+  SHARED_SKILLS.triggerReactiveEffects?.("afterDamageTaken", {
+    unit: target,
+    source,
+    blocked,
+    damageTaken: value,
+    rawAmount: amount,
+    type,
+    visual: visible,
+  }, {
+    counterattack: teamCounterattack,
+  });
 }
 
 function markShot(unit, target) {
@@ -1029,10 +1118,33 @@ function teamAddPoison(target, stacks, time, source) { poison(source, target, st
 function teamAddBurn(target, stacks, time, source) { burn(source, target, stacks); target.burn.time = Math.max(target.burn.time, time); }
 function teamTakeRaw(target, amount) { target.hpNow = Math.max(1, target.hpNow - amount); }
 function teamFloater(unit, text, tone) { floater(unit, text, tone); }
+function teamCounterattack(unit, source, effect, context = {}) {
+  if (!alive(unit) || !alive(source) || (unit.counterCd || 0) > 0) return;
+  unit.counterCd = effect.cooldown || 0;
+  const amount = (effect.flat || 0)
+    + teamEffectivePower(unit) * (effect.power || 0)
+    + (context.blocked || 0) * (effect.blockedRatio || 0);
+  withAction(unit, {
+    tags: ["counter", "reactive"],
+    skillKey: unit.passiveKey || SHARED_SKILL_KEY_BY_NAME[unit.passive] || unit.passive,
+    skillName: effect.label || "反击",
+    meta: { blockedTrigger: context.blocked || 0 },
+  }, () => damage(unit, source, amount, "physical", context.visual));
+  if (context.visual) floater(unit, effect.label || "反击", "shield");
+}
 function unitRef(unit) { return SIGNALS.unitRef ? SIGNALS.unitRef(unit) : unit ? { id: unit.unitId || unit.id, name: unit.name, side: unit.side, role: unit.roleName } : null; }
 function emitSignal(signal) {
   if (!state.signalBus) return;
   state.signalBus.emit({ time: state.time, ...signal });
+}
+function emitTeamEffectSignal(signal) {
+  emitSignal({
+    ...signal,
+    source: unitRef(signal.source),
+    target: unitRef(signal.target),
+    skillKey: signal.source?._actionSignal?.skillKey || null,
+    skillName: signal.source?._actionSignal?.skillName || "",
+  });
 }
 function withAction(unit, action, fn) {
   if (!unit) return fn();

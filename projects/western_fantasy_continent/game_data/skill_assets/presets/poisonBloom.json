@@ -1,6 +1,89 @@
 {
   "name": "毒巢滚雪球",
   "desc": "慢启动，死亡扩散，后期毒爆",
+  "design": {
+    "fantasy": "Survive the opening, accumulate poison, then spread and detonate it.",
+    "experience": {
+      "start": "Poison begins slowly while the team survives.",
+      "transition": "Stacks accelerate and spread between enemies.",
+      "payoff": "A poison payoff converts accumulated stacks into damage.",
+      "reset": "Stacks fall and begin accumulating again."
+    },
+    "primaryOutput": "dot",
+    "desiredTags": [
+      "poison",
+      "dot",
+      "dotPayoff",
+      "sustain"
+    ],
+    "watchTags": [
+      "burst",
+      "execute"
+    ],
+    "strongMatchups": [
+      "alchemyChaos",
+      "bloodRage",
+      "crownCarry",
+      "frostControl",
+      "holySustain",
+      "ironWall",
+      "lightningTempo",
+      "shadowExecute"
+    ],
+    "weakMatchups": [
+      "fireBurst"
+    ],
+    "validationOpponents": [
+      "ironWall",
+      "fireBurst"
+    ],
+    "curves": [
+      {
+        "metric": "poisonApplicationAcceleration",
+        "op": ">=",
+        "value": 1.15
+      },
+      {
+        "metric": "poisonSpreadEvents",
+        "op": ">=",
+        "value": 0.5
+      },
+      {
+        "metric": "payoffCycles",
+        "op": ">=",
+        "value": 1
+      }
+    ],
+    "signalAcceptance": [
+      {
+        "metric": "poisonStacksApplied",
+        "op": ">=",
+        "value": 12
+      },
+      {
+        "metric": "dotDamageShare",
+        "op": ">=",
+        "value": 0.2
+      },
+      {
+        "metric": "dotDamageShare",
+        "op": "<=",
+        "value": 0.55
+      },
+      {
+        "metric": "statusPayoffDamageShare",
+        "op": ">=",
+        "value": 0.08
+      }
+    ],
+    "failureBoundaries": [
+      {
+        "metric": "payoffStartsAfterSetup",
+        "op": ">=",
+        "value": 1
+      }
+    ]
+  },
   "team": [
     {
       "role": "knight",
@@ -21,7 +104,7 @@
       "small1": "venomBrand",
       "small2": "miasmaFlask",
       "passive": "hotbedPact",
-      "ultimate": "plagueOffering"
+      "ultimate": "bloomDetonation"
     },
     {
       "role": "priest",

@@ -64,6 +64,26 @@ const SKILL_FX = {
   miasmaFlask: { kind: "aoe", at: "enemyCenter", sheet: "wavyPurple", image: "smoke01", color: "poison" },
   volatileBottle: { kind: "aoe", at: "target", sheet: "explosion", image: "fire01", color: "fire" },
   frostNova: { kind: "aoe", at: "enemyCenter", sheet: "wavyBlue", color: "ice" },
+  shieldBash: { kind: "shield", at: "target", sheet: "impact", image: "slash02", color: "gold" },
+  guardBreak: { kind: "slash", at: "target", sheet: "bigHit", image: "slash02", color: "gold" },
+  redFeast: { kind: "slash", at: "target", sheet: "blood", image: "slash04", color: "blood" },
+  garrote: { kind: "dash", at: "target", sheet: "blood", image: "slash01", color: "poison" },
+  flareMark: { kind: "projectile", at: "target", sheet: "explosion", image: "spark01", color: "fire" },
+  iceLance: { kind: "projectile", at: "target", sheet: "wavyBlue", image: "spark01", color: "ice" },
+  mendingLight: { kind: "heal", at: "lowestAlly", sheet: "charge", image: "magic01", color: "heal" },
+  curseLeak: { kind: "aoe", at: "target", sheet: "wavyPurple", image: "smoke01", color: "poison" },
+  rhythmGuard: { kind: "teamBuff", at: "teamCenter", sheet: "electricRing", image: "magic01", color: "gold" },
+  sparkCatalyst: { kind: "aoe", at: "target", sheet: "explosion", image: "fire01", color: "arcane" },
+  vowTaunt: { kind: "shield", at: "self", sheet: "electricRing", color: "gold" },
+  sunderingAdvance: { kind: "cleave", at: "target", sheet: "bigHit", image: "slash02", color: "gold" },
+  lastWound: { kind: "slash", at: "target", sheet: "blood", image: "slash04", color: "blood" },
+  deathNeedle: { kind: "dash", at: "target", sheet: "wavyPurple", image: "slash01", color: "shadow" },
+  markRelay: { kind: "projectile", at: "target", sheet: "impact", image: "spark01", color: "blue" },
+  combustSigil: { kind: "aoe", at: "enemyCenter", sheet: "fireRing", image: "flame01", color: "fire" },
+  graceTransfer: { kind: "heal", at: "lowestAlly", sheet: "charge", image: "magic01", color: "heal" },
+  painDividend: { kind: "buff", at: "carryAlly", sheet: "blood", image: "magic01", color: "blood" },
+  syncopate: { kind: "teamBuff", at: "teamCenter", sheet: "electricRing", image: "magic01", color: "gold" },
+  reagentMark: { kind: "aoe", at: "target", sheet: "vortex", image: "magic01", color: "arcane" },
   bannerWall: { kind: "teamBuff", at: "teamCenter", sheet: "electricRing", color: "gold", ultimate: true },
   warBanner: { kind: "cleave", at: "enemyCenter", sheet: "bigHit", image: "slash02", color: "gold", ultimate: true },
   undyingRoar: { kind: "buff", at: "self", sheet: "blood", color: "blood", ultimate: true },
@@ -74,6 +94,8 @@ const SKILL_FX = {
   plagueOffering: { kind: "aoe", at: "enemyCenter", sheet: "vortex", image: "smoke01", color: "poison", ultimate: true },
   crescendo: { kind: "teamBuff", at: "teamCenter", sheet: "electricRing", image: "magic01", color: "gold", ultimate: true },
   grandMixture: { kind: "aoe", at: "enemyCenter", sheet: "vortex", image: "magic01", color: "arcane", ultimate: true },
+  oathRally: { kind: "teamBuff", at: "teamCenter", sheet: "electricRing", image: "magic01", color: "gold", ultimate: true },
+  ruinComet: { kind: "rain", at: "enemyCenter", sheet: "explosion", image: "magic01", color: "arcane", ultimate: true },
 };
 
 function sheet(path, cols, rows, frames) {
@@ -244,9 +266,53 @@ const SKILLS = SHARED_SKILLS.createSkillLibrary({
   addPoison,
   addBurn,
   takeRaw,
+  counterattack,
+  emitEffectSignal,
   floater,
 });
-const PRESETS = SHARED_SKILLS.presets;
+const TEST_PRESETS = {
+  markForge: {
+    name: "猎标熔炉",
+    desc: "新技能测试：猎标接力、试剂标记、燃爆符印，测试标记资源和异常兑现。",
+    team: [
+      { role: "knight", small1: "shieldBash", small2: "guard", passive: "fortressStance", ultimate: "oathRally" },
+      { role: "ranger", small1: "markRelay", small2: "flareMark", passive: "statusHunter", ultimate: "arrowStorm" },
+      { role: "alchemist", small1: "reagentMark", small2: "volatileBottle", passive: "catalyst", ultimate: "ruinComet" },
+      { role: "mage", small1: "combustSigil", small2: "emberSpread", passive: "kindlingEcho", ultimate: "meteorRain" },
+    ],
+  },
+  frontlineOath: {
+    name: "前线誓约",
+    desc: "新技能测试：誓言挑衅、裂阵推进、残伤怒砍，测试前排压制。",
+    team: [
+      { role: "knight", small1: "vowTaunt", small2: "shieldBash", passive: "frontlineDrill", ultimate: "oathRally" },
+      { role: "warrior", small1: "sunderingAdvance", small2: "guardBreak", passive: "frontlineDrill", ultimate: "warBanner" },
+      { role: "berserker", small1: "lastWound", small2: "redFeast", passive: "frontlineDrill", ultimate: "undyingRoar" },
+      { role: "priest", small1: "graceTransfer", small2: "bloodCharm", passive: "afterglowGrace", ultimate: "sanctuary" },
+    ],
+  },
+  poisonRuin: {
+    name: "毒蚀彗星",
+    desc: "新技能测试：死线针刺、痛苦分红、试剂标记和破灭彗星。",
+    team: [
+      { role: "knight", small1: "shieldBash", small2: "guard", passive: "fortressStance", ultimate: "bannerWall" },
+      { role: "assassin", small1: "deathNeedle", small2: "garrote", passive: "statusHunter", ultimate: "shadowHarvest" },
+      { role: "warlock", small1: "painDividend", small2: "curseLeak", passive: "statusHunter", ultimate: "plagueOffering" },
+      { role: "alchemist", small1: "reagentMark", small2: "volatileBottle", passive: "catalyst", ultimate: "ruinComet" },
+    ],
+  },
+  rhythmRally: {
+    name: "守拍集结",
+    desc: "新技能测试：切分拍、恩典转护、终结本能，测试节奏支援。",
+    team: [
+      { role: "warrior", small1: "guardBreak", small2: "powerStrike", passive: "finisherInstinct", ultimate: "oathRally" },
+      { role: "ranger", small1: "flareMark", small2: "pinningArrow", passive: "finisherInstinct", ultimate: "arrowStorm" },
+      { role: "bard", small1: "syncopate", small2: "rhythmGuard", passive: "encore", ultimate: "oathRally" },
+      { role: "priest", small1: "graceTransfer", small2: "mendingLight", passive: "afterglowGrace", ultimate: "sanctuary" },
+    ],
+  },
+};
+const PRESETS = { ...SHARED_SKILLS.presets, ...TEST_PRESETS };
 
 const els = {
   leftConfig: document.querySelector("#leftConfig"),
@@ -327,6 +393,24 @@ function bindEvents() {
 }
 
 function renderPresetButtons() {
+  els.presetButtons.innerHTML = ["left", "right"].map((side) => `
+    <div class="preset-side">
+      <div class="preset-side-head">
+        <strong>${side === "left" ? "左队预设" : "右队预设"}</strong>
+        <span>${presetLabel(state.selectedPreset[side])}</span>
+      </div>
+      <div class="preset-list">
+        ${Object.entries(PRESETS).map(([key, preset]) => `
+          <button type="button" data-side="${side}" data-preset="${key}" class="preset-card ${state.selectedPreset[side] === key ? "active" : ""}">
+            <em>${TEST_PRESETS[key] ? "新技能测试" : "标准流派"}</em>
+            <strong>${preset.name}</strong>
+            <span>${preset.desc || ""}</span>
+          </button>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+  return;
   els.presetButtons.innerHTML = Object.entries(PRESETS).map(([key, preset]) => `
     <button type="button" data-side="left" data-preset="${key}" class="${state.selectedPreset.left === key ? "active" : ""}">左：${preset.name}</button>
     <button type="button" data-side="right" data-preset="${key}" class="${state.selectedPreset.right === key ? "active" : ""}">右：${preset.name}</button>
@@ -339,6 +423,11 @@ function renderConfigs() {
   els.leftSummary.textContent = summarizeTeam("left");
   els.rightSummary.textContent = summarizeTeam("right");
 }
+
+function presetLabel(key) {
+  return PRESETS[key]?.name || "自定义";
+}
+
 function renderSideConfig(side, mount) {
   mount.innerHTML = state.teams[side].map((spec, index) => {
     const role = ROLE_KITS[spec.role];
@@ -408,14 +497,14 @@ function makeTeam(side, specs) {
       armor: role.armor, range: role.range, homeX: slot.x, homeY: slot.y, line: slot.line, x: slot.x, y: slot.y,
       attackCd: 0.6 + index * 0.08,
       skillCd: {
-        small1: 1 + index * 0.35,
-        small2: 2.2 + index * 0.35,
+        small1: openingCooldown(spec.small1, 1 + index * 0.35),
+        small2: openingCooldown(spec.small2, 2.2 + index * 0.35),
         ultimate: openingCooldown(spec.ultimate, 20 + index * 1.8),
       },
       shield: 0, poison: status(), burn: status(), slowTimer: 0, guardTimer: 0, tauntTimer: 0, hasteTimer: 0,
       dotResistTimer: 0, undyingTimer: 0, lifeStealTimer: 0, bonusPowerTimer: 0, bonusPower: 0,
-      bloodFuryTimer: 0, whirlwindTimer: 0, roarFuryTimer: 0,
-      damageDone: 0, mark: 0, icon: `${ICON_BASE}/${role.icon}.svg`,
+      bloodFuryTimer: 0, whirlwindTimer: 0, roarFuryTimer: 0, retaliationTimer: 0, retaliationEffect: null,
+      counterCd: 0, damageDone: 0, mark: 0, icon: `${ICON_BASE}/${role.icon}.svg`,
     };
   });
 }
@@ -456,7 +545,8 @@ function updateBattle(dt, visual = false) {
 function tickTimers(unit, dt) {
   for (const key of ["small1", "small2", "ultimate"]) unit.skillCd[key] = Math.max(0, unit.skillCd[key] - dt);
   unit.attackCd -= dt * (unit.hasteTimer > 0 ? (unit.hasteMultiplier || 1.45) : 1);
-  for (const key of ["slowTimer", "guardTimer", "tauntTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer"]) unit[key] = Math.max(0, unit[key] - dt);
+  for (const key of ["slowTimer", "guardTimer", "tauntTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer"]) unit[key] = Math.max(0, unit[key] - dt);
+  unit.counterCd = Math.max(0, (unit.counterCd || 0) - dt);
 }
 function tickStatuses(unit, dt, visual) {
   tickDot(unit, unit.poison, dt, 2.1, "poison", visual);
@@ -546,6 +636,10 @@ function hit(source, target, amount, type, label, visual = true) {
   if (source.passive === "executionSense" && (hpRatio(target) < 0.45 || statusCount(target) > 0)) value *= 1.18;
   if (source.passive === "duelistFocus") value *= 1 + (target.mark || 0) * 0.045;
   if (source.passive === "catalyst" && statusCount(target) > 0) value *= 1.06;
+  value *= SHARED_SKILLS.passiveDamageMultiplier?.(source, target, {
+    statusCount,
+    hpRatio,
+  }) || 1;
   if (target.guardTimer > 0) value *= 0.72;
   const mitigated = Math.max(1, value - target.armor * (type === "physical" ? 0.72 : 0.38));
   takeDamage(source, target, mitigated, type, visual, label);
@@ -584,6 +678,17 @@ function takeDamage(source, target, amount, type, visual = true, label = "") {
       healUnit(source, amount * leechRate, "吸血", visual);
     }
   }
+  SHARED_SKILLS.triggerReactiveEffects?.("afterDamageTaken", {
+    unit: target,
+    source,
+    blocked,
+    damageTaken: remaining,
+    rawAmount: amount,
+    type,
+    visual,
+  }, {
+    counterattack,
+  });
   if (visual && blocked > 0) floater(target, `护盾-${Math.round(blocked)}`, "shield");
   if (visual && remaining > 0) {
     const label = type === "poison" ? `剧毒-${Math.round(remaining)}`
@@ -593,6 +698,29 @@ function takeDamage(source, target, amount, type, visual = true, label = "") {
     floater(target, label, type === "poison" ? "poison" : type === "burn" || type === "fire" ? "fire" : "");
   }
   if (target.hp <= 0) onDeath(target, source, visual);
+}
+function counterattack(unit, source, effect, context = {}) {
+  if (!isAlive(unit) || !isAlive(source) || (unit.counterCd || 0) > 0) return;
+  unit.counterCd = effect.cooldown || 0;
+  const amount = (effect.flat || 0)
+    + effectivePower(unit) * (effect.power || 0)
+    + (context.blocked || 0) * (effect.blockedRatio || 0);
+  withAction(unit, {
+    tags: ["counter", "reactive"],
+    skillKey: unit.passive,
+    skillName: effect.label || "Counter",
+    meta: { blockedTrigger: context.blocked || 0 },
+  }, () => hit(unit, source, amount, "physical", effect.label || "Counter", context.visual));
+  if (context.visual) floater(unit, "COUNTER", "heal");
+}
+function emitEffectSignal(signal) {
+  emitSignal({
+    ...signal,
+    source: unitRef(signal.source),
+    target: unitRef(signal.target),
+    skillKey: signal.source?._actionSignal?.skillKey || null,
+    skillName: signal.source?._actionSignal?.skillName || "",
+  });
 }
 function takeRaw(target, amount, source, type) {
   const hpBefore = target.hp;
@@ -678,7 +806,11 @@ function addBurn(target, stacks, time, source, visual = state.running) {
 function onDeath(unit, killer, visual) {
   if (visual) log(`${unit.name} 倒下。`);
   if (unit.poison.stacks > 0) alliesOf(killer || unit).filter((ally) => ally.passive === "hotbedPact" && isAlive(ally)).slice(0, 1).forEach((source) => {
-    alliesOf(unit).filter((ally) => isAlive(ally) && ally.id !== unit.id).forEach((enemy) => addPoison(enemy, Math.ceil(unit.poison.stacks * 0.18), 6, source));
+    alliesOf(unit).filter((ally) => isAlive(ally) && ally.id !== unit.id).forEach((enemy) => {
+      withAction(source, { tags: ["passive", "poisonSpread"], skillKey: "hotbedPact", skillName: "Poison Spread" }, () => {
+        addPoison(enemy, Math.ceil(unit.poison.stacks * 0.18), 6, source);
+      });
+    });
     if (visual) log(`温床契约触发，${unit.name} 的余毒扩散。`);
   });
   if (unit.burn.stacks > 0) alliesOf(killer || unit).filter((ally) => ally.passive === "kindlingEcho" && isAlive(ally)).slice(0, 1).forEach((source) => {
@@ -971,19 +1103,20 @@ function runBalanceCheck() {
 }
 function simulateMatchup(leftKey, rightKey, games) {
   const simulator = window.GAME_COMBAT_SIM;
-  if (!simulator?.simulatePresetMatchup) {
+  if (!simulator?.simulateTeams) {
     throw new Error("Shared combat simulator is not loaded.");
   }
   let wins = 0;
   for (let i = 0; i < games; i += 1) {
-    const leftResult = simulator.simulatePresetMatchup(leftKey, rightKey, { seed: i });
-    const rightResult = simulator.simulatePresetMatchup(rightKey, leftKey, { seed: i });
+    const leftResult = simulator.simulateTeams(structuredClone(PRESETS[leftKey].team), structuredClone(PRESETS[rightKey].team), { seed: `${leftKey}|${rightKey}|${i}` });
+    const rightResult = simulator.simulateTeams(structuredClone(PRESETS[rightKey].team), structuredClone(PRESETS[leftKey].team), { seed: `${rightKey}|${leftKey}|${i}` });
     if (leftResult.winner === "left") wins += 1;
     if (rightResult.winner === "right") wins += 1;
   }
   return wins / (games * 2);
 }
 function renderBalance(keys) {
+  els.matchupGrid.style.gridTemplateColumns = `120px repeat(${keys.length}, minmax(88px, 1fr))`;
   els.matchupGrid.innerHTML = `
     <div class="matrix-head"></div>
     ${keys.map((key) => `<div class="matrix-head">${PRESETS[key].name}</div>`).join("")}

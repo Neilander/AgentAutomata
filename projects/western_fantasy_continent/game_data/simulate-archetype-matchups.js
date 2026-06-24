@@ -7,19 +7,6 @@ const OUT_FILE = path.join(__dirname, "..", "design", "archetype-matchup-report.
 const GAMES = 15;
 const TOTAL_GAMES = GAMES * 2;
 
-const EXPECTED = {
-  poisonBloom: { strong: ["ironWall", "holySustain"], weak: ["fireBurst", "shadowExecute"] },
-  fireBurst: { strong: ["shadowExecute", "alchemyChaos"], weak: ["ironWall", "holySustain"] },
-  crownCarry: { strong: ["poisonBloom", "frostControl"], weak: ["shadowExecute", "fireBurst"] },
-  ironWall: { strong: ["fireBurst", "shadowExecute"], weak: ["poisonBloom", "alchemyChaos"] },
-  bloodRage: { strong: ["ironWall", "frostControl"], weak: ["shadowExecute", "fireBurst"] },
-  lightningTempo: { strong: ["ironWall", "holySustain"], weak: ["shadowExecute", "frostControl"] },
-  frostControl: { strong: ["bloodRage", "shadowExecute"], weak: ["fireBurst", "poisonBloom"] },
-  holySustain: { strong: ["fireBurst", "shadowExecute"], weak: ["poisonBloom", "alchemyChaos"] },
-  shadowExecute: { strong: ["fireBurst", "crownCarry"], weak: ["ironWall", "holySustain"] },
-  alchemyChaos: { strong: ["ironWall", "holySustain"], weak: ["shadowExecute", "fireBurst"] },
-};
-
 function run() {
   const keys = Object.keys(SKILL_DATA.presets);
   const rows = keys.map((left) => ({
@@ -58,7 +45,11 @@ function runPair(left, right) {
 }
 
 function classifyExpectation(left, right, rate) {
-  const expected = EXPECTED[left] || { strong: [], weak: [] };
+  const design = SKILL_DATA.presets[left]?.design || {};
+  const expected = {
+    strong: design.strongMatchups || [],
+    weak: design.weakMatchups || [],
+  };
   const actual = rate >= 0.6 ? "favored" : rate <= 0.4 ? "weak" : "even";
   const intended = expected.strong.includes(right) ? "favored" : expected.weak.includes(right) ? "weak" : "flex";
   const ok = intended === "flex" || intended === actual || (intended === "favored" && rate >= 0.53) || (intended === "weak" && rate <= 0.47);

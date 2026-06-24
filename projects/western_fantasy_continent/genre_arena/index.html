@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>西幻大陆 · 流派斗技场</title>
+    <title>西幻大陆 - 流派竞技场</title>
     <link rel="stylesheet" href="/genre_arena/styles.css">
   </head>
   <body>
@@ -11,8 +11,8 @@
       <header class="topbar">
         <div>
           <a href="/workbench/" class="back-link">返回工作台</a>
-          <h1>流派斗技场</h1>
-          <p>4v4 自动战斗沙盒：10 个职业 kit、10 个流派预设、技能冷却、前后排和宏观胜率巡检。</p>
+          <h1>流派竞技场</h1>
+          <p>4v4 自动战斗沙盒。先看战斗，再选择左右队伍和调技能。</p>
         </div>
         <div class="controls">
           <button id="startBtn" type="button">开始</button>
@@ -21,39 +21,38 @@
         </div>
       </header>
 
-      <section id="presetButtons" class="preset-strip">
+      <section class="battle-panel battle-panel-main">
+        <div class="scorebar">
+          <div><strong id="leftAlive">4</strong><span>左队存活</span></div>
+          <div><strong id="battleTimer">0.0s</strong><span id="battleState">待命</span></div>
+          <div><strong id="rightAlive">4</strong><span>右队存活</span></div>
+        </div>
+        <div id="battlefield" class="battlefield">
+          <div id="fxLayer" class="fx-layer"></div>
+          <div id="unitLayer" class="unit-layer"></div>
+        </div>
+        <div class="legend">
+          <span><i class="dot poison"></i>剧毒</span>
+          <span><i class="dot shield"></i>护盾</span>
+          <span><i class="dot cast"></i>技能冷却</span>
+        </div>
       </section>
+
+      <section id="presetButtons" class="preset-dock"></section>
 
       <section class="layout">
         <aside class="team-panel">
           <div class="panel-head">
             <h2>左队配置</h2>
-            <span id="leftSummary">毒巢滚雪球</span>
+            <span id="leftSummary">剧毒绽放</span>
           </div>
           <div id="leftConfig" class="unit-config"></div>
         </aside>
 
-        <section class="battle-panel">
-          <div class="scorebar">
-            <div><strong id="leftAlive">4</strong><span>左队存活</span></div>
-            <div><strong id="battleTimer">0.0s</strong><span id="battleState">待命</span></div>
-            <div><strong id="rightAlive">4</strong><span>右队存活</span></div>
-          </div>
-          <div id="battlefield" class="battlefield">
-            <div id="fxLayer" class="fx-layer"></div>
-            <div id="unitLayer" class="unit-layer"></div>
-          </div>
-          <div class="legend">
-            <span><i class="dot poison"></i>毒层</span>
-            <span><i class="dot shield"></i>护盾</span>
-            <span><i class="dot cast"></i>技能冷却</span>
-          </div>
-        </section>
-
         <aside class="team-panel">
           <div class="panel-head">
             <h2>右队配置</h2>
-            <span id="rightSummary">均衡对照</span>
+            <span id="rightSummary">铁壁反击</span>
           </div>
           <div id="rightConfig" class="unit-config"></div>
         </aside>
@@ -63,9 +62,9 @@
         <article class="flow-card">
           <div class="panel-head">
             <h2>职业技能库</h2>
-            <span>每个职业 2 小技能 · 1 被动 · 1 大招</span>
+            <span>技能、被动、大招</span>
           </div>
-          <p>这里先用手写技能验证结构。后续 AI 可以按同一格式批量生成职业 kit 和流派预设，再用胜率矩阵粗调。</p>
+          <p>这里展示当前技能库。后续 AI 生成技能后，应先经过关键词分类、预算模型、红队和流派回归。</p>
           <div id="skillLibrary" class="skill-library"></div>
         </article>
         <article class="log-card">
@@ -83,7 +82,7 @@
           <button id="simBtn" type="button">跑预设胜率</button>
         </div>
         <div id="matchupGrid" class="matchup-grid">
-          <div class="empty-balance">点击“跑预设胜率”，快速查看流派之间的优劣关系。</div>
+          <div class="empty-balance">点击“跑预设胜率”，快速查看流派之间的优势关系。</div>
         </div>
       </section>
 

@@ -4,13 +4,24 @@ if (-not (Test-Path $node)) {
   $node = "node"
 }
 
-$env:PORT = "3778"
-$procIds = Get-NetTCPConnection -LocalPort 3778 -ErrorAction SilentlyContinue |
-  Select-Object -ExpandProperty OwningProcess -Unique
-foreach ($procId in $procIds) {
-  Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue
+function Stop-PortProcess($port) {
+  $procIds = Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue |
+    Select-Object -ExpandProperty OwningProcess -Unique
+  if (-not $procIds) {
+    $procIds = netstat -ano |
+      Select-String ":$port\s" |
+      ForEach-Object { ($_ -split "\s+")[-1] } |
+      Sort-Object -Unique
+  }
+  foreach ($procId in $procIds) {
+    Stop-Process -Id ([int]$procId) -Force -ErrorAction SilentlyContinue
+  }
 }
+
+$env:PORT = "3777"
+$env:APP_MODE = "production"
+Stop-PortProcess 3777
 
 Start-Process -FilePath $node -ArgumentList "projects\western_fantasy_continent\app\server\server.js" -WorkingDirectory $repo -WindowStyle Hidden
 Start-Sleep -Seconds 1
-Start-Process "http://localhost:3778/workbench/"
+Start-Process "http://localhost:3777/workbench/"

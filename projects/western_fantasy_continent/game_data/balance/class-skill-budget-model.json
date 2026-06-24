@@ -1,0 +1,94 @@
+{
+  "schema": "agent_automata_class_skill_budget_v1",
+  "notes": [
+    "This is a first-pass static budget model. It is a warning system, not an automatic balance verdict.",
+    "A skill is judged against its owning class first, then against global function-density rules.",
+    "Breaker/red-team searches should be run after batches of skills, not after every individual skill."
+  ],
+  "globalSmallSkillDensity": {
+    "maxPrimaryAxes": 2,
+    "warnPrimaryAxes": 3,
+    "notes": "Primary axes are meaningful output channels such as damage, shield, heal, control, buff, DOT, and death-prevention."
+  },
+  "tiers": {
+    "small": {
+      "dps": { "low": 8, "medium": 16, "high": 26, "extreme": 40 },
+      "sps": { "low": 6, "medium": 14, "high": 24, "extreme": 36 },
+      "hps": { "low": 6, "medium": 14, "high": 26, "extreme": 38 },
+      "controlUptime": { "low": 0.25, "medium": 0.55, "high": 0.9, "extreme": 1.2 },
+      "defenseUptime": { "low": 0.3, "medium": 0.6, "high": 1, "extreme": 1.35 },
+      "buffValuePerSecond": { "low": 5, "medium": 12, "high": 22, "extreme": 34 }
+    },
+    "ultimate": {
+      "dps": { "low": 4, "medium": 9, "high": 16, "extreme": 25 },
+      "sps": { "low": 3, "medium": 8, "high": 14, "extreme": 22 },
+      "hps": { "low": 3, "medium": 8, "high": 15, "extreme": 24 },
+      "controlUptime": { "low": 0.08, "medium": 0.18, "high": 0.35, "extreme": 0.55 },
+      "defenseUptime": { "low": 0.1, "medium": 0.25, "high": 0.45, "extreme": 0.7 },
+      "buffValuePerSecond": { "low": 2, "medium": 6, "high": 12, "extreme": 20 }
+    }
+  },
+  "classes": {
+    "knight": {
+      "label": "骑士",
+      "allowedHigh": ["sps", "damageReduction", "taunt", "counter"],
+      "expectedLow": ["hps", "burstDps"],
+      "smallCaps": { "dps": "medium", "sps": "high", "hps": "low", "controlUptime": "high", "defenseUptime": "high", "buffValuePerSecond": "medium" }
+    },
+    "warrior": {
+      "label": "战士",
+      "allowedHigh": ["frontlineDps", "cleave", "armorPressure"],
+      "expectedLow": ["hps", "sps", "longControl"],
+      "smallCaps": { "dps": "high", "sps": "low", "hps": "low", "controlUptime": "medium", "defenseUptime": "low", "buffValuePerSecond": "medium" }
+    },
+    "berserker": {
+      "label": "狂战士",
+      "allowedHigh": ["selfDps", "selfHaste", "selfLeech", "lowHpScaling"],
+      "expectedLow": ["teamShield", "teamHeal", "hardControl"],
+      "smallCaps": { "dps": "high", "sps": "low", "hps": "medium", "controlUptime": "low", "defenseUptime": "low", "buffValuePerSecond": "high" }
+    },
+    "assassin": {
+      "label": "刺客",
+      "allowedHigh": ["singleTargetDps", "execute", "mobility"],
+      "expectedLow": ["aoe", "hps", "sps", "teamBuff"],
+      "smallCaps": { "dps": "high", "sps": "low", "hps": "low", "controlUptime": "medium", "defenseUptime": "low", "buffValuePerSecond": "low" }
+    },
+    "ranger": {
+      "label": "游侠",
+      "allowedHigh": ["singleTargetDps", "mark", "tempo"],
+      "expectedLow": ["hps", "sps", "hardControl"],
+      "smallCaps": { "dps": "high", "sps": "low", "hps": "low", "controlUptime": "medium", "defenseUptime": "low", "buffValuePerSecond": "medium" }
+    },
+    "mage": {
+      "label": "法师",
+      "allowedHigh": ["burstDps", "aoe", "burn"],
+      "expectedLow": ["hps", "sps", "frontlineControl"],
+      "smallCaps": { "dps": "high", "sps": "low", "hps": "low", "controlUptime": "medium", "defenseUptime": "low", "buffValuePerSecond": "low" }
+    },
+    "priest": {
+      "label": "牧师",
+      "allowedHigh": ["hps", "sps", "cleanse", "protection", "deathPreventionSupport"],
+      "expectedLow": ["dps", "execute", "aoeBurst"],
+      "smallCaps": { "dps": "low", "sps": "high", "hps": "high", "controlUptime": "low", "defenseUptime": "high", "buffValuePerSecond": "medium" },
+      "densityNote": "Priest may combine heal/shield with one short defensive timer, but multi-axis protection should be watched in benchmark teams."
+    },
+    "warlock": {
+      "label": "术士",
+      "allowedHigh": ["dotDps", "statusPayoff", "selfCost", "drain"],
+      "expectedLow": ["directHeal", "sps", "instantBurst"],
+      "smallCaps": { "dps": "high", "sps": "low", "hps": "medium", "controlUptime": "medium", "defenseUptime": "low", "buffValuePerSecond": "medium" }
+    },
+    "bard": {
+      "label": "吟游诗人",
+      "allowedHigh": ["buffValuePerSecond", "haste", "teamTempo"],
+      "expectedLow": ["directDps", "directSps", "directHps"],
+      "smallCaps": { "dps": "low", "sps": "low", "hps": "low", "controlUptime": "medium", "defenseUptime": "low", "buffValuePerSecond": "high" }
+    },
+    "alchemist": {
+      "label": "炼金师",
+      "allowedHigh": ["statusAmplify", "mixedDot", "payoff"],
+      "expectedLow": ["directHeal", "hardTank"],
+      "smallCaps": { "dps": "high", "sps": "low", "hps": "low", "controlUptime": "medium", "defenseUptime": "low", "buffValuePerSecond": "medium" }
+    }
+  }
+}

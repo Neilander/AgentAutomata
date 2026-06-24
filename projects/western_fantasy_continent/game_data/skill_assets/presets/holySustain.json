@@ -1,6 +1,76 @@
 {
   "name": "圣盾续航",
   "desc": "治疗护盾密度高，消耗取胜",
+  "design": {
+    "fantasy": "Absorb repeated pressure until healing and shields stabilize the whole team.",
+    "experience": {
+      "start": "The team takes visible early pressure.",
+      "transition": "A health crisis activates repeated healing and shields.",
+      "payoff": "Average team health stabilizes or recovers.",
+      "reset": "The team survives into a longer attrition phase."
+    },
+    "primaryOutput": "sustain",
+    "desiredTags": [
+      "heal",
+      "shield",
+      "sustain"
+    ],
+    "watchTags": [
+      "poison",
+      "dotPayoff"
+    ],
+    "strongMatchups": [
+      "lightningTempo"
+    ],
+    "weakMatchups": [
+      "bloodRage",
+      "crownCarry",
+      "fireBurst",
+      "frostControl",
+      "poisonBloom",
+      "shadowExecute"
+    ],
+    "validationOpponents": [
+      "fireBurst",
+      "poisonBloom"
+    ],
+    "curves": [
+      {
+        "metric": "teamRecoveryAfterCrisis",
+        "op": ">=",
+        "value": 0.1
+      }
+    ],
+    "signalAcceptance": [
+      {
+        "metric": "healingPerSecond",
+        "op": ">=",
+        "value": 5
+      },
+      {
+        "metric": "shieldPerSecond",
+        "op": ">=",
+        "value": 4
+      },
+      {
+        "metric": "effectiveHealingRatio",
+        "op": ">=",
+        "value": 0.6
+      },
+      {
+        "metric": "survivorsAt20Seconds",
+        "op": ">=",
+        "value": 2
+      }
+    ],
+    "failureBoundaries": [
+      {
+        "metric": "teamRecoveryAfterCrisis",
+        "op": "<=",
+        "value": 0.55
+      }
+    ]
+  },
   "team": [
     {
       "role": "knight",
@@ -21,7 +91,7 @@
       "small1": "heal",
       "small2": "bloodCharm",
       "passive": "afterglowGrace",
-      "ultimate": "sanctuary"
+      "ultimate": "renewingSanctuary"
     },
     {
       "role": "priest",

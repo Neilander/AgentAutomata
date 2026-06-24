@@ -4,6 +4,7 @@ const path = require("path");
 const { URL } = require("url");
 
 const PORT = Number(process.env.PORT || 3777);
+const APP_MODE = process.env.APP_MODE || (PORT === 3777 ? "production" : "test");
 const PROJECT_ROOT = path.resolve(__dirname, "..", "..");
 const REPO_ROOT = path.resolve(PROJECT_ROOT, "..", "..");
 const TRACE_DIR = path.join(PROJECT_ROOT, "trace_tool", "traces");
@@ -13,6 +14,7 @@ const ART_IMAGE_DIR = path.join(ART_RECORD_DIR, "images");
 const ART_RECORD_FILE = path.join(ART_RECORD_DIR, "records.json");
 const ENV_FILE = path.join(REPO_ROOT, "env", ".env");
 const API_LOG_FILE = path.join(REPO_ROOT, "logs", "api_calls.jsonl");
+const { readTaskBoard, writeTaskBoard } = require(path.join(GAME_DATA_DIR, "task-board-store.js"));
 
 const KEY_DEFINITIONS = [
   { key: "OPENAI_API_KEY", label: "OpenAI API Key", secret: true },
@@ -334,6 +336,8 @@ function routeStatic(req, res, url) {
     "/genre_arena",
     "/team_simulator",
     "/dps_lab",
+    "/task_board",
+    "/keyword_workbench",
     "/game_data",
   ]);
 
@@ -360,6 +364,8 @@ function routeStatic(req, res, url) {
     "genre_arena",
     "team_simulator",
     "dps_lab",
+    "task_board",
+    "keyword_workbench",
     "game_data",
   ];
 
@@ -869,7 +875,7 @@ async function handle(req, res) {
   }
 
   if (req.method === "GET" && url.pathname === "/api/health") {
-    sendJson(res, 200, { ok: true, project: "western_fantasy_continent" });
+    sendJson(res, 200, { ok: true, project: "western_fantasy_continent", port: PORT, mode: APP_MODE });
     return;
   }
   if (req.method === "GET" && url.pathname === "/api/art-lab/status") {
@@ -943,6 +949,23 @@ async function handle(req, res) {
     readGameDataSummary(res);
     return;
   }
+  if (req.method === "GET" && url.pathname === "/api/task-board") {
+    try {
+      sendJson(res, 200, readTaskBoard());
+    } catch (error) {
+      sendJson(res, 500, { error: errorMessage(error) });
+    }
+    return;
+  }
+  if (req.method === "POST" && url.pathname === "/api/task-board") {
+    try {
+      const body = JSON.parse(await readBody(req));
+      sendJson(res, 200, { ok: true, board: writeTaskBoard(body.board || body) });
+    } catch (error) {
+      sendJson(res, 400, { error: errorMessage(error) });
+    }
+    return;
+  }
 
   if (routeStatic(req, res, url)) {
     return;
@@ -951,5 +974,5 @@ async function handle(req, res) {
 }
 
 http.createServer(handle).listen(PORT, () => {
-  console.log(`Western Fantasy Continent local server: http://localhost:${PORT}/workbench/`);
+  console.log(`Western Fantasy Continent local server (${APP_MODE}): http://localhost:${PORT}/workbench/`);
 });

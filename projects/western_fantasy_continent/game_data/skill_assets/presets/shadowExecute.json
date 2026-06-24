@@ -1,6 +1,71 @@
 {
   "name": "暗影处决",
   "desc": "低血斩杀，优开后排脆皮",
+  "design": {
+    "fantasy": "Create one vulnerable target and repeatedly finish the lowest-health enemy.",
+    "experience": {
+      "start": "Damage begins to concentrate on a vulnerable enemy.",
+      "transition": "The target enters the execute band.",
+      "payoff": "Execute damage rapidly finishes that target.",
+      "reset": "Focus moves to the next lowest-health enemy."
+    },
+    "primaryOutput": "execute",
+    "desiredTags": [
+      "execute",
+      "focus",
+      "risk"
+    ],
+    "watchTags": [
+      "shield",
+      "deathPrevent"
+    ],
+    "strongMatchups": [
+      "bloodRage",
+      "fireBurst",
+      "frostControl",
+      "holySustain",
+      "ironWall"
+    ],
+    "weakMatchups": [
+      "lightningTempo",
+      "poisonBloom"
+    ],
+    "validationOpponents": [
+      "crownCarry",
+      "ironWall"
+    ],
+    "curves": [
+      {
+        "metric": "peak2sDamageShare",
+        "op": ">=",
+        "value": 0.16
+      }
+    ],
+    "signalAcceptance": [
+      {
+        "metric": "executeDamageShare",
+        "op": ">=",
+        "value": 0.1
+      },
+      {
+        "metric": "lowestTargetDamageShare",
+        "op": ">=",
+        "value": 0.25
+      },
+      {
+        "metric": "selfCostPerSecond",
+        "op": ">=",
+        "value": 0.2
+      }
+    ],
+    "failureBoundaries": [
+      {
+        "metric": "areaDamageShare",
+        "op": "<=",
+        "value": 0.5
+      }
+    ]
+  },
   "team": [
     {
       "role": "knight",

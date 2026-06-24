@@ -14,7 +14,7 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 | `fireBurst` 余烬爆燃 | passes intent | warrior, knight, mage, mage | 12 | damage(6), area(4), burn(3), shield(3), sustain(3), team(3) | - | shield |
 | `frostControl` 霜控拖延 | passes intent | knight, priest, mage, alchemist | 16 | damage(6), sustain(6), shield(5), area(4), team(4), burn(2) | - | burst |
 | `holySustain` 圣盾续航 | passes intent | knight, warrior, priest, priest | 12 | sustain(6), shield(5), team(4), damage(3), support(3), area(2) | - | - |
-| `ironWall` 铁壁反击 | passes intent | knight, warrior, priest, bard | 16 | support(6), sustain(6), shield(5), team(4), teamWindow(4), damage(3) | - | - |
+| `ironWall` 铁壁反击 | passes intent | knight, warrior, priest, bard | 16 | support(6), sustain(6), shield(5), damage(4), team(4), teamWindow(4) | - | - |
 | `lightningTempo` 急速节奏 | passes intent | warrior, ranger, bard, ranger | 12 | damage(6), support(4), area(3), teamWindow(3), power(2), singleTarget(2) | - | control |
 | `poisonBloom` 毒巢滚雪球 | passes intent | knight, assassin, warlock, priest | 16 | damage(6), sustain(6), shield(5), poison(4), team(4), dot(3) | - | burst, execute |
 | `shadowExecute` 暗影处决 | passes intent | knight, assassin, assassin, warlock | 12 | damage(5), poison(3), shield(3), sustain(3), team(3), dot(2) | - | shield |
@@ -24,6 +24,8 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 ### `alchemyChaos` 炼金异常
 
 - Fantasy: 毒火混合，靠异常层数放大
+- Design contract: Mix poison and burn, then cash accumulated statuses into area damage.
+- Primary output: statusPayoff
 - Expected tags: poison, burn, statusPayoff, area
 - Watch tags: execute, burst
 - Skill mix: 小技能 6, 被动 3, 大招 3
@@ -47,6 +49,8 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 ### `bloodRage` 低血狂怒
 
 - Fantasy: 低血爆发和吸血翻盘
+- Design contract: Fall into danger, refuse death, then recover through empowered basic attacks.
+- Primary output: basicAttack
 - Expected tags: basicWindow, haste, sustain, deathPrevent
 - Watch tags: execute, burst
 - Skill mix: 小技能 8, 被动 4, 大招 4
@@ -74,6 +78,8 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 ### `crownCarry` 王冠核心
 
 - Fantasy: 全队资源养一个狂战/游侠核心
+- Design contract: Three allies funnel protection and tempo into one visible carry.
+- Primary output: basicAttack
 - Expected tags: support, carry, basicWindow, haste
 - Watch tags: execute
 - Skill mix: 小技能 8, 被动 4, 大招 4
@@ -101,6 +107,8 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 ### `fireBurst` 余烬爆燃
 
 - Fantasy: 点燃扩散，流星收尾，优开脆皮
+- Design contract: Ignite the team, spread fire, then end the fight with a meteor burst.
+- Primary output: burst
 - Expected tags: burn, area, burst
 - Watch tags: shield, heal
 - Skill mix: 小技能 6, 被动 3, 大招 3
@@ -124,6 +132,8 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 ### `frostControl` 霜控拖延
 
 - Fantasy: 减速控场，克制近战
+- Design contract: Slow the enemy front line so ranged damage gains extra time to work.
+- Primary output: control
 - Expected tags: control, slow, statusPayoff
 - Watch tags: backline, burst
 - Skill mix: 小技能 8, 被动 4, 大招 4
@@ -151,6 +161,8 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 ### `holySustain` 圣盾续航
 
 - Fantasy: 治疗护盾密度高，消耗取胜
+- Design contract: Absorb repeated pressure until healing and shields stabilize the whole team.
+- Primary output: sustain
 - Expected tags: heal, shield, sustain
 - Watch tags: poison, dotPayoff
 - Skill mix: 小技能 6, 被动 3, 大招 3
@@ -174,7 +186,9 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 ### `ironWall` 铁壁反击
 
 - Fantasy: 高护盾高减伤，拖时间吃大招
-- Expected tags: shield, heal, sustain
+- Design contract: Invite melee pressure into shields, then turn blocked damage into counterattacks.
+- Primary output: counterattack
+- Expected tags: shield, heal, sustain, counter
 - Watch tags: poison, dotPayoff
 - Skill mix: 小技能 8, 被动 4, 大招 4
 - Result: passes intent
@@ -183,8 +197,8 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 | --- | --- | --- | --- |
 | `guard` 守护 | 小技能 | 骑士 | shield, sustain, team |
 | `tauntLine` 誓卫嘲讽 | 小技能 | 骑士 | selfWindow, shield, sustain, team |
-| `fortressStance` 坚守阵线 | 被动 | 骑士 | none |
-| `bannerWall` 王旗不倒 | 大招 | 骑士 | shield, sustain, team, support, teamWindow |
+| `retaliationStance` 壁垒反击 | 被动 | 骑士 | counter, reactive, damage |
+| `retaliationBanner` 壁垒军旗 | 大招 | 骑士 | shield, sustain, team, support, teamWindow, counter, reactive |
 | `powerStrike` 重击 | 小技能 | 战士 | damage, singleTarget |
 | `cleave` 顺劈 | 小技能 | 战士 | damage, area |
 | `lineBreaker` 破阵步 | 被动 | 战士 | none |
@@ -201,6 +215,8 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 ### `lightningTempo` 急速节奏
 
 - Fantasy: 吟游加速，游侠持续点杀
+- Design contract: Build marks quickly and convert team haste into repeated focused shots.
+- Primary output: focusBasic
 - Expected tags: mark, markPayoff, haste, focus
 - Watch tags: control, execute
 - Skill mix: 小技能 6, 被动 3, 大招 3
@@ -224,6 +240,8 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 ### `poisonBloom` 毒巢滚雪球
 
 - Fantasy: 慢启动，死亡扩散，后期毒爆
+- Design contract: Survive the opening, accumulate poison, then spread and detonate it.
+- Primary output: dot
 - Expected tags: poison, dot, dotPayoff, sustain
 - Watch tags: burst, execute
 - Skill mix: 小技能 8, 被动 4, 大招 4
@@ -251,6 +269,8 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 ### `shadowExecute` 暗影处决
 
 - Fantasy: 低血斩杀，优开后排脆皮
+- Design contract: Create one vulnerable target and repeatedly finish the lowest-health enemy.
+- Primary output: execute
 - Expected tags: execute, focus, risk
 - Watch tags: shield, deathPrevent
 - Skill mix: 小技能 6, 被动 3, 大招 3

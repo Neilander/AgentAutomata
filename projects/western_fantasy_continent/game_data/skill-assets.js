@@ -525,6 +525,160 @@ const GAME_SKILL_ASSETS = (() => {
         "passive": true,
         "effects": []
       },
+      "enemyCullWeak": {
+        "name": "斩弱",
+        "type": "小技能",
+        "role": "敌人",
+        "cooldown": 5.7,
+        "openingCooldown": 2.4,
+        "icon": "deadly-strike",
+        "desc": "锁定最低血量目标，检验护盾、嘲讽与抬血。",
+        "effects": [
+          {
+            "kind": "hitLowestEnemy",
+            "flat": 58,
+            "power": 0.72,
+            "missingTargetHpFlat": 92,
+            "type": "shadow",
+            "label": "斩弱"
+          }
+        ]
+      },
+      "enemyDormantPassive": {
+        "name": "沉默本能",
+        "type": "被动",
+        "role": "敌人",
+        "cooldown": 0,
+        "icon": "sleepy",
+        "desc": "关卡敌人的空被动槽。",
+        "effects": []
+      },
+      "enemyEmberPulse": {
+        "name": "余烬脉冲",
+        "type": "小技能",
+        "role": "敌人",
+        "cooldown": 5.8,
+        "openingCooldown": 1.8,
+        "icon": "fire-wave",
+        "desc": "稳定全队火焰压力，检验爆发速度与群体续航。",
+        "effects": [
+          {
+            "kind": "hitEnemies",
+            "flat": 34,
+            "power": 0.42,
+            "type": "fire",
+            "label": "余烬"
+          }
+        ]
+      },
+      "enemyFrostClamp": {
+        "name": "寒霜钳制",
+        "type": "小技能",
+        "role": "敌人",
+        "cooldown": 7.5,
+        "openingCooldown": 3,
+        "icon": "frozen-orb",
+        "desc": "短窗口群体减速，检验加速和高爆发窗口。",
+        "effects": [
+          {
+            "kind": "enemyTimers",
+            "count": 4,
+            "timer": "slowTimer",
+            "duration": 5.2
+          }
+        ]
+      },
+      "enemyHeavySmash": {
+        "name": "裂骨重击",
+        "type": "小技能",
+        "role": "敌人",
+        "cooldown": 5.8,
+        "openingCooldown": 2.2,
+        "icon": "cracked-bone",
+        "desc": "高单体物理伤害，检验前排承压与治疗。",
+        "effects": [
+          {
+            "kind": "hitTarget",
+            "flat": 62,
+            "power": 0.62,
+            "type": "physical",
+            "label": "裂骨"
+          }
+        ]
+      },
+      "enemyNoUltimate": {
+        "name": "无大招",
+        "type": "大招",
+        "role": "敌人",
+        "cooldown": 999,
+        "openingCooldown": 999,
+        "icon": "empty-hourglass",
+        "desc": "关卡敌人的空大招槽。",
+        "effects": []
+      },
+      "enemyNoop": {
+        "name": "空档",
+        "type": "小技能",
+        "role": "敌人",
+        "cooldown": 999,
+        "openingCooldown": 999,
+        "icon": "hourglass",
+        "desc": "关卡敌人的空小技能槽。",
+        "effects": []
+      },
+      "enemyStoneGuard": {
+        "name": "石肤",
+        "type": "小技能",
+        "role": "敌人",
+        "cooldown": 6.5,
+        "openingCooldown": 0.8,
+        "icon": "stone-block",
+        "desc": "高额自盾，检验破盾、DOT 与持续输出。",
+        "effects": [
+          {
+            "kind": "teamShield",
+            "flat": 165,
+            "power": 0.66,
+            "label": "石肤",
+            "selfOnly": true
+          }
+        ]
+      },
+      "enemySweepingClaw": {
+        "name": "横扫爪击",
+        "type": "小技能",
+        "role": "敌人",
+        "cooldown": 8.2,
+        "openingCooldown": 4.5,
+        "icon": "claw-slashes",
+        "desc": "低频多目标物理伤害，检验队伍整体血线。",
+        "effects": [
+          {
+            "kind": "hitEnemies",
+            "count": 3,
+            "flat": 28,
+            "power": 0.42,
+            "type": "physical",
+            "label": "横扫"
+          }
+        ]
+      },
+      "enemyVenomCloud": {
+        "name": "毒雾喷吐",
+        "type": "小技能",
+        "role": "敌人",
+        "cooldown": 5.4,
+        "openingCooldown": 1.6,
+        "icon": "poison-gas",
+        "desc": "给全体持续叠毒，检验净化、爆发与长期抗压。",
+        "effects": [
+          {
+            "kind": "poisonEnemies",
+            "stacks": 7,
+            "time": 9
+          }
+        ]
+      },
       "executionSense": {
         "name": "处决嗅觉",
         "type": "被动",

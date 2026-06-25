@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 关卡斗技场</title>
+    <link rel="stylesheet" href="/encounter_lab/styles.css">
+  </head>
+  <body>
+    <main class="encounter-app">
+      <header class="topbar">
+        <div>
+          <a href="/workbench/" class="back-link">返回工作台</a>
+          <h1>关卡斗技场</h1>
+          <p>选择固定候选角色挑战简单功能敌人。敌人和玩家技能都走统一战斗模拟器。</p>
+        </div>
+        <div class="actions">
+          <button id="autoBtn" type="button">推荐组合</button>
+          <button id="runBtn" type="button" class="primary">开始挑战</button>
+        </div>
+      </header>
+
+      <section class="level-strip" id="levelStrip"></section>
+
+      <section class="main-grid">
+        <aside class="panel roster-panel">
+          <div class="panel-head">
+            <h2>候选角色</h2>
+            <span id="pickCounter">0 / 0</span>
+          </div>
+          <div id="rosterGrid" class="roster-grid"></div>
+        </aside>
+
+        <section class="panel battle-panel">
+          <div class="panel-head">
+            <h2 id="battleTitle">战斗预览</h2>
+            <span id="battleState">待命</span>
+          </div>
+          <div id="battlefield" class="battlefield"></div>
+          <div class="metric-row">
+            <div><strong id="leftHp">0</strong><span>我方血量分</span></div>
+            <div><strong id="duration">0s</strong><span>战斗时间</span></div>
+            <div><strong id="rightHp">0</strong><span>敌方血量分</span></div>
+          </div>
+        </section>
+
+        <aside class="panel result-panel">
+          <div class="panel-head">
+            <h2>验收数据</h2>
+            <span id="solverSummary">读取中</span>
+          </div>
+          <div class="result-box" id="resultBox"></div>
+          <div class="combo-list">
+            <h3>可过组合</h3>
+            <div id="winnerList"></div>
+          </div>
+          <div class="combo-list">
+            <h3>失败样例</h3>
+            <div id="failList"></div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/game_data/encounter-data.js"></script>
+    <script src="/encounter_lab/encounter-lab.js"></script>
+  </body>
+</html>

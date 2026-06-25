@@ -118,20 +118,22 @@ class CombatSimulation {
 
   makeTeam(side, specs) {
     return specs.map((spec, index) => {
-      const role = SKILL_DATA.roleKits[spec.role];
+      const role = this.unitProfile(spec);
       const slot = FORMATION[side][index % TEAM_SIZE];
+      const maxHp = spec.maxHp || spec.hp || role.hp;
       return {
         id: `${side}-${index + 1}`,
         side,
         index,
         ...spec,
-        name: role.name,
-        roleName: role.role,
-        maxHp: role.hp,
-        hp: role.hp,
-        power: role.power,
-        armor: role.armor,
-        range: role.range,
+        role: spec.role || role.key || role.role || "encounterUnit",
+        name: spec.name || role.name,
+        roleName: spec.roleName || role.role || role.name || "敌人",
+        maxHp,
+        hp: maxHp,
+        power: spec.power ?? role.power,
+        armor: spec.armor ?? role.armor,
+        range: spec.range ?? role.range,
         homeX: slot.x,
         homeY: slot.y,
         line: slot.line,
@@ -163,9 +165,18 @@ class CombatSimulation {
         counterCd: 0,
         damageDone: 0,
         mark: 0,
-        icon: `${ICON_BASE}/${role.icon}.svg`,
+        icon: spec.icon?.startsWith?.("http") ? spec.icon : `${ICON_BASE}/${spec.icon || role.icon || "crossed-swords"}.svg`,
       };
     });
+  }
+
+  unitProfile(spec) {
+    const role = SKILL_DATA.roleKits[spec.role];
+    if (role) return role;
+    for (const field of ["name", "hp", "power", "armor", "range"]) {
+      if (spec[field] === undefined) throw new Error(`Inline combat unit ${spec.role || spec.name || "unknown"} missing ${field}`);
+    }
+    return spec;
   }
 
   openingCooldown(skillKey, fallback) {

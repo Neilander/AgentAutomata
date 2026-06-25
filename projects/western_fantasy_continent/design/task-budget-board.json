@@ -243,6 +243,52 @@
       "skillFlow": [],
       "successCriteria": [],
       "lastEvidence": "2026-06-24 accept: Arena battle panel moved to top; keyword workbench added and served on test port; skill-kit workflow reads keyword data; 10 class-exclusive skills added; red-team risky candidates 0; archetype signals pass; matchup expectations none."
+    },
+    {
+      "id": "matchup-polarization-diagnosis",
+      "name": "矩阵极化归因诊断",
+      "detail": "为每个极端胜率格缓存样本证据，按信号归因强弱原因，汇总每个流派的极端优势/劣势因子；本阶段只诊断不调数值。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 4,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "生成 matchup evidence cache",
+        "生成 extreme diagnosis report",
+        "汇总重复优势/劣势标签",
+        "不直接改技能数值"
+      ],
+      "lastEvidence": "2026-06-24 accept: Built matchup evidence cache with 10 compressed samples per ordered cell, generated extreme diagnosis markdown/json, and preserved balance health failure as separate from expectation mismatches. No skill numbers changed."
+    },
+    {
+      "id": "deterministic-ecology-encounters",
+      "name": "确定性生态与关卡原型",
+      "detail": "把低随机战斗的极端胜率诊断改为生态健康审查，并实现5个可枚举体验的敌人关卡。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 5,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "combat-causal-attribution"
+      ],
+      "successCriteria": [
+        "0/100不再自动判失败",
+        "标出万金油和无猎物弱队",
+        "5关都有多解且不是全组合通过",
+        "输出可接力报告"
+      ],
+      "lastEvidence": "2026-06-24 accept: Final validation: 5 encounter levels all targetOk; deterministic ecology report flags all-rounder and preyless weak presets instead of failing raw 0/100 outcomes."
     }
   ]
 }

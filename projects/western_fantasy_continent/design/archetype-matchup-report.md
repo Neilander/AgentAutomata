@@ -2,7 +2,7 @@
 
 Generated with `15` deterministic seeds per side, `30` total games per matchup, from `game_data/combat-sim.js`.
 
-Rates are left preset win rates. Expectation checks ask whether a matchup follows the intended strong/weak/flex contract; balance health separately checks whether the matrix has too many extreme 0/100-style outcomes.
+Rates are left preset win rates. Expectation checks ask whether a matchup follows the intended strong/weak/flex contract; ecology health treats 0/100 as expected in low-randomness combat, then checks whether hard counters have answers and whether any preset becomes an all-rounder.
 
 ## Win Matrix
 
@@ -19,18 +19,32 @@ Rates are left preset win rates. Expectation checks ask whether a matchup follow
 | 毒巢滚雪球 | 100% | 100% | 97% | 7% | 100% | 100% | 100% | 100% | — | 100% |
 | 暗影处决 | 50% | 100% | 50% | 100% | 100% | 100% | 100% | 7% | 0% | — |
 
-## Balance Health
+## Ecology Health
 
-- Result: fail.
+- Result: review.
 - Matrix cells checked: 90.
-- Absolute outcomes (0% or 100%): 54/90 (60%), target <= 10%.
-- Hard counters (<= 10% or >= 90%): 66/90 (73%), target <= 25%.
-- Soft band (35%-65%): 24/90 (27%), target >= 45%.
+- Absolute outcomes (0% or 100%): 54/90 (60%), recorded as determinism evidence, not an automatic failure.
+- Hard counters (<= 10% or >= 90%): 66/90 (73%).
+- Soft band (35%-65%): 24/90 (27%).
 - Polarization score: 0.73 (0 is all 50/50, 1 is all 0/100).
-- Failed checks:
-  - absolute outcomes are too common (60% > 10%)
-  - hard counters are too common (73% > 25%)
-  - soft-band matchups are too rare (27% < 45%)
+- Review checks:
+  - bloodRage has many hard predators and almost no hard prey (5 predators, 1 prey)
+  - fireBurst has broad hard advantages but few hard predators (6 prey, 1 predators)
+  - holySustain has many hard predators and almost no hard prey (6 predators, 0 prey)
+  - ironWall has many hard predators and almost no hard prey (5 predators, 1 prey)
+  - poisonBloom has broad hard advantages but few hard predators (8 prey, 1 predators)
+
+Preset ecology profile:
+- `alchemyChaos`: answered; prey 2/9, predators 3/9, extreme advantage tags favored->favored, weak->weak.
+- `bloodRage`: vulnerable-without-prey; prey 1/9, predators 5/9, extreme advantage tags favored->favored, weak->weak.
+- `crownCarry`: dominant-but-answered; prey 6/9, predators 2/9, extreme advantage tags favored->favored, flex->favored, flex->weak, weak->weak.
+- `fireBurst`: all-rounder-risk; prey 6/9, predators 1/9, extreme advantage tags favored->favored, weak->weak.
+- `frostControl`: answered; prey 2/9, predators 4/9, extreme advantage tags favored->favored, weak->weak.
+- `holySustain`: vulnerable-without-prey; prey 0/9, predators 6/9, extreme advantage tags -.
+- `ironWall`: vulnerable-without-prey; prey 1/9, predators 5/9, extreme advantage tags favored->favored, weak->weak.
+- `lightningTempo`: answered; prey 2/9, predators 4/9, extreme advantage tags favored->favored, weak->weak.
+- `poisonBloom`: all-rounder-risk; prey 8/9, predators 1/9, extreme advantage tags favored->favored, weak->weak.
+- `shadowExecute`: dominant-but-answered; prey 5/9, predators 2/9, extreme advantage tags favored->favored, weak->weak.
 
 Most polarized ordered matchups:
 - `alchemyChaos` vs `crownCarry`: 0% (flex/weak)

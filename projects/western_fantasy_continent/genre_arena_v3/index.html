@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 流派竞技场 V3</title>
+    <link rel="stylesheet" href="/genre_arena_v3/styles.css">
+  </head>
+  <body>
+    <main class="arena-v3">
+      <header class="topbar">
+        <div>
+          <a href="/workbench/" class="back-link">返回工作台</a>
+          <h1>流派竞技场 V3</h1>
+          <p>第一性原理版：左右只负责选择，中间直接放 4v4 本体。</p>
+        </div>
+        <div class="top-actions">
+          <button id="setupBtn" type="button">准备</button>
+          <button id="startBtn" type="button" class="primary">开始战斗</button>
+        </div>
+      </header>
+
+      <section class="main-layout">
+        <aside class="side-panel left-panel">
+          <div class="panel-head">
+            <h2>左队</h2>
+            <span id="leftStatus">待选择</span>
+          </div>
+          <label class="select-row">
+            <span>流派</span>
+            <select id="leftSelect"></select>
+          </label>
+          <article class="archetype-card">
+            <strong id="leftName">-</strong>
+            <p id="leftDesc">-</p>
+            <div id="leftUnits" class="unit-tokens"></div>
+          </article>
+        </aside>
+
+        <section class="center-stage">
+          <div class="stage-head">
+            <div>
+              <span>当前对局</span>
+              <strong id="matchupTitle">-</strong>
+            </div>
+            <button id="centerStartBtn" type="button">开始战斗</button>
+          </div>
+          <div class="arena-frame-wrap">
+            <iframe id="arenaFrame" class="arena-frame" src="/genre_arena/" title="实时 4v4 战斗"></iframe>
+          </div>
+          <div class="matchup-note" id="matchupNote">选择左右队后，中间会显示实时 4v4 预览。</div>
+        </section>
+
+        <aside class="side-panel right-panel">
+          <div class="panel-head">
+            <h2>右队</h2>
+            <span id="rightStatus">待选择</span>
+          </div>
+          <label class="select-row">
+            <span>流派</span>
+            <select id="rightSelect"></select>
+          </label>
+          <article class="archetype-card">
+            <strong id="rightName">-</strong>
+            <p id="rightDesc">-</p>
+            <div id="rightUnits" class="unit-tokens"></div>
+          </article>
+        </aside>
+      </section>
+
+      <section class="support-row">
+        <article>
+          <strong>准备阶段</strong>
+          <span>左右下拉负责压缩大量流派；中间 4v4 预览承担核心对象。</span>
+        </article>
+        <article>
+          <strong>战斗阶段</strong>
+          <span>旧版实时战斗逻辑直接复用，避免把战斗做成瞬时结果页。</span>
+        </article>
+        <article>
+          <strong>待验证</strong>
+          <span>下拉打开态会成为 overlay，后面要纳入 z-layer 注意力分析。</span>
+        </article>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/genre_arena_v3/genre-arena-v3.js"></script>
+  </body>
+</html>

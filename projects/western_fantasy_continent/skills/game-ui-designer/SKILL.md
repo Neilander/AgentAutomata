@@ -5,6 +5,12 @@ description: Design readable, game-like frontends for games and game tools. Use 
 
 # Game UI Designer
 
+## Routing Rule
+
+Use `signal-based-ui-planner` first when the interface is complex, dense, novel, multi-state, or mixes player-facing UI with debug/designer information. That planner decides intent, core object, hierarchy, attention budget, and control choice.
+
+Use this `game-ui-designer` skill directly when the screen is common and simple, such as a straightforward inventory, combat HUD, map panel, menu, modal, or small tool surface.
+
 ## Core Rule
 
 Do not start by placing data on the page. Start by defining the player's current decision.

@@ -334,11 +334,14 @@ function routeStatic(req, res, url) {
     "/art_lab",
     "/ai_tools",
     "/genre_arena",
+    "/genre_arena_v2",
+    "/genre_arena_v3",
     "/encounter_lab",
     "/team_simulator",
     "/dps_lab",
     "/task_board",
     "/keyword_workbench",
+    "/life_simulator",
     "/game_data",
   ]);
 
@@ -363,11 +366,14 @@ function routeStatic(req, res, url) {
     "art_lab",
     "ai_tools",
     "genre_arena",
+    "genre_arena_v2",
+    "genre_arena_v3",
     "encounter_lab",
     "team_simulator",
     "dps_lab",
     "task_board",
     "keyword_workbench",
+    "life_simulator",
     "game_data",
   ];
 

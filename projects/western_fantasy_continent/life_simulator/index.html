@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>人生认可模拟器</title>
+    <link rel="stylesheet" href="/life_simulator/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">Recognition Loop Prototype</p>
+          <h1>人生认可模拟器</h1>
+        </div>
+        <div class="roundbox">
+          <span>回合</span>
+          <strong id="turnCount">1</strong>
+        </div>
+      </section>
+
+      <section class="layout">
+        <section class="play-area">
+          <div class="section-head">
+            <div>
+              <h2>三选一</h2>
+              <p>每张牌都是一次“认可事件”：低概率牌给更高认可度，成功提升自我认可，失败可能破坏它。</p>
+            </div>
+            <button id="newHandButton" type="button">换一手</button>
+          </div>
+          <div id="cards" class="cards"></div>
+        </section>
+
+        <aside class="state-panel">
+          <h2>内在状态</h2>
+          <div class="meter-block">
+            <div class="meter-title">
+              <span>自我认可</span>
+              <strong id="selfWorthValue">35</strong>
+            </div>
+            <div class="meter"><div id="selfWorthBar" class="meter-fill self"></div></div>
+            <p id="selfWorthHint">当前基准线：普通成功还有效，高难成功会明显抬升。</p>
+          </div>
+
+          <div class="meter-block">
+            <div class="meter-title">
+              <span>愉悦程度</span>
+              <strong id="pleasureValue">64</strong>
+            </div>
+            <div class="meter"><div id="pleasureBar" class="meter-fill pleasure"></div></div>
+            <p id="pleasureHint">愉悦会自然衰减，低愉悦会放大低难度满足感。</p>
+          </div>
+
+          <div class="settings">
+            <label>
+              认可指数 x
+              <input id="exponentSlider" type="range" min="0.55" max="1.35" step="0.05" value="1">
+              <span id="exponentValue">1.00</span>
+            </label>
+            <label>
+              愉悦衰减
+              <input id="decaySlider" type="range" min="1" max="8" step="1" value="3">
+              <span id="decayValue">3</span>
+            </label>
+          </div>
+
+          <div class="last-event">
+            <h3>最近解释</h3>
+            <p id="eventSummary">选择一张牌，观察事件如何被解释成满足感或成就感。</p>
+          </div>
+          <button id="resetButton" class="reset" type="button">重置人生</button>
+        </aside>
+      </section>
+
+      <section class="log-panel">
+        <div class="section-head compact">
+          <h2>事件日志</h2>
+          <p>这里记录“认可度 - 自我认可基准线”如何变成反馈。</p>
+        </div>
+        <div id="log" class="log"></div>
+      </section>
+    </main>
+
+    <script src="/life_simulator/life-simulator.js"></script>
+  </body>
+</html>

@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Genre Arena Attention Annotation</title>
+    <style>
+      :root {
+        --bg: #101010;
+        --panel: #181818;
+        --line: #333;
+        --text: #eee;
+        --muted: #aaa;
+        --green: #6be675;
+        --gold: #ffd25f;
+        --red: #ff5c5c;
+        --blue: #69b8ff;
+        --purple: #c68cff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Arial, "Microsoft YaHei", sans-serif;
+      }
+      main {
+        max-width: 1380px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1, h2, h3, p { margin: 0; }
+      h1 { font-size: 24px; }
+      p {
+        margin-top: 8px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-top: 14px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+      }
+      button, input {
+        min-height: 34px;
+        border: 1px solid #444;
+        border-radius: 4px;
+        background: #222;
+        color: var(--text);
+        font: inherit;
+      }
+      button { padding: 0 12px; cursor: pointer; }
+      input { width: 320px; padding: 0 10px; }
+      .stage {
+        position: relative;
+        width: 1280px;
+        max-width: 100%;
+        height: 920px;
+        margin-top: 16px;
+        border: 1px solid var(--line);
+        background: #050505;
+        overflow: hidden;
+      }
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: #111;
+      }
+      .overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .box {
+        position: absolute;
+        border: 3px solid var(--gold);
+        background: rgba(255, 210, 95, 0.1);
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.55), 0 0 18px rgba(255,210,95,0.25);
+      }
+      .box.green { border-color: var(--green); background: rgba(107,230,117,0.12); }
+      .box.red { border-color: var(--red); background: rgba(255,92,92,0.12); }
+      .box.blue { border-color: var(--blue); background: rgba(105,184,255,0.12); }
+      .box.purple { border-color: var(--purple); background: rgba(198,140,255,0.12); }
+      .label {
+        position: absolute;
+        left: 0;
+        top: 0;
+        max-width: 330px;
+        padding: 5px 7px;
+        transform: translateY(-100%);
+        background: rgba(0,0,0,0.88);
+        color: #fff;
+        font-size: 13px;
+        line-height: 1.28;
+      }
+      .below .label {
+        top: auto;
+        bottom: 0;
+        transform: translateY(100%);
+      }
+      .inside .label {
+        top: 0;
+        transform: none;
+      }
+      .notes {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .note {
+        padding: 12px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+      }
+      .note h3 {
+        margin-bottom: 6px;
+        color: var(--gold);
+        font-size: 14px;
+      }
+      .note p {
+        margin: 0;
+        font-size: 13px;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .swatch {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        background: var(--gold);
+      }
+      .swatch.green { background: var(--green); }
+      .swatch.red { background: var(--red); }
+      .swatch.blue { background: var(--blue); }
+      .swatch.purple { background: var(--purple); }
+      @media (max-width: 900px) {
+        .notes { grid-template-columns: 1fr; }
+        input { width: 100%; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>4v4 流派竞技场：注意力标注版</h1>
+      <p>这是独立标注壳，不修改原页面。先开你的本地服务器，再刷新这里。标注基于 1280px 桌面首屏，主要看 intent、区块注意力、debug 泄露和同类信号拥挤。</p>
+      <div class="toolbar">
+        <button type="button" data-port="3777">3777</button>
+        <button type="button" data-port="3778">3778</button>
+        <button type="button" data-port="3899">3899</button>
+        <input id="urlInput" value="http://localhost:3777/genre_arena/" aria-label="页面地址">
+        <button id="loadBtn" type="button">加载</button>
+      </div>
+      <div class="legend">
+        <span class="chip"><i class="swatch green"></i>P0/P1 正向主信号</span>
+        <span class="chip"><i class="swatch"></i>可用但需权衡</span>
+        <span class="chip"><i class="swatch red"></i>过强/泄露/拥挤风险</span>
+        <span class="chip"><i class="swatch blue"></i>工具/控制信号</span>
+        <span class="chip"><i class="swatch purple"></i>调试/分析信号</span>
+      </div>
+
+      <div class="stage">
+        <iframe id="targetFrame" src="http://localhost:3777/genre_arena/" title="genre arena"></iframe>
+        <div class="overlay">
+          <div class="box blue inside" style="left:0.9%;top:1.3%;width:98.2%;height:8.5%;">
+            <div class="label">顶部控制区：说明当前是 4v4 沙盒，开始/重置/速度是关键工具，但按钮相对不大</div>
+          </div>
+          <div class="box green inside" style="left:0.9%;top:10.8%;width:98.2%;height:51.0%;">
+            <div class="label">P0 战斗窗口：符合“先看战斗”的 intent，是当前最应该吃注意力的区域</div>
+          </div>
+          <div class="box blue" style="left:1.0%;top:11.2%;width:98.0%;height:6.0%;">
+            <div class="label">战斗状态条：存活数/时间/状态清楚，但不应压过单位与技能反馈</div>
+          </div>
+          <div class="box green" style="left:1.0%;top:17.4%;width:98.0%;height:39.5%;">
+            <div class="label">实际战场：如果技能特效/跳字不足，这个 P0 区块会“面积大但信号弱”</div>
+          </div>
+          <div class="box gold below" style="left:1.0%;top:57.3%;width:98.0%;height:4.2%;">
+            <div class="label">图例信号：有助于解释毒/盾/冷却，但如果战斗反馈本身不明显，图例无法补救</div>
+          </div>
+          <div class="box red inside" style="left:0.9%;top:63.0%;width:98.2%;height:22.5%;">
+            <div class="label">预设选择区：对“选择对局”是 P0，但对“观看战斗”是强干扰；两种 intent 叠在一起</div>
+          </div>
+          <div class="box red" style="left:2.0%;top:68.0%;width:47.3%;height:16.5%;">
+            <div class="label">左队卡片 cluster：多张同类卡片 + 文本，individual reading 压力高</div>
+          </div>
+          <div class="box red" style="left:50.8%;top:68.0%;width:47.3%;height:16.5%;">
+            <div class="label">右队卡片 cluster：和左队完全对称，信息量翻倍，注意力被均摊</div>
+          </div>
+          <div class="box gold below" style="left:0.9%;top:86.7%;width:48.6%;height:12.4%;">
+            <div class="label">左队配置区首屏露头：用于深调技能，但在主战斗 intent 下优先级应低于战斗/预设</div>
+          </div>
+          <div class="box gold below" style="left:50.5%;top:86.7%;width:48.6%;height:12.4%;">
+            <div class="label">右队配置区首屏露头：配置能力强，但容易把页面变成调参面板</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <article class="note">
+          <h3>预测第一眼</h3>
+          <p>战斗窗口会先被看到；随后视线会掉到预设卡片区，因为它面积大、卡片多、文字密。</p>
+        </article>
+        <article class="note">
+          <h3>主要问题</h3>
+          <p>页面同时承载“看战斗”和“选/调左右队”两个 intent。战斗区是 P0，但预设区也是强 P0，互相争注意力。</p>
+        </article>
+        <article class="note">
+          <h3>模型建议</h3>
+          <p>如果目标是试玩战斗，预设区应压缩成更轻的对局选择；如果目标是调参，战斗可以变成右侧/上方固定预览。</p>
+        </article>
+      </div>
+
+      <div class="notes">
+        <article class="note">
+          <h3>Cluster 判断</h3>
+          <p>预设卡片和队伍配置都属于 individual reading，高同类密度会稀释单卡信息。适合改成“选中详情 + 紧凑列表”。</p>
+        </article>
+        <article class="note">
+          <h3>信号缺口</h3>
+          <p>战斗区域面积很强，但如果单位技能、伤害、护盾、控制反馈不够强，会出现“视觉主区域没有足够事件信号”的空心问题。</p>
+        </article>
+        <article class="note">
+          <h3>Debug 风险</h3>
+          <p>底部技能库、日志、宏观胜率是分析工具。首屏后可以存在，但不应和主战斗/选队争第一层注意力。</p>
+        </article>
+      </div>
+    </main>
+    <script>
+      const frame = document.querySelector("#targetFrame");
+      const input = document.querySelector("#urlInput");
+      document.querySelectorAll("[data-port]").forEach((button) => {
+        button.addEventListener("click", () => {
+          input.value = `http://localhost:${button.dataset.port}/genre_arena/`;
+          frame.src = input.value;
+        });
+      });
+      document.querySelector("#loadBtn").addEventListener("click", () => {
+        frame.src = input.value;
+      });
+    </script>
+  </body>
+</html>

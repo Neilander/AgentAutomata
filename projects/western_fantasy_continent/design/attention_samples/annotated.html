@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Attention Samples - Annotated</title>
+    <style>
+      :root {
+        --green: #6be675;
+        --gold: #ffd25f;
+        --red: #ff5c5c;
+        --blue: #69b8ff;
+        --purple: #c68cff;
+      }
+      body {
+        margin: 0;
+        background: #101010;
+        color: #eee;
+        font-family: Arial, "Microsoft YaHei", sans-serif;
+      }
+      main {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      h1, h2, h3, p { margin: 0; }
+      h1 { margin-bottom: 8px; }
+      p { color: #aaa; line-height: 1.5; }
+      section {
+        margin-top: 28px;
+        padding: 16px;
+        border: 1px solid #333;
+        background: #181818;
+      }
+      .frame {
+        position: relative;
+        width: 1280px;
+        max-width: 100%;
+        aspect-ratio: 1280 / 800;
+        margin-top: 12px;
+        overflow: hidden;
+        border: 1px solid #2a2a2a;
+        background: #000;
+      }
+      .frame img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .box {
+        position: absolute;
+        border: 3px solid var(--gold);
+        background: rgba(255, 210, 95, 0.1);
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.45), 0 0 18px rgba(255,210,95,0.28);
+      }
+      .box.green { border-color: var(--green); background: rgba(107,230,117,0.12); }
+      .box.red { border-color: var(--red); background: rgba(255,92,92,0.12); }
+      .box.blue { border-color: var(--blue); background: rgba(105,184,255,0.12); }
+      .box.purple { border-color: var(--purple); background: rgba(198,140,255,0.12); }
+      .label {
+        position: absolute;
+        left: 0;
+        top: 0;
+        max-width: 300px;
+        padding: 5px 7px;
+        transform: translateY(-100%);
+        background: rgba(0,0,0,0.84);
+        color: #fff;
+        font-size: 13px;
+        line-height: 1.25;
+      }
+      .below .label {
+        top: auto;
+        bottom: 0;
+        transform: translateY(100%);
+      }
+      .notes {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .note {
+        padding: 12px;
+        border: 1px solid #333;
+        background: #121212;
+      }
+      .note h3 {
+        margin-bottom: 6px;
+        color: #ffd25f;
+        font-size: 14px;
+      }
+      .note p {
+        font-size: 13px;
+      }
+      @media (max-width: 900px) {
+        .notes { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>标注样本</h1>
+      <p>这些标注不是“真理”，是第一版注意力模型的人工预测：看强信号、intent 匹配、cluster 稀释、debug/噪音泄露。</p>
+
+      <section>
+        <h2>Sample A: Steam 首页</h2>
+        <p>Intent：浏览商店推荐，判断当前主推游戏是否值得点进去。</p>
+        <div class="frame">
+          <img src="./steam_home.png" alt="Steam homepage annotated">
+          <div class="box green" style="left:3.9%;top:25.6%;width:64.5%;height:59.2%;">
+            <div class="label">P0 头部视觉：最大图、最高面积，第一眼基本被它吃掉</div>
+          </div>
+          <div class="box gold" style="left:68.4%;top:25.6%;width:27.6%;height:59.2%;">
+            <div class="label">P1 游戏信息：标题、评价、截图、榜单、CTA，但被左侧大图压住</div>
+          </div>
+          <div class="box blue" style="left:59.6%;top:13.7%;width:37.6%;height:4.3%;">
+            <div class="label">P1 搜索：高对比但不属于当前主推判断，属于工具信号</div>
+          </div>
+          <div class="box red below" style="left:88.4%;top:79.5%;width:6.3%;height:3.3%;">
+            <div class="label">CTA 偏弱：真正行动按钮面积小，容易晚于大图/详情被注意</div>
+          </div>
+        </div>
+        <div class="notes">
+          <div class="note"><h3>预测第一眼</h3><p>主推大图与标题画面，其次右侧详情，再其次搜索/导航。</p></div>
+          <div class="note"><h3>模型判断</h3><p>这是典型 head signal 成功案例：一个强头部聚焦浏览 intent。</p></div>
+          <div class="note"><h3>潜在问题</h3><p>如果目标是“立刻转化”，CTA 分到的注意力偏低。</p></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Sample B: itch.io 免费游戏列表</h2>
+        <p>Intent：浏览免费游戏，筛选或选择一个游戏卡片。</p>
+        <div class="frame">
+          <img src="./itch_games.png" alt="itch.io games list annotated">
+          <div class="box blue" style="left:0%;top:6.2%;width:20.3%;height:93.8%;">
+            <div class="label">P1 筛选区：稳定工具区，适合精确筛选，但面积较大</div>
+          </div>
+          <div class="box gold" style="left:21.8%;top:8.5%;width:74.7%;height:20.5%;">
+            <div class="label">P0/P1 排序与标签：决定浏览条件，信息密度高</div>
+          </div>
+          <div class="box red" style="left:21.9%;top:37.0%;width:76.8%;height:8.5%;">
+            <div class="label">高显著低 intent 广告：颜色/面积很强，抢走游戏列表注意力</div>
+          </div>
+          <div class="box green" style="left:21.8%;top:47.5%;width:76.5%;height:43.5%;">
+            <div class="label">P0 游戏卡片 cluster：主内容，但多卡片同类竞争，单卡注意力被稀释</div>
+          </div>
+        </div>
+        <div class="notes">
+          <div class="note"><h3>预测第一眼</h3><p>顶部标题/标签和蓝色 banner 很容易先被看到，然后才看游戏卡片。</p></div>
+          <div class="note"><h3>模型判断</h3><p>这是 dense individual reading：卡片需要逐个读，但卡片数量和广告造成 cluster competition。</p></div>
+          <div class="note"><h3>潜在问题</h3><p>banner 对浏览游戏 intent 来说 intentFit 低，但 salience 高，是典型噪音强信号。</p></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Sample C: Sudoku.com 数独页</h2>
+        <p>Intent：进入解谜状态，找到棋盘、当前操作、下一步应该点什么。</p>
+        <div class="frame">
+          <img src="./sudoku_home.png" alt="Sudoku page annotated">
+          <div class="box green" style="left:3.9%;top:16.5%;width:39.0%;height:59.4%;">
+            <div class="label">P0 棋盘：解谜核心对象，本应是第一注意力</div>
+          </div>
+          <div class="box gold" style="left:44.5%;top:12.0%;width:26.6%;height:64.0%;">
+            <div class="label">P1 操作区：数字键/工具/计时，支持当前行为</div>
+          </div>
+          <div class="box red" style="left:0%;top:76.2%;width:100%;height:23.8%;">
+            <div class="label">强干扰：cookie 横幅遮挡并抢注意力，intentFit 极低</div>
+          </div>
+          <div class="box purple" style="left:72.6%;top:11.2%;width:23.4%;height:29.4%;">
+            <div class="label">广告/下载区：和解谜 intent 弱相关，右侧分流注意力</div>
+          </div>
+        </div>
+        <div class="notes">
+          <div class="note"><h3>预测第一眼</h3><p>棋盘和 cookie 横幅竞争。横幅由于覆盖全宽、中心按钮，会严重抢注意力。</p></div>
+          <div class="note"><h3>模型判断</h3><p>这是 intent mismatch：玩家要解题，强信号却来自 cookie 与下载广告。</p></div>
+          <div class="note"><h3>潜在问题</h3><p>如果不先处理横幅，玩家注意力预算无法稳定进入 puzzle intent。</p></div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

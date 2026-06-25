@@ -1,0 +1,228 @@
+{
+  "schema": "agent_automata_attention_samples_v1",
+  "defaults": {
+    "attentionBudget": 100,
+    "clusterAggregatePower": 1.4,
+    "clusterMatthewPower": 1.5,
+    "signalMatthewPower": 1.6,
+    "categoryDilution": 0.6,
+    "densityWeight": 0.08,
+    "visualSimilarityDilution": 0.5
+  },
+  "samples": [
+    {
+      "id": "steam_home",
+      "title": "Steam homepage",
+      "intent": "browse_store_recommendation",
+      "expectedTopClusters": ["hero_art", "game_detail", "search_tools"],
+      "clusters": [
+        {
+          "id": "hero_art",
+          "label": "Main featured game art",
+          "mode": "gestalt_feedback",
+          "areaShare": 0.38,
+          "thresholds": { "min": 24, "ideal": 36, "max": 50 },
+          "signals": [
+            { "id": "hero_image", "category": "hero_visual", "visualGroup": "large_image", "importance": 0.9, "intentFit": 1.0, "salience": 1.0, "goalRelevance": 1.0, "novelty": 0.8 }
+          ]
+        },
+        {
+          "id": "game_detail",
+          "label": "Featured game details and CTA",
+          "mode": "individual_reading",
+          "areaShare": 0.19,
+          "thresholds": { "min": 20, "ideal": 30, "max": 42 },
+          "signals": [
+            { "id": "game_title", "category": "identity", "visualGroup": "title", "importance": 0.85, "intentFit": 1.0, "salience": 0.66, "goalRelevance": 1.0, "novelty": 0.75 },
+            { "id": "review_badge", "category": "social_proof", "visualGroup": "text_badge", "importance": 0.65, "intentFit": 0.9, "salience": 0.45, "goalRelevance": 0.8, "novelty": 0.45 },
+            { "id": "thumbnail_grid", "category": "preview", "visualGroup": "thumb", "importance": 0.6, "intentFit": 0.8, "salience": 0.62, "goalRelevance": 0.75, "novelty": 0.55 },
+            { "id": "play_button", "category": "cta", "visualGroup": "button", "importance": 0.8, "intentFit": 0.8, "salience": 0.45, "goalRelevance": 0.8, "novelty": 0.5 }
+          ]
+        },
+        {
+          "id": "search_tools",
+          "label": "Search and navigation tools",
+          "mode": "individual_reading",
+          "areaShare": 0.09,
+          "thresholds": { "min": 8, "ideal": 14, "max": 24 },
+          "signals": [
+            { "id": "search_box", "category": "tool", "visualGroup": "input", "importance": 0.55, "intentFit": 0.55, "salience": 0.72, "goalRelevance": 0.5, "novelty": 0.35 },
+            { "id": "top_nav", "category": "tool", "visualGroup": "nav", "importance": 0.45, "intentFit": 0.45, "salience": 0.45, "goalRelevance": 0.4, "novelty": 0.25 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "itch_games",
+      "title": "itch.io free games list",
+      "intent": "browse_game_list",
+      "expectedTopClusters": ["game_grid", "sort_filter", "promo_banner"],
+      "clusters": [
+        {
+          "id": "side_filters",
+          "label": "Left filter panel",
+          "mode": "individual_reading",
+          "areaShare": 0.2,
+          "thresholds": { "min": 10, "ideal": 18, "max": 30 },
+          "signals": [
+            { "id": "platform_filters", "category": "filter", "visualGroup": "filter_text", "importance": 0.6, "intentFit": 0.75, "salience": 0.62, "goalRelevance": 0.75, "novelty": 0.25 },
+            { "id": "price_filter", "category": "filter", "visualGroup": "filter_text", "importance": 0.7, "intentFit": 0.85, "salience": 0.56, "goalRelevance": 0.9, "novelty": 0.35 }
+          ]
+        },
+        {
+          "id": "sort_filter",
+          "label": "Top sort and tag controls",
+          "mode": "individual_reading",
+          "areaShare": 0.17,
+          "thresholds": { "min": 16, "ideal": 26, "max": 38 },
+          "signals": [
+            { "id": "page_title", "category": "identity", "visualGroup": "title", "importance": 0.7, "intentFit": 1.0, "salience": 0.65, "goalRelevance": 0.9, "novelty": 0.35 },
+            { "id": "sort_tabs", "category": "control", "visualGroup": "tab", "importance": 0.75, "intentFit": 0.95, "salience": 0.56, "goalRelevance": 0.9, "novelty": 0.3 },
+            { "id": "tag_chips", "category": "control", "visualGroup": "chip", "importance": 0.65, "intentFit": 0.8, "salience": 0.52, "goalRelevance": 0.7, "novelty": 0.35 }
+          ]
+        },
+        {
+          "id": "promo_banner",
+          "label": "YouTube promo banner",
+          "mode": "gestalt_feedback",
+          "areaShare": 0.08,
+          "thresholds": { "min": 0, "ideal": 6, "max": 12 },
+          "signals": [
+            { "id": "promo_banner_visual", "category": "promo", "visualGroup": "banner", "importance": 0.55, "intentFit": 0.35, "salience": 1.0, "goalRelevance": 0.35, "novelty": 0.75 }
+          ]
+        },
+        {
+          "id": "game_grid",
+          "label": "Game cards grid",
+          "mode": "individual_reading",
+          "areaShare": 0.34,
+          "thresholds": { "min": 24, "ideal": 36, "max": 48 },
+          "signals": [
+            { "id": "card_1", "category": "game_card", "visualGroup": "game_card", "importance": 0.78, "intentFit": 1.0, "salience": 0.72, "goalRelevance": 1.0, "novelty": 0.75 },
+            { "id": "card_2", "category": "game_card", "visualGroup": "game_card", "importance": 0.72, "intentFit": 1.0, "salience": 0.68, "goalRelevance": 1.0, "novelty": 0.7 },
+            { "id": "card_3", "category": "game_card", "visualGroup": "game_card", "importance": 0.7, "intentFit": 1.0, "salience": 0.66, "goalRelevance": 1.0, "novelty": 0.68 },
+            { "id": "card_4", "category": "game_card", "visualGroup": "game_card", "importance": 0.68, "intentFit": 1.0, "salience": 0.7, "goalRelevance": 1.0, "novelty": 0.72 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sudoku_home",
+      "title": "Sudoku puzzle page",
+      "intent": "solve_puzzle",
+      "expectedTopClusters": ["puzzle_board", "number_controls", "cookie_banner"],
+      "clusters": [
+        {
+          "id": "puzzle_board",
+          "label": "Sudoku board",
+          "mode": "individual_reading",
+          "areaShare": 0.23,
+          "thresholds": { "min": 28, "ideal": 42, "max": 56 },
+          "signals": [
+            { "id": "board_grid", "category": "puzzle", "visualGroup": "grid", "importance": 1.0, "intentFit": 1.0, "salience": 0.92, "goalRelevance": 1.0, "novelty": 0.55 },
+            { "id": "given_numbers", "category": "puzzle", "visualGroup": "number", "importance": 0.9, "intentFit": 1.0, "salience": 0.78, "goalRelevance": 1.0, "novelty": 0.45 }
+          ]
+        },
+        {
+          "id": "number_controls",
+          "label": "Number pad and tools",
+          "mode": "individual_reading",
+          "areaShare": 0.18,
+          "thresholds": { "min": 18, "ideal": 28, "max": 38 },
+          "signals": [
+            { "id": "number_pad", "category": "input", "visualGroup": "button_grid", "importance": 0.85, "intentFit": 0.95, "salience": 0.78, "goalRelevance": 0.9, "novelty": 0.35 },
+            { "id": "tool_buttons", "category": "input", "visualGroup": "round_button", "importance": 0.62, "intentFit": 0.8, "salience": 0.56, "goalRelevance": 0.7, "novelty": 0.3 },
+            { "id": "timer_mistakes", "category": "status", "visualGroup": "small_status", "importance": 0.5, "intentFit": 0.7, "salience": 0.4, "goalRelevance": 0.6, "novelty": 0.25 }
+          ]
+        },
+        {
+          "id": "app_ad",
+          "label": "App download ad",
+          "mode": "gestalt_feedback",
+          "areaShare": 0.08,
+          "thresholds": { "min": 0, "ideal": 4, "max": 10 },
+          "signals": [
+            { "id": "download_ad", "category": "ad", "visualGroup": "ad_card", "importance": 0.25, "intentFit": 0.1, "salience": 0.62, "goalRelevance": 0.05, "novelty": 0.35 }
+          ]
+        },
+        {
+          "id": "cookie_banner",
+          "label": "Cookie consent banner",
+          "mode": "individual_reading",
+          "areaShare": 0.24,
+          "thresholds": { "min": 0, "ideal": 0, "max": 8 },
+          "signals": [
+            { "id": "cookie_panel", "category": "consent", "visualGroup": "modal_banner", "importance": 0.8, "intentFit": 0.18, "salience": 1.0, "goalRelevance": 0.18, "novelty": 0.95 },
+            { "id": "accept_button", "category": "consent", "visualGroup": "button", "importance": 0.75, "intentFit": 0.2, "salience": 0.82, "goalRelevance": 0.2, "novelty": 0.85 }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "genre_arena",
+      "title": "4v4 genre arena",
+      "intent": "watch_and_compare_battle",
+      "expectedTopClusters": ["battle_window", "preset_dock", "top_controls"],
+      "clusters": [
+        {
+          "id": "top_controls",
+          "label": "Top controls",
+          "mode": "individual_reading",
+          "areaShare": 0.08,
+          "thresholds": { "min": 8, "ideal": 14, "max": 24 },
+          "signals": [
+            { "id": "start_button", "category": "control", "visualGroup": "button", "importance": 0.8, "intentFit": 0.9, "salience": 0.5, "goalRelevance": 0.9, "novelty": 0.3 },
+            { "id": "speed_button", "category": "control", "visualGroup": "button", "importance": 0.55, "intentFit": 0.75, "salience": 0.45, "goalRelevance": 0.7, "novelty": 0.25 },
+            { "id": "page_title", "category": "identity", "visualGroup": "title", "importance": 0.55, "intentFit": 0.8, "salience": 0.55, "goalRelevance": 0.6, "novelty": 0.25 }
+          ]
+        },
+        {
+          "id": "battle_window",
+          "label": "Battle window",
+          "mode": "gestalt_feedback",
+          "areaShare": 0.5,
+          "thresholds": { "min": 32, "ideal": 46, "max": 60 },
+          "signals": [
+            { "id": "battlefield_area", "category": "battle", "visualGroup": "large_stage", "importance": 1.0, "intentFit": 1.0, "salience": 0.9, "goalRelevance": 1.0, "novelty": 0.45 },
+            { "id": "alive_scorebar", "category": "battle_status", "visualGroup": "scorebar", "importance": 0.75, "intentFit": 0.9, "salience": 0.55, "goalRelevance": 0.85, "novelty": 0.25 },
+            { "id": "battle_legend", "category": "legend", "visualGroup": "legend", "importance": 0.45, "intentFit": 0.65, "salience": 0.35, "goalRelevance": 0.55, "novelty": 0.2 }
+          ]
+        },
+        {
+          "id": "preset_dock",
+          "label": "Left/right preset selector",
+          "mode": "individual_reading",
+          "areaShare": 0.22,
+          "thresholds": { "min": 12, "ideal": 20, "max": 30 },
+          "signals": [
+            { "id": "left_preset_cards", "category": "preset_card", "visualGroup": "preset_card", "importance": 0.75, "intentFit": 0.65, "salience": 0.72, "goalRelevance": 0.7, "novelty": 0.45 },
+            { "id": "right_preset_cards", "category": "preset_card", "visualGroup": "preset_card", "importance": 0.75, "intentFit": 0.65, "salience": 0.72, "goalRelevance": 0.7, "novelty": 0.45 },
+            { "id": "selected_preset_highlight", "category": "selection", "visualGroup": "preset_card", "importance": 0.75, "intentFit": 0.75, "salience": 0.62, "goalRelevance": 0.8, "novelty": 0.35 }
+          ]
+        },
+        {
+          "id": "team_config",
+          "label": "Team detailed config",
+          "mode": "individual_reading",
+          "areaShare": 0.12,
+          "thresholds": { "min": 0, "ideal": 8, "max": 18 },
+          "signals": [
+            { "id": "left_config", "category": "config", "visualGroup": "unit_card", "importance": 0.6, "intentFit": 0.35, "salience": 0.5, "goalRelevance": 0.35, "novelty": 0.3 },
+            { "id": "right_config", "category": "config", "visualGroup": "unit_card", "importance": 0.6, "intentFit": 0.35, "salience": 0.5, "goalRelevance": 0.35, "novelty": 0.3 }
+          ]
+        },
+        {
+          "id": "debug_bottom",
+          "label": "Skill library, logs, matchup matrix",
+          "mode": "individual_reading",
+          "areaShare": 0.08,
+          "thresholds": { "min": 0, "ideal": 4, "max": 10 },
+          "signals": [
+            { "id": "skill_library", "category": "debug", "visualGroup": "panel", "importance": 0.45, "intentFit": 0.2, "salience": 0.35, "goalRelevance": 0.25, "novelty": 0.25 },
+            { "id": "combat_log", "category": "debug", "visualGroup": "panel", "importance": 0.5, "intentFit": 0.35, "salience": 0.35, "goalRelevance": 0.35, "novelty": 0.25 }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-06-24_2104_encounter-lab-ui-and-coop-index.md`](reports/2026-06-24_2104_encounter-lab-ui-and-coop-index.md)
+[`reports/2026-06-25_2015_signal-ui-and-life-recognition-handoff.md`](reports/2026-06-25_2015_signal-ui-and-life-recognition-handoff.md)
 
-Last updated: 2026-06-24
+Last updated: 2026-06-25
 
-Current focus: encounter levels are now visible in `/encounter_lab/`; future handoffs should create a new timestamped report and update `REPORT_INDEX.md`.
+Current focus: today shifted from concrete UI implementation problems into a broader signal-based UI planning and player recognition/feedback simulation system. Future agents should read the latest report before touching 4v4 UI, attention analysis, or the life recognition simulator.

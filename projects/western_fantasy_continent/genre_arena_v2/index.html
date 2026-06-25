@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 流派竞技场 V2</title>
+    <link rel="stylesheet" href="/genre_arena_v2/styles.css">
+  </head>
+  <body>
+    <main class="arena-v2">
+      <header class="topbar">
+        <div>
+          <a href="/workbench/" class="back-link">返回工作台</a>
+          <h1>流派竞技场 V2</h1>
+          <p>按注意力预算重排的 4v4 试验版：准备阶段先选对局，战斗阶段再把注意力交给战场。</p>
+        </div>
+        <div class="top-actions">
+          <div class="state-chip" id="stateChip">准备中</div>
+          <button id="topStartBtn" type="button">开始战斗</button>
+        </div>
+      </header>
+
+      <section class="setup-board" id="setupBoard">
+        <aside class="selector-panel">
+          <div class="panel-head">
+            <h2>左队流派</h2>
+            <span id="leftPickName">-</span>
+          </div>
+          <div id="leftPresetList" class="preset-list"></div>
+        </aside>
+
+        <section class="matchup-panel">
+          <div class="versus">
+            <article class="selected-side left">
+              <span>左队</span>
+              <strong id="leftTitle">-</strong>
+              <p id="leftDesc">选择一个流派</p>
+            </article>
+            <div class="vs-mark">VS</div>
+            <article class="selected-side right">
+              <span>右队</span>
+              <strong id="rightTitle">-</strong>
+              <p id="rightDesc">选择一个流派</p>
+            </article>
+          </div>
+          <div class="intent-note">
+            <strong>当前意图</strong>
+            <span>先确定左右队，再开始看战斗。非选中流派保持低信息密度，避免 20 张卡互相稀释。</span>
+          </div>
+          <button id="startBtn" type="button" class="primary-action">开始战斗</button>
+        </section>
+
+        <aside class="selector-panel">
+          <div class="panel-head">
+            <h2>右队流派</h2>
+            <span id="rightPickName">-</span>
+          </div>
+          <div id="rightPresetList" class="preset-list"></div>
+        </aside>
+      </section>
+
+      <section class="battle-shell" id="battleShell">
+        <div class="battle-head">
+          <button id="backSetupBtn" type="button">重新选队</button>
+          <div class="battle-title">
+            <span id="battlePair">-</span>
+            <strong id="battleState">未开始</strong>
+          </div>
+          <button id="rerunBtn" type="button">再打一场</button>
+        </div>
+
+        <iframe id="legacyArenaFrame" class="legacy-arena" src="/genre_arena/" title="旧版实时战斗"></iframe>
+
+        <section class="battle-grid">
+          <div class="battlefield" id="battlefield"></div>
+          <aside class="result-panel">
+            <div class="result-card">
+              <span>胜者</span>
+              <strong id="winnerText">-</strong>
+            </div>
+            <div class="metric-pair">
+              <div><strong id="leftHp">0</strong><span>左队血量分</span></div>
+              <div><strong id="rightHp">0</strong><span>右队血量分</span></div>
+            </div>
+            <div class="event-list" id="eventList"></div>
+          </aside>
+        </section>
+      </section>
+
+      <section class="analysis-strip">
+        <article>
+          <strong>准备阶段预算</strong>
+          <span>选队 55 / 开始 20 / 战斗预览 15 / 调试 10</span>
+        </article>
+        <article>
+          <strong>战斗阶段预算</strong>
+          <span>战场 65 / 结果 20 / 控制 10 / 预设 5</span>
+        </article>
+        <article>
+          <strong>本版目标</strong>
+          <span>先解决“大量预设卡互相稀释”和“开始按钮离选择流程太远”。</span>
+        </article>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/genre_arena_v2/genre-arena-v2.js"></script>
+  </body>
+</html>

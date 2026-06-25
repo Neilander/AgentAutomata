@@ -1,0 +1,199 @@
+{
+  "schema": "agent_automata_attention_tree_v1",
+  "title": "4v4 Genre Arena Attention Tree",
+  "intent": "select_matchup_then_watch_battle",
+  "defaults": {
+    "attentionBudget": 100,
+    "attentionPower": 1.5,
+    "bottomUpWeight": 0.42,
+    "topDownWeight": 0.58,
+    "categoryDilution": 0.6,
+    "densityWeight": 0.08,
+    "visualSimilarityDilution": 0.5
+  },
+  "root": {
+    "id": "screen",
+    "label": "4v4 genre arena screen",
+    "type": "screen",
+    "mode": "mixed",
+    "importance": 1,
+    "intentFit": 1,
+    "salience": 1,
+    "goalRelevance": 1,
+    "novelty": 0.5,
+    "children": [
+      {
+        "id": "topbar",
+        "label": "Top title and controls",
+        "type": "region",
+        "mode": "individual_reading",
+        "importance": 0.72,
+        "intentFit": 0.95,
+        "salience": 0.5,
+        "goalRelevance": 0.9,
+        "novelty": 0.25,
+        "thresholds": { "min": 8, "ideal": 14, "max": 22 },
+        "childrenComfortLimit": 4,
+        "minChildAttention": 2,
+        "children": [
+          { "id": "page_title", "label": "Page title and description", "type": "text", "category": "identity", "visualGroup": "title", "mode": "individual_reading", "importance": 0.55, "intentFit": 0.8, "salience": 0.5, "goalRelevance": 0.65, "novelty": 0.2 },
+          { "id": "start_button", "label": "Start button", "type": "button", "category": "primary_action", "visualGroup": "button", "mode": "individual_reading", "importance": 0.95, "intentFit": 1, "salience": 0.56, "goalRelevance": 1, "novelty": 0.35, "thresholds": { "min": 3, "ideal": 5, "max": 9 } },
+          { "id": "reset_button", "label": "Reset button", "type": "button", "category": "secondary_action", "visualGroup": "button", "mode": "individual_reading", "importance": 0.45, "intentFit": 0.65, "salience": 0.44, "goalRelevance": 0.6, "novelty": 0.25 },
+          { "id": "speed_button", "label": "Speed button", "type": "button", "category": "secondary_action", "visualGroup": "button", "mode": "individual_reading", "importance": 0.55, "intentFit": 0.8, "salience": 0.45, "goalRelevance": 0.75, "novelty": 0.25 }
+        ]
+      },
+      {
+        "id": "battle_panel",
+        "label": "Battle panel",
+        "type": "region",
+        "mode": "gestalt_feedback",
+        "importance": 0.95,
+        "intentFit": 1,
+        "salience": 0.95,
+        "goalRelevance": 1,
+        "novelty": 0.45,
+        "thresholds": { "min": 32, "ideal": 44, "max": 58 },
+        "childrenComfortLimit": 5,
+        "minChildAttention": 5,
+        "children": [
+          {
+            "id": "scorebar",
+            "label": "Alive count and timer",
+            "type": "status_bar",
+            "mode": "individual_reading",
+            "importance": 0.7,
+            "intentFit": 0.9,
+            "salience": 0.5,
+            "goalRelevance": 0.8,
+            "novelty": 0.25,
+            "thresholds": { "min": 5, "ideal": 8, "max": 14 },
+            "children": [
+              { "id": "left_alive", "label": "Left alive count", "type": "number", "category": "battle_status", "visualGroup": "status_number", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.9, "salience": 0.55, "goalRelevance": 0.8, "novelty": 0.2 },
+              { "id": "timer_state", "label": "Timer and state", "type": "number", "category": "battle_status", "visualGroup": "status_number", "mode": "individual_reading", "importance": 0.65, "intentFit": 0.85, "salience": 0.52, "goalRelevance": 0.75, "novelty": 0.2 },
+              { "id": "right_alive", "label": "Right alive count", "type": "number", "category": "battle_status", "visualGroup": "status_number", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.9, "salience": 0.55, "goalRelevance": 0.8, "novelty": 0.2 }
+            ]
+          },
+          {
+            "id": "battlefield",
+            "label": "Battlefield canvas area",
+            "type": "stage",
+            "mode": "gestalt_feedback",
+            "importance": 1,
+            "intentFit": 1,
+            "salience": 0.95,
+            "goalRelevance": 1,
+            "novelty": 0.42,
+            "thresholds": { "min": 24, "ideal": 34, "max": 46 },
+            "children": [
+              { "id": "left_units", "label": "Left team units", "type": "unit_group", "category": "combat_actor", "visualGroup": "unit_group", "mode": "gestalt_feedback", "importance": 0.85, "intentFit": 1, "salience": 0.58, "goalRelevance": 0.95, "novelty": 0.35 },
+              { "id": "right_units", "label": "Right team units", "type": "unit_group", "category": "combat_actor", "visualGroup": "unit_group", "mode": "gestalt_feedback", "importance": 0.85, "intentFit": 1, "salience": 0.58, "goalRelevance": 0.95, "novelty": 0.35 },
+              { "id": "skill_effects", "label": "Skill effects and floaters", "type": "event_layer", "category": "combat_event", "visualGroup": "fx", "mode": "gestalt_feedback", "importance": 0.95, "intentFit": 1, "salience": 0.42, "goalRelevance": 1, "novelty": 0.55, "thresholds": { "min": 8, "ideal": 14, "max": 24 } }
+            ]
+          },
+          { "id": "battle_legend", "label": "Poison/shield/cooldown legend", "type": "legend", "category": "legend", "visualGroup": "legend", "mode": "individual_reading", "importance": 0.38, "intentFit": 0.65, "salience": 0.32, "goalRelevance": 0.5, "novelty": 0.2, "thresholds": { "min": 0, "ideal": 3, "max": 7 } }
+        ]
+      },
+      {
+        "id": "preset_dock",
+        "label": "Preset matchup selector",
+        "type": "region",
+        "mode": "individual_reading",
+        "importance": 0.9,
+        "intentFit": 0.95,
+        "salience": 0.78,
+        "goalRelevance": 0.95,
+        "novelty": 0.38,
+        "thresholds": { "min": 22, "ideal": 32, "max": 42 },
+        "childrenComfortLimit": 2,
+        "minChildAttention": 8,
+        "children": [
+          {
+            "id": "left_preset_list",
+            "label": "Left team preset list",
+            "type": "choice_list",
+            "mode": "individual_reading",
+            "importance": 0.85,
+            "intentFit": 0.95,
+            "salience": 0.66,
+            "goalRelevance": 0.95,
+            "novelty": 0.35,
+            "thresholds": { "min": 10, "ideal": 16, "max": 24 },
+            "childrenComfortLimit": 6,
+            "minChildAttention": 1.6,
+            "children": [
+              { "id": "left_poison_bloom", "label": "Poison Bloom selected card", "type": "card", "category": "preset_card", "visualGroup": "preset_card_selected", "mode": "individual_reading", "importance": 0.95, "intentFit": 1, "salience": 0.82, "goalRelevance": 1, "novelty": 0.45 },
+              { "id": "left_fire_burst", "label": "Fire Burst card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "left_crown_carry", "label": "Crown Carry card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "left_iron_wall", "label": "Iron Wall card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "left_blood_rage", "label": "Blood Rage card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "left_lightning_tempo", "label": "Lightning Tempo card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "left_frost_control", "label": "Frost Control card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "left_holy_sustain", "label": "Holy Sustain card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "left_shadow_execute", "label": "Shadow Execute card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "left_alchemy_chaos", "label": "Alchemy Chaos card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 }
+            ]
+          },
+          {
+            "id": "right_preset_list",
+            "label": "Right team preset list",
+            "type": "choice_list",
+            "mode": "individual_reading",
+            "importance": 0.85,
+            "intentFit": 0.95,
+            "salience": 0.66,
+            "goalRelevance": 0.95,
+            "novelty": 0.35,
+            "thresholds": { "min": 10, "ideal": 16, "max": 24 },
+            "childrenComfortLimit": 6,
+            "minChildAttention": 1.6,
+            "children": [
+              { "id": "right_poison_bloom", "label": "Poison Bloom card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "right_fire_burst", "label": "Fire Burst card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "right_crown_carry", "label": "Crown Carry card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "right_iron_wall", "label": "Iron Wall selected card", "type": "card", "category": "preset_card", "visualGroup": "preset_card_selected", "mode": "individual_reading", "importance": 0.95, "intentFit": 1, "salience": 0.82, "goalRelevance": 1, "novelty": 0.45 },
+              { "id": "right_blood_rage", "label": "Blood Rage card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "right_lightning_tempo", "label": "Lightning Tempo card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "right_frost_control", "label": "Frost Control card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "right_holy_sustain", "label": "Holy Sustain card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "right_shadow_execute", "label": "Shadow Execute card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 },
+              { "id": "right_alchemy_chaos", "label": "Alchemy Chaos card", "type": "card", "category": "preset_card", "visualGroup": "preset_card", "mode": "individual_reading", "importance": 0.7, "intentFit": 0.85, "salience": 0.58, "goalRelevance": 0.8, "novelty": 0.35 }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "team_config",
+        "label": "Detailed team configuration",
+        "type": "region",
+        "mode": "individual_reading",
+        "importance": 0.45,
+        "intentFit": 0.35,
+        "salience": 0.55,
+        "goalRelevance": 0.35,
+        "novelty": 0.25,
+        "thresholds": { "min": 0, "ideal": 8, "max": 16 },
+        "children": [
+          { "id": "left_config_panel", "label": "Left config panel", "type": "panel", "category": "config_panel", "visualGroup": "panel", "mode": "individual_reading", "importance": 0.5, "intentFit": 0.35, "salience": 0.5, "goalRelevance": 0.35, "novelty": 0.25 },
+          { "id": "right_config_panel", "label": "Right config panel", "type": "panel", "category": "config_panel", "visualGroup": "panel", "mode": "individual_reading", "importance": 0.5, "intentFit": 0.35, "salience": 0.5, "goalRelevance": 0.35, "novelty": 0.25 }
+        ]
+      },
+      {
+        "id": "debug_bottom",
+        "label": "Skill library, log, matchup matrix",
+        "type": "region",
+        "mode": "individual_reading",
+        "importance": 0.3,
+        "intentFit": 0.2,
+        "salience": 0.25,
+        "goalRelevance": 0.2,
+        "novelty": 0.2,
+        "thresholds": { "min": 0, "ideal": 3, "max": 8 },
+        "children": [
+          { "id": "skill_library", "label": "Skill library", "type": "debug_panel", "category": "debug_panel", "visualGroup": "debug_panel", "mode": "individual_reading", "importance": 0.35, "intentFit": 0.2, "salience": 0.3, "goalRelevance": 0.2, "novelty": 0.2 },
+          { "id": "combat_log", "label": "Combat log", "type": "debug_panel", "category": "debug_panel", "visualGroup": "debug_panel", "mode": "individual_reading", "importance": 0.35, "intentFit": 0.25, "salience": 0.3, "goalRelevance": 0.25, "novelty": 0.2 },
+          { "id": "matchup_matrix", "label": "Macro matchup matrix", "type": "debug_panel", "category": "debug_panel", "visualGroup": "debug_panel", "mode": "individual_reading", "importance": 0.4, "intentFit": 0.2, "salience": 0.3, "goalRelevance": 0.2, "novelty": 0.25 }
+        ]
+      }
+    ]
+  }
+}

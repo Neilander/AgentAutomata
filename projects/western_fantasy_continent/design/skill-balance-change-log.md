@@ -4,6 +4,23 @@ This log records skill-asset, archetype, and balance decisions for the Western F
 
 Before choosing a new tuning patch, review the latest entries here so a fix for one archetype does not accidentally undo an earlier decision.
 
+## 2026-06-26
+
+### Workflow: tutorial levels must teach visible class differences
+
+- Problem: the first tutorial level failed after slot changes, and a hidden enemy multiplier patch made it pass without proving the player-facing lesson. That hides the real issue: class differences such as mage AOE and priest healing are not visible enough in the test conditions.
+- Decision: reject raw tutorial stat tuning as the first response. Add `skills/tutorial-level-debug/` as the required workflow for tutorial and small test fights.
+- Recorded debug paths: Option A adjusts available roles or encounter shape, such as swapping knight for warrior or removing accidental solver roles. Option B strengthens class-owned features, such as making mage AOE or priest healing more visible, then reruns balance checks for overpowered drift.
+- Guardrail: do not use hidden player/enemy multipliers to make a lesson pass unless role/encounter and class-feature routes are tried or explicitly rejected.
+
+### Balance: broaden frontline ecology without special tutorial stats
+
+- Problem: tutorial and composition checks showed knight becoming the only reliable answer whenever a fight required damage absorption. That made survival feel like a single-key solution instead of an ecology.
+- Goal: keep knight as the pure stable tank while creating alternate survival routes: warrior as a hybrid bracing frontline, berserker as a risk frontline, and priest/bard as support shells.
+- Change: warrior `powerStrike` now gives a short self `guardTimer` window before its hit, turning warrior into a real hybrid frontline without changing its damage role. Berserker base durability moves from 330 HP / 8 armor to 334 HP / 8 armor so it can enter low-health gameplay slightly more reliably without becoming a stable tank.
+- Follow-up: the first version left `ironWall` at 7/8 signal checks because its counter banner sometimes landed after the first death. `retaliationBanner` opening cooldown is moved from 7.5s to 3.5s as a preset-owned timing repair.
+- Guardrail: no combat-loop, targeting, action priority, or tutorial-only stat scaling is changed.
+
 ## Experiment Card Template
 
 Use this card for a new tuning or implementation branch:
@@ -302,3 +319,36 @@ current_decision: Continue through berserker-owned assets only. The shared actio
 - Balance iteration: red-team first flagged a broad warlock/knight/ranger/berserker random team. `painDividend` was narrowed from mixed support-plus-poison setup into pure risk support, and broad-but-shallow 55%-63% random candidates are now watch-list items rather than automatic nerf triggers.
 - Validation: skill assets, combat signals, skill budget report, red-team report, archetype signal contracts, and matchup matrix all passed after the final patch. Red-team risky candidates are 0, and matchup expectations report no mismatches.
 - Residual risk: the new arena test teams are for browser feel checks; they are not yet standard archetype contracts with their own signal curves.
+
+### Milestone: 8-pick-4 team simulator composition validation
+
+- Goal: make the team simulator test role composition and counterplay rather than hidden stat advantage.
+- Problem: the strength 80 challenge was effectively a stat wall. Enemy challenge strength multiplied base stats, player recruits rolled random quality, and the enemy lineup `knight + assassin + assassin + warlock` compounded execution pressure.
+- Change: team simulator recruits now use base role stats; enemies use base role stats; team simulator battles pass `randomizeStats: false`.
+- Combat framework: `team_simulator` now calls `BattleView.start(...)`; `BattleView` routes to shared `CombatSimulation` when loaded and consumes combat signals for visible feedback.
+- Tooling: added manual role insertion to the team simulator candidate pool, so the user can test specific counters without rerolling.
+- Result: user validated that the 80 challenge is now beatable and that role counterplay/composition choices are visible. Current numbers are acceptable for this stage.
+- Reference: `coop/2026-06-26_team_simulator_composition_milestone.md`.
+
+### Balance: berserker low-health fantasy sharpened
+
+- Problem: the analyzer called berserker "high output", but this was mostly team damage share, not felt standalone strength. In play, the class could feel weak because its low-health window started late and looked like a generic carry waiting for cooldowns.
+- Goal: make berserker distinct from knight and warrior. Knight remains stable protection, warrior remains steady frontline pressure, and berserker should actively enter danger then convert low HP into faster empowered basic attacks and lifesteal recovery.
+- Change: `bloodStrike` now self-costs 5% max HP and opens earlier, `bloodFury` lasts 4.4s, low-health haste scaling is stronger, low-health damage amp is higher, base lifesteal is lower, missing-HP lifesteal is higher, and `undyingRoar` is shorter but still a clear flip window.
+- Guardrail: this does not change targeting, action priority, combat loop order, or team AI. It is a data-only tuning pass plus skill description cleanup.
+- Result: `bloodRage` still passes all 9/9 low-health signal checks. The key curve now shows low-health entry rate 1.000, post-low attack-rate ratio 2.531, recovery after low 0.219, and empowered-basic damage share 0.828.
+- Matchup result: `bloodRage` is no longer an all-rounder. It has 2 hard prey and 3 hard predators, beats sustain/slow frontline styles, and still loses heavily to crown carry, lightning tempo, poison bloom, and shadow execute. Fire burst is again favored into it.
+- Residual risk: role diagnostics still flags many "high output but safe" cases because supported carry teams intentionally protect berserker. Treat this as a watch item for support shells, not proof that raw berserker is too strong.
+
+### Tutorial: narrow solutions to teach one point per stage
+
+- Problem: the tutorial guide had too many choices and several passing teams did not express the intended lesson. Example: early stages could pass with generic double-frontline or off-theme damage, teaching "stack sturdy units" instead of the target role interaction.
+- Decision: reduce each stage to 3-5 candidates and tune enemies per stage so passing teams need the intended mechanic. Use enemy stat modifiers in `tutorial_guide_v2` instead of global role stat changes.
+- Resulting stage checks:
+  - Stage 1 passes only with `knight + ranger`, teaching frontline plus stable backline damage.
+  - Stage 2 passes only with `priest + berserker`, teaching low-health berserker plus sustain.
+  - Stage 3 passes with `knight + ranger + mage`, teaching frontline buys time for ranged burst against dive.
+  - Stage 4 passes with bard-based clear teams, teaching haste/tempo into multiple fragile enemies.
+  - Stage 5 requires `warlock`, teaching sustained damage against high armor.
+  - Stage 6 requires knight, priest, berserker, and one damage option, teaching a complete team shell.
+- Validation: ran exact fixed-seed tutorial combinations with `simulateTeams`; non-teaching combinations now fail in the checked seed.

@@ -151,6 +151,8 @@ const els = {
   recruitBtn: document.querySelector("#recruitBtn"),
   autoPickBtn: document.querySelector("#autoPickBtn"),
   tourBtn: document.querySelector("#tourBtn"),
+  manualRoleSelect: document.querySelector("#manualRoleSelect"),
+  manualAddBtn: document.querySelector("#manualAddBtn"),
   squadSlots: document.querySelector("#squadSlots"),
   squadSummary: document.querySelector("#squadSummary"),
   rosterGrid: document.querySelector("#rosterGrid"),
@@ -266,6 +268,8 @@ function bind() {
   els.recruitBtn.addEventListener("click", recruit);
   els.autoPickBtn.addEventListener("click", autoPick);
   els.tourBtn.addEventListener("click", runTour);
+  initManualRecruit();
+  els.manualAddBtn.addEventListener("click", addManualHero);
   els.rosterGrid.addEventListener("click", (event) => {
     const card = event.target.closest("[data-id]");
     if (!card) return;
@@ -307,13 +311,29 @@ function recruit() {
   render();
 }
 
-function makeHero(index) {
+function initManualRecruit() {
+  els.manualRoleSelect.innerHTML = Object.entries(ROLES).map(([roleKey, roleData]) => (
+    `<option value="${roleKey}">${ROLE_ICONS[roleKey] || ""} ${roleData.name}</option>`
+  )).join("");
+}
+
+function addManualHero() {
+  const roleKey = els.manualRoleSelect.value;
+  if (!ROLES[roleKey]) return;
+  state.battleView?.reset();
+  const hero = makeHero(state.roster.length, roleKey);
+  state.roster.unshift(hero);
+  state.selectedId = hero.id;
+  state.logs.unshift(`\u624b\u52a8\u6dfb\u52a0\uff1a${hero.roleName}`);
+  render();
+}
+
+function makeHero(index, forcedRoleKey = "") {
   const keys = Object.keys(ROLES);
-  const roleKey = keys[Math.floor(Math.random() * keys.length)];
+  const roleKey = forcedRoleKey || keys[Math.floor(Math.random() * keys.length)];
   const base = ROLES[roleKey];
   const kit = randomKit(roleKey, base);
-  const quality = 0.88 + Math.random() * 0.28;
-  const powerScore = Math.round((base.hp * 0.11 + base.power * 4.2 + base.armor * 7) * quality);
+  const powerScore = Math.round(base.hp * 0.11 + base.power * 4.2 + base.armor * 7);
   return {
     id: `h${Date.now()}_${index}_${Math.random().toString(36).slice(2, 5)}`,
     name: `${NAMES[Math.floor(Math.random() * NAMES.length)]}${base.name}`,
@@ -321,9 +341,9 @@ function makeHero(index) {
     roleName: base.name,
     fantasy: base.fantasy,
     icon: ROLE_ICONS[roleKey],
-    hp: Math.round(base.hp * quality),
-    power: Math.round(base.power * quality),
-    armor: Math.round(base.armor * quality),
+    hp: base.hp,
+    power: base.power,
+    armor: base.armor,
     range: base.range,
     smallKeys: kit.smallKeys,
     small: kit.smallKeys.map(skillNameByKey),
@@ -375,43 +395,77 @@ async function runTour() {
   for (const challenge of CHALLENGES) {
     await startChallenge(challenge.id, true);
     await sleep(500);
-    if (state.results[challenge.id]?.result === "失败") break;
+    if (isBattleLoss(state.results[challenge.id]?.result)) break;
   }
+}
+
+function isBattleWin(result) {
+  return result === "\u80dc\u5229";
+}
+
+function isBattleLoss(result) {
+  return result === "\u5931\u8d25";
 }
 
 function startChallenge(strength, silent = false) {
   if (state.squad.length !== 4 || state.running) {
-    if (!silent) state.logs.unshift("需要先选满 4 人。");
+    if (!silent) state.logs.unshift("\u9700\u8981\u5148\u9009\u6ee1 4 \u4eba\u3002");
+    render();
+    return Promise.resolve();
+  }
+  if (!window.GAME_COMBAT_SIM?.CombatSimulation) {
+    state.logs.unshift("\u7edf\u4e00\u6218\u6597\u6a21\u62df\u5668\u672a\u52a0\u8f7d\u3002");
     render();
     return Promise.resolve();
   }
   state.running = true;
   state.time = 0;
   state.activeChallenge = strength;
-  state.logs = [`挑战强度 ${strength} 开始。`];
+  state.logs = [`\u6311\u6218\u5f3a\u5ea6 ${strength} \u5f00\u59cb\u3002`];
   const heroes = state.squad.map((id) => state.roster.find((hero) => hero.id === id));
   const challenge = CHALLENGES.find((item) => item.id === strength);
+  const enemies = challenge.roles.map((roleKey, index) => makeEnemy(roleKey, strength, index));
   state.units = [];
-  state.battleState = `强度 ${strength} 挑战中`;
+  state.battleState = `\u5f3a\u5ea6 ${strength} \u6311\u6218\u4e2d`;
   render();
-  state.battleView.start({
-    leftTeam: heroes,
-    rightTeam: challenge.roles.map((roleKey, index) => makeEnemy(roleKey, strength, index)),
-    seed: `team-simulator|${strength}|${heroes.map((hero) => hero.id).join("+")}`,
-    title: `强度 ${strength}`,
-  });
   return new Promise((resolve) => {
     state.resolveBattle = resolve;
+    state.battleView.start({
+      leftTeam: heroes.map(toCombatSpec),
+      rightTeam: enemies.map(toCombatSpec),
+      seed: `team-simulator|${strength}|${heroes.map((hero) => hero.id).join("+")}`,
+      title: `\u5f3a\u5ea6 ${strength}`,
+      randomizeStats: false,
+    });
   });
 }
 
+
+function toCombatSpec(unit) {
+  const kit = SHARED_SKILLS.roleKits?.[unit.roleKey]?.kit || {};
+  return {
+    id: unit.id,
+    name: unit.name,
+    role: unit.roleKey,
+    roleName: unit.roleName,
+    hp: unit.hp,
+    power: unit.power,
+    armor: unit.armor,
+    range: unit.range,
+    small1: unit.smallKeys?.[0] || SHARED_SKILL_KEY_BY_NAME[unit.small?.[0]] || kit.small1 || unit.small?.[0],
+    small2: unit.smallKeys?.[1] || SHARED_SKILL_KEY_BY_NAME[unit.small?.[1]] || kit.small2 || unit.small?.[1],
+    passive: unit.passiveKey || SHARED_SKILL_KEY_BY_NAME[unit.passive] || kit.passive || unit.passive,
+    ultimate: unit.ultKey || SHARED_SKILL_KEY_BY_NAME[unit.ult] || kit.ultimate || unit.ult,
+  };
+}
+
 function finishSharedBattle(result) {
-  const won = result.metrics.leftAlive > 0 && result.metrics.rightAlive === 0;
+  const won = result.winner ? result.winner === "left" : result.metrics.leftAlive > 0 && result.metrics.rightAlive === 0;
   state.running = false;
   state.time = result.duration || 0;
-  state.results[state.activeChallenge] = { result: won ? "胜利" : "失败", time: state.time.toFixed(1) };
-  state.logs.unshift(`强度 ${state.activeChallenge}：${won ? "胜利" : "失败"}`);
-  state.battleState = won ? "胜利" : "失败";
+  state.results[state.activeChallenge] = { result: won ? "\u80dc\u5229" : "\u5931\u8d25", time: state.time.toFixed(1) };
+  state.logs.unshift(`\u5f3a\u5ea6 ${state.activeChallenge}: ${won ? "\u80dc\u5229" : "\u5931\u8d25"}`);
+  state.battleState = won ? "\u80dc\u5229" : "\u5931\u8d25";
   if (state.resolveBattle) state.resolveBattle();
   state.resolveBattle = null;
   render();
@@ -419,7 +473,6 @@ function finishSharedBattle(result) {
 
 function makeEnemy(roleKey, strength, index) {
   const base = ROLES[roleKey];
-  const quality = 0.64 + strength / 120;
   return {
     id: `e${strength}_${index}`,
     name: `${base.name}${strength}`,
@@ -427,15 +480,15 @@ function makeEnemy(roleKey, strength, index) {
     roleName: base.name,
     fantasy: base.fantasy,
     icon: ROLE_ICONS[roleKey],
-    hp: Math.round(base.hp * quality),
-    power: Math.round(base.power * quality),
-    armor: Math.round(base.armor * quality),
+    hp: base.hp,
+    power: base.power,
+    armor: base.armor,
     range: base.range,
     small: [...base.small],
     passiveKey: SHARED_SKILL_KEY_BY_NAME[base.passive] || base.passive,
     passive: base.passive,
     ult: base.ult,
-    score: strength * 10,
+    score: Math.round(base.hp * 0.11 + base.power * 4.2 + base.armor * 7),
   };
 }
 
@@ -491,7 +544,7 @@ function teamOpeningCooldown(skillName, fallback) {
 function tick(now) {
   const dt = Math.min(0.05, ((now - state.lastFrame) / 1000 || 0.016));
   state.lastFrame = now;
-  if (state.running) updateBattle(dt);
+  if (state.running && state.units.length) updateBattle(dt);
   renderBattle();
   requestAnimationFrame(tick);
 }
@@ -974,7 +1027,7 @@ function renderChallenges() {
   els.challengeList.innerHTML = CHALLENGES.map((item) => {
     const result = state.results[item.id];
     const active = state.activeChallenge === item.id && state.running;
-    const cls = active ? "active" : result?.result === "胜利" ? "win" : result?.result === "失败" ? "lose" : "";
+    const cls = active ? "active" : isBattleWin(result?.result) ? "win" : isBattleLoss(result?.result) ? "lose" : "";
     return `<article class="challenge-card ${cls}">
       <header><strong>${item.name}</strong><span class="power">${item.id}</span></header>
       <div class="result">${result ? `${result.result} · ${result.time}s` : item.roles.map((roleKey) => ROLES[roleKey].name).join(" / ")}</div>

@@ -3,14 +3,19 @@
   "type": "小技能",
   "role": "狂战士",
   "cooldown": 5.2,
-  "openingCooldown": 5.8,
+  "openingCooldown": 4.8,
   "icon": "bloody-sword",
-  "desc": "进入 4 秒血怒状态；期间每次普攻额外造成攻击力45% 伤害，生命越低额外伤害越高。",
+  "desc": "自伤 5% 最大生命，进入 4.4 秒血怒状态；期间普攻额外造成攻击力 48% 伤害，越残伤害和攻速越高。",
   "effects": [
+    {
+      "kind": "selfRawDamage",
+      "maxHp": 0.05,
+      "type": "blood"
+    },
     {
       "kind": "timer",
       "timer": "bloodFuryTimer",
-      "duration": 4,
+      "duration": 4.4,
       "label": "血怒普攻",
       "tone": "heal"
     }

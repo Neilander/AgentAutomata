@@ -11,6 +11,8 @@ Use `signal-based-ui-planner` first when the interface is complex, dense, novel,
 
 Use this `game-ui-designer` skill directly when the screen is common and simple, such as a straightforward inventory, combat HUD, map panel, menu, modal, or small tool surface.
 
+After designing or implementing a UI, use `../user-review/SKILL.md` when the task flow may be incomplete, the player may need to recover from choices, or the user asks whether the interface is convenient, missing controls, or hard to use.
+
 ## Core Rule
 
 Do not start by placing data on the page. Start by defining the player's current decision.

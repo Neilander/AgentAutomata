@@ -108,7 +108,7 @@ const GAME_SKILL_ASSETS = (() => {
         "role": "牧师",
         "fantasy": "保核心，续航和护盾",
         "hp": 285,
-        "power": 44,
+        "power": 30,
         "armor": 6,
         "range": 35,
         "icon": "checked-shield",
@@ -223,7 +223,7 @@ const GAME_SKILL_ASSETS = (() => {
         "effects": [
           {
             "kind": "shieldLowestAlly",
-            "flat": 58,
+            "flat": 64,
             "power": 0.44,
             "label": "净血"
           },
@@ -260,14 +260,19 @@ const GAME_SKILL_ASSETS = (() => {
         "type": "小技能",
         "role": "狂战士",
         "cooldown": 5.2,
-        "openingCooldown": 5.8,
+        "openingCooldown": 4.8,
         "icon": "bloody-sword",
-        "desc": "进入 4 秒血怒状态；期间每次普攻额外造成攻击力45% 伤害，生命越低额外伤害越高。",
+        "desc": "自伤 5% 最大生命，进入 4.4 秒血怒状态；期间普攻额外造成攻击力 48% 伤害，越残伤害和攻速越高。",
         "effects": [
+          {
+            "kind": "selfRawDamage",
+            "maxHp": 0.05,
+            "type": "blood"
+          },
           {
             "kind": "timer",
             "timer": "bloodFuryTimer",
-            "duration": 4,
+            "duration": 4.4,
             "label": "血怒普攻",
             "tone": "heal"
           }
@@ -298,9 +303,9 @@ const GAME_SKILL_ASSETS = (() => {
         "type": "小技能",
         "role": "狂战士",
         "cooldown": 8.4,
-        "openingCooldown": 6.6,
+        "openingCooldown": 6.2,
         "icon": "spinning-sword",
-        "desc": "进入 5 秒旋风架势；期间普攻主目标额外 +攻击力30%，并溅射附近 2 个敌人各攻击力18%。",
+        "desc": "进入 5 秒旋风架势；期间普攻主目标额外造成攻击力 26% 伤害，并溅射附近 2 个敌人各攻击力 18%。用于把低血普攻转成小范围压力。",
         "effects": [
           {
             "kind": "timer",
@@ -929,7 +934,7 @@ const GAME_SKILL_ASSETS = (() => {
         "effects": [
           {
             "kind": "healLowestAlly",
-            "flat": 48,
+            "flat": 54,
             "power": 0.42,
             "label": "急救"
           }
@@ -1236,6 +1241,13 @@ const GAME_SKILL_ASSETS = (() => {
         "desc": "稳定单体物理伤害。",
         "effects": [
           {
+            "kind": "timer",
+            "timer": "guardTimer",
+            "duration": 1.5,
+            "label": "braced",
+            "tone": "shield"
+          },
+          {
             "kind": "hitTarget",
             "flat": 34,
             "power": 0.48,
@@ -1250,7 +1262,7 @@ const GAME_SKILL_ASSETS = (() => {
         "role": "狂战士",
         "cooldown": 0,
         "icon": "rage",
-        "desc": "低血时强化血怒普攻，并让普攻按已造成伤害吸血；越残吸血越高。",
+        "desc": "低血时普攻更快、更痛，并按已造成伤害吸血；高血时收益较低，越接近危险血线越像狂战。",
         "passive": true,
         "effects": []
       },
@@ -1322,13 +1334,13 @@ const GAME_SKILL_ASSETS = (() => {
         "effects": [
           {
             "kind": "teamHeal",
-            "flat": 44,
+            "flat": 49,
             "power": 0.34,
             "label": "复苏"
           },
           {
             "kind": "teamShield",
-            "flat": 38,
+            "flat": 43,
             "power": 0.32,
             "label": "圣域"
           }
@@ -1339,7 +1351,7 @@ const GAME_SKILL_ASSETS = (() => {
         "type": "大招",
         "role": "骑士",
         "cooldown": 34,
-        "openingCooldown": 7.5,
+        "openingCooldown": 3.5,
         "icon": "shield-bash",
         "desc": "在前排开始崩溃前展开壁垒，为全队提供护盾与短暂减伤，延长反击窗口。",
         "effects": [
@@ -1451,13 +1463,13 @@ const GAME_SKILL_ASSETS = (() => {
         "effects": [
           {
             "kind": "teamHeal",
-            "flat": 36,
+            "flat": 40,
             "power": 0.28,
             "label": "庇护"
           },
           {
             "kind": "teamShield",
-            "flat": 32,
+            "flat": 37,
             "power": 0.3,
             "label": "庇护"
           }
@@ -1467,15 +1479,15 @@ const GAME_SKILL_ASSETS = (() => {
         "name": "影切",
         "type": "小技能",
         "role": "刺客",
-        "cooldown": 7,
+        "cooldown": 6.6,
         "icon": "sprint",
-        "desc": "跳向低血目标，制造收割压力但不单独秒前排。",
+        "desc": "跳向低血目标，制造收割压力并帮助大招进入处决线。",
         "effects": [
           {
             "kind": "hitLowestEnemy",
-            "flat": 18,
-            "power": 0.3,
-            "missingTargetHpFlat": 18,
+            "flat": 20.5,
+            "power": 0.33,
+            "missingTargetHpFlat": 24,
             "type": "shadow",
             "label": "影切"
           }
@@ -1485,16 +1497,16 @@ const GAME_SKILL_ASSETS = (() => {
         "name": "暗影收割",
         "type": "大招",
         "role": "刺客",
-        "cooldown": 30,
-        "openingCooldown": 10,
+        "cooldown": 27.5,
+        "openingCooldown": 5.8,
         "icon": "cloak-dagger",
-        "desc": "处决低血目标。开局不再立刻释放，主要负责收尾。",
+        "desc": "处决低血目标。前期形成第一次收割窗口，但需要目标先被压低。",
         "effects": [
           {
             "kind": "hitLowestEnemy",
-            "flat": 48,
-            "power": 0.48,
-            "missingTargetHpFlat": 42,
+            "flat": 58,
+            "power": 0.54,
+            "missingTargetHpFlat": 66,
             "type": "shadow",
             "label": "收割"
           }
@@ -1696,7 +1708,7 @@ const GAME_SKILL_ASSETS = (() => {
         "role": "狂战士",
         "cooldown": 24,
         "icon": "lion",
-        "desc": "自身 6 秒内不会低于 1 点生命，并同时获得急速、血怒、旋风架势和攻击力35% 普攻附伤。",
+        "desc": "自身 4.8 秒内不会低于 1 点生命，并获得 5.2 秒急速、血怒、旋风和吸血窗口；这是低血翻盘键，不是长期站桩减伤。",
         "effects": [
           {
             "kind": "berserkerRoar"
@@ -2483,7 +2495,7 @@ const GAME_SKILL_ASSETS = (() => {
             "shadowExecute"
           ],
           "validationOpponents": [
-            "shadowExecute",
+            "lightningTempo",
             "poisonBloom"
           ],
           "curves": [
@@ -2587,8 +2599,7 @@ const GAME_SKILL_ASSETS = (() => {
             "execute"
           ],
           "strongMatchups": [
-            "bloodRage",
-            "shadowExecute"
+            "bloodRage"
           ],
           "weakMatchups": [
             "alchemyChaos",
@@ -2596,7 +2607,8 @@ const GAME_SKILL_ASSETS = (() => {
             "fireBurst",
             "holySustain",
             "ironWall",
-            "poisonBloom"
+            "poisonBloom",
+            "shadowExecute"
           ],
           "validationOpponents": [
             "ironWall",
@@ -2806,12 +2818,12 @@ const GAME_SKILL_ASSETS = (() => {
           "strongMatchups": [
             "bloodRage",
             "fireBurst",
-            "frostControl",
             "holySustain",
-            "ironWall"
+            "ironWall",
+            "lightningTempo"
           ],
           "weakMatchups": [
-            "lightningTempo",
+            "frostControl",
             "poisonBloom"
           ],
           "validationOpponents": [
@@ -2883,13 +2895,13 @@ const GAME_SKILL_ASSETS = (() => {
       }
     },
     "berserkerModel": {
-      "basicAttackCooldown": 1.35,
+      "basicAttackCooldown": 1.34,
       "basicFlatDamage": 10,
       "basicPowerRatio": 0.22,
       "openingCooldowns": {
-        "bloodStrike": 5.8,
-        "boneWhirl": 6.6,
-        "undyingRoar": 9.5
+        "bloodStrike": 4.8,
+        "boneWhirl": 6.2,
+        "undyingRoar": 8.8
       },
       "cooldowns": {
         "bloodStrike": 5.2,
@@ -2897,27 +2909,27 @@ const GAME_SKILL_ASSETS = (() => {
         "undyingRoar": 24
       },
       "durations": {
-        "bloodFury": 4,
+        "bloodFury": 4.4,
         "whirlwind": 5,
-        "roarFury": 6,
-        "haste": 6,
-        "immortal": 6
+        "roarFury": 5,
+        "haste": 5,
+        "immortal": 4.5
       },
       "ratios": {
-        "blood": 0.45,
-        "whirlwind": 0.3,
+        "blood": 0.48,
+        "whirlwind": 0.26,
         "splash": 0.18,
         "roar": 0.35
       },
       "passive": {
-        "maxDamageAmp": 0.45,
-        "baseLeech": 0.07,
-        "missingHpLeech": 0.11,
-        "lowHpHaste": 0.62,
-        "roarLeech": 0.16
+        "maxDamageAmp": 0.5,
+        "baseLeech": 0.055,
+        "missingHpLeech": 0.14,
+        "lowHpHaste": 0.85,
+        "roarLeech": 0.18
       },
       "splashTargets": 2,
-      "hasteMultiplier": 1.4
+      "hasteMultiplier": 1.45
     }
   };
 })();

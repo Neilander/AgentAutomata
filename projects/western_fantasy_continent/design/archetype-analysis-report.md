@@ -8,12 +8,12 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 
 | Preset | Status | Roles | Unique Skills | Main Tags | Missing Intent Tags | Counter Tags Present |
 | --- | --- | --- | ---: | --- | --- | --- |
-| `alchemyChaos` 炼金异常 | passes intent | knight, alchemist, alchemist, mage | 12 | damage(6), area(4), burn(3), shield(3), statusPayoff(3), sustain(3) | - | burst |
-| `bloodRage` 低血狂怒 | passes intent | berserker, warrior, priest, bard | 16 | support(5), sustain(4), damage(3), teamWindow(3), area(2), haste(2) | - | - |
-| `crownCarry` 王冠核心 | passes intent | knight, priest, bard, berserker | 16 | sustain(7), shield(5), support(5), team(4), selfWindow(3), teamWindow(3) | - | - |
+| `alchemyChaos` 炼金异常 | passes intent | knight, alchemist, alchemist, mage | 13 | damage(7), area(5), statusPayoff(4), burn(3), shield(3), sustain(3) | - | burst |
+| `bloodRage` 低血狂怒 | passes intent | berserker, warrior, priest, bard | 16 | support(5), sustain(4), damage(3), selfWindow(3), teamWindow(3), area(2) | - | - |
+| `crownCarry` 王冠核心 | passes intent | knight, priest, bard, berserker | 16 | sustain(6), shield(4), support(4), team(4), selfWindow(3), teamWindow(3) | - | - |
 | `fireBurst` 余烬爆燃 | passes intent | warrior, knight, mage, mage | 12 | damage(6), area(4), burn(3), shield(3), sustain(3), team(3) | - | shield |
 | `frostControl` 霜控拖延 | passes intent | knight, priest, mage, alchemist | 16 | damage(6), sustain(6), shield(5), area(4), team(4), burn(2) | - | burst |
-| `holySustain` 圣盾续航 | passes intent | knight, warrior, priest, priest | 12 | sustain(6), shield(5), team(4), damage(3), support(3), area(2) | - | - |
+| `holySustain` 圣盾续航 | passes intent | knight, warrior, priest, priest | 13 | sustain(7), shield(6), team(5), damage(3), heal(3), support(3) | - | - |
 | `ironWall` 铁壁反击 | passes intent | knight, warrior, priest, bard | 16 | support(6), sustain(6), shield(5), damage(4), team(4), teamWindow(4) | - | - |
 | `lightningTempo` 急速节奏 | passes intent | warrior, ranger, bard, ranger | 12 | damage(6), support(4), area(3), teamWindow(3), power(2), singleTarget(2) | - | control |
 | `poisonBloom` 毒巢滚雪球 | passes intent | knight, assassin, warlock, priest | 16 | damage(6), sustain(6), shield(5), poison(4), team(4), dot(3) | - | burst, execute |
@@ -28,7 +28,7 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 - Primary output: statusPayoff
 - Expected tags: poison, burn, statusPayoff, area
 - Watch tags: execute, burst
-- Skill mix: 小技能 6, 被动 3, 大招 3
+- Skill mix: 小技能 6, 被动 3, 大招 4
 - Result: passes intent
 
 | Skill | Type | Role | Tags |
@@ -40,6 +40,7 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 | `miasmaFlask` 沼雾瓶 | 小技能 | 炼金师 | poison, dot, area, status, damage |
 | `volatileBottle` 爆裂瓶 | 小技能 | 炼金师 | damage, statusPayoff |
 | `catalyst` 催化剂 | 被动 | 炼金师 | none |
+| `chainReaction` 连锁反应 | 大招 | 炼金师 | damage, area, statusPayoff |
 | `grandMixture` 终极混剂 | 大招 | 炼金师 | damage, area, statusPayoff |
 | `fireball` 余烬火球 | 小技能 | 法师 | damage, singleTarget, burn, dot, status |
 | `emberSpread` 烈焰扩散 | 小技能 | 法师 | damage, burn, area, statusPayoff |
@@ -62,7 +63,7 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 | `boneWhirl` 裂骨旋风 | 小技能 | 狂战士 | selfWindow |
 | `rageEngine` 血怒引擎 | 被动 | 狂战士 | none |
 | `undyingRoar` 不死战吼 | 大招 | 狂战士 | sustain, haste, basicWindow, deathPrevent |
-| `powerStrike` 重击 | 小技能 | 战士 | damage, singleTarget |
+| `powerStrike` 重击 | 小技能 | 战士 | selfWindow, damage, singleTarget |
 | `cleave` 顺劈 | 小技能 | 战士 | damage, area |
 | `lineBreaker` 破阵步 | 被动 | 战士 | none |
 | `warBanner` 战旗冲锋 | 大招 | 战士 | support, teamWindow, damage, area |
@@ -92,7 +93,7 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 | `fortressStance` 坚守阵线 | 被动 | 骑士 | none |
 | `bannerWall` 王旗不倒 | 大招 | 骑士 | shield, sustain, team, support, teamWindow |
 | `heal` 急救 | 小技能 | 牧师 | heal, sustain |
-| `bloodCharm` 净血护符 | 小技能 | 牧师 | shield, sustain, support |
+| `crownBloodCharm` 王冠护符 | 小技能 | 牧师 | unknown:shieldCarryAlly, unknown:carryTimer |
 | `afterglowGrace` 余光恩典 | 被动 | 牧师 | none |
 | `sanctuary` 神圣庇护 | 大招 | 牧师 | heal, sustain, team, shield |
 | `tempoSong` 急板战歌 | 小技能 | 吟游诗人 | support, teamWindow |
@@ -116,7 +117,7 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 
 | Skill | Type | Role | Tags |
 | --- | --- | --- | --- |
-| `powerStrike` 重击 | 小技能 | 战士 | damage, singleTarget |
+| `powerStrike` 重击 | 小技能 | 战士 | selfWindow, damage, singleTarget |
 | `cleave` 顺劈 | 小技能 | 战士 | damage, area |
 | `lineBreaker` 破阵步 | 被动 | 战士 | none |
 | `warBanner` 战旗冲锋 | 大招 | 战士 | support, teamWindow, damage, area |
@@ -165,7 +166,7 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 - Primary output: sustain
 - Expected tags: heal, shield, sustain
 - Watch tags: poison, dotPayoff
-- Skill mix: 小技能 6, 被动 3, 大招 3
+- Skill mix: 小技能 6, 被动 3, 大招 4
 - Result: passes intent
 
 | Skill | Type | Role | Tags |
@@ -174,13 +175,14 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 | `tauntLine` 誓卫嘲讽 | 小技能 | 骑士 | selfWindow, shield, sustain, team |
 | `fortressStance` 坚守阵线 | 被动 | 骑士 | none |
 | `bannerWall` 王旗不倒 | 大招 | 骑士 | shield, sustain, team, support, teamWindow |
-| `powerStrike` 重击 | 小技能 | 战士 | damage, singleTarget |
+| `powerStrike` 重击 | 小技能 | 战士 | selfWindow, damage, singleTarget |
 | `cleave` 顺劈 | 小技能 | 战士 | damage, area |
 | `lineBreaker` 破阵步 | 被动 | 战士 | none |
 | `warBanner` 战旗冲锋 | 大招 | 战士 | support, teamWindow, damage, area |
 | `heal` 急救 | 小技能 | 牧师 | heal, sustain |
 | `bloodCharm` 净血护符 | 小技能 | 牧师 | shield, sustain, support |
 | `afterglowGrace` 余光恩典 | 被动 | 牧师 | none |
+| `renewingSanctuary` 复苏圣域 | 大招 | 牧师 | heal, sustain, team, shield |
 | `sanctuary` 神圣庇护 | 大招 | 牧师 | heal, sustain, team, shield |
 
 ### `ironWall` 铁壁反击
@@ -199,7 +201,7 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 | `tauntLine` 誓卫嘲讽 | 小技能 | 骑士 | selfWindow, shield, sustain, team |
 | `retaliationStance` 壁垒反击 | 被动 | 骑士 | counter, reactive, damage |
 | `retaliationBanner` 壁垒军旗 | 大招 | 骑士 | shield, sustain, team, support, teamWindow, counter, reactive |
-| `powerStrike` 重击 | 小技能 | 战士 | damage, singleTarget |
+| `powerStrike` 重击 | 小技能 | 战士 | selfWindow, damage, singleTarget |
 | `cleave` 顺劈 | 小技能 | 战士 | damage, area |
 | `lineBreaker` 破阵步 | 被动 | 战士 | none |
 | `warBanner` 战旗冲锋 | 大招 | 战士 | support, teamWindow, damage, area |
@@ -224,7 +226,7 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 
 | Skill | Type | Role | Tags |
 | --- | --- | --- | --- |
-| `powerStrike` 重击 | 小技能 | 战士 | damage, singleTarget |
+| `powerStrike` 重击 | 小技能 | 战士 | selfWindow, damage, singleTarget |
 | `cleave` 顺劈 | 小技能 | 战士 | damage, area |
 | `lineBreaker` 破阵步 | 被动 | 战士 | none |
 | `warBanner` 战旗冲锋 | 大招 | 战士 | support, teamWindow, damage, area |
@@ -260,7 +262,7 @@ This is an asset-level check. It verifies that each preset contains the mechanic
 | `venomBrand` 腐毒烙印 | 小技能 | 术士 | poison, dot, status, damage, singleTarget |
 | `miasmaFlask` 沼雾瓶 | 小技能 | 炼金师 | poison, dot, area, status, damage |
 | `hotbedPact` 温床契约 | 被动 | 术士 | none |
-| `plagueOffering` 万毒献祭 | 大招 | 术士 | damage, poison, area, dotPayoff, burst |
+| `bloomDetonation` 毒巢绽放 | 大招 | 术士 | damage, poison, area, dotPayoff, burst |
 | `bloodCharm` 净血护符 | 小技能 | 牧师 | shield, sustain, support |
 | `heal` 急救 | 小技能 | 牧师 | heal, sustain |
 | `afterglowGrace` 余光恩典 | 被动 | 牧师 | none |

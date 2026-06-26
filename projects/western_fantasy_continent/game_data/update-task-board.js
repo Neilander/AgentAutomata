@@ -12,6 +12,7 @@ function usage() {
 
 Usage:
   node game_data/update-task-board.js list
+  node game_data/update-task-board.js get <task-id> [--json]
   node game_data/update-task-board.js attempt <task-id> --decision <accept|reject|inconclusive|note> --evidence "text" [--status active|queued|blocked|done|postponed]
   node game_data/update-task-board.js set <task-id> [--status value] [--priority value] [--budget n] [--used n] [--evidence "text"]
   node game_data/update-task-board.js create <task-id> --name "text" --detail "text" --priority high --budget 5
@@ -44,6 +45,24 @@ function printBoard(board) {
   console.table(rows);
 }
 
+function findTask(board, id) {
+  const task = board.tasks.find((item) => item.id === id);
+  if (!task) {
+    throw new Error(`Task not found: ${id}`);
+  }
+  return task;
+}
+
+function printTask(task, options = {}) {
+  const summary = taskSummary(task);
+  if (options.json) {
+    console.log(JSON.stringify({ ...summary, ...task }, null, 2));
+    return;
+  }
+  console.table([summary]);
+  console.log(JSON.stringify(task, null, 2));
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const command = args._[0];
@@ -61,6 +80,12 @@ function main() {
 
   if (!id) {
     throw new Error(`Missing task id for command: ${command}`);
+  }
+
+  if (command === "get") {
+    const task = findTask(readTaskBoard(), id);
+    printTask(task, { json: Boolean(args.json) });
+    return;
   }
 
   if (command === "attempt") {

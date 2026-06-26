@@ -83,11 +83,15 @@
       this.render();
     }
 
-    start({ leftTeam = [], rightTeam = [], seed = "battle-view", title = "战斗" } = {}) {
+    start({ leftTeam = [], rightTeam = [], seed = "battle-view", title = "战斗", randomizeStats } = {}) {
+      if (window.GAME_COMBAT_SIM?.CombatSimulation) {
+        this.startUnified({ leftTeam, rightTeam, seed, title, randomizeStats });
+        return;
+      }
       this.stop(false);
       this.state.time = 0;
       this.state.result = null;
-      this.state.logs = [`${title}开始。`];
+      this.state.logs = [`${title}\u5f00\u59cb\u3002`];
       this.state.signalBus?.clear();
       this.state.units = [
         ...this.makeUnits("ally", leftTeam),
@@ -113,10 +117,188 @@
       this.render();
     }
 
+    startUnified({ leftTeam = [], rightTeam = [], seed = "battle-view", title = "\u6218\u6597", randomizeStats } = {}) {
+      if (!window.GAME_COMBAT_SIM?.CombatSimulation) {
+        this.start({ leftTeam, rightTeam, seed, title });
+        return;
+      }
+      this.stop(false);
+      const sim = new window.GAME_COMBAT_SIM.CombatSimulation({
+        seed,
+        maxTime: this.maxTime,
+        healthInterval: 0.5,
+        randomizeStats,
+      });
+      sim.time = 0;
+      sim.nextId = 1;
+      sim.logs = [];
+      sim.signalBus.clear();
+      sim.units = [...sim.makeTeam("left", leftTeam), ...sim.makeTeam("right", rightTeam)];
+      if (sim.randomizeStats) sim.applyStatSwing();
+
+      this.state.time = 0;
+      this.state.result = null;
+      this.state.logs = [`${title}\u5f00\u59cb\u3002`];
+      this.state.signalBus?.clear();
+      this.state.units = [
+        ...this.makeUnits("ally", leftTeam),
+        ...this.makeUnits("enemy", rightTeam),
+      ];
+      this.state.unifiedSim = sim;
+      this.state.lastSignalIndex = 0;
+      this.state.running = true;
+      this.state.lastFrame = performance.now();
+      this.state.seed = seed;
+      this.syncUnifiedUnits();
+      this.render();
+      this.state.raf = setInterval(() => this.tickUnified(performance.now()), 33);
+    }
+
+    tickUnified(now) {
+      const sim = this.state.unifiedSim;
+      if (!this.state.running || !sim) return;
+      const dt = Math.min(0.2, ((now - this.state.lastFrame) / 1000 || 0.016)) * this.speed;
+      this.state.lastFrame = now;
+      sim.update(dt);
+      this.state.time = sim.time;
+      this.syncUnifiedUnits();
+      this.playUnifiedSignals();
+      this.finishUnifiedIfNeeded();
+      this.render();
+    }
+
+    syncUnifiedUnits() {
+      const sim = this.state.unifiedSim;
+      if (!sim) return;
+      const sideMap = { left: "ally", right: "enemy" };
+      for (const combatUnit of sim.units || []) {
+        const unit = this.state.units.find((item) => item.side === sideMap[combatUnit.side] && item.unitId.endsWith(`_${combatUnit.index}`));
+        if (!unit) continue;
+        unit.x = combatUnit.x;
+        unit.y = combatUnit.y;
+        unit.maxHp = combatUnit.maxHp;
+        unit.hpNow = Math.max(0, combatUnit.hp);
+        unit.shield = combatUnit.shield || 0;
+        unit.simId = combatUnit.id;
+        unit.deadTriggered = !sim.isAlive(combatUnit);
+        unit.damageDone = combatUnit.damageDone || 0;
+      }
+    }
+
+    playUnifiedSignals() {
+      const sim = this.state.unifiedSim;
+      if (!sim) return;
+      const signals = sim.signalBus.signals || [];
+      const start = this.state.lastSignalIndex || 0;
+      for (const signal of signals.slice(start)) this.playUnifiedSignal(signal);
+      this.state.lastSignalIndex = signals.length;
+    }
+
+    playUnifiedSignal(signal) {
+      if (signal.kind === "health") return;
+      const source = this.displayUnitForRef(signal.source);
+      const target = this.displayUnitForRef(signal.target);
+      const tags = signal.tags || [];
+      const amount = Math.round(signal.amount || 0);
+      if (signal.kind === "skill") {
+        if (source) this.label(source, signal.skillName || signal.skillKey || "\u6280\u80fd", tags.includes("ultimate"));
+        this.playSkillFx(signal, source, target);
+        return;
+      }
+      if (signal.kind === "damage") {
+        if (target && amount > 0) {
+          const cls = tags.includes("burn") || tags.includes("fire") ? "fire" : tags.includes("poison") ? "poison" : "";
+          const prefix = tags.includes("burn") ? "\u71c3\u70e7-" : tags.includes("poison") ? "\u5267\u6bd2-" : "-";
+          this.floater(target, `${prefix}${amount}`, cls);
+          if (source && !tags.includes("dot") && !tags.includes("selfCost")) this.slash(source, target, cls === "poison" ? "poison" : cls === "fire" ? "fire" : "gold");
+        }
+        return;
+      }
+      if (signal.kind === "heal") {
+        if (target && amount > 0) {
+          this.floater(target, `\u6cbb\u7597+${amount}`, "heal");
+          this.ring(target, "green");
+        }
+        return;
+      }
+      if (signal.kind === "shield") {
+        if (target && amount > 0) {
+          this.floater(target, `\u62a4\u76fe+${amount}`, "shield");
+          this.ring(target, "blue");
+        }
+        return;
+      }
+      if (signal.kind === "status") {
+        if (!target) return;
+        if (tags.includes("burn")) {
+          this.floater(target, `\u71c3\u70e7+${amount}`, "fire");
+          this.ring(target, "fire");
+        } else if (tags.includes("poison")) {
+          this.floater(target, `\u5267\u6bd2+${amount}`, "poison");
+          this.ring(target, "poison");
+        } else {
+          this.ring(target, "gold");
+        }
+        return;
+      }
+      if (signal.kind === "death" && target) this.floater(target, "\u5012\u4e0b", "");
+    }
+
+    playSkillFx(signal, source, target) {
+      if (!source) return;
+      const key = signal.skillKey || "";
+      const tags = signal.tags || [];
+      if (tags.includes("ultimate")) this.ring(source, "gold");
+      if (!target) {
+        this.ring(source, tags.includes("ultimate") ? "gold" : "blue");
+        return;
+      }
+      if (/fire|burn|meteor|ember|flare|comet/i.test(key)) this.beam(source, target, "fire"), this.ring(target, "fire");
+      else if (/poison|venom|plague|toxic|curse/i.test(key)) this.beam(source, target, "poison"), this.ring(target, "poison");
+      else if (/heal|grace|mending|sanctuary/i.test(key)) this.ring(target, "green");
+      else if (/shield|guard|banner|vow|wall/i.test(key)) this.ring(target, "blue");
+      else if (/arrow|mark|lance|shot/i.test(key)) this.beam(source, target, "blue");
+      else this.slash(source, target, /shadow|death|blood|wound|rage/i.test(key) ? "blood" : "gold");
+    }
+
+    displayUnitForRef(ref) {
+      if (!ref) return null;
+      const sideMap = { left: "ally", right: "enemy", ally: "ally", enemy: "enemy" };
+      const side = sideMap[ref.side] || ref.side;
+      return this.state.units.find((unit) => unit.simId === ref.id || unit.id === ref.id || unit.unitId === ref.id || (side && unit.side === side && unit.name === ref.name));
+    }
+
+    finishUnifiedIfNeeded() {
+      const sim = this.state.unifiedSim;
+      if (!sim) return;
+      const leftAlive = sim.units.some((unit) => unit.side === "left" && sim.isAlive(unit));
+      const rightAlive = sim.units.some((unit) => unit.side === "right" && sim.isAlive(unit));
+      if (leftAlive && rightAlive && sim.time < this.maxTime) return;
+      this.state.running = false;
+      if (this.state.raf) clearInterval(this.state.raf);
+      this.state.raf = 0;
+      const leftHp = sim.sideHpScore("left");
+      const rightHp = sim.sideHpScore("right");
+      const winner = leftHp >= rightHp ? "left" : "right";
+      this.state.result = {
+        passed: winner === "left",
+        winner,
+        duration: sim.time,
+        leftHp,
+        rightHp,
+        units: this.state.units,
+        signals: sim.signalBus.signals,
+        summary: sim.signalBus.summary(),
+        metrics: sim.metrics(),
+      };
+      this.state.logs.unshift(`${winner === "left" ? "\u80dc\u5229" : "\u5931\u8d25"} 路 ${sim.time.toFixed(1)}s`);
+      this.onFinish(this.state.result);
+    }
     stop(render = true) {
       if (this.state.raf) clearInterval(this.state.raf);
       this.state.raf = 0;
       this.state.running = false;
+      this.state.unifiedSim = null;
       if (render) this.render();
     }
 
@@ -167,11 +349,13 @@
         : [{ x: 72, y: 35, line: "前排" }, { x: 72, y: 65, line: "前排" }, { x: 86, y: 35, line: "后排" }, { x: 86, y: 65, line: "后排" }, { x: 80, y: 50, line: "后排" }, { x: 64, y: 50, line: "前排" }];
       return specs.map((spec, index) => {
         const hero = this.normalizeSpec(spec, side, index);
-        const slot = form[index % form.length];
+        const slotIndex = Number.isFinite(spec.slotIndex) ? spec.slotIndex : index;
+        const slot = form[slotIndex % form.length];
         return {
           ...hero,
           unitId: `${side}_${index}`,
           side,
+          slotIndex,
           x: slot.x,
           y: slot.y,
           line: slot.line,
@@ -195,12 +379,12 @@
           counterCd: 0,
           bonusPowerTimer: 0,
           bonusPower: 0,
-          attackCd: 0.8 + index * 0.12,
+          attackCd: 0.8,
           skillCd: [
-            this.openingCooldown(hero.small[0], 1 + index * 0.3),
-            this.openingCooldown(hero.small[1], 2.6 + index * 0.3),
+            this.openingCooldown(hero.small[0], 1),
+            this.openingCooldown(hero.small[1], 2.6),
           ],
-          ultCd: this.openingCooldown(hero.ult, 14 + index * 1.6),
+          ultCd: this.openingCooldown(hero.ult, 14),
           focusTarget: "",
           focusHits: 0,
           deadTriggered: false,

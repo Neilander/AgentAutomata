@@ -35,6 +35,7 @@ Also mirror active work in the task budget board. Do not edit `design/task-budge
 
 ```bash
 node projects/western_fantasy_continent/game_data/update-task-board.js list
+node projects/western_fantasy_continent/game_data/update-task-board.js get <task-id>
 node projects/western_fantasy_continent/game_data/update-task-board.js attempt <task-id> --decision reject --evidence "reason and validation result"
 node projects/western_fantasy_continent/game_data/update-task-board.js set <task-id> --status active --used 2
 ```

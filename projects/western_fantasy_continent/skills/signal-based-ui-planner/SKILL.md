@@ -11,6 +11,8 @@ Use this skill before `game-ui-designer` when the interface is complex, novel, d
 
 Use `game-ui-designer` directly when the screen is common and simple, such as a straightforward inventory, basic combat HUD, simple menu, or small modal.
 
+After the UI plan or implementation exists, use `../user-review/SKILL.md` to simulate user goals and task paths when checking missing actions, recovery paths, or feedback gaps.
+
 Complex means any of these are true:
 
 - The screen mixes player-facing and debug/designer information.
@@ -65,6 +67,32 @@ Examples:
 - Equipment screen: core object is selected character plus equipped slots.
 - Puzzle screen: core object is the puzzle board/clues.
 
+### 2.5. Preserve Action Proximity
+
+Before splitting regions, trace the player's immediate action chain.
+
+If object A is selected to fill, modify, target, equip, or compare with object B, A and B must be spatially adjacent or inside the same interaction cluster.
+
+Examples:
+
+- Candidate characters -> selected team slots: keep candidates and slots together.
+- Inventory item -> equipment slot: keep item grid and equipped slots close, with detail nearby.
+- Skill card -> target slot: keep skill cards near target/slot, not across the whole combat view.
+
+Do not put the core object between two elements that are part of one continuous selection action. The core object can sit above or beside the whole action cluster, but it should not split the source and destination of the player's click.
+
+### 2.6. Preview The Core Object In Setup
+
+If the core object will exist during play, show a preview during setup.
+
+For combat screens, setup should still show enemy units, selected friendly units, and empty/implicit positions. Do not leave the combat area blank until the start button is pressed.
+
+The preview can be low-detail, but it must answer:
+
+- What am I about to fight or manipulate?
+- Where will my current selection appear?
+- What will the primary action affect?
+
 ### 3. List Required Information
 
 Before layout, list information by priority.
@@ -78,6 +106,8 @@ P4: debug/designer information.
 ```
 
 Anything P4 should default to folded, separate mode, or secondary route unless the current intent is debug.
+
+P0 should be small. Treat it as the one to three signals the player must notice first, not as a bucket for every important thing. If P0 contains many items, split them into P0/P1 or cluster them into one compact signal.
 
 ### 4. Build The Hierarchy Tree
 
@@ -102,6 +132,8 @@ screen
 ```
 
 Use the hierarchy to avoid flat pages where every card, log, and stat competes at the same level.
+
+For player-facing tutorial screens, avoid recommendation labels such as "recommended", "not recommended", "wrong", or "best". Put objective choices near the slots, then let combat feedback and result recap teach the consequence.
 
 ### 5. Allocate Attention Budget
 
@@ -147,6 +179,37 @@ Dropdown rule:
 > Use a dropdown when many options exist but the player mainly needs the selected value.
 
 Do not use dropdowns when simultaneous visual comparison is the main task.
+
+Selection cluster rule:
+
+> Put selected slots, available choices, and the primary confirmation button in one compact cluster unless there is a strong reason not to.
+
+The core object should not be used as a divider between selected state and available options.
+
+Size is not attention:
+
+> Do not make controls large just to create emphasis.
+
+Control size should first satisfy usability:
+
+- easy to click
+- readable
+- distinguishable from nearby controls
+
+After that, use position, grouping, color, contrast, motion, and state to create attention.
+
+A large button is valid only when:
+
+- it is the single primary action
+- the player must hit it quickly
+- it represents a large gameplay object, not just a command
+
+Avoid stretching repeated buttons or choices to fill empty space. Empty space should remain empty or be given to the core object, not inflated controls.
+
+Before accepting a large control, ask:
+
+- If this button became 40% smaller, would the player still understand and click it comfortably?
+- If yes, why is it still this large?
 
 ### 7. Account For Overlay And Z-Layer
 

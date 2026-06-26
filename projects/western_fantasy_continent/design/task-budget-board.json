@@ -1,6 +1,6 @@
 {
   "schema": "agent_automata_task_budget_board_v1",
-  "updatedAt": "2026-06-24",
+  "updatedAt": "2026-06-26",
   "workflow": [
     "Create or refresh an experiment budget card before tuning.",
     "Use the matching debug skill to run bounded attempts.",
@@ -289,6 +289,43 @@
         "输出可接力报告"
       ],
       "lastEvidence": "2026-06-24 accept: Final validation: 5 encounter levels all targetOk; deterministic ecology report flags all-rounder and preyless weak presets instead of failing raw 0/100 outcomes."
+    },
+    {
+      "id": "role-character-anomaly-debug",
+      "name": "职业特点异常调试",
+      "detail": "基于角色贡献诊断报告，按 budget 调试刺客/牧师/炼金等职业画像异常，保护职业辨识度和既有流派曲线。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 6,
+      "attemptsUsed": 4,
+      "status": "active",
+      "skillFlow": [],
+      "successCriteria": [],
+      "lastEvidence": "2026-06-26 accept: Attempt 4 refined assassin survival diagnosis: losing short fights no longer count as true over-tankiness unless survival is very high. Assassin unexplained anomalies improved 34->0 while keeping 55 reasoned risk flags for future review."
+    },
+    {
+      "id": "shadow-execute-midpoint-retune",
+      "name": "暗影处决折中回调",
+      "detail": "shadowHarvest/shadowCut 上次被过度削弱，需恢复处决窗口，但保护 crownCarry/ironWall/holySustain 不被重新秒穿。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 5,
+      "attemptsUsed": 3,
+      "status": "active",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "shadowExecute 至少有2个非tempo优势或均势目标",
+        "shadowExecute 不应重新成为无脑全能",
+        "所有 archetype signal 继续 pass"
+      ],
+      "lastEvidence": "2026-06-26 accept: Attempt 3 accepted as current midpoint: shadowHarvest 5.8s opening, 27.5s cd, 58/0.54/66; shadowCut 6.6s cd, 20.5/0.33/24. ShadowExecute now has usable matchups: favored vs bloodRage 77%, holySustain 83%, ironWall 67%, lightningTempo 77%; even vs fireBurst 53%; weak vs poisonBloom 7%, alchemyChaos 13%, crownCarry 20%, frostControl 23%. Shadow signal passes 5/5. Residual: ironWall signal 7/8 and ecology all-rounder issues remain separate tasks."
     }
   ]
 }

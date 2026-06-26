@@ -22,7 +22,7 @@ const FORMATION = {
 function simulatePresetMatchup(leftKey, rightKey, options = {}) {
   const leftTeam = clonePreset(leftKey);
   const rightTeam = clonePreset(rightKey);
-  return simulateTeams(leftTeam, rightTeam, { seed: `${leftKey}|${rightKey}|${options.seed || 0}`, ...options });
+  return simulateTeams(leftTeam, rightTeam, { ...options, seed: `${leftKey}|${rightKey}|${options.seed || 0}` });
 }
 
 function simulateTeams(leftTeam, rightTeam, options = {}) {
@@ -49,6 +49,7 @@ class CombatSimulation {
     this.signalBus = SIGNALS.createCombatSignalBus({ healthInterval: options.healthInterval ?? 0.5 });
     this.skills = SKILL_DATA.createSkillLibrary(this.api());
     this.randomizeStats = options.randomizeStats !== false;
+    this.currentActionSource = null;
   }
 
   api() {
@@ -57,8 +58,8 @@ class CombatSimulation {
       hit: (...args) => this.hit(...args),
       addPoison: (...args) => this.addPoison(...args),
       addBurn: (...args) => this.addBurn(...args),
-      healUnit: (...args) => this.healUnit(...args),
-      shield: (...args) => this.shield(...args),
+      healUnit: (unit, amount, label, source) => this.healUnit(unit, amount, label, typeof source === "object" ? source : undefined),
+      shield: (unit, amount, label, source) => this.shield(unit, amount, label, typeof source === "object" ? source : undefined),
       takeRaw: (...args) => this.takeRaw(...args),
       floater: () => {},
       enemiesOf: (unit) => this.enemiesOf(unit),
@@ -102,8 +103,13 @@ class CombatSimulation {
       units: this.units.map((unit) => ({
         id: unit.id,
         side: unit.side,
+        index: unit.index,
         role: unit.role,
         name: unit.name,
+        small1: unit.small1,
+        small2: unit.small2,
+        passive: unit.passive,
+        ultimate: unit.ultimate,
         hp: round(unit.hp),
         maxHp: unit.maxHp,
         hpRatio: round(this.hpRatio(unit)),
@@ -119,12 +125,14 @@ class CombatSimulation {
   makeTeam(side, specs) {
     return specs.map((spec, index) => {
       const role = this.unitProfile(spec);
-      const slot = FORMATION[side][index % TEAM_SIZE];
+      const slotIndex = Number.isFinite(spec.slotIndex) ? spec.slotIndex : index;
+      const slot = FORMATION[side][slotIndex % TEAM_SIZE];
       const maxHp = spec.maxHp || spec.hp || role.hp;
       return {
         id: `${side}-${index + 1}`,
         side,
         index,
+        slotIndex,
         ...spec,
         role: spec.role || role.key || role.role || "encounterUnit",
         name: spec.name || role.name,
@@ -139,11 +147,11 @@ class CombatSimulation {
         line: slot.line,
         x: slot.x,
         y: slot.y,
-        attackCd: 0.6 + index * 0.08,
+        attackCd: 0.6,
         skillCd: {
-          small1: this.openingCooldown(spec.small1, 1 + index * 0.35),
-          small2: this.openingCooldown(spec.small2, 2.2 + index * 0.35),
-          ultimate: this.openingCooldown(spec.ultimate, 20 + index * 1.8),
+          small1: this.openingCooldown(spec.small1, 1),
+          small2: this.openingCooldown(spec.small2, 2.2),
+          ultimate: this.openingCooldown(spec.ultimate, 20),
         },
         shield: 0,
         poison: status(),
@@ -400,7 +408,7 @@ class CombatSimulation {
     });
   }
 
-  healUnit(unit, amount, label = "治疗") {
+  healUnit(unit, amount, label = "治疗", source = this.currentActionSource) {
     if (!unit || !this.isAlive(unit)) return;
     const before = unit.hp;
     unit.hp = Math.min(unit.maxHp, unit.hp + amount);
@@ -410,10 +418,11 @@ class CombatSimulation {
     if (healed > 0) {
       this.emitSignal({
         kind: "heal",
-        tags: this.actionTags(null, ["heal"]).filter(Boolean),
-        source: null,
+        tags: this.actionTags(source, ["heal"]).filter(Boolean),
+        source: SIGNALS.unitRef(source),
         target: SIGNALS.unitRef(unit),
         amount: healed,
+        skillKey: source?._actionSignal?.skillKey || null,
         skillName: label,
         hpBefore: before,
         hpAfter: unit.hp,
@@ -422,17 +431,18 @@ class CombatSimulation {
     }
   }
 
-  shield(unit, amount, label) {
+  shield(unit, amount, label, source = this.currentActionSource) {
     if (!unit || !this.isAlive(unit)) return;
     const bonus = unit.passive === "fortressStance" ? 1.08 + (1 - this.hpRatio(unit)) * 0.12 : 1;
     const value = amount * bonus;
     unit.shield += value;
     this.emitSignal({
       kind: "shield",
-      tags: this.actionTags(null, ["shield"]).filter(Boolean),
-      source: null,
+      tags: this.actionTags(source, ["shield"]).filter(Boolean),
+      source: SIGNALS.unitRef(source),
       target: SIGNALS.unitRef(unit),
       amount: value,
+      skillKey: source?._actionSignal?.skillKey || null,
       skillName: label,
       shield: unit.shield,
     });
@@ -578,11 +588,14 @@ class CombatSimulation {
   withAction(unit, action, fn) {
     if (!unit) return fn();
     const previous = unit._actionSignal;
+    const previousSource = this.currentActionSource;
     unit._actionSignal = action;
+    this.currentActionSource = unit;
     try {
       return fn();
     } finally {
       unit._actionSignal = previous;
+      this.currentActionSource = previousSource;
     }
   }
   actionTags(source, tags) {

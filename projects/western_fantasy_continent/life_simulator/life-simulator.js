@@ -3,48 +3,107 @@ const state = {
   selfWorth: 35,
   pleasure: 64,
   exponent: 1,
-  decay: 3,
+  decay: 6,
   hand: [],
   logs: [],
 };
 
 const cardPool = [
   {
+    title: "吃饭洗澡",
+    domain: "基础维持",
+    successRate: 1,
+    baseRecognition: 1,
+    agency: 0.75,
+    kind: "safe",
+    desc: "几乎必然完成的基础维持。它主要防止状态继续掉，不应该提供明显认可。",
+  },
+  {
+    title: "按时睡觉",
+    domain: "基础维持",
+    successRate: 0.93,
+    baseRecognition: 4,
+    agency: 0.72,
+    kind: "safe",
+    desc: "低难但有一点自我管理意味。成功只是轻微稳定，失败会让愉悦和秩序感变差。",
+  },
+  {
     title: "整理房间",
     domain: "生活秩序",
-    successRate: 0.96,
+    successRate: 0.9,
+    baseRecognition: 8,
     agency: 0.9,
     kind: "safe",
-    desc: "低风险、低认可事件。适合愉悦低、自我认可也低的时候恢复一点秩序感。",
+    desc: "低风险的小秩序事件。它不是成就，但能提供几单位的可控感和生活确认。",
+  },
+  {
+    title: "认真做一顿饭",
+    domain: "生活质量",
+    successRate: 0.92,
+    baseRecognition: 14,
+    agency: 0.82,
+    kind: "safe",
+    desc: "日常里的小作品。难度不高，但比基础维持更能提供“我照顾了自己”的确认。",
   },
   {
     title: "完成日常训练",
     domain: "稳定成长",
-    successRate: 0.82,
+    successRate: 0.91,
+    baseRecognition: 20,
     agency: 0.85,
     kind: "safe",
-    desc: "可靠的小进步。它不会证明你很强，但能持续补充“我在变好”的感觉。",
+    desc: "可靠的小进步。它不是突破，但能稳定补充“我在变好”的感觉。",
   },
   {
     title: "约朋友吃饭",
     domain: "关系确认",
-    successRate: 0.74,
+    successRate: 0.9,
+    baseRecognition: 24,
     agency: 0.65,
     kind: "safe",
     desc: "偏满足感的事件。认可来自被回应，但 agency 不完全在自己手里。",
   },
   {
+    title: "连续一周训练",
+    domain: "稳定成长",
+    successRate: 0.9,
+    baseRecognition: 31,
+    agency: 0.86,
+    kind: "mid",
+    desc: "日常积累变成阶段性成果。它不靠稀有爆发，而靠持续执行产生更明确的自我认可。",
+  },
+  {
     title: "公开作品",
     domain: "表达",
-    successRate: 0.46,
+    successRate: 0.9,
+    baseRecognition: 36,
     agency: 0.78,
     kind: "mid",
     desc: "中等风险。成功时会确认能力，失败时也能解释成一次尝试。",
   },
   {
+    title: "解决棘手小问题",
+    domain: "掌控感",
+    successRate: 0.55,
+    baseRecognition: 42,
+    agency: 0.82,
+    kind: "mid",
+    desc: "成功率适中、反馈很近的小挑战。低自我认可时，成功会明显拉高短期愉悦。",
+  },
+  {
+    title: "完成困难任务",
+    domain: "能力确认",
+    successRate: 0.44,
+    baseRecognition: 54,
+    agency: 0.88,
+    kind: "mid",
+    desc: "不是人生跃迁，但足够难。成功会带来强烈即时开心，随后再慢慢消退。",
+  },
+  {
     title: "申请理想职位",
     domain: "职业",
     successRate: 0.28,
+    baseRecognition: 46,
     agency: 0.7,
     kind: "mid",
     desc: "高一点的社会认可事件。成功能明显抬升自我认可，失败会有一点刺痛。",
@@ -53,6 +112,7 @@ const cardPool = [
     title: "参加比赛",
     domain: "竞技",
     successRate: 0.18,
+    baseRecognition: 58,
     agency: 0.88,
     kind: "high-risk",
     desc: "高 agency 的挑战。成败都很容易被解释为“我到底行不行”。",
@@ -61,6 +121,7 @@ const cardPool = [
     title: "创业融资",
     domain: "事业跃迁",
     successRate: 0.08,
+    baseRecognition: 72,
     agency: 0.62,
     kind: "high-risk",
     desc: "低概率高认可。成功很强，失败如果缺少可解释原因，会伤自我认可。",
@@ -69,6 +130,7 @@ const cardPool = [
     title: "一夜成名",
     domain: "外部奖赏",
     successRate: 0.01,
+    baseRecognition: 82,
     agency: 0.28,
     kind: "high-risk",
     desc: "极低概率，理论认可很高，但 agency 低，成功更像运气，不会完整转化成成就感。",
@@ -77,6 +139,7 @@ const cardPool = [
     title: "挑战世界级难题",
     domain: "极限突破",
     successRate: 0.015,
+    baseRecognition: 96,
     agency: 0.95,
     kind: "high-risk",
     desc: "几乎是自我神话级事件。成功会强烈改写基准线，失败也最容易破防。",
@@ -106,8 +169,14 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
-function recognitionFor(successRate) {
-  return Math.pow(1 / successRate, state.exponent);
+function recognitionFor(card) {
+  const base = card.baseRecognition ?? 10;
+  const rarity = 1 / card.successRate;
+  return base * Math.pow(rarity, state.exponent - 1);
+}
+
+function softMoodGain(rawMood, cap = 58) {
+  return cap * (1 - Math.exp(-Math.max(0, rawMood) / cap));
 }
 
 function weightedSample(pool, count) {
@@ -136,7 +205,7 @@ function generateHand() {
 }
 
 function classifyCard(card) {
-  const recognition = recognitionFor(card.successRate);
+  const recognition = recognitionFor(card);
   const delta = recognition - state.selfWorth;
   if (delta < -18) return "安慰型满足";
   if (delta < 0) return "低难确认";
@@ -145,7 +214,7 @@ function classifyCard(card) {
 }
 
 function predictText(card) {
-  const recognition = recognitionFor(card.successRate);
+  const recognition = recognitionFor(card);
   const delta = recognition - state.selfWorth;
   if (delta < -18) {
     return "认可度明显低于当前基准线，成功主要补一点愉悦，几乎不提升自我认可。";
@@ -160,7 +229,7 @@ function predictText(card) {
 }
 
 function resolveCard(card) {
-  const recognition = recognitionFor(card.successRate);
+  const recognition = recognitionFor(card);
   const success = Math.random() < card.successRate;
   const delta = recognition - state.selfWorth;
   const pleasureNeed = (100 - state.pleasure) / 100;
@@ -176,11 +245,31 @@ function resolveCard(card) {
   let label = "";
 
   if (success) {
-    satisfaction = recognition * (0.22 + pleasureNeed * 0.7) * (0.4 + lowSelfBonus * 0.6) * (1 - aboveLine * 0.35);
-    achievement = recognition * card.agency * (0.18 + aboveLine * 0.95 + fit * 0.32);
-    selfWorthDelta = achievement * 0.16 + satisfaction * 0.035;
-    pleasureDelta += satisfaction * 0.18 + achievement * 0.07;
-    label = delta >= 0 ? "成就" : "满足";
+    const beliefGap = Math.max(0, recognition - state.selfWorth);
+    const confirmationBase = Math.min(recognition, state.selfWorth);
+    const beliefJumpRate = 0.46 + card.agency * 0.25 + (card.successRate < 0.2 ? 0.08 : 0);
+    const immediateBeliefUpdate = beliefGap * beliefJumpRate;
+    if (beliefGap > 0) {
+      const moderateChallengeBonus = card.successRate >= 0.35 && card.successRate <= 0.62
+        ? recognition * card.agency * (0.18 + pleasureNeed * 0.32)
+        : 0;
+      const breakthroughBonus = recognition * card.agency * aboveLine * (0.14 + pleasureNeed * 0.18);
+      const confirmationGain = recognition * fit * 0.025;
+      satisfaction = recognition * (0.18 + pleasureNeed * 0.75) * (0.45 + lowSelfBonus * 0.55) * (1 - aboveLine * 0.12);
+      achievement = recognition * card.agency * (0.08 + aboveLine * 0.38 + fit * 0.14);
+      selfWorthDelta = immediateBeliefUpdate + confirmationGain;
+      pleasureDelta += softMoodGain(satisfaction * 0.72 + achievement * 0.42 + moderateChallengeBonus + breakthroughBonus);
+      label = "成就";
+    } else {
+      const baselineRatio = confirmationBase / Math.max(state.selfWorth, 1);
+      const maintenanceRelief = state.decay * Math.pow(clamp(baselineRatio, 0, 0.98), 2);
+      satisfaction = maintenanceRelief;
+      achievement = 0;
+      selfWorthDelta = confirmationBase * (0.006 + pleasureNeed * 0.006);
+      pleasureDelta += maintenanceRelief;
+      pleasureDelta = Math.min(0, pleasureDelta);
+      label = "维持";
+    }
   } else {
     const exposure = clamp((recognition / Math.max(state.selfWorth, 1)) - 0.6, 0.1, 2.2);
     const agencyPain = 0.45 + card.agency * 0.7;
@@ -253,7 +342,7 @@ function pleasureHint() {
 
 function renderCards() {
   els.cards.innerHTML = state.hand.map((card, index) => {
-    const recognition = recognitionFor(card.successRate);
+    const recognition = recognitionFor(card);
     const failureRate = 1 - card.successRate;
     const delta = recognition - state.selfWorth;
     return `
@@ -266,6 +355,7 @@ function renderCards() {
         <div class="stats">
           <div class="stat"><span>成功率</span><strong>${Math.round(card.successRate * 100)}%</strong></div>
           <div class="stat"><span>失败率</span><strong>${Math.round(failureRate * 100)}%</strong></div>
+          <div class="stat"><span>基础认可</span><strong>${card.baseRecognition}</strong></div>
           <div class="stat"><span>认可度</span><strong>${recognition.toFixed(1)}</strong></div>
           <div class="stat"><span>Agency</span><strong>${Math.round(card.agency * 100)}%</strong></div>
         </div>

@@ -61,7 +61,7 @@ const ROLES = {
   knight: role("骑士", "守护前排", 360, 34, 14, 12, ["守护", "誓卫嘲讽"], "护卫反击", "王旗不倒"),
   warrior: role("战士", "稳定压线", 345, 55, 11, 13, ["重击", "顺劈"], "破阵步", "战旗冲锋"),
   berserker: sharedBerserkerRole(),
-  assassin: role("刺客", "低血收割", 292, 67, 7, 12, ["毒刃连刺", "影切"], "破绽毒刃", "暗影收割"),
+  assassin: role("刺客", "低血收割", 292, 60, 7, 12, ["毒刃连刺", "影切"], "破绽毒刃", "暗影收割"),
   ranger: role("游侠", "标记点杀", 285, 58, 7, 38, ["猎标箭", "钉足箭"], "鹰眼换弦", "箭雨"),
   mage: role("法师", "燃烧爆发", 228, 52, 4, 38, ["余烬火球", "烈焰扩散"], "火种共鸣", "流星火雨"),
   priest: role("牧师", "治疗护盾", 286, 44, 6, 35, ["急救", "净血护符"], "净化祷言", "神圣庇护"),
@@ -142,6 +142,7 @@ const state = {
   results: {},
   logs: [],
   signalBus: SIGNALS.createCombatSignalBus ? SIGNALS.createCombatSignalBus() : null,
+  battleView: null,
   time: 0,
   lastFrame: 0,
 };
@@ -165,6 +166,7 @@ const els = {
   modalSkillGrid: document.querySelector("#modalSkillGrid"),
   modalStats: document.querySelector("#modalStats"),
   modalTeamBtn: document.querySelector("#modalTeamBtn"),
+  battlefield: document.querySelector("#battlefield"),
   unitLayer: document.querySelector("#unitLayer"),
   fxLayer: document.querySelector("#fxLayer"),
   battleLog: document.querySelector("#battleLog"),
@@ -252,7 +254,12 @@ function skillNameByKey(key) {
 function setup() {
   recruit();
   bind();
-  requestAnimationFrame(tick);
+  state.battleView = window.GAME_BATTLE_VIEW.mount({
+    container: els.battlefield,
+    maxTime: 70,
+    onFinish: finishSharedBattle,
+  });
+  renderBattle();
 }
 
 function bind() {
@@ -288,6 +295,7 @@ function bind() {
 }
 
 function recruit() {
+  state.battleView?.reset();
   state.roster = Array.from({ length: 8 }, (_, index) => makeHero(index));
   state.squad = [];
   state.selectedId = state.roster[0].id;
@@ -328,6 +336,7 @@ function makeHero(index) {
 }
 
 function toggleHero(id) {
+  state.battleView?.reset();
   selectHero(id);
   if (state.squad.includes(id)) {
     state.squad = state.squad.filter((item) => item !== id);
@@ -354,6 +363,7 @@ function closeHeroModal() {
 }
 
 function autoPick() {
+  state.battleView?.reset();
   state.squad = [...state.roster].sort((a, b) => b.score - a.score).slice(0, 4).map((hero) => hero.id);
   state.selectedId = state.squad[0];
   render();
@@ -381,14 +391,30 @@ function startChallenge(strength, silent = false) {
   state.logs = [`挑战强度 ${strength} 开始。`];
   const heroes = state.squad.map((id) => state.roster.find((hero) => hero.id === id));
   const challenge = CHALLENGES.find((item) => item.id === strength);
-  state.units = [
-    ...makeUnits("ally", heroes, strength),
-    ...makeUnits("enemy", challenge.roles.map((roleKey, index) => makeEnemy(roleKey, strength, index)), strength),
-  ];
+  state.units = [];
+  state.battleState = `强度 ${strength} 挑战中`;
   render();
+  state.battleView.start({
+    leftTeam: heroes,
+    rightTeam: challenge.roles.map((roleKey, index) => makeEnemy(roleKey, strength, index)),
+    seed: `team-simulator|${strength}|${heroes.map((hero) => hero.id).join("+")}`,
+    title: `强度 ${strength}`,
+  });
   return new Promise((resolve) => {
     state.resolveBattle = resolve;
   });
+}
+
+function finishSharedBattle(result) {
+  const won = result.metrics.leftAlive > 0 && result.metrics.rightAlive === 0;
+  state.running = false;
+  state.time = result.duration || 0;
+  state.results[state.activeChallenge] = { result: won ? "胜利" : "失败", time: state.time.toFixed(1) };
+  state.logs.unshift(`强度 ${state.activeChallenge}：${won ? "胜利" : "失败"}`);
+  state.battleState = won ? "胜利" : "失败";
+  if (state.resolveBattle) state.resolveBattle();
+  state.resolveBattle = null;
+  render();
 }
 
 function makeEnemy(roleKey, strength, index) {
@@ -1027,7 +1053,7 @@ function skillHint(name) {
     "血怒斩": "进入 4 秒血怒状态；期间每次普攻额外造成攻击力45% 伤害，生命越低额外伤害越高。",
     "裂骨旋风": "进入 5 秒旋风架势；期间普攻主目标额外 +攻击力30%，并溅射附近 2 个敌人各攻击力18%。",
     "毒刃连刺": "给最近 1 个敌人叠加 3 层剧毒，剧毒每秒造成层数 x 2.1 伤害，最多 20 层。",
-    "影切": "对当前低血目标造成攻击力72% 的物理伤害。",
+    "影切": "对当前低血目标造成中等暗影伤害，目标已损生命会提高伤害，但不再单独秒前排。",
     "猎标箭": "造成攻击力58% 的物理伤害，并叠 1 层猎标，最多 6 层；猎标本身不直接增伤。",
     "钉足箭": "造成攻击力52% 的物理伤害并减速 4 秒；目标有 3 层猎标时额外造成攻击力25%。",
     "余烬火球": "给最近 2 个敌人各叠加 2 层燃烧；燃烧无上限，每秒造成层数 x 2.15 伤害。",
@@ -1067,7 +1093,7 @@ function ultHint(name) {
     "王旗不倒": "给全体友军获得 42 + 攻击力30% 的护盾，并减伤 28%，持续 3 秒。",
     "战旗冲锋": "对最近 3 个敌人各造成攻击力48% 的物理伤害，并触发返场。",
     "不死战吼": "自身 6 秒内不会低于 1 点生命，并同时获得急速、血怒、旋风架势和攻击力35% 普攻附伤。",
-    "暗影收割": "对当前低血目标造成攻击力145% 的物理伤害。",
+    "暗影收割": "延后释放的收尾大招，对低血目标更强，但开局不会立刻处决。",
     "箭雨": "对全体敌人造成攻击力70% 物理伤害；后排额外 +35%；每层猎标额外 +6% 并清除猎标。",
     "流星火雨": "给全体敌人各叠加 4 层燃烧，作为无上限燃烧爆发入口。",
     "神圣庇护": "治疗全体友军，治疗量为 50 + 攻击力50%，并触发净化祷言。",
@@ -1083,12 +1109,15 @@ function sharedHintByName(name) {
 
 function renderBattle() {
   els.battleState.textContent = state.running ? `强度 ${state.activeChallenge} 挑战中` : (state.battleState || "待命");
-  els.unitLayer.innerHTML = state.units.map((unit) => `<div class="unit ${unit.side === "enemy" ? "enemy" : ""} ${alive(unit) ? "" : "dead"}" style="left:${unit.x}%;top:${unit.y}%">
-    <div class="avatar">${unit.icon}</div>
-    <div class="unit-name">${unit.name}</div>
-    <div class="bar"><span style="width:${Math.max(0, unit.hpNow / unit.maxHp * 100)}%"></span></div>
-  </div>`).join("");
-  els.battleLog.innerHTML = state.logs.slice(0, 12).map((item) => `<div>${item}</div>`).join("");
+  if (!state.running && state.battleView && !state.battleView.state.result) {
+    const heroes = state.squad.map((id) => state.roster.find((hero) => hero.id === id)).filter(Boolean);
+    const challenge = CHALLENGES.find((item) => item.id === state.activeChallenge) || CHALLENGES[0];
+    state.battleView.preview({
+      leftTeam: heroes,
+      rightTeam: challenge.roles.map((roleKey, index) => makeEnemy(roleKey, challenge.id, index)),
+      title: challenge.name,
+    });
+  }
 }
 
 function chooseTarget(unit) {

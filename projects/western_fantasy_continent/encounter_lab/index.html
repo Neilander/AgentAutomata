@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>西幻大陆 - 关卡斗技场</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css?v=20260625_battleview6">
     <link rel="stylesheet" href="/encounter_lab/styles.css">
   </head>
   <body>
@@ -12,7 +13,7 @@
         <div>
           <a href="/workbench/" class="back-link">返回工作台</a>
           <h1>关卡斗技场</h1>
-          <p>先看敌人威胁，再从固定角色池里组队挑战。求解器结果放在调试区，默认不剧透答案。</p>
+          <p>看敌人机制，组一支小队，然后用战斗结果验证这关有没有多种过法。</p>
         </div>
         <div class="actions">
           <button id="autoBtn" type="button">填入可过队</button>
@@ -20,67 +21,72 @@
         </div>
       </header>
 
-      <section class="level-strip" id="levelStrip" aria-label="关卡选择"></section>
-
-      <section class="briefing-grid">
-        <section class="panel threat-panel">
-          <div class="panel-head">
-            <h2 id="battleTitle">关卡情报</h2>
-            <span id="solverSummary">未分析</span>
-          </div>
-          <div id="enemyBrief" class="enemy-brief"></div>
-        </section>
-
-        <section class="panel squad-panel">
-          <div class="panel-head">
-            <h2>当前小队</h2>
-            <span id="pickCounter">0 / 0</span>
-          </div>
-          <div id="squadSlots" class="squad-slots"></div>
-          <div id="teamHint" class="team-hint"></div>
-        </section>
-      </section>
-
-      <section class="battle-wrap">
-        <section class="panel battle-panel">
-          <div class="panel-head">
-            <h2>战斗预览</h2>
-            <span id="battleState">待命</span>
-          </div>
-          <div id="battlefield" class="battlefield"></div>
-          <div class="metric-row">
-            <div><strong id="leftHp">0</strong><span>我方剩余血量</span></div>
-            <div><strong id="duration">0s</strong><span>战斗时间</span></div>
-            <div><strong id="rightHp">0</strong><span>敌方剩余血量</span></div>
-          </div>
-        </section>
-
-        <aside class="panel result-panel">
-          <div class="panel-head">
-            <h2>挑战结果</h2>
-            <span id="resultBadge">未开始</span>
-          </div>
-          <div class="result-box" id="resultBox"></div>
-          <details class="solver-box">
-            <summary>调试：查看可过/失败组合</summary>
-            <div class="combo-list">
-              <h3>可过组合</h3>
-              <div id="winnerList"></div>
+      <section class="encounter-shell">
+        <aside class="left-rail">
+          <section class="panel level-panel">
+            <div class="panel-head">
+              <h2>关卡</h2>
+              <span>选择挑战</span>
             </div>
-            <div class="combo-list">
-              <h3>失败样例</h3>
-              <div id="failList"></div>
+            <div class="level-strip" id="levelStrip" aria-label="关卡选择"></div>
+          </section>
+
+          <section class="panel threat-panel">
+            <div class="panel-head">
+              <h2 id="battleTitle">关卡情报</h2>
+              <span id="solverSummary">未分析</span>
             </div>
-          </details>
+            <div id="enemyBrief" class="enemy-brief"></div>
+          </section>
         </aside>
-      </section>
 
-      <section class="panel roster-panel">
-        <div class="panel-head">
-          <h2>候选角色</h2>
-          <span>点击加入/移出小队</span>
-        </div>
-        <div id="rosterGrid" class="roster-grid"></div>
+        <section class="center-stage">
+          <section class="panel battle-panel">
+            <div class="panel-head">
+              <h2>战斗预览</h2>
+              <span id="battleState">待命</span>
+            </div>
+            <div id="battlefield" class="battlefield battle-view-host"></div>
+          </section>
+        </section>
+
+        <aside class="right-rail">
+          <section class="panel squad-panel">
+            <div class="panel-head">
+              <h2>当前小队</h2>
+              <span id="pickCounter">0 / 0</span>
+            </div>
+            <div id="squadSlots" class="squad-slots"></div>
+            <div id="teamHint" class="team-hint"></div>
+          </section>
+
+          <section class="panel roster-panel">
+            <div class="panel-head">
+              <h2>候选角色</h2>
+              <span>点击加入/移出</span>
+            </div>
+            <div id="rosterGrid" class="roster-grid"></div>
+          </section>
+
+          <section class="panel result-panel">
+            <div class="panel-head">
+              <h2>挑战结果</h2>
+              <span id="resultBadge">未开始</span>
+            </div>
+            <div class="result-box" id="resultBox"></div>
+            <details class="solver-box">
+              <summary>调试：查看可过/失败组合</summary>
+              <div class="combo-list">
+                <h3>可过组合</h3>
+                <div id="winnerList"></div>
+              </div>
+              <div class="combo-list">
+                <h3>失败样例</h3>
+                <div id="failList"></div>
+              </div>
+            </details>
+          </section>
+        </aside>
       </section>
     </main>
 
@@ -89,6 +95,7 @@
     <script src="/game_data/combat-signals.js"></script>
     <script src="/game_data/combat-sim.js"></script>
     <script src="/game_data/encounter-data.js"></script>
+    <script src="/battle_view/battle-view.js?v=20260625_battleview6"></script>
     <script src="/encounter_lab/encounter-lab.js"></script>
   </body>
 </html>

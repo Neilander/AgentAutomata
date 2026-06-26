@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-06-25_2015_signal-ui-and-life-recognition-handoff.md`](reports/2026-06-25_2015_signal-ui-and-life-recognition-handoff.md)
+[`reports/2026-06-25_2206_playable-team-composition-next.md`](reports/2026-06-25_2206_playable-team-composition-next.md)
 
 Last updated: 2026-06-25
 
-Current focus: today shifted from concrete UI implementation problems into a broader signal-based UI planning and player recognition/feedback simulation system. Future agents should read the latest report before touching 4v4 UI, attention analysis, or the life recognition simulator.
+Current focus: primary goal is a playable character-composition battle loop. Secondary goal is the player signal system for later analysis, debugging, and balance.

@@ -28,7 +28,7 @@ const GAME_SKILL_ASSETS = (() => {
         "role": "刺客",
         "fantasy": "贴脸叠层，低血收割",
         "hp": 292,
-        "power": 66,
+        "power": 60,
         "armor": 7,
         "range": 12,
         "icon": "daggers",
@@ -1467,15 +1467,15 @@ const GAME_SKILL_ASSETS = (() => {
         "name": "影切",
         "type": "小技能",
         "role": "刺客",
-        "cooldown": 6,
+        "cooldown": 7,
         "icon": "sprint",
-        "desc": "跳向低血目标。",
+        "desc": "跳向低血目标，制造收割压力但不单独秒前排。",
         "effects": [
           {
             "kind": "hitLowestEnemy",
-            "flat": 24,
-            "power": 0.38,
-            "missingTargetHpFlat": 34,
+            "flat": 18,
+            "power": 0.3,
+            "missingTargetHpFlat": 18,
             "type": "shadow",
             "label": "影切"
           }
@@ -1485,16 +1485,16 @@ const GAME_SKILL_ASSETS = (() => {
         "name": "暗影收割",
         "type": "大招",
         "role": "刺客",
-        "cooldown": 24,
-        "openingCooldown": 2,
+        "cooldown": 30,
+        "openingCooldown": 10,
         "icon": "cloak-dagger",
-        "desc": "处决低血目标，击杀刷新。",
+        "desc": "处决低血目标。开局不再立刻释放，主要负责收尾。",
         "effects": [
           {
             "kind": "hitLowestEnemy",
-            "flat": 74,
-            "power": 0.66,
-            "missingTargetHpFlat": 95,
+            "flat": 48,
+            "power": 0.48,
+            "missingTargetHpFlat": 42,
             "type": "shadow",
             "label": "收割"
           }

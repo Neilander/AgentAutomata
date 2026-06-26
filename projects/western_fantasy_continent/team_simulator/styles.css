@@ -183,7 +183,7 @@ p { color: var(--muted); font-size: 13px; line-height: 1.45; }
 }
 
 .battle-panel {
-  grid-template-rows: auto minmax(0, 1fr) 112px;
+  grid-template-rows: auto minmax(0, 1fr);
 }
 .battlefield {
   position: relative;
@@ -200,6 +200,12 @@ p { color: var(--muted); font-size: 13px; line-height: 1.45; }
   width: 1px;
   height: 100%;
   background: var(--line);
+}
+.battlefield.shared-battle-host {
+  background: transparent;
+}
+.battlefield.shared-battle-host::before {
+  content: none;
 }
 .unit-layer, .fx-layer { position: absolute; inset: 0; pointer-events: none; }
 .unit-layer { z-index: 2; }

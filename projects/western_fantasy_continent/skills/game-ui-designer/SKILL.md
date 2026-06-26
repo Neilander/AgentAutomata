@@ -78,6 +78,22 @@ Item details should show:
 - affixes
 - primary action
 
+### Compact Detail Cards
+
+Use flip cards when repeated character/item cards need optional detail without expanding the whole grid.
+
+Front face:
+- icon, name, role tags, selected/equipped state, primary action
+
+Back face:
+- compact details such as passive, small skills, ultimate, or short stat comparison
+
+Rules:
+- The main card click should keep doing the primary action.
+- Add a small explicit detail/flip button for the back face.
+- Keep the back face short; use a side detail panel if the text becomes long.
+- Do not show front and back content at once in every card.
+
 ### Combat HUD
 
 Prefer:

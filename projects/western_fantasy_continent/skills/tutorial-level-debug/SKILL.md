@@ -11,6 +11,25 @@ Do not solve a tutorial or test level by changing raw enemy/player stats first.
 
 A tutorial level must teach a visible decision. If the intended team wins only after hidden stat multipliers, the level is probably not teaching the right thing.
 
+Player-facing setup text must not reveal the solution.
+
+Before combat, text may describe:
+
+- enemy behavior
+- visible pressure
+- selection count
+- broad objective
+- constraints the player can observe
+
+Before combat, text must not say:
+
+- which role is correct
+- which role should stand front/back
+- which skill is the intended answer
+- "recommended", "best", "wrong", or equivalent labels
+
+Only after success may result text summarize what the player just proved.
+
 ## Required Question
 
 Before changing anything, answer:
@@ -87,6 +106,20 @@ Do not:
 - Add hidden tutorial-only stat multipliers as the first fix.
 - Buff a generic base stat when the problem is class identity.
 
+## Natural Player Behavior Rule
+
+Do not fix a bad tutorial by removing ordinary player agency.
+
+If the only passing setup requires an unnatural behavior, such as putting a backline mage or priest in front while the intended frontline stays behind, the level is broken. Do not solve that by locking slots, hiding slots, or preventing the player from making formation choices unless the lesson itself is explicitly about a constrained formation.
+
+Instead:
+
+- Define the natural expected setup first, such as frontline roles in front and ranged/support roles behind.
+- Verify that this natural setup can pass.
+- Verify that at least one plausible wrong setup fails or looks clearly worse.
+- Adjust roster candidates, enemy composition, class-feature visibility, or encounter pressure until the natural setup is the obvious working path.
+- Only constrain slots when the teaching goal is specifically about a smaller formation, such as a two-unit front/back lesson.
+
 After strengthening a feature, run a balance pass to check whether the class became generally overpowered.
 
 Required checks:
@@ -149,4 +182,3 @@ Pass/fail:
 Remaining problem:
 Next patch if needed:
 ```
-

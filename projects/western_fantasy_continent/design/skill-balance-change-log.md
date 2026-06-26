@@ -13,6 +13,27 @@ Before choosing a new tuning patch, review the latest entries here so a fix for 
 - Recorded debug paths: Option A adjusts available roles or encounter shape, such as swapping knight for warrior or removing accidental solver roles. Option B strengthens class-owned features, such as making mage AOE or priest healing more visible, then reruns balance checks for overpowered drift.
 - Guardrail: do not use hidden player/enemy multipliers to make a lesson pass unless role/encounter and class-feature routes are tried or explicitly rejected.
 
+### Tutorial: refocus early lessons on visible class behavior
+
+- Problem: early tutorial levels were being treated like balance puzzles. Level 1 passed only with a backwards-feeling ranger/knight placement, level 2 could be solved without priest, and the mage AOE lesson did not show AOE early enough.
+- Option A changes: Level 1 introduces warrior + mage directly; Level 2 introduces priest + berserker directly; Level 3 narrows to knight + ranger + mage; Level 4 introduces mage + bard + warrior directly; Level 5 introduces warlock + knight directly.
+- Option B change: mage `fireball` now uses `hitEnemies` count 2 with slightly lower per-target damage, making AOE visible on the first small-skill cast instead of waiting for burn spread or ultimate timing.
+- Validation: skill assets validate; tutorial JS syntax passes; enumerated solutions show L1 and L2 each have one passing composition, L4 has two passing placements for the intended trio, and fireball emits two same-time damage events on separate enemies.
+- Balance check: static skill budget reports no `fireball` warning. Red-team still has one risky non-mage candidate, so this change did not introduce the top breaker.
+
+### Tutorial UI: compact skill inspection on role cards
+
+- Problem: role cards showed tags but not the actual passive, small skills, or ultimate, so players could not understand why a class should solve a level.
+- UI workflow update: added flip-card guidance to `skills/signal-based-ui-planner/` and `skills/game-ui-designer/`. Use flip cards when repeated cards have a compact decision face and an occasional detail face.
+- Implementation: tutorial V2 role cards now make the whole card the selection target and use a small `技/返` button to flip between the role face and compact skill details. The detail face shows role focus plus passive, two small skills, and ultimate.
+- Level 1 correction: the first lesson now offers warrior, mage, and priest, then teaches warrior front + mage back against assassin + ranger. Enumerated validation shows the only passing setup is `warrior+mage @0,2`; reversed `mage+warrior` fails.
+- Regression check: a click-level fake DOM probe confirms clicking a role card sets `pendingRole`, and clicking `技` flips to the skill face without stealing the selection action.
+- Revision: the first detail-face implementation was too text-list-like and collapsed visually into the upper-left corner. The revised detail face uses a role-focus band plus a 2x2 skill grid, with each skill showing type, name, and short description. Fake DOM probe confirms the rendered card contains role focus, 12 skill cards across the first level's three options, descriptions, and still supports click-to-select.
+- Tutorial choice correction: levels 2 and 5 now have three candidate roles instead of two. Current enumeration: L2 has two support solutions (`priest+berserker`, `bard+berserker`); L5 has one correct solution (`knight+warlock @0,2`).
+- Spoiler correction: setup text must not reveal the intended solution. Tutorial setup copy now describes enemy pressure and broad goals only; it does not name the correct role, slot, or skill answer. Added this rule to `tutorial-level-debug` and `signal-based-ui-planner`.
+- Skill detail revision: card-back skill text was too small for actual use, so tutorial V2 now opens a skill modal from the `技` button. The modal uses large role header text and four readable skill cards with type, name, and description. A fake DOM probe confirms the modal opens, renders 4 detail cards, and card selection still works.
+- Level 2 correction: the previous encounter passed only for some support/carry ordering and failed the natural `berserker front + priest back` placement. The level now uses warrior/warlock training pressure so both `priest+berserker` orders pass, while `priest+bard` still fails. Full enumeration remains healthy.
+
 ### Balance: broaden frontline ecology without special tutorial stats
 
 - Problem: tutorial and composition checks showed knight becoming the only reliable answer whenever a fight required damage absorption. That made survival feel like a single-key solution instead of an ecology.
@@ -352,3 +373,17 @@ current_decision: Continue through berserker-owned assets only. The shared actio
   - Stage 5 requires `warlock`, teaching sustained damage against high armor.
   - Stage 6 requires knight, priest, berserker, and one damage option, teaching a complete team shell.
 - Validation: ran exact fixed-seed tutorial combinations with `simulateTeams`; non-teaching combinations now fail in the checked seed.
+
+### Tutorial: restore real choice in later stages
+
+- Problem: stages 3 and 4 had the same number of candidates as required units, so the player had no roster decision. Stage 6 was also too loose and could pass with too many arbitrary complete teams.
+- Change: stage 3 is now 4-pick-3, stage 4 is 4-pick-3, stage 5 is 4-pick-2, and stage 6 is 6-pick-4. The player must now decide which role to leave out instead of always using every visible candidate.
+- Guardrail: no player-facing setup text names the correct role, correct slot, or intended solution. Setup text only states the enemy pressure and selection count.
+- Validation: fixed-stat exhaustive enumeration after the patch reports stage pass counts of L1 1, L2 3, L3 35, L4 10, L5 2, and L6 113. Later stages now have multiple solutions but no longer pass by selecting every available unit.
+
+### Tutorial: stage 4 failed patch reverted
+
+- Problem: stage 4 technically had passing combinations, but many were unnatural, such as requiring backline roles to stand in front. That is not an acceptable tutorial solution.
+- Bad patch: enemy pressure was temporarily reduced through tutorial-local enemy multipliers. This was rejected because it teaches a fake matchup: a player who learns from weakened warriors will misread normal warrior encounters later.
+- Revert: stage 4 enemy multipliers were restored to the previous tutorial values. Do not use this stage as accepted until the base-role audit and a real lesson redesign are complete.
+- Method correction: do not fix this by locking slots, removing formation choice, or silently weakening enemies. The right check is whether a natural setup can pass against an encounter that represents the lesson truthfully.

@@ -724,9 +724,10 @@ const GAME_SKILL_ASSETS = (() => {
         "desc": "单体火焰并点燃。",
         "effects": [
           {
-            "kind": "hitTarget",
-            "flat": 19,
-            "power": 0.25,
+            "kind": "hitEnemies",
+            "count": 2,
+            "flat": 15,
+            "power": 0.2,
             "type": "fire",
             "label": "火球"
           },

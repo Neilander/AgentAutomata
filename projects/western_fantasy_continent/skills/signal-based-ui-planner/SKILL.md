@@ -135,6 +135,8 @@ Use the hierarchy to avoid flat pages where every card, log, and stat competes a
 
 For player-facing tutorial screens, avoid recommendation labels such as "recommended", "not recommended", "wrong", or "best". Put objective choices near the slots, then let combat feedback and result recap teach the consequence.
 
+For player-facing tutorial setup text, do not reveal the intended solution before the player acts. Describe the enemy pressure, visible goal, and constraints; do not name the correct role, correct slot, or intended skill answer. Save explanation of the correct pattern for the post-combat result or recap.
+
 ### 5. Allocate Attention Budget
 
 Assign rough attention percentages per state.
@@ -171,6 +173,7 @@ Use controls:
 | Many icons/items need scanning | Grid |
 | Multiple objects need comparison | Compact list plus selected detail |
 | Secondary or debug info | Collapsible panel |
+| One card needs occasional details without growing the layout | Flip card / detail face |
 | Too many options to browse | Search/filter |
 | Continuous value | Slider/stepper |
 
@@ -179,6 +182,14 @@ Dropdown rule:
 > Use a dropdown when many options exist but the player mainly needs the selected value.
 
 Do not use dropdowns when simultaneous visual comparison is the main task.
+
+Flip-card rule:
+
+> Use a flip card when each repeated card has a compact decision face and an occasional detail face, and showing both faces at once would make the grid too noisy.
+
+The front face should keep the primary action clear: name, icon, class tags, selected state, and the main click target. The back face should show only the detail needed at that moment, such as passive, two small skills, and ultimate. Use a small explicit info/flip control; do not make the primary selection click secretly flip the card.
+
+Use flip cards for a small set of cards where players may inspect several options in place. Use a selected-detail panel instead when one object needs long text, comparisons, or editing controls.
 
 Selection cluster rule:
 

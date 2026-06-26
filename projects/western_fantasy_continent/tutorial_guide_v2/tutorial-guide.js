@@ -1,16 +1,16 @@
 const DATA = window.GAME_SKILL_DATA;
 
 const ROLE_META = {
-  knight: { name: "\u9a91\u58eb", icon: "\u26e8\ufe0f", tags: ["\u524d\u6392", "\u62a4\u76fe"] },
-  warrior: { name: "\u6218\u58eb", icon: "\u2694\ufe0f", tags: ["\u8fd1\u6218", "\u538b\u7ebf"] },
-  berserker: { name: "\u72c2\u6218\u58eb", icon: "\ud83e\ude93", tags: ["\u666e\u653b", "\u4f4e\u8840"] },
-  assassin: { name: "\u523a\u5ba2", icon: "\ud83d\udde1\ufe0f", tags: ["\u6536\u5272", "\u4f4e\u8840"] },
-  ranger: { name: "\u6e38\u4fa0", icon: "\ud83c\udff9", tags: ["\u8fdc\u7a0b", "\u6807\u8bb0"] },
-  mage: { name: "\u6cd5\u5e08", icon: "\ud83d\udd25", tags: ["\u71c3\u70e7", "\u8303\u56f4"] },
-  priest: { name: "\u7267\u5e08", icon: "\u2728", tags: ["\u6cbb\u7597", "\u62a4\u76fe"] },
-  warlock: { name: "\u672f\u58eb", icon: "\u2620\ufe0f", tags: ["\u5267\u6bd2", "\u6301\u7eed"] },
-  bard: { name: "\u541f\u6e38\u8bd7\u4eba", icon: "\ud83c\udfb5", tags: ["\u52a0\u901f", "\u652f\u63f4"] },
-  alchemist: { name: "\u70bc\u91d1\u5e08", icon: "\u2697\ufe0f", tags: ["\u5f02\u5e38", "\u7206\u53d1"] },
+  knight: { name: "\u9a91\u58eb", icon: "\u26e8\ufe0f", tags: ["\u524d\u6392", "\u62a4\u76fe"], focus: "\u7ad9\u4f4f\u3001\u6321\u4f24\u3001\u62a4\u961f\u53cb" },
+  warrior: { name: "\u6218\u58eb", icon: "\u2694\ufe0f", tags: ["\u8fd1\u6218", "\u538b\u7ebf"], focus: "\u524d\u6392\u538b\u7ebf\uff0c\u8d34\u8eab\u6253\u7a33\u5b9a\u4f24\u5bb3" },
+  berserker: { name: "\u72c2\u6218\u58eb", icon: "\ud83e\ude93", tags: ["\u666e\u653b", "\u4f4e\u8840"], focus: "\u8840\u91cf\u8d8a\u5371\u9669\uff0c\u666e\u653b\u53cd\u6253\u8d8a\u5f3a" },
+  assassin: { name: "\u523a\u5ba2", icon: "\ud83d\udde1\ufe0f", tags: ["\u6536\u5272", "\u4f4e\u8840"], focus: "\u627e\u6b8b\u8840\uff0c\u5feb\u901f\u6536\u5272" },
+  ranger: { name: "\u6e38\u4fa0", icon: "\ud83c\udff9", tags: ["\u8fdc\u7a0b", "\u6807\u8bb0"], focus: "\u6807\u8bb0\u5355\u4f53\uff0c\u8d8a\u6253\u8d8a\u51c6" },
+  mage: { name: "\u6cd5\u5e08", icon: "\ud83d\udd25", tags: ["\u71c3\u70e7", "\u8303\u56f4"], focus: "\u7528\u706b\u7403\u548c\u71c3\u70e7\u540c\u65f6\u538b\u591a\u4e2a\u654c\u4eba" },
+  priest: { name: "\u7267\u5e08", icon: "\u2728", tags: ["\u6cbb\u7597", "\u62a4\u76fe"], focus: "\u62ac\u6b8b\u8840\uff0c\u628a\u5371\u9669\u7a97\u53e3\u6491\u8fc7\u53bb" },
+  warlock: { name: "\u672f\u58eb", icon: "\u2620\ufe0f", tags: ["\u5267\u6bd2", "\u6301\u7eed"], focus: "\u9760\u6301\u7eed\u4f24\u5bb3\u62d6\u7a7f\u9ad8\u62a4\u7532" },
+  bard: { name: "\u541f\u6e38\u8bd7\u4eba", icon: "\ud83c\udfb5", tags: ["\u52a0\u901f", "\u652f\u63f4"], focus: "\u63d0\u901f\u961f\u53cb\uff0c\u628a\u8282\u594f\u62c9\u8d77\u6765" },
+  alchemist: { name: "\u70bc\u91d1\u5e08", icon: "\u2697\ufe0f", tags: ["\u5f02\u5e38", "\u7206\u53d1"], focus: "\u6df7\u5408\u5f02\u5e38\uff0c\u8f6c\u5316\u6210\u7206\u53d1" },
 };
 
 const FORMATION_SLOTS = [
@@ -35,42 +35,42 @@ const SLOT_LAYOUTS = {
 const LEVELS = [
   {
     title: "\u7b2c\u4e00\u8bfe\uff1a\u7ad9\u4f4f\u524d\u7ebf",
-    objective: "\u654c\u4eba\u662f\u53cc\u6218\u58eb\uff0c\u9700\u8981\u4e00\u4e2a\u524d\u6392\u62d6\u4f4f\uff0c\u518d\u914d\u4e00\u4e2a\u80fd\u7a33\u5b9a\u8f93\u51fa\u7684\u89d2\u8272\u3002",
-    line: "\u9009\u62e9 2 \u4eba\u3002",
-    winLine: "\u901a\u8fc7\uff1a\u9a91\u58eb\u62d6\u4f4f\u524d\u7ebf\uff0c\u6e38\u4fa0\u5728\u540e\u9762\u7a33\u5b9a\u8f93\u51fa\u3002",
+    objective: "\u654c\u4eba\u662f\u4e00\u4e2a\u8d34\u8eab\u523a\u5ba2\u548c\u4e00\u4e2a\u8fdc\u7a0b\u6e38\u4fa0\uff0c\u4ed6\u4eec\u4f1a\u540c\u65f6\u538b\u8feb\u961f\u4f0d\u3002",
+    line: "\u9009\u62e9 2 \u4eba\uff0c\u5c1d\u8bd5\u7528\u7ad9\u4f4d\u548c\u6280\u80fd\u5904\u7406\u4e24\u79cd\u538b\u529b\u3002",
+    winLine: "\u901a\u8fc7\uff1a\u6218\u58eb\u5728\u524d\u6392\u627f\u538b\uff0c\u6cd5\u5e08\u5728\u540e\u6392\u7528\u706b\u7403\u540c\u65f6\u538b\u4f4e\u591a\u4e2a\u654c\u4eba\u3002",
     slots: 2,
     slotLayout: "frontBack",
-    choices: ["knight", "ranger", "mage"],
-    enemies: ["warrior", "warrior"],
+    choices: ["warrior", "mage", "priest"],
+    enemies: ["assassin", "ranger"],
   },
   {
     title: "\u7b2c\u4e8c\u8bfe\uff1a\u6551\u4e0b\u6b8b\u8840",
-    objective: "\u72c2\u6218\u58eb\u9700\u8981\u8fdb\u5165\u5371\u9669\u8840\u7ebf\u624d\u4f1a\u53d8\u5f3a\uff0c\u4f46\u4ed6\u9700\u8981\u7267\u5e08\u628a\u8fd9\u4e2a\u7a97\u53e3\u6491\u4f4f\u3002",
+    objective: "\u654c\u4eba\u4f1a\u7528\u524d\u6392\u538b\u529b\u548c\u6301\u7eed\u4f24\u5bb3\u628a\u6211\u65b9\u538b\u5230\u5371\u9669\u8840\u7ebf\u3002",
     line: "\u9009\u62e9 2 \u4eba\u3002",
     winLine: "\u901a\u8fc7\uff1a\u7267\u5e08\u4fdd\u4f4f\u4e86\u72c2\u6218\u58eb\u7684\u4f4e\u8840\u7ffb\u76d8\u7a97\u53e3\u3002",
     slots: 2,
     slotLayout: "frontBack",
-    choices: ["priest", "berserker", "ranger"],
-    enemies: ["assassin", { role: "warrior", hpMult: 0.85, powerMult: 0.75 }],
+    choices: ["priest", "berserker", "bard"],
+    enemies: [{ role: "warrior", hpMult: 0.85, powerMult: 0.75 }, { role: "warlock", hpMult: 0.9, powerMult: 0.9 }],
   },
   {
     title: "\u7b2c\u4e09\u8bfe\uff1a\u6321\u4f4f\u7a81\u8fdb",
-    objective: "\u654c\u65b9\u6709\u591a\u4e2a\u523a\u5ba2\uff0c\u524d\u6392\u8981\u5438\u6536\u7b2c\u4e00\u6ce2\u538b\u529b\uff0c\u8fdc\u7a0b\u9700\u8981\u5c3d\u5feb\u6253\u6389\u5a01\u80c1\u3002",
-    line: "\u9009\u62e9 3 \u4eba\u3002",
+    objective: "\u654c\u65b9\u6709\u591a\u4e2a\u4f1a\u5feb\u901f\u63a5\u8fd1\u7684\u5a01\u80c1\uff0c\u5982\u679c\u961f\u4f0d\u5206\u5de5\u4e0d\u6e05\u5f88\u5bb9\u6613\u88ab\u6253\u6563\u3002",
+    line: "\u4ece 4 \u4eba\u4e2d\u9009\u62e9 3 \u4eba\uff0c\u5c1d\u8bd5\u5728\u538b\u529b\u7206\u53d1\u524d\u7a33\u4f4f\u5c40\u9762\u3002",
     winLine: "\u901a\u8fc7\uff1a\u9a91\u58eb\u627f\u538b\uff0c\u8fdc\u7a0b\u706b\u529b\u5728\u7a81\u8fdb\u7206\u53d1\u524d\u5b8c\u6210\u51fb\u6740\u3002",
     slots: 3,
     slotLayout: "full",
-    choices: ["knight", "priest", "ranger", "mage"],
+    choices: ["knight", "warrior", "mage", "priest"],
     enemies: ["assassin", "assassin", "warlock"],
   },
   {
     title: "\u7b2c\u56db\u8bfe\uff1a\u6e05\u6389\u5c0f\u961f",
-    objective: "\u654c\u4eba\u6570\u91cf\u591a\u4f46\u5355\u4f53\u8f83\u8106\uff0c\u52a0\u901f\u4f1a\u653e\u5927\u6e05\u573a\u89d2\u8272\u7684\u653b\u51fb\u8282\u594f\u3002",
-    line: "\u9009\u62e9 3 \u4eba\u3002",
-    winLine: "\u901a\u8fc7\uff1a\u541f\u6e38\u8bd7\u4eba\u628a\u961f\u4f0d\u7684\u6e05\u573a\u8282\u594f\u62c9\u4e86\u8d77\u6765\u3002",
+    objective: "\u654c\u4eba\u6570\u91cf\u591a\u4f46\u5355\u4f53\u8f83\u8106\uff0c\u6218\u6597\u4f1a\u8003\u9a8c\u961f\u4f0d\u7684\u6e05\u573a\u6548\u7387\u3002",
+    line: "\u4ece 4 \u4eba\u4e2d\u9009\u62e9 3 \u4eba\uff0c\u5c1d\u8bd5\u5728\u654c\u4eba\u6570\u91cf\u538b\u529b\u4e0b\u5feb\u901f\u6253\u5f00\u7f3a\u53e3\u3002",
+    winLine: "\u901a\u8fc7\uff1a\u6218\u58eb\u5728\u524d\u6392\u627f\u538b\uff0c\u6cd5\u5e08\u5728\u540e\u6392\u628a\u591a\u4e2a\u8106\u76ae\u654c\u4eba\u4e00\u8d77\u538b\u4f4e\u3002",
     slots: 3,
     slotLayout: "full",
-    choices: ["knight", "mage", "bard", "warrior"],
+    choices: ["mage", "bard", "warrior", "priest"],
     enemies: [
       { role: "warrior", hpMult: 0.7, powerMult: 0.75 },
       { role: "warrior", hpMult: 0.7, powerMult: 0.75 },
@@ -80,23 +80,31 @@ const LEVELS = [
   },
   {
     title: "\u7b2c\u4e94\u8bfe\uff1a\u62d6\u957f\u6218\u6597",
-    objective: "\u9ad8\u62a4\u7532\u654c\u4eba\u4e0d\u9002\u5408\u6162\u6162\u7528\u767d\u5b57\u786c\u780d\uff0c\u9700\u8981\u6301\u7eed\u4f24\u5bb3\u914d\u5408\u7eed\u822a\u6216\u524d\u6392\u3002",
-    line: "\u9009\u62e9 2 \u4eba\u3002",
+    objective: "\u654c\u4eba\u62a4\u7532\u5f88\u9ad8\uff0c\u666e\u901a\u653b\u51fb\u5f88\u96be\u5feb\u901f\u89e3\u51b3\u6218\u6597\u3002",
+    line: "\u4ece 4 \u4eba\u4e2d\u9009\u62e9 2 \u4eba\u3002",
     winLine: "\u901a\u8fc7\uff1a\u672f\u58eb\u7684\u6301\u7eed\u4f24\u5bb3\u8ba9\u9ad8\u62a4\u7532\u654c\u4eba\u65e0\u6cd5\u53ea\u9760\u62a4\u7532\u62d6\u4f4f\u3002",
     slots: 2,
     slotLayout: "frontBack",
-    choices: ["warlock", "knight", "priest"],
-    enemies: [{ role: "knight", hpMult: 1.8, powerMult: 0.45, armorAdd: 12 }],
+    choices: ["warlock", "knight", "bard", "ranger"],
+    enemies: [
+      { role: "knight", hpMult: 1.4, powerMult: 0.35, armorAdd: 16 },
+      { role: "warrior", hpMult: 1.2, powerMult: 0.35, armorAdd: 14 },
+    ],
   },
   {
     title: "\u7b2c\u516d\u8bfe\uff1a\u7ec4\u5408\u9009\u62e9",
-    objective: "\u6700\u540e\u4e00\u5173\u6df7\u5408\u4e86\u524d\u6392\u3001\u7a81\u8fdb\u548c\u6301\u7eed\u4f24\u5bb3\uff0c\u9009\u4e00\u652f\u5b8c\u6574\u5c0f\u961f\u3002",
-    line: "\u9009\u62e9 4 \u4eba\u3002",
+    objective: "\u6700\u540e\u4e00\u5173\u4f1a\u540c\u65f6\u51fa\u73b0\u591a\u79cd\u538b\u529b\uff0c\u9700\u8981\u4f60\u7ec4\u51fa\u4e00\u652f\u80fd\u4e92\u76f8\u8865\u4f4d\u7684\u5c0f\u961f\u3002",
+    line: "\u4ece 6 \u4eba\u4e2d\u9009\u62e9 4 \u4eba\u3002",
     winLine: "\u901a\u8fc7\uff1a\u4e00\u652f\u5b8c\u6574\u961f\u4f0d\u9700\u8981\u627f\u538b\u3001\u8f93\u51fa\u548c\u6062\u590d\u540c\u65f6\u6210\u7acb\u3002",
     slots: 4,
     slotLayout: "full",
-    choices: ["knight", "priest", "berserker", "ranger", "mage"],
-    enemies: ["knight", "assassin", "assassin", "warlock"],
+    choices: ["knight", "priest", "berserker", "ranger", "mage", "warlock"],
+    enemies: [
+      { role: "knight", hpMult: 1.05, powerMult: 1.2 },
+      { role: "assassin", powerMult: 1.2 },
+      { role: "assassin", powerMult: 1.2 },
+      { role: "warlock", hpMult: 1.05, powerMult: 1.2 },
+    ],
   },
 ];
 
@@ -104,6 +112,7 @@ const state = {
   levelIndex: 0,
   placements: [null, null, null, null],
   pendingRole: "",
+  detailRole: "",
   running: false,
   passed: false,
   hint: "",
@@ -124,6 +133,8 @@ const els = {
   resetBtn: document.querySelector("#resetBtn"),
   resultLine: document.querySelector("#resultLine"),
   battlefield: document.querySelector("#battlefield"),
+  skillModal: document.querySelector("#skillModal"),
+  skillModalBody: document.querySelector("#skillModalBody"),
 };
 
 function setup() {
@@ -146,8 +157,26 @@ function setup() {
     if (button) removeSelected(Number(button.dataset.removeIndex));
   });
   els.choiceGrid.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-role]");
-    if (button) toggleRole(button.dataset.role);
+    const detail = event.target.closest("[data-detail-role]");
+    if (detail) {
+      openSkillModal(detail.dataset.detailRole);
+      return;
+    }
+    const card = event.target.closest("[data-role]");
+    if (card) toggleRole(card.dataset.role);
+  });
+  els.skillModal.addEventListener("click", (event) => {
+    if (event.target.closest("[data-close-skill]")) closeSkillModal();
+  });
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeSkillModal();
+  });
+  els.choiceGrid.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const card = event.target.closest("[data-role]");
+    if (!card) return;
+    event.preventDefault();
+    toggleRole(card.dataset.role);
   });
   render();
 }
@@ -163,6 +192,7 @@ function currentSlotLayout(level = currentLevel()) {
 function resetLevel() {
   state.placements = [null, null, null, null];
   state.pendingRole = "";
+  closeSkillModal();
   state.running = false;
   state.passed = false;
   state.hint = "";
@@ -192,6 +222,17 @@ function toggleRole(role) {
   state.passed = false;
   els.resultLine.textContent = "";
   render();
+}
+
+function openSkillModal(role) {
+  state.detailRole = role;
+  renderSkillModal(role);
+  els.skillModal.hidden = false;
+}
+
+function closeSkillModal() {
+  state.detailRole = "";
+  if (els.skillModal) els.skillModal.hidden = true;
 }
 
 function placePending(slotIndex) {
@@ -366,11 +407,46 @@ function renderChoices(level) {
     const meta = ROLE_META[role];
     const placed = state.placements.includes(role);
     const pending = state.pendingRole === role;
-    return `<button class="choice ${placed || pending ? "selected" : ""} ${pending ? "pending" : ""}" type="button" data-role="${role}" ${state.running ? "disabled" : ""}>
-      <span class="portrait">${meta.icon}</span>
-      <span><b class="role-name">${meta.name}</b><span class="choice-state">${placed ? "\u5df2\u4e0a\u9635 / \u70b9\u51fb\u79fb\u51fa" : pending ? "\u5f85\u653e\u7f6e" : "\u70b9\u51fb\u9009\u4e2d"}</span><span class="tags">${meta.tags.map((tag) => `<i class="tag">${tag}</i>`).join("")}</span></span>
-    </button>`;
+    return `<article class="choice ${placed || pending ? "selected" : ""} ${pending ? "pending" : ""}" data-role="${role}" role="button" tabindex="${state.running ? "-1" : "0"}" aria-pressed="${placed || pending ? "true" : "false"}">
+      <button class="flip-button" type="button" data-detail-role="${role}" aria-label="\u67e5\u770b${meta.name}\u6280\u80fd">\u6280</button>
+      <div class="choice-face choice-front">
+        <span class="portrait">${meta.icon}</span>
+        <span><b class="role-name">${meta.name}</b><span class="choice-state">${placed ? "\u5df2\u4e0a\u9635 / \u70b9\u51fb\u79fb\u51fa" : pending ? "\u5f85\u653e\u7f6e" : "\u70b9\u51fb\u9009\u4e2d"}</span><span class="tags">${meta.tags.map((tag) => `<i class="tag">${tag}</i>`).join("")}</span></span>
+      </div>
+    </article>`;
   }).join("");
+}
+
+function renderSkillModal(role) {
+  const meta = ROLE_META[role];
+  if (!meta) return;
+  els.skillModalBody.innerHTML = `<header class="skill-modal-head">
+    <span class="portrait">${meta.icon}</span>
+    <span><b id="skillModalTitle">${meta.name}</b><small>${meta.focus}</small></span>
+  </header>
+  <div class="skill-modal-tags">${meta.tags.map((tag) => `<i class="tag">${tag}</i>`).join("")}</div>
+  <div class="skill-modal-grid">
+    ${skillLines(role).map((line) => `<section class="skill-detail-card"><b>${line.label}</b><strong>${line.value}</strong><p>${line.desc}</p></section>`).join("")}
+  </div>`;
+}
+
+function skillLines(role) {
+  const kit = DATA.roleKits[role]?.kit || {};
+  return [
+    { label: "\u88ab\u52a8", value: skillName(kit.passive), desc: skillDesc(kit.passive) },
+    { label: "\u5c0f1", value: skillName(kit.small1), desc: skillDesc(kit.small1) },
+    { label: "\u5c0f2", value: skillName(kit.small2), desc: skillDesc(kit.small2) },
+    { label: "\u5927\u62db", value: skillName(kit.ultimate), desc: skillDesc(kit.ultimate) },
+  ];
+}
+
+function skillName(key) {
+  return DATA.skills[key]?.name || key || "-";
+}
+
+function skillDesc(key) {
+  const desc = DATA.skills[key]?.desc || "";
+  return desc.length > 18 ? `${desc.slice(0, 18)}...` : desc;
 }
 
 function placedCount(level = currentLevel()) {

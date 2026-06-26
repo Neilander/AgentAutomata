@@ -4,8 +4,8 @@ This report is a static first pass. It checks skill scale against class-specific
 
 ## Summary
 
-- Skills checked: 72
-- Active skills checked: 58
+- Skills checked: 82
+- Active skills checked: 67
 - Warning count: 3
 
 ## Current Warnings
@@ -35,11 +35,11 @@ Allowed highs: singleTargetDps, execute, mobility
 
 | Skill | Type | CD | DPS | SPS | HPS | Control | Defense | Buff | Axes |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `toxicStabs` | 小技能 | 4 | 13.8 | 0 | 0 | 0 | 0 | 0 | damage |
-| `garrote` | 小技能 | 6.2 | 11.8 | 0 | 0 | 0 | 0 | 0 | damage |
-| `shadowCut` | 小技能 | 6 | 11.4 | 0 | 0 | 0 | 0 | 0 | damage |
-| `deathNeedle` | 小技能 | 7 | 10.1 | 0 | 0 | 0 | 0 | 0 | damage |
-| `shadowHarvest` | 大招 | 24 | 7 | 0 | 0 | 0 | 0 | 0 |  |
+| `toxicStabs` | 小技能 | 4 | 13.4 | 0 | 0 | 0 | 0 | 0 | damage |
+| `garrote` | 小技能 | 6.2 | 11.4 | 0 | 0 | 0 | 0 | 0 | damage |
+| `deathNeedle` | 小技能 | 7 | 9.7 | 0 | 0 | 0 | 0 | 0 | damage |
+| `shadowCut` | 小技能 | 6.6 | 8.3 | 0 | 0 | 0 | 0 | 0 | damage |
+| `shadowHarvest` | 大招 | 27.5 | 4.6 | 0 | 0 | 0 | 0 | 0 |  |
 
 ### 吟游诗人
 
@@ -59,9 +59,9 @@ Allowed highs: selfDps, selfHaste, selfLeech, lowHpScaling
 
 | Skill | Type | CD | DPS | SPS | HPS | Control | Defense | Buff | Axes |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `bloodStrike` | 小技能 | 5.2 | 0 | 0 | 0 | 0 | 0 | 10.2 | buff |
 | `lastWound` | 小技能 | 8.2 | 4 | 0 | 0 | 0 | 0 | 5.9 | buff |
 | `redFeast` | 小技能 | 7.8 | 3.4 | 0 | 0 | 0 | 0 | 6.2 | buff |
-| `bloodStrike` | 小技能 | 5.2 | 0 | 0 | 0 | 0 | 0 | 9.2 | buff |
 | `boneWhirl` | 小技能 | 8.4 | 0 | 0 | 0 | 0 | 0 | 7.1 | buff |
 | `undyingRoar` | 大招 | 24 | 0 | 0 | 0 | 0 | 0 | 3.3 | death-prevent |
 
@@ -84,9 +84,9 @@ Allowed highs: burstDps, aoe, burn
 
 | Skill | Type | CD | DPS | SPS | HPS | Control | Defense | Buff | Axes |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `fireball` | 小技能 | 6 | 13.3 | 0 | 0 | 0 | 0 | 0 | damage |
 | `combustSigil` | 小技能 | 8.5 | 13 | 0 | 0 | 0 | 0 | 0 | damage |
 | `frostNova` | 小技能 | 10 | 10.3 | 0 | 0 | 0.7 | 0 | 0 | damage, timer/control |
-| `fireball` | 小技能 | 6 | 10 | 0 | 0 | 0 | 0 | 0 | damage |
 | `iceLance` | 小技能 | 7.2 | 7.1 | 0 | 0 | 0.35 | 0 | 0 | timer/control |
 | `emberSpread` | 小技能 | 9 | 6.5 | 0 | 0 | 0 | 0 | 0 |  |
 | `meteorRain` | 大招 | 37 | 5 | 0 | 0 | 0 | 0 | 0 |  |
@@ -97,12 +97,12 @@ Allowed highs: hps, sps, cleanse, protection, deathPreventionSupport
 
 | Skill | Type | CD | DPS | SPS | HPS | Control | Defense | Buff | Axes |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `renewingSanctuary` | 大招 | 30 | 0 | 6.9 | 7.9 | 0 | 0 | 0 | shield, heal |
-| `crownBloodCharm` | 小技能 | 8.5 | 0 | 12.6 | 0 | 0 | 1.41 | 0 | shield, defense-window |
-| `sanctuary` | 大招 | 32 | 0 | 5.7 | 6 | 0 | 0 | 0 | heal |
+| `renewingSanctuary` | 大招 | 30 | 0 | 7 | 7.9 | 0 | 0 | 0 | shield, heal |
+| `sanctuary` | 大招 | 32 | 0 | 5.8 | 6 | 0 | 0 | 0 | heal |
+| `crownBloodCharm` | 小技能 | 8.5 | 0 | 11.7 | 0 | 0 | 1.41 | 0 | shield, defense-window |
 | `heal` | 小技能 | 7 | 0 | 0 | 9.5 | 0 | 0 | 0 | heal |
-| `graceTransfer` | 小技能 | 9.5 | 0 | 5.1 | 3.9 | 0 | 0 | 0 |  |
-| `mendingLight` | 小技能 | 8 | 0 | 3.4 | 5.6 | 0 | 0 | 0 |  |
+| `graceTransfer` | 小技能 | 9.5 | 0 | 4.7 | 3.5 | 0 | 0 | 0 |  |
+| `mendingLight` | 小技能 | 8 | 0 | 3 | 4.9 | 0 | 0 | 0 |  |
 | `bloodCharm` | 小技能 | 10 | 0 | 7.7 | 0 | 0 | 0.5 | 0 | shield, defense-window |
 
 ### 游侠
@@ -123,8 +123,17 @@ Allowed highs: n/a
 
 | Skill | Type | CD | DPS | SPS | HPS | Control | Defense | Buff | Axes |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `enemyVenomCloud` | 小技能 | 5.4 | 65.3 | 0 | 0 | 0 | 0 | 0 | damage |
+| `enemyStoneGuard` | 小技能 | 6.5 | 0 | 30 | 0 | 0 | 0 | 0 | shield |
+| `enemyCullWeak` | 小技能 | 5.7 | 24.1 | 0 | 0 | 0 | 0 | 0 | damage |
+| `enemySweepingClaw` | 小技能 | 8.2 | 17.2 | 0 | 0 | 0 | 0 | 0 | damage |
+| `enemyHeavySmash` | 小技能 | 5.8 | 15.5 | 0 | 0 | 0 | 0 | 0 | damage |
+| `enemyEmberPulse` | 小技能 | 5.8 | 9.9 | 0 | 0 | 0 | 0 | 0 | damage |
 | `oathRally` | 大招 | 32 | 0 | 4.5 | 0 | 0 | 0 | 2.3 |  |
 | `ruinComet` | 大招 | 34 | 3.7 | 0 | 0 | 0 | 0 | 0 |  |
+| `enemyFrostClamp` | 小技能 | 7.5 | 0 | 0 | 0 | 0.69 | 0 | 0 | timer/control |
+| `enemyNoUltimate` | 大招 | 999 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `enemyNoop` | 小技能 | 999 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 
 ### 术士
 
@@ -145,7 +154,7 @@ Allowed highs: frontlineDps, cleave, armorPressure
 
 | Skill | Type | CD | DPS | SPS | HPS | Control | Defense | Buff | Axes |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `powerStrike` | 小技能 | 5 | 12.2 | 0 | 0 | 0 | 0 | 0 | damage |
+| `powerStrike` | 小技能 | 5 | 12.2 | 0 | 0 | 0 | 0.3 | 0 | damage, defense-window |
 | `cleave` | 小技能 | 7 | 12 | 0 | 0 | 0 | 0 | 0 | damage |
 | `guardBreak` | 小技能 | 6.8 | 10.3 | 0 | 0 | 0 | 0 | 0 | damage |
 | `sunderingAdvance` | 小技能 | 7.5 | 9.9 | 0 | 0 | 0 | 0 | 0 | damage |

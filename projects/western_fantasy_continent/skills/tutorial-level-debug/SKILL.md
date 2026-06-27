@@ -122,6 +122,60 @@ Instead:
 
 After strengthening a feature, run a balance pass to check whether the class became generally overpowered.
 
+## Solution Density Rule
+
+A tutorial level is not valid just because it has at least one passing answer. It must have a controlled number of passing answers, and most passing answers must teach the intended lesson.
+
+Before accepting a level, enumerate or sample the solution space:
+
+- total selectable team/formation combinations
+- passing combinations
+- pass density
+- natural passing combinations
+- passing combinations that teach the intended point
+- passing combinations that win for unrelated reasons
+
+Use these rough targets:
+
+- Operation/tutorial UI level: high pass density is acceptable if the goal is only teaching controls.
+- Single-concept combat lesson: target about 15-35% pass density.
+- Combo/synergy lesson: target about 20-45% pass density.
+- Practice/checkpoint level: target about 40-70% pass density.
+
+If pass density is too high, the level is probably a practice arena, not a lesson. Tighten roster choices, enemy composition, pick count, or encounter pattern before changing stats.
+
+## Teaching Validity Rule
+
+Passing answers must be checked for meaning, not only count.
+
+For most passing answers, ask:
+
+- Does this answer use the intended role, skill family, formation idea, or counter-pattern?
+- Would a player who wins this way learn the intended lesson?
+- Is the answer natural, such as frontline units in front and backline units behind?
+- Is the answer accidentally winning through raw role strength, hidden enemy weakness, or a dominant unrelated combo?
+- Does combat feedback visibly show why this answer worked?
+
+Mark each sampled passing answer as:
+
+- `teaches`: proves the intended lesson.
+- `acceptable`: not the ideal lesson, but still reinforces a related idea.
+- `accidental`: wins while teaching the wrong thing or nothing.
+
+Acceptance rule:
+
+- Teaching levels need a majority of passing answers to be `teaches` or `acceptable`.
+- Any strong, obvious `accidental` answer must be removed or turned into a real lesson.
+- Do not accept a level where the easiest or most natural passing answer teaches the wrong thing.
+
+When checking a level, sample at least:
+
+- the first 5-10 passing answers found
+- the most natural passing answers
+- the highest-power-looking passing answers
+- at least 3 plausible failing answers
+- at least 1 negative-control answer that should not pass
+
 Required checks:
 
 ```text
@@ -178,6 +232,8 @@ After implementing:
 ```text
 Changed:
 Signal evidence:
+Solution density:
+Passing answer audit:
 Pass/fail:
 Remaining problem:
 Next patch if needed:

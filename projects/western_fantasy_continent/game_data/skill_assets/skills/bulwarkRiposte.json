@@ -1,0 +1,36 @@
+{
+  "name": "壁垒回击",
+  "type": "小技能",
+  "role": "骑士",
+  "roleKeys": ["knight"],
+  "cooldown": 10.5,
+  "openingCooldown": 2.8,
+  "icon": "shield-bash",
+  "desc": "骑士副定位：反击前排。给自己护盾和短减伤，并开启一次小型近战反击窗口；用于把护盾从纯生存转成可见反打。",
+  "effects": [
+    {
+      "kind": "teamShield",
+      "flat": 48,
+      "power": 0.3,
+      "label": "壁垒",
+      "selfOnly": true
+    },
+    {
+      "kind": "timer",
+      "timer": "guardTimer",
+      "duration": 3.5,
+      "label": "守势"
+    },
+    {
+      "kind": "teamRetaliation",
+      "duration": 3.8,
+      "requiresBlockedDamage": true,
+      "meleeOnly": true,
+      "flat": 4,
+      "power": 0.07,
+      "blockedRatio": 0.28,
+      "cooldown": 0.9,
+      "label": "壁垒回击"
+    }
+  ]
+}

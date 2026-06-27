@@ -60,6 +60,7 @@ class CombatSimulation {
       addBurn: (...args) => this.addBurn(...args),
       healUnit: (unit, amount, label, source) => this.healUnit(unit, amount, label, typeof source === "object" ? source : undefined),
       shield: (unit, amount, label, source) => this.shield(unit, amount, label, typeof source === "object" ? source : undefined),
+      breakShield: (...args) => this.breakShield(...args),
       takeRaw: (...args) => this.takeRaw(...args),
       floater: () => {},
       enemiesOf: (unit) => this.enemiesOf(unit),
@@ -73,6 +74,7 @@ class CombatSimulation {
       hpRatio: (unit) => this.hpRatio(unit),
       statusCount: (unit) => this.statusCount(unit),
       counterattack: (...args) => this.counterattack(...args),
+      chargeToTarget: (...args) => this.chargeToTarget(...args),
       emitEffectSignal: (...args) => this.emitEffectSignal(...args),
     };
   }
@@ -128,7 +130,7 @@ class CombatSimulation {
       const slotIndex = Number.isFinite(spec.slotIndex) ? spec.slotIndex : index;
       const slot = FORMATION[side][slotIndex % TEAM_SIZE];
       const maxHp = spec.maxHp || spec.hp || role.hp;
-      return {
+      const unit = {
         id: `${side}-${index + 1}`,
         side,
         index,
@@ -175,7 +177,22 @@ class CombatSimulation {
         mark: 0,
         icon: spec.icon?.startsWith?.("http") ? spec.icon : `${ICON_BASE}/${spec.icon || role.icon || "crossed-swords"}.svg`,
       };
+      this.applyPassiveStats(unit);
+      unit.hp = unit.maxHp;
+      return unit;
     });
+  }
+
+  applyPassiveStats(unit) {
+    for (const effect of this.passiveEffects(unit, "passiveStat")) {
+      if (Number.isFinite(effect.maxHpAdd)) unit.maxHp += effect.maxHpAdd;
+      if (Number.isFinite(effect.maxHpMult)) unit.maxHp = Math.round(unit.maxHp * effect.maxHpMult);
+      if (Number.isFinite(effect.powerAdd)) unit.power += effect.powerAdd;
+      if (Number.isFinite(effect.powerMult)) unit.power = Math.round(unit.power * effect.powerMult);
+      if (Number.isFinite(effect.armorAdd)) unit.armor += effect.armorAdd;
+      if (Number.isFinite(effect.armorMult)) unit.armor = Math.round(unit.armor * effect.armorMult);
+      if (Number.isFinite(effect.rangeAdd)) unit.range += effect.rangeAdd;
+    }
   }
 
   unitProfile(spec) {
@@ -214,6 +231,10 @@ class CombatSimulation {
       if (!target) continue;
       const distance = this.getDistance(unit, target);
       if (distance > unit.range) {
+        if (unit.skillCd.ultimate <= 0 && this.skillHasEffect(unit.ultimate, "chargeToTarget")) this.castSlot(unit, "ultimate", target);
+        else if (unit.skillCd.small1 <= 0 && this.skillHasEffect(unit.small1, "chargeToTarget")) this.castSlot(unit, "small1", target);
+        else if (unit.skillCd.small2 <= 0 && this.skillHasEffect(unit.small2, "chargeToTarget")) this.castSlot(unit, "small2", target);
+        if (this.getDistance(unit, target) <= unit.range) continue;
         this.moveToward(unit, target, dt);
         continue;
       }
@@ -237,7 +258,7 @@ class CombatSimulation {
   tickTimers(unit, dt) {
     for (const key of ["small1", "small2", "ultimate"]) unit.skillCd[key] = Math.max(0, unit.skillCd[key] - dt);
     unit.attackCd -= dt * (unit.hasteTimer > 0 ? (unit.hasteMultiplier || 1.45) : 1);
-    for (const key of ["slowTimer", "guardTimer", "tauntTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer"]) {
+    for (const key of ["slowTimer", "guardTimer", "tauntTimer", "duelTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer"]) {
       unit[key] = Math.max(0, unit[key] - dt);
     }
     unit.counterCd = Math.max(0, (unit.counterCd || 0) - dt);
@@ -256,7 +277,7 @@ class CombatSimulation {
       dot.tick = 1;
       const resist = unit.dotResistTimer > 0 ? 0.6 : 1;
       this.withAction(dot.source, { tags: ["dot", "damage", type], skillName: type === "poison" ? "剧毒" : "燃烧" }, () => {
-        this.takeDamage(dot.source, unit, dot.stacks * perStack * resist, type);
+        this.takeDamage(dot.source, unit, dot.stacks * perStack * resist * this.passiveDotMultiplier(dot.source, type), type);
       });
     }
     if (dot.time <= 0) Object.assign(dot, status());
@@ -315,9 +336,9 @@ class CombatSimulation {
   hit(source, target, amount, type, label) {
     if (!target) return;
     let value = amount + this.effectivePower(source) * 0.04;
-    if (source.passive === "lineBreaker" && target.line === "前排") value *= 1.12;
+    if (source.passive === "lineBreaker" && target.line === "前排") value *= 1.06;
     if (source.passive === "rageEngine") value *= 1 + (1 - this.hpRatio(source)) * (BERSERKER_PASSIVE.maxDamageAmp ?? 0.45);
-    if (source.passive === "executionSense" && (this.hpRatio(target) < 0.45 || this.statusCount(target) > 0)) value *= 1.18;
+    if (source.passive === "executionSense" && (this.hpRatio(target) < 0.38 || this.statusCount(target) > 0)) value *= 1.06;
     if (source.passive === "duelistFocus") value *= 1 + (target.mark || 0) * 0.045;
     if (source.passive === "catalyst" && this.statusCount(target) > 0) value *= 1.06;
     value *= SKILL_DATA.passiveDamageMultiplier?.(source, target, this.api()) || 1;
@@ -410,10 +431,11 @@ class CombatSimulation {
 
   healUnit(unit, amount, label = "治疗", source = this.currentActionSource) {
     if (!unit || !this.isAlive(unit)) return;
+    const value = amount * this.passiveHealMultiplier(source, unit);
     const before = unit.hp;
-    unit.hp = Math.min(unit.maxHp, unit.hp + amount);
+    unit.hp = Math.min(unit.maxHp, unit.hp + value);
     const healed = unit.hp - before;
-    const overflow = Math.max(0, amount - (unit.maxHp - before));
+    const overflow = Math.max(0, value - (unit.maxHp - before));
     if (unit.passive === "afterglowGrace" && overflow > 0) unit.shield += overflow * 0.65;
     if (healed > 0) {
       this.emitSignal({
@@ -434,7 +456,7 @@ class CombatSimulation {
   shield(unit, amount, label, source = this.currentActionSource) {
     if (!unit || !this.isAlive(unit)) return;
     const bonus = unit.passive === "fortressStance" ? 1.08 + (1 - this.hpRatio(unit)) * 0.12 : 1;
-    const value = amount * bonus;
+    const value = amount * bonus * this.passiveShieldMultiplier(source, unit);
     unit.shield += value;
     this.emitSignal({
       kind: "shield",
@@ -445,6 +467,22 @@ class CombatSimulation {
       skillKey: source?._actionSignal?.skillKey || null,
       skillName: label,
       shield: unit.shield,
+    });
+  }
+
+  breakShield(source, target, amount, label = "破盾") {
+    if (!target || !this.isAlive(target) || !(target.shield > 0) || !(amount > 0)) return;
+    const broken = Math.min(target.shield, amount);
+    target.shield -= broken;
+    this.emitSignal({
+      kind: "shieldBreak",
+      tags: this.actionTags(source, ["shieldBreak"]).filter(Boolean),
+      source: SIGNALS.unitRef(source),
+      target: SIGNALS.unitRef(target),
+      amount: broken,
+      skillKey: source?._actionSignal?.skillKey || null,
+      skillName: label,
+      meta: { shieldAfter: target.shield },
     });
   }
 
@@ -564,6 +602,55 @@ class CombatSimulation {
     unit.y = clamp(unit.y + (dy / distance) * move, 12, 88);
   }
 
+  chargeToTarget(unit, target, effect = {}) {
+    if (!unit || !target || !this.isAlive(unit) || !this.isAlive(target)) return;
+    const distance = this.getDistance(unit, target);
+    if (distance <= 0) return;
+    const stopRange = Number.isFinite(effect.stopRange) ? effect.stopRange : Math.max(6, unit.range * 0.72);
+    const maxDistance = Number.isFinite(effect.distance) ? effect.distance : 18;
+    const dx = target.x - unit.x;
+    const dy = target.y - unit.y;
+    const travel = Math.min(maxDistance, Math.max(0, distance - stopRange));
+    const before = { x: unit.x, y: unit.y };
+    unit.x = clamp(unit.x + (dx / distance) * travel, 7, 93);
+    unit.y = clamp(unit.y + (dy / distance) * travel, 12, 88);
+    unit.attackCd = Math.min(unit.attackCd, effect.attackCd ?? 0.15);
+    const impactCount = Number.isFinite(effect.impactCount) ? effect.impactCount : 0;
+    if (impactCount > 0) {
+      this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy)).sort(this.byDistance(unit)).slice(0, impactCount).forEach((enemy) => {
+        const impactDistance = Math.max(0.001, this.getDistance(unit, enemy));
+        const push = effect.pushDistance ?? 2.5;
+        enemy.x = clamp(enemy.x + ((enemy.x - unit.x) / impactDistance) * push, 7, 93);
+        enemy.y = clamp(enemy.y + ((enemy.y - unit.y) / impactDistance) * push, 12, 88);
+        enemy.attackCd = Math.max(enemy.attackCd, effect.attackDelay ?? 0.45);
+        if ((effect.shieldBreak || 0) > 0 && enemy.shield > 0) {
+          const broken = Math.min(enemy.shield, effect.shieldBreak);
+          enemy.shield -= broken;
+          this.emitSignal({
+            kind: "shieldBreak",
+            tags: this.actionTags(unit, ["shieldBreak", "charge"]).filter(Boolean),
+            source: SIGNALS.unitRef(unit),
+            target: SIGNALS.unitRef(enemy),
+            amount: broken,
+            skillKey: unit?._actionSignal?.skillKey || null,
+            skillName: effect.label || unit?._actionSignal?.skillName || "charge",
+            meta: { shieldAfter: enemy.shield },
+          });
+        }
+      });
+    }
+    this.emitSignal({
+      kind: "movement",
+      tags: this.actionTags(unit, ["movement", "charge"]).filter(Boolean),
+      source: SIGNALS.unitRef(unit),
+      target: SIGNALS.unitRef(target),
+      amount: round(travel),
+      skillKey: unit?._actionSignal?.skillKey || null,
+      skillName: effect.label || unit?._actionSignal?.skillName || "charge",
+      meta: { before, after: { x: unit.x, y: unit.y }, stopRange, impactCount },
+    });
+  }
+
   effectivePower(unit) { return unit.power + (unit.bonusPowerTimer > 0 ? unit.bonusPower || 14 : 0); }
   statusCount(unit) { return unit.poison.stacks + unit.burn.stacks + (unit.slowTimer > 0 ? 2 : 0) + (unit.mark || 0); }
   carryAlly(unit) { return this.alliesOf(unit).filter((ally) => this.isAlive(ally)).sort((a, b) => this.effectivePower(b) - this.effectivePower(a))[0]; }
@@ -576,6 +663,36 @@ class CombatSimulation {
   getDistance(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
   byDistance(unit) { return (a, b) => this.getDistance(unit, a) - this.getDistance(unit, b); }
   isBerserkerUnit(unit) { return unit?.role === "berserker" || unit?.roleName === "狂战士" || unit?.passive === "rageEngine"; }
+  passiveEffects(unit, kind) {
+    const passive = SKILL_DATA.skills[unit?.passiveKey || unit?.passive];
+    return (passive?.effects || []).filter((effect) => effect.kind === kind);
+  }
+  skillHasEffect(skillKey, kind) {
+    return (SKILL_DATA.skills[skillKey]?.effects || []).some((effect) => effect.kind === kind);
+  }
+  passiveDotMultiplier(source, type) {
+    if (!source) return 1;
+    return this.passiveEffects(source, "passiveDotAmp").reduce((multiplier, effect) => {
+      if (effect.type && effect.type !== type) return multiplier;
+      return multiplier * (1 + (effect.amp || 0));
+    }, 1);
+  }
+  passiveHealMultiplier(source, target) {
+    if (!source) return 1;
+    return this.passiveEffects(source, "passiveHealAmp").reduce((multiplier, effect) => {
+      if (effect.selfOnly && source.id !== target?.id) return multiplier;
+      if (effect.targetLine && target?.line !== effect.targetLine) return multiplier;
+      return multiplier * (1 + (effect.amp || 0));
+    }, 1);
+  }
+  passiveShieldMultiplier(source, target) {
+    if (!source) return 1;
+    return this.passiveEffects(source, "passiveShieldAmp").reduce((multiplier, effect) => {
+      if (effect.selfOnly && source.id !== target?.id) return multiplier;
+      if (effect.targetLine && target?.line !== effect.targetLine) return multiplier;
+      return multiplier * (1 + (effect.amp || 0));
+    }, 1);
+  }
   emitSignal(signal) { this.signalBus.emit({ time: this.time, ...signal }); }
   activeWindows(unit) {
     return [

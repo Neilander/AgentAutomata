@@ -387,3 +387,51 @@ current_decision: Continue through berserker-owned assets only. The shared actio
 - Bad patch: enemy pressure was temporarily reduced through tutorial-local enemy multipliers. This was rejected because it teaches a fake matchup: a player who learns from weakened warriors will misread normal warrior encounters later.
 - Revert: stage 4 enemy multipliers were restored to the previous tutorial values. Do not use this stage as accepted until the base-role audit and a real lesson redesign are complete.
 - Method correction: do not fix this by locking slots, removing formation choice, or silently weakening enemies. The right check is whether a natural setup can pass against an encounter that represents the lesson truthfully.
+
+### Role ecology: warrior and assassin retune with budget gate
+
+- Goal: keep warrior strong as a self-contained duelist while lowering its buff/combo ceiling, and keep assassin as a conditional finisher rather than an unconditional single-target eraser.
+- Budget process: created `role-ecology-balance` on the task board and used repeated 1v1, 2v2, and 4v4 matrix checks from the new `game_data/analyze-role-ecology.js` script.
+- Changes: warrior power 56 -> 53, armor 12 -> 11, `lineBreaker` front-row multiplier 1.12 -> 1.06, `cleave` and `warBanner` reduced. Assassin HP 292 -> 282, power 60 -> 57, `executionSense` multiplier 1.18 -> 1.06, and `shadowCut`/`shadowHarvest` missing-HP payoff reduced. Bard tempo/courage and berserker haste scaling were lightly reduced because blood-support teams became dominant.
+- Result: warrior remains a high 1v1 role at 6/8, but `doubleWarrior` in the 4v4 standard set dropped to 4/9. Assassin solo is 5/8 and `assassinWarlock` is 7/13. `assassinRanger` and `berserkerPriest` remain watch items, so this pass is accepted with limitations rather than declared perfect.
+- Validation: `validate-skill-assets`, `analyze-role-ecology`, `analyze-archetype-signals`, `simulate-archetype-matchups`, `analyze-skill-budget`, and `redteam-skill-pool` were run. Archetype signal contracts still pass, while matchup expectations remain a broader future review item.
+
+### Tutorial V3: ten-level guide with skip controls
+
+- Goal: create a new player-facing guide instead of continuing to patch V2. The guide should have 10 levels, support skipping, and avoid hidden enemy stat lessons.
+- Implementation: added `tutorial_guide_v3`, workbench entry, and server static route. The top bar now has previous/next level skip buttons plus retry.
+- Lesson spread: intro front/back, low-health sustain, dive pressure, small-squad clear, hard-shell pressure, full team shell, backline protection, attrition, focus fire, and final mixed-team challenge.
+- Validation: fixed-stat enumeration found no dead levels. Current pass counts are L1 6/6, L2 3/6, L3 53/96, L4 11/96, L5 2/12, L6 233/360, L7 157/240, L8 125/240, L9 196/240, L10 506/840. Early levels are teaching gates; later levels are intentionally more open practice.
+- Residual risk: later levels are broad and should be playtested for whether they feel like meaningful choices rather than just pass/fail puzzles. The skill-expansion task remains queued until this guide is reviewed.
+
+### Skill batch: class secondary positions
+
+- Goal: after the current role numbers were accepted, add class secondary-position skills without changing combat fundamentals.
+- Added skills: knight `bulwarkRiposte`, warrior `lineHold`, berserker `scarletChallenge`, ranger `markDetonate`, mage `ashZone`, priest `purifyingWard`, warlock `venomDividend`, bard `battleHymn`, and alchemist `stabilizingVapor`.
+- Added presets: `bulwarkMarks`, `purgeAttrition`, and `scarletVanguard` so the new skills have standard signal contracts rather than being loose content only.
+- Iteration: the first `bulwarkMarks` team passed signals but had 0 prey and 12 predators in the matchup matrix. It was changed from a single-ranger team into a dual-ranger mark team, splitting mark setup and mark payoff instead of buffing raw numbers.
+- Validation: `build-skill-assets`, `validate-skill-assets`, `analyze-archetype-signals`, `redteam-skill-pool`, and `simulate-archetype-matchups` were run after the final patch. Skill assets are valid, all archetype signal contracts pass, red-team risky candidates are 0, and `bulwarkMarks` is now answered with 2 prey and 5 predators.
+- Residual risk: the full standard matchup matrix is still in review because of broader inherited ecology issues: `crownCarry`, `fireBurst`, and `poisonBloom` are broad hard-advantage teams, while `holySustain`, `ironWall`, and `shadowExecute` have too few prey. Treat that as a future standard-ecology balance goal, not as a blocker for this skill batch.
+- Handoff: see `coop/2026-06-27_secondary_skill_batch_report.md`.
+
+### Skill wave 2: one passive, one ultimate, one small skill per class
+
+- Goal: give every class a new secondary-archetype entry point, with the passive defining the build direction rather than duplicating existing passives.
+- Runtime support: added small data-driven passive effects: `passiveStat`, `passiveHealAmp`, `passiveShieldAmp`, and `passiveDotAmp`. `passiveDamageAmp` now supports `sourceHpBelow`, `targetTimer`, and `perMark` conditions. This avoids hardcoding every new passive name.
+- Added 30 skills: warrior `veteranCut/loneVeteran/duelistBreak`; knight `interceptVow/wardenVow/oathBulwark`; berserker `bloodAegis/painAnchor/crimsonCyclone`; assassin `venomStep/toxinExecution/midnightBloom`; ranger `snareShot/trapSense/killZone`; mage `glacierShard/frostScholar/whiteout`; priest `radiantInterpose/martyrAegis/bastionSanctuary`; warlock `bloodHex/crimsonPact/forbiddenOffering`; bard `lullabyGuard/chorusKeeper/resonantFinale`; alchemist `corrosiveFoam/distillationLoop/perfectReaction`.
+- Iteration: attempt 1 produced one red-team breaker, a berserker/knight/warlock/bard shell at 67.7% average win rate. The issue was stacked safety from `painAnchor`, `interceptVow`, `wardenVow`, and `lullabyGuard`.
+- Balance: reduced `painAnchor` HP/armor and low-health damage amp, reduced `interceptVow` shield and taunt/guard duration, reduced `wardenVow` self-shield scaling, and reduced `lullabyGuard` slow/shield.
+- Validation: `build-skill-assets`, `validate-skill-assets`, `analyze-archetype-signals`, `redteam-skill-pool`, `simulate-archetype-matchups`, `analyze-skill-budget`, and syntax checks for changed runtime files were run after the final patch. Skill assets are valid, existing archetype signal contracts pass, and red-team risky candidates are 0. The top candidate is now 60.0% average win rate, below breaker threshold.
+- Residual risk: standard matchup matrix remains in review for inherited ecology issues around `crownCarry`, `fireBurst`, `poisonBloom`, `holySustain`, `ironWall`, and `shadowExecute`; this wave did not try to solve those old standard-team relationships.
+- Handoff: see `coop/2026-06-27_class_archetype_skill_wave_2.md`.
+
+### Warrior duel and knight charge sharpen pass
+
+- Problem: the previous warrior and knight secondary directions were useful but not distinct enough. Warrior still read as "harder frontliner"; knight still read as "more shield".
+- Decision: keep old skills and add sharper alternatives. Warrior becomes a duel specialist; knight becomes a charge initiator.
+- Added warrior skills: `duelChallenge`, `duelistOath`, and `singleCombatVerdict`. These use a temporary `duelTimer` on the target so the warrior has a visible single-target pressure window.
+- Added knight skills: `lanceCharge`, `chargerMomentum`, and `royalCavalryBreak`. These create early charge pressure, slow disrupted enemies, and reward hitting slowed targets.
+- Runtime support: added `duelTimer` to the normal timer decay list so duel windows expire. No targeting, action priority, cooldown, death, or global combat-loop rules were changed.
+- Validation: `build-skill-assets`, `validate-skill-assets`, runtime syntax checks, `analyze-archetype-signals`, `redteam-skill-pool`, `simulate-archetype-matchups`, and `analyze-skill-budget` were run. Skill assets are valid, existing archetype signal contracts pass, and red-team risky candidates are 0.
+- Residual risk: the top red-team watch candidate is 63.1% average win rate, below breaker threshold but close enough to watch. It uses a berserker/charge-knight/warlock/bard shell, so do not casually add more safety to charge-frontline packages.
+- Handoff: see `coop/2026-06-27_warrior_duel_knight_charge.md`.

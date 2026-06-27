@@ -1,0 +1,37 @@
+{
+  "name": "净化消耗",
+  "desc": "牧师抗异常，术士用自伤和毒层把长战斗转成资源。",
+  "design": {
+    "fantasy": "Survive status pressure, then let poison and carry support convert a long fight into inevitability.",
+    "experience": {
+      "start": "The team takes poison or burn pressure.",
+      "transition": "Purifying shields blunt the dangerous status window.",
+      "payoff": "Poison stacks and carry buffs start to decide the long fight.",
+      "reset": "The team stabilizes rather than bursting."
+    },
+    "primaryOutput": "dot",
+    "desiredTags": ["poison", "dot", "shield", "sustain", "carry"],
+    "watchTags": ["burst", "execute"],
+    "strongMatchups": ["fireBurst", "ironWall"],
+    "weakMatchups": ["shadowExecute", "crownCarry"],
+    "validationOpponents": ["fireBurst", "shadowExecute"],
+    "curves": [
+      { "metric": "poisonStacksApplied", "op": ">=", "value": 16 },
+      { "metric": "shieldPerSecond", "op": ">=", "value": 3 }
+    ],
+    "signalAcceptance": [
+      { "metric": "poisonStacksApplied", "op": ">=", "value": 10 },
+      { "metric": "shieldPerSecond", "op": ">=", "value": 3 },
+      { "metric": "dotDamageShare", "op": ">=", "value": 0.16 }
+    ],
+    "failureBoundaries": [
+      { "metric": "selfCostPerSecond", "op": ">=", "value": 0.1 }
+    ]
+  },
+  "team": [
+    { "role": "knight", "small1": "guard", "small2": "vowTaunt", "passive": "fortressStance", "ultimate": "bannerWall" },
+    { "role": "priest", "small1": "purifyingWard", "small2": "heal", "passive": "afterglowGrace", "ultimate": "sanctuary" },
+    { "role": "warlock", "small1": "venomDividend", "small2": "venomBrand", "passive": "hotbedPact", "ultimate": "plagueOffering" },
+    { "role": "alchemist", "small1": "stabilizingVapor", "small2": "miasmaFlask", "passive": "catalyst", "ultimate": "grandMixture" }
+  ]
+}

@@ -5,22 +5,22 @@ Generated random 4-unit teams from default role kits plus newly tagged role/comm
 ## Summary
 
 - Candidates tested: 32
-- Standard presets tested per candidate: 10
+- Standard presets tested per candidate: 17
 - Seeds per matchup: 5
-- Risky candidates: 1
+- Risky candidates: 2
 
 ## Top Breaker Candidates
 
 | Candidate | Avg Win | Presets Beaten | New Skills | Team | Most Lopsided Wins |
 | --- | ---: | ---: | ---: | --- | --- |
-| 5 | 68.0% | 8/10 | 5 | 狂战士 + 术士(咒血渗漏/异常猎手) + 骑士(盾击/前线操典) + 游侠(绞喉) | alchemyChaos 100%, fireBurst 80%, frostControl 80%, holySustain 100% |
-| 2 | 46.0% | 4/10 | 6 | 术士(异常猎手) + 游侠(终结本能) + 战士(破甲重砍/终结本能/誓约集结) + 狂战士(破甲重砍) | bloodRage 100%, holySustain 100%, ironWall 100% |
-| 14 | 38.0% | 4/10 | 4 | 狂战士(破甲重砍/前线操典) + 骑士(守拍/前线操典) + 术士 + 吟游诗人 | bloodRage 100%, holySustain 100%, ironWall 80% |
-| 32 | 34.0% | 4/10 | 6 | 骑士(守拍) + 游侠(绞喉/异常猎手) + 战士(破甲重砍/终结本能) + 狂战士(赤宴) | bloodRage 80%, frostControl 80%, holySustain 80%, ironWall 100% |
-| 23 | 32.0% | 3/10 | 4 | 牧师(誓约集结) + 游侠(终结本能) + 法师(冰枪/破灭彗星) + 狂战士 | frostControl 100%, holySustain 80% |
-| 18 | 20.0% | 1/10 | 5 | 狂战士(破甲重砍/赤宴/前线操典) + 炼金师 + 术士(咒血渗漏) + 刺客(异常猎手) | holySustain 100% |
-| 10 | 18.0% | 1/10 | 7 | 炼金师(咒血渗漏) + 牧师(守拍/复苏微光/誓约集结) + 狂战士(赤宴) + 战士(终结本能/誓约集结) | ironWall 100% |
-| 22 | 18.0% | 1/10 | 6 | 游侠(灼痕箭/异常猎手) + 骑士(前线操典) + 刺客(异常猎手) + 战士(盾击/誓约集结) | bloodRage 100% |
+| 14 | 84.7% | 15/17 | 5 | 狂战士(破甲重砍/痛楚锚定) + 骑士(枪骑冲锋/守望誓约) + 术士 + 吟游诗人(安魂守拍) | bloodRage 100%, bulwarkMarks 100%, cavalryBreak 100%, crownCarry 100% |
+| 32 | 68.2% | 12/17 | 8 | 骑士(枪骑冲锋) + 游侠(缚足箭/陷阱嗅觉) + 战士(破甲重砍/终结本能) + 狂战士(血盾冲顶/前线操典/赤血旋风) | bloodRage 100%, bulwarkMarks 100%, cavalryBreak 100%, crownCarry 100% |
+| 20 | 52.9% | 8/17 | 9 | 游侠(陷阱嗅觉/猎杀禁区) + 骑士(守拍) + 炼金师(咒血渗漏/异常猎手/完美反应) + 术士(咒血渗漏/赤契术式/破灭彗星) | bloodRage 100%, bulwarkMarks 100%, duelChampion 100%, ironWall 100% |
+| 2 | 50.6% | 9/17 | 10 | 术士(血咒蚀刻/异常猎手/禁忌献祭) + 游侠(缚足箭/终结本能) + 战士(破甲重砍/决斗誓约/誓约集结) + 狂战士(破甲重砍/前线操典) | bloodRage 80%, duelChampion 100%, holySustain 100%, ironWall 100% |
+| 10 | 47.1% | 8/17 | 10 | 炼金师(咒血渗漏/蒸馏循环) + 牧师(守拍/辉光拦截/誓约集结) + 狂战士(血盾冲顶/赤血旋风) + 战士(老兵稳切/前线操典/单挑裁决) | bloodRage 100%, cavalryBreak 100%, duelChampion 100%, frostTrapField 100% |
+| 5 | 40.0% | 6/17 | 10 | 狂战士(血盾冲顶/前线操典/赤血旋风) + 术士(咒血渗漏/异常猎手) + 骑士(守拍/前线操典/誓约壁垒) + 游侠(终结本能/猎杀禁区) | alchemyChaos 80%, bulwarkMarks 100%, frostControl 80%, ironWall 80% |
+| 12 | 34.1% | 7/17 | 9 | 战士(盾击/孤胆老兵/单挑裁决) + 术士(血咒蚀刻/咒血渗漏/赤契术式/禁忌献祭) + 骑士(枪骑冲锋/誓约壁垒) + 刺客 | bloodRage 80%, cavalryBreak 80%, martyrFrontline 80%, scarletVanguard 100% |
+| 8 | 31.8% | 5/17 | 9 | 牧师(殉道圣盾/堡垒圣域) + 术士(血咒蚀刻/咒血渗漏/赤契术式/禁忌献祭) + 狂战士(血盾冲顶/前线操典) + 吟游诗人(誓约集结) | duelChampion 100%, frostTrapField 80%, lightningTempo 100%, martyrFrontline 100% |
 
 ## Interpretation
 

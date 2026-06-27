@@ -1,0 +1,37 @@
+{
+  "name": "赤血先锋",
+  "desc": "狂战承担风险前排，战士补保护，法师用火场制造控制和范围压力。",
+  "design": {
+    "fantasy": "A risky berserker front line opens danger windows while the team stabilizes and burns enemies down.",
+    "experience": {
+      "start": "The berserker deliberately takes risk.",
+      "transition": "Short guard and shields prevent immediate collapse.",
+      "payoff": "Low-health basic pressure and fire zones win before the frontline burns out.",
+      "reset": "The team needs new guard windows after each risk cycle."
+    },
+    "primaryOutput": "basic attack",
+    "desiredTags": ["selfCost", "haste", "shield", "burn", "area"],
+    "watchTags": ["execute", "burst"],
+    "strongMatchups": ["ironWall"],
+    "weakMatchups": ["shadowExecute", "frostControl"],
+    "validationOpponents": ["ironWall", "shadowExecute"],
+    "curves": [
+      { "metric": "lowHealthEntryRate", "op": ">=", "value": 0.5 },
+      { "metric": "postLowAttackRateRatio", "op": ">=", "value": 1.15 }
+    ],
+    "signalAcceptance": [
+      { "metric": "basicDamageShare", "op": ">=", "value": 0.22 },
+      { "metric": "selfCostPerSecond", "op": ">=", "value": 0.15 },
+      { "metric": "areaDamageShare", "op": ">=", "value": 0.12 }
+    ],
+    "failureBoundaries": [
+      { "metric": "lowHealthEntryRate", "op": ">=", "value": 0.5 }
+    ]
+  },
+  "team": [
+    { "role": "berserker", "small1": "scarletChallenge", "small2": "bloodStrike", "passive": "rageEngine", "ultimate": "undyingRoar" },
+    { "role": "warrior", "small1": "lineHold", "small2": "sunderingAdvance", "passive": "lineBreaker", "ultimate": "warBanner" },
+    { "role": "mage", "small1": "ashZone", "small2": "fireball", "passive": "kindlingEcho", "ultimate": "meteorRain" },
+    { "role": "bard", "small1": "battleHymn", "small2": "syncopate", "passive": "encore", "ultimate": "crescendo" }
+  ]
+}

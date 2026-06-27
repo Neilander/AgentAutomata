@@ -1,0 +1,36 @@
+{
+  "name": "王骑破阵",
+  "desc": "骑士用冲锋抢开局节奏，压慢敌方前排，再让队伍趁乱推进。",
+  "design": {
+    "fantasy": "A charge knight crashes into the enemy front line, slows it, and lets the team attack during the disruption window.",
+    "experience": {
+      "start": "The knight charges early instead of only waiting behind shields.",
+      "transition": "Enemy front units are slowed and briefly pulled into pressure.",
+      "payoff": "Royal Cavalry Break creates a larger disruption window.",
+      "reset": "The team loses momentum when slow windows expire."
+    },
+    "primaryOutput": "controlTempo",
+    "desiredTags": ["charge", "slow", "frontlinePressure", "tempo"],
+    "watchTags": ["shield", "counter"],
+    "strongMatchups": ["ironWall", "duelChampion"],
+    "weakMatchups": ["poisonBloom", "crownCarry"],
+    "validationOpponents": ["ironWall", "duelChampion", "poisonBloom"],
+    "curves": [
+      { "metric": "slowApplications", "op": ">=", "value": 4 },
+      { "metric": "controlWindowMeleeRateRatio", "op": "<=", "value": 0.85 }
+    ],
+    "signalAcceptance": [
+      { "metric": "slowApplications", "op": ">=", "value": 4 },
+      { "metric": "areaDamageShare", "op": ">=", "value": 0.08 }
+    ],
+    "failureBoundaries": [
+      { "metric": "shieldPerSecond", "op": "<=", "value": 38 }
+    ]
+  },
+  "team": [
+    { "role": "knight", "small1": "lanceCharge", "small2": "shieldBash", "passive": "chargerMomentum", "ultimate": "royalCavalryBreak" },
+    { "role": "warrior", "small1": "sunderingAdvance", "small2": "lineHold", "passive": "lineBreaker", "ultimate": "warBanner" },
+    { "role": "berserker", "small1": "bloodStrike", "small2": "boneWhirl", "passive": "rageEngine", "ultimate": "undyingRoar" },
+    { "role": "priest", "small1": "mendingLight", "small2": "purifyingWard", "passive": "afterglowGrace", "ultimate": "sanctuary" }
+  ]
+}

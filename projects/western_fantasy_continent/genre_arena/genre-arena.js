@@ -84,6 +84,8 @@ const SKILL_FX = {
   painDividend: { kind: "buff", at: "carryAlly", sheet: "blood", image: "magic01", color: "blood" },
   syncopate: { kind: "teamBuff", at: "teamCenter", sheet: "electricRing", image: "magic01", color: "gold" },
   reagentMark: { kind: "aoe", at: "target", sheet: "vortex", image: "magic01", color: "arcane" },
+  lanceCharge: { kind: "dash", at: "target", sheet: "charge", image: "spark01", color: "gold" },
+  royalCavalryBreak: { kind: "dash", at: "enemyCenter", sheet: "electricRing", image: "spark01", color: "gold", ultimate: true },
   bannerWall: { kind: "teamBuff", at: "teamCenter", sheet: "electricRing", color: "gold", ultimate: true },
   warBanner: { kind: "cleave", at: "enemyCenter", sheet: "bigHit", image: "slash02", color: "gold", ultimate: true },
   undyingRoar: { kind: "buff", at: "self", sheet: "blood", color: "blood", ultimate: true },
@@ -262,11 +264,13 @@ const SKILLS = SHARED_SKILLS.createSkillLibrary({
   byDistance,
   hit,
   shield,
+  breakShield,
   healUnit,
   addPoison,
   addBurn,
   takeRaw,
   counterattack,
+  chargeToTarget,
   emitEffectSignal,
   floater,
 });
@@ -531,6 +535,10 @@ function updateBattle(dt, visual = false) {
     if (!target) continue;
     const distance = getDistance(unit, target);
     if (distance > unit.range) {
+      if (unit.skillCd.ultimate <= 0 && skillHasEffect(unit.ultimate, "chargeToTarget")) castSlot(unit, "ultimate", target, visual);
+      else if (unit.skillCd.small1 <= 0 && skillHasEffect(unit.small1, "chargeToTarget")) castSlot(unit, "small1", target, visual);
+      else if (unit.skillCd.small2 <= 0 && skillHasEffect(unit.small2, "chargeToTarget")) castSlot(unit, "small2", target, visual);
+      if (getDistance(unit, target) <= unit.range) continue;
       moveToward(unit, target, dt);
       continue;
     }
@@ -626,6 +634,43 @@ function moveToward(unit, target, dt) {
   const move = Math.min(step, Math.max(0, distance - unit.range * 0.9));
   unit.x = clamp(unit.x + (dx / distance) * move, 7, 93);
   unit.y = clamp(unit.y + (dy / distance) * move, 12, 88);
+}
+
+function chargeToTarget(unit, target, effect = {}) {
+  if (!unit || !target || !isAlive(unit) || !isAlive(target)) return;
+  const distance = getDistance(unit, target);
+  if (distance <= 0) return;
+  const stopRange = Number.isFinite(effect.stopRange) ? effect.stopRange : Math.max(6, unit.range * 0.72);
+  const maxDistance = Number.isFinite(effect.distance) ? effect.distance : 18;
+  const dx = target.x - unit.x;
+  const dy = target.y - unit.y;
+  const travel = Math.min(maxDistance, Math.max(0, distance - stopRange));
+  const before = { x: unit.x, y: unit.y };
+  unit.x = clamp(unit.x + (dx / distance) * travel, 7, 93);
+  unit.y = clamp(unit.y + (dy / distance) * travel, 12, 88);
+  unit.attackCd = Math.min(unit.attackCd, effect.attackCd ?? 0.15);
+  const impactCount = Number.isFinite(effect.impactCount) ? effect.impactCount : 0;
+  if (impactCount > 0) {
+    enemiesOf(unit).filter(isAlive).sort(byDistance(unit)).slice(0, impactCount).forEach((enemy) => {
+      const impactDistance = Math.max(0.001, getDistance(unit, enemy));
+      const push = effect.pushDistance ?? 2.5;
+      enemy.x = clamp(enemy.x + ((enemy.x - unit.x) / impactDistance) * push, 7, 93);
+      enemy.y = clamp(enemy.y + ((enemy.y - unit.y) / impactDistance) * push, 12, 88);
+      enemy.attackCd = Math.max(enemy.attackCd, effect.attackDelay ?? 0.45);
+      if ((effect.shieldBreak || 0) > 0) breakShield(unit, enemy, effect.shieldBreak, effect.label || "冲锋破盾");
+    });
+  }
+  emitSignal({
+    kind: "movement",
+    tags: actionTags(unit, ["movement", "charge"]).filter(Boolean),
+    source: unitRef(unit),
+    target: unitRef(target),
+    amount: travel,
+    skillKey: unit?._actionSignal?.skillKey || null,
+    skillName: effect.label || unit?._actionSignal?.skillName || "冲锋",
+    meta: { before, after: { x: unit.x, y: unit.y }, stopRange, impactCount },
+  });
+  if (travel > 0 && state.running) spawnChargeFx(before, { x: unit.x, y: unit.y }, unit, effect);
 }
 
 function hit(source, target, amount, type, label, visual = true) {
@@ -773,6 +818,22 @@ function shield(unit, amount, label, visual = true) {
   });
   if (visual) floater(unit, `${label}+${Math.round(value)}`, "shield");
 }
+function breakShield(source, target, amount, label = "破盾") {
+  if (!target || !isAlive(target) || !(target.shield > 0) || !(amount > 0)) return;
+  const broken = Math.min(target.shield, amount);
+  target.shield -= broken;
+  emitSignal({
+    kind: "shieldBreak",
+    tags: actionTags(source, ["shieldBreak"]).filter(Boolean),
+    source: unitRef(source),
+    target: unitRef(target),
+    amount: broken,
+    skillKey: source?._actionSignal?.skillKey || null,
+    skillName: label,
+    meta: { shieldAfter: target.shield },
+  });
+  if (state.running) floater(target, `破盾-${Math.round(broken)}`, "shield");
+}
 function addPoison(target, stacks, time, source, visual = state.running) {
   target.poison.stacks = Math.min(20, target.poison.stacks + stacks);
   target.poison.time = Math.max(target.poison.time, time);
@@ -857,6 +918,9 @@ function isAlive(unit) { return unit && unit.hp > 0; }
 function hpRatio(unit) { return unit.hp / unit.maxHp; }
 function getDistance(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
 function byDistance(unit) { return (a, b) => getDistance(unit, a) - getDistance(unit, b); }
+function skillHasEffect(skillKey, kind) {
+  return (SHARED_SKILLS.skills?.[skillKey]?.effects || []).some((effect) => effect.kind === kind);
+}
 function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
 function unitRef(unit) { return SIGNALS.unitRef ? SIGNALS.unitRef(unit) : unit ? { id: unit.id, name: unit.name, side: unit.side, role: unit.roleName } : null; }
 function emitSignal(signal) {
@@ -1016,6 +1080,43 @@ function spawnBeam(source, target, color, heavy) {
   node.style.transform = `rotate(${angle}rad)`;
   els.fxLayer.appendChild(node);
   setTimeout(() => node.remove(), heavy ? 520 : 360);
+}
+
+function spawnChargeFx(source, target, unit, effect = {}) {
+  const dx = target.x - source.x;
+  const dy = target.y - source.y;
+  const length = Math.max(4, Math.hypot(dx, dy));
+  const angle = Math.atan2(dy, dx);
+  const trail = document.createElement("div");
+  trail.className = "vfx-charge-trail";
+  trail.style.left = `${source.x}%`;
+  trail.style.top = `${source.y}%`;
+  trail.style.width = `${length}%`;
+  trail.style.setProperty("--angle", `${angle}rad`);
+  els.fxLayer.appendChild(trail);
+
+  const shock = document.createElement("div");
+  shock.className = "vfx-charge-impact";
+  shock.style.left = `${target.x}%`;
+  shock.style.top = `${target.y}%`;
+  els.fxLayer.appendChild(shock);
+
+  const ghost = document.createElement("div");
+  ghost.className = `vfx-charge-ghost ${unit.side}`;
+  ghost.style.left = `${source.x}%`;
+  ghost.style.top = `${source.y}%`;
+  ghost.style.setProperty("--dx", `${target.x - source.x}%`);
+  ghost.style.setProperty("--dy", `${target.y - source.y}%`);
+  els.fxLayer.appendChild(ghost);
+  ghost.animate([
+    { left: `${source.x}%`, top: `${source.y}%`, opacity: 0.95, transform: "translate(-50%, -50%) scale(0.82)" },
+    { left: `${target.x}%`, top: `${target.y}%`, opacity: 0, transform: "translate(-50%, -50%) scale(1.2)" },
+  ], { duration: 360, easing: "cubic-bezier(.2,.8,.2,1)", fill: "forwards" });
+
+  spawnSkillLabel(unit, effect.label || "冲锋", false);
+  setTimeout(() => trail.remove(), 520);
+  setTimeout(() => shock.remove(), 620);
+  setTimeout(() => ghost.remove(), 360);
 }
 
 function spawnSlash(source, target, imageName, color, scale = 1) {

@@ -5,8 +5,8 @@ if (!SKILL_DATA?.presets || !SKILL_DATA?.roleKits) {
 }
 
 const state = {
-  left: "poisonBloom",
-  right: "ironWall",
+  left: "duelChampion",
+  right: "cavalryBreak",
   fighting: false,
   frameReady: false,
 };

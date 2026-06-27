@@ -1,0 +1,36 @@
+{
+  "name": "殉道前线",
+  "desc": "牧师站上前排，用自己的血量和圣盾承压，让后排慢慢赢。",
+  "design": {
+    "fantasy": "A priest becomes a temporary frontline bastion, absorbing pressure with self-shields while allies grind the fight out.",
+    "experience": {
+      "start": "The priest steps into danger rather than hiding as a healer.",
+      "transition": "Self-shields and guard windows blunt early pressure.",
+      "payoff": "Bastion Sanctuary stabilizes the whole team.",
+      "reset": "The team is vulnerable between sanctuary windows."
+    },
+    "primaryOutput": "frontlineSustain",
+    "desiredTags": ["shield", "heal", "guard", "frontline"],
+    "watchTags": ["burst", "execute"],
+    "strongMatchups": ["ironWall", "bloodRage"],
+    "weakMatchups": ["fireBurst", "shadowExecute"],
+    "validationOpponents": ["bloodRage", "ironWall", "fireBurst"],
+    "curves": [
+      { "metric": "shieldPerSecond", "op": ">=", "value": 8 },
+      { "metric": "survivorsAt20Seconds", "op": ">=", "value": 1.5 }
+    ],
+    "signalAcceptance": [
+      { "metric": "healingPerSecond", "op": ">=", "value": 3 },
+      { "metric": "shieldPerSecond", "op": ">=", "value": 8 }
+    ],
+    "failureBoundaries": [
+      { "metric": "carryDamageShare", "op": "<=", "value": 0.72 }
+    ]
+  },
+  "team": [
+    { "role": "priest", "small1": "radiantInterpose", "small2": "mendingLight", "passive": "martyrAegis", "ultimate": "bastionSanctuary" },
+    { "role": "warrior", "small1": "lineHold", "small2": "guardBreak", "passive": "loneVeteran", "ultimate": "duelistBreak" },
+    { "role": "warlock", "small1": "bloodHex", "small2": "venomDividend", "passive": "crimsonPact", "ultimate": "forbiddenOffering" },
+    { "role": "ranger", "small1": "snareShot", "small2": "markDetonate", "passive": "trapSense", "ultimate": "killZone" }
+  ]
+}

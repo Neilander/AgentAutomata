@@ -1,0 +1,37 @@
+{
+  "name": "壁垒猎标",
+  "desc": "骑士反击承压，双游侠分工铺标与兑现，逐个击破慢速队伍。",
+  "design": {
+    "fantasy": "Hold melee pressure behind a riposte wall while one ranger builds marks and another cashes them out into focused shots.",
+    "experience": {
+      "start": "The knight absorbs early melee contact.",
+      "transition": "One ranger keeps marks moving while the other waits for a cash-out window.",
+      "payoff": "Mark detonation and repeated shots finish one slow target at a time.",
+      "reset": "The team waits for the next shield and mark window."
+    },
+    "primaryOutput": "focusBasic",
+    "desiredTags": ["shield", "counter", "mark", "markPayoff", "focus"],
+    "watchTags": ["dot", "area"],
+    "strongMatchups": ["ironWall", "holySustain"],
+    "weakMatchups": ["poisonBloom", "fireBurst", "shadowExecute"],
+    "validationOpponents": ["ironWall", "holySustain", "poisonBloom", "fireBurst"],
+    "curves": [
+      { "metric": "lowestTargetDamageShare", "op": ">=", "value": 0.3 },
+      { "metric": "counterTriggers", "op": ">=", "value": 1 }
+    ],
+    "signalAcceptance": [
+      { "metric": "markApplications", "op": ">=", "value": 4 },
+      { "metric": "shieldPerSecond", "op": ">=", "value": 3 },
+      { "metric": "lowestTargetDamageShare", "op": ">=", "value": 0.3 }
+    ],
+    "failureBoundaries": [
+      { "metric": "counterDamageShare", "op": "<=", "value": 0.22 }
+    ]
+  },
+  "team": [
+    { "role": "knight", "small1": "bulwarkRiposte", "small2": "tauntLine", "passive": "fortressStance", "ultimate": "bannerWall" },
+    { "role": "ranger", "small1": "markShot", "small2": "markDetonate", "passive": "duelistFocus", "ultimate": "arrowStorm" },
+    { "role": "ranger", "small1": "markRelay", "small2": "markDetonate", "passive": "duelistFocus", "ultimate": "arrowStorm" },
+    { "role": "bard", "small1": "battleHymn", "small2": "syncopate", "passive": "encore", "ultimate": "crescendo" }
+  ]
+}

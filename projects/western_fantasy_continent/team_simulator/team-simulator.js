@@ -712,9 +712,9 @@ function damage(source, target, amount, type, visible = true) {
   if (!alive(target)) return;
   const hpBefore = target.hpNow;
   let value = Math.max(1, amount - target.armor * (type === "physical" ? 0.7 : 0.35));
-  if (source?.passive === "破阵步" && target.line === "前排") value *= 1.12;
+  if (source?.passive === "破阵步" && target.line === "前排") value *= 1.06;
   if (source?.passive === "血怒引擎") value *= 1 + (1 - source.hpNow / source.maxHp) * (BERSERKER_PASSIVE.maxDamageAmp ?? 0.45);
-  if (source?.passive === "破绽毒刃" && (target.poison.stacks > 0 || target.burn.stacks > 0)) value *= 1.18;
+  if (source?.passive === "破绽毒刃" && (target.hpNow / target.maxHp < 0.38 || target.poison.stacks > 0 || target.burn.stacks > 0)) value *= 1.06;
   if (source?.passive === "催化剂" && (target.poison.stacks > 0 || target.burn.stacks > 0 || target.mark > 0)) value *= 1.12;
   value *= SHARED_SKILLS.passiveDamageMultiplier?.(source, target, {
     statusCount: teamStatusCount,

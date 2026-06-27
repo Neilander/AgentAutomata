@@ -1,6 +1,6 @@
 {
   "schema": "agent_automata_task_budget_board_v1",
-  "updatedAt": "2026-06-26",
+  "updatedAt": "2026-06-27",
   "workflow": [
     "Create or refresh an experiment budget card before tuning.",
     "Use the matching debug skill to run bounded attempts.",
@@ -326,6 +326,114 @@
         "所有 archetype signal 继续 pass"
       ],
       "lastEvidence": "2026-06-26 accept: Attempt 3 accepted as current midpoint: shadowHarvest 5.8s opening, 27.5s cd, 58/0.54/66; shadowCut 6.6s cd, 20.5/0.33/24. ShadowExecute now has usable matchups: favored vs bloodRage 77%, holySustain 83%, ironWall 67%, lightningTempo 77%; even vs fireBurst 53%; weak vs poisonBloom 7%, alchemyChaos 13%, crownCarry 20%, frostControl 23%. Shadow signal passes 5/5. Residual: ironWall signal 7/8 and ecology all-rounder issues remain separate tasks."
+    },
+    {
+      "id": "role-ecology-balance",
+      "name": "职业基础生态平衡",
+      "detail": "用 1v1、2v2、4v4 matrix 校准战士和刺客：战士单挑可强但低 combo 乘区，刺客保留收割但降低无条件爆发。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 6,
+      "attemptsUsed": 4,
+      "status": "done",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "archetype-signal-curve-design",
+        "tutorial-level-debug"
+      ],
+      "successCriteria": [
+        "1v1/2v2/4v4 matrix each attempt",
+        "warrior solo can be high but warrior combo is not dominant",
+        "assassin execute requires condition and has front/sustain counters",
+        "no tutorial-local enemy stat weakening"
+      ],
+      "lastEvidence": "2026-06-26 accept: Accepted with limitations after 5 tuning attempts: warrior solo is 6/8 and doubleWarrior 4v9; assassin solo 5/8 and assassinWarlock 7/13. Known watch items: berserkerPriest and assassinRanger remain high and should be avoided as early tutorial accidental solvers."
+    },
+    {
+      "id": "secondary-skill-batch-balance",
+      "name": "副定位技能批次平衡",
+      "detail": "基础生态稳定后，检查现有新增技能；补每职业 1-2 个副定位技能，按模板锚点统一 budget、redteam、matrix 平衡。",
+      "priority": "medium",
+      "importance": "medium",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 5,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [],
+      "successCriteria": [],
+      "lastEvidence": "2026-06-27 accept: 2026-06-27 complete: added 9 secondary-position skills and 3 standard presets; build/validate/archetype signals/redteam/matchup matrix rerun. Signals pass, redteam risky candidates 0. bulwarkMarks first version was too weak, revised to dual-ranger setup/payoff team; now 2 prey/5 predators. Broader inherited matrix review remains future standard-ecology work."
+    },
+    {
+      "id": "tutorial-v3-ten-levels",
+      "name": "新版十关教学关",
+      "detail": "基础生态稳定后制作带跳关按钮的 10 关教学关，每关验证自然阵型、可过解比例和玩家可理解反馈。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 5,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [],
+      "successCriteria": [],
+      "lastEvidence": "2026-06-26 accept: Created tutorial_guide_v3 with 10 levels and prev/next skip controls; added workbench and server route; no dead levels in fixed-stat enumeration."
+    },
+    {
+      "id": "class-archetype-skill-wave-2",
+      "name": "职业新流派技能第二批",
+      "detail": "每职业新增1个被动、1个大招、1个小技能；被动必须打开和现有被动不同的新流派入口，并通过红队、信号和矩阵验证。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 6,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [
+        "skill-kit-design",
+        "archetype-signal-curve-design",
+        "experiment-budget-governance"
+      ],
+      "successCriteria": [
+        "每职业新增 passive/ultimate/small 各1个",
+        "新被动有明确副流派定位",
+        "不改底层战斗逻辑",
+        "构建和资产校验通过",
+        "红队无 breaker",
+        "矩阵结果记录并说明残余风险"
+      ],
+      "lastEvidence": "2026-06-27 accept: 2026-06-27 complete: added 30 skills, one passive/ultimate/small for every class; added data-driven passiveStat/passiveHealAmp/passiveShieldAmp/passiveDotAmp support; attempt 1 redteam breaker 67.7% was tuned down by narrowing painAnchor/interceptVow/wardenVow/lullabyGuard; final build/validate/signals/redteam/matrix/budget passed with redteam risky candidates 0. Matrix still review from inherited standard-ecology issues."
+    },
+    {
+      "id": "warrior-duel-knight-charge",
+      "name": "决斗战士与冲锋骑士",
+      "detail": "保留旧技能，新增战士决斗流与骑士冲锋流；验证其技能辨识度、红队风险和对旧标准流派的回归影响。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 5,
+      "attemptsUsed": 1,
+      "status": "done",
+      "skillFlow": [
+        "skill-kit-design",
+        "archetype-signal-curve-design",
+        "experiment-budget-governance"
+      ],
+      "successCriteria": [
+        "新增战士决斗技能组",
+        "新增骑士冲锋技能组",
+        "不删除旧技能",
+        "不改底层战斗循环",
+        "构建校验通过",
+        "红队无breaker",
+        "旧标准流派信号通过",
+        "矩阵残余风险记录"
+      ],
+      "lastEvidence": "2026-06-27 accept: 2026-06-27 complete: kept old skills; added warrior duel skills duelChallenge/duelistOath/singleCombatVerdict and knight charge skills lanceCharge/chargerMomentum/royalCavalryBreak. Added duelTimer decay only. Build/validate/syntax/signals/redteam/matrix/budget ran; existing archetype signals pass; redteam risky candidates 0; top watch candidate 63.1% below breaker threshold."
     }
   ]
 }

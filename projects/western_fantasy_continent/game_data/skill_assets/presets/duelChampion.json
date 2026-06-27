@@ -1,0 +1,36 @@
+{
+  "name": "决斗冠军",
+  "desc": "战士点名一个目标持续单挑，队友只负责稳住窗口，不把伤害摊成一片。",
+  "design": {
+    "fantasy": "A warrior names one enemy, holds the duel window, and wins through repeated single-target pressure.",
+    "experience": {
+      "start": "The warrior marks a current front target for a duel.",
+      "transition": "Damage concentrates on that target instead of spreading.",
+      "payoff": "Single Combat Verdict refreshes the duel and lands a heavy strike.",
+      "reset": "The team waits for the next named target."
+    },
+    "primaryOutput": "singleTargetSkill",
+    "desiredTags": ["duel", "focus", "frontlinePressure", "singleTarget"],
+    "watchTags": ["area", "teamBuff"],
+    "strongMatchups": ["ironWall", "holySustain"],
+    "weakMatchups": ["fireBurst", "poisonBloom"],
+    "validationOpponents": ["ironWall", "holySustain", "fireBurst"],
+    "curves": [
+      { "metric": "lowestTargetDamageShare", "op": ">=", "value": 0.32 },
+      { "metric": "areaDamageShare", "op": "<=", "value": 0.28 }
+    ],
+    "signalAcceptance": [
+      { "metric": "lowestTargetDamageShare", "op": ">=", "value": 0.32 },
+      { "metric": "basicDamageShare", "op": ">=", "value": 0.18 }
+    ],
+    "failureBoundaries": [
+      { "metric": "areaDamageShare", "op": "<=", "value": 0.3 }
+    ]
+  },
+  "team": [
+    { "role": "warrior", "small1": "duelChallenge", "small2": "veteranCut", "passive": "duelistOath", "ultimate": "singleCombatVerdict" },
+    { "role": "knight", "small1": "guard", "small2": "tauntLine", "passive": "fortressStance", "ultimate": "bannerWall" },
+    { "role": "priest", "small1": "mendingLight", "small2": "purifyingWard", "passive": "afterglowGrace", "ultimate": "sanctuary" },
+    { "role": "bard", "small1": "battleHymn", "small2": "syncopate", "passive": "encore", "ultimate": "resonantFinale" }
+  ]
+}

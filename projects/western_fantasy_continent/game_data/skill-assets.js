@@ -27,8 +27,8 @@ const GAME_SKILL_ASSETS = (() => {
         "name": "毒刃刺客",
         "role": "刺客",
         "fantasy": "贴脸叠层，低血收割",
-        "hp": 292,
-        "power": 60,
+        "hp": 282,
+        "power": 57,
         "armor": 7,
         "range": 12,
         "icon": "daggers",
@@ -60,8 +60,8 @@ const GAME_SKILL_ASSETS = (() => {
         "role": "狂战士",
         "fantasy": "技能开窗口，越砍越疯，吃急速和吸血翻盘",
         "hp": 330,
-        "power": 60,
-        "armor": 8,
+        "power": 58,
+        "armor": 7,
         "range": 12,
         "icon": "axe-swing",
         "kit": {
@@ -156,8 +156,8 @@ const GAME_SKILL_ASSETS = (() => {
         "role": "战士",
         "fantasy": "稳健前排，压低敌方阵线",
         "hp": 345,
-        "power": 56,
-        "armor": 12,
+        "power": 53,
+        "armor": 11,
         "range": 13,
         "icon": "hammer-drop",
         "kit": {
@@ -192,6 +192,34 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "ashZone": {
+        "name": "灰烬火场",
+        "type": "小技能",
+        "role": "法师",
+        "roleKeys": [
+          "mage"
+        ],
+        "cooldown": 10,
+        "openingCooldown": 3,
+        "icon": "fire-zone",
+        "desc": "法师副定位：控制火场。轻伤多个敌人并附加燃烧和短减速，让火法不只爆发，也能制造站位压力。",
+        "effects": [
+          {
+            "kind": "hitEnemies",
+            "count": 3,
+            "flat": 10,
+            "power": 0.14,
+            "type": "fire",
+            "label": "灰烬"
+          },
+          {
+            "kind": "enemyTimers",
+            "count": 3,
+            "timer": "slowTimer",
+            "duration": 2.8
+          }
+        ]
+      },
       "bannerWall": {
         "name": "王旗不倒",
         "type": "大招",
@@ -213,6 +241,102 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "bastionSanctuary": {
+        "name": "堡垒圣域",
+        "type": "大招",
+        "role": "牧师",
+        "roleKeys": [
+          "priest"
+        ],
+        "cooldown": 34,
+        "openingCooldown": 15,
+        "icon": "divine-intervention",
+        "desc": "牧师副流派大招：全队获得护盾、少量治疗和守势，偏防线稳定而不是纯抬血。",
+        "effects": [
+          {
+            "kind": "teamShield",
+            "flat": 45,
+            "power": 0.32,
+            "label": "堡垒圣域"
+          },
+          {
+            "kind": "teamHeal",
+            "flat": 22,
+            "power": 0.16,
+            "label": "圣域回光"
+          },
+          {
+            "kind": "teamTimer",
+            "timer": "guardTimer",
+            "duration": 3.5,
+            "label": "圣域守势"
+          }
+        ]
+      },
+      "battleHymn": {
+        "name": "战地圣歌",
+        "type": "小技能",
+        "role": "吟游诗人",
+        "roleKeys": [
+          "bard"
+        ],
+        "cooldown": 10,
+        "openingCooldown": 2.8,
+        "icon": "lyre",
+        "desc": "诗人副定位：节奏保护。给全队短急速，同时给最低血队友护盾；不是纯输出加速，而是把节奏窗口做得更安全。",
+        "effects": [
+          {
+            "kind": "teamTimer",
+            "timer": "hasteTimer",
+            "duration": 3.2,
+            "label": "圣歌"
+          },
+          {
+            "kind": "shieldLowestAlly",
+            "flat": 30,
+            "power": 0.2,
+            "label": "和声护盾"
+          }
+        ]
+      },
+      "bloodAegis": {
+        "name": "血盾冲顶",
+        "type": "小技能",
+        "role": "狂战士",
+        "roleKeys": [
+          "berserker"
+        ],
+        "cooldown": 9.4,
+        "openingCooldown": 2.4,
+        "icon": "bleeding-heart",
+        "desc": "狂战士副流派：风险前排。主动掉血换自盾和守势，提前进入低血节奏。",
+        "effects": [
+          {
+            "kind": "selfRawDamage",
+            "maxHp": 0.06,
+            "type": "blood"
+          },
+          {
+            "kind": "teamShield",
+            "selfOnly": true,
+            "flat": 58,
+            "power": 0.3,
+            "label": "血盾"
+          },
+          {
+            "kind": "timer",
+            "timer": "guardTimer",
+            "duration": 2.8,
+            "label": "顶住"
+          },
+          {
+            "kind": "timer",
+            "timer": "bloodFuryTimer",
+            "duration": 3.2,
+            "label": "血热"
+          }
+        ]
+      },
       "bloodCharm": {
         "name": "净血护符",
         "type": "小技能",
@@ -223,8 +347,8 @@ const GAME_SKILL_ASSETS = (() => {
         "effects": [
           {
             "kind": "shieldLowestAlly",
-            "flat": 64,
-            "power": 0.44,
+            "flat": 56,
+            "power": 0.38,
             "label": "净血"
           },
           {
@@ -252,6 +376,36 @@ const GAME_SKILL_ASSETS = (() => {
             "duration": 6,
             "amount": 16,
             "label": "血契"
+          }
+        ]
+      },
+      "bloodHex": {
+        "name": "血咒蚀刻",
+        "type": "小技能",
+        "role": "术士",
+        "roleKeys": [
+          "warlock"
+        ],
+        "cooldown": 8.8,
+        "openingCooldown": 2.2,
+        "icon": "bleeding-eye",
+        "desc": "术士副流派：自伤契约。牺牲血量给目标叠毒，并短暂强化队伍核心。",
+        "effects": [
+          {
+            "kind": "selfRawDamage",
+            "maxHp": 0.08,
+            "type": "blood"
+          },
+          {
+            "kind": "poisonTarget",
+            "stacks": 4,
+            "time": 8
+          },
+          {
+            "kind": "buffCarryPower",
+            "amount": 8,
+            "duration": 3.5,
+            "label": "血咒"
           }
         ]
       },
@@ -316,6 +470,44 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "bulwarkRiposte": {
+        "name": "壁垒回击",
+        "type": "小技能",
+        "role": "骑士",
+        "roleKeys": [
+          "knight"
+        ],
+        "cooldown": 10.5,
+        "openingCooldown": 2.8,
+        "icon": "shield-bash",
+        "desc": "骑士副定位：反击前排。给自己护盾和短减伤，并开启一次小型近战反击窗口；用于把护盾从纯生存转成可见反打。",
+        "effects": [
+          {
+            "kind": "teamShield",
+            "flat": 48,
+            "power": 0.3,
+            "label": "壁垒",
+            "selfOnly": true
+          },
+          {
+            "kind": "timer",
+            "timer": "guardTimer",
+            "duration": 3.5,
+            "label": "守势"
+          },
+          {
+            "kind": "teamRetaliation",
+            "duration": 3.8,
+            "requiresBlockedDamage": true,
+            "meleeOnly": true,
+            "flat": 4,
+            "power": 0.07,
+            "blockedRatio": 0.28,
+            "cooldown": 0.9,
+            "label": "壁垒回击"
+          }
+        ]
+      },
       "catalyst": {
         "name": "催化剂",
         "type": "被动",
@@ -344,6 +536,52 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "chargerMomentum": {
+        "name": "冲阵余势",
+        "type": "被动",
+        "role": "骑士",
+        "roleKeys": [
+          "knight"
+        ],
+        "cooldown": 0,
+        "icon": "cavalry",
+        "desc": "骑士冲锋流入口：对被减速的敌人更有压制力，自身稍微更快更脆。区别于铁壁骑士，它强调开战节奏和扰乱阵线。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveStat",
+            "powerAdd": 3,
+            "armorAdd": -1
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "targetTimer": "slowTimer",
+            "amp": 0.12
+          }
+        ]
+      },
+      "chorusKeeper": {
+        "name": "和声守护者",
+        "type": "被动",
+        "role": "吟游诗人",
+        "roleKeys": [
+          "bard"
+        ],
+        "cooldown": 0,
+        "icon": "lyre",
+        "desc": "诗人新流派入口：把诗人从纯加速改成防守辅助，治疗和护盾略强但不直接提高输出。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveHealAmp",
+            "amp": 0.12
+          },
+          {
+            "kind": "passiveShieldAmp",
+            "amp": 0.1
+          }
+        ]
+      },
       "cleave": {
         "name": "顺劈",
         "type": "小技能",
@@ -355,8 +593,8 @@ const GAME_SKILL_ASSETS = (() => {
           {
             "kind": "hitEnemies",
             "count": 2,
-            "flat": 24,
-            "power": 0.32,
+            "flat": 20,
+            "power": 0.25,
             "type": "physical",
             "label": "顺劈"
           }
@@ -387,6 +625,35 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "corrosiveFoam": {
+        "name": "腐蚀泡沫",
+        "type": "小技能",
+        "role": "炼金师",
+        "roleKeys": [
+          "alchemist"
+        ],
+        "cooldown": 8.7,
+        "openingCooldown": 2.1,
+        "icon": "foam",
+        "desc": "炼金副流派：控场异常。给目标同时挂毒、燃烧和减速，制造后续反应条件。",
+        "effects": [
+          {
+            "kind": "poisonTarget",
+            "stacks": 2,
+            "time": 7
+          },
+          {
+            "kind": "burnTarget",
+            "stacks": 2,
+            "time": 7
+          },
+          {
+            "kind": "targetTimer",
+            "timer": "slowTimer",
+            "duration": 3
+          }
+        ]
+      },
       "courageChord": {
         "name": "勇气和弦",
         "type": "小技能",
@@ -397,8 +664,8 @@ const GAME_SKILL_ASSETS = (() => {
         "effects": [
           {
             "kind": "buffCarryPower",
-            "duration": 6,
-            "amount": 22,
+            "duration": 4.8,
+            "amount": 16,
             "label": "勇气"
           }
         ]
@@ -413,6 +680,65 @@ const GAME_SKILL_ASSETS = (() => {
         "effects": [
           {
             "kind": "crescendo"
+          }
+        ]
+      },
+      "crimsonCyclone": {
+        "name": "赤血旋风",
+        "type": "大招",
+        "role": "狂战士",
+        "roleKeys": [
+          "berserker"
+        ],
+        "cooldown": 33,
+        "openingCooldown": 12,
+        "icon": "whirlwind",
+        "desc": "狂战士副流派大招：付血开启狂怒，并扫击多个近敌。不是无脑秒人，而是把低血窗口做成范围压力。",
+        "effects": [
+          {
+            "kind": "selfRawDamage",
+            "maxHp": 0.08,
+            "type": "blood"
+          },
+          {
+            "kind": "berserkerRoar"
+          },
+          {
+            "kind": "hitEnemies",
+            "count": 3,
+            "flat": 28,
+            "power": 0.42,
+            "type": "physical",
+            "label": "赤血旋风"
+          }
+        ]
+      },
+      "crimsonPact": {
+        "name": "赤契术式",
+        "type": "被动",
+        "role": "术士",
+        "roleKeys": [
+          "warlock"
+        ],
+        "cooldown": 0,
+        "icon": "cultist",
+        "desc": "术士新流派入口：生命更厚，毒伤更强；自身低血时直伤也提升，强调风险换收益。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveStat",
+            "maxHpMult": 1.08,
+            "armorAdd": 1
+          },
+          {
+            "kind": "passiveDotAmp",
+            "type": "poison",
+            "amp": 0.15
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "sourceHpBelow": 0.65,
+            "amp": 0.08
           }
         ]
       },
@@ -490,6 +816,95 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "distillationLoop": {
+        "name": "蒸馏循环",
+        "type": "被动",
+        "role": "炼金师",
+        "roleKeys": [
+          "alchemist"
+        ],
+        "cooldown": 0,
+        "icon": "chemical-drop",
+        "desc": "炼金新流派入口：不追求一次性爆炸，而是提高毒和燃烧的持续收益。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveDotAmp",
+            "type": "poison",
+            "amp": 0.09
+          },
+          {
+            "kind": "passiveDotAmp",
+            "type": "burn",
+            "amp": 0.09
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "requiresStatus": true,
+            "amp": 0.04
+          }
+        ]
+      },
+      "duelChallenge": {
+        "name": "点名决斗",
+        "type": "小技能",
+        "role": "战士",
+        "roleKeys": [
+          "warrior"
+        ],
+        "cooldown": 7.2,
+        "openingCooldown": 1.6,
+        "icon": "crossed-swords",
+        "desc": "战士决斗流小技能：点名当前目标，短时间内把战斗变成一对一压制。玩家应看到战士反复追打同一个被点名目标。",
+        "effects": [
+          {
+            "kind": "targetTimer",
+            "timer": "duelTimer",
+            "duration": 5.2
+          },
+          {
+            "kind": "hitTarget",
+            "flat": 24,
+            "power": 0.34,
+            "type": "physical",
+            "label": "点名"
+          },
+          {
+            "kind": "timer",
+            "timer": "guardTimer",
+            "duration": 1.8,
+            "label": "架势"
+          }
+        ]
+      },
+      "duelistBreak": {
+        "name": "决斗破势",
+        "type": "大招",
+        "role": "战士",
+        "roleKeys": [
+          "warrior"
+        ],
+        "cooldown": 30,
+        "openingCooldown": 13,
+        "icon": "sword-wound",
+        "desc": "战士副流派大招：对当前目标打一次高压破势，目标身上状态越多越痛，但没有全队增益。",
+        "effects": [
+          {
+            "kind": "hitTargetWithStatus",
+            "flat": 42,
+            "power": 0.65,
+            "perStatus": 5,
+            "maxStatus": 6,
+            "type": "physical",
+            "label": "破势"
+          },
+          {
+            "kind": "targetTimer",
+            "timer": "slowTimer",
+            "duration": 3.2
+          }
+        ]
+      },
       "duelistFocus": {
         "name": "决斗专注",
         "type": "被动",
@@ -499,6 +914,30 @@ const GAME_SKILL_ASSETS = (() => {
         "desc": "同一目标标记越高越强。",
         "passive": true,
         "effects": []
+      },
+      "duelistOath": {
+        "name": "决斗誓约",
+        "type": "被动",
+        "role": "战士",
+        "roleKeys": [
+          "warrior"
+        ],
+        "cooldown": 0,
+        "icon": "duel",
+        "desc": "战士决斗流入口：对被点名决斗的目标造成更高伤害，但不提供团队光环。强在单点压制，弱在被群体、控制和换目标拖散。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveStat",
+            "powerAdd": 3,
+            "armorAdd": 1
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "targetTimer": "duelTimer",
+            "amp": 0.16
+          }
+        ]
       },
       "emberSpread": {
         "name": "烈焰扩散",
@@ -763,6 +1202,34 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "forbiddenOffering": {
+        "name": "禁忌献祭",
+        "type": "大招",
+        "role": "术士",
+        "roleKeys": [
+          "warlock"
+        ],
+        "cooldown": 35,
+        "openingCooldown": 14,
+        "icon": "pentacle",
+        "desc": "术士副流派大招：付出大量血量引爆毒层，并重新留下少量毒，适合长线毒队的兑现。",
+        "effects": [
+          {
+            "kind": "selfRawDamage",
+            "maxHp": 0.12,
+            "type": "blood"
+          },
+          {
+            "kind": "plagueOffering",
+            "flat": 30,
+            "power": 0.24,
+            "perPoison": 10,
+            "retain": 0.42,
+            "reapply": 2,
+            "reapplyTime": 7
+          }
+        ]
+      },
       "fortressStance": {
         "name": "坚守阵线",
         "type": "被动",
@@ -818,6 +1285,29 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "frostScholar": {
+        "name": "霜纹学者",
+        "type": "被动",
+        "role": "法师",
+        "roleKeys": [
+          "mage"
+        ],
+        "cooldown": 0,
+        "icon": "frozen-orb",
+        "desc": "法师新流派入口：不靠火焰爆发，而是让减速目标承受更多法术压力。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveStat",
+            "powerAdd": 2
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "targetTimer": "slowTimer",
+            "amp": 0.12
+          }
+        ]
+      },
       "garrote": {
         "name": "绞喉",
         "type": "小技能",
@@ -842,6 +1332,32 @@ const GAME_SKILL_ASSETS = (() => {
             "kind": "poisonTarget",
             "stacks": 2,
             "time": 6
+          }
+        ]
+      },
+      "glacierShard": {
+        "name": "冰川碎片",
+        "type": "小技能",
+        "role": "法师",
+        "roleKeys": [
+          "mage"
+        ],
+        "cooldown": 7.8,
+        "openingCooldown": 2,
+        "icon": "ice-bolt",
+        "desc": "法师副流派：冰霜压速。打单体并制造较长减速，为后排争取时间。",
+        "effects": [
+          {
+            "kind": "hitTarget",
+            "flat": 26,
+            "power": 0.42,
+            "type": "arcane",
+            "label": "冰川碎片"
+          },
+          {
+            "kind": "targetTimer",
+            "timer": "slowTimer",
+            "duration": 4
           }
         ]
       },
@@ -977,6 +1493,61 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "interceptVow": {
+        "name": "截护誓言",
+        "type": "小技能",
+        "role": "骑士",
+        "roleKeys": [
+          "knight"
+        ],
+        "cooldown": 10.2,
+        "openingCooldown": 2.6,
+        "icon": "checked-shield",
+        "desc": "骑士副流派：主动保护核心。给最高输出队友护盾，同时自己短暂嘲讽与减伤。",
+        "effects": [
+          {
+            "kind": "shieldCarryAlly",
+            "flat": 34,
+            "power": 0.28,
+            "label": "截护"
+          },
+          {
+            "kind": "timer",
+            "timer": "tauntTimer",
+            "duration": 2.4,
+            "label": "誓言"
+          },
+          {
+            "kind": "timer",
+            "timer": "guardTimer",
+            "duration": 2.4,
+            "label": "守护"
+          }
+        ]
+      },
+      "killZone": {
+        "name": "猎杀禁区",
+        "type": "大招",
+        "role": "游侠",
+        "roleKeys": [
+          "ranger"
+        ],
+        "cooldown": 32,
+        "openingCooldown": 14,
+        "icon": "arrow-cluster",
+        "desc": "游侠副流派大招：大范围减速后箭雨压制，让陷阱流有清晰开场窗口。",
+        "effects": [
+          {
+            "kind": "enemyTimers",
+            "timer": "slowTimer",
+            "duration": 5.2,
+            "label": "禁区"
+          },
+          {
+            "kind": "arrowStorm"
+          }
+        ]
+      },
       "kindlingEcho": {
         "name": "火种共鸣",
         "type": "被动",
@@ -986,6 +1557,51 @@ const GAME_SKILL_ASSETS = (() => {
         "desc": "燃烧目标死亡时溅射火焰。",
         "passive": true,
         "effects": []
+      },
+      "lanceCharge": {
+        "name": "枪骑冲锋",
+        "type": "小技能",
+        "role": "骑士",
+        "roleKeys": [
+          "knight"
+        ],
+        "cooldown": 9.4,
+        "openingCooldown": 0.8,
+        "icon": "mounted-knight",
+        "desc": "骑士冲锋流小技能：开局很早冲击前线，伤害不高，但会减速敌方前排并让自己短暂承压。",
+        "effects": [
+          {
+            "kind": "chargeToTarget",
+            "distance": 20,
+            "stopRange": 7,
+            "attackCd": 0.05,
+            "impactCount": 2,
+            "pushDistance": 1.5,
+            "attackDelay": 0.35,
+            "label": "冲锋"
+          },
+          {
+            "kind": "hitEnemies",
+            "count": 2,
+            "flat": 20,
+            "power": 0.28,
+            "type": "physical",
+            "label": "冲锋"
+          },
+          {
+            "kind": "enemyTimers",
+            "count": 2,
+            "timer": "slowTimer",
+            "duration": 2.8,
+            "label": "冲乱"
+          },
+          {
+            "kind": "timer",
+            "timer": "tauntTimer",
+            "duration": 2.2,
+            "label": "亮旗"
+          }
+        ]
       },
       "lastWound": {
         "name": "残伤怒砍",
@@ -1029,6 +1645,107 @@ const GAME_SKILL_ASSETS = (() => {
         "desc": "攻击前排时小幅增伤。",
         "passive": true,
         "effects": []
+      },
+      "lineHold": {
+        "name": "压线护步",
+        "type": "小技能",
+        "role": "战士",
+        "roleKeys": [
+          "warrior"
+        ],
+        "cooldown": 8.2,
+        "openingCooldown": 2.6,
+        "icon": "shield-impact",
+        "desc": "战士副定位：半保护前排。打一名前排目标，同时给最低血队友一层小盾；战士仍以压线为主，但能补一点保护。",
+        "effects": [
+          {
+            "kind": "hitTarget",
+            "flat": 18,
+            "power": 0.28,
+            "type": "physical",
+            "label": "压线"
+          },
+          {
+            "kind": "shieldLowestAlly",
+            "flat": 28,
+            "power": 0.18,
+            "label": "护步"
+          }
+        ]
+      },
+      "loneVeteran": {
+        "name": "孤胆老兵",
+        "type": "被动",
+        "role": "战士",
+        "roleKeys": [
+          "warrior"
+        ],
+        "cooldown": 0,
+        "icon": "round-shield",
+        "desc": "战士新流派入口：自身面板更硬，打前排略强，但不提供团队乘算资源。适合自洽单兵而不是吃满 buff 的核心。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveStat",
+            "maxHpAdd": 18,
+            "armorAdd": 2,
+            "powerAdd": 2
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "targetLine": "前排",
+            "amp": 0.04
+          }
+        ]
+      },
+      "lullabyGuard": {
+        "name": "安魂守拍",
+        "type": "小技能",
+        "role": "吟游诗人",
+        "roleKeys": [
+          "bard"
+        ],
+        "cooldown": 9.6,
+        "openingCooldown": 2.4,
+        "icon": "musical-score",
+        "desc": "诗人副流派：防守节奏。减缓两个近敌，并给低血队友护盾。",
+        "effects": [
+          {
+            "kind": "enemyTimers",
+            "count": 2,
+            "timer": "slowTimer",
+            "duration": 2.4,
+            "label": "安魂"
+          },
+          {
+            "kind": "shieldLowestAlly",
+            "flat": 24,
+            "power": 0.18,
+            "label": "守拍"
+          }
+        ]
+      },
+      "markDetonate": {
+        "name": "猎标引爆",
+        "type": "小技能",
+        "role": "游侠",
+        "roleKeys": [
+          "ranger"
+        ],
+        "cooldown": 8.4,
+        "openingCooldown": 4.4,
+        "icon": "bullseye",
+        "desc": "游侠副定位：标记兑现。对当前标记目标造成按层数提升的伤害，但不额外铺标；用于区分铺标技能和兑现技能。",
+        "effects": [
+          {
+            "kind": "hitMarkedTarget",
+            "flat": 18,
+            "power": 0.24,
+            "perMark": 7,
+            "type": "physical",
+            "label": "猎标引爆"
+          }
+        ]
       },
       "markRelay": {
         "name": "猎标接力",
@@ -1077,6 +1794,37 @@ const GAME_SKILL_ASSETS = (() => {
             "perMark": 5,
             "type": "physical",
             "label": "猎标箭"
+          }
+        ]
+      },
+      "martyrAegis": {
+        "name": "殉道圣盾",
+        "type": "被动",
+        "role": "牧师",
+        "roleKeys": [
+          "priest"
+        ],
+        "cooldown": 0,
+        "icon": "holy-symbol",
+        "desc": "牧师新流派入口：自身生命和护甲提高，给自己的治疗/护盾更强，适合站前排承担压力，但输出更低。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveStat",
+            "maxHpMult": 1.32,
+            "armorAdd": 4,
+            "powerMult": 0.86,
+            "rangeAdd": -16
+          },
+          {
+            "kind": "passiveShieldAmp",
+            "selfOnly": true,
+            "amp": 0.2
+          },
+          {
+            "kind": "passiveHealAmp",
+            "selfOnly": true,
+            "amp": 0.15
           }
         ]
       },
@@ -1143,6 +1891,64 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "midnightBloom": {
+        "name": "午夜毒绽",
+        "type": "大招",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 31,
+        "openingCooldown": 12,
+        "icon": "deadly-strike",
+        "desc": "刺客副流派大招：先给敌队撒毒，再重刺最低血目标，强调毒线收割而不是裸秒。",
+        "effects": [
+          {
+            "kind": "poisonEnemies",
+            "stacks": 2,
+            "time": 8
+          },
+          {
+            "kind": "hitLowestEnemy",
+            "flat": 40,
+            "power": 0.55,
+            "missingTargetHpFlat": 52,
+            "type": "shadow",
+            "label": "午夜毒绽"
+          }
+        ]
+      },
+      "oathBulwark": {
+        "name": "誓约壁垒",
+        "type": "大招",
+        "role": "骑士",
+        "roleKeys": [
+          "knight"
+        ],
+        "cooldown": 34,
+        "openingCooldown": 17,
+        "icon": "shield-reflect",
+        "desc": "骑士副流派大招：全队开盾，并给短反击窗口；用于把保护转成可见反打。",
+        "effects": [
+          {
+            "kind": "teamShield",
+            "flat": 46,
+            "power": 0.34,
+            "label": "誓约壁垒"
+          },
+          {
+            "kind": "teamRetaliation",
+            "duration": 4.5,
+            "requiresBlockedDamage": true,
+            "meleeOnly": true,
+            "flat": 5,
+            "power": 0.08,
+            "blockedRatio": 0.24,
+            "cooldown": 0.95,
+            "label": "誓约反击"
+          }
+        ]
+      },
       "oathRally": {
         "name": "誓约集结",
         "type": "大招",
@@ -1173,6 +1979,30 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "painAnchor": {
+        "name": "痛楚锚定",
+        "type": "被动",
+        "role": "狂战士",
+        "roleKeys": [
+          "berserker"
+        ],
+        "cooldown": 0,
+        "icon": "spiked-shell",
+        "desc": "狂战士新流派入口：更像带风险的前排锚点。血量越危险越有输出，但只提供有限稳定性，不能变成通用硬坦。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveStat",
+            "maxHpMult": 1.07,
+            "armorAdd": 1
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "sourceHpBelow": 0.45,
+            "amp": 0.05
+          }
+        ]
+      },
       "painDividend": {
         "name": "痛苦分红",
         "type": "小技能",
@@ -1195,6 +2025,32 @@ const GAME_SKILL_ASSETS = (() => {
             "amount": 8,
             "duration": 5,
             "label": "痛苦分红"
+          }
+        ]
+      },
+      "perfectReaction": {
+        "name": "完美反应",
+        "type": "大招",
+        "role": "炼金师",
+        "roleKeys": [
+          "alchemist"
+        ],
+        "cooldown": 34,
+        "openingCooldown": 14,
+        "icon": "chemical-bolt",
+        "desc": "炼金副流派大招：根据敌人身上的异常数量造成奥术反应伤害，并补少量毒层。",
+        "effects": [
+          {
+            "kind": "grandMixture",
+            "flat": 25,
+            "power": 0.2,
+            "perStatus": 10,
+            "maxStatus": 9
+          },
+          {
+            "kind": "poisonEnemies",
+            "stacks": 1,
+            "time": 6
           }
         ]
       },
@@ -1254,6 +2110,64 @@ const GAME_SKILL_ASSETS = (() => {
             "power": 0.48,
             "type": "physical",
             "label": "重击"
+          }
+        ]
+      },
+      "purifyingWard": {
+        "name": "净化结界",
+        "type": "小技能",
+        "role": "牧师",
+        "roleKeys": [
+          "priest"
+        ],
+        "cooldown": 10.5,
+        "openingCooldown": 3,
+        "icon": "holy-symbol",
+        "desc": "牧师副定位：抗异常前排。给最低血队友护盾和短 DOT 抗性，不提高输出，专门对抗毒/燃烧窗口。",
+        "effects": [
+          {
+            "kind": "shieldLowestAlly",
+            "flat": 46,
+            "power": 0.34,
+            "label": "净化"
+          },
+          {
+            "kind": "lowestAllyTimer",
+            "timer": "dotResistTimer",
+            "duration": 6
+          }
+        ]
+      },
+      "radiantInterpose": {
+        "name": "辉光拦截",
+        "type": "小技能",
+        "role": "牧师",
+        "roleKeys": [
+          "priest"
+        ],
+        "cooldown": 10.6,
+        "openingCooldown": 2.4,
+        "icon": "aura",
+        "desc": "牧师副流派：圣盾前排。给自己护盾、嘲讽和守势，把治疗者变成可以短暂挡刀的肉盾。",
+        "effects": [
+          {
+            "kind": "teamShield",
+            "selfOnly": true,
+            "flat": 58,
+            "power": 0.28,
+            "label": "辉光拦截"
+          },
+          {
+            "kind": "timer",
+            "timer": "tauntTimer",
+            "duration": 2.8,
+            "label": "拦截"
+          },
+          {
+            "kind": "timer",
+            "timer": "guardTimer",
+            "duration": 3.2,
+            "label": "圣盾"
           }
         ]
       },
@@ -1347,6 +2261,38 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "resonantFinale": {
+        "name": "共鸣终曲",
+        "type": "大招",
+        "role": "吟游诗人",
+        "roleKeys": [
+          "bard"
+        ],
+        "cooldown": 33,
+        "openingCooldown": 14,
+        "icon": "sonic-shout",
+        "desc": "诗人副流派大招：同时提供短加速、团队小治疗和护盾，是偏稳态的终曲而非爆发终曲。",
+        "effects": [
+          {
+            "kind": "teamTimer",
+            "timer": "hasteTimer",
+            "duration": 5,
+            "label": "共鸣"
+          },
+          {
+            "kind": "teamHeal",
+            "flat": 30,
+            "power": 0.16,
+            "label": "终曲治疗"
+          },
+          {
+            "kind": "teamShield",
+            "flat": 24,
+            "power": 0.18,
+            "label": "终曲护盾"
+          }
+        ]
+      },
       "retaliationBanner": {
         "name": "壁垒军旗",
         "type": "大招",
@@ -1430,6 +2376,58 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "royalCavalryBreak": {
+        "name": "王骑破阵",
+        "type": "大招",
+        "role": "骑士",
+        "roleKeys": [
+          "knight"
+        ],
+        "cooldown": 33,
+        "openingCooldown": 11.5,
+        "icon": "horse-head",
+        "desc": "骑士冲锋流大招：一次大范围破阵，压慢敌方前线并给自己守势。它不是纯防御大招，而是抢节奏的大冲锋。",
+        "effects": [
+          {
+            "kind": "chargeToTarget",
+            "distance": 16,
+            "stopRange": 6,
+            "attackCd": 0.05,
+            "impactCount": 3,
+            "pushDistance": 3.2,
+            "attackDelay": 0.75,
+            "shieldBreak": 90,
+            "label": "破阵"
+          },
+          {
+            "kind": "shieldBreakEnemies",
+            "count": 3,
+            "amount": 115,
+            "label": "破阵碎盾"
+          },
+          {
+            "kind": "hitEnemies",
+            "count": 3,
+            "flat": 28,
+            "power": 0.36,
+            "type": "physical",
+            "label": "王骑破阵"
+          },
+          {
+            "kind": "enemyTimers",
+            "count": 3,
+            "timer": "slowTimer",
+            "duration": 4.6,
+            "label": "破阵"
+          },
+          {
+            "kind": "timer",
+            "timer": "guardTimer",
+            "duration": 3.2,
+            "label": "回马"
+          }
+        ]
+      },
       "ruinComet": {
         "name": "破灭彗星",
         "type": "大招",
@@ -1476,6 +2474,37 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "scarletChallenge": {
+        "name": "赤血挑衅",
+        "type": "小技能",
+        "role": "狂战士",
+        "roleKeys": [
+          "berserker"
+        ],
+        "cooldown": 9.2,
+        "openingCooldown": 3.6,
+        "icon": "bleeding-eye",
+        "desc": "狂战副定位：风险前排。自伤进入危险线，短暂嘲讽和减伤，让低血流能承担一点前排任务，但风险真实存在。",
+        "effects": [
+          {
+            "kind": "selfRawDamage",
+            "maxHp": 0.06,
+            "type": "blood"
+          },
+          {
+            "kind": "timer",
+            "timer": "tauntTimer",
+            "duration": 3.2,
+            "label": "挑衅"
+          },
+          {
+            "kind": "timer",
+            "timer": "guardTimer",
+            "duration": 2.6,
+            "label": "硬撑"
+          }
+        ]
+      },
       "shadowCut": {
         "name": "影切",
         "type": "小技能",
@@ -1486,9 +2515,9 @@ const GAME_SKILL_ASSETS = (() => {
         "effects": [
           {
             "kind": "hitLowestEnemy",
-            "flat": 20.5,
-            "power": 0.33,
-            "missingTargetHpFlat": 24,
+            "flat": 18,
+            "power": 0.3,
+            "missingTargetHpFlat": 12,
             "type": "shadow",
             "label": "影切"
           }
@@ -1505,9 +2534,9 @@ const GAME_SKILL_ASSETS = (() => {
         "effects": [
           {
             "kind": "hitLowestEnemy",
-            "flat": 58,
-            "power": 0.54,
-            "missingTargetHpFlat": 66,
+            "flat": 52,
+            "power": 0.48,
+            "missingTargetHpFlat": 38,
             "type": "shadow",
             "label": "收割"
           }
@@ -1540,6 +2569,66 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "singleCombatVerdict": {
+        "name": "单挑裁决",
+        "type": "大招",
+        "role": "战士",
+        "roleKeys": [
+          "warrior"
+        ],
+        "cooldown": 31,
+        "openingCooldown": 12,
+        "icon": "sword-wound",
+        "desc": "战士决斗流大招：重击被点名或当前目标，并重新拉长决斗窗口。它应该像一次明确的单挑斩杀尝试，而不是范围清场。",
+        "effects": [
+          {
+            "kind": "targetTimer",
+            "timer": "duelTimer",
+            "duration": 6.4
+          },
+          {
+            "kind": "hitTargetWithStatus",
+            "flat": 50,
+            "power": 0.72,
+            "perStatus": 6,
+            "maxStatus": 5,
+            "type": "physical",
+            "label": "单挑裁决"
+          }
+        ]
+      },
+      "snareShot": {
+        "name": "缚足箭",
+        "type": "小技能",
+        "role": "游侠",
+        "roleKeys": [
+          "ranger"
+        ],
+        "cooldown": 7.6,
+        "openingCooldown": 2.1,
+        "icon": "arrow-scope",
+        "desc": "游侠副流派：陷阱控制。给目标减速并打上标记，用控制创造猎杀窗口。",
+        "effects": [
+          {
+            "kind": "markTarget",
+            "stacks": 2,
+            "max": 8
+          },
+          {
+            "kind": "targetTimer",
+            "timer": "slowTimer",
+            "duration": 3.4
+          },
+          {
+            "kind": "hitMarkedTarget",
+            "flat": 12,
+            "power": 0.22,
+            "perMark": 4,
+            "type": "physical",
+            "label": "缚足箭"
+          }
+        ]
+      },
       "sparkCatalyst": {
         "name": "火花催化",
         "type": "小技能",
@@ -1562,6 +2651,35 @@ const GAME_SKILL_ASSETS = (() => {
             "kind": "poisonTarget",
             "stacks": 2,
             "time": 6
+          }
+        ]
+      },
+      "stabilizingVapor": {
+        "name": "稳定蒸汽",
+        "type": "小技能",
+        "role": "炼金师",
+        "roleKeys": [
+          "alchemist"
+        ],
+        "cooldown": 9.5,
+        "openingCooldown": 3.5,
+        "icon": "fizzing-flask",
+        "desc": "炼金副定位：异常辅助。给目标同时加少量燃烧和剧毒，并短暂减速；它负责铺材料，不负责直接爆发。",
+        "effects": [
+          {
+            "kind": "burnTarget",
+            "stacks": 1,
+            "time": 6
+          },
+          {
+            "kind": "poisonTarget",
+            "stacks": 1,
+            "time": 7
+          },
+          {
+            "kind": "targetTimer",
+            "timer": "slowTimer",
+            "duration": 2.4
           }
         ]
       },
@@ -1675,7 +2793,7 @@ const GAME_SKILL_ASSETS = (() => {
           {
             "kind": "teamTimer",
             "timer": "hasteTimer",
-            "duration": 5,
+            "duration": 4,
             "label": "急板",
             "tone": "heal"
           }
@@ -1700,6 +2818,55 @@ const GAME_SKILL_ASSETS = (() => {
             "kind": "poisonTarget",
             "stacks": 2,
             "time": 6
+          }
+        ]
+      },
+      "toxinExecution": {
+        "name": "淬毒处刑",
+        "type": "被动",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 0,
+        "icon": "poison-bottle",
+        "desc": "刺客新流派入口：不追求开局秒人，而是对带异常的低血目标持续加压。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveDotAmp",
+            "type": "poison",
+            "amp": 0.14
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "requiresStatus": true,
+            "targetHpBelow": 0.5,
+            "amp": 0.07
+          }
+        ]
+      },
+      "trapSense": {
+        "name": "陷阱嗅觉",
+        "type": "被动",
+        "role": "游侠",
+        "roleKeys": [
+          "ranger"
+        ],
+        "cooldown": 0,
+        "icon": "trap-mask",
+        "desc": "游侠新流派入口：对被减速目标和标记目标更强，鼓励队伍先控场再集火。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveDamageAmp",
+            "targetTimer": "slowTimer",
+            "amp": 0.1,
+            "perMark": 0.012
+          },
+          {
+            "kind": "passiveStat",
+            "rangeAdd": 2
           }
         ]
       },
@@ -1735,6 +2902,90 @@ const GAME_SKILL_ASSETS = (() => {
             "power": 0.2,
             "type": "poison",
             "label": "腐毒"
+          }
+        ]
+      },
+      "venomDividend": {
+        "name": "毒息分红",
+        "type": "小技能",
+        "role": "术士",
+        "roleKeys": [
+          "warlock"
+        ],
+        "cooldown": 9.2,
+        "openingCooldown": 3.8,
+        "icon": "poison-bottle",
+        "desc": "术士副定位：毒层转队友资源。自伤后给目标叠毒，并给最高攻击队友增伤；用风险把持续伤害和核心支援接起来。",
+        "effects": [
+          {
+            "kind": "selfRawDamage",
+            "maxHp": 0.04,
+            "type": "blood"
+          },
+          {
+            "kind": "poisonTarget",
+            "stacks": 2,
+            "time": 8
+          },
+          {
+            "kind": "buffCarryPower",
+            "duration": 4.5,
+            "amount": 12,
+            "label": "毒息分红"
+          }
+        ]
+      },
+      "venomStep": {
+        "name": "毒步穿刺",
+        "type": "小技能",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 7.2,
+        "openingCooldown": 2,
+        "icon": "stiletto",
+        "desc": "刺客副流派：毒伤处决。攻击最低血敌人，并在当前目标身上补毒，让刺客可以走持续压低血线。",
+        "effects": [
+          {
+            "kind": "hitLowestEnemy",
+            "flat": 18,
+            "power": 0.26,
+            "missingTargetHpFlat": 26,
+            "type": "shadow",
+            "label": "毒步"
+          },
+          {
+            "kind": "poisonTarget",
+            "stacks": 2,
+            "time": 7
+          }
+        ]
+      },
+      "veteranCut": {
+        "name": "老兵稳切",
+        "type": "小技能",
+        "role": "战士",
+        "roleKeys": [
+          "warrior"
+        ],
+        "cooldown": 7.4,
+        "openingCooldown": 2.2,
+        "icon": "swordman",
+        "desc": "战士副流派：孤胆决斗。稳定攻击当前前排，并短暂进入守势，让战士更像自己能站住的决斗者。",
+        "effects": [
+          {
+            "kind": "hitTarget",
+            "flat": 24,
+            "power": 0.38,
+            "type": "physical",
+            "label": "稳切"
+          },
+          {
+            "kind": "timer",
+            "timer": "guardTimer",
+            "duration": 2.2,
+            "label": "稳守"
           }
         ]
       },
@@ -1803,15 +3054,66 @@ const GAME_SKILL_ASSETS = (() => {
           {
             "kind": "teamTimer",
             "timer": "bonusPowerTimer",
-            "duration": 5
+            "duration": 3.5
           },
           {
             "kind": "hitEnemies",
-            "count": 3,
-            "flat": 32,
-            "power": 0.34,
+            "count": 2,
+            "flat": 30,
+            "power": 0.3,
             "type": "physical",
             "label": "冲锋"
+          }
+        ]
+      },
+      "wardenVow": {
+        "name": "守望誓约",
+        "type": "被动",
+        "role": "骑士",
+        "roleKeys": [
+          "knight"
+        ],
+        "cooldown": 0,
+        "icon": "shield",
+        "desc": "骑士新流派入口：个人护盾收益更高，适合做单点护卫和反击墙，而不是纯群体盾。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveStat",
+            "maxHpMult": 1.04,
+            "armorAdd": 1
+          },
+          {
+            "kind": "passiveShieldAmp",
+            "selfOnly": true,
+            "amp": 0.08
+          }
+        ]
+      },
+      "whiteout": {
+        "name": "白霜封场",
+        "type": "大招",
+        "role": "法师",
+        "roleKeys": [
+          "mage"
+        ],
+        "cooldown": 35,
+        "openingCooldown": 15,
+        "icon": "snowflake-2",
+        "desc": "法师副流派大招：全场减速并造成中等奥术伤害，强化控制窗口而非一波爆炸。",
+        "effects": [
+          {
+            "kind": "enemyTimers",
+            "timer": "slowTimer",
+            "duration": 6,
+            "label": "白霜"
+          },
+          {
+            "kind": "hitEnemies",
+            "flat": 24,
+            "power": 0.28,
+            "type": "arcane",
+            "label": "白霜封场"
           }
         ]
       }
@@ -2040,6 +3342,210 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "bulwarkMarks": {
+        "name": "壁垒猎标",
+        "desc": "骑士反击承压，双游侠分工铺标与兑现，逐个击破慢速队伍。",
+        "design": {
+          "fantasy": "Hold melee pressure behind a riposte wall while one ranger builds marks and another cashes them out into focused shots.",
+          "experience": {
+            "start": "The knight absorbs early melee contact.",
+            "transition": "One ranger keeps marks moving while the other waits for a cash-out window.",
+            "payoff": "Mark detonation and repeated shots finish one slow target at a time.",
+            "reset": "The team waits for the next shield and mark window."
+          },
+          "primaryOutput": "focusBasic",
+          "desiredTags": [
+            "shield",
+            "counter",
+            "mark",
+            "markPayoff",
+            "focus"
+          ],
+          "watchTags": [
+            "dot",
+            "area"
+          ],
+          "strongMatchups": [
+            "ironWall",
+            "holySustain"
+          ],
+          "weakMatchups": [
+            "poisonBloom",
+            "fireBurst",
+            "shadowExecute"
+          ],
+          "validationOpponents": [
+            "ironWall",
+            "holySustain",
+            "poisonBloom",
+            "fireBurst"
+          ],
+          "curves": [
+            {
+              "metric": "lowestTargetDamageShare",
+              "op": ">=",
+              "value": 0.3
+            },
+            {
+              "metric": "counterTriggers",
+              "op": ">=",
+              "value": 1
+            }
+          ],
+          "signalAcceptance": [
+            {
+              "metric": "markApplications",
+              "op": ">=",
+              "value": 4
+            },
+            {
+              "metric": "shieldPerSecond",
+              "op": ">=",
+              "value": 3
+            },
+            {
+              "metric": "lowestTargetDamageShare",
+              "op": ">=",
+              "value": 0.3
+            }
+          ],
+          "failureBoundaries": [
+            {
+              "metric": "counterDamageShare",
+              "op": "<=",
+              "value": 0.22
+            }
+          ]
+        },
+        "team": [
+          {
+            "role": "knight",
+            "small1": "bulwarkRiposte",
+            "small2": "tauntLine",
+            "passive": "fortressStance",
+            "ultimate": "bannerWall"
+          },
+          {
+            "role": "ranger",
+            "small1": "markShot",
+            "small2": "markDetonate",
+            "passive": "duelistFocus",
+            "ultimate": "arrowStorm"
+          },
+          {
+            "role": "ranger",
+            "small1": "markRelay",
+            "small2": "markDetonate",
+            "passive": "duelistFocus",
+            "ultimate": "arrowStorm"
+          },
+          {
+            "role": "bard",
+            "small1": "battleHymn",
+            "small2": "syncopate",
+            "passive": "encore",
+            "ultimate": "crescendo"
+          }
+        ]
+      },
+      "cavalryBreak": {
+        "name": "王骑破阵",
+        "desc": "骑士用冲锋抢开局节奏，压慢敌方前排，再让队伍趁乱推进。",
+        "design": {
+          "fantasy": "A charge knight crashes into the enemy front line, slows it, and lets the team attack during the disruption window.",
+          "experience": {
+            "start": "The knight charges early instead of only waiting behind shields.",
+            "transition": "Enemy front units are slowed and briefly pulled into pressure.",
+            "payoff": "Royal Cavalry Break creates a larger disruption window.",
+            "reset": "The team loses momentum when slow windows expire."
+          },
+          "primaryOutput": "controlTempo",
+          "desiredTags": [
+            "charge",
+            "slow",
+            "frontlinePressure",
+            "tempo"
+          ],
+          "watchTags": [
+            "shield",
+            "counter"
+          ],
+          "strongMatchups": [
+            "ironWall",
+            "duelChampion"
+          ],
+          "weakMatchups": [
+            "poisonBloom",
+            "crownCarry"
+          ],
+          "validationOpponents": [
+            "ironWall",
+            "duelChampion",
+            "poisonBloom"
+          ],
+          "curves": [
+            {
+              "metric": "slowApplications",
+              "op": ">=",
+              "value": 4
+            },
+            {
+              "metric": "controlWindowMeleeRateRatio",
+              "op": "<=",
+              "value": 0.85
+            }
+          ],
+          "signalAcceptance": [
+            {
+              "metric": "slowApplications",
+              "op": ">=",
+              "value": 4
+            },
+            {
+              "metric": "areaDamageShare",
+              "op": ">=",
+              "value": 0.08
+            }
+          ],
+          "failureBoundaries": [
+            {
+              "metric": "shieldPerSecond",
+              "op": "<=",
+              "value": 38
+            }
+          ]
+        },
+        "team": [
+          {
+            "role": "knight",
+            "small1": "lanceCharge",
+            "small2": "shieldBash",
+            "passive": "chargerMomentum",
+            "ultimate": "royalCavalryBreak"
+          },
+          {
+            "role": "warrior",
+            "small1": "sunderingAdvance",
+            "small2": "lineHold",
+            "passive": "lineBreaker",
+            "ultimate": "warBanner"
+          },
+          {
+            "role": "berserker",
+            "small1": "bloodStrike",
+            "small2": "boneWhirl",
+            "passive": "rageEngine",
+            "ultimate": "undyingRoar"
+          },
+          {
+            "role": "priest",
+            "small1": "mendingLight",
+            "small2": "purifyingWard",
+            "passive": "afterglowGrace",
+            "ultimate": "sanctuary"
+          }
+        ]
+      },
       "crownCarry": {
         "name": "王冠核心",
         "desc": "全队资源养一个狂战/游侠核心",
@@ -2146,6 +3652,104 @@ const GAME_SKILL_ASSETS = (() => {
             "small2": "boneWhirl",
             "passive": "rageEngine",
             "ultimate": "undyingRoar"
+          }
+        ]
+      },
+      "duelChampion": {
+        "name": "决斗冠军",
+        "desc": "战士点名一个目标持续单挑，队友只负责稳住窗口，不把伤害摊成一片。",
+        "design": {
+          "fantasy": "A warrior names one enemy, holds the duel window, and wins through repeated single-target pressure.",
+          "experience": {
+            "start": "The warrior marks a current front target for a duel.",
+            "transition": "Damage concentrates on that target instead of spreading.",
+            "payoff": "Single Combat Verdict refreshes the duel and lands a heavy strike.",
+            "reset": "The team waits for the next named target."
+          },
+          "primaryOutput": "singleTargetSkill",
+          "desiredTags": [
+            "duel",
+            "focus",
+            "frontlinePressure",
+            "singleTarget"
+          ],
+          "watchTags": [
+            "area",
+            "teamBuff"
+          ],
+          "strongMatchups": [
+            "ironWall",
+            "holySustain"
+          ],
+          "weakMatchups": [
+            "fireBurst",
+            "poisonBloom"
+          ],
+          "validationOpponents": [
+            "ironWall",
+            "holySustain",
+            "fireBurst"
+          ],
+          "curves": [
+            {
+              "metric": "lowestTargetDamageShare",
+              "op": ">=",
+              "value": 0.32
+            },
+            {
+              "metric": "areaDamageShare",
+              "op": "<=",
+              "value": 0.28
+            }
+          ],
+          "signalAcceptance": [
+            {
+              "metric": "lowestTargetDamageShare",
+              "op": ">=",
+              "value": 0.32
+            },
+            {
+              "metric": "basicDamageShare",
+              "op": ">=",
+              "value": 0.18
+            }
+          ],
+          "failureBoundaries": [
+            {
+              "metric": "areaDamageShare",
+              "op": "<=",
+              "value": 0.3
+            }
+          ]
+        },
+        "team": [
+          {
+            "role": "warrior",
+            "small1": "duelChallenge",
+            "small2": "veteranCut",
+            "passive": "duelistOath",
+            "ultimate": "singleCombatVerdict"
+          },
+          {
+            "role": "knight",
+            "small1": "guard",
+            "small2": "tauntLine",
+            "passive": "fortressStance",
+            "ultimate": "bannerWall"
+          },
+          {
+            "role": "priest",
+            "small1": "mendingLight",
+            "small2": "purifyingWard",
+            "passive": "afterglowGrace",
+            "ultimate": "sanctuary"
+          },
+          {
+            "role": "bard",
+            "small1": "battleHymn",
+            "small2": "syncopate",
+            "passive": "encore",
+            "ultimate": "resonantFinale"
           }
         ]
       },
@@ -2355,6 +3959,104 @@ const GAME_SKILL_ASSETS = (() => {
             "small2": "miasmaFlask",
             "passive": "catalyst",
             "ultimate": "grandMixture"
+          }
+        ]
+      },
+      "frostTrapField": {
+        "name": "霜陷猎场",
+        "desc": "游侠铺陷阱，法师拉长冰霜控制，队伍在减速窗口里集火目标。",
+        "design": {
+          "fantasy": "Ranger traps and mage frost turn the battlefield into a slow kill zone.",
+          "experience": {
+            "start": "Trap shots and frost skills apply slow and marks.",
+            "transition": "Enemy melee cadence drops during control windows.",
+            "payoff": "Marked and slowed targets are finished by focused shots.",
+            "reset": "Pressure falls if the team cannot refresh slow."
+          },
+          "primaryOutput": "controlFocus",
+          "desiredTags": [
+            "slow",
+            "mark",
+            "focus",
+            "control"
+          ],
+          "watchTags": [
+            "burst",
+            "dot"
+          ],
+          "strongMatchups": [
+            "bloodRage",
+            "ironWall"
+          ],
+          "weakMatchups": [
+            "fireBurst",
+            "poisonBloom"
+          ],
+          "validationOpponents": [
+            "bloodRage",
+            "ironWall",
+            "poisonBloom"
+          ],
+          "curves": [
+            {
+              "metric": "slowApplications",
+              "op": ">=",
+              "value": 6
+            },
+            {
+              "metric": "controlWindowMeleeRateRatio",
+              "op": "<=",
+              "value": 0.85
+            }
+          ],
+          "signalAcceptance": [
+            {
+              "metric": "markApplications",
+              "op": ">=",
+              "value": 4
+            },
+            {
+              "metric": "lowestTargetDamageShare",
+              "op": ">=",
+              "value": 0.3
+            }
+          ],
+          "failureBoundaries": [
+            {
+              "metric": "areaDamageShare",
+              "op": "<=",
+              "value": 0.45
+            }
+          ]
+        },
+        "team": [
+          {
+            "role": "ranger",
+            "small1": "snareShot",
+            "small2": "markRelay",
+            "passive": "trapSense",
+            "ultimate": "killZone"
+          },
+          {
+            "role": "mage",
+            "small1": "glacierShard",
+            "small2": "iceLance",
+            "passive": "frostScholar",
+            "ultimate": "whiteout"
+          },
+          {
+            "role": "knight",
+            "small1": "lanceCharge",
+            "small2": "vowTaunt",
+            "passive": "chargerMomentum",
+            "ultimate": "royalCavalryBreak"
+          },
+          {
+            "role": "bard",
+            "small1": "lullabyGuard",
+            "small2": "battleHymn",
+            "passive": "chorusKeeper",
+            "ultimate": "resonantFinale"
           }
         ]
       },
@@ -2678,6 +4380,104 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "martyrFrontline": {
+        "name": "殉道前线",
+        "desc": "牧师站上前排，用自己的血量和圣盾承压，让后排慢慢赢。",
+        "design": {
+          "fantasy": "A priest becomes a temporary frontline bastion, absorbing pressure with self-shields while allies grind the fight out.",
+          "experience": {
+            "start": "The priest steps into danger rather than hiding as a healer.",
+            "transition": "Self-shields and guard windows blunt early pressure.",
+            "payoff": "Bastion Sanctuary stabilizes the whole team.",
+            "reset": "The team is vulnerable between sanctuary windows."
+          },
+          "primaryOutput": "frontlineSustain",
+          "desiredTags": [
+            "shield",
+            "heal",
+            "guard",
+            "frontline"
+          ],
+          "watchTags": [
+            "burst",
+            "execute"
+          ],
+          "strongMatchups": [
+            "ironWall",
+            "bloodRage"
+          ],
+          "weakMatchups": [
+            "fireBurst",
+            "shadowExecute"
+          ],
+          "validationOpponents": [
+            "bloodRage",
+            "ironWall",
+            "fireBurst"
+          ],
+          "curves": [
+            {
+              "metric": "shieldPerSecond",
+              "op": ">=",
+              "value": 8
+            },
+            {
+              "metric": "survivorsAt20Seconds",
+              "op": ">=",
+              "value": 1.5
+            }
+          ],
+          "signalAcceptance": [
+            {
+              "metric": "healingPerSecond",
+              "op": ">=",
+              "value": 3
+            },
+            {
+              "metric": "shieldPerSecond",
+              "op": ">=",
+              "value": 8
+            }
+          ],
+          "failureBoundaries": [
+            {
+              "metric": "carryDamageShare",
+              "op": "<=",
+              "value": 0.72
+            }
+          ]
+        },
+        "team": [
+          {
+            "role": "priest",
+            "small1": "radiantInterpose",
+            "small2": "mendingLight",
+            "passive": "martyrAegis",
+            "ultimate": "bastionSanctuary"
+          },
+          {
+            "role": "warrior",
+            "small1": "lineHold",
+            "small2": "guardBreak",
+            "passive": "loneVeteran",
+            "ultimate": "duelistBreak"
+          },
+          {
+            "role": "warlock",
+            "small1": "bloodHex",
+            "small2": "venomDividend",
+            "passive": "crimsonPact",
+            "ultimate": "forbiddenOffering"
+          },
+          {
+            "role": "ranger",
+            "small1": "snareShot",
+            "small2": "markDetonate",
+            "passive": "trapSense",
+            "ultimate": "killZone"
+          }
+        ]
+      },
       "poisonBloom": {
         "name": "毒巢滚雪球",
         "desc": "慢启动，死亡扩散，后期毒爆",
@@ -2792,6 +4592,211 @@ const GAME_SKILL_ASSETS = (() => {
             "small2": "heal",
             "passive": "afterglowGrace",
             "ultimate": "sanctuary"
+          }
+        ]
+      },
+      "purgeAttrition": {
+        "name": "净化消耗",
+        "desc": "牧师抗异常，术士用自伤和毒层把长战斗转成资源。",
+        "design": {
+          "fantasy": "Survive status pressure, then let poison and carry support convert a long fight into inevitability.",
+          "experience": {
+            "start": "The team takes poison or burn pressure.",
+            "transition": "Purifying shields blunt the dangerous status window.",
+            "payoff": "Poison stacks and carry buffs start to decide the long fight.",
+            "reset": "The team stabilizes rather than bursting."
+          },
+          "primaryOutput": "dot",
+          "desiredTags": [
+            "poison",
+            "dot",
+            "shield",
+            "sustain",
+            "carry"
+          ],
+          "watchTags": [
+            "burst",
+            "execute"
+          ],
+          "strongMatchups": [
+            "fireBurst",
+            "ironWall"
+          ],
+          "weakMatchups": [
+            "shadowExecute",
+            "crownCarry"
+          ],
+          "validationOpponents": [
+            "fireBurst",
+            "shadowExecute"
+          ],
+          "curves": [
+            {
+              "metric": "poisonStacksApplied",
+              "op": ">=",
+              "value": 16
+            },
+            {
+              "metric": "shieldPerSecond",
+              "op": ">=",
+              "value": 3
+            }
+          ],
+          "signalAcceptance": [
+            {
+              "metric": "poisonStacksApplied",
+              "op": ">=",
+              "value": 10
+            },
+            {
+              "metric": "shieldPerSecond",
+              "op": ">=",
+              "value": 3
+            },
+            {
+              "metric": "dotDamageShare",
+              "op": ">=",
+              "value": 0.16
+            }
+          ],
+          "failureBoundaries": [
+            {
+              "metric": "selfCostPerSecond",
+              "op": ">=",
+              "value": 0.1
+            }
+          ]
+        },
+        "team": [
+          {
+            "role": "knight",
+            "small1": "guard",
+            "small2": "vowTaunt",
+            "passive": "fortressStance",
+            "ultimate": "bannerWall"
+          },
+          {
+            "role": "priest",
+            "small1": "purifyingWard",
+            "small2": "heal",
+            "passive": "afterglowGrace",
+            "ultimate": "sanctuary"
+          },
+          {
+            "role": "warlock",
+            "small1": "venomDividend",
+            "small2": "venomBrand",
+            "passive": "hotbedPact",
+            "ultimate": "plagueOffering"
+          },
+          {
+            "role": "alchemist",
+            "small1": "stabilizingVapor",
+            "small2": "miasmaFlask",
+            "passive": "catalyst",
+            "ultimate": "grandMixture"
+          }
+        ]
+      },
+      "scarletVanguard": {
+        "name": "赤血先锋",
+        "desc": "狂战承担风险前排，战士补保护，法师用火场制造控制和范围压力。",
+        "design": {
+          "fantasy": "A risky berserker front line opens danger windows while the team stabilizes and burns enemies down.",
+          "experience": {
+            "start": "The berserker deliberately takes risk.",
+            "transition": "Short guard and shields prevent immediate collapse.",
+            "payoff": "Low-health basic pressure and fire zones win before the frontline burns out.",
+            "reset": "The team needs new guard windows after each risk cycle."
+          },
+          "primaryOutput": "basic attack",
+          "desiredTags": [
+            "selfCost",
+            "haste",
+            "shield",
+            "burn",
+            "area"
+          ],
+          "watchTags": [
+            "execute",
+            "burst"
+          ],
+          "strongMatchups": [
+            "ironWall"
+          ],
+          "weakMatchups": [
+            "shadowExecute",
+            "frostControl"
+          ],
+          "validationOpponents": [
+            "ironWall",
+            "shadowExecute"
+          ],
+          "curves": [
+            {
+              "metric": "lowHealthEntryRate",
+              "op": ">=",
+              "value": 0.5
+            },
+            {
+              "metric": "postLowAttackRateRatio",
+              "op": ">=",
+              "value": 1.15
+            }
+          ],
+          "signalAcceptance": [
+            {
+              "metric": "basicDamageShare",
+              "op": ">=",
+              "value": 0.22
+            },
+            {
+              "metric": "selfCostPerSecond",
+              "op": ">=",
+              "value": 0.15
+            },
+            {
+              "metric": "areaDamageShare",
+              "op": ">=",
+              "value": 0.12
+            }
+          ],
+          "failureBoundaries": [
+            {
+              "metric": "lowHealthEntryRate",
+              "op": ">=",
+              "value": 0.5
+            }
+          ]
+        },
+        "team": [
+          {
+            "role": "berserker",
+            "small1": "scarletChallenge",
+            "small2": "bloodStrike",
+            "passive": "rageEngine",
+            "ultimate": "undyingRoar"
+          },
+          {
+            "role": "warrior",
+            "small1": "lineHold",
+            "small2": "sunderingAdvance",
+            "passive": "lineBreaker",
+            "ultimate": "warBanner"
+          },
+          {
+            "role": "mage",
+            "small1": "ashZone",
+            "small2": "fireball",
+            "passive": "kindlingEcho",
+            "ultimate": "meteorRain"
+          },
+          {
+            "role": "bard",
+            "small1": "battleHymn",
+            "small2": "syncopate",
+            "passive": "encore",
+            "ultimate": "crescendo"
           }
         ]
       },
@@ -2926,11 +4931,11 @@ const GAME_SKILL_ASSETS = (() => {
         "maxDamageAmp": 0.5,
         "baseLeech": 0.055,
         "missingHpLeech": 0.14,
-        "lowHpHaste": 0.85,
+        "lowHpHaste": 0.75,
         "roarLeech": 0.18
       },
       "splashTargets": 2,
-      "hasteMultiplier": 1.45
+      "hasteMultiplier": 1.35
     }
   };
 })();

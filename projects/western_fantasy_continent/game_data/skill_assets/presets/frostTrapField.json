@@ -1,0 +1,36 @@
+{
+  "name": "霜陷猎场",
+  "desc": "游侠铺陷阱，法师拉长冰霜控制，队伍在减速窗口里集火目标。",
+  "design": {
+    "fantasy": "Ranger traps and mage frost turn the battlefield into a slow kill zone.",
+    "experience": {
+      "start": "Trap shots and frost skills apply slow and marks.",
+      "transition": "Enemy melee cadence drops during control windows.",
+      "payoff": "Marked and slowed targets are finished by focused shots.",
+      "reset": "Pressure falls if the team cannot refresh slow."
+    },
+    "primaryOutput": "controlFocus",
+    "desiredTags": ["slow", "mark", "focus", "control"],
+    "watchTags": ["burst", "dot"],
+    "strongMatchups": ["bloodRage", "ironWall"],
+    "weakMatchups": ["fireBurst", "poisonBloom"],
+    "validationOpponents": ["bloodRage", "ironWall", "poisonBloom"],
+    "curves": [
+      { "metric": "slowApplications", "op": ">=", "value": 6 },
+      { "metric": "controlWindowMeleeRateRatio", "op": "<=", "value": 0.85 }
+    ],
+    "signalAcceptance": [
+      { "metric": "markApplications", "op": ">=", "value": 4 },
+      { "metric": "lowestTargetDamageShare", "op": ">=", "value": 0.3 }
+    ],
+    "failureBoundaries": [
+      { "metric": "areaDamageShare", "op": "<=", "value": 0.45 }
+    ]
+  },
+  "team": [
+    { "role": "ranger", "small1": "snareShot", "small2": "markRelay", "passive": "trapSense", "ultimate": "killZone" },
+    { "role": "mage", "small1": "glacierShard", "small2": "iceLance", "passive": "frostScholar", "ultimate": "whiteout" },
+    { "role": "knight", "small1": "lanceCharge", "small2": "vowTaunt", "passive": "chargerMomentum", "ultimate": "royalCavalryBreak" },
+    { "role": "bard", "small1": "lullabyGuard", "small2": "battleHymn", "passive": "chorusKeeper", "ultimate": "resonantFinale" }
+  ]
+}

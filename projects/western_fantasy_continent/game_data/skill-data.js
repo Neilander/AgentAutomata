@@ -53,6 +53,8 @@ const GAME_SKILL_DATA = (() => {
         meta: { timer: effect.timer, duration: effect.duration },
       });
       if (effect.label) api.floater(unit, effect.label, effect.tone || "heal");
+    } else if (effect.kind === "chargeToTarget" && target) {
+      api.chargeToTarget?.(unit, target, effect);
     } else if (effect.kind === "targetTimer" && target) {
       setTimer(target, effect.timer, effect.duration);
       api.emitEffectSignal?.({
@@ -67,6 +69,8 @@ const GAME_SKILL_DATA = (() => {
       api.hit(unit, target, effect.flat + power * effect.power, effect.type, effect.label, visual);
     } else if (effect.kind === "hitEnemies") {
       enemies(effect.count).forEach((enemy) => api.hit(unit, enemy, effect.flat + power * effect.power, effect.type, effect.label, visual));
+    } else if (effect.kind === "shieldBreakEnemies") {
+      enemies(effect.count).forEach((enemy) => api.breakShield?.(unit, enemy, effect.amount, effect.label));
     } else if (effect.kind === "poisonTarget" && target) {
       api.addPoison(target, effect.stacks, effect.time, unit, visual);
     } else if (effect.kind === "burnTarget" && target) {
@@ -217,6 +221,9 @@ const GAME_SKILL_DATA = (() => {
       if (effect.requiresStatus && !(api.statusCount?.(target) > 0)) continue;
       if (effect.targetLine && target.line !== effect.targetLine) continue;
       if (Number.isFinite(effect.targetHpBelow) && !(api.hpRatio?.(target) < effect.targetHpBelow)) continue;
+      if (Number.isFinite(effect.sourceHpBelow) && !(api.hpRatio?.(source) < effect.sourceHpBelow)) continue;
+      if (effect.targetTimer && !(target[effect.targetTimer] > 0)) continue;
+      if (Number.isFinite(effect.perMark)) multiplier *= 1 + (target.mark || 0) * effect.perMark;
       multiplier *= 1 + (effect.amp || 0);
     }
     return multiplier;

@@ -2,6 +2,11 @@
 
 本文档记录角色养成与装备系统的属性框架参考。它借鉴 `Dark and Darker` 的大属性驱动小属性结构，但目标是服务本项目的自走战斗、角色搭配、刷装养成，而不是照搬动作游戏数值。
 
+配套细化文档：
+
+- `attribute_growth_and_build_model.md`：大属性加点、职业主副属性、副产物耦合、当前职业数值归整方案。
+- `attribute_system_v2_candidate.md`：当前对齐后的数值统一方案候选，包含基础小属性、二级属性、六大属性、职业主副属性和待模拟问题。
+
 ## 核心定义
 
 ### 大属性
@@ -263,4 +268,3 @@
 - Dark and Darker Wiki: `Stats`
 - Dark and Darker Wiki: `Enchantments`
 - Dark and Darker Wiki: `Gear Score`
-

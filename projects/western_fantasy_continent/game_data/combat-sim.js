@@ -70,11 +70,12 @@ class CombatSimulation {
       lowestEnemy: (unit) => this.lowestEnemy(unit),
       lowestHpAlly: (unit) => this.lowestHpAlly(unit),
       carryAlly: (unit) => this.carryAlly(unit),
-      effectivePower: (unit) => this.effectivePower(unit),
+      effectivePower: (unit, type) => this.effectivePower(unit, type),
       hpRatio: (unit) => this.hpRatio(unit),
       statusCount: (unit) => this.statusCount(unit),
       counterattack: (...args) => this.counterattack(...args),
       chargeToTarget: (...args) => this.chargeToTarget(...args),
+      blinkBacklineStrike: (...args) => this.blinkBacklineStrike(...args),
       emitEffectSignal: (...args) => this.emitEffectSignal(...args),
     };
   }
@@ -142,8 +143,15 @@ class CombatSimulation {
         maxHp,
         hp: maxHp,
         power: spec.power ?? role.power,
+        physicalPower: spec.physicalPower ?? spec.power ?? role.power,
+        magicPower: spec.magicPower ?? spec.power ?? role.power,
         armor: spec.armor ?? role.armor,
         range: spec.range ?? role.range,
+        attackSpeedMult: spec.attackSpeedMult ?? 1,
+        skillHasteMult: spec.skillHasteMult ?? 1,
+        effectPowerMult: spec.effectPowerMult ?? 1,
+        effectResistPct: spec.effectResistPct ?? 0,
+        receivedHealingMult: spec.receivedHealingMult ?? 1,
         homeX: slot.x,
         homeY: slot.y,
         line: slot.line,
@@ -172,6 +180,9 @@ class CombatSimulation {
         roarFuryTimer: 0,
         retaliationTimer: 0,
         retaliationEffect: null,
+        deathRoarUsed: false,
+        forcedTargetId: null,
+        forcedTargetTimer: 0,
         counterCd: 0,
         damageDone: 0,
         mark: 0,
@@ -187,8 +198,16 @@ class CombatSimulation {
     for (const effect of this.passiveEffects(unit, "passiveStat")) {
       if (Number.isFinite(effect.maxHpAdd)) unit.maxHp += effect.maxHpAdd;
       if (Number.isFinite(effect.maxHpMult)) unit.maxHp = Math.round(unit.maxHp * effect.maxHpMult);
-      if (Number.isFinite(effect.powerAdd)) unit.power += effect.powerAdd;
-      if (Number.isFinite(effect.powerMult)) unit.power = Math.round(unit.power * effect.powerMult);
+      if (Number.isFinite(effect.powerAdd)) {
+        unit.power += effect.powerAdd;
+        unit.physicalPower += effect.powerAdd;
+        unit.magicPower += effect.powerAdd;
+      }
+      if (Number.isFinite(effect.powerMult)) {
+        unit.power = Math.round(unit.power * effect.powerMult);
+        unit.physicalPower = Math.round(unit.physicalPower * effect.powerMult);
+        unit.magicPower = Math.round(unit.magicPower * effect.powerMult);
+      }
       if (Number.isFinite(effect.armorAdd)) unit.armor += effect.armorAdd;
       if (Number.isFinite(effect.armorMult)) unit.armor = Math.round(unit.armor * effect.armorMult);
       if (Number.isFinite(effect.rangeAdd)) unit.range += effect.rangeAdd;
@@ -215,6 +234,8 @@ class CombatSimulation {
       unit.maxHp = Math.round(unit.maxHp * statSwing);
       unit.hp = unit.maxHp;
       unit.power = Math.round(unit.power * (0.95 + this.rng() * 0.1));
+      unit.physicalPower = Math.round(unit.physicalPower * (0.95 + this.rng() * 0.1));
+      unit.magicPower = Math.round(unit.magicPower * (0.95 + this.rng() * 0.1));
       unit.armor = Math.round(unit.armor * (0.96 + this.rng() * 0.08));
       unit.skillCd.small1 += this.rng() * 1.2;
       unit.skillCd.small2 += this.rng() * 1.5;
@@ -256,11 +277,12 @@ class CombatSimulation {
   }
 
   tickTimers(unit, dt) {
-    for (const key of ["small1", "small2", "ultimate"]) unit.skillCd[key] = Math.max(0, unit.skillCd[key] - dt);
-    unit.attackCd -= dt * (unit.hasteTimer > 0 ? (unit.hasteMultiplier || 1.45) : 1);
-    for (const key of ["slowTimer", "guardTimer", "tauntTimer", "duelTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer"]) {
+    for (const key of ["small1", "small2", "ultimate"]) unit.skillCd[key] = Math.max(0, unit.skillCd[key] - dt * (unit.skillHasteMult || 1));
+    unit.attackCd -= dt * (unit.hasteTimer > 0 ? (unit.hasteMultiplier || 1.45) : 1) * (unit.attackSpeedMult || 1);
+    for (const key of ["slowTimer", "guardTimer", "tauntTimer", "duelTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer", "forcedTargetTimer"]) {
       unit[key] = Math.max(0, unit[key] - dt);
     }
+    if (unit.forcedTargetTimer <= 0) unit.forcedTargetId = null;
     unit.counterCd = Math.max(0, (unit.counterCd || 0) - dt);
   }
 
@@ -275,9 +297,9 @@ class CombatSimulation {
     dot.tick -= dt;
     if (dot.tick <= 0) {
       dot.tick = 1;
-      const resist = unit.dotResistTimer > 0 ? 0.6 : 1;
+      const resist = (unit.dotResistTimer > 0 ? 0.6 : 1) * (1 - Math.min(0.5, Math.max(0, unit.effectResistPct || 0)));
       this.withAction(dot.source, { tags: ["dot", "damage", type], skillName: type === "poison" ? "剧毒" : "燃烧" }, () => {
-        this.takeDamage(dot.source, unit, dot.stacks * perStack * resist * this.passiveDotMultiplier(dot.source, type), type);
+        this.takeDamage(dot.source, unit, dot.stacks * perStack * resist * this.passiveDotMultiplier(dot.source, type) * (dot.source?.effectPowerMult || 1), type);
       });
     }
     if (dot.time <= 0) Object.assign(dot, status());
@@ -307,7 +329,8 @@ class CombatSimulation {
     const missingHp = isBerserker ? 1 - this.hpRatio(unit) : 0;
     const lowHpHaste = isBerserker ? 1 + missingHp * (BERSERKER_PASSIVE.lowHpHaste ?? 0) : 1;
     unit.attackCd = ((isBerserker ? (BERSERKER_MODEL.basicAttackCooldown ?? 1.35) : 1.45) * (unit.slowTimer > 0 ? 1.25 : 1)) / lowHpHaste;
-    const power = this.effectivePower(unit);
+    const attackType = unit.attackType || "physical";
+    const power = this.effectivePower(unit, attackType);
     let amount = isBerserker ? (BERSERKER_MODEL.basicFlatDamage ?? 10) + power * (BERSERKER_MODEL.basicPowerRatio ?? 0.22) : 11 + power * 0.22;
     let label = "攻击";
     if (isBerserker && unit.bloodFuryTimer > 0) {
@@ -323,7 +346,30 @@ class CombatSimulation {
       label = "战吼普攻";
     }
     this.withAction(unit, { tags: ["basic", "attack"], skillName: label, meta: { windows: this.activeWindows(unit) } }, () => {
-      this.hit(unit, target, amount, "physical", label);
+      this.hit(unit, target, amount, attackType, label);
+      for (const effect of this.passiveEffects(unit, "basicAttackMark")) {
+        target.mark = Math.min(effect.max || 6, (target.mark || 0) + (effect.stacks || 1));
+        this.emitSignal({
+          kind: "status",
+          side: target.side,
+          unitId: target.id,
+          text: `猎标${target.mark}`,
+          tone: "debuff",
+          value: target.mark,
+          tags: this.actionTags(unit, ["status", "debuff", "mark", "basic"]).filter(Boolean),
+          sourceId: unit.id,
+          skillKey: unit.passive,
+          skillName: "猎杀节律",
+          meta: { stacks: target.mark },
+        });
+      }
+      for (const effect of this.passiveEffects(unit, "basicAttackSelfShield")) {
+        const bonus = (target.mark || 0) * (effect.perMark || 0);
+        this.shield(unit, (effect.flat || 0) + bonus, effect.label || "影步", unit);
+      }
+      for (const effect of this.passiveEffects(unit, "basicAttackPoison")) {
+        this.addPoison(target, effect.stacks || 1, effect.time || 4, unit);
+      }
     });
     if (isBerserker && unit.whirlwindTimer > 0) {
       this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy) && enemy.id !== target.id).sort(this.byDistance(target)).slice(0, BERSERKER_MODEL.splashTargets ?? 2)
@@ -333,9 +379,9 @@ class CombatSimulation {
     }
   }
 
-  hit(source, target, amount, type, label) {
+  hit(source, target, amount, type, label, visual, scaleWith = type) {
     if (!target) return;
-    let value = amount + this.effectivePower(source) * 0.04;
+    let value = amount + this.effectivePower(source, scaleWith) * 0.04;
     if (source.passive === "lineBreaker" && target.line === "前排") value *= 1.06;
     if (source.passive === "rageEngine") value *= 1 + (1 - this.hpRatio(source)) * (BERSERKER_PASSIVE.maxDamageAmp ?? 0.45);
     if (source.passive === "executionSense" && (this.hpRatio(target) < 0.38 || this.statusCount(target) > 0)) value *= 1.06;
@@ -388,14 +434,39 @@ class CombatSimulation {
       rawAmount: amount,
       type,
     }, this.api());
+    if (target.hp <= 0 && this.tryAutoRazorRoar(target, source)) return;
     if (target.hp <= 0) this.onDeath(target, source);
+  }
+
+  tryAutoRazorRoar(unit, source) {
+    if (!unit || unit.ultimate !== "aaRazorRoar" || unit.deathRoarUsed) return false;
+    unit.deathRoarUsed = true;
+    unit.hp = 1;
+    unit.skillCd.ultimate = Math.max(unit.skillCd.ultimate || 0, SKILL_DATA.skills.aaRazorRoar?.cooldown || 32);
+    this.emitSignal({
+      kind: "status",
+      tags: ["status", "deathPrevent", "autoUltimate", "berserker"],
+      source: SIGNALS.unitRef(unit),
+      target: SIGNALS.unitRef(unit),
+      amount: unit.hp,
+      skillKey: "aaRazorRoar",
+      skillName: SKILL_DATA.skills.aaRazorRoar?.name || "刃吼狂潮",
+      meta: { trigger: "firstZeroHp", preventedBy: source?.id || "" },
+    });
+    this.withAction(unit, { tags: ["skill", "ultimate", "autoUltimate"], skillKey: "aaRazorRoar", skillName: SKILL_DATA.skills.aaRazorRoar?.name || "刃吼狂潮" }, () => {
+      this.skills.aaRazorRoar?.cast({ unit, target: this.chooseTarget(unit), visual: false });
+    });
+    unit.hasteTimer = Math.min(unit.hasteTimer || 0, 0.9);
+    unit.bloodFuryTimer = 0;
+    unit.whirlwindTimer = Math.min(unit.whirlwindTimer || 0, 2.8);
+    return true;
   }
 
   counterattack(unit, source, effect, context = {}) {
     if (!this.isAlive(unit) || !this.isAlive(source) || (unit.counterCd || 0) > 0) return;
     unit.counterCd = effect.cooldown || 0;
     const amount = (effect.flat || 0)
-      + this.effectivePower(unit) * (effect.power || 0)
+      + this.effectivePower(unit, "physical") * (effect.power || 0)
       + (context.blocked || 0) * (effect.blockedRatio || 0);
     this.withAction(unit, {
       tags: ["counter", "reactive"],
@@ -431,7 +502,8 @@ class CombatSimulation {
 
   healUnit(unit, amount, label = "治疗", source = this.currentActionSource) {
     if (!unit || !this.isAlive(unit)) return;
-    const value = amount * this.passiveHealMultiplier(source, unit);
+    const received = label === "吸血" ? 1 : (unit.receivedHealingMult || 1);
+    const value = amount * received * this.passiveHealMultiplier(source, unit);
     const before = unit.hp;
     unit.hp = Math.min(unit.maxHp, unit.hp + value);
     const healed = unit.hp - before;
@@ -456,7 +528,7 @@ class CombatSimulation {
   shield(unit, amount, label, source = this.currentActionSource) {
     if (!unit || !this.isAlive(unit)) return;
     const bonus = unit.passive === "fortressStance" ? 1.08 + (1 - this.hpRatio(unit)) * 0.12 : 1;
-    const value = amount * bonus * this.passiveShieldMultiplier(source, unit);
+    const value = amount * (unit.receivedHealingMult || 1) * bonus * this.passiveShieldMultiplier(source, unit);
     unit.shield += value;
     this.emitSignal({
       kind: "shield",
@@ -583,6 +655,10 @@ class CombatSimulation {
   chooseTarget(unit) {
     const enemies = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy));
     if (!enemies.length) return null;
+    if (unit.forcedTargetId && unit.forcedTargetTimer > 0) {
+      const forced = enemies.find((enemy) => enemy.id === unit.forcedTargetId);
+      if (forced) return forced;
+    }
     const taunters = unit.range < 20 ? enemies.filter((enemy) => enemy.tauntTimer > 0) : [];
     if (taunters.length) return taunters.sort(this.byDistance(unit))[0];
     if (unit.roleName === "刺客") return this.lowestEnemy(unit) || enemies[0];
@@ -651,9 +727,60 @@ class CombatSimulation {
     });
   }
 
-  effectivePower(unit) { return unit.power + (unit.bonusPowerTimer > 0 ? unit.bonusPower || 14 : 0); }
+  blinkBacklineStrike(unit, effect = {}) {
+    if (!unit || !this.isAlive(unit)) return;
+    const backline = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy) && enemy.line === "鍚庢帓");
+    const fallback = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy));
+    const target = (backline.length ? backline : fallback).sort((a, b) => this.hpRatio(a) - this.hpRatio(b) || this.getDistance(unit, a) - this.getDistance(unit, b))[0];
+    if (!target) return;
+    const before = { x: unit.x, y: unit.y };
+    const sideOffset = unit.side === "left" ? -3.8 : 3.8;
+    unit.x = clamp(target.x + sideOffset, 7, 93);
+    unit.y = clamp(target.y + (effect.yOffset || 1.6), 12, 88);
+    unit.attackCd = Math.min(unit.attackCd, effect.attackCd ?? 0.08);
+    unit.forcedTargetId = target.id;
+    unit.forcedTargetTimer = effect.lockDuration ?? 3.2;
+    if (effect.guardDuration) unit.guardTimer = Math.max(unit.guardTimer || 0, effect.guardDuration);
+    this.emitSignal({
+      kind: "movement",
+      tags: this.actionTags(unit, ["movement", "blink", "backline"]).filter(Boolean),
+      source: SIGNALS.unitRef(unit),
+      target: SIGNALS.unitRef(target),
+      amount: round(this.getDistance({ x: before.x, y: before.y }, unit)),
+      skillKey: unit?._actionSignal?.skillKey || null,
+      skillName: effect.label || unit?._actionSignal?.skillName || "blink",
+      meta: { before, after: { x: unit.x, y: unit.y }, lockDuration: unit.forcedTargetTimer },
+    });
+    if (effect.targetSlowDuration) target.slowTimer = Math.max(target.slowTimer || 0, effect.targetSlowDuration);
+    const power = this.effectivePower(unit, effect.scaleWith || effect.type || "physical");
+    const executeBonus = (1 - this.hpRatio(target)) * (effect.missingTargetHpFlat || 0);
+    this.hit(unit, target, (effect.flat || 0) + power * (effect.power || 0) + executeBonus, effect.type || "physical", effect.hitLabel || effect.label || "blink", false, effect.scaleWith || effect.type || "physical");
+    if (effect.markStacks) {
+      target.mark = Math.min(effect.markMax || 5, (target.mark || 0) + effect.markStacks);
+      this.emitSignal({
+        kind: "status",
+        tags: this.actionTags(unit, ["status", "debuff", "mark", "backline"]).filter(Boolean),
+        source: SIGNALS.unitRef(unit),
+        target: SIGNALS.unitRef(target),
+        amount: effect.markStacks,
+        skillKey: unit?._actionSignal?.skillKey || null,
+        skillName: effect.label || unit?._actionSignal?.skillName || "blink",
+        meta: { stacks: target.mark },
+      });
+    }
+  }
+
+  effectivePower(unit, type = "physical") {
+    const base = type === "physical"
+      ? (unit.physicalPower ?? unit.power)
+      : (unit.magicPower ?? unit.power);
+    return base + (unit.bonusPowerTimer > 0 ? unit.bonusPower || 14 : 0);
+  }
   statusCount(unit) { return unit.poison.stacks + unit.burn.stacks + (unit.slowTimer > 0 ? 2 : 0) + (unit.mark || 0); }
-  carryAlly(unit) { return this.alliesOf(unit).filter((ally) => this.isAlive(ally)).sort((a, b) => this.effectivePower(b) - this.effectivePower(a))[0]; }
+  carryAlly(unit) {
+    const carryScore = (ally) => Math.max(this.effectivePower(ally, "physical"), this.effectivePower(ally, "magic"));
+    return this.alliesOf(unit).filter((ally) => this.isAlive(ally)).sort((a, b) => carryScore(b) - carryScore(a))[0];
+  }
   lowestEnemy(unit) { return this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy)).sort((a, b) => this.hpRatio(a) - this.hpRatio(b))[0]; }
   enemiesOf(unit) { return this.units.filter((item) => item.side !== unit.side); }
   alliesOf(unit) { return this.units.filter((item) => item.side === unit.side); }

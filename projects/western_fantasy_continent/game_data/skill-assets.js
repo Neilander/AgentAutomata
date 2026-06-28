@@ -2481,7 +2481,7 @@ const GAME_SKILL_ASSETS = (() => {
         "roleKeys": [
           "berserker"
         ],
-        "cooldown": 9.2,
+        "cooldown": 8.8,
         "openingCooldown": 3.6,
         "icon": "bleeding-eye",
         "desc": "狂战副定位：风险前排。自伤进入危险线，短暂嘲讽和减伤，让低血流能承担一点前排任务，但风险真实存在。",
@@ -2821,6 +2821,260 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "aaBladeFlurry": {
+        "name": "迅刃连刺",
+        "type": "小技能",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 4.8,
+        "openingCooldown": 2.4,
+        "icon": "daggers",
+        "desc": "刺客实验技能：用低冷却物理连刺主动压血，而不是只等低血处决。预期吃敏捷和武力，不吃奥术。",
+        "effects": [
+          {
+            "kind": "hitTarget",
+            "flat": 10,
+            "power": 0.42,
+            "type": "physical",
+            "label": "迅刃"
+          },
+          {
+            "kind": "poisonTarget",
+            "stacks": 1,
+            "time": 5
+          }
+        ]
+      },
+      "aaShadowPursuit": {
+        "name": "追影切",
+        "type": "小技能",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 6.2,
+        "openingCooldown": 3,
+        "icon": "sprint",
+        "desc": "刺客实验技能：暗影表现，物理缩放。主要靠自身武力制造处决线，缺失生命加成较低。",
+        "effects": [
+          {
+            "kind": "hitLowestEnemy",
+            "flat": 12,
+            "power": 0.62,
+            "missingTargetHpFlat": 6,
+            "type": "shadow",
+            "scaleWith": "physical",
+            "label": "追影"
+          }
+        ]
+      },
+      "aaPredatorRhythm": {
+        "name": "猎杀节律",
+        "type": "被动",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 0,
+        "icon": "crosshair",
+        "desc": "刺客实验被动：普攻叠猎标，猎标放大后续伤害。敏捷负责叠层速度，武力负责命中质量。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "basicAttackMark",
+            "stacks": 1,
+            "max": 5
+          },
+          {
+            "kind": "basicAttackPoison",
+            "stacks": 1,
+            "time": 4
+          },
+          {
+            "kind": "basicAttackSelfShield",
+            "flat": 2.4,
+            "perMark": 0.45,
+            "label": "影步"
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "requiresStatus": true,
+            "amp": 0.06
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "targetHpBelow": 0.5,
+            "amp": 0.05
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "perMark": 0.035
+          }
+        ]
+      },
+      "aaBladeHarvest": {
+        "name": "刃影收割",
+        "type": "大招",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 26,
+        "openingCooldown": 5.6,
+        "icon": "cloak-dagger",
+        "desc": "刺客实验大招：暗影表现，物理缩放。降低纯缺失生命收益，提高自身武力收益。",
+        "effects": [
+          {
+            "kind": "hitLowestEnemy",
+            "flat": 30,
+            "power": 0.9,
+            "missingTargetHpFlat": 8,
+            "type": "shadow",
+            "scaleWith": "physical",
+            "label": "刃收"
+          }
+        ]
+      },
+      "aa2VeinMark": {
+        "name": "破绽刻痕",
+        "type": "小技能",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 6.6,
+        "openingCooldown": 3.2,
+        "icon": "crosshair",
+        "desc": "刺客第二批实验技能：低伤害铺垫猎标。它负责制造爆发条件，不负责单独杀人。",
+        "effects": [
+          {
+            "kind": "hitTarget",
+            "flat": 9,
+            "power": 0.3,
+            "type": "physical",
+            "label": "刻痕"
+          },
+          {
+            "kind": "markTarget",
+            "stacks": 1,
+            "max": 4
+          }
+        ]
+      },
+      "aa2SmokeStep": {
+        "name": "烟步侧切",
+        "type": "小技能",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 9.2,
+        "openingCooldown": 4.8,
+        "icon": "sprint",
+        "desc": "刺客第二批实验技能：短暂减伤后切向低血目标。它提供进场窗口，但频率低，不应变成常驻坦度。",
+        "effects": [
+          {
+            "kind": "timer",
+            "timer": "guardTimer",
+            "duration": 2.1,
+            "label": "烟步",
+            "tone": "shield"
+          },
+          {
+            "kind": "hitLowestEnemy",
+            "flat": 12,
+            "power": 0.38,
+            "missingTargetHpFlat": 4,
+            "type": "shadow",
+            "scaleWith": "physical",
+            "label": "侧切"
+          }
+        ]
+      },
+      "aa2BacklineBlink": {
+        "name": "影跃后切",
+        "type": "小技能",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 8.6,
+        "openingCooldown": 2.2,
+        "icon": "sprint",
+        "desc": "刺客第二批实验技能：闪现到敌方后排身边并短暂锁定目标。它负责让刺客真的接触后排，而不是隔着前排等低血。",
+        "effects": [
+          {
+            "kind": "blinkBacklineStrike",
+            "flat": 20,
+            "power": 0.5,
+            "missingTargetHpFlat": 5,
+            "type": "physical",
+            "scaleWith": "physical",
+            "label": "影跃",
+            "hitLabel": "后切",
+            "markStacks": 2,
+            "markMax": 5,
+            "lockDuration": 4,
+            "guardDuration": 3,
+            "targetSlowDuration": 1.8,
+            "attackCd": 0.05
+          }
+        ]
+      },
+      "aa2MarkedTempo": {
+        "name": "猎标节拍",
+        "type": "被动",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 0,
+        "icon": "target-arrows",
+        "desc": "刺客第二批实验被动：普攻少量叠猎标，对猎标目标增伤。收益来自持续命中同一目标，不给毒和自护盾。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "basicAttackMark",
+            "stacks": 1,
+            "max": 5
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "perMark": 0.03
+          },
+          {
+            "kind": "passiveDamageAmp",
+            "targetHpBelow": 0.45,
+            "amp": 0.03
+          }
+        ]
+      },
+      "aa2FinisherCut": {
+        "name": "断喉收束",
+        "type": "大招",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 30,
+        "openingCooldown": 8.8,
+        "icon": "cloak-dagger",
+        "desc": "刺客第二批实验大招：消耗猎标打一次爆发。没有猎标时伤害一般，避免无条件处决。",
+        "effects": [
+          {
+            "kind": "hitMarkedTarget",
+            "flat": 20,
+            "power": 0.62,
+            "perMark": 12,
+            "type": "shadow",
+            "scaleWith": "physical",
+            "label": "断喉",
+            "consumeMark": true
+          }
+        ]
+      },
       "toxinExecution": {
         "name": "淬毒处刑",
         "type": "被动",
@@ -2867,6 +3121,91 @@ const GAME_SKILL_ASSETS = (() => {
           {
             "kind": "passiveStat",
             "rangeAdd": 2
+          }
+        ]
+      },
+      "aaFrenzyCut": {
+        "name": "躁血快斩",
+        "type": "小技能",
+        "role": "狂战士",
+        "roleKeys": [
+          "berserker"
+        ],
+        "cooldown": 6.8,
+        "openingCooldown": 3.8,
+        "icon": "bloody-sword",
+        "desc": "狂战士实验技能：自伤进入短血怒窗口。收益来自窗口内普攻次数，预期吃敏捷和武力，不吃受治愈。",
+        "effects": [
+          {
+            "kind": "selfRawDamage",
+            "maxHp": 0.12,
+            "type": "blood"
+          },
+          {
+            "kind": "timer",
+            "timer": "bloodFuryTimer",
+            "duration": 2.5,
+            "label": "躁血",
+            "tone": "heal"
+          }
+        ]
+      },
+      "aaFrenzyEngine": {
+        "name": "躁血引擎",
+        "type": "被动",
+        "role": "狂战士",
+        "roleKeys": [
+          "berserker"
+        ],
+        "cooldown": 0,
+        "icon": "rage",
+        "desc": "狂战士实验被动：低血时小幅增伤，但不自带吸血。把强度从活得久转向窗口内输出质量。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "passiveDamageAmp",
+            "sourceHpBelow": 0.42,
+            "amp": 0.03
+          }
+        ]
+      },
+      "aaRazorRoar": {
+        "name": "刃吼狂潮",
+        "type": "大招",
+        "role": "狂战士",
+        "roleKeys": [
+          "berserker"
+        ],
+        "cooldown": 36,
+        "openingCooldown": 10.8,
+        "icon": "lion",
+        "desc": "狂战士实验大招：付血换急速、血怒和旋风，不给不死和额外吸血。赢法应该是高频普攻爆发，不是硬拖。",
+        "effects": [
+          {
+            "kind": "selfRawDamage",
+            "maxHp": 0.17,
+            "type": "blood"
+          },
+          {
+            "kind": "timer",
+            "timer": "hasteTimer",
+            "duration": 2,
+            "label": "刃吼",
+            "tone": "heal"
+          },
+          {
+            "kind": "timer",
+            "timer": "bloodFuryTimer",
+            "duration": 2,
+            "label": "血怒",
+            "tone": "heal"
+          },
+          {
+            "kind": "timer",
+            "timer": "whirlwindTimer",
+            "duration": 3.2,
+            "label": "旋风",
+            "tone": "shield"
           }
         ]
       },

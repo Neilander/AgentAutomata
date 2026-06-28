@@ -217,6 +217,38 @@ Examples:
 
 If a needed effect kind does not exist, specify the new effect kind and its required API behavior.
 
+## Step 6.5: Check Scaling Alignment
+
+Before approving or implementing any skill, compare its effect schema against the current stat documents and combat scaling rules.
+
+Read or check:
+
+- `design/attribute_stat_system_reference.md`
+- `design/attribute_system_v2_candidate.md`
+- `design/attribute-build-route-simulation-v2.md` when testing the new attribute model
+- `game_data/combat-sim.js` for `effectivePower`, healing, shield, DOT, haste, and received-healing behavior
+
+For every skill, declare:
+
+```text
+Intended primary output:
+  physical direct | magic direct | DOT | basic attack | healing | shield | control | execute
+Expected scaling:
+  physicalPower | magicPower | attackSpeed | skillHaste | effectPower | receivedHealing | none
+Forbidden scaling:
+  stats this skill must not benefit from
+Runtime schema check:
+  whether type, scaleWith, timer, heal, shield, DOT, or passive path actually uses the intended stat
+```
+
+Reject or revise the skill if:
+
+- A physical assassin skill accidentally scales with `magicPower` because `type: "shadow"` routes through magic scaling.
+- A DOT skill is supposed to scale with `effectPower` but only scales with flat stacks.
+- A basic-attack carry skill claims to like attack speed but its payoff is mostly fixed skill damage.
+- A sustain skill is supposed to reward received healing but uses lifesteal and bypasses `receivedHealing`.
+- A support skill claims to buff a carry but does not affect the carry's declared primary output.
+
 ## Step 7: Number Pass
 
 Do a first conservative numeric pass.

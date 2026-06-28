@@ -7,6 +7,7 @@ const SKILL_ASSETS = loadSkillAssetSource();
 const KNOWN_EFFECT_KINDS = new Set([
   "arrowStorm",
   "berserkerRoar",
+  "blinkBacklineStrike",
   "buffCarryPower",
   "burningEnemies",
   "burnTarget",

@@ -1,6 +1,6 @@
 {
   "schema": "agent_automata_task_budget_board_v1",
-  "updatedAt": "2026-06-27",
+  "updatedAt": "2026-06-28",
   "workflow": [
     "Create or refresh an experiment budget card before tuning.",
     "Use the matching debug skill to run bounded attempts.",
@@ -434,6 +434,29 @@
         "矩阵残余风险记录"
       ],
       "lastEvidence": "2026-06-27 accept: 2026-06-27 complete: kept old skills; added warrior duel skills duelChallenge/duelistOath/singleCombatVerdict and knight charge skills lanceCharge/chargerMomentum/royalCavalryBreak. Added duelTimer decay only. Build/validate/syntax/signals/redteam/matrix/budget ran; existing archetype signals pass; redteam risky candidates 0; top watch candidate 63.1% below breaker threshold."
+    },
+    {
+      "id": "attribute-v2-yield-tuning",
+      "name": "属性收益 v2 调试",
+      "detail": "在不改已确认职业基础数值的前提下，调试六大属性每点收益，使主/副属性在1v1、2v2、4v4里形成2-4条有效路线，避免纯坚韧或错属性统治。",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "high",
+      "blastRadius": "medium",
+      "attemptBudget": 6,
+      "attemptsUsed": 6,
+      "status": "active",
+      "skillFlow": [
+        "experiment-budget-governance",
+        "combat-causal-attribution"
+      ],
+      "successCriteria": [
+        "法师等法系不再由武力路线主导",
+        "多数职业至少2条有效加点路线",
+        "坚韧/韧性不能在大多数职业里无脑第一",
+        "每轮调参后跑1v1、2v2、4v4验证"
+      ],
+      "lastEvidence": "2026-06-28 inconclusive: Attempt 6: added scaling-alignment rule, experimental berserker/assassin kits, scaleWith support, basic-attack mark/poison/shield hooks. Berserker team routes improved: 2v2/4v4 no issue, 4v4 best 3main7secondary 46%. Assassin remains survival-led in team: 2v2 and 4v4 best pure fortitude; 1v1 became too broad/too strong, so further tuning should address entry/targeting/team environment rather than increasing new-skill numbers."
     }
   ]
 }

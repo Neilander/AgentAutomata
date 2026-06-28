@@ -34,7 +34,8 @@ const GAME_SKILL_DATA = (() => {
 
   function executeEffect(effect, context, api) {
     const { unit, target, visual } = context;
-    const power = api.effectivePower ? api.effectivePower(unit) : unit.power;
+    const powerFor = (type = "physical") => api.effectivePower ? api.effectivePower(unit, type) : unit.power;
+    const scaleType = () => effect.scaleWith || effect.type;
     const enemies = (count, anchor = unit) => api.enemiesOf(unit).filter(api.isAlive).sort(api.byDistance(anchor)).slice(0, count ?? Infinity);
     const allies = () => api.alliesOf(unit).filter(api.isAlive);
     const setTimer = (owner, timerName, duration) => {
@@ -55,6 +56,8 @@ const GAME_SKILL_DATA = (() => {
       if (effect.label) api.floater(unit, effect.label, effect.tone || "heal");
     } else if (effect.kind === "chargeToTarget" && target) {
       api.chargeToTarget?.(unit, target, effect);
+    } else if (effect.kind === "blinkBacklineStrike") {
+      api.blinkBacklineStrike?.(unit, effect, visual);
     } else if (effect.kind === "targetTimer" && target) {
       setTimer(target, effect.timer, effect.duration);
       api.emitEffectSignal?.({
@@ -66,9 +69,11 @@ const GAME_SKILL_DATA = (() => {
         meta: { timer: effect.timer, duration: effect.duration },
       });
     } else if (effect.kind === "hitTarget" && target) {
-      api.hit(unit, target, effect.flat + power * effect.power, effect.type, effect.label, visual);
+      const power = powerFor(scaleType());
+      api.hit(unit, target, effect.flat + power * effect.power, effect.type, effect.label, visual, scaleType());
     } else if (effect.kind === "hitEnemies") {
-      enemies(effect.count).forEach((enemy) => api.hit(unit, enemy, effect.flat + power * effect.power, effect.type, effect.label, visual));
+      const power = powerFor(scaleType());
+      enemies(effect.count).forEach((enemy) => api.hit(unit, enemy, effect.flat + power * effect.power, effect.type, effect.label, visual, scaleType()));
     } else if (effect.kind === "shieldBreakEnemies") {
       enemies(effect.count).forEach((enemy) => api.breakShield?.(unit, enemy, effect.amount, effect.label));
     } else if (effect.kind === "poisonTarget" && target) {
@@ -86,20 +91,26 @@ const GAME_SKILL_DATA = (() => {
         meta: { stacks: target.mark },
       });
     } else if (effect.kind === "hitMarkedTarget" && target) {
-      api.hit(unit, target, effect.flat + power * effect.power + (target.mark || 0) * effect.perMark, effect.type, effect.label, visual);
+      const power = powerFor(scaleType());
+      api.hit(unit, target, effect.flat + power * effect.power + (target.mark || 0) * effect.perMark, effect.type, effect.label, visual, scaleType());
+      if (effect.consumeMark) target.mark = 0;
     } else if (effect.kind === "hitLowestEnemy") {
+      const power = powerFor(scaleType());
       const enemy = api.lowestEnemy(unit);
-      if (enemy) api.hit(unit, enemy, effect.flat + power * effect.power + (1 - api.hpRatio(enemy)) * effect.missingTargetHpFlat, effect.type, effect.label, visual);
+      if (enemy) api.hit(unit, enemy, effect.flat + power * effect.power + (1 - api.hpRatio(enemy)) * effect.missingTargetHpFlat, effect.type, effect.label, visual, scaleType());
     } else if (effect.kind === "burningEnemies") {
       api.enemiesOf(unit).filter((enemy) => api.isAlive(enemy) && enemy.burn.stacks > 0).slice(0, effect.count).forEach((enemy) => {
         api.hit(unit, enemy, effect.flat + enemy.burn.stacks * effect.perBurn, effect.type, effect.label, visual);
         api.addBurn(enemy, effect.addBurn, effect.burnTime, unit, visual);
       });
     } else if (effect.kind === "healLowestAlly") {
+      const power = powerFor("heal");
       api.healUnit(api.lowestHpAlly(unit), effect.flat + power * effect.power, effect.label, visual);
     } else if (effect.kind === "shieldLowestAlly") {
+      const power = powerFor("shield");
       api.shield(api.lowestHpAlly(unit), effect.flat + power * effect.power, effect.label, visual);
     } else if (effect.kind === "shieldCarryAlly") {
+      const power = powerFor("shield");
       api.shield(api.carryAlly(unit), effect.flat + power * effect.power, effect.label, visual);
     } else if (effect.kind === "lowestAllyTimer") {
       const ally = api.lowestHpAlly(unit);
@@ -153,7 +164,8 @@ const GAME_SKILL_DATA = (() => {
     } else if (effect.kind === "poisonEnemies") {
       enemies(null).forEach((enemy) => api.addPoison(enemy, effect.stacks, effect.time, unit, visual));
     } else if (effect.kind === "hitTargetWithStatus" && target) {
-      api.hit(unit, target, effect.flat + power * effect.power + Math.min(effect.maxStatus, api.statusCount(target)) * effect.perStatus, effect.type, effect.label, visual);
+      const power = powerFor(scaleType());
+      api.hit(unit, target, effect.flat + power * effect.power + Math.min(effect.maxStatus, api.statusCount(target)) * effect.perStatus, effect.type, effect.label, visual, scaleType());
     } else if (effect.kind === "enemyTimers") {
       enemies(effect.count).forEach((enemy) => {
         setTimer(enemy, effect.timer, effect.duration);
@@ -167,9 +179,11 @@ const GAME_SKILL_DATA = (() => {
         });
       });
     } else if (effect.kind === "teamShield") {
+      const power = powerFor("shield");
       const targets = effect.selfOnly ? [unit] : allies();
       targets.forEach((ally) => api.shield(ally, effect.flat + power * effect.power, effect.label, visual));
     } else if (effect.kind === "teamHeal") {
+      const power = powerFor("heal");
       allies().forEach((ally) => api.healUnit(ally, effect.flat + power * effect.power, effect.label, visual));
     } else if (effect.kind === "berserkerRoar") {
       setTimer(unit, "undyingTimer", berserkerModel.durations.immortal);
@@ -181,13 +195,16 @@ const GAME_SKILL_DATA = (() => {
       setTimer(unit, "roarFuryTimer", berserkerModel.durations.roarFury);
       api.floater(unit, "不死", "heal");
     } else if (effect.kind === "arrowStorm") {
+      const power = powerFor("physical");
       enemies(null).forEach((enemy) => api.hit(unit, enemy, 29 + power * 0.28 + (enemy.line === "后排" ? 16 : 0), "physical", "箭雨", visual));
     } else if (effect.kind === "meteorRain") {
+      const power = powerFor("fire");
       enemies(null).forEach((enemy) => {
         api.hit(unit, enemy, 22 + power * 0.18 + enemy.burn.stacks * 6, "fire", "流星", visual);
         api.addBurn(enemy, 2, 6, unit, visual);
       });
     } else if (effect.kind === "plagueOffering") {
+      const power = powerFor("poison");
       enemies(null).forEach((enemy) => {
         if (enemy.poison.stacks <= 0) return;
         api.hit(unit, enemy, (effect.flat ?? 22) + enemy.poison.stacks * (effect.perPoison ?? 9) + power * (effect.power ?? 0.22), "poison", "万毒", visual);
@@ -201,6 +218,7 @@ const GAME_SKILL_DATA = (() => {
         ally.bonusPower = Math.max(ally.bonusPower || 0, 10);
       });
     } else if (effect.kind === "grandMixture") {
+      const power = powerFor("arcane");
       enemies(null).forEach((enemy) => api.hit(
         unit,
         enemy,

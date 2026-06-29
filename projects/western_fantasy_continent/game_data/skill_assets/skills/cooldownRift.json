@@ -1,0 +1,26 @@
+{
+  "name": "冷却裂隙",
+  "type": "小技能",
+  "role": "法师",
+  "roleKeys": ["mage"],
+  "cooldown": 10.5,
+  "openingCooldown": 3,
+  "icon": "frostfire",
+  "desc": "攻击敌方技能急速最高单位；若相同，选择法术强度最高者。造成冰霜伤害，并延长其当前最快冷却技能。",
+  "design": {
+    "primaryAnswer": "依赖大招或技能窗口的队伍",
+    "secondaryUtility": "通用节奏干扰",
+    "targetRule": "highest skillHasteMult enemy, tie highest magicPower"
+  },
+  "effects": [
+    {
+      "kind": "hitHighestSkillHasteEnemyDelay",
+      "flat": 20,
+      "power": 0.28,
+      "type": "frost",
+      "scaleWith": "magic",
+      "delay": 1.2,
+      "label": "冷却裂隙"
+    }
+  ]
+}

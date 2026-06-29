@@ -1,0 +1,35 @@
+{
+  "name": "裂肉狂斩",
+  "type": "小技能",
+  "role": "狂战士",
+  "roleKeys": ["berserker"],
+  "cooldown": 7.4,
+  "openingCooldown": 2.8,
+  "icon": "bloody-sword",
+  "desc": "造成物理伤害，并打开短血怒普攻窗口。它不是大招替代品，而是把武力和普攻窗口绑在一起。",
+  "design": {
+    "primaryOutput": "physical direct + basic attack window",
+    "expectedScaling": "physicalPower",
+    "forbiddenScaling": "magicPower",
+    "primaryAnswer": "狂战平时普攻价值不足",
+    "secondaryUtility": "前排持续压低血线",
+    "targetRule": "current target"
+  },
+  "effects": [
+    {
+      "kind": "hitTarget",
+      "flat": 18,
+      "power": 0.32,
+      "type": "physical",
+      "scaleWith": "physical",
+      "label": "裂肉狂斩"
+    },
+    {
+      "kind": "timer",
+      "timer": "bloodFuryTimer",
+      "duration": 3.2,
+      "label": "裂肉血怒",
+      "tone": "damage"
+    }
+  ]
+}

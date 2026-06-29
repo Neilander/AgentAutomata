@@ -1,0 +1,33 @@
+{
+  "name": "怒血连击",
+  "type": "被动",
+  "role": "狂战士",
+  "roleKeys": ["berserker"],
+  "cooldown": 0,
+  "icon": "rage",
+  "desc": "实验狂战核心：普攻叠怒血，怒血提高后续普攻速度、普攻伤害和少量吸血。目标是让敏捷通过普攻频率自然转化成狂战价值。",
+  "passive": true,
+  "design": {
+    "primaryOutput": "basic attack",
+    "expectedScaling": "attackSpeed + physicalPower",
+    "forbiddenScaling": "magicPower",
+    "primaryAnswer": "狂战过度依赖大招",
+    "secondaryUtility": "长线普攻和低血吸血节奏",
+    "targetRule": "self basic attacks"
+  },
+  "effects": [
+    {
+      "kind": "basicAttackRage",
+      "stacks": 1,
+      "lowHpExtraStacks": 1,
+      "max": 8,
+      "attackSpeedPerStack": 0.025,
+      "damagePerStack": 0.012,
+      "lowHpDamagePerStack": 0.006,
+      "leechPerStack": 0.006,
+      "lowHpLeechBonus": 0.035,
+      "lowHpThreshold": 0.45,
+      "label": "怒血连击"
+    }
+  ]
+}

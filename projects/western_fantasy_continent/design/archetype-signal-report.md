@@ -34,11 +34,11 @@ A pass requires the intended process curve, numeric conversion, and failure boun
 - Experience: Poison and burn begin accumulating together. -> Both statuses overlap on several targets. -> Alchemy skills convert the overlap into area damage. -> Statuses rebuild after the payoff.
 - Samples: 16
 - PASS [curve] `dualStatusOverlapRatio`: 1 >= 0.250
-- PASS [curve] `payoffCycles`: 11.313 >= 1
-- PASS [metric] `statusStacksApplied`: 48.500 >= 20
-- PASS [metric] `statusPayoffDamageShare`: 0.256 >= 0.120
-- PASS [failure boundary] `poisonStacksApplied`: 29.375 >= 4
-- PASS [failure boundary] `burnStacksApplied`: 19.125 >= 4
+- PASS [curve] `payoffCycles`: 11.938 >= 1
+- PASS [metric] `statusStacksApplied`: 49.188 >= 20
+- PASS [metric] `statusPayoffDamageShare`: 0.230 >= 0.120
+- PASS [failure boundary] `poisonStacksApplied`: 29.625 >= 4
+- PASS [failure boundary] `burnStacksApplied`: 19.563 >= 4
 
 ### `bloodRage` 低血狂怒
 
@@ -60,11 +60,11 @@ A pass requires the intended process curve, numeric conversion, and failure boun
 - Fantasy: Hold melee pressure behind a riposte wall while one ranger builds marks and another cashes them out into focused shots.
 - Experience: The knight absorbs early melee contact. -> One ranger keeps marks moving while the other waits for a cash-out window. -> Mark detonation and repeated shots finish one slow target at a time. -> The team waits for the next shield and mark window.
 - Samples: 32
-- PASS [curve] `lowestTargetDamageShare`: 0.411 >= 0.300
+- PASS [curve] `lowestTargetDamageShare`: 0.401 >= 0.300
 - PASS [curve] `counterTriggers`: 1.469 >= 1
-- PASS [metric] `markApplications`: 13.438 >= 4
-- PASS [metric] `shieldPerSecond`: 20.046 >= 3
-- PASS [metric] `lowestTargetDamageShare`: 0.411 >= 0.300
+- PASS [metric] `markApplications`: 13.625 >= 4
+- PASS [metric] `shieldPerSecond`: 19.969 >= 3
+- PASS [metric] `lowestTargetDamageShare`: 0.401 >= 0.300
 - PASS [failure boundary] `counterDamageShare`: 0.003 <= 0.220
 
 ### `cavalryBreak` 王骑破阵
@@ -83,13 +83,13 @@ A pass requires the intended process curve, numeric conversion, and failure boun
 - Fantasy: Three allies funnel protection and tempo into one visible carry.
 - Experience: Supports begin feeding one designated carry. -> Buff and haste windows concentrate on that carry. -> The carry becomes the visible majority damage source. -> Team output falls outside the carry window.
 - Samples: 16
-- PASS [curve] `carryBuffShare`: 0.662 >= 0.450
+- PASS [curve] `carryBuffShare`: 0.677 >= 0.450
 - PASS [metric] `basicDamageShare`: 1 >= 0.280
-- PASS [metric] `hasteWindowBasicDamageShare`: 0.625 >= 0.100
-- PASS [metric] `shieldPerSecond`: 25.195 >= 3
+- PASS [metric] `hasteWindowBasicDamageShare`: 0.615 >= 0.100
+- PASS [metric] `shieldPerSecond`: 29.135 >= 3
 - PASS [failure boundary] `carrySurvives10Seconds`: 1 >= 0.750
-- PASS [failure boundary] `carryDamageShare`: 0.741 >= 0.450
-- PASS [failure boundary] `carryDamageShare`: 0.741 <= 0.750
+- PASS [failure boundary] `carryDamageShare`: 0.708 >= 0.450
+- PASS [failure boundary] `carryDamageShare`: 0.708 <= 0.750
 
 ### `duelChampion` 决斗冠军
 
@@ -142,12 +142,12 @@ A pass requires the intended process curve, numeric conversion, and failure boun
 - Fantasy: Absorb repeated pressure until healing and shields stabilize the whole team.
 - Experience: The team takes visible early pressure. -> A health crisis activates repeated healing and shields. -> Average team health stabilizes or recovers. -> The team survives into a longer attrition phase.
 - Samples: 16
-- PASS [curve] `teamRecoveryAfterCrisis`: 0.141 >= 0.100
-- PASS [metric] `healingPerSecond`: 23.572 >= 5
-- PASS [metric] `shieldPerSecond`: 37.132 >= 4
-- PASS [metric] `effectiveHealingRatio`: 0.888 >= 0.600
-- PASS [metric] `survivorsAt20Seconds`: 2.375 >= 2
-- PASS [failure boundary] `teamRecoveryAfterCrisis`: 0.141 <= 0.550
+- PASS [curve] `teamRecoveryAfterCrisis`: 0.174 >= 0.100
+- PASS [metric] `healingPerSecond`: 25.782 >= 5
+- PASS [metric] `shieldPerSecond`: 43.207 >= 4
+- PASS [metric] `effectiveHealingRatio`: 0.922 >= 0.600
+- PASS [metric] `survivorsAt20Seconds`: 2.500 >= 2
+- PASS [failure boundary] `teamRecoveryAfterCrisis`: 0.174 <= 0.550
 
 ### `ironWall` 铁壁反击
 
@@ -155,11 +155,11 @@ A pass requires the intended process curve, numeric conversion, and failure boun
 - Experience: The frontline absorbs pressure behind shields. -> Blocked melee hits trigger retaliation. -> The banner slows team health loss and opens a team counter window. -> The team returns to ordinary defense after the retaliation window.
 - Samples: 16
 - PASS [curve] `blockedCounterLinkRate`: 1 >= 0.950
-- PASS [curve] `postUltimateHpLossRatio`: 0.088 <= 0.800
-- PASS [metric] `counterTriggers`: 7.813 >= 1
-- PASS [metric] `counterDamageShare`: 0.135 >= 0.060
-- PASS [metric] `counterDamageShare`: 0.135 <= 0.180
-- PASS [metric] `shieldPerSecond`: 34.282 >= 3
+- PASS [curve] `postUltimateHpLossRatio`: 0.066 <= 0.800
+- PASS [metric] `counterTriggers`: 7.750 >= 1
+- PASS [metric] `counterDamageShare`: 0.132 >= 0.060
+- PASS [metric] `counterDamageShare`: 0.132 <= 0.180
+- PASS [metric] `shieldPerSecond`: 34.062 >= 3
 - PASS [metric] `ultimateCastsBefore15`: 1 >= 1
 - PASS [failure boundary] `ultimateBeforeFirstDeath`: 1 >= 0.750
 
@@ -190,13 +190,13 @@ A pass requires the intended process curve, numeric conversion, and failure boun
 - Fantasy: Survive the opening, accumulate poison, then spread and detonate it.
 - Experience: Poison begins slowly while the team survives. -> Stacks accelerate and spread between enemies. -> A poison payoff converts accumulated stacks into damage. -> Stacks fall and begin accumulating again.
 - Samples: 16
-- PASS [curve] `poisonApplicationAcceleration`: 3.506 >= 1.150
-- PASS [curve] `poisonSpreadEvents`: 6 >= 0.500
-- PASS [curve] `payoffCycles`: 1.438 >= 1
-- PASS [metric] `poisonStacksApplied`: 76.563 >= 12
-- PASS [metric] `dotDamageShare`: 0.341 >= 0.200
-- PASS [metric] `dotDamageShare`: 0.341 <= 0.550
-- PASS [metric] `statusPayoffDamageShare`: 0.289 >= 0.080
+- PASS [curve] `poisonApplicationAcceleration`: 1.817 >= 1.150
+- PASS [curve] `poisonSpreadEvents`: 5.750 >= 0.500
+- PASS [curve] `payoffCycles`: 1.375 >= 1
+- PASS [metric] `poisonStacksApplied`: 70.438 >= 12
+- PASS [metric] `dotDamageShare`: 0.365 >= 0.200
+- PASS [metric] `dotDamageShare`: 0.365 <= 0.550
+- PASS [metric] `statusPayoffDamageShare`: 0.203 >= 0.080
 - PASS [failure boundary] `payoffStartsAfterSetup`: 1 >= 1
 
 ### `purgeAttrition` 净化消耗
@@ -204,12 +204,12 @@ A pass requires the intended process curve, numeric conversion, and failure boun
 - Fantasy: Survive status pressure, then let poison and carry support convert a long fight into inevitability.
 - Experience: The team takes poison or burn pressure. -> Purifying shields blunt the dangerous status window. -> Poison stacks and carry buffs start to decide the long fight. -> The team stabilizes rather than bursting.
 - Samples: 16
-- PASS [curve] `poisonStacksApplied`: 37.875 >= 16
-- PASS [curve] `shieldPerSecond`: 14.648 >= 3
-- PASS [metric] `poisonStacksApplied`: 37.875 >= 10
-- PASS [metric] `shieldPerSecond`: 14.648 >= 3
-- PASS [metric] `dotDamageShare`: 0.450 >= 0.160
-- PASS [failure boundary] `selfCostPerSecond`: 1.563 >= 0.100
+- PASS [curve] `poisonStacksApplied`: 36.375 >= 16
+- PASS [curve] `shieldPerSecond`: 15.238 >= 3
+- PASS [metric] `poisonStacksApplied`: 36.375 >= 10
+- PASS [metric] `shieldPerSecond`: 15.238 >= 3
+- PASS [metric] `dotDamageShare`: 0.464 >= 0.160
+- PASS [failure boundary] `selfCostPerSecond`: 1.534 >= 0.100
 
 ### `scarletVanguard` 赤血先锋
 
@@ -217,10 +217,10 @@ A pass requires the intended process curve, numeric conversion, and failure boun
 - Experience: The berserker deliberately takes risk. -> Short guard and shields prevent immediate collapse. -> Low-health basic pressure and fire zones win before the frontline burns out. -> The team needs new guard windows after each risk cycle.
 - Samples: 16
 - PASS [curve] `lowHealthEntryRate`: 1 >= 0.500
-- PASS [curve] `postLowAttackRateRatio`: 2.859 >= 1.150
-- PASS [metric] `basicDamageShare`: 0.833 >= 0.220
-- PASS [metric] `selfCostPerSecond`: 4.030 >= 0.150
-- PASS [metric] `areaDamageShare`: 0.165 >= 0.120
+- PASS [curve] `postLowAttackRateRatio`: 3.786 >= 1.150
+- PASS [metric] `basicDamageShare`: 0.788 >= 0.220
+- PASS [metric] `selfCostPerSecond`: 3.724 >= 0.150
+- PASS [metric] `areaDamageShare`: 0.188 >= 0.120
 - PASS [failure boundary] `lowHealthEntryRate`: 1 >= 0.500
 
 ### `shadowExecute` 暗影处决
@@ -228,9 +228,9 @@ A pass requires the intended process curve, numeric conversion, and failure boun
 - Fantasy: Create one vulnerable target and repeatedly finish the lowest-health enemy.
 - Experience: Damage begins to concentrate on a vulnerable enemy. -> The target enters the execute band. -> Execute damage rapidly finishes that target. -> Focus moves to the next lowest-health enemy.
 - Samples: 16
-- PASS [curve] `peak2sDamageShare`: 0.197 >= 0.160
-- PASS [metric] `executeDamageShare`: 0.181 >= 0.100
-- PASS [metric] `lowestTargetDamageShare`: 0.376 >= 0.250
-- PASS [metric] `selfCostPerSecond`: 2.174 >= 0.200
-- PASS [failure boundary] `areaDamageShare`: 0.087 <= 0.500
+- PASS [curve] `peak2sDamageShare`: 0.225 >= 0.160
+- PASS [metric] `executeDamageShare`: 0.149 >= 0.100
+- PASS [metric] `lowestTargetDamageShare`: 0.533 >= 0.250
+- PASS [metric] `selfCostPerSecond`: 2.235 >= 0.200
+- PASS [failure boundary] `areaDamageShare`: 0.060 <= 0.500
 

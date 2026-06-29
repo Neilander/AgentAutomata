@@ -1,0 +1,28 @@
+{
+  "name": "盾墙反制",
+  "type": "被动",
+  "role": "骑士",
+  "roleKeys": ["knight"],
+  "cooldown": 0,
+  "icon": "shield-reflect",
+  "desc": "自身护盾吸收近战伤害后反击，并短暂进入嘲讽窗口。主答近战刺客，副用反制高频普攻。",
+  "passive": true,
+  "design": {
+    "primaryAnswer": "近战刺客和高频近战",
+    "secondaryUtility": "护盾前排通用反打",
+    "targetRule": "melee source after blocked damage"
+  },
+  "effects": [
+    {
+      "kind": "counterOnDamageTaken",
+      "requiresBlockedDamage": true,
+      "meleeOnly": true,
+      "flat": 10,
+      "power": 0.12,
+      "blockedRatio": 0.45,
+      "cooldown": 1.2,
+      "tauntDuration": 2.5,
+      "label": "盾墙反制"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "净血术",
+  "type": "小技能",
+  "role": "牧师",
+  "roleKeys": ["priest"],
+  "cooldown": 9.2,
+  "openingCooldown": 3.2,
+  "icon": "healing",
+  "desc": "选择己方剧毒层数最高单位，清除最多5层剧毒并治疗。若无人中毒，则治疗己方最低血量单位。",
+  "design": {
+    "primaryAnswer": "剧毒叠层队",
+    "secondaryUtility": "DOT环境续航、普通单体治疗",
+    "targetRule": "highest poison stacks ally, fallback lowest hp ratio ally"
+  },
+  "effects": [
+    {
+      "kind": "cleanseStatusAlly",
+      "statusType": "poison",
+      "amount": 5,
+      "healPerStack": 17,
+      "fallbackHeal": 26,
+      "label": "净血术"
+    }
+  ]
+}

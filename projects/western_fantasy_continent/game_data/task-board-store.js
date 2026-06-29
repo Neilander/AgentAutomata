@@ -3,12 +3,13 @@ const path = require("path");
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 const TASK_BOARD_FILE = path.join(PROJECT_ROOT, "design", "task-budget-board.json");
-const SCHEMA = "agent_automata_task_budget_board_v1";
+const SCHEMA = "agent_automata_task_budget_board_v2";
 
 const VALID_STATUS = new Set(["active", "queued", "blocked", "done", "postponed"]);
 const VALID_PRIORITY = new Set(["critical", "high", "medium", "low"]);
 const VALID_UNCERTAINTY = new Set(["high", "medium", "low"]);
 const VALID_BLAST_RADIUS = new Set(["high", "medium", "low"]);
+const VALID_TASK_TYPE = new Set(["balance", "ui", "tooling", "design", "research", "content", "vfx", "bug", "ops"]);
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -19,6 +20,11 @@ function asText(value, fallback = "") {
   return text || fallback;
 }
 
+function asList(value) {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => asText(item)).filter(Boolean);
+}
+
 function asNonNegativeNumber(value, fallback = 0) {
   const number = Number(value);
   if (!Number.isFinite(number)) return fallback;
@@ -26,7 +32,7 @@ function asNonNegativeNumber(value, fallback = 0) {
 }
 
 function cleanId(value, fallback) {
-  const id = asText(value, fallback).replace(/[^a-zA-Z0-9_-]/g, "-");
+  const id = asText(value, fallback).replace(/[^a-zA-Z0-9_-]/g, "-").replace(/-+/g, "-");
   return id || fallback;
 }
 
@@ -35,13 +41,41 @@ function pickEnum(value, allowed, fallback) {
   return allowed.has(normalized) ? normalized : fallback;
 }
 
-function normalizeTask(task, index = 0) {
+function defaultLineName(lineId, type) {
+  const labels = {
+    balance: "数值与流派",
+    ui: "界面与交互",
+    tooling: "工具与自动化",
+    design: "设计模型",
+    research: "调研",
+    content: "内容生产",
+    vfx: "特效表现",
+    bug: "缺陷修复",
+    ops: "工程运维",
+  };
+  return labels[type] || lineId;
+}
+
+function normalizeTask(task = {}, index = 0) {
+  const id = cleanId(task.id, `task-${index + 1}`);
+  const parentId = task.parentId ? cleanId(task.parentId, "") : "";
+  const type = pickEnum(task.type || task.category, VALID_TASK_TYPE, "balance");
+  const lineId = cleanId(task.lineId || parentId || type, type);
   const attemptBudget = asNonNegativeNumber(task.attemptBudget, 0);
   const attemptsUsed = asNonNegativeNumber(task.attemptsUsed, 0);
+
   return {
-    id: cleanId(task.id, `task-${index + 1}`),
+    id,
     name: asText(task.name, "未命名任务"),
     detail: asText(task.detail),
+    type,
+    category: type,
+    lineId,
+    parentId,
+    sourceTaskId: task.sourceTaskId ? cleanId(task.sourceTaskId, parentId || "") : parentId,
+    outcome: asText(task.outcome || task.goal),
+    nextAction: asText(task.nextAction),
+    owner: asText(task.owner, "agent"),
     priority: pickEnum(task.priority || task.importance, VALID_PRIORITY, "medium"),
     importance: pickEnum(task.importance || task.priority, VALID_PRIORITY, "medium"),
     uncertainty: pickEnum(task.uncertainty, VALID_UNCERTAINTY, "medium"),
@@ -49,26 +83,58 @@ function normalizeTask(task, index = 0) {
     attemptBudget,
     attemptsUsed,
     status: pickEnum(task.status, VALID_STATUS, "queued"),
-    skillFlow: Array.isArray(task.skillFlow) ? task.skillFlow.map((item) => asText(item)).filter(Boolean) : [],
-    successCriteria: Array.isArray(task.successCriteria) ? task.successCriteria.map((item) => asText(item)).filter(Boolean) : [],
+    links: asList(task.links),
+    tags: asList(task.tags),
+    skillFlow: asList(task.skillFlow),
+    successCriteria: asList(task.successCriteria),
     lastEvidence: asText(task.lastEvidence),
   };
 }
 
+function normalizeTaskLines(lines, tasks) {
+  const byId = new Map();
+  const input = Array.isArray(lines) ? lines : [];
+  for (const line of input) {
+    const id = cleanId(line.id, "");
+    if (!id) continue;
+    byId.set(id, {
+      id,
+      name: asText(line.name, id),
+      detail: asText(line.detail),
+      color: asText(line.color),
+      status: pickEnum(line.status, VALID_STATUS, "active"),
+    });
+  }
+
+  for (const task of tasks) {
+    if (byId.has(task.lineId)) continue;
+    byId.set(task.lineId, {
+      id: task.lineId,
+      name: defaultLineName(task.lineId, task.type),
+      detail: "",
+      color: "",
+      status: "active",
+    });
+  }
+
+  return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name, "zh-CN"));
+}
+
 function normalizeBoard(input) {
   const board = input && typeof input === "object" ? input : {};
-  const tasks = Array.isArray(board.tasks) ? board.tasks : [];
+  const tasks = Array.isArray(board.tasks) ? board.tasks.map(normalizeTask) : [];
   return {
     schema: SCHEMA,
     updatedAt: today(),
     workflow: Array.isArray(board.workflow) ? board.workflow.map((item) => asText(item)).filter(Boolean).slice(0, 8) : [],
-    tasks: tasks.map(normalizeTask),
+    taskLines: normalizeTaskLines(board.taskLines, tasks),
+    tasks,
   };
 }
 
 function readTaskBoard() {
   if (!fs.existsSync(TASK_BOARD_FILE)) {
-    return normalizeBoard({ workflow: [], tasks: [] });
+    return normalizeBoard({ workflow: [], taskLines: [], tasks: [] });
   }
   return normalizeBoard(JSON.parse(fs.readFileSync(TASK_BOARD_FILE, "utf8")));
 }
@@ -82,9 +148,7 @@ function writeTaskBoard(board) {
 
 function findTask(board, id) {
   const task = board.tasks.find((item) => item.id === id);
-  if (!task) {
-    throw new Error(`Task not found: ${id}`);
-  }
+  if (!task) throw new Error(`Task not found: ${id}`);
   return task;
 }
 
@@ -127,6 +191,9 @@ function taskSummary(task) {
   return {
     id: task.id,
     name: task.name,
+    type: task.type,
+    lineId: task.lineId,
+    parentId: task.parentId,
     priority: task.priority,
     status: task.status,
     attemptsUsed: task.attemptsUsed,

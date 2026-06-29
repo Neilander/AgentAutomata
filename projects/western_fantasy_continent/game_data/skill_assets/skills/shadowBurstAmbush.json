@@ -1,0 +1,36 @@
+{
+  "name": "暗影突袭",
+  "type": "小技能",
+  "role": "刺客",
+  "roleKeys": ["assassin"],
+  "cooldown": 8.4,
+  "openingCooldown": 1.8,
+  "icon": "cloak-dagger",
+  "desc": "暗影爆发贼入口：切入敌方后排血量比例最低目标，短暂进入隐藏状态。普通敌人不会优先转火他，但被他命中的目标会短暂反击。",
+  "design": {
+    "primaryOutput": "hidden backline burst",
+    "expectedScaling": "attackSpeed + physicalPower",
+    "forbiddenScaling": "magicPower + raw durability",
+    "primaryAnswer": "刺客切入后被全队转火",
+    "secondaryUtility": "后排扰乱、短窗口收割",
+    "targetRule": "lowest hp ratio backline enemy"
+  },
+  "effects": [
+    {
+      "kind": "shadowStepStrike",
+      "flat": 16,
+      "power": 0.34,
+      "missingTargetHpFlat": 8,
+      "markStacks": 2,
+      "markMax": 5,
+      "hiddenDuration": 2.8,
+      "retaliateDuration": 0.8,
+      "guardDuration": 0.5,
+      "lockDuration": 3.0,
+      "attackCd": 0.06,
+      "type": "physical",
+      "scaleWith": "physical",
+      "label": "暗影突袭"
+    }
+  ]
+}

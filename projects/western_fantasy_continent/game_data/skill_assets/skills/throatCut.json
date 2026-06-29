@@ -1,0 +1,30 @@
+{
+  "name": "割喉收束",
+  "type": "小技能",
+  "role": "刺客",
+  "roleKeys": ["assassin"],
+  "cooldown": 6.8,
+  "openingCooldown": 4.2,
+  "icon": "daggers",
+  "desc": "消费当前目标猎痕造成物理伤害，目标越残越痛。它把普攻叠层转换成处决，不直接制造秒杀。",
+  "design": {
+    "primaryOutput": "mark payoff + execute",
+    "expectedScaling": "physicalPower + attackSpeed through mark stacks",
+    "forbiddenScaling": "magicPower",
+    "primaryAnswer": "刺客普攻资源缺少兑现",
+    "secondaryUtility": "收割残血、压制后排",
+    "targetRule": "current target"
+  },
+  "effects": [
+    {
+      "kind": "hitMarkedTarget",
+      "flat": 16,
+      "power": 0.3,
+      "perMark": 8,
+      "consumeMark": true,
+      "type": "physical",
+      "scaleWith": "physical",
+      "label": "割喉收束"
+    }
+  ]
+}

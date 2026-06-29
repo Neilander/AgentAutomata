@@ -22,6 +22,40 @@ const GAME_SKILL_DATA = (() => {
         if (effect.requiresBlockedDamage && !(context.blocked > 0)) continue;
         if (effect.meleeOnly && !(context.source?.range < 20)) continue;
         api.counterattack?.(context.unit, context.source, effect, context);
+      } else if (effect.kind === "dotResistOnDotTaken" && event === "afterDamageTaken") {
+        if (!["poison", "burn", "fire"].includes(context.type)) continue;
+        context.unit.dotResistTimer = Math.max(context.unit.dotResistTimer || 0, effect.duration || 4);
+        api.emitEffectSignal?.({
+          kind: "status",
+          tags: ["status", "buff", "dotResist", "reactive"],
+          source: context.unit,
+          target: context.unit,
+          amount: effect.duration || 4,
+          meta: { trigger: context.type },
+        });
+      } else if (effect.kind === "fadeOnLowHp" && event === "afterDamageTaken") {
+        if (api.hpRatio?.(context.unit) > (effect.threshold || 0.45)) continue;
+        const flag = `_used_${effect.kind}_${effect.label || "fade"}`;
+        if (effect.once !== false && context.unit[flag]) continue;
+        context.unit[flag] = true;
+        context.unit.guardTimer = Math.max(context.unit.guardTimer || 0, effect.guardDuration || 1.8);
+        const shieldValue = (effect.shieldFlat || 0) + (api.effectivePower?.(context.unit, effect.scaleWith || "physical") || context.unit.power || 0) * (effect.shieldPower || 0);
+        if (shieldValue > 0) api.shield?.(context.unit, shieldValue, effect.label || "Fade", context.unit);
+        api.emitEffectSignal?.({
+          kind: "status",
+          tags: ["status", "buff", "fade", "survivalWindow"],
+          source: context.unit,
+          target: context.unit,
+          amount: effect.guardDuration || 1.8,
+          meta: { trigger: context.type, threshold: effect.threshold || 0.45, shieldValue },
+        });
+      }
+    }
+    const sourcePassive = skills[context.source?.passiveKey || context.source?.passive];
+    for (const effect of sourcePassive?.effects || []) {
+      if (effect.kind === "shieldSourceOnDamageType" && event === "afterDamageTaken") {
+        if (effect.type && effect.type !== context.type) continue;
+        api.shield?.(context.source, (effect.flat || 0) + (context.damageTaken || 0) * (effect.damageRatio || 0), effect.label || "Conversion", context.source);
       }
     }
     const teamEffect = context.unit?.retaliationTimer > 0 ? context.unit.retaliationEffect : null;
@@ -58,6 +92,8 @@ const GAME_SKILL_DATA = (() => {
       api.chargeToTarget?.(unit, target, effect);
     } else if (effect.kind === "blinkBacklineStrike") {
       api.blinkBacklineStrike?.(unit, effect, visual);
+    } else if (effect.kind === "shadowStepStrike") {
+      api.shadowStepStrike?.(unit, effect, visual);
     } else if (effect.kind === "targetTimer" && target) {
       setTimer(target, effect.timer, effect.duration);
       api.emitEffectSignal?.({
@@ -71,6 +107,8 @@ const GAME_SKILL_DATA = (() => {
     } else if (effect.kind === "hitTarget" && target) {
       const power = powerFor(scaleType());
       api.hit(unit, target, effect.flat + power * effect.power, effect.type, effect.label, visual, scaleType());
+      if (effect.shieldBreak) api.breakShield?.(unit, target, effect.shieldBreak, effect.label || "shield break");
+      if (effect.shieldVulnerableDuration && target.shield > 0) target.shieldVulnerableTimer = Math.max(target.shieldVulnerableTimer || 0, effect.shieldVulnerableDuration);
     } else if (effect.kind === "hitEnemies") {
       const power = powerFor(scaleType());
       enemies(effect.count).forEach((enemy) => api.hit(unit, enemy, effect.flat + power * effect.power, effect.type, effect.label, visual, scaleType()));
@@ -98,6 +136,51 @@ const GAME_SKILL_DATA = (() => {
       const power = powerFor(scaleType());
       const enemy = api.lowestEnemy(unit);
       if (enemy) api.hit(unit, enemy, effect.flat + power * effect.power + (1 - api.hpRatio(enemy)) * effect.missingTargetHpFlat, effect.type, effect.label, visual, scaleType());
+    } else if (effect.kind === "markHighestPowerEnemy") {
+      const enemy = api.highestPowerEnemy?.(unit);
+      if (enemy) {
+        enemy.mark = Math.min(effect.max || 6, (enemy.mark || 0) + (effect.stacks || 1));
+        if (effect.shieldBreak) api.breakShield?.(unit, enemy, effect.shieldBreak, effect.label || "Mark Break");
+        if (effect.shieldVulnerableDuration) enemy.shieldVulnerableTimer = Math.max(enemy.shieldVulnerableTimer || 0, effect.shieldVulnerableDuration);
+        api.emitEffectSignal?.({
+          kind: "status",
+          tags: ["status", "debuff", "mark", "highestPower"],
+          source: unit,
+          target: enemy,
+          amount: effect.stacks || 1,
+          meta: { stacks: enemy.mark },
+        });
+      }
+    } else if (effect.kind === "hitBacklineLowestEnemy") {
+      const power = powerFor(scaleType());
+      const enemy = api.backlineLowestEnemy?.(unit);
+      if (enemy) {
+        api.hit(unit, enemy, effect.flat + power * effect.power + (1 - api.hpRatio(enemy)) * (effect.missingTargetHpFlat || 0), effect.type, effect.label, visual, scaleType());
+        if (effect.markStacks) {
+          enemy.mark = Math.min(effect.markMax || 5, (enemy.mark || 0) + effect.markStacks);
+          api.emitEffectSignal?.({
+            kind: "status",
+            tags: ["status", "debuff", "mark", "backline"],
+            source: unit,
+            target: enemy,
+            amount: effect.markStacks,
+            meta: { stacks: enemy.mark },
+          });
+        }
+      }
+    } else if (effect.kind === "cleanseStatusAlly") {
+      const ally = api.highestStatusAlly?.(unit, effect.statusType);
+      if (ally) {
+        const cleared = api.cleanseStatus?.(unit, ally, effect.statusType, effect.amount || 1, effect.healPerStack || 0, effect.label || "Cleanse") || 0;
+        if (cleared <= 0 && effect.fallbackHeal) api.healUnit(ally, effect.fallbackHeal, effect.label, unit);
+      }
+    } else if (effect.kind === "hitHighestSkillHasteEnemyDelay") {
+      const power = powerFor(scaleType());
+      const enemy = api.highestSkillHasteEnemy?.(unit);
+      if (enemy) {
+        api.hit(unit, enemy, effect.flat + power * effect.power, effect.type, effect.label, visual, scaleType());
+        api.delayReadySkill?.(enemy, effect.delay || 1, effect.label);
+      }
     } else if (effect.kind === "burningEnemies") {
       api.enemiesOf(unit).filter((enemy) => api.isAlive(enemy) && enemy.burn.stacks > 0).slice(0, effect.count).forEach((enemy) => {
         api.hit(unit, enemy, effect.flat + enemy.burn.stacks * effect.perBurn, effect.type, effect.label, visual);
@@ -194,6 +277,23 @@ const GAME_SKILL_DATA = (() => {
       setTimer(unit, "whirlwindTimer", berserkerModel.durations.roarFury);
       setTimer(unit, "roarFuryTimer", berserkerModel.durations.roarFury);
       api.floater(unit, "不死", "heal");
+    } else if (effect.kind === "rageRelease") {
+      const before = unit.rageStacks || 0;
+      unit.rageStacks = Math.min(effect.max || 8, before + (effect.addStacks || 0));
+      const durationBonus = Math.min(effect.maxBonusDuration || 2, unit.rageStacks * (effect.durationPerStack || 0));
+      const duration = (effect.baseDuration || 3.6) + durationBonus;
+      setTimer(unit, "hasteTimer", duration);
+      setTimer(unit, "lifeStealTimer", duration);
+      setTimer(unit, "bloodFuryTimer", duration);
+      api.emitEffectSignal?.({
+        kind: "status",
+        tags: ["status", "buff", "rage", "ultimate"],
+        source: unit,
+        target: unit,
+        amount: unit.rageStacks,
+        meta: { before, stacks: unit.rageStacks, duration },
+      });
+      if (effect.label) api.floater(unit, effect.label, effect.tone || "heal");
     } else if (effect.kind === "arrowStorm") {
       const power = powerFor("physical");
       enemies(null).forEach((enemy) => api.hit(unit, enemy, 29 + power * 0.28 + (enemy.line === "后排" ? 16 : 0), "physical", "箭雨", visual));

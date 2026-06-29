@@ -14,8 +14,8 @@ Usage:
   node game_data/update-task-board.js list
   node game_data/update-task-board.js get <task-id> [--json]
   node game_data/update-task-board.js attempt <task-id> --decision <accept|reject|inconclusive|note> --evidence "text" [--status active|queued|blocked|done|postponed]
-  node game_data/update-task-board.js set <task-id> [--status value] [--priority value] [--budget n] [--used n] [--evidence "text"]
-  node game_data/update-task-board.js create <task-id> --name "text" --detail "text" --priority high --budget 5
+  node game_data/update-task-board.js set <task-id> [--status value] [--priority value] [--type balance|ui|tooling|design|research|content|vfx|bug|ops] [--line id] [--parent id] [--budget n] [--used n] [--evidence "text"]
+  node game_data/update-task-board.js create <task-id> --name "text" --detail "text" --priority high --type design --line main --parent source-task --budget 5
 
 Agents should use this updater instead of editing design/task-budget-board.json directly.`);
 }
@@ -104,6 +104,12 @@ function main() {
     const patch = {};
     if (args.name) patch.name = args.name;
     if (args.detail) patch.detail = args.detail;
+    if (args.type) patch.type = args.type;
+    if (args.line) patch.lineId = args.line;
+    if (args.parent) patch.parentId = args.parent;
+    if (args.outcome) patch.outcome = args.outcome;
+    if (args.next) patch.nextAction = args.next;
+    if (args.owner) patch.owner = args.owner;
     if (args.status) patch.status = args.status;
     if (args.priority) patch.priority = args.priority;
     if (args.importance) patch.importance = args.importance;
@@ -124,6 +130,18 @@ function main() {
         .map((item) => item.trim())
         .filter(Boolean);
     }
+    if (args.tags !== undefined) {
+      patch.tags = String(args.tags)
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+    if (args.links !== undefined) {
+      patch.links = String(args.links)
+        .split("|")
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
     const board = updateTask(id, patch);
     printBoard(board);
     return;
@@ -134,6 +152,12 @@ function main() {
       id,
       name: args.name,
       detail: args.detail,
+      type: args.type,
+      lineId: args.line,
+      parentId: args.parent,
+      outcome: args.outcome,
+      nextAction: args.next,
+      owner: args.owner,
       priority: args.priority,
       importance: args.importance || args.priority,
       uncertainty: args.uncertainty,
@@ -146,6 +170,14 @@ function main() {
         .map((item) => item.trim())
         .filter(Boolean),
       successCriteria: String(args.criteria || "")
+        .split("|")
+        .map((item) => item.trim())
+        .filter(Boolean),
+      tags: String(args.tags || "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+      links: String(args.links || "")
         .split("|")
         .map((item) => item.trim())
         .filter(Boolean),

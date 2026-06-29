@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>任务预算表 · 西幻大陆</title>
+    <title>任务线工作台 · 西幻大陆</title>
     <link rel="stylesheet" href="/task_board/styles.css">
   </head>
   <body>
@@ -11,29 +11,21 @@
       <header class="topbar">
         <div>
           <a class="back" href="/workbench/">返回工作台</a>
-          <h1>任务预算表</h1>
-          <p>先调用 budget，再调用调试 skill，调试完回写尝试次数和证据。</p>
+          <h1>任务线工作台</h1>
+          <p>记录主任务、发散任务、尝试预算、验证证据和下一步行动。</p>
         </div>
-        <button id="saveButton" type="button">保存修改</button>
+        <div class="top-actions">
+          <button id="addRootButton" type="button">新增任务</button>
+          <button id="addChildButton" type="button">从当前发散</button>
+          <button id="saveButton" class="primary" type="button">保存</button>
+        </div>
       </header>
 
       <section class="summary" aria-label="任务总览">
-        <div class="summary-card">
-          <span>任务数</span>
-          <strong id="totalTasks">0</strong>
-        </div>
-        <div class="summary-card">
-          <span>进行中</span>
-          <strong id="activeTasks">0</strong>
-        </div>
-        <div class="summary-card">
-          <span>已用尝试</span>
-          <strong id="usedAttempts">0</strong>
-        </div>
-        <div class="summary-card">
-          <span>剩余尝试</span>
-          <strong id="remainingAttempts">0</strong>
-        </div>
+        <div class="summary-card"><span>任务数</span><strong id="totalTasks">0</strong></div>
+        <div class="summary-card"><span>任务线</span><strong id="totalLines">0</strong></div>
+        <div class="summary-card"><span>进行中</span><strong id="activeTasks">0</strong></div>
+        <div class="summary-card"><span>剩余尝试</span><strong id="remainingAttempts">0</strong></div>
       </section>
 
       <section class="workflow">
@@ -41,20 +33,57 @@
         <ol id="workflowList"></ol>
       </section>
 
-      <section class="board-head">
-        <div>
-          <h2>任务队列</h2>
-          <p id="updatedAt">等待读取...</p>
-        </div>
-        <div class="filters" role="group" aria-label="筛选任务">
-          <button class="filter active" type="button" data-filter="all">全部</button>
-          <button class="filter" type="button" data-filter="active">进行中</button>
-          <button class="filter" type="button" data-filter="queued">排队</button>
-          <button class="filter" type="button" data-filter="high">高优先级</button>
-        </div>
+      <section class="board">
+        <aside class="line-panel">
+          <div class="panel-title">
+            <h2>任务线</h2>
+            <span id="updatedAt">等待读取</span>
+          </div>
+          <div class="filters" role="group" aria-label="筛选任务">
+            <button class="filter active" type="button" data-filter="all">全部</button>
+            <button class="filter" type="button" data-filter="active">进行中</button>
+            <button class="filter" type="button" data-filter="queued">排队</button>
+            <button class="filter" type="button" data-filter="high">高优先</button>
+          </div>
+          <div id="lineList" class="line-list"></div>
+        </aside>
+
+        <section class="tree-panel">
+          <div class="panel-title">
+            <h2 id="currentLineTitle">任务树</h2>
+            <span id="currentLineMeta"></span>
+          </div>
+          <div id="taskTree" class="task-tree" aria-live="polite"></div>
+        </section>
+
+        <aside class="detail-panel">
+          <div class="panel-title">
+            <h2>任务详情</h2>
+            <span id="selectedTaskId">未选择</span>
+          </div>
+          <form id="taskForm" class="task-form">
+            <label>名称<input name="name" type="text"></label>
+            <label>细节<textarea name="detail" rows="4"></textarea></label>
+            <label>目标结果<textarea name="outcome" rows="2"></textarea></label>
+            <label>下一步<textarea name="nextAction" rows="2"></textarea></label>
+            <div class="form-grid">
+              <label>类型<select name="type"></select></label>
+              <label>任务线<input name="lineId" type="text"></label>
+              <label>父任务<input name="parentId" type="text"></label>
+              <label>状态<select name="status"></select></label>
+              <label>优先级<select name="priority"></select></label>
+              <label>总预算<input name="attemptBudget" min="0" max="99" type="number"></label>
+              <label>已尝试<input name="attemptsUsed" min="0" max="99" type="number"></label>
+              <label>负责人<input name="owner" type="text"></label>
+            </div>
+            <label>验收信号<textarea name="successCriteria" rows="3" placeholder="每行一条"></textarea></label>
+            <label>Skill 顺序<textarea name="skillFlow" rows="2" placeholder="每行一个 skill"></textarea></label>
+            <label>标签<input name="tags" type="text" placeholder="逗号分隔"></label>
+            <label>最近证据<textarea name="lastEvidence" rows="3"></textarea></label>
+          </form>
+        </aside>
       </section>
 
-      <section id="taskList" class="task-list" aria-live="polite"></section>
       <p id="statusLine" class="status-line"></p>
     </main>
 

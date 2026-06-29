@@ -1,0 +1,37 @@
+{
+  "name": "碎阵怒吼",
+  "type": "小技能",
+  "role": "狂战士",
+  "roleKeys": ["berserker"],
+  "cooldown": 11,
+  "openingCooldown": 3.2,
+  "icon": "screaming",
+  "desc": "自伤进入风险窗口，获得攻速、吸血和DOT抗性。主答拖长线DOT队，副用启动低血普攻流。",
+  "design": {
+    "primaryAnswer": "毒队和控制拖长线",
+    "secondaryUtility": "低血普攻流启动器",
+    "targetRule": "self"
+  },
+  "effects": [
+    {
+      "kind": "selfRawDamage",
+      "maxHp": 0.1,
+      "type": "self"
+    },
+    {
+      "kind": "timer",
+      "timer": "hasteTimer",
+      "duration": 5
+    },
+    {
+      "kind": "timer",
+      "timer": "lifeStealTimer",
+      "duration": 5
+    },
+    {
+      "kind": "timer",
+      "timer": "dotResistTimer",
+      "duration": 5
+    }
+  ]
+}

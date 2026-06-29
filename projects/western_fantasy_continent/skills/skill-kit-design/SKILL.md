@@ -136,6 +136,23 @@ Avoid overlap:
 - Two skills may share a theme, but they should not create the same player-facing effect unless one is setup and the other is payoff.
 - If two skills both "deal area damage", clarify why one is not redundant.
 
+Avoid single-lock counter design:
+
+- A counter skill may have a primary target, but it must also have at least one ordinary use case outside that matchup.
+- Do not design a skill whose only value is "beats one named archetype." It should express a reusable tactical function such as shield pressure, cleanse, tempo denial, target marking, anti-burst, anti-DOT, backline access, or formation disruption.
+- Prefer soft counters over hard deletes. The target archetype should still work when it plays well or gets support.
+- For every counter-style skill, state both:
+  - Primary answer: the archetype or problem it is meant to answer.
+  - Secondary utility: the other teams, situations, or builds where it remains useful.
+- Reject the skill if it becomes dead text in most fights or if it invalidates an entire archetype by itself.
+
+Avoid vague targeting and over-designed descriptions:
+
+- Do not write targeting rules like "the most threatening enemy", "the most dangerous debuff", "the best target", or "the right ally" unless the runtime has a concrete score for that phrase.
+- Prefer simple, visible, deterministic rules: highest physicalPower, highest magicPower, highest shield, lowest hp ratio, front row, back row, nearest, random enemy, random debuff, most poison stacks, most burn stacks.
+- If a weighted or scored target is needed, define the exact formula in the skill design before implementation.
+- Player-facing descriptions should use the same concrete rule as the implementation. Do not hide a complex AI decision behind fantasy text.
+
 Output:
 
 ```text
@@ -200,6 +217,8 @@ function:
 damage profile contribution:
 preferred combo partners:
 counterplay / weakness:
+primary answer:
+secondary utility:
 signal acceptance:
 effect schema:
 ```

@@ -1,0 +1,31 @@
+{
+  "name": "净焰祷言",
+  "type": "小技能",
+  "role": "牧师",
+  "roleKeys": ["priest"],
+  "cooldown": 8.8,
+  "openingCooldown": 1.4,
+  "icon": "holy-water",
+  "desc": "选择己方燃烧层数最高单位，清除最多5层燃烧并治疗。若无人燃烧，则治疗己方最低血量单位。",
+  "design": {
+    "primaryAnswer": "燃烧爆发队",
+    "secondaryUtility": "普通单体治疗",
+    "targetRule": "highest burn stacks ally, fallback lowest hp ratio ally"
+  },
+  "effects": [
+    {
+      "kind": "cleanseStatusAlly",
+      "statusType": "burn",
+      "amount": 7,
+      "healPerStack": 20,
+      "fallbackHeal": 34,
+      "label": "净焰祷言"
+    },
+    {
+      "kind": "teamTimer",
+      "timer": "guardTimer",
+      "duration": 5,
+      "label": "净焰守护"
+    }
+  ]
+}

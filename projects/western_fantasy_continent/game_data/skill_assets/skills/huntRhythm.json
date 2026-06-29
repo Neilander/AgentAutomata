@@ -1,0 +1,41 @@
+{
+  "name": "猎杀节律",
+  "type": "被动",
+  "role": "刺客",
+  "roleKeys": ["assassin"],
+  "cooldown": 0,
+  "icon": "targeted",
+  "desc": "实验刺客核心：普攻叠猎痕，猎痕既是后续割喉的资源，也给少量自保。目标是让敏捷通过普攻频率转化成处决资源。",
+  "passive": true,
+  "design": {
+    "primaryOutput": "basic attack resource setup",
+    "expectedScaling": "attackSpeed + physicalPower",
+    "forbiddenScaling": "magicPower",
+    "primaryAnswer": "刺客团战只能靠堆生存摸到人",
+    "secondaryUtility": "标记资源、轻量自保、处决准备",
+    "targetRule": "basic attack target"
+  },
+  "effects": [
+    {
+      "kind": "basicAttackMark",
+      "stacks": 1,
+      "max": 5
+    },
+    {
+      "kind": "basicAttackSelfShield",
+      "flat": 3,
+      "perMark": 2,
+      "label": "猎步"
+    },
+    {
+      "kind": "fadeOnLowHp",
+      "threshold": 0.42,
+      "guardDuration": 2.1,
+      "shieldFlat": 8,
+      "shieldPower": 0.55,
+      "scaleWith": "physical",
+      "once": true,
+      "label": "影遁"
+    }
+  ]
+}

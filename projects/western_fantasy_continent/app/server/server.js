@@ -14,7 +14,13 @@ const ART_IMAGE_DIR = path.join(ART_RECORD_DIR, "images");
 const ART_RECORD_FILE = path.join(ART_RECORD_DIR, "records.json");
 const ENV_FILE = path.join(REPO_ROOT, "env", ".env");
 const API_LOG_FILE = path.join(REPO_ROOT, "logs", "api_calls.jsonl");
-const { readTaskBoard, writeTaskBoard } = require(path.join(GAME_DATA_DIR, "task-board-store.js"));
+const {
+  createTask,
+  readTaskBoard,
+  recordAttempt,
+  updateTask,
+  writeTaskBoard,
+} = require(path.join(GAME_DATA_DIR, "task-board-store.js"));
 
 const KEY_DEFINITIONS = [
   { key: "OPENAI_API_KEY", label: "OpenAI API Key", secret: true },
@@ -977,6 +983,31 @@ async function handle(req, res) {
     try {
       const body = JSON.parse(await readBody(req));
       sendJson(res, 200, { ok: true, board: writeTaskBoard(body.board || body) });
+    } catch (error) {
+      sendJson(res, 400, { error: errorMessage(error) });
+    }
+    return;
+  }
+  if (req.method === "POST" && url.pathname === "/api/task-board/tasks") {
+    try {
+      const body = JSON.parse(await readBody(req));
+      sendJson(res, 200, { ok: true, board: createTask(body.task || body) });
+    } catch (error) {
+      sendJson(res, 400, { error: errorMessage(error) });
+    }
+    return;
+  }
+  if ((req.method === "PATCH" || req.method === "POST") && url.pathname.startsWith("/api/task-board/tasks/")) {
+    try {
+      const parts = url.pathname.split("/").filter(Boolean);
+      const id = decodeURIComponent(parts[3] || "");
+      const action = parts[4] || "";
+      const body = JSON.parse(await readBody(req));
+      if (action === "attempt") {
+        sendJson(res, 200, { ok: true, board: recordAttempt(id, body) });
+      } else {
+        sendJson(res, 200, { ok: true, board: updateTask(id, body.patch || body) });
+      }
     } catch (error) {
       sendJson(res, 400, { error: errorMessage(error) });
     }

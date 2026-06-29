@@ -33,20 +33,29 @@ const MAGIC_ROLES = new Set(["mage", "priest", "warlock", "bard", "alchemist"]);
 
 const EXPERIMENTAL_KITS = {
   berserker: {
-    small1: "aaFrenzyCut",
+    small1: "rendingFury",
     small2: "boneWhirl",
-    passive: "aaFrenzyEngine",
-    ultimate: "aaRazorRoar",
+    passive: "rageChain",
+    ultimate: "rageRelease",
     note: "实验狂战：去掉不死/吸血兜底，把收益集中到高频普攻窗口。",
   },
   assassin: {
-    small1: "aa2VeinMark",
-    small2: "aa2BacklineBlink",
-    passive: "aa2MarkedTempo",
-    ultimate: "aa2FinisherCut",
+    small1: "shadowBurstAmbush",
+    small2: "throatCut",
+    passive: "shadowMomentum",
+    ultimate: "midnightBloom",
     note: "实验刺客：暗影表现但物理缩放，降低等低血处决收益。",
   },
 };
+
+function resolveKit(role, base) {
+  const experimental = EXPERIMENTAL_KITS[role];
+  if (!experimental) return { kit: base.kit || {}, source: "default" };
+  const keys = [experimental.small1, experimental.small2, experimental.passive, experimental.ultimate].filter(Boolean);
+  const missing = keys.filter((key) => !SKILL_DATA.skills[key]);
+  if (missing.length) return { kit: base.kit || {}, source: `default; missing experimental ${missing.join(", ")}` };
+  return { kit: experimental, source: "experimental" };
+}
 
 const ATTR_BONUS = {
   might: { physicalPower: 2.35, hp: 3 },
@@ -150,7 +159,7 @@ function standardPoints(role) {
 
 function unitSpec(role, points, routeLabel) {
   const base = SKILL_DATA.roleKits[role];
-  const kit = EXPERIMENTAL_KITS[role] || base.kit || {};
+  const { kit } = resolveKit(role, base);
   const bonus = buildBonus(points);
   return {
     role,

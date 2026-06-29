@@ -1,6 +1,6 @@
 # Role Character Diagnostics
 
-Generated with 12 seeds per ordered preset matchup, 1080 games total.
+Generated with 12 seeds per ordered preset matchup, 3264 games total.
 
 This report checks whether each role behaves like its intended fantasy. Every issue links to a game id, seed, unit, metrics, and a short reason when the analyzer can find one.
 
@@ -8,16 +8,16 @@ This report checks whether each role behaves like its intended fantasy. Every is
 
 | Role | Samples | Avg damage share | Avg sustain share | Avg taken share | Avg survival | Anomalies | Unexplained | Top issues |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| 牧师 `priest` | 1512 | 13% | 47% | 18% | 91% | 213 | 30 | 牧师输出过高 127; 牧师治疗/护盾没有存在感 86 |
-| 诗人 `bard` | 864 | 16% | 0% | 15% | 95% | 118 | 15 | 诗人输出过高 118 |
-| 游侠 `ranger` | 432 | 34% | 0% | 24% | 78% | 28 | 14 | 游侠承伤生存过强 28 |
-| 刺客 `assassin` | 648 | 23% | 0% | 33% | 47% | 80 | 4 | 刺客生存过强 49; 刺客承伤过高但仍存活 31 |
-| 法师 `mage` | 864 | 41% | 0% | 13% | 96% | 5 | 4 | 法师承伤生存过强 5 |
-| 狂战士 `berserker` | 432 | 64% | 22% | 37% | 84% | 178 | 3 | 狂战高输出但过于安全 178 |
-| 战士 `warrior` | 1080 | 32% | 0% | 36% | 60% | 3 | 3 | 战士爆发过高 3 |
-| 术士 `warlock` | 432 | 56% | 0% | 16% | 92% | 1 | 1 | 术士持续伤害占比低 1 |
-| 炼金术士 `alchemist` | 648 | 32% | 0% | 24% | 79% | 34 | 0 | 炼金状态参与低 34 |
-| 骑士 `knight` | 1728 | 6% | 49% | 32% | 80% | 0 | 0 | - |
+| 游侠 `ranger` | 2304 | 38% | 0% | 23% | 87% | 394 | 148 | 游侠承伤生存过强 394 |
+| 牧师 `priest` | 4224 | 13% | 53% | 21% | 91% | 385 | 51 | 牧师输出过高 275; 牧师治疗/护盾没有存在感 110 |
+| 诗人 `bard` | 3072 | 18% | 17% | 17% | 94% | 461 | 45 | 诗人输出过高 461 |
+| 狂战士 `berserker` | 1536 | 56% | 21% | 35% | 81% | 591 | 33 | 狂战高输出但过于安全 590; 狂战输出不像普攻流 1 |
+| 法师 `mage` | 2304 | 41% | 0% | 11% | 97% | 30 | 16 | 法师承伤生存过强 30 |
+| 战士 `warrior` | 3456 | 25% | 4% | 34% | 61% | 10 | 10 | 战士自带续航/护盾过高 8; 战士爆发过高 2 |
+| 刺客 `assassin` | 1152 | 19% | 0% | 33% | 48% | 163 | 8 | 刺客承伤过高但仍存活 84; 刺客生存过强 79 |
+| 术士 `warlock` | 1536 | 53% | 0% | 15% | 94% | 6 | 5 | 术士持续伤害占比低 6 |
+| 骑士 `knight` | 4992 | 8% | 42% | 34% | 76% | 7 | 3 | 骑士输出过高 7 |
+| 炼金术士 `alchemist` | 1536 | 32% | 0% | 22% | 86% | 41 | 0 | 炼金状态参与低 41 |
 
 ## Interpretation Notes
 
@@ -30,89 +30,89 @@ This report checks whether each role behaves like its intended fantasy. Every is
 
 ## Highest Priority Unexplained Issues
 
-- [法师] 法师承伤生存过强: `alchemyChaos__vs__ironWall__seed_0`, 烬火法师 `left-4`, damage 42%, sustain 0%, taken 24%, survival 100%, peak2s 5%. Reason: none.
-- [刺客] 刺客承伤过高但仍存活: `shadowExecute__vs__poisonBloom__seed_0`, 毒刃刺客 `left-3`, damage 44%, sustain 0%, taken 24%, survival 77%, peak2s 17%. Reason: none.
-- [刺客] 刺客生存过强: `poisonBloom__vs__shadowExecute__seed_7`, 毒刃刺客 `right-3`, damage 42%, sustain 0%, taken 24%, survival 95%, peak2s 13%. Reason: none.
-- [法师] 法师承伤生存过强: `frostControl__vs__bloodRage__seed_2`, 烬火法师 `left-3`, damage 54%, sustain 0%, taken 26%, survival 100%, peak2s 23%. Reason: none.
-- [法师] 法师承伤生存过强: `shadowExecute__vs__frostControl__seed_2`, 烬火法师 `right-3`, damage 51%, sustain 0%, taken 26%, survival 100%, peak2s 19%. Reason: none.
-- [狂战士] 狂战高输出但过于安全: `bloodRage__vs__frostControl__seed_6`, 赤狮狂战 `left-1`, damage 47%, sustain 20%, taken 32%, survival 89%, peak2s 24%. Reason: none.
-- [刺客] 刺客生存过强: `lightningTempo__vs__shadowExecute__seed_1`, 毒刃刺客 `right-3`, damage 70%, sustain 0%, taken 22%, survival 100%, peak2s 18%. Reason: none.
-- [刺客] 刺客生存过强: `poisonBloom__vs__shadowExecute__seed_1`, 毒刃刺客 `right-3`, damage 41%, sustain 0%, taken 24%, survival 92%, peak2s 10%. Reason: none.
-- [狂战士] 狂战高输出但过于安全: `bloodRage__vs__frostControl__seed_8`, 赤狮狂战 `left-1`, damage 48%, sustain 21%, taken 32%, survival 100%, peak2s 19%. Reason: none.
-- [法师] 法师承伤生存过强: `bloodRage__vs__frostControl__seed_8`, 烬火法师 `right-3`, damage 49%, sustain 0%, taken 26%, survival 85%, peak2s 14%. Reason: none.
-- [狂战士] 狂战高输出但过于安全: `bloodRage__vs__frostControl__seed_9`, 赤狮狂战 `left-1`, damage 46%, sustain 22%, taken 37%, survival 97%, peak2s 19%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `shadowExecute__vs__frostControl__seed_10`, 银誓牧师 `right-2`, damage 6%, sustain 5%, taken 30%, survival 10%, peak2s 2%. Reason: none.
-- [诗人] 诗人输出过高: `alchemyChaos__vs__ironWall__seed_7`, 晨歌诗人 `right-4`, damage 49%, sustain 0%, taken 17%, survival 37%, peak2s 8%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `frostControl__vs__shadowExecute__seed_11`, 银誓牧师 `left-2`, damage 7%, sustain 12%, taken 45%, survival 19%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `frostControl__vs__shadowExecute__seed_5`, 银誓牧师 `left-2`, damage 7%, sustain 12%, taken 46%, survival 19%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `frostControl__vs__shadowExecute__seed_4`, 银誓牧师 `left-2`, damage 5%, sustain 9%, taken 30%, survival 16%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `frostControl__vs__shadowExecute__seed_0`, 银誓牧师 `left-2`, damage 6%, sustain 7%, taken 35%, survival 17%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `shadowExecute__vs__frostControl__seed_5`, 银誓牧师 `right-2`, damage 6%, sustain 7%, taken 38%, survival 15%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `frostControl__vs__shadowExecute__seed_1`, 银誓牧师 `left-2`, damage 8%, sustain 13%, taken 40%, survival 20%, peak2s 2%. Reason: none.
-- [战士] 战士爆发过高: `crownCarry__vs__holySustain__seed_6`, 前锋战士 `right-2`, damage 70%, sustain 0%, taken 25%, survival 28%, peak2s 43%. Reason: none.
-- [游侠] 游侠承伤生存过强: `lightningTempo__vs__holySustain__seed_4`, 月弦游侠 `left-4`, damage 42%, sustain 0%, taken 25%, survival 100%, peak2s 8%. Reason: none.
-- [战士] 战士爆发过高: `crownCarry__vs__holySustain__seed_1`, 前锋战士 `right-2`, damage 57%, sustain 0%, taken 21%, survival 25%, peak2s 57%. Reason: none.
-- [战士] 战士爆发过高: `holySustain__vs__crownCarry__seed_4`, 前锋战士 `left-2`, damage 52%, sustain 0%, taken 23%, survival 30%, peak2s 50%. Reason: none.
-- [游侠] 游侠承伤生存过强: `holySustain__vs__lightningTempo__seed_2`, 月弦游侠 `right-4`, damage 65%, sustain 0%, taken 25%, survival 100%, peak2s 11%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `frostControl__vs__shadowExecute__seed_7`, 银誓牧师 `left-2`, damage 4%, sustain 17%, taken 31%, survival 17%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `poisonBloom__vs__crownCarry__seed_3`, 银誓牧师 `right-2`, damage 5%, sustain 18%, taken 34%, survival 31%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `shadowExecute__vs__frostControl__seed_9`, 银誓牧师 `right-2`, damage 5%, sustain 17%, taken 35%, survival 23%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `shadowExecute__vs__frostControl__seed_0`, 银誓牧师 `right-2`, damage 7%, sustain 17%, taken 44%, survival 33%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `shadowExecute__vs__frostControl__seed_6`, 银誓牧师 `right-2`, damage 5%, sustain 17%, taken 32%, survival 23%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `shadowExecute__vs__frostControl__seed_3`, 银誓牧师 `right-2`, damage 7%, sustain 17%, taken 47%, survival 34%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `frostControl__vs__shadowExecute__seed_10`, 银誓牧师 `left-2`, damage 6%, sustain 18%, taken 34%, survival 27%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `frostControl__vs__shadowExecute__seed_9`, 银誓牧师 `left-2`, damage 5%, sustain 17%, taken 31%, survival 26%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `shadowExecute__vs__frostControl__seed_8`, 银誓牧师 `right-2`, damage 7%, sustain 18%, taken 37%, survival 30%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `shadowExecute__vs__frostControl__seed_11`, 银誓牧师 `right-2`, damage 8%, sustain 17%, taken 52%, survival 38%, peak2s 2%. Reason: none.
-- [牧师] 牧师治疗/护盾没有存在感: `frostControl__vs__shadowExecute__seed_3`, 银誓牧师 `left-2`, damage 5%, sustain 10%, taken 38%, survival 28%, peak2s 2%. Reason: none.
-- [游侠] 游侠承伤生存过强: `ironWall__vs__lightningTempo__seed_8`, 月弦游侠 `right-4`, damage 49%, sustain 0%, taken 25%, survival 100%, peak2s 13%. Reason: none.
-- [游侠] 游侠承伤生存过强: `frostControl__vs__lightningTempo__seed_10`, 月弦游侠 `right-4`, damage 48%, sustain 0%, taken 24%, survival 100%, peak2s 11%. Reason: none.
-- [游侠] 游侠承伤生存过强: `ironWall__vs__lightningTempo__seed_1`, 月弦游侠 `right-4`, damage 55%, sustain 0%, taken 24%, survival 95%, peak2s 14%. Reason: none.
-- [游侠] 游侠承伤生存过强: `ironWall__vs__lightningTempo__seed_7`, 月弦游侠 `right-4`, damage 46%, sustain 0%, taken 24%, survival 96%, peak2s 14%. Reason: none.
-- [诗人] 诗人输出过高: `ironWall__vs__crownCarry__seed_2`, 晨歌诗人 `left-4`, damage 29%, sustain 0%, taken 19%, survival 100%, peak2s 8%. Reason: none.
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_11`, 银誓牧师 `right-4`, damage 60%, sustain 30%, taken 43%, survival 100%, peak2s 10%. Reason: none.
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_0`, 银誓牧师 `left-4`, damage 63%, sustain 31%, taken 41%, survival 100%, peak2s 10%. Reason: none.
+- [牧师] 牧师输出过高: `holySustain__vs__crownCarry__seed_7`, 银誓牧师 `left-4`, damage 25%, sustain 30%, taken 26%, survival 93%, peak2s 13%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `holySustain__vs__cavalryBreak__seed_3`, 赤狮狂战 `right-3`, damage 52%, sustain 10%, taken 0%, survival 100%, peak2s 9%. Reason: none.
+- [牧师] 牧师输出过高: `holySustain__vs__bulwarkMarks__seed_5`, 银誓牧师 `left-4`, damage 71%, sustain 26%, taken 31%, survival 72%, peak2s 14%. Reason: none.
+- [牧师] 牧师输出过高: `bulwarkMarks__vs__holySustain__seed_10`, 银誓牧师 `right-4`, damage 64%, sustain 29%, taken 32%, survival 73%, peak2s 13%. Reason: none.
+- [牧师] 牧师输出过高: `holySustain__vs__bulwarkMarks__seed_0`, 银誓牧师 `left-4`, damage 72%, sustain 31%, taken 32%, survival 75%, peak2s 14%. Reason: none.
+- [牧师] 牧师输出过高: `bulwarkMarks__vs__holySustain__seed_4`, 银誓牧师 `right-4`, damage 70%, sustain 29%, taken 33%, survival 72%, peak2s 15%. Reason: none.
+- [牧师] 牧师输出过高: `bulwarkMarks__vs__holySustain__seed_9`, 银誓牧师 `right-4`, damage 68%, sustain 30%, taken 29%, survival 71%, peak2s 14%. Reason: none.
+- [牧师] 牧师输出过高: `holySustain__vs__bulwarkMarks__seed_10`, 银誓牧师 `left-4`, damage 69%, sustain 28%, taken 33%, survival 76%, peak2s 14%. Reason: none.
+- [牧师] 牧师输出过高: `bulwarkMarks__vs__holySustain__seed_11`, 银誓牧师 `right-4`, damage 70%, sustain 23%, taken 26%, survival 58%, peak2s 14%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `cavalryBreak__vs__holySustain__seed_1`, 赤狮狂战 `left-3`, damage 44%, sustain 10%, taken 0%, survival 100%, peak2s 8%. Reason: none.
+- [牧师] 牧师输出过高: `holySustain__vs__bulwarkMarks__seed_7`, 银誓牧师 `left-4`, damage 69%, sustain 29%, taken 36%, survival 77%, peak2s 14%. Reason: none.
+- [牧师] 牧师输出过高: `holySustain__vs__bulwarkMarks__seed_4`, 银誓牧师 `left-4`, damage 73%, sustain 24%, taken 30%, survival 58%, peak2s 14%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `cavalryBreak__vs__holySustain__seed_10`, 赤狮狂战 `left-3`, damage 39%, sustain 8%, taken 0%, survival 100%, peak2s 7%. Reason: none.
+- [法师] 法师承伤生存过强: `ironWall__vs__frostTrapField__seed_9`, 烬火法师 `right-2`, damage 37%, sustain 0%, taken 34%, survival 92%, peak2s 9%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `cavalryBreak__vs__holySustain__seed_5`, 赤狮狂战 `left-3`, damage 42%, sustain 8%, taken 0%, survival 100%, peak2s 7%. Reason: none.
+- [法师] 法师承伤生存过强: `frostControl__vs__purgeAttrition__seed_9`, 烬火法师 `left-3`, damage 47%, sustain 0%, taken 24%, survival 96%, peak2s 10%. Reason: none.
+- [牧师] 牧师输出过高: `bulwarkMarks__vs__holySustain__seed_1`, 银誓牧师 `right-4`, damage 69%, sustain 18%, taken 26%, survival 64%, peak2s 14%. Reason: none.
+- [法师] 法师承伤生存过强: `frostTrapField__vs__ironWall__seed_2`, 烬火法师 `left-2`, damage 39%, sustain 0%, taken 31%, survival 94%, peak2s 8%. Reason: none.
+- [牧师] 牧师输出过高: `bulwarkMarks__vs__holySustain__seed_8`, 银誓牧师 `right-4`, damage 67%, sustain 18%, taken 30%, survival 65%, peak2s 15%. Reason: none.
+- [刺客] 刺客生存过强: `duelChampion__vs__shadowExecute__seed_2`, 毒刃刺客 `right-3`, damage 33%, sustain 0%, taken 28%, survival 92%, peak2s 7%. Reason: none.
+- [刺客] 刺客承伤过高但仍存活: `duelChampion__vs__shadowExecute__seed_2`, 毒刃刺客 `right-3`, damage 33%, sustain 0%, taken 28%, survival 92%, peak2s 7%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `holySustain__vs__cavalryBreak__seed_0`, 赤狮狂战 `right-3`, damage 46%, sustain 6%, taken 0%, survival 100%, peak2s 7%. Reason: none.
+- [牧师] 牧师输出过高: `alchemyChaos__vs__holySustain__seed_7`, 银誓牧师 `right-4`, damage 60%, sustain 22%, taken 26%, survival 68%, peak2s 10%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `purgeAttrition__vs__cavalryBreak__seed_8`, 赤狮狂战 `right-3`, damage 48%, sustain 17%, taken 30%, survival 84%, peak2s 12%. Reason: none.
+- [法师] 法师承伤生存过强: `shadowExecute__vs__frostTrapField__seed_11`, 烬火法师 `right-2`, damage 51%, sustain 0%, taken 25%, survival 91%, peak2s 14%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `duelChampion__vs__cavalryBreak__seed_5`, 赤狮狂战 `right-3`, damage 40%, sustain 6%, taken 0%, survival 100%, peak2s 11%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `cavalryBreak__vs__purgeAttrition__seed_9`, 赤狮狂战 `left-3`, damage 51%, sustain 20%, taken 29%, survival 96%, peak2s 14%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `cavalryBreak__vs__purgeAttrition__seed_4`, 赤狮狂战 `left-3`, damage 43%, sustain 19%, taken 32%, survival 97%, peak2s 13%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `cavalryBreak__vs__purgeAttrition__seed_8`, 赤狮狂战 `left-3`, damage 43%, sustain 20%, taken 24%, survival 100%, peak2s 12%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `purgeAttrition__vs__cavalryBreak__seed_5`, 赤狮狂战 `right-3`, damage 42%, sustain 14%, taken 35%, survival 95%, peak2s 11%. Reason: none.
+- [刺客] 刺客承伤过高但仍存活: `shadowExecute__vs__alchemyChaos__seed_0`, 毒刃刺客 `left-3`, damage 44%, sustain 0%, taken 24%, survival 89%, peak2s 18%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `cavalryBreak__vs__alchemyChaos__seed_4`, 赤狮狂战 `left-3`, damage 66%, sustain 29%, taken 28%, survival 89%, peak2s 37%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `frostControl__vs__cavalryBreak__seed_2`, 赤狮狂战 `right-3`, damage 39%, sustain 16%, taken 26%, survival 82%, peak2s 26%. Reason: none.
+- [法师] 法师承伤生存过强: `frostTrapField__vs__crownCarry__seed_8`, 烬火法师 `left-2`, damage 51%, sustain 0%, taken 25%, survival 84%, peak2s 19%. Reason: none.
+- [法师] 法师承伤生存过强: `frostTrapField__vs__crownCarry__seed_5`, 烬火法师 `left-2`, damage 53%, sustain 0%, taken 25%, survival 86%, peak2s 20%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `cavalryBreak__vs__fireBurst__seed_5`, 赤狮狂战 `left-3`, damage 54%, sustain 22%, taken 25%, survival 86%, peak2s 21%. Reason: none.
+- [狂战士] 狂战高输出但过于安全: `purgeAttrition__vs__cavalryBreak__seed_1`, 赤狮狂战 `right-3`, damage 45%, sustain 17%, taken 28%, survival 100%, peak2s 15%. Reason: none.
+- [法师] 法师承伤生存过强: `shadowExecute__vs__frostTrapField__seed_2`, 烬火法师 `right-2`, damage 42%, sustain 0%, taken 25%, survival 73%, peak2s 15%. Reason: none.
 
 ## Reasoned Issues
 
-- [牧师] 牧师输出过高: `alchemyChaos__vs__holySustain__seed_3`, 银誓牧师 `right-4`, damage 69%, sustain 30%, taken 45%, survival 100%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `alchemyChaos__vs__holySustain__seed_8`, 银誓牧师 `right-4`, damage 29%, sustain 28%, taken 48%, survival 100%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_1`, 银誓牧师 `right-4`, damage 44%, sustain 29%, taken 30%, survival 100%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_2`, 银誓牧师 `right-4`, damage 32%, sustain 29%, taken 15%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_3`, 银誓牧师 `right-4`, damage 26%, sustain 29%, taken 17%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_4`, 银誓牧师 `right-4`, damage 25%, sustain 32%, taken 3%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_5`, 银誓牧师 `right-4`, damage 33%, sustain 29%, taken 15%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_7`, 银誓牧师 `right-4`, damage 30%, sustain 28%, taken 20%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_9`, 银誓牧师 `right-4`, damage 30%, sustain 30%, taken 19%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_10`, 银誓牧师 `right-4`, damage 35%, sustain 29%, taken 18%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_11`, 银誓牧师 `right-4`, damage 27%, sustain 31%, taken 12%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__alchemyChaos__seed_2`, 银誓牧师 `left-4`, damage 31%, sustain 28%, taken 52%, survival 94%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__alchemyChaos__seed_8`, 银誓牧师 `left-4`, damage 27%, sustain 7%, taken 17%, survival 30%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_0`, 银誓牧师 `left-4`, damage 33%, sustain 30%, taken 19%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_2`, 银誓牧师 `left-4`, damage 35%, sustain 31%, taken 16%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_3`, 银誓牧师 `left-4`, damage 25%, sustain 32%, taken 2%, survival 100%, peak2s 2%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_4`, 银誓牧师 `left-4`, damage 24%, sustain 33%, taken 14%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_5`, 银誓牧师 `left-4`, damage 41%, sustain 28%, taken 16%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_6`, 银誓牧师 `left-4`, damage 29%, sustain 32%, taken 3%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_7`, 银誓牧师 `left-4`, damage 32%, sustain 30%, taken 15%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_9`, 银誓牧师 `left-4`, damage 36%, sustain 28%, taken 16%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_10`, 银誓牧师 `left-4`, damage 35%, sustain 33%, taken 21%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_11`, 银誓牧师 `left-4`, damage 31%, sustain 29%, taken 16%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__ironWall__seed_3`, 银誓牧师 `left-4`, damage 25%, sustain 33%, taken 0%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__ironWall__seed_11`, 银誓牧师 `left-3`, damage 26%, sustain 37%, taken 0%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__poisonBloom__seed_11`, 银誓牧师 `left-3`, damage 24%, sustain 40%, taken 9%, survival 100%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__poisonBloom__seed_11`, 银誓牧师 `left-4`, damage 28%, sustain 32%, taken 8%, survival 100%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__shadowExecute__seed_0`, 银誓牧师 `left-3`, damage 31%, sustain 37%, taken 0%, survival 100%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__shadowExecute__seed_0`, 银誓牧师 `left-4`, damage 32%, sustain 30%, taken 0%, survival 100%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__shadowExecute__seed_7`, 银誓牧师 `left-3`, damage 30%, sustain 49%, taken 14%, survival 100%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__shadowExecute__seed_7`, 银誓牧师 `left-4`, damage 34%, sustain 28%, taken 28%, survival 74%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `ironWall__vs__holySustain__seed_2`, 银誓牧师 `right-4`, damage 30%, sustain 31%, taken 0%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_2`, 银誓牧师 `right-3`, damage 34%, sustain 39%, taken 1%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_2`, 银誓牧师 `right-4`, damage 31%, sustain 28%, taken 1%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_6`, 银誓牧师 `right-3`, damage 37%, sustain 38%, taken 0%, survival 100%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_6`, 银誓牧师 `right-4`, damage 35%, sustain 30%, taken 0%, survival 100%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_9`, 银誓牧师 `right-4`, damage 50%, sustain 29%, taken 0%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_11`, 银誓牧师 `right-4`, damage 33%, sustain 29%, taken 0%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `ironWall__vs__shadowExecute__seed_8`, 银誓牧师 `left-3`, damage 28%, sustain 64%, taken 19%, survival 100%, peak2s 3%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
-- [牧师] 牧师输出过高: `holySustain__vs__poisonBloom__seed_1`, 银誓牧师 `left-3`, damage 27%, sustain 37%, taken 14%, survival 81%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [狂战士] 狂战高输出但过于安全: `crownCarry__vs__holySustain__seed_11`, 赤狮狂战 `left-4`, damage 73%, sustain 6%, taken 34%, survival 100%, peak2s 8%. Reason: 该角色收到大量治疗/护盾，生存偏高有队友保护解释。
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_0`, 银誓牧师 `right-4`, damage 41%, sustain 31%, taken 27%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_1`, 银誓牧师 `right-4`, damage 42%, sustain 30%, taken 30%, survival 100%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_2`, 银誓牧师 `right-4`, damage 37%, sustain 31%, taken 4%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_3`, 银誓牧师 `right-4`, damage 27%, sustain 31%, taken 10%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_4`, 银誓牧师 `right-4`, damage 44%, sustain 31%, taken 24%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_5`, 银誓牧师 `right-4`, damage 41%, sustain 31%, taken 29%, survival 100%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_6`, 银誓牧师 `right-4`, damage 29%, sustain 28%, taken 19%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_7`, 银誓牧师 `right-4`, damage 39%, sustain 29%, taken 24%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_8`, 银誓牧师 `right-4`, damage 39%, sustain 31%, taken 19%, survival 100%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_9`, 银誓牧师 `right-4`, damage 27%, sustain 30%, taken 21%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `frostControl__vs__holySustain__seed_10`, 银誓牧师 `right-4`, damage 64%, sustain 30%, taken 40%, survival 100%, peak2s 8%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_1`, 银誓牧师 `left-4`, damage 35%, sustain 30%, taken 20%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_2`, 银誓牧师 `left-4`, damage 27%, sustain 30%, taken 24%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_3`, 银誓牧师 `left-4`, damage 32%, sustain 31%, taken 21%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_4`, 银誓牧师 `left-4`, damage 56%, sustain 30%, taken 33%, survival 95%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_5`, 银誓牧师 `left-4`, damage 57%, sustain 31%, taken 32%, survival 100%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_6`, 银誓牧师 `left-4`, damage 43%, sustain 31%, taken 25%, survival 100%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_7`, 银誓牧师 `left-4`, damage 32%, sustain 30%, taken 33%, survival 100%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_8`, 银誓牧师 `left-4`, damage 57%, sustain 30%, taken 45%, survival 100%, peak2s 10%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_9`, 银誓牧师 `left-4`, damage 49%, sustain 31%, taken 28%, survival 100%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_10`, 银誓牧师 `left-4`, damage 49%, sustain 32%, taken 30%, survival 100%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__frostControl__seed_11`, 银誓牧师 `left-4`, damage 59%, sustain 30%, taken 29%, survival 100%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__purgeAttrition__seed_4`, 银誓牧师 `left-4`, damage 51%, sustain 30%, taken 35%, survival 86%, peak2s 7%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__purgeAttrition__seed_9`, 银誓牧师 `left-4`, damage 50%, sustain 30%, taken 34%, survival 94%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__shadowExecute__seed_1`, 银誓牧师 `left-3`, damage 25%, sustain 35%, taken 0%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__shadowExecute__seed_1`, 银誓牧师 `left-4`, damage 25%, sustain 28%, taken 0%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `holySustain__vs__shadowExecute__seed_11`, 银誓牧师 `left-4`, damage 54%, sustain 37%, taken 35%, survival 94%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `ironWall__vs__holySustain__seed_9`, 银誓牧师 `right-3`, damage 32%, sustain 37%, taken 0%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `ironWall__vs__holySustain__seed_9`, 银誓牧师 `right-4`, damage 32%, sustain 29%, taken 0%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `purgeAttrition__vs__holySustain__seed_1`, 银誓牧师 `right-4`, damage 43%, sustain 32%, taken 38%, survival 100%, peak2s 6%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `purgeAttrition__vs__holySustain__seed_6`, 银誓牧师 `right-4`, damage 52%, sustain 28%, taken 34%, survival 90%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_1`, 银誓牧师 `right-3`, damage 31%, sustain 37%, taken 0%, survival 100%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_1`, 银誓牧师 `right-4`, damage 38%, sustain 30%, taken 0%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_3`, 银誓牧师 `right-4`, damage 52%, sustain 36%, taken 31%, survival 94%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_6`, 银誓牧师 `right-4`, damage 44%, sustain 29%, taken 0%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_7`, 银誓牧师 `right-4`, damage 37%, sustain 35%, taken 35%, survival 95%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_9`, 银誓牧师 `right-3`, damage 34%, sustain 41%, taken 16%, survival 100%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `shadowExecute__vs__holySustain__seed_9`, 银誓牧师 `right-4`, damage 58%, sustain 34%, taken 32%, survival 82%, peak2s 4%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
+- [牧师] 牧师输出过高: `purgeAttrition__vs__holySustain__seed_9`, 银誓牧师 `right-4`, damage 37%, sustain 33%, taken 36%, survival 100%, peak2s 5%. Reason: 牧师高输出主要来自长时间普攻累计，不是技能爆发；优先检查辅助空档和队友伤害不足。
 
 ## Role Contracts Used
 

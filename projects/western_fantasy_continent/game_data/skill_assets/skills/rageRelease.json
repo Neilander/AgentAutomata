@@ -1,0 +1,30 @@
+{
+  "name": "怒血释放",
+  "type": "大招",
+  "role": "狂战士",
+  "roleKeys": ["berserker"],
+  "cooldown": 28,
+  "openingCooldown": 11,
+  "icon": "lion",
+  "desc": "根据已有怒血层数打开短攻速、吸血和血怒窗口。大招只放大前面的普攻循环，不负责从零启动狂战。",
+  "design": {
+    "primaryOutput": "basic attack burst window",
+    "expectedScaling": "attackSpeed + physicalPower through rage stacks",
+    "forbiddenScaling": "magicPower",
+    "primaryAnswer": "狂战大招依赖过高",
+    "secondaryUtility": "把长线普攻资源兑现为短爆发",
+    "targetRule": "self"
+  },
+  "effects": [
+    {
+      "kind": "rageRelease",
+      "addStacks": 2,
+      "max": 8,
+      "baseDuration": 3.6,
+      "durationPerStack": 0.18,
+      "maxBonusDuration": 1.6,
+      "label": "怒血释放",
+      "tone": "damage"
+    }
+  ]
+}

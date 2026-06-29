@@ -1,0 +1,29 @@
+{
+  "name": "影势连杀",
+  "type": "被动",
+  "role": "刺客",
+  "roleKeys": ["assassin"],
+  "cooldown": 0,
+  "icon": "targeted",
+  "desc": "暗影爆发贼被动：普攻叠猎标，并略微提高攻速。它不提供通用肉度，目标是让隐藏窗口里的普攻频率变成收割资源。",
+  "passive": true,
+  "design": {
+    "primaryOutput": "hidden window resource conversion",
+    "expectedScaling": "attackSpeed + physicalPower",
+    "forbiddenScaling": "magicPower + generic tankiness",
+    "primaryAnswer": "刺客输出窗口太短，攻速无法兑现",
+    "secondaryUtility": "猎标积累、收割准备",
+    "targetRule": "basic attack target"
+  },
+  "effects": [
+    {
+      "kind": "passiveStat",
+      "attackSpeedMult": 1.08
+    },
+    {
+      "kind": "basicAttackMark",
+      "stacks": 1,
+      "max": 5
+    }
+  ]
+}

@@ -8,2276 +8,2280 @@ Rates are left preset win rates. Expectation checks ask whether a matchup follow
 
 | Preset | 炼金异常 | 低血狂怒 | 壁垒猎标 | 王骑破阵 | 王冠核心 | 决斗冠军 | 余烬爆燃 | 霜控拖延 | 霜陷猎场 | 圣盾续航 | 铁壁反击 | 急速节奏 | 殉道前线 | 毒巢滚雪球 | 净化消耗 | 赤血先锋 | 暗影处决 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 炼金异常 | — | 73%! | 100% | 83% | 7% | 97% | 20% | 57% | 47% | 100% | 100% | 53% | 100% | 53%! | 90% | 100% | 100% |
-| 低血狂怒 | 27%! | — | 67% | 77% | 3% | 60% | 0% | 3% | 40% | 100% | 77% | 27% | 87% | 10% | 90% | 0% | 30% |
-| 壁垒猎标 | 0% | 33% | — | 20% | 0% | 80% | 0% | 0% | 0% | 100% | 93% | 17% | 100% | 3% | 73% | 40% | 43% |
-| 王骑破阵 | 17% | 23% | 80% | — | 7% | 87% | 10% | 3% | 20% | 50% | 100% | 10% | 63% | 3% | 97% | 53% | 50% |
-| 王冠核心 | 93% | 97% | 100% | 93% | — | 100% | 53%! | 100% | 100% | 100% | 100% | 87% | 100% | 77%! | 100% | 80% | 90% |
-| 决斗冠军 | 3% | 40% | 20% | 13% | 0% | — | 0% | 80% | 17% | 7%! | 53% | 7% | 17% | 0% | 33% | 50% | 3% |
-| 余烬爆燃 | 80% | 100% | 100% | 90% | 47%! | 100% | — | 93% | 100% | 100% | 100% | 20%! | 100% | 27%! | 100% | 100% | 100%! |
-| 霜控拖延 | 43% | 97% | 100% | 97% | 0% | 20% | 7% | — | 73% | 100% | 100% | 77% | 100% | 3% | 93% | 90% | 97%! |
-| 霜陷猎场 | 53% | 60% | 100% | 80% | 0% | 83% | 0% | 27% | — | 97% | 97% | 87% | 87% | 3% | 100% | 57% | 70% |
-| 圣盾续航 | 0% | 0% | 0% | 50% | 0% | 93% | 0% | 0% | 3% | — | 67% | 3%! | 53% | 0% | 0% | 0% | 27% |
-| 铁壁反击 | 0% | 23% | 7% | 0% | 0% | 47% | 0% | 0% | 3% | 33% | — | 100% | 60% | 0% | 0% | 20% | 30% |
-| 急速节奏 | 47% | 73% | 83% | 90% | 13% | 93% | 80%! | 23% | 13% | 97%! | 0% | — | 100% | 7% | 87% | 70% | 87%! |
-| 殉道前线 | 0% | 13%! | 0% | 37% | 0% | 83% | 0% | 0% | 13% | 47% | 40%! | 0% | — | 0% | 10% | 3% | 7% |
-| 毒巢滚雪球 | 47%! | 90% | 97% | 97% | 23%! | 100% | 73%! | 97% | 97% | 100% | 100% | 93% | 100% | — | 100% | 100% | 97% |
-| 净化消耗 | 10% | 10% | 27% | 3% | 0% | 67% | 0%! | 7% | 0% | 100% | 100% | 13% | 90% | 0% | — | 7% | 93%! |
-| 赤血先锋 | 0% | 100% | 60% | 47% | 20% | 50% | 0% | 10% | 43% | 100% | 80% | 30% | 97% | 0% | 93% | — | 30% |
-| 暗影处决 | 0% | 70% | 57% | 50% | 10% | 97% | 0%! | 3% | 30% | 73% | 70% | 13%! | 93% | 3% | 7% | 70% | — |
+| 炼金异常 | — | 77%! | 100% | 90% | 20% | 100% | 13% | 40% | 53% | 100% | 100% | 50%! | 100% | 57%! | 87% | 100% | 100% |
+| 低血狂怒 | 23%! | — | 60% | 83% | 0% | 70% | 0% | 0% | 30% | 100% | 83% | 13% | 93% | 3% | 97% | 3% | 20% |
+| 壁垒猎标 | 0% | 40% | — | 0% | 0% | 83% | 0% | 0% | 0% | 100% | 87% | 43% | 93% | 0% | 80% | 23% | 70%! |
+| 王骑破阵 | 10% | 17% | 100% | — | 13% | 73% | 13% | 7% | 17% | 73% | 100% | 20% | 67% | 0% | 90% | 50% | 60% |
+| 王冠核心 | 80% | 100% | 100% | 87% | — | 100% | 40% | 100% | 100% | 100% | 100% | 100% | 100% | 100%! | 100% | 70% | 100% |
+| 决斗冠军 | 0% | 30% | 17% | 27% | 0% | — | 0% | 70% | 23% | 13%! | 60% | 30% | 7% | 0% | 33% | 53% | 23% |
+| 余烬爆燃 | 87% | 100% | 100% | 87% | 60% | 100% | — | 90% | 100% | 100% | 100% | 13%! | 100% | 40%! | 100% | 100% | 100%! |
+| 霜控拖延 | 60% | 100% | 100% | 93% | 0% | 30% | 10% | — | 90% | 100% | 100% | 77% | 100% | 7% | 90% | 93% | 100%! |
+| 霜陷猎场 | 47% | 70% | 100% | 83% | 0% | 77% | 0% | 10% | — | 87% | 100% | 90% | 90% | 7% | 100% | 57% | 73% |
+| 圣盾续航 | 0% | 0% | 0% | 27% | 0% | 87% | 0% | 0% | 13% | — | 47% | 7%! | 37% | 0% | 0% | 0% | 53%! |
+| 铁壁反击 | 0% | 17% | 13% | 0% | 0% | 40% | 0% | 0% | 0% | 53% | — | 100% | 47% | 0% | 3% | 27% | 70%! |
+| 急速节奏 | 50%! | 87% | 57% | 80% | 0% | 70% | 87%! | 23% | 10% | 93%! | 0% | — | 100% | 7% | 83% | 77% | 97%! |
+| 殉道前线 | 0% | 7%! | 7% | 33% | 0% | 93% | 0% | 0% | 10% | 63% | 53% | 0% | — | 0% | 20% | 0% | 37% |
+| 毒巢滚雪球 | 43%! | 97% | 100% | 100% | 0%! | 100% | 60%! | 93% | 93% | 100% | 100% | 93% | 100% | — | 100% | 100% | 100% |
+| 净化消耗 | 13% | 3% | 20% | 10% | 0% | 67% | 0%! | 10% | 0% | 100% | 97% | 17% | 80% | 0% | — | 13% | 93%! |
+| 赤血先锋 | 0% | 97% | 77% | 50% | 30% | 47% | 0% | 7% | 43% | 100% | 73% | 23% | 100% | 0% | 87% | — | 30% |
+| 暗影处决 | 0% | 80% | 30% | 40% | 0% | 77% | 0%! | 0% | 27% | 47%! | 30%! | 3%! | 63% | 0% | 7% | 70% | — |
 
 ## Ecology Health
 
 - Result: review.
 - Matrix cells checked: 272.
-- Absolute outcomes (0% or 100%): 92/272 (34%), recorded as determinism evidence, not an automatic failure.
-- Hard counters (<= 10% or >= 90%): 162/272 (60%).
+- Absolute outcomes (0% or 100%): 112/272 (41%), recorded as determinism evidence, not an automatic failure.
+- Hard counters (<= 10% or >= 90%): 156/272 (57%).
 - Soft band (35%-65%): 36/272 (13%).
-- Polarization score: 0.73 (0 is all 50/50, 1 is all 0/100).
+- Polarization score: 0.74 (0 is all 50/50, 1 is all 0/100).
 - Review checks:
   - crownCarry has broad hard advantages but few hard predators (12 prey, 0 predators)
-  - fireBurst has broad hard advantages but few hard predators (12 prey, 0 predators)
-  - frostControl has broad hard advantages but few hard predators (9 prey, 3 predators)
-  - holySustain has many hard predators and almost no hard prey (11 predators, 1 prey)
-  - ironWall has many hard predators and almost no hard prey (9 predators, 1 prey)
-  - martyrFrontline has many hard predators and almost no hard prey (10 predators, 0 prey)
-  - poisonBloom has broad hard advantages but few hard predators (13 prey, 0 predators)
+  - fireBurst has broad hard advantages but few hard predators (11 prey, 0 predators)
+  - frostControl has broad hard advantages but few hard predators (10 prey, 3 predators)
+  - holySustain has many hard predators and almost no hard prey (10 predators, 0 prey)
+  - ironWall has many hard predators and almost no hard prey (8 predators, 1 prey)
+  - martyrFrontline has many hard predators and almost no hard prey (10 predators, 1 prey)
+  - poisonBloom has broad hard advantages but few hard predators (13 prey, 1 predators)
 
 Preset ecology profile:
-- `alchemyChaos`: answered; prey 8/16, predators 1/16, extreme advantage tags favored->favored, flex->favored, flex->weak, weak->weak.
-- `bloodRage`: answered; prey 2/16, predators 5/16, extreme advantage tags favored->favored, flex->favored, flex->weak, weak->weak.
-- `bulwarkMarks`: answered; prey 3/16, predators 6/16, extreme advantage tags favored->favored, flex->favored, flex->weak.
-- `cavalryBreak`: answered; prey 2/16, predators 5/16, extreme advantage tags favored->favored, flex->favored, flex->weak.
-- `crownCarry`: all-rounder-risk; prey 12/16, predators 0/16, extreme advantage tags favored->favored, flex->favored, flex->weak, weak->weak.
-- `duelChampion`: answered; prey 0/16, predators 7/16, extreme advantage tags -.
-- `fireBurst`: all-rounder-risk; prey 12/16, predators 0/16, extreme advantage tags favored->favored, favored->weak, flex->favored, flex->weak, weak->favored, weak->weak.
-- `frostControl`: all-rounder-risk; prey 9/16, predators 3/16, extreme advantage tags favored->favored, flex->favored, flex->weak, weak->favored, weak->weak.
-- `frostTrapField`: answered; prey 4/16, predators 3/16, extreme advantage tags favored->favored, flex->favored, flex->weak.
-- `holySustain`: vulnerable-without-prey; prey 1/16, predators 11/16, extreme advantage tags favored->weak, flex->favored.
-- `ironWall`: vulnerable-without-prey; prey 1/16, predators 9/16, extreme advantage tags favored->favored, weak->weak.
-- `lightningTempo`: answered; prey 4/16, predators 2/16, extreme advantage tags favored->weak, flex->favored, flex->weak, weak->favored.
-- `martyrFrontline`: vulnerable-without-prey; prey 0/16, predators 10/16, extreme advantage tags -.
-- `poisonBloom`: all-rounder-risk; prey 13/16, predators 0/16, extreme advantage tags favored->favored, flex->favored, flex->weak, weak->weak.
-- `purgeAttrition`: niche-under-pressure; prey 4/16, predators 9/16, extreme advantage tags favored->favored, flex->favored, flex->weak, weak->favored.
-- `scarletVanguard`: answered; prey 4/16, predators 4/16, extreme advantage tags flex->favored, flex->weak.
-- `shadowExecute`: answered; prey 2/16, predators 6/16, extreme advantage tags flex->favored, flex->weak, weak->weak.
+- `alchemyChaos`: answered; prey 8/16, predators 0/16, extreme advantage tags favored->favored, flex->favored, flex->weak, weak->weak.
+- `bloodRage`: answered; prey 3/16, predators 5/16, extreme advantage tags favored->favored, favored->weak, flex->favored, flex->weak, weak->weak.
+- `bulwarkMarks`: answered; prey 2/16, predators 7/16, extreme advantage tags favored->favored, flex->favored, flex->weak.
+- `cavalryBreak`: answered; prey 3/16, predators 3/16, extreme advantage tags favored->favored, flex->favored, flex->weak.
+- `crownCarry`: all-rounder-risk; prey 12/16, predators 0/16, extreme advantage tags favored->favored, favored->weak, flex->favored, flex->weak, weak->favored, weak->weak.
+- `duelChampion`: answered; prey 0/16, predators 5/16, extreme advantage tags -.
+- `fireBurst`: all-rounder-risk; prey 11/16, predators 0/16, extreme advantage tags favored->favored, favored->weak, flex->favored, flex->weak, weak->favored, weak->weak.
+- `frostControl`: all-rounder-risk; prey 10/16, predators 3/16, extreme advantage tags favored->favored, flex->favored, flex->weak, weak->favored, weak->weak.
+- `frostTrapField`: answered; prey 5/16, predators 4/16, extreme advantage tags favored->favored, flex->favored, flex->weak.
+- `holySustain`: vulnerable-without-prey; prey 0/16, predators 10/16, extreme advantage tags -.
+- `ironWall`: vulnerable-without-prey; prey 1/16, predators 8/16, extreme advantage tags favored->favored, weak->weak.
+- `lightningTempo`: answered; prey 3/16, predators 4/16, extreme advantage tags favored->weak, flex->favored, flex->weak, weak->favored.
+- `martyrFrontline`: vulnerable-without-prey; prey 1/16, predators 10/16, extreme advantage tags flex->favored, flex->weak.
+- `poisonBloom`: all-rounder-risk; prey 13/16, predators 1/16, extreme advantage tags favored->favored, flex->favored, flex->weak, weak->weak.
+- `purgeAttrition`: answered; prey 3/16, predators 7/16, extreme advantage tags favored->favored, flex->favored, flex->weak, weak->favored.
+- `scarletVanguard`: answered; prey 3/16, predators 4/16, extreme advantage tags flex->favored, flex->weak.
+- `shadowExecute`: answered; prey 0/16, predators 7/16, extreme advantage tags -.
 
 Most polarized ordered matchups:
 - `alchemyChaos` vs `bulwarkMarks`: 100% (flex/favored)
+- `alchemyChaos` vs `duelChampion`: 100% (flex/favored)
 - `alchemyChaos` vs `holySustain`: 100% (flex/favored)
 - `alchemyChaos` vs `ironWall`: 100% (favored/favored)
 - `alchemyChaos` vs `martyrFrontline`: 100% (flex/favored)
 - `alchemyChaos` vs `scarletVanguard`: 100% (flex/favored)
 - `alchemyChaos` vs `shadowExecute`: 100% (flex/favored)
+- `bloodRage` vs `crownCarry`: 0% (weak/weak)
 - `bloodRage` vs `fireBurst`: 0% (weak/weak)
+- `bloodRage` vs `frostControl`: 0% (flex/weak)
 - `bloodRage` vs `holySustain`: 100% (favored/favored)
-- `bloodRage` vs `scarletVanguard`: 0% (flex/weak)
 - `bulwarkMarks` vs `alchemyChaos`: 0% (flex/weak)
-- `bulwarkMarks` vs `crownCarry`: 0% (flex/weak)
-- `bulwarkMarks` vs `fireBurst`: 0% (weak/weak)
 
 ## Expectation Mismatches
 
-- `alchemyChaos` vs `bloodRage`: expected weak, actual favored, rate 73%.
-- `alchemyChaos` vs `poisonBloom`: expected weak, actual even, rate 53%.
-- `bloodRage` vs `alchemyChaos`: expected favored, actual weak, rate 27%.
-- `crownCarry` vs `fireBurst`: expected weak, actual even, rate 53%.
-- `crownCarry` vs `poisonBloom`: expected weak, actual favored, rate 77%.
-- `duelChampion` vs `holySustain`: expected favored, actual weak, rate 7%.
-- `fireBurst` vs `crownCarry`: expected favored, actual even, rate 47%.
-- `fireBurst` vs `lightningTempo`: expected favored, actual weak, rate 20%.
-- `fireBurst` vs `poisonBloom`: expected favored, actual weak, rate 27%.
+- `alchemyChaos` vs `bloodRage`: expected weak, actual favored, rate 77%.
+- `alchemyChaos` vs `lightningTempo`: expected favored, actual even, rate 50%.
+- `alchemyChaos` vs `poisonBloom`: expected weak, actual even, rate 57%.
+- `bloodRage` vs `alchemyChaos`: expected favored, actual weak, rate 23%.
+- `bulwarkMarks` vs `shadowExecute`: expected weak, actual favored, rate 70%.
+- `crownCarry` vs `poisonBloom`: expected weak, actual favored, rate 100%.
+- `duelChampion` vs `holySustain`: expected favored, actual weak, rate 13%.
+- `fireBurst` vs `lightningTempo`: expected favored, actual weak, rate 13%.
+- `fireBurst` vs `poisonBloom`: expected favored, actual weak, rate 40%.
 - `fireBurst` vs `shadowExecute`: expected weak, actual favored, rate 100%.
-- `frostControl` vs `shadowExecute`: expected weak, actual favored, rate 97%.
-- `holySustain` vs `lightningTempo`: expected favored, actual weak, rate 3%.
-- `lightningTempo` vs `fireBurst`: expected weak, actual favored, rate 80%.
-- `lightningTempo` vs `holySustain`: expected weak, actual favored, rate 97%.
-- `lightningTempo` vs `shadowExecute`: expected weak, actual favored, rate 87%.
-- `martyrFrontline` vs `bloodRage`: expected favored, actual weak, rate 13%.
-- `martyrFrontline` vs `ironWall`: expected favored, actual weak, rate 40%.
-- `poisonBloom` vs `alchemyChaos`: expected favored, actual even, rate 47%.
-- `poisonBloom` vs `crownCarry`: expected favored, actual weak, rate 23%.
-- `poisonBloom` vs `fireBurst`: expected weak, actual favored, rate 73%.
+- `frostControl` vs `shadowExecute`: expected weak, actual favored, rate 100%.
+- `holySustain` vs `lightningTempo`: expected favored, actual weak, rate 7%.
+- `holySustain` vs `shadowExecute`: expected weak, actual even, rate 53%.
+- `ironWall` vs `shadowExecute`: expected weak, actual favored, rate 70%.
+- `lightningTempo` vs `alchemyChaos`: expected weak, actual even, rate 50%.
+- `lightningTempo` vs `fireBurst`: expected weak, actual favored, rate 87%.
+- `lightningTempo` vs `holySustain`: expected weak, actual favored, rate 93%.
+- `lightningTempo` vs `shadowExecute`: expected weak, actual favored, rate 97%.
+- `martyrFrontline` vs `bloodRage`: expected favored, actual weak, rate 7%.
+- `poisonBloom` vs `alchemyChaos`: expected favored, actual even, rate 43%.
+- `poisonBloom` vs `crownCarry`: expected favored, actual weak, rate 0%.
+- `poisonBloom` vs `fireBurst`: expected weak, actual favored, rate 60%.
 - `purgeAttrition` vs `fireBurst`: expected favored, actual weak, rate 0%.
 - `purgeAttrition` vs `shadowExecute`: expected weak, actual favored, rate 93%.
 - `shadowExecute` vs `fireBurst`: expected favored, actual weak, rate 0%.
-- `shadowExecute` vs `lightningTempo`: expected favored, actual weak, rate 13%.
+- `shadowExecute` vs `holySustain`: expected favored, actual even, rate 47%.
+- `shadowExecute` vs `ironWall`: expected favored, actual weak, rate 30%.
+- `shadowExecute` vs `lightningTempo`: expected favored, actual weak, rate 3%.
 
 ## Pair Details
 
 ### `alchemyChaos` into `bloodRage`
 
-- Win rate: 73% (22/30)
+- Win rate: 77% (23/30)
 - Expectation: intended weak, actual favored, mismatch
-- Avg duration: 15.7s
-- Avg left basic / DOT / heal / shield: 495 / 294 / 0 / 143
-- Avg right basic / DOT / heal / shield: 872 / 0 / 227 / 135
+- Avg duration: 15.4s
+- Avg left basic / DOT / heal / shield: 494 / 310 / 0 / 138
+- Avg right basic / DOT / heal / shield: 900 / 0 / 230 / 130
 
 ### `alchemyChaos` into `bulwarkMarks`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 22.1s
-- Avg left basic / DOT / heal / shield: 387 / 298 / 0 / 371
-- Avg right basic / DOT / heal / shield: 426 / 0 / 0 / 336
+- Avg duration: 21.9s
+- Avg left basic / DOT / heal / shield: 399 / 293 / 0 / 373
+- Avg right basic / DOT / heal / shield: 437 / 0 / 0 / 333
 
 ### `alchemyChaos` into `cavalryBreak`
 
-- Win rate: 83% (25/30)
+- Win rate: 90% (27/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 19.3s
-- Avg left basic / DOT / heal / shield: 495 / 318 / 0 / 207
-- Avg right basic / DOT / heal / shield: 879 / 0 / 212 / 213
+- Avg duration: 17.9s
+- Avg left basic / DOT / heal / shield: 478 / 332 / 0 / 205
+- Avg right basic / DOT / heal / shield: 903 / 0 / 195 / 196
 
 ### `alchemyChaos` into `crownCarry`
 
-- Win rate: 7% (2/30)
+- Win rate: 20% (6/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 17.7s
-- Avg left basic / DOT / heal / shield: 301 / 343 / 0 / 203
-- Avg right basic / DOT / heal / shield: 1386 / 0 / 344 / 498
+- Avg duration: 17.4s
+- Avg left basic / DOT / heal / shield: 305 / 331 / 0 / 198
+- Avg right basic / DOT / heal / shield: 1333 / 0 / 313 / 492
 
 ### `alchemyChaos` into `duelChampion`
 
-- Win rate: 97% (29/30)
+- Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
 - Avg duration: 16.9s
-- Avg left basic / DOT / heal / shield: 263 / 285 / 0 / 280
-- Avg right basic / DOT / heal / shield: 356 / 0 / 115 / 433
+- Avg left basic / DOT / heal / shield: 275 / 296 / 0 / 282
+- Avg right basic / DOT / heal / shield: 338 / 0 / 117 / 422
 
 ### `alchemyChaos` into `fireBurst`
 
-- Win rate: 20% (6/30)
+- Win rate: 13% (4/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 14.0s
-- Avg left basic / DOT / heal / shield: 287 / 265 / 0 / 192
-- Avg right basic / DOT / heal / shield: 285 / 139 / 0 / 149
+- Avg duration: 13.9s
+- Avg left basic / DOT / heal / shield: 271 / 260 / 0 / 201
+- Avg right basic / DOT / heal / shield: 297 / 138 / 0 / 148
 
 ### `alchemyChaos` into `frostControl`
 
-- Win rate: 57% (17/30)
-- Expectation: intended flex, actual even, ok
-- Avg duration: 31.0s
-- Avg left basic / DOT / heal / shield: 464 / 300 / 0 / 614
-- Avg right basic / DOT / heal / shield: 351 / 197 / 180 / 761
+- Win rate: 40% (12/30)
+- Expectation: intended flex, actual weak, ok
+- Avg duration: 30.9s
+- Avg left basic / DOT / heal / shield: 435 / 324 / 0 / 623
+- Avg right basic / DOT / heal / shield: 359 / 207 / 190 / 778
 
 ### `alchemyChaos` into `frostTrapField`
 
-- Win rate: 47% (14/30)
+- Win rate: 53% (16/30)
 - Expectation: intended flex, actual even, ok
-- Avg duration: 16.5s
-- Avg left basic / DOT / heal / shield: 341 / 319 / 0 / 213
-- Avg right basic / DOT / heal / shield: 604 / 0 / 44 / 248
+- Avg duration: 16.6s
+- Avg left basic / DOT / heal / shield: 339 / 324 / 0 / 218
+- Avg right basic / DOT / heal / shield: 586 / 0 / 40 / 240
 
 ### `alchemyChaos` into `holySustain`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 35.0s
-- Avg left basic / DOT / heal / shield: 714 / 450 / 0 / 868
-- Avg right basic / DOT / heal / shield: 242 / 0 / 710 / 1255
+- Avg duration: 35.4s
+- Avg left basic / DOT / heal / shield: 715 / 453 / 0 / 876
+- Avg right basic / DOT / heal / shield: 240 / 0 / 732 / 1283
 
 ### `alchemyChaos` into `ironWall`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 27.9s
-- Avg left basic / DOT / heal / shield: 526 / 357 / 0 / 664
-- Avg right basic / DOT / heal / shield: 418 / 0 / 317 / 887
+- Avg duration: 27.5s
+- Avg left basic / DOT / heal / shield: 521 / 339 / 0 / 655
+- Avg right basic / DOT / heal / shield: 393 / 0 / 306 / 875
 
 ### `alchemyChaos` into `lightningTempo`
 
-- Win rate: 53% (16/30)
-- Expectation: intended favored, actual even, ok
-- Avg duration: 17.5s
-- Avg left basic / DOT / heal / shield: 437 / 320 / 0 / 199
-- Avg right basic / DOT / heal / shield: 497 / 0 / 0 / 0
+- Win rate: 50% (15/30)
+- Expectation: intended favored, actual even, mismatch
+- Avg duration: 17.2s
+- Avg left basic / DOT / heal / shield: 434 / 326 / 0 / 208
+- Avg right basic / DOT / heal / shield: 494 / 0 / 0 / 0
 
 ### `alchemyChaos` into `martyrFrontline`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 14.6s
-- Avg left basic / DOT / heal / shield: 447 / 289 / 0 / 237
-- Avg right basic / DOT / heal / shield: 285 / 99 / 73 / 177
+- Avg duration: 14.5s
+- Avg left basic / DOT / heal / shield: 433 / 297 / 0 / 253
+- Avg right basic / DOT / heal / shield: 281 / 98 / 72 / 167
 
 ### `alchemyChaos` into `poisonBloom`
 
-- Win rate: 53% (16/30)
+- Win rate: 57% (17/30)
 - Expectation: intended weak, actual even, mismatch
-- Avg duration: 16.7s
-- Avg left basic / DOT / heal / shield: 468 / 273 / 0 / 233
-- Avg right basic / DOT / heal / shield: 255 / 371 / 133 / 351
+- Avg duration: 16.6s
+- Avg left basic / DOT / heal / shield: 485 / 266 / 0 / 243
+- Avg right basic / DOT / heal / shield: 251 / 354 / 131 / 344
 
 ### `alchemyChaos` into `purgeAttrition`
 
-- Win rate: 90% (27/30)
+- Win rate: 87% (26/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 19.0s
-- Avg left basic / DOT / heal / shield: 473 / 319 / 0 / 283
-- Avg right basic / DOT / heal / shield: 380 / 323 / 142 / 344
+- Avg duration: 18.3s
+- Avg left basic / DOT / heal / shield: 460 / 303 / 0 / 283
+- Avg right basic / DOT / heal / shield: 367 / 310 / 145 / 338
 
 ### `alchemyChaos` into `scarletVanguard`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 13.6s
-- Avg left basic / DOT / heal / shield: 448 / 260 / 0 / 138
-- Avg right basic / DOT / heal / shield: 590 / 34 / 53 / 92
+- Avg duration: 13.5s
+- Avg left basic / DOT / heal / shield: 435 / 262 / 0 / 138
+- Avg right basic / DOT / heal / shield: 575 / 29 / 52 / 90
 
 ### `alchemyChaos` into `shadowExecute`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 27.4s
-- Avg left basic / DOT / heal / shield: 510 / 242 / 0 / 472
-- Avg right basic / DOT / heal / shield: 266 / 203 / 0 / 523
+- Avg duration: 24.6s
+- Avg left basic / DOT / heal / shield: 528 / 221 / 0 / 578
+- Avg right basic / DOT / heal / shield: 217 / 193 / 0 / 457
 
 ### `bloodRage` into `alchemyChaos`
 
-- Win rate: 27% (8/30)
+- Win rate: 23% (7/30)
 - Expectation: intended favored, actual weak, mismatch
-- Avg duration: 15.7s
-- Avg left basic / DOT / heal / shield: 872 / 0 / 227 / 135
-- Avg right basic / DOT / heal / shield: 495 / 294 / 0 / 143
+- Avg duration: 15.4s
+- Avg left basic / DOT / heal / shield: 900 / 0 / 230 / 130
+- Avg right basic / DOT / heal / shield: 494 / 310 / 0 / 138
 
 ### `bloodRage` into `bulwarkMarks`
 
-- Win rate: 67% (20/30)
+- Win rate: 60% (18/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 22.9s
-- Avg left basic / DOT / heal / shield: 1192 / 0 / 386 / 213
-- Avg right basic / DOT / heal / shield: 860 / 0 / 0 / 228
+- Avg duration: 22.0s
+- Avg left basic / DOT / heal / shield: 1160 / 0 / 367 / 188
+- Avg right basic / DOT / heal / shield: 861 / 0 / 0 / 227
 
 ### `bloodRage` into `cavalryBreak`
 
-- Win rate: 77% (23/30)
+- Win rate: 83% (25/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 21.8s
-- Avg left basic / DOT / heal / shield: 1472 / 0 / 449 / 177
-- Avg right basic / DOT / heal / shield: 1134 / 0 / 327 / 257
+- Avg duration: 22.8s
+- Avg left basic / DOT / heal / shield: 1507 / 0 / 487 / 197
+- Avg right basic / DOT / heal / shield: 1170 / 0 / 328 / 269
 
 ### `bloodRage` into `crownCarry`
 
-- Win rate: 3% (1/30)
+- Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 24.3s
-- Avg left basic / DOT / heal / shield: 995 / 0 / 373 / 230
-- Avg right basic / DOT / heal / shield: 1739 / 0 / 323 / 482
+- Avg duration: 23.7s
+- Avg left basic / DOT / heal / shield: 924 / 0 / 346 / 213
+- Avg right basic / DOT / heal / shield: 1703 / 0 / 348 / 493
 
 ### `bloodRage` into `duelChampion`
 
-- Win rate: 60% (18/30)
+- Win rate: 70% (21/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 27.1s
-- Avg left basic / DOT / heal / shield: 1108 / 0 / 413 / 236
-- Avg right basic / DOT / heal / shield: 832 / 0 / 217 / 604
+- Avg duration: 22.2s
+- Avg left basic / DOT / heal / shield: 1115 / 0 / 376 / 183
+- Avg right basic / DOT / heal / shield: 701 / 0 / 160 / 531
 
 ### `bloodRage` into `fireBurst`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 14.7s
-- Avg left basic / DOT / heal / shield: 368 / 0 / 148 / 128
-- Avg right basic / DOT / heal / shield: 482 / 120 / 0 / 248
+- Avg duration: 14.5s
+- Avg left basic / DOT / heal / shield: 394 / 0 / 152 / 130
+- Avg right basic / DOT / heal / shield: 464 / 112 / 0 / 236
 
 ### `bloodRage` into `frostControl`
 
-- Win rate: 3% (1/30)
+- Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 20.8s
-- Avg left basic / DOT / heal / shield: 861 / 0 / 296 / 140
-- Avg right basic / DOT / heal / shield: 613 / 220 / 152 / 354
+- Avg duration: 20.4s
+- Avg left basic / DOT / heal / shield: 809 / 0 / 288 / 146
+- Avg right basic / DOT / heal / shield: 609 / 217 / 138 / 333
 
 ### `bloodRage` into `frostTrapField`
 
-- Win rate: 40% (12/30)
+- Win rate: 30% (9/30)
 - Expectation: intended flex, actual weak, ok
 - Avg duration: 21.9s
-- Avg left basic / DOT / heal / shield: 917 / 0 / 331 / 167
-- Avg right basic / DOT / heal / shield: 768 / 0 / 62 / 338
+- Avg left basic / DOT / heal / shield: 837 / 0 / 312 / 170
+- Avg right basic / DOT / heal / shield: 798 / 0 / 72 / 356
 
 ### `bloodRage` into `holySustain`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 23.7s
-- Avg left basic / DOT / heal / shield: 1547 / 0 / 505 / 353
-- Avg right basic / DOT / heal / shield: 441 / 0 / 442 / 744
+- Avg duration: 23.6s
+- Avg left basic / DOT / heal / shield: 1565 / 0 / 487 / 344
+- Avg right basic / DOT / heal / shield: 450 / 0 / 440 / 745
 
 ### `bloodRage` into `ironWall`
 
-- Win rate: 77% (23/30)
+- Win rate: 83% (25/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 20.9s
-- Avg left basic / DOT / heal / shield: 1316 / 0 / 408 / 172
-- Avg right basic / DOT / heal / shield: 638 / 0 / 158 / 611
+- Avg duration: 20.8s
+- Avg left basic / DOT / heal / shield: 1391 / 0 / 411 / 170
+- Avg right basic / DOT / heal / shield: 621 / 0 / 155 / 572
 
 ### `bloodRage` into `lightningTempo`
 
-- Win rate: 27% (8/30)
+- Win rate: 13% (4/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 18.6s
-- Avg left basic / DOT / heal / shield: 900 / 0 / 263 / 143
-- Avg right basic / DOT / heal / shield: 756 / 0 / 0 / 0
+- Avg duration: 19.3s
+- Avg left basic / DOT / heal / shield: 833 / 0 / 242 / 144
+- Avg right basic / DOT / heal / shield: 799 / 0 / 0 / 0
 
 ### `bloodRage` into `martyrFrontline`
 
-- Win rate: 87% (26/30)
+- Win rate: 93% (28/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 23.8s
-- Avg left basic / DOT / heal / shield: 1374 / 0 / 389 / 248
-- Avg right basic / DOT / heal / shield: 636 / 161 / 38 / 165
+- Avg duration: 22.6s
+- Avg left basic / DOT / heal / shield: 1313 / 0 / 372 / 238
+- Avg right basic / DOT / heal / shield: 619 / 146 / 38 / 165
 
 ### `bloodRage` into `poisonBloom`
 
-- Win rate: 10% (3/30)
+- Win rate: 3% (1/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 17.5s
-- Avg left basic / DOT / heal / shield: 649 / 0 / 173 / 135
-- Avg right basic / DOT / heal / shield: 459 / 396 / 149 / 393
+- Avg duration: 17.1s
+- Avg left basic / DOT / heal / shield: 553 / 0 / 158 / 133
+- Avg right basic / DOT / heal / shield: 468 / 382 / 153 / 402
 
 ### `bloodRage` into `purgeAttrition`
 
-- Win rate: 90% (27/30)
+- Win rate: 97% (29/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 20.4s
-- Avg left basic / DOT / heal / shield: 1361 / 0 / 334 / 164
-- Avg right basic / DOT / heal / shield: 533 / 439 / 95 / 210
+- Avg duration: 19.5s
+- Avg left basic / DOT / heal / shield: 1376 / 0 / 320 / 150
+- Avg right basic / DOT / heal / shield: 514 / 429 / 94 / 192
 
 ### `bloodRage` into `scarletVanguard`
 
-- Win rate: 0% (0/30)
+- Win rate: 3% (1/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 15.8s
-- Avg left basic / DOT / heal / shield: 465 / 0 / 124 / 106
-- Avg right basic / DOT / heal / shield: 1030 / 40 / 84 / 155
+- Avg duration: 17.8s
+- Avg left basic / DOT / heal / shield: 513 / 0 / 153 / 138
+- Avg right basic / DOT / heal / shield: 997 / 55 / 66 / 154
 
 ### `bloodRage` into `shadowExecute`
 
-- Win rate: 30% (9/30)
+- Win rate: 20% (6/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 21.1s
-- Avg left basic / DOT / heal / shield: 828 / 0 / 226 / 166
-- Avg right basic / DOT / heal / shield: 585 / 233 / 0 / 247
+- Avg duration: 20.2s
+- Avg left basic / DOT / heal / shield: 721 / 0 / 195 / 148
+- Avg right basic / DOT / heal / shield: 605 / 225 / 0 / 289
 
 ### `bulwarkMarks` into `alchemyChaos`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 22.1s
-- Avg left basic / DOT / heal / shield: 426 / 0 / 0 / 336
-- Avg right basic / DOT / heal / shield: 387 / 298 / 0 / 371
+- Avg duration: 21.9s
+- Avg left basic / DOT / heal / shield: 437 / 0 / 0 / 333
+- Avg right basic / DOT / heal / shield: 399 / 293 / 0 / 373
 
 ### `bulwarkMarks` into `bloodRage`
 
-- Win rate: 33% (10/30)
+- Win rate: 40% (12/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 22.9s
-- Avg left basic / DOT / heal / shield: 860 / 0 / 0 / 228
-- Avg right basic / DOT / heal / shield: 1192 / 0 / 386 / 213
+- Avg duration: 22.0s
+- Avg left basic / DOT / heal / shield: 861 / 0 / 0 / 227
+- Avg right basic / DOT / heal / shield: 1160 / 0 / 367 / 188
 
 ### `bulwarkMarks` into `cavalryBreak`
 
-- Win rate: 20% (6/30)
+- Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 25.0s
-- Avg left basic / DOT / heal / shield: 763 / 0 / 0 / 227
-- Avg right basic / DOT / heal / shield: 1073 / 0 / 290 / 316
+- Avg duration: 24.9s
+- Avg left basic / DOT / heal / shield: 738 / 0 / 0 / 219
+- Avg right basic / DOT / heal / shield: 1125 / 0 / 308 / 314
 
 ### `bulwarkMarks` into `crownCarry`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 18.3s
-- Avg left basic / DOT / heal / shield: 385 / 0 / 0 / 215
-- Avg right basic / DOT / heal / shield: 1401 / 0 / 354 / 516
+- Avg duration: 18.2s
+- Avg left basic / DOT / heal / shield: 380 / 0 / 0 / 215
+- Avg right basic / DOT / heal / shield: 1388 / 0 / 360 / 510
 
 ### `bulwarkMarks` into `duelChampion`
 
-- Win rate: 80% (24/30)
+- Win rate: 83% (25/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 29.0s
-- Avg left basic / DOT / heal / shield: 821 / 0 / 0 / 431
-- Avg right basic / DOT / heal / shield: 659 / 0 / 273 / 745
+- Avg duration: 29.4s
+- Avg left basic / DOT / heal / shield: 867 / 0 / 0 / 444
+- Avg right basic / DOT / heal / shield: 672 / 0 / 282 / 770
 
 ### `bulwarkMarks` into `fireBurst`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 14.8s
-- Avg left basic / DOT / heal / shield: 404 / 0 / 0 / 225
-- Avg right basic / DOT / heal / shield: 322 / 167 / 0 / 147
+- Avg duration: 14.9s
+- Avg left basic / DOT / heal / shield: 405 / 0 / 0 / 223
+- Avg right basic / DOT / heal / shield: 319 / 166 / 0 / 147
 
 ### `bulwarkMarks` into `frostControl`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 23.6s
-- Avg left basic / DOT / heal / shield: 447 / 0 / 0 / 471
-- Avg right basic / DOT / heal / shield: 456 / 209 / 233 / 638
+- Avg duration: 22.7s
+- Avg left basic / DOT / heal / shield: 452 / 0 / 0 / 443
+- Avg right basic / DOT / heal / shield: 463 / 204 / 230 / 653
 
 ### `bulwarkMarks` into `frostTrapField`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 17.9s
-- Avg left basic / DOT / heal / shield: 463 / 0 / 0 / 218
-- Avg right basic / DOT / heal / shield: 635 / 0 / 115 / 315
+- Avg duration: 17.7s
+- Avg left basic / DOT / heal / shield: 466 / 0 / 0 / 216
+- Avg right basic / DOT / heal / shield: 629 / 0 / 103 / 306
 
 ### `bulwarkMarks` into `holySustain`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 39.6s
-- Avg left basic / DOT / heal / shield: 1080 / 0 / 0 / 1085
-- Avg right basic / DOT / heal / shield: 195 / 0 / 552 / 1483
+- Avg duration: 38.2s
+- Avg left basic / DOT / heal / shield: 1060 / 0 / 0 / 1052
+- Avg right basic / DOT / heal / shield: 191 / 0 / 534 / 1413
 
 ### `bulwarkMarks` into `ironWall`
 
-- Win rate: 93% (28/30)
+- Win rate: 87% (26/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 32.1s
-- Avg left basic / DOT / heal / shield: 914 / 0 / 0 / 902
-- Avg right basic / DOT / heal / shield: 495 / 0 / 326 / 1005
+- Avg duration: 32.5s
+- Avg left basic / DOT / heal / shield: 903 / 0 / 0 / 879
+- Avg right basic / DOT / heal / shield: 535 / 0 / 337 / 1015
 
 ### `bulwarkMarks` into `lightningTempo`
 
-- Win rate: 17% (5/30)
-- Expectation: intended flex, actual weak, ok
-- Avg duration: 19.4s
-- Avg left basic / DOT / heal / shield: 655 / 0 / 0 / 180
-- Avg right basic / DOT / heal / shield: 673 / 0 / 0 / 0
+- Win rate: 43% (13/30)
+- Expectation: intended flex, actual even, ok
+- Avg duration: 19.8s
+- Avg left basic / DOT / heal / shield: 668 / 0 / 0 / 185
+- Avg right basic / DOT / heal / shield: 634 / 0 / 0 / 0
 
 ### `bulwarkMarks` into `martyrFrontline`
 
-- Win rate: 100% (30/30)
+- Win rate: 93% (28/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 22.9s
-- Avg left basic / DOT / heal / shield: 795 / 0 / 0 / 354
-- Avg right basic / DOT / heal / shield: 476 / 147 / 135 / 319
+- Avg duration: 22.4s
+- Avg left basic / DOT / heal / shield: 791 / 0 / 0 / 339
+- Avg right basic / DOT / heal / shield: 468 / 145 / 111 / 283
 
 ### `bulwarkMarks` into `poisonBloom`
 
-- Win rate: 3% (1/30)
+- Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 19.5s
-- Avg left basic / DOT / heal / shield: 583 / 0 / 0 / 279
-- Avg right basic / DOT / heal / shield: 335 / 444 / 160 / 428
+- Avg duration: 19.4s
+- Avg left basic / DOT / heal / shield: 541 / 0 / 0 / 315
+- Avg right basic / DOT / heal / shield: 325 / 448 / 158 / 456
 
 ### `bulwarkMarks` into `purgeAttrition`
 
-- Win rate: 73% (22/30)
+- Win rate: 80% (24/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 24.2s
-- Avg left basic / DOT / heal / shield: 798 / 0 / 0 / 404
-- Avg right basic / DOT / heal / shield: 421 / 402 / 191 / 450
+- Avg duration: 24.6s
+- Avg left basic / DOT / heal / shield: 806 / 0 / 0 / 404
+- Avg right basic / DOT / heal / shield: 418 / 397 / 172 / 478
 
 ### `bulwarkMarks` into `scarletVanguard`
 
-- Win rate: 40% (12/30)
+- Win rate: 23% (7/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 18.9s
-- Avg left basic / DOT / heal / shield: 767 / 0 / 0 / 220
-- Avg right basic / DOT / heal / shield: 772 / 96 / 51 / 116
+- Avg duration: 18.7s
+- Avg left basic / DOT / heal / shield: 740 / 0 / 0 / 219
+- Avg right basic / DOT / heal / shield: 799 / 91 / 60 / 115
 
 ### `bulwarkMarks` into `shadowExecute`
 
-- Win rate: 43% (13/30)
-- Expectation: intended weak, actual even, ok
-- Avg duration: 32.1s
-- Avg left basic / DOT / heal / shield: 675 / 0 / 0 / 568
-- Avg right basic / DOT / heal / shield: 452 / 282 / 0 / 623
+- Win rate: 70% (21/30)
+- Expectation: intended weak, actual favored, mismatch
+- Avg duration: 32.8s
+- Avg left basic / DOT / heal / shield: 755 / 0 / 0 / 685
+- Avg right basic / DOT / heal / shield: 410 / 278 / 0 / 608
 
 ### `cavalryBreak` into `alchemyChaos`
 
-- Win rate: 17% (5/30)
+- Win rate: 10% (3/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 19.3s
-- Avg left basic / DOT / heal / shield: 879 / 0 / 212 / 213
-- Avg right basic / DOT / heal / shield: 495 / 318 / 0 / 207
+- Avg duration: 17.9s
+- Avg left basic / DOT / heal / shield: 903 / 0 / 195 / 196
+- Avg right basic / DOT / heal / shield: 478 / 332 / 0 / 205
 
 ### `cavalryBreak` into `bloodRage`
 
-- Win rate: 23% (7/30)
+- Win rate: 17% (5/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 21.8s
-- Avg left basic / DOT / heal / shield: 1134 / 0 / 327 / 257
-- Avg right basic / DOT / heal / shield: 1472 / 0 / 449 / 177
+- Avg duration: 22.8s
+- Avg left basic / DOT / heal / shield: 1170 / 0 / 328 / 269
+- Avg right basic / DOT / heal / shield: 1507 / 0 / 487 / 197
 
 ### `cavalryBreak` into `bulwarkMarks`
 
-- Win rate: 80% (24/30)
+- Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 25.0s
-- Avg left basic / DOT / heal / shield: 1073 / 0 / 290 / 316
-- Avg right basic / DOT / heal / shield: 763 / 0 / 0 / 227
+- Avg duration: 24.9s
+- Avg left basic / DOT / heal / shield: 1125 / 0 / 308 / 314
+- Avg right basic / DOT / heal / shield: 738 / 0 / 0 / 219
 
 ### `cavalryBreak` into `crownCarry`
 
-- Win rate: 7% (2/30)
+- Win rate: 13% (4/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 26.5s
-- Avg left basic / DOT / heal / shield: 1052 / 0 / 300 / 337
-- Avg right basic / DOT / heal / shield: 1702 / 0 / 341 / 451
+- Avg duration: 26.9s
+- Avg left basic / DOT / heal / shield: 1074 / 0 / 298 / 341
+- Avg right basic / DOT / heal / shield: 1661 / 0 / 350 / 451
 
 ### `cavalryBreak` into `duelChampion`
 
-- Win rate: 87% (26/30)
+- Win rate: 73% (22/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 34.8s
-- Avg left basic / DOT / heal / shield: 1263 / 0 / 355 / 510
-- Avg right basic / DOT / heal / shield: 800 / 0 / 366 / 907
+- Avg duration: 34.2s
+- Avg left basic / DOT / heal / shield: 1110 / 0 / 328 / 483
+- Avg right basic / DOT / heal / shield: 843 / 0 / 360 / 991
 
 ### `cavalryBreak` into `fireBurst`
 
-- Win rate: 10% (3/30)
+- Win rate: 13% (4/30)
 - Expectation: intended flex, actual weak, ok
 - Avg duration: 17.3s
-- Avg left basic / DOT / heal / shield: 912 / 0 / 220 / 195
-- Avg right basic / DOT / heal / shield: 472 / 192 / 0 / 173
+- Avg left basic / DOT / heal / shield: 932 / 0 / 227 / 198
+- Avg right basic / DOT / heal / shield: 463 / 177 / 0 / 189
 
 ### `cavalryBreak` into `frostControl`
 
-- Win rate: 3% (1/30)
+- Win rate: 7% (2/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 22.6s
-- Avg left basic / DOT / heal / shield: 653 / 0 / 231 / 259
-- Avg right basic / DOT / heal / shield: 536 / 244 / 257 / 487
+- Avg duration: 23.9s
+- Avg left basic / DOT / heal / shield: 680 / 0 / 241 / 280
+- Avg right basic / DOT / heal / shield: 537 / 250 / 253 / 466
 
 ### `cavalryBreak` into `frostTrapField`
 
-- Win rate: 20% (6/30)
+- Win rate: 17% (5/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 23.3s
-- Avg left basic / DOT / heal / shield: 819 / 0 / 273 / 275
-- Avg right basic / DOT / heal / shield: 795 / 0 / 95 / 400
+- Avg duration: 25.1s
+- Avg left basic / DOT / heal / shield: 805 / 0 / 273 / 290
+- Avg right basic / DOT / heal / shield: 796 / 0 / 101 / 417
 
 ### `cavalryBreak` into `holySustain`
 
-- Win rate: 50% (15/30)
-- Expectation: intended flex, actual even, ok
-- Avg duration: 43.8s
-- Avg left basic / DOT / heal / shield: 1323 / 0 / 441 / 616
-- Avg right basic / DOT / heal / shield: 782 / 0 / 922 / 1769
+- Win rate: 73% (22/30)
+- Expectation: intended flex, actual favored, ok
+- Avg duration: 41.0s
+- Avg left basic / DOT / heal / shield: 1468 / 0 / 448 / 595
+- Avg right basic / DOT / heal / shield: 672 / 0 / 831 / 1545
 
 ### `cavalryBreak` into `ironWall`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
 - Avg duration: 29.0s
-- Avg left basic / DOT / heal / shield: 1388 / 0 / 414 / 385
-- Avg right basic / DOT / heal / shield: 642 / 0 / 223 / 683
+- Avg left basic / DOT / heal / shield: 1395 / 0 / 407 / 397
+- Avg right basic / DOT / heal / shield: 641 / 0 / 228 / 683
 
 ### `cavalryBreak` into `lightningTempo`
 
-- Win rate: 10% (3/30)
+- Win rate: 20% (6/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 19.6s
-- Avg left basic / DOT / heal / shield: 695 / 0 / 153 / 219
-- Avg right basic / DOT / heal / shield: 705 / 0 / 0 / 0
+- Avg duration: 20.5s
+- Avg left basic / DOT / heal / shield: 746 / 0 / 168 / 225
+- Avg right basic / DOT / heal / shield: 700 / 0 / 0 / 0
 
 ### `cavalryBreak` into `martyrFrontline`
 
-- Win rate: 63% (19/30)
+- Win rate: 67% (20/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 26.4s
-- Avg left basic / DOT / heal / shield: 1093 / 0 / 297 / 322
-- Avg right basic / DOT / heal / shield: 647 / 149 / 67 / 198
+- Avg duration: 26.0s
+- Avg left basic / DOT / heal / shield: 1111 / 0 / 304 / 322
+- Avg right basic / DOT / heal / shield: 633 / 142 / 68 / 197
 
 ### `cavalryBreak` into `poisonBloom`
 
-- Win rate: 3% (1/30)
+- Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 17.7s
-- Avg left basic / DOT / heal / shield: 841 / 0 / 217 / 214
-- Avg right basic / DOT / heal / shield: 452 / 384 / 143 / 392
+- Avg duration: 17.5s
+- Avg left basic / DOT / heal / shield: 815 / 0 / 208 / 212
+- Avg right basic / DOT / heal / shield: 452 / 384 / 144 / 390
 
 ### `cavalryBreak` into `purgeAttrition`
 
-- Win rate: 97% (29/30)
+- Win rate: 90% (27/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 22.3s
-- Avg left basic / DOT / heal / shield: 1072 / 0 / 273 / 318
-- Avg right basic / DOT / heal / shield: 481 / 474 / 102 / 286
+- Avg duration: 23.4s
+- Avg left basic / DOT / heal / shield: 1080 / 0 / 285 / 332
+- Avg right basic / DOT / heal / shield: 499 / 482 / 106 / 292
 
 ### `cavalryBreak` into `scarletVanguard`
 
-- Win rate: 53% (16/30)
+- Win rate: 50% (15/30)
 - Expectation: intended flex, actual even, ok
-- Avg duration: 25.6s
-- Avg left basic / DOT / heal / shield: 1008 / 0 / 274 / 283
-- Avg right basic / DOT / heal / shield: 1105 / 45 / 99 / 172
+- Avg duration: 20.1s
+- Avg left basic / DOT / heal / shield: 1066 / 0 / 273 / 225
+- Avg right basic / DOT / heal / shield: 1073 / 44 / 134 / 150
 
 ### `cavalryBreak` into `shadowExecute`
 
-- Win rate: 50% (15/30)
-- Expectation: intended flex, actual even, ok
-- Avg duration: 24.8s
-- Avg left basic / DOT / heal / shield: 1225 / 0 / 319 / 277
-- Avg right basic / DOT / heal / shield: 604 / 285 / 0 / 228
+- Win rate: 60% (18/30)
+- Expectation: intended flex, actual favored, ok
+- Avg duration: 24.4s
+- Avg left basic / DOT / heal / shield: 1278 / 0 / 324 / 275
+- Avg right basic / DOT / heal / shield: 600 / 280 / 0 / 226
 
 ### `crownCarry` into `alchemyChaos`
 
-- Win rate: 93% (28/30)
+- Win rate: 80% (24/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 17.7s
-- Avg left basic / DOT / heal / shield: 1386 / 0 / 344 / 498
-- Avg right basic / DOT / heal / shield: 301 / 343 / 0 / 203
+- Avg duration: 17.4s
+- Avg left basic / DOT / heal / shield: 1333 / 0 / 313 / 492
+- Avg right basic / DOT / heal / shield: 305 / 331 / 0 / 198
 
 ### `crownCarry` into `bloodRage`
 
-- Win rate: 97% (29/30)
+- Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 24.3s
-- Avg left basic / DOT / heal / shield: 1739 / 0 / 323 / 482
-- Avg right basic / DOT / heal / shield: 995 / 0 / 373 / 230
+- Avg duration: 23.7s
+- Avg left basic / DOT / heal / shield: 1703 / 0 / 348 / 493
+- Avg right basic / DOT / heal / shield: 924 / 0 / 346 / 213
 
 ### `crownCarry` into `bulwarkMarks`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 18.3s
-- Avg left basic / DOT / heal / shield: 1401 / 0 / 354 / 516
-- Avg right basic / DOT / heal / shield: 385 / 0 / 0 / 215
+- Avg duration: 18.2s
+- Avg left basic / DOT / heal / shield: 1388 / 0 / 360 / 510
+- Avg right basic / DOT / heal / shield: 380 / 0 / 0 / 215
 
 ### `crownCarry` into `cavalryBreak`
 
-- Win rate: 93% (28/30)
+- Win rate: 87% (26/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 26.5s
-- Avg left basic / DOT / heal / shield: 1702 / 0 / 341 / 451
-- Avg right basic / DOT / heal / shield: 1052 / 0 / 300 / 337
+- Avg duration: 26.9s
+- Avg left basic / DOT / heal / shield: 1661 / 0 / 350 / 451
+- Avg right basic / DOT / heal / shield: 1074 / 0 / 298 / 341
 
 ### `crownCarry` into `duelChampion`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 31.7s
-- Avg left basic / DOT / heal / shield: 1661 / 0 / 469 / 1411
-- Avg right basic / DOT / heal / shield: 263 / 0 / 294 / 779
+- Avg duration: 32.0s
+- Avg left basic / DOT / heal / shield: 1659 / 0 / 476 / 1417
+- Avg right basic / DOT / heal / shield: 255 / 0 / 302 / 795
 
 ### `crownCarry` into `fireBurst`
 
-- Win rate: 53% (16/30)
-- Expectation: intended weak, actual even, mismatch
+- Win rate: 40% (12/30)
+- Expectation: intended weak, actual weak, ok
 - Avg duration: 19.3s
-- Avg left basic / DOT / heal / shield: 1256 / 0 / 305 / 427
-- Avg right basic / DOT / heal / shield: 280 / 329 / 0 / 142
+- Avg left basic / DOT / heal / shield: 1252 / 0 / 295 / 428
+- Avg right basic / DOT / heal / shield: 274 / 333 / 0 / 141
 
 ### `crownCarry` into `frostControl`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
 - Avg duration: 21.8s
-- Avg left basic / DOT / heal / shield: 1454 / 0 / 412 / 688
-- Avg right basic / DOT / heal / shield: 287 / 256 / 133 / 347
+- Avg left basic / DOT / heal / shield: 1450 / 0 / 483 / 746
+- Avg right basic / DOT / heal / shield: 279 / 256 / 125 / 351
 
 ### `crownCarry` into `frostTrapField`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 20.1s
-- Avg left basic / DOT / heal / shield: 1426 / 0 / 371 / 610
-- Avg right basic / DOT / heal / shield: 342 / 0 / 56 / 280
+- Avg duration: 20.3s
+- Avg left basic / DOT / heal / shield: 1429 / 0 / 369 / 639
+- Avg right basic / DOT / heal / shield: 360 / 0 / 59 / 286
 
 ### `crownCarry` into `holySustain`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 55.6s
-- Avg left basic / DOT / heal / shield: 2280 / 0 / 457 / 2328
-- Avg right basic / DOT / heal / shield: 170 / 0 / 939 / 2187
+- Avg duration: 57.9s
+- Avg left basic / DOT / heal / shield: 2377 / 0 / 455 / 2343
+- Avg right basic / DOT / heal / shield: 169 / 0 / 1051 / 2345
 
 ### `crownCarry` into `ironWall`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 28.3s
-- Avg left basic / DOT / heal / shield: 1677 / 0 / 537 / 1303
-- Avg right basic / DOT / heal / shield: 383 / 0 / 272 / 852
+- Avg duration: 28.0s
+- Avg left basic / DOT / heal / shield: 1674 / 0 / 526 / 1303
+- Avg right basic / DOT / heal / shield: 390 / 0 / 265 / 849
 
 ### `crownCarry` into `lightningTempo`
 
-- Win rate: 87% (26/30)
+- Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 21.0s
-- Avg left basic / DOT / heal / shield: 1390 / 0 / 326 / 556
-- Avg right basic / DOT / heal / shield: 423 / 0 / 0 / 0
+- Avg duration: 19.9s
+- Avg left basic / DOT / heal / shield: 1392 / 0 / 371 / 655
+- Avg right basic / DOT / heal / shield: 402 / 0 / 0 / 0
 
 ### `crownCarry` into `martyrFrontline`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 27.5s
-- Avg left basic / DOT / heal / shield: 1472 / 0 / 532 / 1019
-- Avg right basic / DOT / heal / shield: 385 / 213 / 115 / 315
+- Avg duration: 25.8s
+- Avg left basic / DOT / heal / shield: 1480 / 0 / 529 / 1062
+- Avg right basic / DOT / heal / shield: 354 / 202 / 113 / 309
 
 ### `crownCarry` into `poisonBloom`
 
-- Win rate: 77% (23/30)
+- Win rate: 100% (30/30)
 - Expectation: intended weak, actual favored, mismatch
-- Avg duration: 23.7s
-- Avg left basic / DOT / heal / shield: 1530 / 0 / 413 / 601
-- Avg right basic / DOT / heal / shield: 311 / 560 / 195 / 451
+- Avg duration: 22.2s
+- Avg left basic / DOT / heal / shield: 1576 / 0 / 474 / 683
+- Avg right basic / DOT / heal / shield: 277 / 567 / 170 / 438
 
 ### `crownCarry` into `purgeAttrition`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 21.1s
-- Avg left basic / DOT / heal / shield: 1459 / 0 / 341 / 669
-- Avg right basic / DOT / heal / shield: 252 / 348 / 107 / 299
+- Avg duration: 21.3s
+- Avg left basic / DOT / heal / shield: 1481 / 0 / 366 / 705
+- Avg right basic / DOT / heal / shield: 255 / 338 / 114 / 297
 
 ### `crownCarry` into `scarletVanguard`
 
-- Win rate: 80% (24/30)
+- Win rate: 70% (21/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 21.6s
-- Avg left basic / DOT / heal / shield: 1438 / 0 / 336 / 423
-- Avg right basic / DOT / heal / shield: 980 / 106 / 104 / 129
+- Avg duration: 21.5s
+- Avg left basic / DOT / heal / shield: 1408 / 0 / 319 / 422
+- Avg right basic / DOT / heal / shield: 1003 / 101 / 109 / 130
 
 ### `crownCarry` into `shadowExecute`
 
-- Win rate: 90% (27/30)
+- Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 17.5s
-- Avg left basic / DOT / heal / shield: 1339 / 0 / 227 / 423
-- Avg right basic / DOT / heal / shield: 256 / 226 / 0 / 254
+- Avg duration: 17.7s
+- Avg left basic / DOT / heal / shield: 1374 / 0 / 278 / 393
+- Avg right basic / DOT / heal / shield: 224 / 230 / 0 / 199
 
 ### `duelChampion` into `alchemyChaos`
 
-- Win rate: 3% (1/30)
+- Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
 - Avg duration: 16.9s
-- Avg left basic / DOT / heal / shield: 356 / 0 / 115 / 433
-- Avg right basic / DOT / heal / shield: 263 / 285 / 0 / 280
+- Avg left basic / DOT / heal / shield: 338 / 0 / 117 / 422
+- Avg right basic / DOT / heal / shield: 275 / 296 / 0 / 282
 
 ### `duelChampion` into `bloodRage`
 
-- Win rate: 40% (12/30)
+- Win rate: 30% (9/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 27.1s
-- Avg left basic / DOT / heal / shield: 832 / 0 / 217 / 604
-- Avg right basic / DOT / heal / shield: 1108 / 0 / 413 / 236
+- Avg duration: 22.2s
+- Avg left basic / DOT / heal / shield: 701 / 0 / 160 / 531
+- Avg right basic / DOT / heal / shield: 1115 / 0 / 376 / 183
 
 ### `duelChampion` into `bulwarkMarks`
 
-- Win rate: 20% (6/30)
+- Win rate: 17% (5/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 29.0s
-- Avg left basic / DOT / heal / shield: 659 / 0 / 273 / 745
-- Avg right basic / DOT / heal / shield: 821 / 0 / 0 / 431
+- Avg duration: 29.4s
+- Avg left basic / DOT / heal / shield: 672 / 0 / 282 / 770
+- Avg right basic / DOT / heal / shield: 867 / 0 / 0 / 444
 
 ### `duelChampion` into `cavalryBreak`
 
-- Win rate: 13% (4/30)
+- Win rate: 27% (8/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 34.8s
-- Avg left basic / DOT / heal / shield: 800 / 0 / 366 / 907
-- Avg right basic / DOT / heal / shield: 1263 / 0 / 355 / 510
+- Avg duration: 34.2s
+- Avg left basic / DOT / heal / shield: 843 / 0 / 360 / 991
+- Avg right basic / DOT / heal / shield: 1110 / 0 / 328 / 483
 
 ### `duelChampion` into `crownCarry`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 31.7s
-- Avg left basic / DOT / heal / shield: 263 / 0 / 294 / 779
-- Avg right basic / DOT / heal / shield: 1661 / 0 / 469 / 1411
+- Avg duration: 32.0s
+- Avg left basic / DOT / heal / shield: 255 / 0 / 302 / 795
+- Avg right basic / DOT / heal / shield: 1659 / 0 / 476 / 1417
 
 ### `duelChampion` into `fireBurst`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 34.2s
-- Avg left basic / DOT / heal / shield: 308 / 0 / 386 / 1284
-- Avg right basic / DOT / heal / shield: 436 / 214 / 0 / 748
+- Avg duration: 33.0s
+- Avg left basic / DOT / heal / shield: 294 / 0 / 377 / 1236
+- Avg right basic / DOT / heal / shield: 427 / 221 / 0 / 707
 
 ### `duelChampion` into `frostControl`
 
-- Win rate: 80% (24/30)
+- Win rate: 70% (21/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 63.4s
-- Avg left basic / DOT / heal / shield: 1209 / 0 / 905 / 2964
-- Avg right basic / DOT / heal / shield: 437 / 342 / 545 / 1747
+- Avg duration: 61.8s
+- Avg left basic / DOT / heal / shield: 1179 / 0 / 889 / 2868
+- Avg right basic / DOT / heal / shield: 427 / 353 / 531 / 1726
 
 ### `duelChampion` into `frostTrapField`
 
-- Win rate: 17% (5/30)
+- Win rate: 23% (7/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 36.3s
-- Avg left basic / DOT / heal / shield: 512 / 0 / 420 / 1160
-- Avg right basic / DOT / heal / shield: 739 / 0 / 94 / 589
+- Avg duration: 36.1s
+- Avg left basic / DOT / heal / shield: 532 / 0 / 401 / 1176
+- Avg right basic / DOT / heal / shield: 711 / 0 / 86 / 582
 
 ### `duelChampion` into `holySustain`
 
-- Win rate: 7% (2/30)
+- Win rate: 13% (4/30)
 - Expectation: intended favored, actual weak, mismatch
 - Avg duration: 75.0s
-- Avg left basic / DOT / heal / shield: 579 / 0 / 413 / 3440
-- Avg right basic / DOT / heal / shield: 255 / 0 / 750 / 4027
+- Avg left basic / DOT / heal / shield: 580 / 0 / 412 / 3458
+- Avg right basic / DOT / heal / shield: 222 / 0 / 774 / 4012
 
 ### `duelChampion` into `ironWall`
 
-- Win rate: 53% (16/30)
-- Expectation: intended favored, actual even, ok
-- Avg duration: 61.3s
-- Avg left basic / DOT / heal / shield: 1062 / 0 / 527 / 2469
-- Avg right basic / DOT / heal / shield: 709 / 0 / 610 / 1720
+- Win rate: 60% (18/30)
+- Expectation: intended favored, actual favored, ok
+- Avg duration: 58.1s
+- Avg left basic / DOT / heal / shield: 1084 / 0 / 505 / 2286
+- Avg right basic / DOT / heal / shield: 672 / 0 / 589 / 1610
 
 ### `duelChampion` into `lightningTempo`
 
-- Win rate: 7% (2/30)
+- Win rate: 30% (9/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 25.4s
-- Avg left basic / DOT / heal / shield: 725 / 0 / 213 / 592
-- Avg right basic / DOT / heal / shield: 735 / 0 / 0 / 0
+- Avg duration: 26.7s
+- Avg left basic / DOT / heal / shield: 811 / 0 / 207 / 641
+- Avg right basic / DOT / heal / shield: 677 / 0 / 0 / 0
 
 ### `duelChampion` into `martyrFrontline`
 
-- Win rate: 17% (5/30)
+- Win rate: 7% (2/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 35.9s
-- Avg left basic / DOT / heal / shield: 625 / 0 / 335 / 1194
-- Avg right basic / DOT / heal / shield: 670 / 229 / 235 / 666
+- Avg duration: 34.5s
+- Avg left basic / DOT / heal / shield: 545 / 0 / 334 / 1088
+- Avg right basic / DOT / heal / shield: 742 / 237 / 255 / 722
 
 ### `duelChampion` into `poisonBloom`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 29.9s
-- Avg left basic / DOT / heal / shield: 508 / 0 / 343 / 920
-- Avg right basic / DOT / heal / shield: 430 / 585 / 314 / 1074
+- Avg duration: 29.7s
+- Avg left basic / DOT / heal / shield: 511 / 0 / 343 / 841
+- Avg right basic / DOT / heal / shield: 482 / 520 / 322 / 1069
 
 ### `duelChampion` into `purgeAttrition`
 
 - Win rate: 33% (10/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 47.4s
-- Avg left basic / DOT / heal / shield: 947 / 0 / 557 / 1616
-- Avg right basic / DOT / heal / shield: 649 / 645 / 507 / 1165
+- Avg duration: 49.6s
+- Avg left basic / DOT / heal / shield: 934 / 0 / 561 / 1695
+- Avg right basic / DOT / heal / shield: 677 / 671 / 527 / 1272
 
 ### `duelChampion` into `scarletVanguard`
 
-- Win rate: 50% (15/30)
+- Win rate: 53% (16/30)
 - Expectation: intended flex, actual even, ok
-- Avg duration: 24.9s
-- Avg left basic / DOT / heal / shield: 708 / 0 / 282 / 675
-- Avg right basic / DOT / heal / shield: 870 / 85 / 92 / 190
+- Avg duration: 27.0s
+- Avg left basic / DOT / heal / shield: 791 / 0 / 312 / 755
+- Avg right basic / DOT / heal / shield: 824 / 97 / 76 / 197
 
 ### `duelChampion` into `shadowExecute`
 
-- Win rate: 3% (1/30)
+- Win rate: 23% (7/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 31.9s
-- Avg left basic / DOT / heal / shield: 635 / 0 / 284 / 739
-- Avg right basic / DOT / heal / shield: 635 / 301 / 0 / 674
+- Avg duration: 31.7s
+- Avg left basic / DOT / heal / shield: 687 / 0 / 265 / 732
+- Avg right basic / DOT / heal / shield: 579 / 306 / 0 / 602
 
 ### `fireBurst` into `alchemyChaos`
 
-- Win rate: 80% (24/30)
+- Win rate: 87% (26/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 14.0s
-- Avg left basic / DOT / heal / shield: 285 / 139 / 0 / 149
-- Avg right basic / DOT / heal / shield: 287 / 265 / 0 / 192
+- Avg duration: 13.9s
+- Avg left basic / DOT / heal / shield: 297 / 138 / 0 / 148
+- Avg right basic / DOT / heal / shield: 271 / 260 / 0 / 201
 
 ### `fireBurst` into `bloodRage`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 14.7s
-- Avg left basic / DOT / heal / shield: 482 / 120 / 0 / 248
-- Avg right basic / DOT / heal / shield: 368 / 0 / 148 / 128
+- Avg duration: 14.5s
+- Avg left basic / DOT / heal / shield: 464 / 112 / 0 / 236
+- Avg right basic / DOT / heal / shield: 394 / 0 / 152 / 130
 
 ### `fireBurst` into `bulwarkMarks`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 14.8s
-- Avg left basic / DOT / heal / shield: 322 / 167 / 0 / 147
-- Avg right basic / DOT / heal / shield: 404 / 0 / 0 / 225
+- Avg duration: 14.9s
+- Avg left basic / DOT / heal / shield: 319 / 166 / 0 / 147
+- Avg right basic / DOT / heal / shield: 405 / 0 / 0 / 223
 
 ### `fireBurst` into `cavalryBreak`
 
-- Win rate: 90% (27/30)
+- Win rate: 87% (26/30)
 - Expectation: intended flex, actual favored, ok
 - Avg duration: 17.3s
-- Avg left basic / DOT / heal / shield: 472 / 192 / 0 / 173
-- Avg right basic / DOT / heal / shield: 912 / 0 / 220 / 195
+- Avg left basic / DOT / heal / shield: 463 / 177 / 0 / 189
+- Avg right basic / DOT / heal / shield: 932 / 0 / 227 / 198
 
 ### `fireBurst` into `crownCarry`
 
-- Win rate: 47% (14/30)
-- Expectation: intended favored, actual even, mismatch
+- Win rate: 60% (18/30)
+- Expectation: intended favored, actual favored, ok
 - Avg duration: 19.3s
-- Avg left basic / DOT / heal / shield: 280 / 329 / 0 / 142
-- Avg right basic / DOT / heal / shield: 1256 / 0 / 305 / 427
+- Avg left basic / DOT / heal / shield: 274 / 333 / 0 / 141
+- Avg right basic / DOT / heal / shield: 1252 / 0 / 295 / 428
 
 ### `fireBurst` into `duelChampion`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 34.2s
-- Avg left basic / DOT / heal / shield: 436 / 214 / 0 / 748
-- Avg right basic / DOT / heal / shield: 308 / 0 / 386 / 1284
+- Avg duration: 33.0s
+- Avg left basic / DOT / heal / shield: 427 / 221 / 0 / 707
+- Avg right basic / DOT / heal / shield: 294 / 0 / 377 / 1236
 
 ### `fireBurst` into `frostControl`
 
-- Win rate: 93% (28/30)
+- Win rate: 90% (27/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 17.0s
-- Avg left basic / DOT / heal / shield: 290 / 163 / 0 / 147
-- Avg right basic / DOT / heal / shield: 291 / 212 / 92 / 303
+- Avg duration: 16.8s
+- Avg left basic / DOT / heal / shield: 286 / 161 / 0 / 147
+- Avg right basic / DOT / heal / shield: 292 / 212 / 89 / 305
 
 ### `fireBurst` into `frostTrapField`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 17.1s
-- Avg left basic / DOT / heal / shield: 365 / 117 / 0 / 158
-- Avg right basic / DOT / heal / shield: 355 / 0 / 35 / 241
+- Avg duration: 16.9s
+- Avg left basic / DOT / heal / shield: 374 / 101 / 0 / 153
+- Avg right basic / DOT / heal / shield: 362 / 0 / 28 / 235
 
 ### `fireBurst` into `holySustain`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 23.7s
-- Avg left basic / DOT / heal / shield: 469 / 323 / 0 / 526
-- Avg right basic / DOT / heal / shield: 252 / 0 / 570 / 844
+- Avg duration: 23.5s
+- Avg left basic / DOT / heal / shield: 423 / 351 / 0 / 475
+- Avg right basic / DOT / heal / shield: 251 / 0 / 573 / 827
 
 ### `fireBurst` into `ironWall`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 18.4s
-- Avg left basic / DOT / heal / shield: 353 / 229 / 0 / 235
-- Avg right basic / DOT / heal / shield: 367 / 0 / 166 / 592
+- Avg duration: 18.6s
+- Avg left basic / DOT / heal / shield: 355 / 203 / 0 / 244
+- Avg right basic / DOT / heal / shield: 377 / 0 / 176 / 598
 
 ### `fireBurst` into `lightningTempo`
 
-- Win rate: 20% (6/30)
+- Win rate: 13% (4/30)
 - Expectation: intended favored, actual weak, mismatch
-- Avg duration: 13.5s
-- Avg left basic / DOT / heal / shield: 332 / 127 / 0 / 20
-- Avg right basic / DOT / heal / shield: 607 / 0 / 0 / 0
+- Avg duration: 13.2s
+- Avg left basic / DOT / heal / shield: 339 / 111 / 0 / 15
+- Avg right basic / DOT / heal / shield: 601 / 0 / 0 / 0
 
 ### `fireBurst` into `martyrFrontline`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 15.4s
-- Avg left basic / DOT / heal / shield: 423 / 183 / 0 / 237
-- Avg right basic / DOT / heal / shield: 357 / 174 / 45 / 152
+- Avg duration: 15.3s
+- Avg left basic / DOT / heal / shield: 398 / 209 / 0 / 225
+- Avg right basic / DOT / heal / shield: 344 / 167 / 46 / 152
 
 ### `fireBurst` into `poisonBloom`
 
-- Win rate: 27% (8/30)
+- Win rate: 40% (12/30)
 - Expectation: intended favored, actual weak, mismatch
-- Avg duration: 16.1s
-- Avg left basic / DOT / heal / shield: 308 / 138 / 0 / 241
-- Avg right basic / DOT / heal / shield: 207 / 392 / 154 / 404
+- Avg duration: 17.1s
+- Avg left basic / DOT / heal / shield: 365 / 183 / 0 / 223
+- Avg right basic / DOT / heal / shield: 269 / 412 / 157 / 415
 
 ### `fireBurst` into `purgeAttrition`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 15.2s
-- Avg left basic / DOT / heal / shield: 309 / 140 / 0 / 145
-- Avg right basic / DOT / heal / shield: 289 / 313 / 127 / 254
+- Avg duration: 15.5s
+- Avg left basic / DOT / heal / shield: 314 / 135 / 0 / 143
+- Avg right basic / DOT / heal / shield: 294 / 315 / 131 / 253
 
 ### `fireBurst` into `scarletVanguard`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 13.4s
-- Avg left basic / DOT / heal / shield: 437 / 87 / 0 / 252
-- Avg right basic / DOT / heal / shield: 399 / 44 / 33 / 88
+- Avg duration: 13.3s
+- Avg left basic / DOT / heal / shield: 404 / 102 / 0 / 241
+- Avg right basic / DOT / heal / shield: 418 / 46 / 35 / 94
 
 ### `fireBurst` into `shadowExecute`
 
 - Win rate: 100% (30/30)
 - Expectation: intended weak, actual favored, mismatch
-- Avg duration: 15.3s
-- Avg left basic / DOT / heal / shield: 393 / 146 / 0 / 143
-- Avg right basic / DOT / heal / shield: 335 / 203 / 0 / 188
+- Avg duration: 15.6s
+- Avg left basic / DOT / heal / shield: 388 / 142 / 0 / 144
+- Avg right basic / DOT / heal / shield: 338 / 208 / 0 / 192
 
 ### `frostControl` into `alchemyChaos`
 
-- Win rate: 43% (13/30)
-- Expectation: intended flex, actual even, ok
-- Avg duration: 31.0s
-- Avg left basic / DOT / heal / shield: 351 / 197 / 180 / 761
-- Avg right basic / DOT / heal / shield: 464 / 300 / 0 / 614
+- Win rate: 60% (18/30)
+- Expectation: intended flex, actual favored, ok
+- Avg duration: 30.9s
+- Avg left basic / DOT / heal / shield: 359 / 207 / 190 / 778
+- Avg right basic / DOT / heal / shield: 435 / 324 / 0 / 623
 
 ### `frostControl` into `bloodRage`
 
-- Win rate: 97% (29/30)
+- Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 20.8s
-- Avg left basic / DOT / heal / shield: 613 / 220 / 152 / 354
-- Avg right basic / DOT / heal / shield: 861 / 0 / 296 / 140
+- Avg duration: 20.4s
+- Avg left basic / DOT / heal / shield: 609 / 217 / 138 / 333
+- Avg right basic / DOT / heal / shield: 809 / 0 / 288 / 146
 
 ### `frostControl` into `bulwarkMarks`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 23.6s
-- Avg left basic / DOT / heal / shield: 456 / 209 / 233 / 638
-- Avg right basic / DOT / heal / shield: 447 / 0 / 0 / 471
+- Avg duration: 22.7s
+- Avg left basic / DOT / heal / shield: 463 / 204 / 230 / 653
+- Avg right basic / DOT / heal / shield: 452 / 0 / 0 / 443
 
 ### `frostControl` into `cavalryBreak`
 
-- Win rate: 97% (29/30)
+- Win rate: 93% (28/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 22.6s
-- Avg left basic / DOT / heal / shield: 536 / 244 / 257 / 487
-- Avg right basic / DOT / heal / shield: 653 / 0 / 231 / 259
+- Avg duration: 23.9s
+- Avg left basic / DOT / heal / shield: 537 / 250 / 253 / 466
+- Avg right basic / DOT / heal / shield: 680 / 0 / 241 / 280
 
 ### `frostControl` into `crownCarry`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
 - Avg duration: 21.8s
-- Avg left basic / DOT / heal / shield: 287 / 256 / 133 / 347
-- Avg right basic / DOT / heal / shield: 1454 / 0 / 412 / 688
+- Avg left basic / DOT / heal / shield: 279 / 256 / 125 / 351
+- Avg right basic / DOT / heal / shield: 1450 / 0 / 483 / 746
 
 ### `frostControl` into `duelChampion`
 
-- Win rate: 20% (6/30)
+- Win rate: 30% (9/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 63.4s
-- Avg left basic / DOT / heal / shield: 437 / 342 / 545 / 1747
-- Avg right basic / DOT / heal / shield: 1209 / 0 / 905 / 2964
+- Avg duration: 61.8s
+- Avg left basic / DOT / heal / shield: 427 / 353 / 531 / 1726
+- Avg right basic / DOT / heal / shield: 1179 / 0 / 889 / 2868
 
 ### `frostControl` into `fireBurst`
 
-- Win rate: 7% (2/30)
+- Win rate: 10% (3/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 17.0s
-- Avg left basic / DOT / heal / shield: 291 / 212 / 92 / 303
-- Avg right basic / DOT / heal / shield: 290 / 163 / 0 / 147
+- Avg duration: 16.8s
+- Avg left basic / DOT / heal / shield: 292 / 212 / 89 / 305
+- Avg right basic / DOT / heal / shield: 286 / 161 / 0 / 147
 
 ### `frostControl` into `frostTrapField`
 
-- Win rate: 73% (22/30)
+- Win rate: 90% (27/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 20.4s
-- Avg left basic / DOT / heal / shield: 393 / 189 / 171 / 396
-- Avg right basic / DOT / heal / shield: 520 / 0 / 75 / 291
+- Avg duration: 19.3s
+- Avg left basic / DOT / heal / shield: 403 / 177 / 163 / 392
+- Avg right basic / DOT / heal / shield: 465 / 0 / 60 / 262
 
 ### `frostControl` into `holySustain`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
 - Avg duration: 75.0s
-- Avg left basic / DOT / heal / shield: 1035 / 323 / 535 / 2760
-- Avg right basic / DOT / heal / shield: 331 / 0 / 1828 / 3709
+- Avg left basic / DOT / heal / shield: 1034 / 325 / 569 / 2766
+- Avg right basic / DOT / heal / shield: 345 / 0 / 1823 / 3733
 
 ### `frostControl` into `ironWall`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 49.3s
-- Avg left basic / DOT / heal / shield: 742 / 248 / 492 / 1657
-- Avg right basic / DOT / heal / shield: 370 / 0 / 616 / 1466
+- Avg duration: 49.8s
+- Avg left basic / DOT / heal / shield: 749 / 258 / 494 / 1703
+- Avg right basic / DOT / heal / shield: 363 / 0 / 627 / 1501
 
 ### `frostControl` into `lightningTempo`
 
 - Win rate: 77% (23/30)
 - Expectation: intended flex, actual favored, ok
 - Avg duration: 20.7s
-- Avg left basic / DOT / heal / shield: 489 / 192 / 112 / 405
-- Avg right basic / DOT / heal / shield: 520 / 0 / 0 / 0
+- Avg left basic / DOT / heal / shield: 494 / 186 / 121 / 405
+- Avg right basic / DOT / heal / shield: 521 / 0 / 0 / 0
 
 ### `frostControl` into `martyrFrontline`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 24.1s
-- Avg left basic / DOT / heal / shield: 493 / 205 / 299 / 638
-- Avg right basic / DOT / heal / shield: 391 / 120 / 161 / 377
+- Avg duration: 23.7s
+- Avg left basic / DOT / heal / shield: 475 / 202 / 275 / 614
+- Avg right basic / DOT / heal / shield: 376 / 119 / 152 / 367
 
 ### `frostControl` into `poisonBloom`
 
-- Win rate: 3% (1/30)
+- Win rate: 7% (2/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 20.0s
-- Avg left basic / DOT / heal / shield: 437 / 208 / 135 / 411
-- Avg right basic / DOT / heal / shield: 281 / 449 / 214 / 468
+- Avg duration: 21.0s
+- Avg left basic / DOT / heal / shield: 455 / 211 / 171 / 433
+- Avg right basic / DOT / heal / shield: 302 / 523 / 234 / 540
 
 ### `frostControl` into `purgeAttrition`
 
-- Win rate: 93% (28/30)
+- Win rate: 90% (27/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 23.5s
-- Avg left basic / DOT / heal / shield: 521 / 260 / 251 / 654
-- Avg right basic / DOT / heal / shield: 416 / 425 / 240 / 525
+- Avg duration: 24.1s
+- Avg left basic / DOT / heal / shield: 536 / 247 / 283 / 666
+- Avg right basic / DOT / heal / shield: 415 / 410 / 259 / 547
 
 ### `frostControl` into `scarletVanguard`
 
-- Win rate: 90% (27/30)
+- Win rate: 93% (28/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 17.7s
-- Avg left basic / DOT / heal / shield: 467 / 184 / 116 / 282
-- Avg right basic / DOT / heal / shield: 711 / 53 / 70 / 115
+- Avg duration: 17.1s
+- Avg left basic / DOT / heal / shield: 475 / 166 / 122 / 293
+- Avg right basic / DOT / heal / shield: 691 / 53 / 71 / 116
 
 ### `frostControl` into `shadowExecute`
 
-- Win rate: 97% (29/30)
+- Win rate: 100% (30/30)
 - Expectation: intended weak, actual favored, mismatch
-- Avg duration: 34.0s
-- Avg left basic / DOT / heal / shield: 534 / 162 / 30 / 734
-- Avg right basic / DOT / heal / shield: 250 / 227 / 0 / 614
+- Avg duration: 24.6s
+- Avg left basic / DOT / heal / shield: 539 / 155 / 101 / 733
+- Avg right basic / DOT / heal / shield: 232 / 222 / 0 / 440
 
 ### `frostTrapField` into `alchemyChaos`
 
-- Win rate: 53% (16/30)
+- Win rate: 47% (14/30)
 - Expectation: intended flex, actual even, ok
-- Avg duration: 16.5s
-- Avg left basic / DOT / heal / shield: 604 / 0 / 44 / 248
-- Avg right basic / DOT / heal / shield: 341 / 319 / 0 / 213
+- Avg duration: 16.6s
+- Avg left basic / DOT / heal / shield: 586 / 0 / 40 / 240
+- Avg right basic / DOT / heal / shield: 339 / 324 / 0 / 218
 
 ### `frostTrapField` into `bloodRage`
 
-- Win rate: 60% (18/30)
+- Win rate: 70% (21/30)
 - Expectation: intended favored, actual favored, ok
 - Avg duration: 21.9s
-- Avg left basic / DOT / heal / shield: 768 / 0 / 62 / 338
-- Avg right basic / DOT / heal / shield: 917 / 0 / 331 / 167
+- Avg left basic / DOT / heal / shield: 798 / 0 / 72 / 356
+- Avg right basic / DOT / heal / shield: 837 / 0 / 312 / 170
 
 ### `frostTrapField` into `bulwarkMarks`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 17.9s
-- Avg left basic / DOT / heal / shield: 635 / 0 / 115 / 315
-- Avg right basic / DOT / heal / shield: 463 / 0 / 0 / 218
+- Avg duration: 17.7s
+- Avg left basic / DOT / heal / shield: 629 / 0 / 103 / 306
+- Avg right basic / DOT / heal / shield: 466 / 0 / 0 / 216
 
 ### `frostTrapField` into `cavalryBreak`
 
-- Win rate: 80% (24/30)
+- Win rate: 83% (25/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 23.3s
-- Avg left basic / DOT / heal / shield: 795 / 0 / 95 / 400
-- Avg right basic / DOT / heal / shield: 819 / 0 / 273 / 275
+- Avg duration: 25.1s
+- Avg left basic / DOT / heal / shield: 796 / 0 / 101 / 417
+- Avg right basic / DOT / heal / shield: 805 / 0 / 273 / 290
 
 ### `frostTrapField` into `crownCarry`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 20.1s
-- Avg left basic / DOT / heal / shield: 342 / 0 / 56 / 280
-- Avg right basic / DOT / heal / shield: 1426 / 0 / 371 / 610
+- Avg duration: 20.3s
+- Avg left basic / DOT / heal / shield: 360 / 0 / 59 / 286
+- Avg right basic / DOT / heal / shield: 1429 / 0 / 369 / 639
 
 ### `frostTrapField` into `duelChampion`
 
-- Win rate: 83% (25/30)
+- Win rate: 77% (23/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 36.3s
-- Avg left basic / DOT / heal / shield: 739 / 0 / 94 / 589
-- Avg right basic / DOT / heal / shield: 512 / 0 / 420 / 1160
+- Avg duration: 36.1s
+- Avg left basic / DOT / heal / shield: 711 / 0 / 86 / 582
+- Avg right basic / DOT / heal / shield: 532 / 0 / 401 / 1176
 
 ### `frostTrapField` into `fireBurst`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 17.1s
-- Avg left basic / DOT / heal / shield: 355 / 0 / 35 / 241
-- Avg right basic / DOT / heal / shield: 365 / 117 / 0 / 158
+- Avg duration: 16.9s
+- Avg left basic / DOT / heal / shield: 362 / 0 / 28 / 235
+- Avg right basic / DOT / heal / shield: 374 / 101 / 0 / 153
 
 ### `frostTrapField` into `frostControl`
 
-- Win rate: 27% (8/30)
+- Win rate: 10% (3/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 20.4s
-- Avg left basic / DOT / heal / shield: 520 / 0 / 75 / 291
-- Avg right basic / DOT / heal / shield: 393 / 189 / 171 / 396
+- Avg duration: 19.3s
+- Avg left basic / DOT / heal / shield: 465 / 0 / 60 / 262
+- Avg right basic / DOT / heal / shield: 403 / 177 / 163 / 392
 
 ### `frostTrapField` into `holySustain`
 
-- Win rate: 97% (29/30)
+- Win rate: 87% (26/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 36.1s
-- Avg left basic / DOT / heal / shield: 1073 / 0 / 92 / 627
-- Avg right basic / DOT / heal / shield: 249 / 0 / 857 / 1300
+- Avg duration: 41.3s
+- Avg left basic / DOT / heal / shield: 1053 / 0 / 111 / 727
+- Avg right basic / DOT / heal / shield: 324 / 0 / 968 / 1656
 
 ### `frostTrapField` into `ironWall`
 
-- Win rate: 97% (29/30)
+- Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 27.0s
-- Avg left basic / DOT / heal / shield: 759 / 0 / 86 / 516
-- Avg right basic / DOT / heal / shield: 351 / 0 / 307 / 818
+- Avg duration: 28.3s
+- Avg left basic / DOT / heal / shield: 784 / 0 / 84 / 522
+- Avg right basic / DOT / heal / shield: 378 / 0 / 322 / 825
 
 ### `frostTrapField` into `lightningTempo`
 
-- Win rate: 87% (26/30)
+- Win rate: 90% (27/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 16.7s
-- Avg left basic / DOT / heal / shield: 687 / 0 / 23 / 182
-- Avg right basic / DOT / heal / shield: 453 / 0 / 0 / 0
+- Avg duration: 16.5s
+- Avg left basic / DOT / heal / shield: 696 / 0 / 21 / 190
+- Avg right basic / DOT / heal / shield: 438 / 0 / 0 / 0
 
 ### `frostTrapField` into `martyrFrontline`
 
-- Win rate: 87% (26/30)
+- Win rate: 90% (27/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 21.9s
-- Avg left basic / DOT / heal / shield: 661 / 0 / 100 / 340
-- Avg right basic / DOT / heal / shield: 448 / 126 / 103 / 271
+- Avg duration: 23.0s
+- Avg left basic / DOT / heal / shield: 693 / 0 / 99 / 347
+- Avg right basic / DOT / heal / shield: 471 / 130 / 104 / 272
 
 ### `frostTrapField` into `poisonBloom`
 
-- Win rate: 3% (1/30)
+- Win rate: 7% (2/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 20.9s
-- Avg left basic / DOT / heal / shield: 503 / 0 / 111 / 307
-- Avg right basic / DOT / heal / shield: 354 / 516 / 217 / 484
+- Avg duration: 21.3s
+- Avg left basic / DOT / heal / shield: 518 / 0 / 114 / 308
+- Avg right basic / DOT / heal / shield: 351 / 556 / 232 / 492
 
 ### `frostTrapField` into `purgeAttrition`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 18.3s
-- Avg left basic / DOT / heal / shield: 725 / 0 / 125 / 317
-- Avg right basic / DOT / heal / shield: 372 / 357 / 162 / 297
+- Avg duration: 18.4s
+- Avg left basic / DOT / heal / shield: 729 / 0 / 125 / 316
+- Avg right basic / DOT / heal / shield: 373 / 367 / 161 / 299
 
 ### `frostTrapField` into `scarletVanguard`
 
 - Win rate: 57% (17/30)
 - Expectation: intended flex, actual even, ok
-- Avg duration: 18.7s
-- Avg left basic / DOT / heal / shield: 611 / 0 / 63 / 272
-- Avg right basic / DOT / heal / shield: 741 / 55 / 77 / 126
+- Avg duration: 18.3s
+- Avg left basic / DOT / heal / shield: 620 / 0 / 58 / 269
+- Avg right basic / DOT / heal / shield: 743 / 56 / 78 / 123
 
 ### `frostTrapField` into `shadowExecute`
 
-- Win rate: 70% (21/30)
+- Win rate: 73% (22/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 20.8s
-- Avg left basic / DOT / heal / shield: 544 / 0 / 43 / 243
-- Avg right basic / DOT / heal / shield: 388 / 246 / 0 / 349
+- Avg duration: 21.5s
+- Avg left basic / DOT / heal / shield: 539 / 0 / 28 / 226
+- Avg right basic / DOT / heal / shield: 400 / 243 / 0 / 337
 
 ### `holySustain` into `alchemyChaos`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 35.0s
-- Avg left basic / DOT / heal / shield: 242 / 0 / 710 / 1255
-- Avg right basic / DOT / heal / shield: 714 / 450 / 0 / 868
+- Avg duration: 35.4s
+- Avg left basic / DOT / heal / shield: 240 / 0 / 732 / 1283
+- Avg right basic / DOT / heal / shield: 715 / 453 / 0 / 876
 
 ### `holySustain` into `bloodRage`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 23.7s
-- Avg left basic / DOT / heal / shield: 441 / 0 / 442 / 744
-- Avg right basic / DOT / heal / shield: 1547 / 0 / 505 / 353
+- Avg duration: 23.6s
+- Avg left basic / DOT / heal / shield: 450 / 0 / 440 / 745
+- Avg right basic / DOT / heal / shield: 1565 / 0 / 487 / 344
 
 ### `holySustain` into `bulwarkMarks`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 39.6s
-- Avg left basic / DOT / heal / shield: 195 / 0 / 552 / 1483
-- Avg right basic / DOT / heal / shield: 1080 / 0 / 0 / 1085
+- Avg duration: 38.2s
+- Avg left basic / DOT / heal / shield: 191 / 0 / 534 / 1413
+- Avg right basic / DOT / heal / shield: 1060 / 0 / 0 / 1052
 
 ### `holySustain` into `cavalryBreak`
 
-- Win rate: 50% (15/30)
-- Expectation: intended flex, actual even, ok
-- Avg duration: 43.8s
-- Avg left basic / DOT / heal / shield: 782 / 0 / 922 / 1769
-- Avg right basic / DOT / heal / shield: 1323 / 0 / 441 / 616
+- Win rate: 27% (8/30)
+- Expectation: intended flex, actual weak, ok
+- Avg duration: 41.0s
+- Avg left basic / DOT / heal / shield: 672 / 0 / 831 / 1545
+- Avg right basic / DOT / heal / shield: 1468 / 0 / 448 / 595
 
 ### `holySustain` into `crownCarry`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 55.6s
-- Avg left basic / DOT / heal / shield: 170 / 0 / 939 / 2187
-- Avg right basic / DOT / heal / shield: 2280 / 0 / 457 / 2328
+- Avg duration: 57.9s
+- Avg left basic / DOT / heal / shield: 169 / 0 / 1051 / 2345
+- Avg right basic / DOT / heal / shield: 2377 / 0 / 455 / 2343
 
 ### `holySustain` into `duelChampion`
 
-- Win rate: 93% (28/30)
+- Win rate: 87% (26/30)
 - Expectation: intended flex, actual favored, ok
 - Avg duration: 75.0s
-- Avg left basic / DOT / heal / shield: 255 / 0 / 750 / 4027
-- Avg right basic / DOT / heal / shield: 579 / 0 / 413 / 3440
+- Avg left basic / DOT / heal / shield: 222 / 0 / 774 / 4012
+- Avg right basic / DOT / heal / shield: 580 / 0 / 412 / 3458
 
 ### `holySustain` into `fireBurst`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 23.7s
-- Avg left basic / DOT / heal / shield: 252 / 0 / 570 / 844
-- Avg right basic / DOT / heal / shield: 469 / 323 / 0 / 526
+- Avg duration: 23.5s
+- Avg left basic / DOT / heal / shield: 251 / 0 / 573 / 827
+- Avg right basic / DOT / heal / shield: 423 / 351 / 0 / 475
 
 ### `holySustain` into `frostControl`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
 - Avg duration: 75.0s
-- Avg left basic / DOT / heal / shield: 331 / 0 / 1828 / 3709
-- Avg right basic / DOT / heal / shield: 1035 / 323 / 535 / 2760
+- Avg left basic / DOT / heal / shield: 345 / 0 / 1823 / 3733
+- Avg right basic / DOT / heal / shield: 1034 / 325 / 569 / 2766
 
 ### `holySustain` into `frostTrapField`
 
-- Win rate: 3% (1/30)
+- Win rate: 13% (4/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 36.1s
-- Avg left basic / DOT / heal / shield: 249 / 0 / 857 / 1300
-- Avg right basic / DOT / heal / shield: 1073 / 0 / 92 / 627
+- Avg duration: 41.3s
+- Avg left basic / DOT / heal / shield: 324 / 0 / 968 / 1656
+- Avg right basic / DOT / heal / shield: 1053 / 0 / 111 / 727
 
 ### `holySustain` into `ironWall`
 
-- Win rate: 67% (20/30)
-- Expectation: intended flex, actual favored, ok
+- Win rate: 47% (14/30)
+- Expectation: intended flex, actual even, ok
 - Avg duration: 75.0s
-- Avg left basic / DOT / heal / shield: 568 / 0 / 1499 / 3909
-- Avg right basic / DOT / heal / shield: 1013 / 0 / 676 / 2764
+- Avg left basic / DOT / heal / shield: 553 / 0 / 1480 / 3884
+- Avg right basic / DOT / heal / shield: 1009 / 0 / 687 / 2784
 
 ### `holySustain` into `lightningTempo`
 
-- Win rate: 3% (1/30)
+- Win rate: 7% (2/30)
 - Expectation: intended favored, actual weak, mismatch
-- Avg duration: 27.2s
-- Avg left basic / DOT / heal / shield: 473 / 0 / 491 / 925
-- Avg right basic / DOT / heal / shield: 751 / 0 / 0 / 0
+- Avg duration: 27.0s
+- Avg left basic / DOT / heal / shield: 480 / 0 / 482 / 938
+- Avg right basic / DOT / heal / shield: 710 / 0 / 0 / 0
 
 ### `holySustain` into `martyrFrontline`
 
-- Win rate: 53% (16/30)
-- Expectation: intended flex, actual even, ok
-- Avg duration: 53.2s
-- Avg left basic / DOT / heal / shield: 664 / 0 / 865 / 2291
-- Avg right basic / DOT / heal / shield: 720 / 299 / 303 / 866
+- Win rate: 37% (11/30)
+- Expectation: intended flex, actual weak, ok
+- Avg duration: 59.6s
+- Avg left basic / DOT / heal / shield: 604 / 0 / 1007 / 2463
+- Avg right basic / DOT / heal / shield: 831 / 365 / 375 / 1054
 
 ### `holySustain` into `poisonBloom`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 58.4s
-- Avg left basic / DOT / heal / shield: 318 / 0 / 1288 / 2305
-- Avg right basic / DOT / heal / shield: 719 / 960 / 183 / 1975
+- Avg duration: 57.3s
+- Avg left basic / DOT / heal / shield: 318 / 0 / 1241 / 2168
+- Avg right basic / DOT / heal / shield: 743 / 998 / 162 / 1931
 
 ### `holySustain` into `purgeAttrition`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 65.6s
-- Avg left basic / DOT / heal / shield: 383 / 0 / 1301 / 2760
-- Avg right basic / DOT / heal / shield: 1181 / 809 / 620 / 2180
+- Avg duration: 63.8s
+- Avg left basic / DOT / heal / shield: 378 / 0 / 1265 / 2663
+- Avg right basic / DOT / heal / shield: 1171 / 792 / 624 / 2209
 
 ### `holySustain` into `scarletVanguard`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
 - Avg duration: 21.8s
-- Avg left basic / DOT / heal / shield: 357 / 0 / 434 / 677
-- Avg right basic / DOT / heal / shield: 1501 / 64 / 201 / 178
+- Avg left basic / DOT / heal / shield: 352 / 0 / 428 / 670
+- Avg right basic / DOT / heal / shield: 1476 / 64 / 194 / 185
 
 ### `holySustain` into `shadowExecute`
 
-- Win rate: 27% (8/30)
-- Expectation: intended weak, actual weak, ok
-- Avg duration: 54.6s
-- Avg left basic / DOT / heal / shield: 449 / 0 / 716 / 1968
-- Avg right basic / DOT / heal / shield: 620 / 479 / 0 / 1145
+- Win rate: 53% (16/30)
+- Expectation: intended weak, actual even, mismatch
+- Avg duration: 65.4s
+- Avg left basic / DOT / heal / shield: 450 / 0 / 1005 / 2626
+- Avg right basic / DOT / heal / shield: 637 / 614 / 0 / 1391
 
 ### `ironWall` into `alchemyChaos`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 27.9s
-- Avg left basic / DOT / heal / shield: 418 / 0 / 317 / 887
-- Avg right basic / DOT / heal / shield: 526 / 357 / 0 / 664
+- Avg duration: 27.5s
+- Avg left basic / DOT / heal / shield: 393 / 0 / 306 / 875
+- Avg right basic / DOT / heal / shield: 521 / 339 / 0 / 655
 
 ### `ironWall` into `bloodRage`
 
-- Win rate: 23% (7/30)
+- Win rate: 17% (5/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 20.9s
-- Avg left basic / DOT / heal / shield: 638 / 0 / 158 / 611
-- Avg right basic / DOT / heal / shield: 1316 / 0 / 408 / 172
+- Avg duration: 20.8s
+- Avg left basic / DOT / heal / shield: 621 / 0 / 155 / 572
+- Avg right basic / DOT / heal / shield: 1391 / 0 / 411 / 170
 
 ### `ironWall` into `bulwarkMarks`
 
-- Win rate: 7% (2/30)
+- Win rate: 13% (4/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 32.1s
-- Avg left basic / DOT / heal / shield: 495 / 0 / 326 / 1005
-- Avg right basic / DOT / heal / shield: 914 / 0 / 0 / 902
+- Avg duration: 32.5s
+- Avg left basic / DOT / heal / shield: 535 / 0 / 337 / 1015
+- Avg right basic / DOT / heal / shield: 903 / 0 / 0 / 879
 
 ### `ironWall` into `cavalryBreak`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
 - Avg duration: 29.0s
-- Avg left basic / DOT / heal / shield: 642 / 0 / 223 / 683
-- Avg right basic / DOT / heal / shield: 1388 / 0 / 414 / 385
+- Avg left basic / DOT / heal / shield: 641 / 0 / 228 / 683
+- Avg right basic / DOT / heal / shield: 1395 / 0 / 407 / 397
 
 ### `ironWall` into `crownCarry`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 28.3s
-- Avg left basic / DOT / heal / shield: 383 / 0 / 272 / 852
-- Avg right basic / DOT / heal / shield: 1677 / 0 / 537 / 1303
+- Avg duration: 28.0s
+- Avg left basic / DOT / heal / shield: 390 / 0 / 265 / 849
+- Avg right basic / DOT / heal / shield: 1674 / 0 / 526 / 1303
 
 ### `ironWall` into `duelChampion`
 
-- Win rate: 47% (14/30)
-- Expectation: intended flex, actual even, ok
-- Avg duration: 61.3s
-- Avg left basic / DOT / heal / shield: 709 / 0 / 610 / 1720
-- Avg right basic / DOT / heal / shield: 1062 / 0 / 527 / 2469
+- Win rate: 40% (12/30)
+- Expectation: intended flex, actual weak, ok
+- Avg duration: 58.1s
+- Avg left basic / DOT / heal / shield: 672 / 0 / 589 / 1610
+- Avg right basic / DOT / heal / shield: 1084 / 0 / 505 / 2286
 
 ### `ironWall` into `fireBurst`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 18.4s
-- Avg left basic / DOT / heal / shield: 367 / 0 / 166 / 592
-- Avg right basic / DOT / heal / shield: 353 / 229 / 0 / 235
+- Avg duration: 18.6s
+- Avg left basic / DOT / heal / shield: 377 / 0 / 176 / 598
+- Avg right basic / DOT / heal / shield: 355 / 203 / 0 / 244
 
 ### `ironWall` into `frostControl`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 49.3s
-- Avg left basic / DOT / heal / shield: 370 / 0 / 616 / 1466
-- Avg right basic / DOT / heal / shield: 742 / 248 / 492 / 1657
+- Avg duration: 49.8s
+- Avg left basic / DOT / heal / shield: 363 / 0 / 627 / 1501
+- Avg right basic / DOT / heal / shield: 749 / 258 / 494 / 1703
 
 ### `ironWall` into `frostTrapField`
 
-- Win rate: 3% (1/30)
+- Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 27.0s
-- Avg left basic / DOT / heal / shield: 351 / 0 / 307 / 818
-- Avg right basic / DOT / heal / shield: 759 / 0 / 86 / 516
+- Avg duration: 28.3s
+- Avg left basic / DOT / heal / shield: 378 / 0 / 322 / 825
+- Avg right basic / DOT / heal / shield: 784 / 0 / 84 / 522
 
 ### `ironWall` into `holySustain`
 
-- Win rate: 33% (10/30)
-- Expectation: intended flex, actual weak, ok
+- Win rate: 53% (16/30)
+- Expectation: intended flex, actual even, ok
 - Avg duration: 75.0s
-- Avg left basic / DOT / heal / shield: 1013 / 0 / 676 / 2764
-- Avg right basic / DOT / heal / shield: 568 / 0 / 1499 / 3909
+- Avg left basic / DOT / heal / shield: 1009 / 0 / 687 / 2784
+- Avg right basic / DOT / heal / shield: 553 / 0 / 1480 / 3884
 
 ### `ironWall` into `lightningTempo`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 28.4s
-- Avg left basic / DOT / heal / shield: 970 / 0 / 379 / 1035
-- Avg right basic / DOT / heal / shield: 428 / 0 / 0 / 0
+- Avg duration: 28.8s
+- Avg left basic / DOT / heal / shield: 959 / 0 / 392 / 1060
+- Avg right basic / DOT / heal / shield: 442 / 0 / 0 / 0
 
 ### `ironWall` into `martyrFrontline`
 
-- Win rate: 60% (18/30)
-- Expectation: intended flex, actual favored, ok
-- Avg duration: 39.4s
-- Avg left basic / DOT / heal / shield: 850 / 0 / 339 / 1081
-- Avg right basic / DOT / heal / shield: 601 / 253 / 193 / 486
+- Win rate: 47% (14/30)
+- Expectation: intended flex, actual even, ok
+- Avg duration: 41.3s
+- Avg left basic / DOT / heal / shield: 874 / 0 / 348 / 1125
+- Avg right basic / DOT / heal / shield: 634 / 265 / 203 / 512
 
 ### `ironWall` into `poisonBloom`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 38.6s
-- Avg left basic / DOT / heal / shield: 391 / 0 / 439 / 1095
-- Avg right basic / DOT / heal / shield: 528 / 742 / 338 / 1272
+- Avg duration: 37.7s
+- Avg left basic / DOT / heal / shield: 397 / 0 / 436 / 1060
+- Avg right basic / DOT / heal / shield: 525 / 740 / 347 / 1236
 
 ### `ironWall` into `purgeAttrition`
 
-- Win rate: 0% (0/30)
+- Win rate: 3% (1/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 37.1s
-- Avg left basic / DOT / heal / shield: 511 / 0 / 415 / 1139
-- Avg right basic / DOT / heal / shield: 740 / 543 / 449 / 1241
+- Avg duration: 35.8s
+- Avg left basic / DOT / heal / shield: 525 / 0 / 408 / 1113
+- Avg right basic / DOT / heal / shield: 708 / 538 / 432 / 1157
 
 ### `ironWall` into `scarletVanguard`
 
-- Win rate: 20% (6/30)
+- Win rate: 27% (8/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 20.2s
-- Avg left basic / DOT / heal / shield: 561 / 0 / 141 / 588
-- Avg right basic / DOT / heal / shield: 1213 / 54 / 173 / 129
+- Avg duration: 19.3s
+- Avg left basic / DOT / heal / shield: 554 / 0 / 136 / 597
+- Avg right basic / DOT / heal / shield: 1126 / 53 / 172 / 125
 
 ### `ironWall` into `shadowExecute`
 
-- Win rate: 30% (9/30)
-- Expectation: intended weak, actual weak, ok
-- Avg duration: 52.2s
-- Avg left basic / DOT / heal / shield: 580 / 0 / 415 / 1221
-- Avg right basic / DOT / heal / shield: 595 / 473 / 0 / 962
+- Win rate: 70% (21/30)
+- Expectation: intended weak, actual favored, mismatch
+- Avg duration: 39.9s
+- Avg left basic / DOT / heal / shield: 711 / 0 / 360 / 1197
+- Avg right basic / DOT / heal / shield: 412 / 371 / 0 / 664
 
 ### `lightningTempo` into `alchemyChaos`
 
-- Win rate: 47% (14/30)
-- Expectation: intended weak, actual even, ok
-- Avg duration: 17.5s
-- Avg left basic / DOT / heal / shield: 497 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 437 / 320 / 0 / 199
+- Win rate: 50% (15/30)
+- Expectation: intended weak, actual even, mismatch
+- Avg duration: 17.2s
+- Avg left basic / DOT / heal / shield: 494 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 434 / 326 / 0 / 208
 
 ### `lightningTempo` into `bloodRage`
 
-- Win rate: 73% (22/30)
+- Win rate: 87% (26/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 18.6s
-- Avg left basic / DOT / heal / shield: 756 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 900 / 0 / 263 / 143
+- Avg duration: 19.3s
+- Avg left basic / DOT / heal / shield: 799 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 833 / 0 / 242 / 144
 
 ### `lightningTempo` into `bulwarkMarks`
 
-- Win rate: 83% (25/30)
-- Expectation: intended flex, actual favored, ok
-- Avg duration: 19.4s
-- Avg left basic / DOT / heal / shield: 673 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 655 / 0 / 0 / 180
+- Win rate: 57% (17/30)
+- Expectation: intended flex, actual even, ok
+- Avg duration: 19.8s
+- Avg left basic / DOT / heal / shield: 634 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 668 / 0 / 0 / 185
 
 ### `lightningTempo` into `cavalryBreak`
 
-- Win rate: 90% (27/30)
+- Win rate: 80% (24/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 19.6s
-- Avg left basic / DOT / heal / shield: 705 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 695 / 0 / 153 / 219
+- Avg duration: 20.5s
+- Avg left basic / DOT / heal / shield: 700 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 746 / 0 / 168 / 225
 
 ### `lightningTempo` into `crownCarry`
 
-- Win rate: 13% (4/30)
+- Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 21.0s
-- Avg left basic / DOT / heal / shield: 423 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 1390 / 0 / 326 / 556
+- Avg duration: 19.9s
+- Avg left basic / DOT / heal / shield: 402 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 1392 / 0 / 371 / 655
 
 ### `lightningTempo` into `duelChampion`
 
-- Win rate: 93% (28/30)
+- Win rate: 70% (21/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 25.4s
-- Avg left basic / DOT / heal / shield: 735 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 725 / 0 / 213 / 592
+- Avg duration: 26.7s
+- Avg left basic / DOT / heal / shield: 677 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 811 / 0 / 207 / 641
 
 ### `lightningTempo` into `fireBurst`
 
-- Win rate: 80% (24/30)
+- Win rate: 87% (26/30)
 - Expectation: intended weak, actual favored, mismatch
-- Avg duration: 13.5s
-- Avg left basic / DOT / heal / shield: 607 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 332 / 127 / 0 / 20
+- Avg duration: 13.2s
+- Avg left basic / DOT / heal / shield: 601 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 339 / 111 / 0 / 15
 
 ### `lightningTempo` into `frostControl`
 
 - Win rate: 23% (7/30)
 - Expectation: intended flex, actual weak, ok
 - Avg duration: 20.7s
-- Avg left basic / DOT / heal / shield: 520 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 489 / 192 / 112 / 405
+- Avg left basic / DOT / heal / shield: 521 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 494 / 186 / 121 / 405
 
 ### `lightningTempo` into `frostTrapField`
 
-- Win rate: 13% (4/30)
+- Win rate: 10% (3/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 16.7s
-- Avg left basic / DOT / heal / shield: 453 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 687 / 0 / 23 / 182
+- Avg duration: 16.5s
+- Avg left basic / DOT / heal / shield: 438 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 696 / 0 / 21 / 190
 
 ### `lightningTempo` into `holySustain`
 
-- Win rate: 97% (29/30)
+- Win rate: 93% (28/30)
 - Expectation: intended weak, actual favored, mismatch
-- Avg duration: 27.2s
-- Avg left basic / DOT / heal / shield: 751 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 473 / 0 / 491 / 925
+- Avg duration: 27.0s
+- Avg left basic / DOT / heal / shield: 710 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 480 / 0 / 482 / 938
 
 ### `lightningTempo` into `ironWall`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 28.4s
-- Avg left basic / DOT / heal / shield: 428 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 970 / 0 / 379 / 1035
+- Avg duration: 28.8s
+- Avg left basic / DOT / heal / shield: 442 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 959 / 0 / 392 / 1060
 
 ### `lightningTempo` into `martyrFrontline`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 16.3s
-- Avg left basic / DOT / heal / shield: 665 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 446 / 134 / 38 / 139
+- Avg duration: 16.4s
+- Avg left basic / DOT / heal / shield: 672 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 452 / 131 / 39 / 140
 
 ### `lightningTempo` into `poisonBloom`
 
 - Win rate: 7% (2/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 15.3s
-- Avg left basic / DOT / heal / shield: 619 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 303 / 407 / 98 / 236
+- Avg duration: 15.5s
+- Avg left basic / DOT / heal / shield: 628 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 297 / 430 / 89 / 226
 
 ### `lightningTempo` into `purgeAttrition`
 
-- Win rate: 87% (26/30)
+- Win rate: 83% (25/30)
 - Expectation: intended flex, actual favored, ok
 - Avg duration: 18.9s
-- Avg left basic / DOT / heal / shield: 709 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 466 / 475 / 131 / 239
+- Avg left basic / DOT / heal / shield: 702 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 461 / 455 / 131 / 242
 
 ### `lightningTempo` into `scarletVanguard`
 
-- Win rate: 70% (21/30)
+- Win rate: 77% (23/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 15.8s
-- Avg left basic / DOT / heal / shield: 634 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 645 / 60 / 43 / 74
+- Avg duration: 15.7s
+- Avg left basic / DOT / heal / shield: 638 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 638 / 57 / 41 / 74
 
 ### `lightningTempo` into `shadowExecute`
 
-- Win rate: 87% (26/30)
+- Win rate: 97% (29/30)
 - Expectation: intended weak, actual favored, mismatch
-- Avg duration: 22.4s
-- Avg left basic / DOT / heal / shield: 623 / 0 / 0 / 0
-- Avg right basic / DOT / heal / shield: 357 / 206 / 0 / 390
+- Avg duration: 20.6s
+- Avg left basic / DOT / heal / shield: 598 / 0 / 0 / 0
+- Avg right basic / DOT / heal / shield: 310 / 177 / 0 / 354
 
 ### `martyrFrontline` into `alchemyChaos`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 14.6s
-- Avg left basic / DOT / heal / shield: 285 / 99 / 73 / 177
-- Avg right basic / DOT / heal / shield: 447 / 289 / 0 / 237
+- Avg duration: 14.5s
+- Avg left basic / DOT / heal / shield: 281 / 98 / 72 / 167
+- Avg right basic / DOT / heal / shield: 433 / 297 / 0 / 253
 
 ### `martyrFrontline` into `bloodRage`
 
-- Win rate: 13% (4/30)
+- Win rate: 7% (2/30)
 - Expectation: intended favored, actual weak, mismatch
-- Avg duration: 23.8s
-- Avg left basic / DOT / heal / shield: 636 / 161 / 38 / 165
-- Avg right basic / DOT / heal / shield: 1374 / 0 / 389 / 248
+- Avg duration: 22.6s
+- Avg left basic / DOT / heal / shield: 619 / 146 / 38 / 165
+- Avg right basic / DOT / heal / shield: 1313 / 0 / 372 / 238
 
 ### `martyrFrontline` into `bulwarkMarks`
 
-- Win rate: 0% (0/30)
+- Win rate: 7% (2/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 22.9s
-- Avg left basic / DOT / heal / shield: 476 / 147 / 135 / 319
-- Avg right basic / DOT / heal / shield: 795 / 0 / 0 / 354
+- Avg duration: 22.4s
+- Avg left basic / DOT / heal / shield: 468 / 145 / 111 / 283
+- Avg right basic / DOT / heal / shield: 791 / 0 / 0 / 339
 
 ### `martyrFrontline` into `cavalryBreak`
 
-- Win rate: 37% (11/30)
+- Win rate: 33% (10/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 26.4s
-- Avg left basic / DOT / heal / shield: 647 / 149 / 67 / 198
-- Avg right basic / DOT / heal / shield: 1093 / 0 / 297 / 322
+- Avg duration: 26.0s
+- Avg left basic / DOT / heal / shield: 633 / 142 / 68 / 197
+- Avg right basic / DOT / heal / shield: 1111 / 0 / 304 / 322
 
 ### `martyrFrontline` into `crownCarry`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 27.5s
-- Avg left basic / DOT / heal / shield: 385 / 213 / 115 / 315
-- Avg right basic / DOT / heal / shield: 1472 / 0 / 532 / 1019
+- Avg duration: 25.8s
+- Avg left basic / DOT / heal / shield: 354 / 202 / 113 / 309
+- Avg right basic / DOT / heal / shield: 1480 / 0 / 529 / 1062
 
 ### `martyrFrontline` into `duelChampion`
 
-- Win rate: 83% (25/30)
+- Win rate: 93% (28/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 35.9s
-- Avg left basic / DOT / heal / shield: 670 / 229 / 235 / 666
-- Avg right basic / DOT / heal / shield: 625 / 0 / 335 / 1194
+- Avg duration: 34.5s
+- Avg left basic / DOT / heal / shield: 742 / 237 / 255 / 722
+- Avg right basic / DOT / heal / shield: 545 / 0 / 334 / 1088
 
 ### `martyrFrontline` into `fireBurst`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 15.4s
-- Avg left basic / DOT / heal / shield: 357 / 174 / 45 / 152
-- Avg right basic / DOT / heal / shield: 423 / 183 / 0 / 237
+- Avg duration: 15.3s
+- Avg left basic / DOT / heal / shield: 344 / 167 / 46 / 152
+- Avg right basic / DOT / heal / shield: 398 / 209 / 0 / 225
 
 ### `martyrFrontline` into `frostControl`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 24.1s
-- Avg left basic / DOT / heal / shield: 391 / 120 / 161 / 377
-- Avg right basic / DOT / heal / shield: 493 / 205 / 299 / 638
+- Avg duration: 23.7s
+- Avg left basic / DOT / heal / shield: 376 / 119 / 152 / 367
+- Avg right basic / DOT / heal / shield: 475 / 202 / 275 / 614
 
 ### `martyrFrontline` into `frostTrapField`
 
-- Win rate: 13% (4/30)
+- Win rate: 10% (3/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 21.9s
-- Avg left basic / DOT / heal / shield: 448 / 126 / 103 / 271
-- Avg right basic / DOT / heal / shield: 661 / 0 / 100 / 340
+- Avg duration: 23.0s
+- Avg left basic / DOT / heal / shield: 471 / 130 / 104 / 272
+- Avg right basic / DOT / heal / shield: 693 / 0 / 99 / 347
 
 ### `martyrFrontline` into `holySustain`
 
-- Win rate: 47% (14/30)
-- Expectation: intended flex, actual even, ok
-- Avg duration: 53.2s
-- Avg left basic / DOT / heal / shield: 720 / 299 / 303 / 866
-- Avg right basic / DOT / heal / shield: 664 / 0 / 865 / 2291
+- Win rate: 63% (19/30)
+- Expectation: intended flex, actual favored, ok
+- Avg duration: 59.6s
+- Avg left basic / DOT / heal / shield: 831 / 365 / 375 / 1054
+- Avg right basic / DOT / heal / shield: 604 / 0 / 1007 / 2463
 
 ### `martyrFrontline` into `ironWall`
 
-- Win rate: 40% (12/30)
-- Expectation: intended favored, actual weak, mismatch
-- Avg duration: 39.4s
-- Avg left basic / DOT / heal / shield: 601 / 253 / 193 / 486
-- Avg right basic / DOT / heal / shield: 850 / 0 / 339 / 1081
+- Win rate: 53% (16/30)
+- Expectation: intended favored, actual even, ok
+- Avg duration: 41.3s
+- Avg left basic / DOT / heal / shield: 634 / 265 / 203 / 512
+- Avg right basic / DOT / heal / shield: 874 / 0 / 348 / 1125
 
 ### `martyrFrontline` into `lightningTempo`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 16.3s
-- Avg left basic / DOT / heal / shield: 446 / 134 / 38 / 139
-- Avg right basic / DOT / heal / shield: 665 / 0 / 0 / 0
+- Avg duration: 16.4s
+- Avg left basic / DOT / heal / shield: 452 / 131 / 39 / 140
+- Avg right basic / DOT / heal / shield: 672 / 0 / 0 / 0
 
 ### `martyrFrontline` into `poisonBloom`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
 - Avg duration: 20.4s
-- Avg left basic / DOT / heal / shield: 397 / 85 / 105 / 265
-- Avg right basic / DOT / heal / shield: 414 / 433 / 202 / 532
+- Avg left basic / DOT / heal / shield: 373 / 85 / 114 / 267
+- Avg right basic / DOT / heal / shield: 407 / 438 / 203 / 573
 
 ### `martyrFrontline` into `purgeAttrition`
 
-- Win rate: 10% (3/30)
+- Win rate: 20% (6/30)
 - Expectation: intended flex, actual weak, ok
 - Avg duration: 27.8s
-- Avg left basic / DOT / heal / shield: 643 / 151 / 202 / 440
-- Avg right basic / DOT / heal / shield: 612 / 451 / 312 / 451
+- Avg left basic / DOT / heal / shield: 635 / 162 / 203 / 446
+- Avg right basic / DOT / heal / shield: 607 / 446 / 313 / 439
 
 ### `martyrFrontline` into `scarletVanguard`
 
-- Win rate: 3% (1/30)
+- Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 17.7s
-- Avg left basic / DOT / heal / shield: 458 / 147 / 39 / 142
-- Avg right basic / DOT / heal / shield: 1114 / 44 / 116 / 120
+- Avg duration: 17.5s
+- Avg left basic / DOT / heal / shield: 465 / 141 / 39 / 142
+- Avg right basic / DOT / heal / shield: 1102 / 40 / 115 / 121
 
 ### `martyrFrontline` into `shadowExecute`
 
-- Win rate: 7% (2/30)
+- Win rate: 37% (11/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 26.3s
-- Avg left basic / DOT / heal / shield: 532 / 93 / 122 / 303
-- Avg right basic / DOT / heal / shield: 513 / 341 / 0 / 547
+- Avg duration: 23.2s
+- Avg left basic / DOT / heal / shield: 589 / 107 / 107 / 265
+- Avg right basic / DOT / heal / shield: 483 / 342 / 0 / 396
 
 ### `poisonBloom` into `alchemyChaos`
 
-- Win rate: 47% (14/30)
+- Win rate: 43% (13/30)
 - Expectation: intended favored, actual even, mismatch
-- Avg duration: 16.7s
-- Avg left basic / DOT / heal / shield: 255 / 371 / 133 / 351
-- Avg right basic / DOT / heal / shield: 468 / 273 / 0 / 233
+- Avg duration: 16.6s
+- Avg left basic / DOT / heal / shield: 251 / 354 / 131 / 344
+- Avg right basic / DOT / heal / shield: 485 / 266 / 0 / 243
 
 ### `poisonBloom` into `bloodRage`
 
-- Win rate: 90% (27/30)
+- Win rate: 97% (29/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 17.5s
-- Avg left basic / DOT / heal / shield: 459 / 396 / 149 / 393
-- Avg right basic / DOT / heal / shield: 649 / 0 / 173 / 135
+- Avg duration: 17.1s
+- Avg left basic / DOT / heal / shield: 468 / 382 / 153 / 402
+- Avg right basic / DOT / heal / shield: 553 / 0 / 158 / 133
 
 ### `poisonBloom` into `bulwarkMarks`
 
-- Win rate: 97% (29/30)
+- Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 19.5s
-- Avg left basic / DOT / heal / shield: 335 / 444 / 160 / 428
-- Avg right basic / DOT / heal / shield: 583 / 0 / 0 / 279
+- Avg duration: 19.4s
+- Avg left basic / DOT / heal / shield: 325 / 448 / 158 / 456
+- Avg right basic / DOT / heal / shield: 541 / 0 / 0 / 315
 
 ### `poisonBloom` into `cavalryBreak`
 
-- Win rate: 97% (29/30)
+- Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 17.7s
-- Avg left basic / DOT / heal / shield: 452 / 384 / 143 / 392
-- Avg right basic / DOT / heal / shield: 841 / 0 / 217 / 214
+- Avg duration: 17.5s
+- Avg left basic / DOT / heal / shield: 452 / 384 / 144 / 390
+- Avg right basic / DOT / heal / shield: 815 / 0 / 208 / 212
 
 ### `poisonBloom` into `crownCarry`
 
-- Win rate: 23% (7/30)
+- Win rate: 0% (0/30)
 - Expectation: intended favored, actual weak, mismatch
-- Avg duration: 23.7s
-- Avg left basic / DOT / heal / shield: 311 / 560 / 195 / 451
-- Avg right basic / DOT / heal / shield: 1530 / 0 / 413 / 601
+- Avg duration: 22.2s
+- Avg left basic / DOT / heal / shield: 277 / 567 / 170 / 438
+- Avg right basic / DOT / heal / shield: 1576 / 0 / 474 / 683
 
 ### `poisonBloom` into `duelChampion`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 29.9s
-- Avg left basic / DOT / heal / shield: 430 / 585 / 314 / 1074
-- Avg right basic / DOT / heal / shield: 508 / 0 / 343 / 920
+- Avg duration: 29.7s
+- Avg left basic / DOT / heal / shield: 482 / 520 / 322 / 1069
+- Avg right basic / DOT / heal / shield: 511 / 0 / 343 / 841
 
 ### `poisonBloom` into `fireBurst`
 
-- Win rate: 73% (22/30)
+- Win rate: 60% (18/30)
 - Expectation: intended weak, actual favored, mismatch
-- Avg duration: 16.1s
-- Avg left basic / DOT / heal / shield: 207 / 392 / 154 / 404
-- Avg right basic / DOT / heal / shield: 308 / 138 / 0 / 241
+- Avg duration: 17.1s
+- Avg left basic / DOT / heal / shield: 269 / 412 / 157 / 415
+- Avg right basic / DOT / heal / shield: 365 / 183 / 0 / 223
 
 ### `poisonBloom` into `frostControl`
 
-- Win rate: 97% (29/30)
+- Win rate: 93% (28/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 20.0s
-- Avg left basic / DOT / heal / shield: 281 / 449 / 214 / 468
-- Avg right basic / DOT / heal / shield: 437 / 208 / 135 / 411
+- Avg duration: 21.0s
+- Avg left basic / DOT / heal / shield: 302 / 523 / 234 / 540
+- Avg right basic / DOT / heal / shield: 455 / 211 / 171 / 433
 
 ### `poisonBloom` into `frostTrapField`
 
-- Win rate: 97% (29/30)
+- Win rate: 93% (28/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 20.9s
-- Avg left basic / DOT / heal / shield: 354 / 516 / 217 / 484
-- Avg right basic / DOT / heal / shield: 503 / 0 / 111 / 307
+- Avg duration: 21.3s
+- Avg left basic / DOT / heal / shield: 351 / 556 / 232 / 492
+- Avg right basic / DOT / heal / shield: 518 / 0 / 114 / 308
 
 ### `poisonBloom` into `holySustain`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 58.4s
-- Avg left basic / DOT / heal / shield: 719 / 960 / 183 / 1975
-- Avg right basic / DOT / heal / shield: 318 / 0 / 1288 / 2305
+- Avg duration: 57.3s
+- Avg left basic / DOT / heal / shield: 743 / 998 / 162 / 1931
+- Avg right basic / DOT / heal / shield: 318 / 0 / 1241 / 2168
 
 ### `poisonBloom` into `ironWall`
 
 - Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 38.6s
-- Avg left basic / DOT / heal / shield: 528 / 742 / 338 / 1272
-- Avg right basic / DOT / heal / shield: 391 / 0 / 439 / 1095
+- Avg duration: 37.7s
+- Avg left basic / DOT / heal / shield: 525 / 740 / 347 / 1236
+- Avg right basic / DOT / heal / shield: 397 / 0 / 436 / 1060
 
 ### `poisonBloom` into `lightningTempo`
 
 - Win rate: 93% (28/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 15.3s
-- Avg left basic / DOT / heal / shield: 303 / 407 / 98 / 236
-- Avg right basic / DOT / heal / shield: 619 / 0 / 0 / 0
+- Avg duration: 15.5s
+- Avg left basic / DOT / heal / shield: 297 / 430 / 89 / 226
+- Avg right basic / DOT / heal / shield: 628 / 0 / 0 / 0
 
 ### `poisonBloom` into `martyrFrontline`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
 - Avg duration: 20.4s
-- Avg left basic / DOT / heal / shield: 414 / 433 / 202 / 532
-- Avg right basic / DOT / heal / shield: 397 / 85 / 105 / 265
+- Avg left basic / DOT / heal / shield: 407 / 438 / 203 / 573
+- Avg right basic / DOT / heal / shield: 373 / 85 / 114 / 267
 
 ### `poisonBloom` into `purgeAttrition`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 18.5s
-- Avg left basic / DOT / heal / shield: 351 / 434 / 166 / 461
-- Avg right basic / DOT / heal / shield: 387 / 380 / 127 / 287
+- Avg duration: 19.1s
+- Avg left basic / DOT / heal / shield: 362 / 461 / 177 / 458
+- Avg right basic / DOT / heal / shield: 407 / 410 / 145 / 274
 
 ### `poisonBloom` into `scarletVanguard`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 15.5s
-- Avg left basic / DOT / heal / shield: 377 / 349 / 114 / 360
-- Avg right basic / DOT / heal / shield: 542 / 40 / 38 / 126
+- Avg duration: 15.7s
+- Avg left basic / DOT / heal / shield: 376 / 352 / 114 / 326
+- Avg right basic / DOT / heal / shield: 632 / 49 / 48 / 128
 
 ### `poisonBloom` into `shadowExecute`
 
-- Win rate: 97% (29/30)
+- Win rate: 100% (30/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 18.8s
-- Avg left basic / DOT / heal / shield: 357 / 444 / 153 / 444
-- Avg right basic / DOT / heal / shield: 276 / 240 / 0 / 319
+- Avg duration: 16.9s
+- Avg left basic / DOT / heal / shield: 367 / 380 / 153 / 412
+- Avg right basic / DOT / heal / shield: 316 / 229 / 0 / 280
 
 ### `purgeAttrition` into `alchemyChaos`
 
-- Win rate: 10% (3/30)
+- Win rate: 13% (4/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 19.0s
-- Avg left basic / DOT / heal / shield: 380 / 323 / 142 / 344
-- Avg right basic / DOT / heal / shield: 473 / 319 / 0 / 283
+- Avg duration: 18.3s
+- Avg left basic / DOT / heal / shield: 367 / 310 / 145 / 338
+- Avg right basic / DOT / heal / shield: 460 / 303 / 0 / 283
 
 ### `purgeAttrition` into `bloodRage`
 
-- Win rate: 10% (3/30)
+- Win rate: 3% (1/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 20.4s
-- Avg left basic / DOT / heal / shield: 533 / 439 / 95 / 210
-- Avg right basic / DOT / heal / shield: 1361 / 0 / 334 / 164
+- Avg duration: 19.5s
+- Avg left basic / DOT / heal / shield: 514 / 429 / 94 / 192
+- Avg right basic / DOT / heal / shield: 1376 / 0 / 320 / 150
 
 ### `purgeAttrition` into `bulwarkMarks`
 
-- Win rate: 27% (8/30)
+- Win rate: 20% (6/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 24.2s
-- Avg left basic / DOT / heal / shield: 421 / 402 / 191 / 450
-- Avg right basic / DOT / heal / shield: 798 / 0 / 0 / 404
+- Avg duration: 24.6s
+- Avg left basic / DOT / heal / shield: 418 / 397 / 172 / 478
+- Avg right basic / DOT / heal / shield: 806 / 0 / 0 / 404
 
 ### `purgeAttrition` into `cavalryBreak`
 
-- Win rate: 3% (1/30)
+- Win rate: 10% (3/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 22.3s
-- Avg left basic / DOT / heal / shield: 481 / 474 / 102 / 286
-- Avg right basic / DOT / heal / shield: 1072 / 0 / 273 / 318
+- Avg duration: 23.4s
+- Avg left basic / DOT / heal / shield: 499 / 482 / 106 / 292
+- Avg right basic / DOT / heal / shield: 1080 / 0 / 285 / 332
 
 ### `purgeAttrition` into `crownCarry`
 
 - Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 21.1s
-- Avg left basic / DOT / heal / shield: 252 / 348 / 107 / 299
-- Avg right basic / DOT / heal / shield: 1459 / 0 / 341 / 669
+- Avg duration: 21.3s
+- Avg left basic / DOT / heal / shield: 255 / 338 / 114 / 297
+- Avg right basic / DOT / heal / shield: 1481 / 0 / 366 / 705
 
 ### `purgeAttrition` into `duelChampion`
 
 - Win rate: 67% (20/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 47.4s
-- Avg left basic / DOT / heal / shield: 649 / 645 / 507 / 1165
-- Avg right basic / DOT / heal / shield: 947 / 0 / 557 / 1616
+- Avg duration: 49.6s
+- Avg left basic / DOT / heal / shield: 677 / 671 / 527 / 1272
+- Avg right basic / DOT / heal / shield: 934 / 0 / 561 / 1695
 
 ### `purgeAttrition` into `fireBurst`
 
 - Win rate: 0% (0/30)
 - Expectation: intended favored, actual weak, mismatch
-- Avg duration: 15.2s
-- Avg left basic / DOT / heal / shield: 289 / 313 / 127 / 254
-- Avg right basic / DOT / heal / shield: 309 / 140 / 0 / 145
+- Avg duration: 15.5s
+- Avg left basic / DOT / heal / shield: 294 / 315 / 131 / 253
+- Avg right basic / DOT / heal / shield: 314 / 135 / 0 / 143
 
 ### `purgeAttrition` into `frostControl`
 
-- Win rate: 7% (2/30)
+- Win rate: 10% (3/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 23.5s
-- Avg left basic / DOT / heal / shield: 416 / 425 / 240 / 525
-- Avg right basic / DOT / heal / shield: 521 / 260 / 251 / 654
+- Avg duration: 24.1s
+- Avg left basic / DOT / heal / shield: 415 / 410 / 259 / 547
+- Avg right basic / DOT / heal / shield: 536 / 247 / 283 / 666
 
 ### `purgeAttrition` into `frostTrapField`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 18.3s
-- Avg left basic / DOT / heal / shield: 372 / 357 / 162 / 297
-- Avg right basic / DOT / heal / shield: 725 / 0 / 125 / 317
+- Avg duration: 18.4s
+- Avg left basic / DOT / heal / shield: 373 / 367 / 161 / 299
+- Avg right basic / DOT / heal / shield: 729 / 0 / 125 / 316
 
 ### `purgeAttrition` into `holySustain`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 65.6s
-- Avg left basic / DOT / heal / shield: 1181 / 809 / 620 / 2180
-- Avg right basic / DOT / heal / shield: 383 / 0 / 1301 / 2760
+- Avg duration: 63.8s
+- Avg left basic / DOT / heal / shield: 1171 / 792 / 624 / 2209
+- Avg right basic / DOT / heal / shield: 378 / 0 / 1265 / 2663
 
 ### `purgeAttrition` into `ironWall`
 
-- Win rate: 100% (30/30)
+- Win rate: 97% (29/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 37.1s
-- Avg left basic / DOT / heal / shield: 740 / 543 / 449 / 1241
-- Avg right basic / DOT / heal / shield: 511 / 0 / 415 / 1139
+- Avg duration: 35.8s
+- Avg left basic / DOT / heal / shield: 708 / 538 / 432 / 1157
+- Avg right basic / DOT / heal / shield: 525 / 0 / 408 / 1113
 
 ### `purgeAttrition` into `lightningTempo`
 
-- Win rate: 13% (4/30)
+- Win rate: 17% (5/30)
 - Expectation: intended flex, actual weak, ok
 - Avg duration: 18.9s
-- Avg left basic / DOT / heal / shield: 466 / 475 / 131 / 239
-- Avg right basic / DOT / heal / shield: 709 / 0 / 0 / 0
+- Avg left basic / DOT / heal / shield: 461 / 455 / 131 / 242
+- Avg right basic / DOT / heal / shield: 702 / 0 / 0 / 0
 
 ### `purgeAttrition` into `martyrFrontline`
 
-- Win rate: 90% (27/30)
+- Win rate: 80% (24/30)
 - Expectation: intended flex, actual favored, ok
 - Avg duration: 27.8s
-- Avg left basic / DOT / heal / shield: 612 / 451 / 312 / 451
-- Avg right basic / DOT / heal / shield: 643 / 151 / 202 / 440
+- Avg left basic / DOT / heal / shield: 607 / 446 / 313 / 439
+- Avg right basic / DOT / heal / shield: 635 / 162 / 203 / 446
 
 ### `purgeAttrition` into `poisonBloom`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 18.5s
-- Avg left basic / DOT / heal / shield: 387 / 380 / 127 / 287
-- Avg right basic / DOT / heal / shield: 351 / 434 / 166 / 461
+- Avg duration: 19.1s
+- Avg left basic / DOT / heal / shield: 407 / 410 / 145 / 274
+- Avg right basic / DOT / heal / shield: 362 / 461 / 177 / 458
 
 ### `purgeAttrition` into `scarletVanguard`
 
-- Win rate: 7% (2/30)
+- Win rate: 13% (4/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 15.5s
-- Avg left basic / DOT / heal / shield: 426 / 339 / 102 / 183
-- Avg right basic / DOT / heal / shield: 1087 / 38 / 121 / 115
+- Avg duration: 15.8s
+- Avg left basic / DOT / heal / shield: 449 / 344 / 108 / 186
+- Avg right basic / DOT / heal / shield: 1068 / 53 / 111 / 118
 
 ### `purgeAttrition` into `shadowExecute`
 
 - Win rate: 93% (28/30)
 - Expectation: intended weak, actual favored, mismatch
-- Avg duration: 23.5s
-- Avg left basic / DOT / heal / shield: 554 / 446 / 51 / 452
-- Avg right basic / DOT / heal / shield: 348 / 241 / 0 / 435
+- Avg duration: 23.6s
+- Avg left basic / DOT / heal / shield: 574 / 440 / 82 / 422
+- Avg right basic / DOT / heal / shield: 393 / 298 / 0 / 404
 
 ### `scarletVanguard` into `alchemyChaos`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 13.6s
-- Avg left basic / DOT / heal / shield: 590 / 34 / 53 / 92
-- Avg right basic / DOT / heal / shield: 448 / 260 / 0 / 138
+- Avg duration: 13.5s
+- Avg left basic / DOT / heal / shield: 575 / 29 / 52 / 90
+- Avg right basic / DOT / heal / shield: 435 / 262 / 0 / 138
 
 ### `scarletVanguard` into `bloodRage`
 
-- Win rate: 100% (30/30)
+- Win rate: 97% (29/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 15.8s
-- Avg left basic / DOT / heal / shield: 1030 / 40 / 84 / 155
-- Avg right basic / DOT / heal / shield: 465 / 0 / 124 / 106
+- Avg duration: 17.8s
+- Avg left basic / DOT / heal / shield: 997 / 55 / 66 / 154
+- Avg right basic / DOT / heal / shield: 513 / 0 / 153 / 138
 
 ### `scarletVanguard` into `bulwarkMarks`
 
-- Win rate: 60% (18/30)
+- Win rate: 77% (23/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 18.9s
-- Avg left basic / DOT / heal / shield: 772 / 96 / 51 / 116
-- Avg right basic / DOT / heal / shield: 767 / 0 / 0 / 220
+- Avg duration: 18.7s
+- Avg left basic / DOT / heal / shield: 799 / 91 / 60 / 115
+- Avg right basic / DOT / heal / shield: 740 / 0 / 0 / 219
 
 ### `scarletVanguard` into `cavalryBreak`
 
-- Win rate: 47% (14/30)
+- Win rate: 50% (15/30)
 - Expectation: intended flex, actual even, ok
-- Avg duration: 25.6s
-- Avg left basic / DOT / heal / shield: 1105 / 45 / 99 / 172
-- Avg right basic / DOT / heal / shield: 1008 / 0 / 274 / 283
+- Avg duration: 20.1s
+- Avg left basic / DOT / heal / shield: 1073 / 44 / 134 / 150
+- Avg right basic / DOT / heal / shield: 1066 / 0 / 273 / 225
 
 ### `scarletVanguard` into `crownCarry`
 
-- Win rate: 20% (6/30)
+- Win rate: 30% (9/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 21.6s
-- Avg left basic / DOT / heal / shield: 980 / 106 / 104 / 129
-- Avg right basic / DOT / heal / shield: 1438 / 0 / 336 / 423
+- Avg duration: 21.5s
+- Avg left basic / DOT / heal / shield: 1003 / 101 / 109 / 130
+- Avg right basic / DOT / heal / shield: 1408 / 0 / 319 / 422
 
 ### `scarletVanguard` into `duelChampion`
 
-- Win rate: 50% (15/30)
+- Win rate: 47% (14/30)
 - Expectation: intended flex, actual even, ok
-- Avg duration: 24.9s
-- Avg left basic / DOT / heal / shield: 870 / 85 / 92 / 190
-- Avg right basic / DOT / heal / shield: 708 / 0 / 282 / 675
+- Avg duration: 27.0s
+- Avg left basic / DOT / heal / shield: 824 / 97 / 76 / 197
+- Avg right basic / DOT / heal / shield: 791 / 0 / 312 / 755
 
 ### `scarletVanguard` into `fireBurst`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 13.4s
-- Avg left basic / DOT / heal / shield: 399 / 44 / 33 / 88
-- Avg right basic / DOT / heal / shield: 437 / 87 / 0 / 252
+- Avg duration: 13.3s
+- Avg left basic / DOT / heal / shield: 418 / 46 / 35 / 94
+- Avg right basic / DOT / heal / shield: 404 / 102 / 0 / 241
 
 ### `scarletVanguard` into `frostControl`
 
-- Win rate: 10% (3/30)
+- Win rate: 7% (2/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 17.7s
-- Avg left basic / DOT / heal / shield: 711 / 53 / 70 / 115
-- Avg right basic / DOT / heal / shield: 467 / 184 / 116 / 282
+- Avg duration: 17.1s
+- Avg left basic / DOT / heal / shield: 691 / 53 / 71 / 116
+- Avg right basic / DOT / heal / shield: 475 / 166 / 122 / 293
 
 ### `scarletVanguard` into `frostTrapField`
 
 - Win rate: 43% (13/30)
 - Expectation: intended flex, actual even, ok
-- Avg duration: 18.7s
-- Avg left basic / DOT / heal / shield: 741 / 55 / 77 / 126
-- Avg right basic / DOT / heal / shield: 611 / 0 / 63 / 272
+- Avg duration: 18.3s
+- Avg left basic / DOT / heal / shield: 743 / 56 / 78 / 123
+- Avg right basic / DOT / heal / shield: 620 / 0 / 58 / 269
 
 ### `scarletVanguard` into `holySustain`
 
 - Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
 - Avg duration: 21.8s
-- Avg left basic / DOT / heal / shield: 1501 / 64 / 201 / 178
-- Avg right basic / DOT / heal / shield: 357 / 0 / 434 / 677
+- Avg left basic / DOT / heal / shield: 1476 / 64 / 194 / 185
+- Avg right basic / DOT / heal / shield: 352 / 0 / 428 / 670
 
 ### `scarletVanguard` into `ironWall`
 
-- Win rate: 80% (24/30)
+- Win rate: 73% (22/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 20.2s
-- Avg left basic / DOT / heal / shield: 1213 / 54 / 173 / 129
-- Avg right basic / DOT / heal / shield: 561 / 0 / 141 / 588
+- Avg duration: 19.3s
+- Avg left basic / DOT / heal / shield: 1126 / 53 / 172 / 125
+- Avg right basic / DOT / heal / shield: 554 / 0 / 136 / 597
 
 ### `scarletVanguard` into `lightningTempo`
 
-- Win rate: 30% (9/30)
+- Win rate: 23% (7/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 15.8s
-- Avg left basic / DOT / heal / shield: 645 / 60 / 43 / 74
-- Avg right basic / DOT / heal / shield: 634 / 0 / 0 / 0
+- Avg duration: 15.7s
+- Avg left basic / DOT / heal / shield: 638 / 57 / 41 / 74
+- Avg right basic / DOT / heal / shield: 638 / 0 / 0 / 0
 
 ### `scarletVanguard` into `martyrFrontline`
 
-- Win rate: 97% (29/30)
+- Win rate: 100% (30/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 17.7s
-- Avg left basic / DOT / heal / shield: 1114 / 44 / 116 / 120
-- Avg right basic / DOT / heal / shield: 458 / 147 / 39 / 142
+- Avg duration: 17.5s
+- Avg left basic / DOT / heal / shield: 1102 / 40 / 115 / 121
+- Avg right basic / DOT / heal / shield: 465 / 141 / 39 / 142
 
 ### `scarletVanguard` into `poisonBloom`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 15.5s
-- Avg left basic / DOT / heal / shield: 542 / 40 / 38 / 126
-- Avg right basic / DOT / heal / shield: 377 / 349 / 114 / 360
+- Avg duration: 15.7s
+- Avg left basic / DOT / heal / shield: 632 / 49 / 48 / 128
+- Avg right basic / DOT / heal / shield: 376 / 352 / 114 / 326
 
 ### `scarletVanguard` into `purgeAttrition`
 
-- Win rate: 93% (28/30)
+- Win rate: 87% (26/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 15.5s
-- Avg left basic / DOT / heal / shield: 1087 / 38 / 121 / 115
-- Avg right basic / DOT / heal / shield: 426 / 339 / 102 / 183
+- Avg duration: 15.8s
+- Avg left basic / DOT / heal / shield: 1068 / 53 / 111 / 118
+- Avg right basic / DOT / heal / shield: 449 / 344 / 108 / 186
 
 ### `scarletVanguard` into `shadowExecute`
 
 - Win rate: 30% (9/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 18.1s
-- Avg left basic / DOT / heal / shield: 660 / 57 / 41 / 114
-- Avg right basic / DOT / heal / shield: 477 / 224 / 0 / 239
+- Avg duration: 17.9s
+- Avg left basic / DOT / heal / shield: 667 / 49 / 41 / 113
+- Avg right basic / DOT / heal / shield: 476 / 219 / 0 / 243
 
 ### `shadowExecute` into `alchemyChaos`
 
 - Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 27.4s
-- Avg left basic / DOT / heal / shield: 266 / 203 / 0 / 523
-- Avg right basic / DOT / heal / shield: 510 / 242 / 0 / 472
+- Avg duration: 24.6s
+- Avg left basic / DOT / heal / shield: 217 / 193 / 0 / 457
+- Avg right basic / DOT / heal / shield: 528 / 221 / 0 / 578
 
 ### `shadowExecute` into `bloodRage`
 
-- Win rate: 70% (21/30)
+- Win rate: 80% (24/30)
 - Expectation: intended favored, actual favored, ok
-- Avg duration: 21.1s
-- Avg left basic / DOT / heal / shield: 585 / 233 / 0 / 247
-- Avg right basic / DOT / heal / shield: 828 / 0 / 226 / 166
+- Avg duration: 20.2s
+- Avg left basic / DOT / heal / shield: 605 / 225 / 0 / 289
+- Avg right basic / DOT / heal / shield: 721 / 0 / 195 / 148
 
 ### `shadowExecute` into `bulwarkMarks`
 
-- Win rate: 57% (17/30)
-- Expectation: intended flex, actual even, ok
-- Avg duration: 32.1s
-- Avg left basic / DOT / heal / shield: 452 / 282 / 0 / 623
-- Avg right basic / DOT / heal / shield: 675 / 0 / 0 / 568
+- Win rate: 30% (9/30)
+- Expectation: intended flex, actual weak, ok
+- Avg duration: 32.8s
+- Avg left basic / DOT / heal / shield: 410 / 278 / 0 / 608
+- Avg right basic / DOT / heal / shield: 755 / 0 / 0 / 685
 
 ### `shadowExecute` into `cavalryBreak`
 
-- Win rate: 50% (15/30)
-- Expectation: intended flex, actual even, ok
-- Avg duration: 24.8s
-- Avg left basic / DOT / heal / shield: 604 / 285 / 0 / 228
-- Avg right basic / DOT / heal / shield: 1225 / 0 / 319 / 277
+- Win rate: 40% (12/30)
+- Expectation: intended flex, actual weak, ok
+- Avg duration: 24.4s
+- Avg left basic / DOT / heal / shield: 600 / 280 / 0 / 226
+- Avg right basic / DOT / heal / shield: 1278 / 0 / 324 / 275
 
 ### `shadowExecute` into `crownCarry`
 
-- Win rate: 10% (3/30)
+- Win rate: 0% (0/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 17.5s
-- Avg left basic / DOT / heal / shield: 256 / 226 / 0 / 254
-- Avg right basic / DOT / heal / shield: 1339 / 0 / 227 / 423
+- Avg duration: 17.7s
+- Avg left basic / DOT / heal / shield: 224 / 230 / 0 / 199
+- Avg right basic / DOT / heal / shield: 1374 / 0 / 278 / 393
 
 ### `shadowExecute` into `duelChampion`
 
-- Win rate: 97% (29/30)
+- Win rate: 77% (23/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 31.9s
-- Avg left basic / DOT / heal / shield: 635 / 301 / 0 / 674
-- Avg right basic / DOT / heal / shield: 635 / 0 / 284 / 739
+- Avg duration: 31.7s
+- Avg left basic / DOT / heal / shield: 579 / 306 / 0 / 602
+- Avg right basic / DOT / heal / shield: 687 / 0 / 265 / 732
 
 ### `shadowExecute` into `fireBurst`
 
 - Win rate: 0% (0/30)
 - Expectation: intended favored, actual weak, mismatch
-- Avg duration: 15.3s
-- Avg left basic / DOT / heal / shield: 335 / 203 / 0 / 188
-- Avg right basic / DOT / heal / shield: 393 / 146 / 0 / 143
+- Avg duration: 15.6s
+- Avg left basic / DOT / heal / shield: 338 / 208 / 0 / 192
+- Avg right basic / DOT / heal / shield: 388 / 142 / 0 / 144
 
 ### `shadowExecute` into `frostControl`
 
-- Win rate: 3% (1/30)
+- Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 34.0s
-- Avg left basic / DOT / heal / shield: 250 / 227 / 0 / 614
-- Avg right basic / DOT / heal / shield: 534 / 162 / 30 / 734
+- Avg duration: 24.6s
+- Avg left basic / DOT / heal / shield: 232 / 222 / 0 / 440
+- Avg right basic / DOT / heal / shield: 539 / 155 / 101 / 733
 
 ### `shadowExecute` into `frostTrapField`
 
-- Win rate: 30% (9/30)
+- Win rate: 27% (8/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 20.8s
-- Avg left basic / DOT / heal / shield: 388 / 246 / 0 / 349
-- Avg right basic / DOT / heal / shield: 544 / 0 / 43 / 243
+- Avg duration: 21.5s
+- Avg left basic / DOT / heal / shield: 400 / 243 / 0 / 337
+- Avg right basic / DOT / heal / shield: 539 / 0 / 28 / 226
 
 ### `shadowExecute` into `holySustain`
 
-- Win rate: 73% (22/30)
-- Expectation: intended favored, actual favored, ok
-- Avg duration: 54.6s
-- Avg left basic / DOT / heal / shield: 620 / 479 / 0 / 1145
-- Avg right basic / DOT / heal / shield: 449 / 0 / 716 / 1968
+- Win rate: 47% (14/30)
+- Expectation: intended favored, actual even, mismatch
+- Avg duration: 65.4s
+- Avg left basic / DOT / heal / shield: 637 / 614 / 0 / 1391
+- Avg right basic / DOT / heal / shield: 450 / 0 / 1005 / 2626
 
 ### `shadowExecute` into `ironWall`
 
-- Win rate: 70% (21/30)
-- Expectation: intended favored, actual favored, ok
-- Avg duration: 52.2s
-- Avg left basic / DOT / heal / shield: 595 / 473 / 0 / 962
-- Avg right basic / DOT / heal / shield: 580 / 0 / 415 / 1221
+- Win rate: 30% (9/30)
+- Expectation: intended favored, actual weak, mismatch
+- Avg duration: 39.9s
+- Avg left basic / DOT / heal / shield: 412 / 371 / 0 / 664
+- Avg right basic / DOT / heal / shield: 711 / 0 / 360 / 1197
 
 ### `shadowExecute` into `lightningTempo`
 
-- Win rate: 13% (4/30)
+- Win rate: 3% (1/30)
 - Expectation: intended favored, actual weak, mismatch
-- Avg duration: 22.4s
-- Avg left basic / DOT / heal / shield: 357 / 206 / 0 / 390
-- Avg right basic / DOT / heal / shield: 623 / 0 / 0 / 0
+- Avg duration: 20.6s
+- Avg left basic / DOT / heal / shield: 310 / 177 / 0 / 354
+- Avg right basic / DOT / heal / shield: 598 / 0 / 0 / 0
 
 ### `shadowExecute` into `martyrFrontline`
 
-- Win rate: 93% (28/30)
+- Win rate: 63% (19/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 26.3s
-- Avg left basic / DOT / heal / shield: 513 / 341 / 0 / 547
-- Avg right basic / DOT / heal / shield: 532 / 93 / 122 / 303
+- Avg duration: 23.2s
+- Avg left basic / DOT / heal / shield: 483 / 342 / 0 / 396
+- Avg right basic / DOT / heal / shield: 589 / 107 / 107 / 265
 
 ### `shadowExecute` into `poisonBloom`
 
-- Win rate: 3% (1/30)
+- Win rate: 0% (0/30)
 - Expectation: intended weak, actual weak, ok
-- Avg duration: 18.8s
-- Avg left basic / DOT / heal / shield: 276 / 240 / 0 / 319
-- Avg right basic / DOT / heal / shield: 357 / 444 / 153 / 444
+- Avg duration: 16.9s
+- Avg left basic / DOT / heal / shield: 316 / 229 / 0 / 280
+- Avg right basic / DOT / heal / shield: 367 / 380 / 153 / 412
 
 ### `shadowExecute` into `purgeAttrition`
 
 - Win rate: 7% (2/30)
 - Expectation: intended flex, actual weak, ok
-- Avg duration: 23.5s
-- Avg left basic / DOT / heal / shield: 348 / 241 / 0 / 435
-- Avg right basic / DOT / heal / shield: 554 / 446 / 51 / 452
+- Avg duration: 23.6s
+- Avg left basic / DOT / heal / shield: 393 / 298 / 0 / 404
+- Avg right basic / DOT / heal / shield: 574 / 440 / 82 / 422
 
 ### `shadowExecute` into `scarletVanguard`
 
 - Win rate: 70% (21/30)
 - Expectation: intended flex, actual favored, ok
-- Avg duration: 18.1s
-- Avg left basic / DOT / heal / shield: 477 / 224 / 0 / 239
-- Avg right basic / DOT / heal / shield: 660 / 57 / 41 / 114
+- Avg duration: 17.9s
+- Avg left basic / DOT / heal / shield: 476 / 219 / 0 / 243
+- Avg right basic / DOT / heal / shield: 667 / 49 / 41 / 113
 

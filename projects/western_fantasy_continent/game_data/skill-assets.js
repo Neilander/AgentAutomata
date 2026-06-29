@@ -220,6 +220,42 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "backlineHunt": {
+        "name": "暗线切入",
+        "type": "小技能",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 8.2,
+        "openingCooldown": 2.4,
+        "icon": "cloak-dagger",
+        "desc": "攻击敌方后排血量比例最低目标并叠猎痕。它解决的是接触目标和建立猎杀链，不是单纯加爆发。",
+        "design": {
+          "primaryOutput": "backline access + mark setup",
+          "expectedScaling": "physicalPower",
+          "forbiddenScaling": "magicPower",
+          "primaryAnswer": "后排核心",
+          "secondaryUtility": "追残血、打法师牧师游侠",
+          "targetRule": "lowest hp ratio backline enemy, fallback lowest hp ratio enemy"
+        },
+        "effects": [
+          {
+            "kind": "shadowStepStrike",
+            "flat": 18,
+            "power": 0.28,
+            "missingTargetHpFlat": 10,
+            "markStacks": 2,
+            "markMax": 5,
+            "guardDuration": 1.2,
+            "lockDuration": 3.2,
+            "attackCd": 0.08,
+            "type": "physical",
+            "scaleWith": "physical",
+            "label": "暗线切入"
+          }
+        ]
+      },
       "bannerWall": {
         "name": "王旗不倒",
         "type": "大招",
@@ -355,6 +391,33 @@ const GAME_SKILL_ASSETS = (() => {
             "kind": "lowestAllyTimer",
             "timer": "dotResistTimer",
             "duration": 5
+          }
+        ]
+      },
+      "bloodCleanse": {
+        "name": "净血术",
+        "type": "小技能",
+        "role": "牧师",
+        "roleKeys": [
+          "priest"
+        ],
+        "cooldown": 9.2,
+        "openingCooldown": 3.2,
+        "icon": "healing",
+        "desc": "选择己方剧毒层数最高单位，清除最多5层剧毒并治疗。若无人中毒，则治疗己方最低血量单位。",
+        "design": {
+          "primaryAnswer": "剧毒叠层队",
+          "secondaryUtility": "DOT环境续航、普通单体治疗",
+          "targetRule": "highest poison stacks ally, fallback lowest hp ratio ally"
+        },
+        "effects": [
+          {
+            "kind": "cleanseStatusAlly",
+            "statusType": "poison",
+            "amount": 5,
+            "healPerStack": 17,
+            "fallbackHeal": 26,
+            "label": "净血术"
           }
         ]
       },
@@ -622,6 +685,34 @@ const GAME_SKILL_ASSETS = (() => {
             "burnTime": 5,
             "type": "fire",
             "label": "燃爆"
+          }
+        ]
+      },
+      "cooldownRift": {
+        "name": "冷却裂隙",
+        "type": "小技能",
+        "role": "法师",
+        "roleKeys": [
+          "mage"
+        ],
+        "cooldown": 10.5,
+        "openingCooldown": 3,
+        "icon": "frostfire",
+        "desc": "攻击敌方技能急速最高单位；若相同，选择法术强度最高者。造成冰霜伤害，并延长其当前最快冷却技能。",
+        "design": {
+          "primaryAnswer": "依赖大招或技能窗口的队伍",
+          "secondaryUtility": "通用节奏干扰",
+          "targetRule": "highest skillHasteMult enemy, tie highest magicPower"
+        },
+        "effects": [
+          {
+            "kind": "hitHighestSkillHasteEnemyDelay",
+            "flat": 20,
+            "power": 0.28,
+            "type": "frost",
+            "scaleWith": "magic",
+            "delay": 1.2,
+            "label": "冷却裂隙"
           }
         ]
       },
@@ -939,6 +1030,100 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "duskStep": {
+        "name": "暗幕步",
+        "type": "小技能",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 8.6,
+        "openingCooldown": 2.6,
+        "icon": "cloak-dagger",
+        "desc": "攻击后排中血量比例最低的敌人；无后排时攻击全场最低血量敌人。主答后排核心，副用处决残血。",
+        "design": {
+          "primaryAnswer": "后排核心",
+          "secondaryUtility": "处决残血、打牧师法师游侠",
+          "targetRule": "lowest hp ratio backline enemy, fallback lowest hp ratio enemy"
+        },
+        "effects": [
+          {
+            "kind": "hitBacklineLowestEnemy",
+            "flat": 24,
+            "power": 0.34,
+            "missingTargetHpFlat": 16,
+            "type": "physical",
+            "scaleWith": "physical",
+            "label": "暗幕步"
+          }
+        ]
+      },
+      "emberConversion": {
+        "name": "余烬转化",
+        "type": "被动",
+        "role": "术士",
+        "roleKeys": [
+          "warlock"
+        ],
+        "cooldown": 0,
+        "icon": "fire-shield",
+        "desc": "自己造成燃烧或火焰伤害时获得护盾。主答火焰环境，副用火毒混合队自保。",
+        "passive": true,
+        "design": {
+          "primaryAnswer": "火焰爆发队",
+          "secondaryUtility": "异常流自保、火毒混合流",
+          "targetRule": "self when source damage type is burn or fire"
+        },
+        "effects": [
+          {
+            "kind": "shieldSourceOnDamageType",
+            "type": "burn",
+            "flat": 4,
+            "damageRatio": 0.22,
+            "label": "余烬转化"
+          },
+          {
+            "kind": "shieldSourceOnDamageType",
+            "type": "fire",
+            "flat": 4,
+            "damageRatio": 0.18,
+            "label": "余烬转化"
+          }
+        ]
+      },
+      "emberPrayer": {
+        "name": "净焰祷言",
+        "type": "小技能",
+        "role": "牧师",
+        "roleKeys": [
+          "priest"
+        ],
+        "cooldown": 8.8,
+        "openingCooldown": 1.4,
+        "icon": "holy-water",
+        "desc": "选择己方燃烧层数最高单位，清除最多5层燃烧并治疗。若无人燃烧，则治疗己方最低血量单位。",
+        "design": {
+          "primaryAnswer": "燃烧爆发队",
+          "secondaryUtility": "普通单体治疗",
+          "targetRule": "highest burn stacks ally, fallback lowest hp ratio ally"
+        },
+        "effects": [
+          {
+            "kind": "cleanseStatusAlly",
+            "statusType": "burn",
+            "amount": 7,
+            "healPerStack": 20,
+            "fallbackHeal": 34,
+            "label": "净焰祷言"
+          },
+          {
+            "kind": "teamTimer",
+            "timer": "guardTimer",
+            "duration": 5,
+            "label": "净焰守护"
+          }
+        ]
+      },
       "emberSpread": {
         "name": "烈焰扩散",
         "type": "小技能",
@@ -1133,6 +1318,29 @@ const GAME_SKILL_ASSETS = (() => {
         "passive": true,
         "effects": []
       },
+      "filterElixir": {
+        "name": "过滤药剂",
+        "type": "被动",
+        "role": "炼金术士",
+        "roleKeys": [
+          "alchemist"
+        ],
+        "cooldown": 0,
+        "icon": "round-bottom-flask",
+        "desc": "自身受到燃烧或剧毒伤害后，获得短暂DOT抗性。主答DOT队，副用抗异常环境。",
+        "passive": true,
+        "design": {
+          "primaryAnswer": "DOT队",
+          "secondaryUtility": "抗火、抗毒、抗异常副本环境",
+          "targetRule": "self after taking poison/burn/fire damage"
+        },
+        "effects": [
+          {
+            "kind": "dotResistOnDotTaken",
+            "duration": 4
+          }
+        ]
+      },
       "finisherInstinct": {
         "name": "终结本能",
         "type": "被动",
@@ -1239,6 +1447,45 @@ const GAME_SKILL_ASSETS = (() => {
         "desc": "护盾效果提高，低血更硬。",
         "passive": true,
         "effects": []
+      },
+      "frenzyBreakRoar": {
+        "name": "碎阵怒吼",
+        "type": "小技能",
+        "role": "狂战士",
+        "roleKeys": [
+          "berserker"
+        ],
+        "cooldown": 11,
+        "openingCooldown": 3.2,
+        "icon": "screaming",
+        "desc": "自伤进入风险窗口，获得攻速、吸血和DOT抗性。主答拖长线DOT队，副用启动低血普攻流。",
+        "design": {
+          "primaryAnswer": "毒队和控制拖长线",
+          "secondaryUtility": "低血普攻流启动器",
+          "targetRule": "self"
+        },
+        "effects": [
+          {
+            "kind": "selfRawDamage",
+            "maxHp": 0.1,
+            "type": "self"
+          },
+          {
+            "kind": "timer",
+            "timer": "hasteTimer",
+            "duration": 5
+          },
+          {
+            "kind": "timer",
+            "timer": "lifeStealTimer",
+            "duration": 5
+          },
+          {
+            "kind": "timer",
+            "timer": "dotResistTimer",
+            "duration": 5
+          }
+        ]
       },
       "frontlineDrill": {
         "name": "前线操典",
@@ -1467,6 +1714,49 @@ const GAME_SKILL_ASSETS = (() => {
         "passive": true,
         "effects": []
       },
+      "huntRhythm": {
+        "name": "猎杀节律",
+        "type": "被动",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 0,
+        "icon": "targeted",
+        "desc": "实验刺客核心：普攻叠猎痕，猎痕既是后续割喉的资源，也给少量自保。目标是让敏捷通过普攻频率转化成处决资源。",
+        "passive": true,
+        "design": {
+          "primaryOutput": "basic attack resource setup",
+          "expectedScaling": "attackSpeed + physicalPower",
+          "forbiddenScaling": "magicPower",
+          "primaryAnswer": "刺客团战只能靠堆生存摸到人",
+          "secondaryUtility": "标记资源、轻量自保、处决准备",
+          "targetRule": "basic attack target"
+        },
+        "effects": [
+          {
+            "kind": "basicAttackMark",
+            "stacks": 1,
+            "max": 5
+          },
+          {
+            "kind": "basicAttackSelfShield",
+            "flat": 3,
+            "perMark": 2,
+            "label": "猎步"
+          },
+          {
+            "kind": "fadeOnLowHp",
+            "threshold": 0.42,
+            "guardDuration": 2.1,
+            "shieldFlat": 8,
+            "shieldPower": 0.55,
+            "scaleWith": "physical",
+            "once": true,
+            "label": "影遁"
+          }
+        ]
+      },
       "iceLance": {
         "name": "冰枪",
         "type": "小技能",
@@ -1557,6 +1847,33 @@ const GAME_SKILL_ASSETS = (() => {
         "desc": "燃烧目标死亡时溅射火焰。",
         "passive": true,
         "effects": []
+      },
+      "kingmarkShot": {
+        "name": "猎王印记",
+        "type": "小技能",
+        "role": "游侠",
+        "roleKeys": [
+          "ranger"
+        ],
+        "cooldown": 8.2,
+        "openingCooldown": 1.8,
+        "icon": "targeted",
+        "desc": "标记敌方物理强度+法术强度最高的单位。主答单核队，副用服务标记、处决和决斗集火。",
+        "design": {
+          "primaryAnswer": "单核输出队",
+          "secondaryUtility": "标记流、处决流、决斗流",
+          "targetRule": "highest physicalPower + magicPower enemy"
+        },
+        "effects": [
+          {
+            "kind": "markHighestPowerEnemy",
+            "stacks": 4,
+            "max": 8,
+            "shieldBreak": 42,
+            "shieldVulnerableDuration": 5,
+            "label": "猎王印记"
+          }
+        ]
       },
       "lanceCharge": {
         "name": "枪骑冲锋",
@@ -1979,6 +2296,35 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "oathbreakerSlash": {
+        "name": "破势斩",
+        "type": "小技能",
+        "role": "战士",
+        "roleKeys": [
+          "warrior"
+        ],
+        "cooldown": 7.8,
+        "openingCooldown": 2.4,
+        "icon": "broken-shield",
+        "desc": "攻击当前目标。若目标有护盾，额外破盾，并短暂降低其获得护盾量。主答护盾核心，副用打任何盾墙前排。",
+        "design": {
+          "primaryAnswer": "护盾保护队",
+          "secondaryUtility": "铁壁、牧师盾、前排盾",
+          "targetRule": "current target"
+        },
+        "effects": [
+          {
+            "kind": "hitTarget",
+            "flat": 24,
+            "power": 0.36,
+            "type": "physical",
+            "scaleWith": "physical",
+            "label": "破势斩",
+            "shieldBreak": 58,
+            "shieldVulnerableDuration": 4
+          }
+        ]
+      },
       "painAnchor": {
         "name": "痛楚锚定",
         "type": "被动",
@@ -2171,6 +2517,41 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "rageChain": {
+        "name": "怒血连击",
+        "type": "被动",
+        "role": "狂战士",
+        "roleKeys": [
+          "berserker"
+        ],
+        "cooldown": 0,
+        "icon": "rage",
+        "desc": "实验狂战核心：普攻叠怒血，怒血提高后续普攻速度、普攻伤害和少量吸血。目标是让敏捷通过普攻频率自然转化成狂战价值。",
+        "passive": true,
+        "design": {
+          "primaryOutput": "basic attack",
+          "expectedScaling": "attackSpeed + physicalPower",
+          "forbiddenScaling": "magicPower",
+          "primaryAnswer": "狂战过度依赖大招",
+          "secondaryUtility": "长线普攻和低血吸血节奏",
+          "targetRule": "self basic attacks"
+        },
+        "effects": [
+          {
+            "kind": "basicAttackRage",
+            "stacks": 1,
+            "lowHpExtraStacks": 1,
+            "max": 8,
+            "attackSpeedPerStack": 0.025,
+            "damagePerStack": 0.012,
+            "lowHpDamagePerStack": 0.006,
+            "leechPerStack": 0.006,
+            "lowHpLeechBonus": 0.035,
+            "lowHpThreshold": 0.45,
+            "label": "怒血连击"
+          }
+        ]
+      },
       "rageEngine": {
         "name": "血怒引擎",
         "type": "被动",
@@ -2180,6 +2561,38 @@ const GAME_SKILL_ASSETS = (() => {
         "desc": "低血时普攻更快、更痛，并按已造成伤害吸血；高血时收益较低，越接近危险血线越像狂战。",
         "passive": true,
         "effects": []
+      },
+      "rageRelease": {
+        "name": "怒血释放",
+        "type": "大招",
+        "role": "狂战士",
+        "roleKeys": [
+          "berserker"
+        ],
+        "cooldown": 28,
+        "openingCooldown": 11,
+        "icon": "lion",
+        "desc": "根据已有怒血层数打开短攻速、吸血和血怒窗口。大招只放大前面的普攻循环，不负责从零启动狂战。",
+        "design": {
+          "primaryOutput": "basic attack burst window",
+          "expectedScaling": "attackSpeed + physicalPower through rage stacks",
+          "forbiddenScaling": "magicPower",
+          "primaryAnswer": "狂战大招依赖过高",
+          "secondaryUtility": "把长线普攻资源兑现为短爆发",
+          "targetRule": "self"
+        },
+        "effects": [
+          {
+            "kind": "rageRelease",
+            "addStacks": 2,
+            "max": 8,
+            "baseDuration": 3.6,
+            "durationPerStack": 0.18,
+            "maxBonusDuration": 1.6,
+            "label": "怒血释放",
+            "tone": "damage"
+          }
+        ]
       },
       "reagentMark": {
         "name": "试剂标记",
@@ -2235,6 +2648,43 @@ const GAME_SKILL_ASSETS = (() => {
             "power": 0.24,
             "type": "physical",
             "label": "赤宴"
+          }
+        ]
+      },
+      "rendingFury": {
+        "name": "裂肉狂斩",
+        "type": "小技能",
+        "role": "狂战士",
+        "roleKeys": [
+          "berserker"
+        ],
+        "cooldown": 7.4,
+        "openingCooldown": 2.8,
+        "icon": "bloody-sword",
+        "desc": "造成物理伤害，并打开短血怒普攻窗口。它不是大招替代品，而是把武力和普攻窗口绑在一起。",
+        "design": {
+          "primaryOutput": "physical direct + basic attack window",
+          "expectedScaling": "physicalPower",
+          "forbiddenScaling": "magicPower",
+          "primaryAnswer": "狂战平时普攻价值不足",
+          "secondaryUtility": "前排持续压低血线",
+          "targetRule": "current target"
+        },
+        "effects": [
+          {
+            "kind": "hitTarget",
+            "flat": 18,
+            "power": 0.32,
+            "type": "physical",
+            "scaleWith": "physical",
+            "label": "裂肉狂斩"
+          },
+          {
+            "kind": "timer",
+            "timer": "bloodFuryTimer",
+            "duration": 3.2,
+            "label": "裂肉血怒",
+            "tone": "damage"
           }
         ]
       },
@@ -2481,7 +2931,7 @@ const GAME_SKILL_ASSETS = (() => {
         "roleKeys": [
           "berserker"
         ],
-        "cooldown": 8.8,
+        "cooldown": 9.2,
         "openingCooldown": 3.6,
         "icon": "bleeding-eye",
         "desc": "狂战副定位：风险前排。自伤进入危险线，短暂嘲讽和减伤，让低血流能承担一点前排任务，但风险真实存在。",
@@ -2502,6 +2952,44 @@ const GAME_SKILL_ASSETS = (() => {
             "timer": "guardTimer",
             "duration": 2.6,
             "label": "硬撑"
+          }
+        ]
+      },
+      "shadowBurstAmbush": {
+        "name": "暗影突袭",
+        "type": "小技能",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 8.4,
+        "openingCooldown": 1.8,
+        "icon": "cloak-dagger",
+        "desc": "暗影爆发贼入口：切入敌方后排血量比例最低目标，短暂进入隐藏状态。普通敌人不会优先转火他，但被他命中的目标会短暂反击。",
+        "design": {
+          "primaryOutput": "hidden backline burst",
+          "expectedScaling": "attackSpeed + physicalPower",
+          "forbiddenScaling": "magicPower + raw durability",
+          "primaryAnswer": "刺客切入后被全队转火",
+          "secondaryUtility": "后排扰乱、短窗口收割",
+          "targetRule": "lowest hp ratio backline enemy"
+        },
+        "effects": [
+          {
+            "kind": "shadowStepStrike",
+            "flat": 16,
+            "power": 0.34,
+            "missingTargetHpFlat": 8,
+            "markStacks": 2,
+            "markMax": 5,
+            "hiddenDuration": 2.8,
+            "retaliateDuration": 0.8,
+            "guardDuration": 0.5,
+            "lockDuration": 3,
+            "attackCd": 0.06,
+            "type": "physical",
+            "scaleWith": "physical",
+            "label": "暗影突袭"
           }
         ]
       },
@@ -2542,6 +3030,37 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "shadowMomentum": {
+        "name": "影势连杀",
+        "type": "被动",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 0,
+        "icon": "targeted",
+        "desc": "暗影爆发贼被动：普攻叠猎标，并略微提高攻速。它不提供通用肉度，目标是让隐藏窗口里的普攻频率变成收割资源。",
+        "passive": true,
+        "design": {
+          "primaryOutput": "hidden window resource conversion",
+          "expectedScaling": "attackSpeed + physicalPower",
+          "forbiddenScaling": "magicPower + generic tankiness",
+          "primaryAnswer": "刺客输出窗口太短，攻速无法兑现",
+          "secondaryUtility": "猎标积累、收割准备",
+          "targetRule": "basic attack target"
+        },
+        "effects": [
+          {
+            "kind": "passiveStat",
+            "attackSpeedMult": 1.08
+          },
+          {
+            "kind": "basicAttackMark",
+            "stacks": 1,
+            "max": 5
+          }
+        ]
+      },
       "shieldBash": {
         "name": "盾击",
         "type": "小技能",
@@ -2566,6 +3085,36 @@ const GAME_SKILL_ASSETS = (() => {
             "kind": "targetTimer",
             "timer": "slowTimer",
             "duration": 3
+          }
+        ]
+      },
+      "shieldwallRiposte": {
+        "name": "盾墙反制",
+        "type": "被动",
+        "role": "骑士",
+        "roleKeys": [
+          "knight"
+        ],
+        "cooldown": 0,
+        "icon": "shield-reflect",
+        "desc": "自身护盾吸收近战伤害后反击，并短暂进入嘲讽窗口。主答近战刺客，副用反制高频普攻。",
+        "passive": true,
+        "design": {
+          "primaryAnswer": "近战刺客和高频近战",
+          "secondaryUtility": "护盾前排通用反打",
+          "targetRule": "melee source after blocked damage"
+        },
+        "effects": [
+          {
+            "kind": "counterOnDamageTaken",
+            "requiresBlockedDamage": true,
+            "meleeOnly": true,
+            "flat": 10,
+            "power": 0.12,
+            "blockedRatio": 0.45,
+            "cooldown": 1.2,
+            "tauntDuration": 2.5,
+            "label": "盾墙反制"
           }
         ]
       },
@@ -2799,6 +3348,38 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "throatCut": {
+        "name": "割喉收束",
+        "type": "小技能",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 6.8,
+        "openingCooldown": 4.2,
+        "icon": "daggers",
+        "desc": "消费当前目标猎痕造成物理伤害，目标越残越痛。它把普攻叠层转换成处决，不直接制造秒杀。",
+        "design": {
+          "primaryOutput": "mark payoff + execute",
+          "expectedScaling": "physicalPower + attackSpeed through mark stacks",
+          "forbiddenScaling": "magicPower",
+          "primaryAnswer": "刺客普攻资源缺少兑现",
+          "secondaryUtility": "收割残血、压制后排",
+          "targetRule": "current target"
+        },
+        "effects": [
+          {
+            "kind": "hitMarkedTarget",
+            "flat": 16,
+            "power": 0.3,
+            "perMark": 8,
+            "consumeMark": true,
+            "type": "physical",
+            "scaleWith": "physical",
+            "label": "割喉收束"
+          }
+        ]
+      },
       "toxicStabs": {
         "name": "毒刃连刺",
         "type": "小技能",
@@ -2818,260 +3399,6 @@ const GAME_SKILL_ASSETS = (() => {
             "kind": "poisonTarget",
             "stacks": 2,
             "time": 6
-          }
-        ]
-      },
-      "aaBladeFlurry": {
-        "name": "迅刃连刺",
-        "type": "小技能",
-        "role": "刺客",
-        "roleKeys": [
-          "assassin"
-        ],
-        "cooldown": 4.8,
-        "openingCooldown": 2.4,
-        "icon": "daggers",
-        "desc": "刺客实验技能：用低冷却物理连刺主动压血，而不是只等低血处决。预期吃敏捷和武力，不吃奥术。",
-        "effects": [
-          {
-            "kind": "hitTarget",
-            "flat": 10,
-            "power": 0.42,
-            "type": "physical",
-            "label": "迅刃"
-          },
-          {
-            "kind": "poisonTarget",
-            "stacks": 1,
-            "time": 5
-          }
-        ]
-      },
-      "aaShadowPursuit": {
-        "name": "追影切",
-        "type": "小技能",
-        "role": "刺客",
-        "roleKeys": [
-          "assassin"
-        ],
-        "cooldown": 6.2,
-        "openingCooldown": 3,
-        "icon": "sprint",
-        "desc": "刺客实验技能：暗影表现，物理缩放。主要靠自身武力制造处决线，缺失生命加成较低。",
-        "effects": [
-          {
-            "kind": "hitLowestEnemy",
-            "flat": 12,
-            "power": 0.62,
-            "missingTargetHpFlat": 6,
-            "type": "shadow",
-            "scaleWith": "physical",
-            "label": "追影"
-          }
-        ]
-      },
-      "aaPredatorRhythm": {
-        "name": "猎杀节律",
-        "type": "被动",
-        "role": "刺客",
-        "roleKeys": [
-          "assassin"
-        ],
-        "cooldown": 0,
-        "icon": "crosshair",
-        "desc": "刺客实验被动：普攻叠猎标，猎标放大后续伤害。敏捷负责叠层速度，武力负责命中质量。",
-        "passive": true,
-        "effects": [
-          {
-            "kind": "basicAttackMark",
-            "stacks": 1,
-            "max": 5
-          },
-          {
-            "kind": "basicAttackPoison",
-            "stacks": 1,
-            "time": 4
-          },
-          {
-            "kind": "basicAttackSelfShield",
-            "flat": 2.4,
-            "perMark": 0.45,
-            "label": "影步"
-          },
-          {
-            "kind": "passiveDamageAmp",
-            "requiresStatus": true,
-            "amp": 0.06
-          },
-          {
-            "kind": "passiveDamageAmp",
-            "targetHpBelow": 0.5,
-            "amp": 0.05
-          },
-          {
-            "kind": "passiveDamageAmp",
-            "perMark": 0.035
-          }
-        ]
-      },
-      "aaBladeHarvest": {
-        "name": "刃影收割",
-        "type": "大招",
-        "role": "刺客",
-        "roleKeys": [
-          "assassin"
-        ],
-        "cooldown": 26,
-        "openingCooldown": 5.6,
-        "icon": "cloak-dagger",
-        "desc": "刺客实验大招：暗影表现，物理缩放。降低纯缺失生命收益，提高自身武力收益。",
-        "effects": [
-          {
-            "kind": "hitLowestEnemy",
-            "flat": 30,
-            "power": 0.9,
-            "missingTargetHpFlat": 8,
-            "type": "shadow",
-            "scaleWith": "physical",
-            "label": "刃收"
-          }
-        ]
-      },
-      "aa2VeinMark": {
-        "name": "破绽刻痕",
-        "type": "小技能",
-        "role": "刺客",
-        "roleKeys": [
-          "assassin"
-        ],
-        "cooldown": 6.6,
-        "openingCooldown": 3.2,
-        "icon": "crosshair",
-        "desc": "刺客第二批实验技能：低伤害铺垫猎标。它负责制造爆发条件，不负责单独杀人。",
-        "effects": [
-          {
-            "kind": "hitTarget",
-            "flat": 9,
-            "power": 0.3,
-            "type": "physical",
-            "label": "刻痕"
-          },
-          {
-            "kind": "markTarget",
-            "stacks": 1,
-            "max": 4
-          }
-        ]
-      },
-      "aa2SmokeStep": {
-        "name": "烟步侧切",
-        "type": "小技能",
-        "role": "刺客",
-        "roleKeys": [
-          "assassin"
-        ],
-        "cooldown": 9.2,
-        "openingCooldown": 4.8,
-        "icon": "sprint",
-        "desc": "刺客第二批实验技能：短暂减伤后切向低血目标。它提供进场窗口，但频率低，不应变成常驻坦度。",
-        "effects": [
-          {
-            "kind": "timer",
-            "timer": "guardTimer",
-            "duration": 2.1,
-            "label": "烟步",
-            "tone": "shield"
-          },
-          {
-            "kind": "hitLowestEnemy",
-            "flat": 12,
-            "power": 0.38,
-            "missingTargetHpFlat": 4,
-            "type": "shadow",
-            "scaleWith": "physical",
-            "label": "侧切"
-          }
-        ]
-      },
-      "aa2BacklineBlink": {
-        "name": "影跃后切",
-        "type": "小技能",
-        "role": "刺客",
-        "roleKeys": [
-          "assassin"
-        ],
-        "cooldown": 8.6,
-        "openingCooldown": 2.2,
-        "icon": "sprint",
-        "desc": "刺客第二批实验技能：闪现到敌方后排身边并短暂锁定目标。它负责让刺客真的接触后排，而不是隔着前排等低血。",
-        "effects": [
-          {
-            "kind": "blinkBacklineStrike",
-            "flat": 20,
-            "power": 0.5,
-            "missingTargetHpFlat": 5,
-            "type": "physical",
-            "scaleWith": "physical",
-            "label": "影跃",
-            "hitLabel": "后切",
-            "markStacks": 2,
-            "markMax": 5,
-            "lockDuration": 4,
-            "guardDuration": 3,
-            "targetSlowDuration": 1.8,
-            "attackCd": 0.05
-          }
-        ]
-      },
-      "aa2MarkedTempo": {
-        "name": "猎标节拍",
-        "type": "被动",
-        "role": "刺客",
-        "roleKeys": [
-          "assassin"
-        ],
-        "cooldown": 0,
-        "icon": "target-arrows",
-        "desc": "刺客第二批实验被动：普攻少量叠猎标，对猎标目标增伤。收益来自持续命中同一目标，不给毒和自护盾。",
-        "passive": true,
-        "effects": [
-          {
-            "kind": "basicAttackMark",
-            "stacks": 1,
-            "max": 5
-          },
-          {
-            "kind": "passiveDamageAmp",
-            "perMark": 0.03
-          },
-          {
-            "kind": "passiveDamageAmp",
-            "targetHpBelow": 0.45,
-            "amp": 0.03
-          }
-        ]
-      },
-      "aa2FinisherCut": {
-        "name": "断喉收束",
-        "type": "大招",
-        "role": "刺客",
-        "roleKeys": [
-          "assassin"
-        ],
-        "cooldown": 30,
-        "openingCooldown": 8.8,
-        "icon": "cloak-dagger",
-        "desc": "刺客第二批实验大招：消耗猎标打一次爆发。没有猎标时伤害一般，避免无条件处决。",
-        "effects": [
-          {
-            "kind": "hitMarkedTarget",
-            "flat": 20,
-            "power": 0.62,
-            "perMark": 12,
-            "type": "shadow",
-            "scaleWith": "physical",
-            "label": "断喉",
-            "consumeMark": true
           }
         ]
       },
@@ -3121,91 +3448,6 @@ const GAME_SKILL_ASSETS = (() => {
           {
             "kind": "passiveStat",
             "rangeAdd": 2
-          }
-        ]
-      },
-      "aaFrenzyCut": {
-        "name": "躁血快斩",
-        "type": "小技能",
-        "role": "狂战士",
-        "roleKeys": [
-          "berserker"
-        ],
-        "cooldown": 6.8,
-        "openingCooldown": 3.8,
-        "icon": "bloody-sword",
-        "desc": "狂战士实验技能：自伤进入短血怒窗口。收益来自窗口内普攻次数，预期吃敏捷和武力，不吃受治愈。",
-        "effects": [
-          {
-            "kind": "selfRawDamage",
-            "maxHp": 0.12,
-            "type": "blood"
-          },
-          {
-            "kind": "timer",
-            "timer": "bloodFuryTimer",
-            "duration": 2.5,
-            "label": "躁血",
-            "tone": "heal"
-          }
-        ]
-      },
-      "aaFrenzyEngine": {
-        "name": "躁血引擎",
-        "type": "被动",
-        "role": "狂战士",
-        "roleKeys": [
-          "berserker"
-        ],
-        "cooldown": 0,
-        "icon": "rage",
-        "desc": "狂战士实验被动：低血时小幅增伤，但不自带吸血。把强度从活得久转向窗口内输出质量。",
-        "passive": true,
-        "effects": [
-          {
-            "kind": "passiveDamageAmp",
-            "sourceHpBelow": 0.42,
-            "amp": 0.03
-          }
-        ]
-      },
-      "aaRazorRoar": {
-        "name": "刃吼狂潮",
-        "type": "大招",
-        "role": "狂战士",
-        "roleKeys": [
-          "berserker"
-        ],
-        "cooldown": 36,
-        "openingCooldown": 10.8,
-        "icon": "lion",
-        "desc": "狂战士实验大招：付血换急速、血怒和旋风，不给不死和额外吸血。赢法应该是高频普攻爆发，不是硬拖。",
-        "effects": [
-          {
-            "kind": "selfRawDamage",
-            "maxHp": 0.17,
-            "type": "blood"
-          },
-          {
-            "kind": "timer",
-            "timer": "hasteTimer",
-            "duration": 2,
-            "label": "刃吼",
-            "tone": "heal"
-          },
-          {
-            "kind": "timer",
-            "timer": "bloodFuryTimer",
-            "duration": 2,
-            "label": "血怒",
-            "tone": "heal"
-          },
-          {
-            "kind": "timer",
-            "timer": "whirlwindTimer",
-            "duration": 3.2,
-            "label": "旋风",
-            "tone": "shield"
           }
         ]
       },

@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-06-25_2206_playable-team-composition-next.md`](reports/2026-06-25_2206_playable-team-composition-next.md)
+[`reports/2026-06-28_2107_waterline-interpretation-and-bloodrage.md`](reports/2026-06-28_2107_waterline-interpretation-and-bloodrage.md)
 
-Last updated: 2026-06-25
+Last updated: 2026-06-28
 
-Current focus: primary goal is a playable character-composition battle loop. Secondary goal is the player signal system for later analysis, debugging, and balance.
+Current focus: interpreting the generated 4v4 waterline correctly. Treat waterline score as team-structure strength, not naked role strength; `bloodRage` is the current example.

@@ -387,6 +387,25 @@ class CombatSimulation {
         const bonus = (target.mark || 0) * (effect.perMark || 0);
         this.shield(unit, (effect.flat || 0) + bonus, effect.label || "影步", unit);
       }
+      for (const effect of this.passiveEffects(unit, "basicAttackHiddenExtend")) {
+        if (!(unit.hiddenTimer > 0)) continue;
+        if ((target.mark || 0) < (effect.minMark || 1)) continue;
+        const beforeHidden = unit.hiddenTimer;
+        unit.hiddenTimer = Math.min(effect.maxHidden || 4, unit.hiddenTimer + (effect.extend || 0.2));
+        if (effect.guardDuration) unit.guardTimer = Math.max(unit.guardTimer || 0, effect.guardDuration);
+        if (unit.hiddenTimer > beforeHidden) {
+          this.emitSignal({
+            kind: "status",
+            tags: this.actionTags(unit, ["status", "buff", "hidden", "extend", "basic"]).filter(Boolean),
+            source: SIGNALS.unitRef(unit),
+            target: SIGNALS.unitRef(unit),
+            amount: round(unit.hiddenTimer - beforeHidden),
+            skillKey: unit.passive,
+            skillName: effect.label || "影势续隐",
+            meta: { beforeHidden, afterHidden: unit.hiddenTimer, targetMark: target.mark || 0, guardDuration: effect.guardDuration || 0 },
+          });
+        }
+      }
       for (const effect of this.passiveEffects(unit, "basicAttackPoison")) {
         this.addPoison(target, effect.stacks || 1, effect.time || 4, unit);
       }

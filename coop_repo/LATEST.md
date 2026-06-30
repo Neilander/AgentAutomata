@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-06-28_2107_waterline-interpretation-and-bloodrage.md`](reports/2026-06-28_2107_waterline-interpretation-and-bloodrage.md)
+[`reports/2026-06-29_2219_balance-showcase-and-open-bugs.md`](reports/2026-06-29_2219_balance-showcase-and-open-bugs.md)
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
-Current focus: interpreting the generated 4v4 waterline correctly. Treat waterline score as team-structure strength, not naked role strength; `bloodRage` is the current example.
+Current focus: balance showcase handoff and open bugs. `/balance_showcase/` is usable, but next fixes are shadow assassin blink target lock and fire/mage FX anchoring after one mage dies.

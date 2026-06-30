@@ -2982,9 +2982,9 @@ const GAME_SKILL_ASSETS = (() => {
             "missingTargetHpFlat": 8,
             "markStacks": 2,
             "markMax": 5,
-            "hiddenDuration": 2.8,
-            "retaliateDuration": 0.8,
-            "guardDuration": 0.5,
+            "hiddenDuration": 3.2,
+            "retaliateDuration": 0.6,
+            "guardDuration": 0.8,
             "lockDuration": 3,
             "attackCd": 0.06,
             "type": "physical",
@@ -3052,12 +3052,29 @@ const GAME_SKILL_ASSETS = (() => {
         "effects": [
           {
             "kind": "passiveStat",
-            "attackSpeedMult": 1.08
+            "attackSpeedMult": 1.18
           },
           {
             "kind": "basicAttackMark",
             "stacks": 1,
             "max": 5
+          },
+          {
+            "kind": "basicAttackHiddenExtend",
+            "minMark": 2,
+            "extend": 0.35,
+            "maxHidden": 4.8,
+            "guardDuration": 0.55,
+            "label": "影势续隐"
+          },
+          {
+            "kind": "fadeOnLowHp",
+            "threshold": 0.4,
+            "guardDuration": 1.3,
+            "shieldPower": 0,
+            "scaleWith": "physical",
+            "label": "残影脱身",
+            "once": true
           }
         ]
       },

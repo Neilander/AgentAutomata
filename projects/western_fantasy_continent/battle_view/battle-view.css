@@ -99,6 +99,17 @@
 
 .battle-unit.enemy .battle-avatar { border-color: rgba(223, 103, 88, 0.58); }
 .battle-unit.dead { opacity: 0.24; filter: grayscale(1); }
+.battle-unit.hidden {
+  opacity: 0.72;
+  filter: drop-shadow(0 0 14px rgba(181, 140, 255, 0.55));
+}
+.battle-unit.hidden .battle-avatar {
+  border-color: rgba(181, 140, 255, 0.9);
+  box-shadow: 0 0 18px rgba(181, 140, 255, 0.5), inset 0 0 14px rgba(181, 140, 255, 0.22);
+}
+.battle-unit.guarded .battle-avatar {
+  box-shadow: 0 0 16px rgba(159, 214, 255, 0.38);
+}
 
 .battle-avatar {
   width: 46px;
@@ -148,7 +159,8 @@
 .battle-skill-label,
 .battle-vfx-ring,
 .battle-vfx-slash,
-.battle-vfx-beam {
+.battle-vfx-beam,
+.battle-vfx-afterimage {
   position: absolute;
   pointer-events: none;
   transform: translate(-50%, -50%);
@@ -166,6 +178,7 @@
 .battle-floater.poison { color: #84d391; }
 .battle-floater.heal { color: #9fe6c6; }
 .battle-floater.shield { color: #9fd6ff; }
+.battle-floater.purple { color: #d8b8ff; text-shadow: 0 0 12px rgba(181, 140, 255, 0.85); }
 
 .battle-skill-label {
   min-width: 54px;
@@ -217,6 +230,20 @@
   animation: battleBeam 0.36s ease-out forwards;
 }
 
+.battle-vfx-afterimage {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  color: var(--battle-purple);
+  background: radial-gradient(circle, rgba(181, 140, 255, 0.34), rgba(181, 140, 255, 0.05) 62%, transparent 68%);
+  font-size: 24px;
+  filter: blur(0.2px) drop-shadow(0 0 14px currentColor);
+  animation: battleAfterimage 0.52s ease-out forwards;
+}
+
 .battle-vfx-fire { color: #ff8b3d; }
 .battle-vfx-poison { color: #84d391; }
 .battle-vfx-blood { color: #e25c50; }
@@ -251,4 +278,9 @@
   0% { opacity: 0; clip-path: inset(0 100% 0 0); }
   28% { opacity: 1; clip-path: inset(0 0 0 0); }
   100% { opacity: 0; clip-path: inset(0 0 0 100%); }
+}
+
+@keyframes battleAfterimage {
+  0% { opacity: 0.72; transform: translate(-50%, -50%) scale(0.86); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.35); }
 }

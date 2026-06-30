@@ -2,7 +2,9 @@
   "name": "影势连杀",
   "type": "被动",
   "role": "刺客",
-  "roleKeys": ["assassin"],
+  "roleKeys": [
+    "assassin"
+  ],
   "cooldown": 0,
   "icon": "targeted",
   "desc": "暗影爆发贼被动：普攻叠猎标，并略微提高攻速。它不提供通用肉度，目标是让隐藏窗口里的普攻频率变成收割资源。",
@@ -26,6 +28,20 @@
       "max": 5
     },
     {
+      "kind": "basicAttackMarkBurst",
+      "minMark": 5,
+      "consumeMark": 4,
+      "cooldown": 1.05,
+      "flat": 6,
+      "power": 0.16,
+      "perMark": 1.5,
+      "hiddenDuration": 1.6,
+      "guardDuration": 0.4,
+      "type": "physical",
+      "scaleWith": "physical",
+      "label": "影标爆发"
+    },
+    {
       "kind": "basicAttackHiddenExtend",
       "minMark": 2,
       "extend": 0.35,
@@ -41,6 +57,18 @@
       "scaleWith": "physical",
       "label": "残影脱身",
       "once": true
+    },
+    {
+      "kind": "shadowKillReset",
+      "requiresHidden": true,
+      "requiresMarked": false,
+      "blinkToNext": true,
+      "hiddenDuration": 2.6,
+      "guardDuration": 0.55,
+      "lockDuration": 2.8,
+      "cooldownRefund": 2.4,
+      "refundSkill": "shadowBurstAmbush",
+      "label": "影杀转火"
     }
   ]
 }

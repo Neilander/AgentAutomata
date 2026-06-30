@@ -14,6 +14,7 @@ Project skills are reusable workflows for this game. They are not global Codex s
 - `combat-causal-attribution/`: diagnoses extreme matchup outcomes as causal chains: occurrence, amplification, conversion, failed resolution, and best balance levers.
 - `tutorial-level-debug/`: debugs tutorial and test combat levels by first checking visible class differences, then trying role/encounter adjustments or class-feature strengthening before any raw stat tuning.
 - `phenomenon-math-modeling/`: translates observed balance, UX, or player-behavior symptoms into rough value functions, variables, contribution channels, hypotheses, and validation metrics before proposing fixes.
+- `comparative-analysis/`: compares multiple attempts, observations, and math-modeling passes, then resolves contradictions, cancellations, measurement artifacts, and scope splits into a precise diagnosis.
 
 ## Related Documents
 

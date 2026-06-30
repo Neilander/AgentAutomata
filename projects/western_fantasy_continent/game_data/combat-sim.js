@@ -176,6 +176,7 @@ class CombatSimulation {
         slowTimer: 0,
         guardTimer: 0,
         hiddenTimer: 0,
+        shadowBurstCd: 0,
         shieldVulnerableTimer: 0,
         tauntTimer: 0,
         hasteTimer: 0,
@@ -192,6 +193,8 @@ class CombatSimulation {
         deathRoarUsed: false,
         forcedTargetId: null,
         forcedTargetTimer: 0,
+        assassinFocusTargetId: null,
+        lastTargetSignalId: null,
         hiddenRetaliateTimer: 2.2,
         counterCd: 0,
         damageDone: 0,
@@ -263,6 +266,7 @@ class CombatSimulation {
       this.tickTimers(unit, dt);
       const target = this.chooseTarget(unit);
       if (!target) continue;
+      this.emitTargetSignal(unit, target);
       const distance = this.getDistance(unit, target);
       if (distance > unit.range) {
         if (unit.skillCd.ultimate <= 0 && this.skillHasEffect(unit.ultimate, "chargeToTarget")) this.castSlot(unit, "ultimate", target);
@@ -292,7 +296,7 @@ class CombatSimulation {
   tickTimers(unit, dt) {
     for (const key of ["small1", "small2", "ultimate"]) unit.skillCd[key] = Math.max(0, unit.skillCd[key] - dt * (unit.skillHasteMult || 1));
     unit.attackCd -= dt * (unit.hasteTimer > 0 ? (unit.hasteMultiplier || 1.45) : 1) * (unit.attackSpeedMult || 1);
-    for (const key of ["slowTimer", "guardTimer", "hiddenTimer", "shieldVulnerableTimer", "tauntTimer", "duelTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer", "forcedTargetTimer"]) {
+    for (const key of ["slowTimer", "guardTimer", "hiddenTimer", "shadowBurstCd", "shieldVulnerableTimer", "tauntTimer", "duelTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer", "forcedTargetTimer"]) {
       unit[key] = Math.max(0, unit[key] - dt);
     }
     if (unit.forcedTargetTimer <= 0) unit.forcedTargetId = null;
@@ -387,6 +391,29 @@ class CombatSimulation {
         const bonus = (target.mark || 0) * (effect.perMark || 0);
         this.shield(unit, (effect.flat || 0) + bonus, effect.label || "影步", unit);
       }
+      for (const effect of this.passiveEffects(unit, "basicAttackMarkBurst")) {
+        if (!this.isAlive(target) || !(unit.hiddenTimer > 0) || (unit.shadowBurstCd || 0) > 0) continue;
+        if ((target.mark || 0) < (effect.minMark || 5)) continue;
+        const consumed = Math.min(target.mark || 0, effect.consumeMark || effect.minMark || 5);
+        target.mark = Math.max(0, (target.mark || 0) - consumed);
+        unit.shadowBurstCd = effect.cooldown || 1.1;
+        unit.hiddenTimer = Math.max(unit.hiddenTimer || 0, effect.hiddenDuration || 1.2);
+        if (effect.guardDuration) unit.guardTimer = Math.max(unit.guardTimer || 0, effect.guardDuration);
+        this.withAction(unit, { tags: ["passive", "markBurst", "hidden"], skillKey: unit.passive, skillName: effect.label || "影标爆发" }, () => {
+          const power = this.effectivePower(unit, effect.scaleWith || "physical");
+          this.hit(unit, target, (effect.flat || 0) + power * (effect.power || 0) + consumed * (effect.perMark || 0), effect.type || "physical", effect.label || "影标爆发", false, effect.scaleWith || "physical");
+        });
+        this.emitSignal({
+          kind: "status",
+          tags: this.actionTags(unit, ["status", "buff", "hidden", "markBurst"]).filter(Boolean),
+          source: SIGNALS.unitRef(unit),
+          target: SIGNALS.unitRef(target),
+          amount: consumed,
+          skillKey: unit.passive,
+          skillName: effect.label || "影标爆发",
+          meta: { consumed, targetMark: target.mark || 0, hiddenDuration: unit.hiddenTimer },
+        });
+      }
       for (const effect of this.passiveEffects(unit, "basicAttackHiddenExtend")) {
         if (!(unit.hiddenTimer > 0)) continue;
         if ((target.mark || 0) < (effect.minMark || 1)) continue;
@@ -404,6 +431,43 @@ class CombatSimulation {
             skillName: effect.label || "影势续隐",
             meta: { beforeHidden, afterHidden: unit.hiddenTimer, targetMark: target.mark || 0, guardDuration: effect.guardDuration || 0 },
           });
+        }
+      }
+      for (const effect of this.passiveEffects(unit, "basicAttackCooldownRefund")) {
+        if (effect.requiresHidden !== false && !(unit.hiddenTimer > 0)) continue;
+        if (Number.isFinite(effect.minHiddenRemaining) && (unit.hiddenTimer || 0) < effect.minHiddenRemaining) continue;
+        if ((target.mark || 0) < (effect.minMark || 0)) continue;
+        const speedBonus = Math.max(0, (unit.attackSpeedMult || 1) - 1);
+        const refunded = {};
+        for (const [slot, field] of [["small1", "small1Refund"], ["small2", "small2Refund"], ["ultimate", "ultimateRefund"]]) {
+          const speedField = `${field}PerAttackSpeedBonus`;
+          const amount = (effect[field] || 0) + speedBonus * (effect[speedField] || 0);
+          if (amount <= 0 || !unit.skillCd?.[slot]) continue;
+          const beforeCd = unit.skillCd[slot];
+          unit.skillCd[slot] = Math.max(0, beforeCd - amount);
+          const delta = beforeCd - unit.skillCd[slot];
+          if (delta > 0) refunded[slot] = round(delta);
+        }
+        const totalRefund = Object.values(refunded).reduce((sum, value) => sum + value, 0);
+        if (totalRefund > 0) {
+          this.emitSignal({
+            kind: "status",
+            tags: this.actionTags(unit, ["status", "buff", "cooldownRefund", "basic", "hidden"]).filter(Boolean),
+            source: SIGNALS.unitRef(unit),
+            target: SIGNALS.unitRef(unit),
+            amount: round(totalRefund),
+            skillKey: unit.passive,
+            skillName: effect.label || "影刃回环",
+            meta: { refunded, enemy: SIGNALS.unitRef(target), targetMark: target.mark || 0 },
+          });
+          const cutPower = effect.cutPower || 0;
+          const cutSpeedPower = effect.cutPowerPerAttackSpeedBonus || 0;
+          const cutFlat = effect.cutFlat || 0;
+          if (cutFlat > 0 || cutPower > 0 || cutSpeedPower > 0) {
+            const power = this.effectivePower(unit, effect.cutScaleWith || "physical");
+            const cutAmount = cutFlat + power * cutPower + power * speedBonus * cutSpeedPower;
+            if (cutAmount > 0) this.hit(unit, target, cutAmount, effect.cutType || "physical", effect.cutLabel || effect.label || "影刃切割", false, effect.cutScaleWith || "physical");
+          }
         }
       }
       for (const effect of this.passiveEffects(unit, "basicAttackPoison")) {
@@ -714,6 +778,7 @@ class CombatSimulation {
         targetRole: unit.role || "",
       },
     });
+    this.tryShadowKillReset(killer, unit);
     if (unit.poison.stacks > 0) {
       this.alliesOf(killer || unit).filter((ally) => ally.passive === "hotbedPact" && this.isAlive(ally)).slice(0, 1).forEach((source) => {
         this.alliesOf(unit).filter((ally) => this.isAlive(ally) && ally.id !== unit.id).forEach((enemy) => {
@@ -729,6 +794,57 @@ class CombatSimulation {
       });
     }
     if (killer && killer.ultimate === "shadowHarvest") killer.skillCd.ultimate = Math.min(killer.skillCd.ultimate, 8);
+  }
+
+  tryShadowKillReset(killer, victim) {
+    if (!killer || !this.isAlive(killer)) return;
+    const effects = this.passiveEffects(killer, "shadowKillReset");
+    if (!effects.length) return;
+    for (const effect of effects) {
+      if (effect.requiresHidden !== false && !(killer.hiddenTimer > 0)) continue;
+      if (effect.requiresMarked !== false && !((victim?.mark || 0) >= (effect.minMark || 1))) continue;
+      const next = this.backlineLowestEnemy(killer) || this.lowestEnemy(killer);
+      const before = { x: killer.x, y: killer.y };
+      if (next && effect.blinkToNext !== false) {
+        const sideOffset = killer.side === "left" ? -3.6 : 3.6;
+        killer.x = clamp(next.x + sideOffset, 7, 93);
+        killer.y = clamp(next.y + (effect.yOffset || 1.4), 12, 88);
+        killer.forcedTargetId = next.id;
+        killer.forcedTargetTimer = Math.max(killer.forcedTargetTimer || 0, effect.lockDuration || 2.6);
+        killer.assassinFocusTargetId = next.id;
+      } else {
+        killer.forcedTargetId = null;
+        killer.forcedTargetTimer = 0;
+        killer.assassinFocusTargetId = null;
+      }
+      killer.hiddenTimer = Math.max(killer.hiddenTimer || 0, effect.hiddenDuration || 2.4);
+      killer.guardTimer = Math.max(killer.guardTimer || 0, effect.guardDuration || 0.45);
+      if (Number.isFinite(effect.cooldownRefund)) {
+        for (const slot of ["small1", "small2", "ultimate"]) {
+          if (killer[slot] === (effect.refundSkill || "shadowBurstAmbush")) {
+            killer.skillCd[slot] = Math.max(0, killer.skillCd[slot] - effect.cooldownRefund);
+          }
+        }
+      }
+      this.emitSignal({
+        kind: "movement",
+        tags: this.actionTags(killer, ["movement", "blink", "shadowReset", "hidden", next ? "retarget" : "exit"]).filter(Boolean),
+        source: SIGNALS.unitRef(killer),
+        target: SIGNALS.unitRef(next || victim),
+        amount: next ? round(this.getDistance({ x: before.x, y: before.y }, killer)) : 0,
+        skillKey: killer.passive,
+        skillName: effect.label || "影杀转火",
+        meta: {
+          before,
+          after: { x: killer.x, y: killer.y },
+          victim: SIGNALS.unitRef(victim),
+          nextTarget: SIGNALS.unitRef(next),
+          hiddenDuration: killer.hiddenTimer,
+          lockDuration: killer.forcedTargetTimer || 0,
+        },
+      });
+      break;
+    }
   }
 
   triggerEncore(unit) {
@@ -776,14 +892,46 @@ class CombatSimulation {
       const forced = enemies.find((enemy) => enemy.id === unit.forcedTargetId);
       if (forced) return forced;
     }
+    if (unit.role === "assassin" && unit.assassinFocusTargetId) {
+      const focus = enemies.find((enemy) => enemy.id === unit.assassinFocusTargetId);
+      if (focus) return focus;
+      unit.assassinFocusTargetId = null;
+    }
     const taunter = this.tauntTarget(unit, enemies);
     if (taunter) return taunter;
+    if (unit.role === "assassin") return this.lowestEnemy(unit) || enemies[0];
     if (unit.roleName === "刺客") return this.lowestEnemy(unit) || enemies[0];
     const visibleEnemies = enemies.filter((enemy) => !(enemy.hiddenTimer > 0));
     const targetPool = visibleEnemies.length ? visibleEnemies : enemies;
     const front = targetPool.filter((enemy) => enemy.line === "前排");
     const candidates = front.length && unit.range < 30 ? front : targetPool;
     return candidates.sort(this.byDistance(unit))[0];
+  }
+
+  emitTargetSignal(unit, target) {
+    if (!unit || !target || unit.lastTargetSignalId === target.id) return;
+    const previousTargetId = unit.lastTargetSignalId || null;
+    unit.lastTargetSignalId = target.id;
+    const forced = unit.forcedTargetId === target.id && unit.forcedTargetTimer > 0;
+    const assassinFocus = unit.assassinFocusTargetId === target.id;
+    const taunted = target.tauntTimer > 0 && unit.range < 20;
+    this.emitSignal({
+      kind: "targeting",
+      tags: this.actionTags(unit, ["targeting", forced ? "forcedTarget" : "", assassinFocus ? "assassinFocus" : "", taunted ? "taunt" : ""]).filter(Boolean),
+      source: SIGNALS.unitRef(unit),
+      target: SIGNALS.unitRef(target),
+      amount: 0,
+      skillKey: null,
+      skillName: "target select",
+      meta: {
+        previousTargetId,
+        forcedTargetId: unit.forcedTargetId || null,
+        forcedTargetTimer: round(unit.forcedTargetTimer || 0),
+        assassinFocusTargetId: unit.assassinFocusTargetId || null,
+        targetHpRatio: round(this.hpRatio(target)),
+        distance: round(this.getDistance(unit, target)),
+      },
+    });
   }
 
   moveToward(unit, target, dt) {
@@ -850,7 +998,11 @@ class CombatSimulation {
     if (!unit || !this.isAlive(unit)) return;
     const backline = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy) && enemy.line === "鍚庢帓");
     const fallback = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy));
-    const target = (backline.length ? backline : fallback).sort((a, b) => this.hpRatio(a) - this.hpRatio(b) || this.getDistance(unit, a) - this.getDistance(unit, b))[0];
+    let target = (backline.length ? backline : fallback).sort((a, b) => this.hpRatio(a) - this.hpRatio(b) || this.getDistance(unit, a) - this.getDistance(unit, b))[0];
+    if (unit.assassinFocusTargetId) {
+      const currentFocus = fallback.find((enemy) => enemy.id === unit.assassinFocusTargetId);
+      if (currentFocus) target = currentFocus;
+    }
     if (!target) return;
     const before = { x: unit.x, y: unit.y };
     const sideOffset = unit.side === "left" ? -3.8 : 3.8;
@@ -859,6 +1011,7 @@ class CombatSimulation {
     unit.attackCd = Math.min(unit.attackCd, effect.attackCd ?? 0.08);
     unit.forcedTargetId = target.id;
     unit.forcedTargetTimer = effect.lockDuration ?? 3.2;
+    unit.assassinFocusTargetId = target.id;
     unit.hiddenRetaliateTimer = effect.retaliateDuration ?? 2.2;
     if (effect.guardDuration) unit.guardTimer = Math.max(unit.guardTimer || 0, effect.guardDuration);
     this.emitSignal({
@@ -892,7 +1045,11 @@ class CombatSimulation {
 
   shadowStepStrike(unit, effect = {}) {
     if (!unit || !this.isAlive(unit)) return;
-    const target = this.backlineLowestEnemy(unit);
+    let target = this.backlineLowestEnemy(unit);
+    if (unit.assassinFocusTargetId) {
+      const currentFocus = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy)).find((enemy) => enemy.id === unit.assassinFocusTargetId);
+      if (currentFocus) target = currentFocus;
+    }
     if (!target) return;
 
     const before = { x: unit.x, y: unit.y };
@@ -902,6 +1059,7 @@ class CombatSimulation {
     unit.attackCd = Math.min(unit.attackCd, effect.attackCd ?? 0.08);
     unit.forcedTargetId = target.id;
     unit.forcedTargetTimer = effect.lockDuration ?? 3.2;
+    unit.assassinFocusTargetId = target.id;
     if (effect.guardDuration) unit.guardTimer = Math.max(unit.guardTimer || 0, effect.guardDuration);
     if (effect.hiddenDuration) unit.hiddenTimer = Math.max(unit.hiddenTimer || 0, effect.hiddenDuration);
 

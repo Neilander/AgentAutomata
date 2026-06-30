@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 加点对比器</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css?v=attribute_compare_1">
+    <link rel="stylesheet" href="/attribute_compare/styles.css">
+  </head>
+  <body>
+    <main class="compare-shell">
+      <header class="compare-top">
+        <div>
+          <a class="back-link" href="/workbench/">工作台</a>
+          <h1>加点对比器</h1>
+          <p>选择 preset，直接看对应加点路线在代表队伍里的实战表现。</p>
+        </div>
+        <div class="top-actions">
+          <button id="previewBtn" type="button">预览阵容</button>
+          <button id="playBtn" type="button" class="primary">开始战斗</button>
+        </div>
+      </header>
+
+      <section class="preset-strip" aria-label="对比 preset">
+        <div class="strip-head">
+          <span>Preset</span>
+          <strong id="presetCount">0</strong>
+        </div>
+        <div id="presetList" class="preset-list"></div>
+      </section>
+
+      <section class="compare-layout">
+        <section class="battle-panel" aria-label="战斗场面">
+          <div class="battle-titlebar">
+            <div>
+              <span id="routeBadge" class="route-badge">-</span>
+              <strong id="presetTitle">请选择 preset</strong>
+            </div>
+            <div id="resultBadge" class="result-badge">待命</div>
+          </div>
+          <div id="battleMount" class="battle-mount"></div>
+        </section>
+
+        <aside class="readout-panel" aria-label="结果摘要">
+          <section>
+            <h2>当前观察</h2>
+            <p id="presetDesc">选择一个 preset 后开始。</p>
+          </section>
+          <section class="stat-grid">
+            <div><span>胜负</span><strong id="statWinner">-</strong></div>
+            <div><span>时长</span><strong id="statDuration">-</strong></div>
+            <div><span>刺客伤害</span><strong id="statAssassinDamage">-</strong></div>
+            <div><span>转火异常</span><strong id="statBadSwitch">-</strong></div>
+          </section>
+          <section>
+            <h2>敌方代表队</h2>
+            <div id="enemySummary" class="unit-summary"></div>
+          </section>
+        </aside>
+      </section>
+
+      <details class="ai-console">
+        <summary>AI 控制台</summary>
+        <div class="console-grid">
+          <label>
+            当前 preset JSON
+            <textarea id="presetJson" spellcheck="false"></textarea>
+          </label>
+          <div class="console-actions">
+            <button id="applyJsonBtn" type="button">应用 JSON</button>
+            <button id="copyApiBtn" type="button">复制 API 示例</button>
+          </div>
+          <pre id="apiHint"></pre>
+        </div>
+      </details>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/battle_view/battle-view.js?v=attribute_compare_1"></script>
+    <script src="/attribute_compare/attribute-compare.js"></script>
+  </body>
+</html>

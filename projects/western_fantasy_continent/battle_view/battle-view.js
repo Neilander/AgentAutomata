@@ -182,6 +182,9 @@
         unit.simId = combatUnit.id;
         unit.deadTriggered = !sim.isAlive(combatUnit);
         unit.damageDone = combatUnit.damageDone || 0;
+        unit.hiddenTimer = combatUnit.hiddenTimer || 0;
+        unit.guardTimer = combatUnit.guardTimer || 0;
+        unit.forcedTargetId = combatUnit.forcedTargetId || null;
       }
     }
 
@@ -228,6 +231,24 @@
         }
         return;
       }
+      if (signal.kind === "movement") {
+        if (!source) return;
+        if (tags.includes("shadowReset")) {
+          this.afterimage(signal.meta?.before, source, "purple");
+          this.floater(source, "转火", "purple");
+          this.ring(source, "purple");
+          if (target) this.slash(source, target, "purple");
+        } else if (tags.includes("shadowStep") || tags.includes("hidden")) {
+          this.afterimage(signal.meta?.before, source, "purple");
+          this.floater(source, "隐身", "purple");
+          this.ring(source, "purple");
+          if (target) this.slash(source, target, "purple");
+        } else if (tags.includes("blink")) {
+          this.afterimage(signal.meta?.before, source, "blue");
+          if (target) this.slash(source, target, "blue");
+        }
+        return;
+      }
       if (signal.kind === "status") {
         if (!target) return;
         if (tags.includes("burn")) {
@@ -236,6 +257,12 @@
         } else if (tags.includes("poison")) {
           this.floater(target, `\u5267\u6bd2+${amount}`, "poison");
           this.ring(target, "poison");
+        } else if (tags.includes("hidden")) {
+          this.floater(target, tags.includes("extend") ? "续隐" : "隐身", "purple");
+          this.ring(target, "purple");
+        } else if (tags.includes("mark")) {
+          this.floater(target, `猎标+${amount}`, "purple");
+          this.ring(target, "purple");
         } else {
           this.ring(target, "gold");
         }
@@ -257,8 +284,9 @@
       else if (/poison|venom|plague|toxic|curse/i.test(key)) this.beam(source, target, "poison"), this.ring(target, "poison");
       else if (/heal|grace|mending|sanctuary/i.test(key)) this.ring(target, "green");
       else if (/shield|guard|banner|vow|wall/i.test(key)) this.ring(target, "blue");
+      else if (/shadow|assassin|throat|midnight/i.test(key) || tags.includes("hidden")) this.slash(source, target, "purple");
       else if (/arrow|mark|lance|shot/i.test(key)) this.beam(source, target, "blue");
-      else this.slash(source, target, /shadow|death|blood|wound|rage/i.test(key) ? "blood" : "gold");
+      else this.slash(source, target, /death|blood|wound|rage/i.test(key) ? "blood" : "gold");
     }
 
     displayUnitForRef(ref) {
@@ -739,7 +767,7 @@
       this.els.left.textContent = String(this.state.units.filter((unit) => unit.side === "ally" && this.alive(unit)).length);
       this.els.right.textContent = String(this.state.units.filter((unit) => unit.side === "enemy" && this.alive(unit)).length);
       this.els.unitLayer.innerHTML = this.state.units.map((unit) => `
-        <div class="battle-unit ${unit.side === "enemy" ? "enemy" : ""} ${this.alive(unit) ? "" : "dead"}" style="left:${unit.x}%;top:${unit.y}%">
+        <div class="battle-unit ${unit.side === "enemy" ? "enemy" : ""} ${unit.hiddenTimer > 0 ? "hidden" : ""} ${unit.guardTimer > 0 ? "guarded" : ""} ${this.alive(unit) ? "" : "dead"}" style="left:${unit.x}%;top:${unit.y}%">
           <div class="battle-avatar">${unit.icon}</div>
           <div class="battle-unit-name">${unit.name}</div>
           <div class="battle-hp"><span style="width:${Math.max(0, unit.hpNow / unit.maxHp * 100)}%"></span></div>
@@ -780,6 +808,17 @@
       node.style.setProperty("--scale", "1");
       this.els.fxLayer.appendChild(node);
       setTimeout(() => node.remove(), 720);
+    }
+
+    afterimage(before, unit, color = "purple") {
+      if (!unit || !before || !this.els?.fxLayer) return;
+      const node = document.createElement("div");
+      node.className = `battle-vfx-afterimage battle-vfx-${color}`;
+      node.style.left = `${before.x}%`;
+      node.style.top = `${before.y}%`;
+      node.textContent = unit.icon || "";
+      this.els.fxLayer.appendChild(node);
+      setTimeout(() => node.remove(), 520);
     }
 
     slash(source, target, color = "gold") {

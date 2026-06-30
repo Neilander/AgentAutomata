@@ -284,4 +284,56 @@ Suggested next test goal:
 5. Acceptance target:
    - 4v4 should no longer have `10坚韧` as the only effective assassin route.
    - At least one intended route such as `10副`, `3主7副`, or `5主5副` should be within 5 percentage points of the best route.
-   - Survival route can remain viable, but should not be clearly dominant.
+- Survival route can remain viable, but should not be clearly dominant.
+
+## 2026-06-30 Follow-up: Assassin Retarget + VFX
+
+Implemented the suggested shadow assassin follow-up instead of changing base stats.
+
+Changes made:
+
+- Added `shadowKillReset`: if the assassin kills during hidden, it blinks to a new backline/low-health target, refreshes a short hidden window, locks the new target, and partially refunds `shadowBurstAmbush`.
+- Added `basicAttackMarkBurst`: while hidden, basic attacks can consume mark stacks for an extra physical burst, making attack speed and physical scaling matter before the kill.
+- Added combat signals for shadow reset / hidden / mark burst so the UI can show the behavior instead of silently changing numbers.
+- Added battle feedback: purple hidden outline, guarded outline, afterimage, purple slash, and floaters such as `转火`, `隐身`, `续隐`, and `猎标+N`.
+
+Validation run:
+
+- `node --check game_data/combat-sim.js`
+- `node --check battle_view/battle-view.js`
+- `node game_data/build-skill-assets.js`
+- `node game_data/validate-skill-assets.js`
+- `node game_data/validate-combat-signals.js`
+- `node game_data/analyze-attribute-build-routes-v2.js`
+- `node game_data/analyze-attribute-team-routes-v2.js`
+
+Observed result:
+
+- Smoke test produced both reset and mark-burst signals, so the new mechanics are firing.
+- 2v2 route result is healthier: mixed/offensive routes now beat pure survival.
+- 4v4 still has residual survival pressure: `10坚韧` remains tied at the top in the latest route report, but it is no longer the only meaningful route.
+
+Next recommended step:
+
+- Do not keep buffing base assassin stats.
+- If 4v4 still feels too survival-biased, add or tune one more assassin-side tempo payoff: safer exit after failed burst, faster second-target mark application, or a clearer anti-backline chain rule.
+
+## 2026-06-30 Correction: Premature Retarget Fix
+
+The real "retarget" bug was not only about kill reset. The visible issue was:
+
+- Assassin blinks to a backline target.
+- The target is still alive.
+- After the temporary forced-target timer expires, the assassin falls back to generic lowest-HP targeting and can start attacking the frontliner.
+
+Fix added:
+
+- Added `assassinFocusTargetId`.
+- Backline blink / shadow step now records the selected target as assassin focus.
+- While that focus target is alive, assassin keeps attacking it even after the short forced-target timer expires.
+- Focus clears only when the target dies or disappears, then normal target selection resumes.
+
+Verification:
+
+- Smoke test with a low-HP frontliner and a high-HP backliner produced `badSwitchesBeforeFocusDeath: []`.
+- This means the assassin no longer leaves the backline target before killing it.

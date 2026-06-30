@@ -2955,6 +2955,98 @@ const GAME_SKILL_ASSETS = (() => {
           }
         ]
       },
+      "shadowBladeLoop": {
+        "name": "影刃回环",
+        "type": "被动",
+        "role": "刺客",
+        "roleKeys": [
+          "assassin"
+        ],
+        "cooldown": 0,
+        "icon": "targeted",
+        "desc": "刺客在隐匿刚开始的短窗口内普攻带猎标目标时，会把攻速转化为小技能冷却返还和影刃切割伤害。它不奖励长时间站桩，而奖励短时间高频刺杀。",
+        "passive": true,
+        "design": {
+          "primaryOutput": "short hidden-window attack speed converts into assassin skill cycle and cut damage",
+          "expectedScaling": "attackSpeed + physicalPower",
+          "forbiddenScaling": "generic tankiness only",
+          "primaryAnswer": "刺客不能靠活得久慢慢拿到同一套收益；敏捷应该在刺杀窗口里提高行动密度和击杀质量。",
+          "secondaryUtility": "猎标积累、短窗口冷却回环、击杀后换目标",
+          "targetRule": "current focused target"
+        },
+        "effects": [
+          {
+            "kind": "passiveStat",
+            "attackSpeedMult": 1
+          },
+          {
+            "kind": "basicAttackMark",
+            "stacks": 1,
+            "max": 6
+          },
+          {
+            "kind": "basicAttackCooldownRefund",
+            "requiresHidden": true,
+            "minHiddenRemaining": 0.9,
+            "minMark": 3,
+            "small1Refund": 0.05,
+            "small1RefundPerAttackSpeedBonus": 1.05,
+            "small2Refund": 0.03,
+            "small2RefundPerAttackSpeedBonus": 0.62,
+            "ultimateRefund": 0,
+            "cutFlat": 1,
+            "cutPower": 0.02,
+            "cutPowerPerAttackSpeedBonus": 0.55,
+            "cutType": "physical",
+            "cutScaleWith": "physical",
+            "cutLabel": "影刃切割",
+            "label": "影刃回环"
+          },
+          {
+            "kind": "basicAttackMarkBurst",
+            "minMark": 6,
+            "consumeMark": 6,
+            "cooldown": 1.8,
+            "flat": 0,
+            "power": 0.14,
+            "perMark": 0.5,
+            "hiddenDuration": 0.25,
+            "guardDuration": 0,
+            "type": "physical",
+            "scaleWith": "physical",
+            "label": "影标爆发"
+          },
+          {
+            "kind": "basicAttackHiddenExtend",
+            "minMark": 5,
+            "extend": 0.02,
+            "maxHidden": 1.35,
+            "guardDuration": 0,
+            "label": "影势续隐"
+          },
+          {
+            "kind": "fadeOnLowHp",
+            "threshold": 0.2,
+            "guardDuration": 0.25,
+            "shieldPower": 0,
+            "scaleWith": "physical",
+            "label": "残影脱身",
+            "once": true
+          },
+          {
+            "kind": "shadowKillReset",
+            "requiresHidden": true,
+            "requiresMarked": false,
+            "blinkToNext": true,
+            "hiddenDuration": 0.8,
+            "guardDuration": 0,
+            "lockDuration": 2.5,
+            "cooldownRefund": 0.2,
+            "refundSkill": "shadowBurstAmbush",
+            "label": "影杀转火"
+          }
+        ]
+      },
       "shadowBurstAmbush": {
         "name": "暗影突袭",
         "type": "小技能",
@@ -3060,6 +3152,20 @@ const GAME_SKILL_ASSETS = (() => {
             "max": 5
           },
           {
+            "kind": "basicAttackMarkBurst",
+            "minMark": 5,
+            "consumeMark": 4,
+            "cooldown": 1.05,
+            "flat": 6,
+            "power": 0.16,
+            "perMark": 1.5,
+            "hiddenDuration": 1.6,
+            "guardDuration": 0.4,
+            "type": "physical",
+            "scaleWith": "physical",
+            "label": "影标爆发"
+          },
+          {
             "kind": "basicAttackHiddenExtend",
             "minMark": 2,
             "extend": 0.35,
@@ -3075,6 +3181,18 @@ const GAME_SKILL_ASSETS = (() => {
             "scaleWith": "physical",
             "label": "残影脱身",
             "once": true
+          },
+          {
+            "kind": "shadowKillReset",
+            "requiresHidden": true,
+            "requiresMarked": false,
+            "blinkToNext": true,
+            "hiddenDuration": 2.6,
+            "guardDuration": 0.55,
+            "lockDuration": 2.8,
+            "cooldownRefund": 2.4,
+            "refundSkill": "shadowBurstAmbush",
+            "label": "影杀转火"
           }
         ]
       },

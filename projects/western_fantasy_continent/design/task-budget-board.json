@@ -1,6 +1,6 @@
 {
   "schema": "agent_automata_task_budget_board_v2",
-  "updatedAt": "2026-06-30",
+  "updatedAt": "2026-07-01",
   "workflow": [
     "先围绕可玩的角色搭配定义本阶段体验目标。",
     "用统一 4v4 战斗验证队伍 combo、克制和强度感。",
@@ -26,6 +26,20 @@
       "name": "数值与流派",
       "detail": "",
       "color": "",
+      "status": "active"
+    },
+    {
+      "id": "attribute-equipment-growth",
+      "name": "数值与流派",
+      "detail": "",
+      "color": "",
+      "status": "active"
+    },
+    {
+      "id": "agent-math-modeling-capability",
+      "name": "提升agent的数学建模以及分析能力",
+      "detail": "沉淀数学建模、对比分析、常见函数关系和验证模板，提升 agent 对复杂现象的归因与设计能力。",
+      "color": "blue",
       "status": "active"
     }
   ],
@@ -1102,6 +1116,115 @@
       "skillFlow": [],
       "successCriteria": [],
       "lastEvidence": "2026-06-30 accept: Attempt 5 completed combat-proxy comparison. Static best v4 is not combat-stable; v5 fixed-base recovery is the best proxy candidate (+2.1% avg win-rate, 8 regressions), while v3 has fewer regressions but no lift. First-version equipment auto-iteration toolchain is complete; next phase should implement real equipment modifiers rather than keep tuning proxy mapping."
+    },
+    {
+      "id": "math-relationship-knowledge-base",
+      "name": "数学关系知识库 v1",
+      "detail": "为 agent 建造常见数学关系知识库：收益递减、乘算/加算、阈值、窗口、频率-质量转换、采样噪声、对比分析等，方便后续建模和归因调用。",
+      "type": "research",
+      "category": "research",
+      "lineId": "agent-math-modeling-capability",
+      "parentId": "",
+      "sourceTaskId": "",
+      "outcome": "",
+      "nextAction": "",
+      "owner": "agent",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 4,
+      "attemptsUsed": 1,
+      "status": "active",
+      "links": [],
+      "tags": [
+        "math-modeling",
+        "knowledge-base",
+        "agent-capability"
+      ],
+      "skillFlow": [
+        "phenomenon-math-modeling",
+        "comparative-analysis"
+      ],
+      "successCriteria": [
+        "整理常见数学关系",
+        "给出游戏设计对应例子",
+        "标注适用/不适用场景",
+        "作为后续 skill/reference 的入口"
+      ],
+      "lastEvidence": "2026-07-01 accept: created design/agent_math_modeling_knowledge_base.md with common math relationships, diagnosis templates, and the rule that attribute points must pass through a conversion function."
+    },
+    {
+      "id": "build-layer-attribute-equipment-integration",
+      "name": "属性/装备共享加成层",
+      "detail": "实现统一 build layer：角色基础值不回推，属性点先经函数换算，再与装备基础数值、词条修正合并到最终战斗单位。",
+      "type": "tooling",
+      "category": "tooling",
+      "lineId": "progression-build-system",
+      "parentId": "progression-equipment-system-design",
+      "sourceTaskId": "progression-equipment-system-design",
+      "outcome": "",
+      "nextAction": "",
+      "owner": "agent",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 5,
+      "attemptsUsed": 6,
+      "status": "active",
+      "links": [],
+      "tags": [
+        "equipment",
+        "attribute-growth",
+        "build-layer"
+      ],
+      "skillFlow": [
+        "phenomenon-math-modeling",
+        "comparative-analysis"
+      ],
+      "successCriteria": [
+        "属性点不直接等于属性",
+        "属性模拟脚本接入共享层",
+        "装备加成可通过同一层应用",
+        "保留基础数值锚点不改"
+      ],
+      "lastEvidence": "2026-07-01 record: Reran the 8 different-team equipment progression simulation against the new enhanced 100-team waterline. End avg/best/worst changed to 0.701/0.917/0.480; enhanced waterline makes weak-team collapse less severe, but fire mage still frequently caps at 1.0 and holy/assassin remain lower in some team sets."
+    },
+    {
+      "id": "tune-attribute-skill-haste-curve",
+      "name": "调试大属性技能急速曲线",
+      "detail": "循环确认火毒成长是否由属性急速触发，试多组奥术/节律技能急速斜率，测试火毒和其他技能流是否被误伤，选择一版落地。",
+      "type": "balance",
+      "category": "balance",
+      "lineId": "attribute-equipment-growth",
+      "parentId": "build-layer-attribute-equipment-integration",
+      "sourceTaskId": "build-layer-attribute-equipment-integration",
+      "outcome": "",
+      "nextAction": "",
+      "owner": "agent",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 6,
+      "attemptsUsed": 6,
+      "status": "done",
+      "links": [],
+      "tags": [
+        "attribute",
+        "skillHaste",
+        "fire",
+        "poison",
+        "equipment-growth"
+      ],
+      "skillFlow": [],
+      "successCriteria": [
+        "火毒带加点不轻易封顶",
+        "牧师/诗人/炼金等技能流不被明显误伤",
+        "变更记录和报告落地"
+      ],
+      "lastEvidence": "2026-07-01 accept: 完整 100 水桶确认 very_hard_cut 最佳：firePoisonAverage 0.929、supportAverage 0.766、capRisk 0.053、hardCap 0；旧参考 hardCap 7，上一刀 hardCap 5。"
     }
   ]
 }

@@ -4,6 +4,7 @@ const SKILL_DATA = require("./skill-data");
 const { simulateTeams, clonePreset } = require("./combat-sim");
 const { ARCHETYPES } = require("./equipment-affix-registry");
 const { evaluateVariant, VARIANTS } = require("./equipment-auto-iteration");
+const { applyBuildLayers } = require("./build-layers");
 
 const OUT_DIR = path.join(__dirname, "../design/equipment_auto_iteration");
 const OUT_JSON = path.join(OUT_DIR, "equipment-combat-validation.json");
@@ -166,27 +167,32 @@ function normalizeBonusForArchetype(bonus, archetypeId) {
     // Preserve the low-health window: too much HP/healing made the build worse in validation.
     bonus.maxHpAdd = 0;
     bonus.magicPowerAdd = 0;
-    bonus.armorAdd = Math.min(bonus.armorAdd, 3);
-    bonus.physicalPowerAdd = Math.min(Math.max(bonus.physicalPowerAdd, 32), 38);
-    bonus.receivedHealingMult = Math.min(bonus.receivedHealingMult, 1.06);
-    bonus.effectResistPct = Math.min(bonus.effectResistPct, 0.06);
-    bonus.attackSpeedMult = Math.min(Math.max(bonus.attackSpeedMult, 1.22), 1.32);
-    bonus.skillHasteMult = Math.min(bonus.skillHasteMult, 1.08);
-  } else if (archetypeId === "shadowAssassin") {
-    bonus.maxHpAdd = Math.min(bonus.maxHpAdd, 45);
-    bonus.magicPowerAdd = 0;
-    bonus.armorAdd = Math.min(bonus.armorAdd, 4);
-    bonus.physicalPowerAdd = Math.min(Math.max(bonus.physicalPowerAdd, 34), 42);
-    bonus.receivedHealingMult = 1;
+    bonus.armorAdd = Math.min(bonus.armorAdd, 2);
+    bonus.physicalPowerAdd = Math.min(bonus.physicalPowerAdd, 24);
+    bonus.receivedHealingMult = Math.min(bonus.receivedHealingMult, 1.02);
     bonus.effectResistPct = Math.min(bonus.effectResistPct, 0.04);
     bonus.attackSpeedMult = Math.min(bonus.attackSpeedMult, 1.18);
+    bonus.skillHasteMult = Math.min(bonus.skillHasteMult, 1.04);
+  } else if (archetypeId === "shadowAssassin") {
+    bonus.maxHpAdd = Math.min(bonus.maxHpAdd, 10);
+    bonus.magicPowerAdd = 0;
+    bonus.armorAdd = Math.min(bonus.armorAdd, 1);
+    bonus.physicalPowerAdd = Math.min(bonus.physicalPowerAdd, 16);
+    bonus.receivedHealingMult = 1;
+    bonus.effectResistPct = Math.min(bonus.effectResistPct, 0.015);
+    bonus.attackSpeedMult = Math.min(bonus.attackSpeedMult, 1.05);
+    bonus.skillHasteMult = Math.min(bonus.skillHasteMult, 1.015);
+    bonus.effectPowerMult = Math.min(bonus.effectPowerMult, 1.015);
   } else if (archetypeId === "holySustain") {
+    bonus.maxHpAdd = Math.min(bonus.maxHpAdd, 25);
     bonus.physicalPowerAdd = 0;
-    bonus.magicPowerAdd = Math.min(bonus.magicPowerAdd, 22);
-    bonus.armorAdd = Math.min(bonus.armorAdd, 12);
-    bonus.skillHasteMult = Math.min(bonus.skillHasteMult, 1.08);
-    bonus.effectPowerMult = Math.min(bonus.effectPowerMult, 1.08);
-    bonus.receivedHealingMult = Math.min(bonus.receivedHealingMult, 1.12);
+    bonus.magicPowerAdd = Math.min(bonus.magicPowerAdd, 10);
+    bonus.armorAdd = Math.min(bonus.armorAdd, 4);
+    bonus.attackSpeedMult = Math.min(bonus.attackSpeedMult, 1.02);
+    bonus.skillHasteMult = Math.min(bonus.skillHasteMult, 1.035);
+    bonus.effectPowerMult = Math.min(bonus.effectPowerMult, 1.03);
+    bonus.effectResistPct = Math.min(bonus.effectResistPct, 0.04);
+    bonus.receivedHealingMult = Math.min(bonus.receivedHealingMult, 1.04);
   } else if (archetypeId === "fireMage") {
     bonus.physicalPowerAdd = Math.min(bonus.physicalPowerAdd, 8);
     bonus.armorAdd = Math.min(bonus.armorAdd, 20);
@@ -198,10 +204,13 @@ function normalizeBonusForArchetype(bonus, archetypeId) {
     bonus.receivedHealingMult = Math.min(bonus.receivedHealingMult, 1.16);
     bonus.effectPowerMult = Math.min(bonus.effectPowerMult, 1.18);
   } else if (archetypeId === "ironKnight") {
+    bonus.maxHpAdd = Math.min(bonus.maxHpAdd, 50);
     bonus.magicPowerAdd = Math.min(bonus.magicPowerAdd, 8);
-    bonus.physicalPowerAdd = Math.min(bonus.physicalPowerAdd, 22);
-    bonus.attackSpeedMult = Math.min(bonus.attackSpeedMult, 1.08);
-    bonus.effectPowerMult = Math.min(bonus.effectPowerMult, 1.08);
+    bonus.physicalPowerAdd = Math.min(bonus.physicalPowerAdd, 6);
+    bonus.armorAdd = Math.min(bonus.armorAdd, 12);
+    bonus.attackSpeedMult = Math.min(bonus.attackSpeedMult, 1.02);
+    bonus.effectPowerMult = Math.min(bonus.effectPowerMult, 1.02);
+    bonus.effectResistPct = Math.min(bonus.effectResistPct, 0.06);
   }
 }
 
@@ -327,19 +336,10 @@ function applyAffixBonus(bonus, affix, archetypeId) {
 function applyEquipmentToTeam(team, targetRole, bonus) {
   return team.map((unit) => {
     if (unit.role !== targetRole) return structuredClone(unit);
-    const next = structuredClone(unit);
-    const baseHp = next.maxHp || next.hp || 0;
-    next.maxHp = Math.round(baseHp + bonus.maxHpAdd);
-    next.hp = next.maxHp;
-    next.physicalPower = (next.physicalPower ?? next.power ?? 0) + bonus.physicalPowerAdd;
-    next.magicPower = (next.magicPower ?? next.power ?? 0) + bonus.magicPowerAdd;
-    next.power = Math.round(Math.max(next.physicalPower, next.magicPower, next.power || 0));
-    next.armor = round((next.armor || 0) + bonus.armorAdd);
-    next.attackSpeedMult = round((next.attackSpeedMult || 1) * bonus.attackSpeedMult);
-    next.skillHasteMult = round((next.skillHasteMult || 1) * bonus.skillHasteMult);
-    next.effectPowerMult = round((next.effectPowerMult || 1) * bonus.effectPowerMult);
-    next.effectResistPct = round((next.effectResistPct || 0) + bonus.effectResistPct);
-    next.receivedHealingMult = round((next.receivedHealingMult || 1) * bonus.receivedHealingMult);
+    const next = applyBuildLayers(unit, {
+      equipmentModifiers: bonus,
+      tags: ["equipment-v5-static-best"],
+    });
     next.equipmentTags = ["equipment-v5-static-best"];
     return next;
   });

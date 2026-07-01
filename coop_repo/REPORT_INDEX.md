@@ -2,6 +2,10 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-01
+
+- `2026-07-01_2044_equipment-character-modal.md`: added a reusable character + equipment display modal to the equipment grind simulator, with center portrait, side equipment slots, four skill cards, and a seven-stat detail toggle.
+
 ## 2026-06-30
 
 - `2026-06-30_2116_attribute-equipment-layer-direction.md`: records the agreed next architecture direction: keep character base stats unchanged, use 0 starting attribute points, and implement a shared additive attribute/equipment modifier layer instead of continuing proxy tuning.

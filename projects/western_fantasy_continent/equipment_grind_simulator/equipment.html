@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 装备</title>
+    <link rel="stylesheet" href="/equipment_grind_simulator/styles.css">
+  </head>
+  <body data-page="equipment">
+    <main class="grind-shell mode-equipment">
+      <header class="topbar">
+        <div>
+          <a class="back-link" href="/workbench/">工作台</a>
+          <h1>装备</h1>
+          <p>选择角色，点背包装备，给当前角色穿上。</p>
+        </div>
+        <nav class="page-nav">
+          <a href="/equipment_grind_simulator/">副本</a>
+          <a href="/equipment_grind_simulator/team.html">队伍</a>
+          <a class="active" href="/equipment_grind_simulator/equipment.html">装备</a>
+          <a href="/equipment_grind_simulator/loot.html">掉落</a>
+        </nav>
+        <div class="top-stats">
+          <div><span>小队战力</span><strong id="teamPower">0</strong></div>
+          <div><span>最高通关</span><strong id="bestClear">0</strong></div>
+        </div>
+      </header>
+
+      <section class="page-layout equipment-layout">
+        <section class="hero-strip-panel page-panel">
+          <div class="panel-head"><span>当前角色</span><strong>点击头像切换</strong></div>
+          <div id="rosterList" class="roster-list hero-strip"></div>
+        </section>
+        <section class="equipment-panel page-panel">
+          <div class="selected-hero" id="selectedHero"></div>
+          <div id="equippedSlots" class="equipped-slots"></div>
+        </section>
+        <section class="bag-panel page-panel">
+          <div class="panel-head"><span>背包</span><strong id="bagCount">0/42</strong></div>
+          <div id="bagGrid" class="bag-grid"></div>
+        </section>
+        <aside class="detail-panel page-panel">
+          <div class="panel-head"><span>详情</span><strong id="detailTitle">未选择</strong></div>
+          <div id="detailBody" class="detail-body"></div>
+          <button id="equipBtn" type="button" class="equip-action" disabled>装备到当前角色</button>
+        </aside>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/equipment_grind_simulator/equipment-grind-simulator.js"></script>
+  </body>
+</html>

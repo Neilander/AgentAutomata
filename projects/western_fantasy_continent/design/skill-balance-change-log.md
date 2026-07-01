@@ -435,3 +435,12 @@ current_decision: Continue through berserker-owned assets only. The shared actio
 - Validation: `build-skill-assets`, `validate-skill-assets`, runtime syntax checks, `analyze-archetype-signals`, `redteam-skill-pool`, `simulate-archetype-matchups`, and `analyze-skill-budget` were run. Skill assets are valid, existing archetype signal contracts pass, and red-team risky candidates are 0.
 - Residual risk: the top red-team watch candidate is 63.1% average win rate, below breaker threshold but close enough to watch. It uses a berserker/charge-knight/warlock/bard shell, so do not casually add more safety to charge-frontline packages.
 - Handoff: see `coop/2026-06-27_warrior_duel_knight_charge.md`.
+
+### Attribute haste slope reduction
+
+- Problem: fire and poison teams showed nonlinear growth after equipment/attribute progression. A single-variable diagnostic showed skill haste was the largest trigger, because it lets status teams cross an extra setup/payoff cycle rather than merely adding linear damage.
+- Process correction: this pass was moved into a budgeted loop instead of a single hand edit. The loop created `tune-attribute-haste-curve.js`, fixed a polluted-seed test bug, added hard-cap and support-floor checks, tested several candidate slopes, and then confirmed the chosen curve on the full 100-team enhanced waterline.
+- Change: reduced skill haste gained from large attributes only. `arcana` skill haste side yield changed from `0.018` to `0.006`; `rhythm` main skill haste yield changed from `0.055` to `0.02`. Direct equipment `skillHaste` affixes were not changed in this pass.
+- Expected effect: lower the chance that fire/poison builds cross an extra cast-cycle threshold purely through attribute growth, while preserving arcana as magic power and rhythm as the skill-cycle attribute.
+- Validation: syntax checks passed for `build-layers.js`, `analyze-attribute-build-routes-v2.js`, and `tune-attribute-haste-curve.js`. Quick conversion check now gives 10 arcana -> `skillHaste x1.063`, 10 rhythm -> `skillHaste x1.209`, and 5 arcana/5 rhythm -> `skillHaste x1.137`.
+- Full-waterline result: the selected `very_hard_cut` candidate scored best on the 100-team enhanced waterline: fire/poison average `0.929`, support average `0.766`, cap risk `0.053`, and hard cap count `0`. By comparison, the previous `current_cut` still had hard cap count `5`, and the old reference had hard cap count `7`.

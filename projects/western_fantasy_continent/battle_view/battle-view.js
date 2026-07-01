@@ -837,6 +837,8 @@
       if (!source || !target || !this.els?.fxLayer) return;
       const node = document.createElement("img");
       node.className = `battle-vfx-slash battle-vfx-${color}`;
+      node.alt = "";
+      node.onerror = () => node.remove();
       node.src = `${SLASH_BASE}/slash_02_a.png`;
       node.style.left = `${(source.x + target.x) / 2}%`;
       node.style.top = `${(source.y + target.y) / 2}%`;

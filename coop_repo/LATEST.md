@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-06-30_2116_attribute-equipment-layer-direction.md`](reports/2026-06-30_2116_attribute-equipment-layer-direction.md)
+[`reports/2026-07-01_2044_equipment-character-modal.md`](reports/2026-07-01_2044_equipment-character-modal.md)
 
-Last updated: 2026-06-30
+Last updated: 2026-07-01
 
-Current focus: stop tuning the equipment combat proxy. The next phase should keep role/class base stats unchanged, treat every character as starting with 0 added attribute points, and implement a shared additive layer for attribute points, equipment base stats, and equipment affix modifiers.
+Current focus: equipment grind simulator UI is being split into focused surfaces. The latest change added a reusable character + equipment display modal with skill/stat toggle; it did not change combat or balance logic.

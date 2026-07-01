@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const SKILL_DATA = require("./skill-data");
 const { simulateTeams } = require("./combat-sim");
+const BUILD_LAYERS = require("./build-layers");
 
 const OUT_FILE = path.join(__dirname, "..", "design", "attribute-build-route-simulation-v2.md");
 const SEEDS = 8;
@@ -61,8 +62,8 @@ const ATTR_BONUS = {
   might: { physicalPower: 2.35, hp: 3 },
   fortitude: { hp: 14, receivedHealing: 0.012 },
   agility: { attackSpeed: 0.052, effectResist: 0.005 },
-  arcana: { magicPower: 2.65, skillHaste: 0.018 },
-  rhythm: { skillHaste: 0.055, effectPower: 0.04 },
+  arcana: { magicPower: 2.65, skillHaste: 0.006 },
+  rhythm: { skillHaste: 0.02, effectPower: 0.04 },
   resilience: { armor: 0.5, effectResist: 0.012 },
 };
 
@@ -184,21 +185,18 @@ function unitSpec(role, points, routeLabel) {
 }
 
 function buildBonus(points) {
-  const bonus = { hp: 0, physicalPower: 0, magicPower: 0, armor: 0, attackSpeed: 0, skillHaste: 0, effectPower: 0, effectResist: 0, receivedHealing: 0 };
-  for (const [attr, value] of Object.entries(points)) {
-    const row = ATTR_BONUS[attr];
-    if (!row || !value) continue;
-    bonus.hp += (row.hp || 0) * value;
-    bonus.physicalPower += (row.physicalPower || 0) * value;
-    bonus.magicPower += (row.magicPower || 0) * value;
-    bonus.armor += (row.armor || 0) * value;
-    bonus.attackSpeed += (row.attackSpeed || 0) * value;
-    bonus.skillHaste += (row.skillHaste || 0) * value;
-    bonus.effectPower += (row.effectPower || 0) * value;
-    bonus.effectResist += (row.effectResist || 0) * value;
-    bonus.receivedHealing += (row.receivedHealing || 0) * value;
-  }
-  return bonus;
+  const bundle = BUILD_LAYERS.buildAttributeModifierBundle(points);
+  return {
+    hp: bundle.maxHpAdd,
+    physicalPower: bundle.physicalPowerAdd,
+    magicPower: bundle.magicPowerAdd,
+    armor: bundle.armorAdd,
+    attackSpeed: bundle.attackSpeedMult - 1,
+    skillHaste: bundle.skillHasteMult - 1,
+    effectPower: bundle.effectPowerMult - 1,
+    effectResist: bundle.effectResistPct,
+    receivedHealing: bundle.receivedHealingMult - 1,
+  };
 }
 
 function renderReport(rows) {
@@ -225,8 +223,8 @@ function renderReport(rows) {
   lines.push("| 武力 | 每点 `physicalPower +2.35`，`hp +3` |");
   lines.push("| 坚韧 | 每点 `hp +14`，`receivedHealing +1.2%`，不增幅吸血 |");
   lines.push("| 敏捷 | 每点 `attackSpeed +5.2%`，`effectResist +0.5%` |");
-  lines.push("| 奥术 | 每点 `magicPower +2.65`，`skillHaste +1.8%` |");
-  lines.push("| 节律 | 每点 `skillHaste +5.5%`，`effectPower +4%` |");
+  lines.push("| 奥术 | 每点 `magicPower +2.65`，`skillHaste +0.6%` |");
+  lines.push("| 节律 | 每点 `skillHaste +2.0%`，`effectPower +4%` |");
   lines.push("| 韧性 | 每点 `armor +0.5`，`effectResist +1.2%` |");
   lines.push("");
   lines.push("说明：当前正式战斗仍没有完整的物理/法术分离、DOT 增幅、控制强度公式。本次只给模拟器增加了默认不生效的测试字段，用来近似攻速、急速、效果强度、效果抗性。");

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 刷装副本</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css?v=equipment_grind_2">
+    <link rel="stylesheet" href="/equipment_grind_simulator/styles.css">
+  </head>
+  <body data-page="battle">
+    <main class="grind-shell mode-battle">
+      <header class="topbar">
+        <div>
+          <a class="back-link" href="/workbench/">工作台</a>
+          <h1>刷装副本</h1>
+          <p>选择副本，开战，胜利后拿装备。</p>
+        </div>
+        <nav class="page-nav">
+          <a class="active" href="/equipment_grind_simulator/">副本</a>
+          <a href="/equipment_grind_simulator/team.html">队伍</a>
+          <a href="/equipment_grind_simulator/equipment.html">装备</a>
+          <a href="/equipment_grind_simulator/loot.html">掉落</a>
+        </nav>
+        <div class="top-stats">
+          <div><span>小队战力</span><strong id="teamPower">0</strong></div>
+          <div><span>最高通关</span><strong id="bestClear">0</strong></div>
+          <button id="rerollBtn" type="button">重置队伍</button>
+        </div>
+      </header>
+
+      <section class="battle-page-layout">
+        <aside class="dungeon-panel">
+          <div class="panel-head">
+            <span>副本等级</span>
+            <strong id="dungeonName">Lv.1</strong>
+          </div>
+          <div class="enemy-preview">
+            <div class="mini-title">本次敌人</div>
+            <div id="enemyPreview" class="enemy-grid"></div>
+          </div>
+          <div id="dungeonList" class="dungeon-list"></div>
+        </aside>
+
+        <section class="combat-panel">
+          <div class="combat-head">
+            <div>
+              <span id="combatStatus" class="status-pill">待命</span>
+              <strong id="combatTitle">选择副本后开刷</strong>
+            </div>
+            <button id="fightBtn" type="button" class="primary">开刷一次</button>
+          </div>
+          <div id="teamPreview" class="team-skill-strip"></div>
+          <div id="battleMount" class="battle-mount"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/battle_view/battle-view.js?v=equipment_grind_2"></script>
+    <script src="/equipment_grind_simulator/equipment-grind-simulator.js"></script>
+  </body>
+</html>

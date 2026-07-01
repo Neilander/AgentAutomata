@@ -1,10 +1,10 @@
 {
   "schema": "agent_automata_task_budget_board_v2",
-  "updatedAt": "2026-06-29",
+  "updatedAt": "2026-06-30",
   "workflow": [
-    "Create or refresh an experiment budget card before tuning.",
-    "Use the matching debug skill to run bounded attempts.",
-    "Update attempts, evidence, decision, and remaining budget after validation."
+    "先围绕可玩的角色搭配定义本阶段体验目标。",
+    "用统一 4v4 战斗验证队伍 combo、克制和强度感。",
+    "发现缺口后再发散到新技能、装备或属性回调。"
   ],
   "taskLines": [
     {
@@ -17,7 +17,7 @@
     {
       "id": "progression-build-system",
       "name": "角色成长体系主线",
-      "detail": "装备、加点、技能、评价标准和属性回调组成的连续研发线。",
+      "detail": "当前阶段：属性调试已收束，转入可玩的角色搭配玩法 v1；装备和新技能跟随玩法缺口推进。",
       "color": "gold",
       "status": "active"
     },
@@ -689,7 +689,7 @@
         "坚韧/韧性不能在大多数职业里无脑第一",
         "每轮调参后跑1v1、2v2、4v4验证"
       ],
-      "lastEvidence": "Closed without extra attempt: base combat numbers are accepted as v1 anchor; stop broad base-stat retuning unless later evidence breaks the anchor."
+      "lastEvidence": "2026-06-30 accept: User confirmed the attribute tuning direction is finally usable. Treat current attribute model as the next-stage baseline instead of continuing attribute-only tuning."
     },
     {
       "id": "task-line-board-v2",
@@ -769,7 +769,7 @@
       "parentId": "progression-equipment-system-design",
       "sourceTaskId": "progression-equipment-system-design",
       "outcome": "属性点能转换成当前战斗框架能吃到的小属性。",
-      "nextAction": "基于当前职业技能偏好重列主吃和副吃属性。",
+      "nextAction": "",
       "owner": "agent",
       "priority": "high",
       "importance": "high",
@@ -777,7 +777,7 @@
       "blastRadius": "medium",
       "attemptBudget": 6,
       "attemptsUsed": 0,
-      "status": "queued",
+      "status": "done",
       "links": [],
       "tags": [
         "progression",
@@ -792,7 +792,7 @@
         "??????????",
         "???????????"
       ],
-      "lastEvidence": "created: ???????????????????????"
+      "lastEvidence": "2026-06-30 accept: Attribute allocation direction is accepted enough to leave design mode and support the next playable composition phase."
     },
     {
       "id": "progression-meaningful-build-routes",
@@ -804,7 +804,7 @@
       "parentId": "progression-attribute-allocation-design",
       "sourceTaskId": "progression-attribute-allocation-design",
       "outcome": "每个职业至少有可解释的主路线和队伍相关副路线。",
-      "nextAction": "用一对一、二对二、四对四和随机队伍抽样测试。",
+      "nextAction": "",
       "owner": "agent",
       "priority": "high",
       "importance": "high",
@@ -812,7 +812,7 @@
       "blastRadius": "medium",
       "attemptBudget": 8,
       "attemptsUsed": 0,
-      "status": "queued",
+      "status": "done",
       "links": [],
       "tags": [
         "progression",
@@ -827,7 +827,7 @@
         "??????????",
         "????????????????"
       ],
-      "lastEvidence": "created: ???????????????????????"
+      "lastEvidence": "2026-06-30 accept: Attribute routes are considered validated for the current stage; future issues should be opened as focused route or skill tasks."
     },
     {
       "id": "progression-new-skill-design",
@@ -839,7 +839,7 @@
       "parentId": "progression-meaningful-build-routes",
       "sourceTaskId": "progression-meaningful-build-routes",
       "outcome": "新技能要打开新流派入口和属性需求。",
-      "nextAction": "Design the next skill batch around reusable ecology gaps, not narrow counters.",
+      "nextAction": "Use playable composition needs to decide the next skill batch, not isolated skill ideas.",
       "owner": "agent",
       "priority": "high",
       "importance": "high",
@@ -847,7 +847,7 @@
       "blastRadius": "medium",
       "attemptBudget": 6,
       "attemptsUsed": 0,
-      "status": "active",
+      "status": "queued",
       "links": [],
       "tags": [
         "progression",
@@ -864,7 +864,7 @@
         "?????????/????",
         "??????"
       ],
-      "lastEvidence": "Mainline return rule recorded here: task lines are not infinite chains. Peripheral validation/tools must return to the current center; current center is new skill design based on the accepted v1 base-stat anchor."
+      "lastEvidence": "2026-06-30 queued behind playable composition v1: next skill design should serve actual team-building gaps."
     },
     {
       "id": "progression-new-skill-balance",
@@ -948,7 +948,7 @@
       "parentId": "progression-evaluation-standard-v2",
       "sourceTaskId": "progression-evaluation-standard-v2",
       "outcome": "属性调整变成受控闭环。",
-      "nextAction": "把当前坚韧、奥术、狂战、刺客遗留问题放入这条闭环。",
+      "nextAction": "Only reopen if the next playable-composition tests expose a clear attribute-side failure.",
       "owner": "agent",
       "priority": "high",
       "importance": "high",
@@ -956,7 +956,7 @@
       "blastRadius": "medium",
       "attemptBudget": 10,
       "attemptsUsed": 0,
-      "status": "queued",
+      "status": "postponed",
       "links": [],
       "tags": [
         "progression",
@@ -971,7 +971,7 @@
         "????????????",
         "????????????/??"
       ],
-      "lastEvidence": "Do not enter attribute adjustment loop unless later matrix/waterline reports show a structural issue that skills or equipment cannot solve."
+      "lastEvidence": "2026-06-30 parked: Current attribute pass is accepted. The adjustment loop is kept as a future safety valve, not the active center."
     },
     {
       "id": "standard-team-ecology-retune",
@@ -1025,7 +1025,7 @@
       "blastRadius": "medium",
       "attemptBudget": 3,
       "attemptsUsed": 3,
-      "status": "active",
+      "status": "done",
       "links": [],
       "tags": [],
       "skillFlow": [
@@ -1037,7 +1037,71 @@
         "不直接加刺客基础HP",
         "水表不变成全能超模"
       ],
-      "lastEvidence": "2026-06-29 refined baseline interpretation: one-shadow remains failed. Two-shadow should not be judged as universal replacement: no-attribute matrix avg 64% with clear prey/predators, waterline 53% vs old 62%, but improves high buckets (13-14: 26% vs old 17%, 15-17: 7% vs old 0%) and is weak into multi-front patterns (four-front 24%, three-front 26%). Treat as plausible anti-combo/two-core branch prototype; next tests should evaluate it as a double-shadow archetype, not single-character replacement, before attribute routes."
+      "lastEvidence": "2026-06-30 accept: Latest Shadow Blade Loop / target-focus pass is considered healthy. Fire mage FX anchoring bug in the showcase was patched separately; no more attribute tuning needed before the next phase."
+    },
+    {
+      "id": "playable-team-composition-v1",
+      "name": "可玩的角色搭配玩法 v1",
+      "detail": "属性调试收束后，把已有职业、技能组和预设队伍整理成一个能实际选择、搭配、开战、复盘的核心玩法切片。",
+      "type": "design",
+      "category": "design",
+      "lineId": "progression-build-system",
+      "parentId": "",
+      "sourceTaskId": "",
+      "outcome": "玩家能围绕4个位置从多个预设角色/技能组中组队，并通过标准战斗验证 combo、克制和强度感。",
+      "nextAction": "定义第一版可选角色池、预设技能组、队伍槽位和战斗验收路径。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 6,
+      "attemptsUsed": 0,
+      "status": "active",
+      "links": [],
+      "tags": [
+        "next-phase",
+        "playable-slice",
+        "team-building"
+      ],
+      "skillFlow": [
+        "game-ui-designer",
+        "skill-kit-design",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "工作台有清晰入口",
+        "能选择4人队伍和技能组",
+        "能直接进入统一4v4战斗",
+        "战后能看到胜负、关键击杀和基础信号摘要",
+        "至少支持多种有效配队而不是单一答案"
+      ],
+      "lastEvidence": "2026-06-30 created: Attribute tuning accepted; next phase is playable role-composition gameplay."
+    },
+    {
+      "id": "equipment-affix-auto-iteration",
+      "name": "装备词条自动迭代循环",
+      "detail": "建立全局统一装备 asset：定义部位固定属性、词条池、稀有度与词条等级；模拟玩家每轮掉落装备并自动配装，用多样性、流派增强、极端风险、成型速度四个评价函数诊断，再用带属性/装备水表战斗验证；每轮只允许修改装备系统规则，最多 5 次循环，并保留阶段性最佳版本。",
+      "type": "design",
+      "category": "design",
+      "lineId": "progression-build-system",
+      "parentId": "",
+      "sourceTaskId": "",
+      "outcome": "",
+      "nextAction": "",
+      "owner": "agent",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 5,
+      "attemptsUsed": 5,
+      "status": "done",
+      "links": [],
+      "tags": [],
+      "skillFlow": [],
+      "successCriteria": [],
+      "lastEvidence": "2026-06-30 accept: Attempt 5 completed combat-proxy comparison. Static best v4 is not combat-stable; v5 fixed-base recovery is the best proxy candidate (+2.1% avg win-rate, 8 regressions), while v3 has fewer regressions but no lift. First-version equipment auto-iteration toolchain is complete; next phase should implement real equipment modifiers rather than keep tuning proxy mapping."
     }
   ]
 }

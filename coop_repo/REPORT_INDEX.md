@@ -2,6 +2,19 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-06-30
+
+- `2026-06-30_2116_attribute-equipment-layer-direction.md`: records the agreed next architecture direction: keep character base stats unchanged, use 0 starting attribute points, and implement a shared additive attribute/equipment modifier layer instead of continuing proxy tuning.
+- `2026-06-30_1338_equipment-auto-iteration-goal-complete.md`: completed the first-version equipment auto-iteration toolchain at 5/5 attempts, with static reports, combat proxy validation, and next-step recommendation for real equipment modifiers.
+- `2026-06-30_1315_equipment-static-loop-attempts-2-3.md`: records attempts 2-3 of equipment auto-iteration: bridge affixes, required-group fantasy scoring, and v5 static best-so-far.
+- `2026-06-30_1258_equipment-static-loop-attempt1.md`: implemented attempt 1/5 of the equipment auto-iteration loop with a global affix registry, static loot/equip evaluator, five rule variants, and first metric results.
+- `2026-06-30_1239_equipment-auto-iteration-pipeline.md`: created the equipment auto-iteration pipeline and task-board entry, with four evaluation functions and a five-loop equipment-only adjustment budget.
+- `2026-06-30_1224_equipment-affix-full-pool.md`: expanded equipment design from only major attributes into full first-level, second-level, and third-level affix pools distributed by slot.
+- `2026-06-30_1206_equipment-affix-attribute-correction.md`: corrected equipment affix design to use the accepted v2 attributes: 武力、坚韧、敏捷、奥术、节律、韧性.
+- `2026-06-30_1131_equipment-loot-design.md`: added the v1 equipment loot experience draft: slots, left/right/two-hand weapons, rarity-to-affix count, steep affix levels, and slot-restricted affix pools.
+- `2026-06-30_1111_task-board-next-phase.md`: updated the task board after attribute tuning acceptance; closed/parked attribute-shadow tuning tasks and made `playable-team-composition-v1` the active next phase.
+- `2026-06-30_1053_shadow-loop-and-fire-fx-check.md`: checked latest assassin target-focus work, verified fire mage active-cast signals in the showcase case, patched duplicate-name FX fallback and residual fire visuals.
+
 ## 2026-06-29
 
 - `2026-06-29_2219_balance-showcase-and-open-bugs.md`: summarizes the balance showcase work and records the next two combat bugs: shadow blink target lock and mage/fire FX anchoring.

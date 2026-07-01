@@ -213,7 +213,11 @@
           const cls = tags.includes("burn") || tags.includes("fire") ? "fire" : tags.includes("poison") ? "poison" : "";
           const prefix = tags.includes("burn") ? "\u71c3\u70e7-" : tags.includes("poison") ? "\u5267\u6bd2-" : "-";
           this.floater(target, `${prefix}${amount}`, cls);
-          if (source && !tags.includes("dot") && !tags.includes("selfCost")) this.slash(source, target, cls === "poison" ? "poison" : cls === "fire" ? "fire" : "gold");
+          if (this.isResidualFireSignal(signal)) {
+            this.ring(target, "fire");
+          } else if (source && !tags.includes("dot") && !tags.includes("selfCost")) {
+            this.slash(source, target, cls === "poison" ? "poison" : cls === "fire" ? "fire" : "gold");
+          }
         }
         return;
       }
@@ -293,7 +297,15 @@
       if (!ref) return null;
       const sideMap = { left: "ally", right: "enemy", ally: "ally", enemy: "enemy" };
       const side = sideMap[ref.side] || ref.side;
-      return this.state.units.find((unit) => unit.simId === ref.id || unit.id === ref.id || unit.unitId === ref.id || (side && unit.side === side && unit.name === ref.name));
+      const exact = this.state.units.find((unit) => unit.simId === ref.id || unit.id === ref.id || unit.unitId === ref.id);
+      if (exact) return exact;
+      const named = this.state.units.filter((unit) => side && unit.side === side && unit.name === ref.name);
+      return named.length === 1 ? named[0] : null;
+    }
+
+    isResidualFireSignal(signal) {
+      const tags = signal.tags || [];
+      return tags.includes("fire") && (/火种余爆|燃烧/.test(signal.skillName || "") || tags.includes("dot"));
     }
 
     finishUnifiedIfNeeded() {

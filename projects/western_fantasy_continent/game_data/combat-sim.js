@@ -996,7 +996,7 @@ class CombatSimulation {
 
   blinkBacklineStrike(unit, effect = {}) {
     if (!unit || !this.isAlive(unit)) return;
-    const backline = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy) && enemy.line === "鍚庢帓");
+    const backline = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy) && enemy.line === "后排");
     const fallback = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy));
     let target = (backline.length ? backline : fallback).sort((a, b) => this.hpRatio(a) - this.hpRatio(b) || this.getDistance(unit, a) - this.getDistance(unit, b))[0];
     if (unit.assassinFocusTargetId) {

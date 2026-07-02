@@ -21,6 +21,14 @@ right column: legs, boots, ring, charm
 
 This means the requested dual-hand weapon model is still missing.
 
+For future affix and mechanic review, use the project skill:
+
+```text
+projects/western_fantasy_continent/skills/design-width-evaluator/SKILL.md
+```
+
+That skill records the corrected rule: evaluate current real users, future possible users, and an extreme saturation test before accepting a mechanic into shared pools.
+
 ## Current Weapon Slot
 
 Current `weapon` base options are mutually exclusive:
@@ -118,11 +126,21 @@ valid normal affix = real roles >= 2
 | `shadowAmp` | shadow/backline burst line | 3 | assassin, warlock | yes | no |
 | `arcaneAmp` | arcane/general magic line | 3 | mage, warlock, alchemist, priest, bard | yes | no |
 
-Current result:
+Initial result before the 2026-07-02 correction:
 
 - Valid normal archetype affixes: 8/12
 - Invalid under the new rule: 4/12
 - Invalid affixes: `fireAmp`, `stealthDuration`, `lowHpDamage`, `auraPower`
+
+Corrected result after review:
+
+- Valid normal archetype affixes: 12/12
+- `fireAmp`: broadened to mage, alchemist, ranger.
+- `stealthDuration`: broadened to assassin, ranger, but should remain gated because full-team stealth is system-warping.
+- `lowHpDamage`: broadened to berserker, warlock, warrior.
+- `auraPower`: broadened to bard, priest, knight.
+- `shadowAmp`: gained direct generic build-layer side effects.
+- `arcaneAmp`: gained direct generic build-layer side effects.
 
 ## Observations
 
@@ -132,12 +150,12 @@ Current result:
 
 ### Under-Covered Affixes
 
-The following affixes violate the new "at least two real roles" rule:
+The following affixes violated the new "at least two real roles" rule before correction:
 
-- `fireAmp`: currently mage-only in practice. Fix by giving alchemist or warlock a real fire/burn branch, or rename it into a broader elemental/burning affix that more roles consume.
-- `stealthDuration`: currently assassin-only. Fix by giving ranger a camouflage/ambush branch or warlock a shadow-cloak branch, or remove it from normal loot and make it assassin-exclusive.
-- `lowHpDamage`: currently berserker-only. Fix by giving warrior or warlock a low-HP/last-stand damage branch, or merge it with `lowHpHealingReceived` into a broader "low-HP power" affix.
-- `auraPower`: currently bard-only. Fix by giving knight, priest, or alchemist real aura/field skills, or remove it from normal loot and make it bard-exclusive.
+- `fireAmp`: corrected by treating fire/burn as a damage-type family for mage, alchemist, and ranger.
+- `stealthDuration`: corrected by giving ranger a plausible camouflage/ambush use case, but it remains gated and should not become universal.
+- `lowHpDamage`: corrected by treating low-health pressure as berserker, warlock, and warrior risk-reward space.
+- `auraPower`: corrected by treating aura/field value as bard, priest, and knight team-space value.
 
 The key design lesson: a narrow identity is fine for skills, but normal loot affixes should not be single-class dead rolls.
 
@@ -165,12 +183,5 @@ They may still be available for future skill-specific consumption, but right now
    - shield/counter/sustain;
    - focus/arcana/effect;
    - dagger/crit/execute/stealth.
-5. Redesign under-covered affixes so each normal archetype affix has at least two real roles:
-   - `fireAmp`;
-   - `stealthDuration`;
-   - `lowHpDamage`;
-   - `auraPower`.
-6. Add direct build-layer side effects or skill hooks for:
-   - `shadowAmp`;
-   - `arcaneAmp`.
-7. After weapon slots and affix coverage are corrected, rerun fixed-team dungeon calibration.
+5. Keep `stealthDuration` gated by role/slot/rarity despite meeting the two-role rule, because extreme saturation is system-warping.
+6. After weapon slots and affix coverage are corrected, rerun fixed-team dungeon calibration.

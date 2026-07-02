@@ -1,6 +1,7 @@
 (() => {
   const SKILL_DATA = window.GAME_SKILL_DATA;
   const BUILD_LAYERS = window.GAME_BUILD_LAYERS;
+  const MECHANIC_CURVES = window.GAME_MECHANIC_CURVES;
   const BATTLE = window.GAME_BATTLE_VIEW;
   if (!SKILL_DATA) throw new Error("Equipment grind simulator requires skill data.");
   if (!BUILD_LAYERS) throw new Error("Equipment grind simulator requires build layer data.");
@@ -94,13 +95,13 @@
     weapon: {
       label: "武器",
       icon: "⚔️",
-      baseOptions: [["physicalPower", "attackSpeed"], ["magicPower", "skillHaste"]],
+      baseOptions: [["physicalPower"], ["magicPower"]],
       affixPool: ["might", "agility", "arcana", "physicalPower", "magicPower", "attackSpeed", "critChance", "critDamage", "lifeSteal", "shieldBreak", "armorBreak", "fireAmp", "poisonAmp", "shadowAmp", "arcaneAmp", "executeDamage", "lowHpDamage", "markPower"],
     },
     helm: {
       label: "头盔",
       icon: "🎩",
-      baseStats: ["maxHp", "skillHaste", "effectResist"],
+      baseStats: ["maxHp", "armor"],
       affixPool: ["arcana", "rhythm", "resilience", "magicPower", "skillHaste", "effectPower", "effectResist", "healPower", "controlPower", "critChance", "fireAmp", "poisonAmp", "arcaneAmp", "markPower", "stealthDuration", "cleanseEfficiency", "auraPower"],
     },
     chest: {
@@ -112,31 +113,31 @@
     gloves: {
       label: "护手",
       icon: "🧤",
-      baseStats: ["physicalPower", "attackSpeed"],
+      baseStats: ["physicalPower", "armor"],
       affixPool: ["might", "agility", "physicalPower", "attackSpeed", "critChance", "critDamage", "lifeSteal", "shieldBreak", "armorBreak", "markPower", "executeDamage", "lowHpDamage", "counterDamage"],
     },
     legs: {
       label: "腿甲",
       icon: "▰",
-      baseStats: ["maxHp", "armor", "effectResist"],
+      baseStats: ["maxHp", "armor"],
       affixPool: ["fortitude", "resilience", "agility", "maxHp", "armor", "effectResist", "receivedHealing", "skillHaste", "lowHpHealingReceived", "cleanseEfficiency", "counterDamage"],
     },
     boots: {
       label: "靴子",
       icon: "🥾",
-      baseStats: ["attackSpeed", "skillHaste"],
+      baseStats: ["maxHp", "armor"],
       affixPool: ["agility", "rhythm", "resilience", "attackSpeed", "skillHaste", "effectResist", "initiative", "controlPower", "stealthDuration", "auraPower"],
     },
     ring: {
       label: "戒指",
       icon: "💍",
-      baseStats: ["effectPower", "skillHaste"],
+      baseOptions: [["physicalPower"], ["magicPower"]],
       affixPool: ["might", "fortitude", "agility", "arcana", "rhythm", "resilience", "skillHaste", "effectPower", "effectResist", "dotAmp", "controlPower", "healPower", "shieldPower", "fireAmp", "poisonAmp", "shadowAmp", "markPower", "executeDamage", "lowHpDamage", "lowHpHealingReceived", "auraPower"],
     },
     charm: {
       label: "护符",
       icon: "🔮",
-      baseStats: ["effectPower", "receivedHealing"],
+      baseOptions: [["maxHp"], ["magicPower"]],
       affixPool: ["might", "fortitude", "agility", "arcana", "rhythm", "resilience", "effectPower", "receivedHealing", "dotAmp", "healPower", "shieldPower", "controlPower", "fireAmp", "poisonAmp", "shadowAmp", "arcaneAmp", "stealthDuration", "cleanseEfficiency", "auraPower", "counterDamage"],
     },
   };
@@ -144,12 +145,14 @@
     ...Object.fromEntries(Object.entries(AFFIX_DEFS).map(([id, def]) => [id, def.label])),
   };
   const RARITIES = [
-    { id: "common", label: "普通", affixes: 1, value: 1, levelBonus: 0 },
-    { id: "rare", label: "稀有", affixes: 2, value: 1.18, levelBonus: 1 },
-    { id: "epic", label: "史诗", affixes: 3, value: 1.36, levelBonus: 1 },
-    { id: "legendary", label: "传说", affixes: 4, value: 1.58, levelBonus: 2 },
-    { id: "mythic", label: "神话", affixes: 4, value: 1.82, levelBonus: 2 },
+    { id: "common", label: "普通", affixes: 1, value: 1 },
+    { id: "rare", label: "稀有", affixes: 2, value: 1.3 },
+    { id: "epic", label: "史诗", affixes: 4, value: 1.9 },
+    { id: "legendary", label: "传说", affixes: 7, value: 2.8 },
+    { id: "mythic", label: "神话", affixes: 12, value: 4.2 },
   ];
+  const EQUIPMENT_LEVEL_BY_TIER = { 1: 20, 2: 40, 3: 60, 4: 100, 5: 150 };
+  const BLOCKED_DIRECT_AFFIXES = new Set(["physicalPower", "magicPower", "maxHp", "armor", "attackSpeed", "skillHaste"]);
   const BAG_CAPACITY = 500;
   const RARITY_RANK = Object.fromEntries(RARITIES.map((rarity, index) => [rarity.id, index]));
   const DUNGEONS = [
@@ -580,16 +583,18 @@
     const slotKey = pick(Object.keys(SLOT_DATA));
     const slot = SLOT_DATA[slotKey];
     const rarity = chooseRarity(rarityTable || { common: 0.6, rare: 0.28, epic: 0.1, legendary: 0.02 });
-    const affixes = pickMany(slot.affixPool, rarity.affixes).map((stat) => rollAffix(stat, tier, rarity));
+    const equipmentLevel = equipmentLevelForTier(tier);
+    const affixes = pickAffixStats(slot.affixPool, rarity.affixes).map((stat) => rollAffix(stat, equipmentLevel));
     const baseStats = rollBaseStats(slot, tier, rarity);
     return {
       id: `item_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       slot: slotKey,
       tier,
+      equipmentLevel,
       rarity: rarity.id,
       rarityLabel: rarity.label,
       icon: slot.icon,
-      name: `${rarity.label}${slot.label}+${tier}`,
+      name: `${rarity.label}${slot.label} Lv.${equipmentLevel}`,
       baseStats,
       affixes,
     };
@@ -597,40 +602,56 @@
 
   function rollBaseStats(slot, tier, rarity) {
     const baseStats = slot.baseOptions ? pick(slot.baseOptions) : (slot.baseStats || []);
-    return Object.fromEntries(baseStats.map((stat) => [stat, rollDirectStatValue(stat, tier, rarity.value, 0.72)]));
+    const equipmentLevel = equipmentLevelForTier(tier);
+    return Object.fromEntries(baseStats.map((stat) => [stat, rollDirectStatValue(stat, equipmentLevel)]));
   }
 
-  function rollAffix(stat, tier, rarity) {
-    const level = rollAffixLevel(tier, rarity);
+  function rollAffix(stat, equipmentLevel) {
+    const level = rollAffixLevel(equipmentLevel);
     return {
       stat,
-      value: rollAffixValue(stat, level, rarity.value),
+      value: rollAffixValue(stat, equipmentLevel),
       level,
       category: AFFIX_DEFS[stat]?.category || "mechanic",
     };
   }
 
-  function rollAffixLevel(tier, rarity) {
-    const maxLevel = clamp(Math.ceil(tier * 0.55) + (rarity.levelBonus || 0), 1, 5);
-    const minLevel = Math.max(1, maxLevel - 2);
-    const roll = state.rng();
-    if (roll > 0.86) return maxLevel;
-    if (roll > 0.56) return Math.max(minLevel, maxLevel - 1);
-    return minLevel;
+  function rollAffixLevel(equipmentLevel) {
+    if (equipmentLevel >= 120) return 5;
+    if (equipmentLevel >= 80) return 4;
+    if (equipmentLevel >= 50) return 3;
+    if (equipmentLevel >= 30) return 2;
+    return 1;
   }
 
-  function rollAffixValue(stat, level, rarityValue) {
-    const def = AFFIX_DEFS[stat] || { scale: 1 };
-    const levelBudget = [0, 1, 2, 4, 7, 12][level] || level;
-    const value = levelBudget * (def.scale || 1) * rarityValue * (0.88 + state.rng() * 0.24);
-    if (def.percent) return round(value, 3);
-    return Math.max(1, Math.round(value));
+  function rollAffixValue(stat, equipmentLevel) {
+    const def = AFFIX_DEFS[stat] || { category: "mechanic" };
+    const variance = 0.88 + state.rng() * 0.24;
+    if (def.category === "major") return Math.max(1, Math.round((1.1 + equipmentLevel / 45) * variance));
+    if (def.percent || MECHANIC_CURVES?.hasMechanicCurve?.(stat)) return Math.max(1, Math.round((2.5 + equipmentLevel / 7.5) * variance));
+    if (stat === "effectResist" || stat === "receivedHealing" || stat === "effectPower") return Math.max(1, Math.round((2.5 + equipmentLevel / 8) * variance));
+    return Math.max(1, Math.round((2 + equipmentLevel / 9) * variance));
   }
 
-  function rollDirectStatValue(stat, tier, rarityValue, budgetScale = 1) {
-    const def = AFFIX_DEFS[stat] || { scale: 1 };
-    const value = (0.9 + tier * 0.55) * rarityValue * (def.scale || 1) * budgetScale * (0.86 + state.rng() * 0.28);
-    return def.percent ? round(value, 3) : Math.max(1, Math.round(value));
+  function rollDirectStatValue(stat, equipmentLevel) {
+    const variance = 0.92 + state.rng() * 0.16;
+    const rows = {
+      physicalPower: 0.5,
+      magicPower: 0.5,
+      maxHp: 2.8,
+      armor: 0.08,
+      attackSpeed: 0.0014,
+      skillHaste: 0.0014,
+      effectPower: 0.0012,
+      effectResist: 0.001,
+      receivedHealing: 0.0012,
+    };
+    const value = equipmentLevel * (rows[stat] || 0.12) * variance;
+    return percentStats().includes(stat) ? round(value, 3) : Math.max(1, Math.round(value));
+  }
+
+  function equipmentLevelForTier(tier) {
+    return EQUIPMENT_LEVEL_BY_TIER[tier] || Math.max(1, Math.round(Number(tier) || 1));
   }
 
   function equipmentBonus(hero) {
@@ -659,13 +680,14 @@
       affixes: (item.affixes || []).map((affix) => ({
         ...affix,
         id: affix.stat,
-        value: buildLayerAffixValue(affix.stat, affix.value),
+        value: buildLayerAffixValue(affix.stat, affix.value, true),
       })),
     }));
   }
 
-  function buildLayerAffixValue(stat, value) {
+  function buildLayerAffixValue(stat, value, isAffix = false) {
     const numeric = Number(value) || 0;
+    if (isAffix && MECHANIC_CURVES?.hasMechanicCurve?.(stat)) return numeric;
     return percentStats().includes(stat) ? numeric * 100 : numeric;
   }
 
@@ -1040,6 +1062,8 @@
     const numeric = Number(value) || 0;
     const role = hero?.role || "";
     if (BUILD_LAYERS.ATTR_ORDER?.includes(stat)) return numeric * 55 * roleAttributeWeight(role, stat);
+    const curvePoints = MECHANIC_CURVES?.hasMechanicCurve?.(stat) ? numeric : percentStats().includes(stat) ? numeric * 100 : numeric;
+    const curveValue = MECHANIC_CURVES?.hasMechanicCurve?.(stat) ? MECHANIC_CURVES.mechanicCurveValue(stat, curvePoints) * 100 : numeric;
     const weights = {
       maxHp: 0.55,
       physicalPower: 8 * rolePhysicalWeight(role),
@@ -1060,20 +1084,20 @@
       shieldBreak: 12 * rolePhysicalWeight(role),
       armorBreak: 12 * rolePhysicalWeight(role),
       initiative: 14 * roleInitiativeWeight(role),
-      fireAmp: 18 * (role === "mage" ? 1.1 : 0.35),
+      fireAmp: 18 * (["mage", "alchemist", "ranger"].includes(role) ? 1 : 0.35),
       poisonAmp: 18 * (["warlock", "alchemist", "assassin"].includes(role) ? 1 : 0.35),
       shadowAmp: 18 * (["assassin", "warlock"].includes(role) ? 1 : 0.35),
       arcaneAmp: 18 * (["mage", "warlock", "alchemist", "priest", "bard"].includes(role) ? 0.9 : 0.25),
       markPower: 18 * (["ranger", "assassin"].includes(role) ? 1 : 0.25),
-      stealthDuration: 20 * (role === "assassin" ? 1 : 0.12),
+      stealthDuration: 20 * (role === "assassin" ? 1 : role === "ranger" ? 0.82 : 0.12),
       executeDamage: 17 * (["assassin", "ranger", "warrior"].includes(role) ? 1 : 0.25),
-      lowHpDamage: 18 * (role === "berserker" ? 1 : 0.25),
+      lowHpDamage: 18 * (["berserker", "warlock", "warrior"].includes(role) ? 1 : 0.25),
       lowHpHealingReceived: 18 * (["berserker", "knight", "warrior"].includes(role) ? 1 : 0.28),
       counterDamage: 16 * (["knight", "warrior"].includes(role) ? 1 : 0.3),
       cleanseEfficiency: 17 * (["priest", "bard", "alchemist"].includes(role) ? 1 : 0.35),
-      auraPower: 18 * (role === "bard" ? 1 : 0.35),
+      auraPower: 18 * (["bard", "priest", "knight"].includes(role) ? 1 : 0.35),
     };
-    return (weights[stat] || 2.5) * numeric;
+    return (weights[stat] || 2.5) * curveValue;
   }
   function rolePhysicalWeight(role) { return ["warrior", "berserker", "assassin", "ranger", "knight"].includes(role) ? 1 : 0.45; }
   function roleMagicWeight(role) { return ["mage", "priest", "warlock", "alchemist", "bard"].includes(role) ? 1 : 0.35; }
@@ -1115,6 +1139,12 @@
     while (pool.length && result.length < count) result.push(pool.splice(Math.floor(state.rng() * pool.length), 1)[0]);
     return result;
   }
+  function pickAffixStats(list, count) {
+    const pool = list.filter((stat) => !BLOCKED_DIRECT_AFFIXES.has(stat));
+    const result = [];
+    for (let i = 0; i < count; i += 1) result.push(pick(pool));
+    return result;
+  }
   function seededRandom(seedText) {
     let seed = 2166136261;
     for (let i = 0; i < seedText.length; i += 1) {
@@ -1143,16 +1173,17 @@
   function skillName(key) { return SKILL_DATA.skills?.[key]?.name || key || "-"; }
   function enemyNames(roles) { return roles.map((role) => ROLE_LABELS[role] || role).join(" / "); }
   function itemStatRows(item) {
-    const baseRows = Object.entries(item.baseStats || item.stats || {}).map(([stat, value]) => `<div class="affix base"><span>基础 · ${STAT_LABELS[stat] || stat}</span><b>${formatValue(stat, value)}</b></div>`);
-    const affixRows = (item.affixes || []).map((affix) => `<div class="affix"><span>${STAT_LABELS[affix.stat] || affix.stat}${affix.level ? ` ${romanLevel(affix.level)}` : ""}</span><b>${formatValue(affix.stat, affix.value)}</b></div>`);
+    const baseRows = Object.entries(item.baseStats || item.stats || {}).map(([stat, value]) => `<div class="affix base"><span>基础 · ${STAT_LABELS[stat] || stat}</span><b>${formatBaseValue(stat, value)}</b></div>`);
+    const affixRows = (item.affixes || []).map((affix) => `<div class="affix"><span>${STAT_LABELS[affix.stat] || affix.stat}${affix.level ? ` ${romanLevel(affix.level)}` : ""}</span><b>${formatAffixValue(affix.stat, affix.value)}</b></div>`);
     return [...baseRows, ...affixRows];
   }
   function formatAffixes(item) {
-    const base = Object.entries(item.baseStats || item.stats || {}).map(([stat, value]) => `基础${STAT_LABELS[stat] || stat} ${formatValue(stat, value)}`);
-    const affixes = (item.affixes || []).map((affix) => `${STAT_LABELS[affix.stat] || affix.stat}${affix.level ? romanLevel(affix.level) : ""} ${formatValue(affix.stat, affix.value)}`);
+    const base = Object.entries(item.baseStats || item.stats || {}).map(([stat, value]) => `基础${STAT_LABELS[stat] || stat} ${formatBaseValue(stat, value)}`);
+    const affixes = (item.affixes || []).map((affix) => `${STAT_LABELS[affix.stat] || affix.stat}${affix.level ? romanLevel(affix.level) : ""} ${formatAffixValue(affix.stat, affix.value)}`);
     return [...base, ...affixes].join(" · ");
   }
-  function formatValue(stat, value) { return percentStats().includes(stat) ? `+${Math.round(value * 100)}%` : `+${value}`; }
+  function formatBaseValue(stat, value) { return percentStats().includes(stat) ? `+${Math.round(value * 100)}%` : `+${value}`; }
+  function formatAffixValue(stat, value) { return MECHANIC_CURVES?.hasMechanicCurve?.(stat) ? `+${value}点` : `+${value}`; }
   function percentStats() { return Object.entries(AFFIX_DEFS).filter(([, def]) => def.percent).map(([id]) => id); }
   function romanLevel(level) { return ["", "I", "II", "III", "IV", "V"][level] || String(level); }
   function showPowerPop(text) {

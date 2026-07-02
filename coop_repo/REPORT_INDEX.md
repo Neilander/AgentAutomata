@@ -4,6 +4,12 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-02
 
+- `2026-07-02_1938_equipment-v2-followup-and-drop-bug.md`: clarified that low super-waterline grind scores are caused by drop tier being tied to benchmark score, not weak 150 mythic gear; removed legacy percentage-style base stat production and confirmed forced 150 mythic teams beat the super bucket.
+- `2026-07-02_1928_equipment-generation-v2.md`: changed equipment generation so level drives base stats, rarity drives affix point count, direct small stats covered by major attributes are blocked from affix pools, and the super-waterline equipment simulation uses the same formula.
+- `2026-07-02_1910_global-mechanic-curves.md`: added a global mechanic curve asset so equipment affix points convert into real effects through shared diminishing curves; integrated it into build layers, equipment UI scoring, and super-waterline grind simulation scoring.
+- `2026-07-02_1549_super-waterline-equipment-grind.md`: added a stronger generated mob waterline with attribute/equipment boosts, then ran 8 current-equipment grind simulations against it; equipment improves scores but the curve is compressed and jump rhythm is weak.
+- `2026-07-02_0030_archetype-affix-width-pass.md`: re-reviewed archetype affixes with the design-width rule, broadened `fireAmp`, `stealthDuration`, `lowHpDamage`, and `auraPower`, and added direct build-layer side effects for `shadowAmp` and `arcaneAmp`.
+- `2026-07-02_0015_design-width-evaluator-skill.md`: added the `design-width-evaluator` project skill for judging application width of affixes, keywords, mechanics, item stats, enemy mechanics, UI controls, and reward types using current users, future users, and extreme saturation tests.
 - `2026-07-02_0000_weapon-and-archetype-affix-audit.md`: confirmed the equipment grind simulator still has a single weapon slot rather than left/right hands, and audited all 12 archetype affixes by slot coverage, role coverage, direct build-layer hook, and corrected user rule that normal affixes need at least two real user roles.
 
 ## 2026-07-01

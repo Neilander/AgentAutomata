@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-02_0000_weapon-and-archetype-affix-audit.md`](reports/2026-07-02_0000_weapon-and-archetype-affix-audit.md)
+[`reports/2026-07-02_1938_equipment-v2-followup-and-drop-bug.md`](reports/2026-07-02_1938_equipment-v2-followup-and-drop-bug.md)
 
 Last updated: 2026-07-02
 
-Current focus: equipment grind audit. The current simulator has one `weapon` slot, not left/right hands. The corrected affix rule is that every normal archetype affix must have at least two real user roles; `fireAmp`, `stealthDuration`, `lowHpDamage`, and `auraPower` currently fail this rule.
+Current focus: equipment generation v2 is implemented, but the current grind simulation's drop progression is wrong. It uses super-waterline score to decide drop tier, causing teams to keep receiving low-level drops. Next step is to separate loot source level from benchmark score.

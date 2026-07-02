@@ -1,4 +1,8 @@
 const SKILL_DATA = typeof require === "function" ? require("./skill-data") : window.GAME_SKILL_DATA;
+const MECHANIC_CURVES = (typeof require === "function" ? require("./mechanic-curves") : window.GAME_MECHANIC_CURVES) || {
+  hasMechanicCurve: () => false,
+  mechanicCurveValue: (_id, value) => Number(value) || 0,
+};
 
 const ATTR_ORDER = ["might", "fortitude", "agility", "arcana", "rhythm", "resilience"];
 
@@ -166,22 +170,60 @@ function applyAffixValue(bundle, affix, source = "affix") {
     addMechanicModifier(bundle, `attribute:${id}`, value);
     return;
   }
+  if (MECHANIC_CURVES.hasMechanicCurve(id)) {
+    applyCurvedMechanicValue(bundle, id, value, source);
+    return;
+  }
 
   applyStatValue(bundle, id, value, source);
-  if (["dotAmp", "fireAmp", "poisonAmp", "ritualFocus", "controlPower", "auraPower"].includes(id)) {
-    bundle.effectPowerMult *= 1 + value * 0.008;
-  } else if (["cleanseEfficiency", "sustainFlow", "lowHpHealingReceived"].includes(id)) {
-    bundle.receivedHealingMult *= 1 + value * 0.008;
-  } else if (["critChance", "critDamage", "shieldBreak", "armorBreak", "focusFire", "markPower", "executeDamage"].includes(id)) {
-    bundle.physicalPowerAdd += value * 0.25;
-  } else if (["lifeSteal", "lowHpDamage", "martialTempo"].includes(id)) {
-    bundle.attackSpeedMult *= 1 + value * 0.004;
-    bundle.physicalPowerAdd += value * 0.18;
-  } else if (["stealthDuration"].includes(id)) {
-    bundle.effectResistPct += value * 0.002;
-  } else if (["counterDamage"].includes(id)) {
-    bundle.armorAdd += value * 0.2;
-    bundle.physicalPowerAdd += value * 0.15;
+}
+
+function applyCurvedMechanicValue(bundle, id, points, source = "affix") {
+  const effect = MECHANIC_CURVES.mechanicCurveValue(id, points);
+  addMechanicModifier(bundle, id, points);
+  bundle.debug.curvedMechanics = bundle.debug.curvedMechanics || {};
+  bundle.debug.curvedMechanics[id] = {
+    rawPoints: round((bundle.debug.curvedMechanics[id]?.rawPoints || 0) + points, 4),
+    effect: round((bundle.debug.curvedMechanics[id]?.effect || 0) + effect, 4),
+  };
+  bundle.notes.push(`${source}:curve:${id}`);
+
+  if (id === "attackSpeed") {
+    bundle.attackSpeedMult *= 1 + effect;
+  } else if (id === "skillHaste") {
+    bundle.skillHasteMult *= 1 + effect;
+  } else if (id === "effectPower") {
+    bundle.effectPowerMult *= 1 + effect;
+  } else if (id === "effectResist") {
+    bundle.effectResistPct += effect;
+  } else if (id === "receivedHealing" || id === "cleanseEfficiency" || id === "lowHpHealingReceived") {
+    bundle.receivedHealingMult *= 1 + effect;
+  } else if (id === "healPower" || id === "shieldPower") {
+    bundle.magicPowerAdd += effect * 18;
+  } else if (["dotAmp", "fireAmp", "poisonAmp", "controlPower", "auraPower"].includes(id)) {
+    bundle.effectPowerMult *= 1 + effect;
+  } else if (id === "arcaneAmp") {
+    bundle.effectPowerMult *= 1 + effect;
+    bundle.magicPowerAdd += effect * 20;
+    bundle.skillHasteMult *= 1 + effect * 0.25;
+  } else if (["critChance", "critDamage", "shieldBreak", "armorBreak", "markPower", "executeDamage"].includes(id)) {
+    bundle.physicalPowerAdd += effect * 25;
+  } else if (id === "lifeSteal") {
+    bundle.attackSpeedMult *= 1 + effect * 0.35;
+    bundle.physicalPowerAdd += effect * 18;
+  } else if (id === "lowHpDamage") {
+    bundle.attackSpeedMult *= 1 + effect * 0.45;
+    bundle.physicalPowerAdd += effect * 22;
+  } else if (id === "initiative") {
+    bundle.attackSpeedMult *= 1 + effect;
+  } else if (id === "stealthDuration") {
+    bundle.effectResistPct += effect * 0.35;
+  } else if (id === "shadowAmp") {
+    bundle.physicalPowerAdd += effect * 22;
+    bundle.effectResistPct += effect * 0.2;
+  } else if (id === "counterDamage") {
+    bundle.armorAdd += effect * 20;
+    bundle.physicalPowerAdd += effect * 14;
   }
 }
 
@@ -204,9 +246,21 @@ function mergeModifierBundles(...bundles) {
     for (const [key, value] of Object.entries(bundle.mechanicModifiers || {})) {
       addMechanicModifier(merged, key, value);
     }
+    merged.debug.curvedMechanics = mergeCurvedMechanicsDebug(merged.debug.curvedMechanics, bundle.debug?.curvedMechanics);
     merged.notes.push(...(bundle.notes || []));
   }
   return finalizeBundle(merged);
+}
+
+function mergeCurvedMechanicsDebug(left = {}, right = {}) {
+  const output = { ...(left || {}) };
+  for (const [key, value] of Object.entries(right || {})) {
+    output[key] = {
+      rawPoints: round((output[key]?.rawPoints || 0) + (value.rawPoints || 0), 4),
+      effect: round((output[key]?.effect || 0) + (value.effect || 0), 4),
+    };
+  }
+  return output;
 }
 
 function applyCombatModifiers(baseSpec, bundle) {
@@ -280,6 +334,7 @@ const api = {
   ATTRS,
   ROLE_ATTRS,
   ATTRIBUTE_STAT_WEIGHTS,
+  MECHANIC_CURVES,
   attributePointYield,
   normalizeAttributePoints,
   buildAttributeModifierBundle,

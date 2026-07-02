@@ -221,6 +221,31 @@ p { margin-top: 6px; color: var(--muted); font-size: 13px; }
   font-size: 16px;
 }
 
+.combat-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auto-dust-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 8px;
+  border: 1px solid rgba(226, 188, 91, 0.18);
+  background: rgba(8, 8, 6, 0.34);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.auto-dust-control select {
+  height: 26px;
+  border: 1px solid var(--line);
+  background: #120f09;
+  color: var(--text);
+}
+
 .primary {
   min-width: 112px;
   height: 36px;
@@ -229,6 +254,17 @@ p { margin-top: 6px; color: var(--muted); font-size: 13px; }
   color: #fff4c9;
   font-weight: 700;
   box-shadow: 0 0 20px rgba(217, 179, 90, 0.16);
+}
+
+#autoFightBtn {
+  min-width: 86px;
+  height: 36px;
+}
+
+#autoFightBtn.active {
+  border-color: rgba(221, 102, 88, 0.72);
+  color: #ffd6d1;
+  background: linear-gradient(180deg, #6b2e24, #27100d);
 }
 
 .status-pill {
@@ -393,6 +429,20 @@ p { margin-top: 6px; color: var(--muted); font-size: 13px; }
 .hero-card.selected { border-color: var(--gold-2); box-shadow: 0 0 22px rgba(217, 179, 90, 0.13); }
 .hero-card .team-mark { position: absolute; right: 8px; top: 7px; color: var(--green); font-size: 12px; }
 .hero-card button { height: 24px; margin-top: 7px; padding: 0 9px; font-size: 12px; }
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+.hero-actions button {
+  margin-top: 0;
+}
+.hero-actions button.active {
+  border-color: rgba(244, 217, 138, 0.55);
+  color: var(--gold);
+  background: rgba(217, 179, 90, 0.12);
+}
 
 .hero-strip .hero-card {
   grid-template-columns: 42px minmax(0, 1fr);
@@ -407,7 +457,7 @@ p { margin-top: 6px; color: var(--muted); font-size: 13px; }
 }
 
 .hero-strip .hero-card span span:nth-of-type(2),
-.hero-strip .hero-card button {
+.hero-strip .hero-actions {
   display: none;
 }
 

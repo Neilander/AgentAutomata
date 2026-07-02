@@ -368,10 +368,13 @@
         enemiesOf: (unit) => this.enemies(unit),
         alliesOf: (unit) => this.allies(unit),
         lowestEnemy: (unit) => this.lowestEnemy(unit),
+        backlineLowestEnemy: (unit) => this.backlineLowestEnemy(unit),
         lowestHpAlly: (unit) => this.lowestHpAlly(unit),
         carryAlly: (unit) => this.carryAlly(unit),
         byDistance: (unit) => this.byDistance(unit),
         hit: (source, target, amount, type, text, visible) => this.hit(source, target, amount, type, text, visible),
+        blinkBacklineStrike: (unit, effect) => this.shadowStepStrike(unit, effect),
+        shadowStepStrike: (unit, effect) => this.shadowStepStrike(unit, effect),
         shield: (unit, amount, text) => this.shield(unit, amount, text, 0),
         healUnit: (target, amount) => this.heal(target, target, amount),
         addPoison: (target, stacks, time, source) => this.poison(source, target, stacks, time),
@@ -419,6 +422,11 @@
           counterCd: 0,
           bonusPowerTimer: 0,
           bonusPower: 0,
+          hiddenTimer: 0,
+          hiddenRetaliateTimer: 0,
+          forcedTargetId: null,
+          forcedTargetTimer: 0,
+          assassinFocusTargetId: null,
           attackCd: 0.8,
           skillCd: [
             this.openingCooldown(hero.small[0], 1),
@@ -496,6 +504,10 @@
         for (const key of ["haste", "slow", "guard", "taunt", "immortal", "lifeSteal", "bloodFury", "whirlwind", "roarFury", "retaliationTimer", "bonusPowerTimer"]) {
           unit[key] = Math.max(0, unit[key] - dt);
         }
+        for (const key of ["hiddenTimer", "hiddenRetaliateTimer", "forcedTargetTimer"]) {
+          unit[key] = Math.max(0, unit[key] - dt);
+        }
+        if (unit.forcedTargetTimer <= 0) unit.forcedTargetId = null;
         unit.counterCd = Math.max(0, unit.counterCd - dt);
 
         const target = this.chooseTarget(unit);
@@ -864,6 +876,15 @@
     chooseTarget(unit) {
       const foes = this.enemies(unit).filter((enemy) => this.alive(enemy));
       if (!foes.length) return null;
+      if (unit.forcedTargetId && unit.forcedTargetTimer > 0) {
+        const forced = foes.find((foe) => foe.unitId === unit.forcedTargetId || foe.id === unit.forcedTargetId);
+        if (forced) return forced;
+      }
+      if (unit.roleKey === "assassin" && unit.assassinFocusTargetId) {
+        const focus = foes.find((foe) => foe.unitId === unit.assassinFocusTargetId || foe.id === unit.assassinFocusTargetId);
+        if (focus) return focus;
+        unit.assassinFocusTargetId = null;
+      }
       const taunters = unit.range < 20 ? foes.filter((foe) => foe.taunt > 0) : [];
       if (taunters.length) return taunters.sort(this.byDistance(unit))[0];
       if (unit.roleKey === "assassin") return foes.sort((a, b) => this.hpRatio(a) - this.hpRatio(b))[0];
@@ -880,6 +901,11 @@
     statusCount(unit) { return unit.poison.stacks + unit.burn.stacks + (unit.slow > 0 ? 2 : 0) + (unit.mark || 0); }
     effectivePower(unit) { return unit.power + (unit.bonusPowerTimer > 0 ? unit.bonusPower || 14 : 0); }
     lowestEnemy(unit) { return this.enemies(unit).filter((enemy) => this.alive(enemy)).sort((a, b) => this.hpRatio(a) - this.hpRatio(b))[0]; }
+    backlineLowestEnemy(unit) {
+      const foes = this.enemies(unit).filter((enemy) => this.alive(enemy));
+      const backline = foes.filter((enemy) => enemy.line === "后排");
+      return (backline.length ? backline : foes).sort((a, b) => this.hpRatio(a) - this.hpRatio(b))[0];
+    }
     lowestHpAlly(unit) { return this.allies(unit).filter((ally) => this.alive(ally)).sort((a, b) => this.hpRatio(a) - this.hpRatio(b))[0]; }
     carryAlly(unit) { return this.allies(unit).filter((ally) => this.alive(ally)).sort((a, b) => this.effectivePower(b) - this.effectivePower(a))[0]; }
     sideHpScore(side) { return this.state.units.filter((unit) => unit.side === side).reduce((sum, unit) => sum + Math.max(0, unit.hpNow / unit.maxHp), 0); }
@@ -896,6 +922,54 @@
       }
     }
     actionTags(source, tags) { return [...(source?._actionSignal?.tags || []), ...tags]; }
+    shadowStepStrike(unit, effect = {}) {
+      if (!this.alive(unit)) return;
+      const foes = this.enemies(unit).filter((enemy) => this.alive(enemy));
+      let target = unit.assassinFocusTargetId
+        ? foes.find((enemy) => enemy.unitId === unit.assassinFocusTargetId || enemy.id === unit.assassinFocusTargetId)
+        : null;
+      if (!target) target = this.backlineLowestEnemy(unit);
+      if (!target) return;
+
+      const before = { x: unit.x, y: unit.y };
+      const sideOffset = unit.side === "ally" ? -3.8 : 3.8;
+      unit.x = Math.max(7, Math.min(93, target.x + sideOffset));
+      unit.y = Math.max(12, Math.min(88, target.y + (effect.yOffset || 1.6)));
+      unit.attackCd = Math.min(unit.attackCd, effect.attackCd ?? 0.08);
+      unit.forcedTargetId = target.unitId || target.id;
+      unit.forcedTargetTimer = effect.lockDuration ?? 3.2;
+      unit.assassinFocusTargetId = unit.forcedTargetId;
+      unit.hiddenRetaliateTimer = effect.retaliateDuration ?? 2.2;
+      if (effect.hiddenDuration) unit.hiddenTimer = Math.max(unit.hiddenTimer || 0, effect.hiddenDuration);
+      if (effect.guardDuration) unit.guard = Math.max(unit.guard || 0, effect.guardDuration);
+
+      this.emitSignal({
+        kind: "movement",
+        tags: this.actionTags(unit, ["movement", "blink", "backline", "shadowStep", effect.hiddenDuration ? "hidden" : ""]).filter(Boolean),
+        source: this.unitRef(unit),
+        target: this.unitRef(target),
+        amount: Math.round(this.dist(before, unit) * 1000) / 1000,
+        skillKey: unit?._actionSignal?.skillKey || null,
+        skillName: effect.label || unit?._actionSignal?.skillName || "暗影突袭",
+        meta: { before, after: { x: unit.x, y: unit.y }, lockDuration: unit.forcedTargetTimer, hiddenDuration: effect.hiddenDuration || 0 },
+      });
+
+      const amount = (effect.flat || 0) + this.effectivePower(unit) * (effect.power || 0) + (1 - this.hpRatio(target)) * (effect.missingTargetHpFlat || 0);
+      this.damage(unit, target, amount, effect.type || "physical", true);
+      if (effect.markStacks) {
+        target.mark = Math.min(effect.markMax || 5, (target.mark || 0) + effect.markStacks);
+        this.emitSignal({
+          kind: "status",
+          tags: this.actionTags(unit, ["status", "debuff", "mark", "backline", "shadowStep"]).filter(Boolean),
+          source: this.unitRef(unit),
+          target: this.unitRef(target),
+          amount: effect.markStacks,
+          skillKey: unit?._actionSignal?.skillKey || null,
+          skillName: effect.label || unit?._actionSignal?.skillName || "暗影突袭",
+          meta: { stacks: target.mark },
+        });
+      }
+    }
     activeWindows(unit) {
       return [
         unit.bloodFury > 0 ? "bloodFury" : "",

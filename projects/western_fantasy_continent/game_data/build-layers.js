@@ -1,4 +1,4 @@
-const SKILL_DATA = require("./skill-data");
+const SKILL_DATA = typeof require === "function" ? require("./skill-data") : window.GAME_SKILL_DATA;
 
 const ATTR_ORDER = ["might", "fortitude", "agility", "arcana", "rhythm", "resilience"];
 
@@ -144,6 +144,7 @@ function applyStatValue(bundle, stat, value, source = "stat") {
       bundle.magicPowerAdd += value * 0.45;
       break;
     case "healingReceived":
+    case "receivedHealing":
       bundle.receivedHealingMult *= 1 + value * 0.01;
       break;
     case "initiative":
@@ -274,7 +275,7 @@ function round(value, digits = 3) {
   return Number((Number(value) || 0).toFixed(digits));
 }
 
-module.exports = {
+const api = {
   ATTR_ORDER,
   ATTRS,
   ROLE_ATTRS,
@@ -287,3 +288,6 @@ module.exports = {
   applyCombatModifiers,
   applyBuildLayers,
 };
+
+if (typeof module !== "undefined" && module.exports) module.exports = api;
+if (typeof window !== "undefined") window.GAME_BUILD_LAYERS = api;

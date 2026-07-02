@@ -47,7 +47,20 @@
               <span id="combatStatus" class="status-pill">待命</span>
               <strong id="combatTitle">选择副本后开刷</strong>
             </div>
-            <button id="fightBtn" type="button" class="primary">开刷一次</button>
+            <div class="combat-actions">
+              <label class="auto-dust-control">
+                <span>自动分解</span>
+                <select id="autoDustSelect">
+                  <option value="none">关闭</option>
+                  <option value="rare">稀有以下</option>
+                  <option value="epic">史诗以下</option>
+                  <option value="legendary">传说以下</option>
+                  <option value="mythic">神话以下</option>
+                </select>
+              </label>
+              <button id="autoFightBtn" type="button">持续刷</button>
+              <button id="fightBtn" type="button" class="primary">开刷一次</button>
+            </div>
           </div>
           <div id="teamPreview" class="team-skill-strip"></div>
           <div id="battleMount" class="battle-mount"></div>
@@ -57,6 +70,7 @@
 
     <script src="/game_data/skill-assets.js"></script>
     <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/build-layers.js"></script>
     <script src="/game_data/combat-signals.js"></script>
     <script src="/game_data/combat-sim.js"></script>
     <script src="/battle_view/battle-view.js?v=equipment_grind_2"></script>

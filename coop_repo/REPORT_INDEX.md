@@ -4,6 +4,14 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-01
 
+- `2026-07-01_1513_equipment-affix-build-pool-pass.md`: rebuilt equipment grind affix generation around major attributes, small stats, and archetype affixes across 8 slots; added role-aware scoring and first late-dungeon budget correction.
+- `2026-07-01_1218_shadow-assassin-engine-check.md`: verified shared combat-sim shadow assassin blink/lock/reset behavior, patched battle_view fallback shadow APIs, and added a clear generated `暗影刺客` branch to the equipment grind roster.
+- `2026-07-01_1148_auto-grind-continues-after-loss.md`: changed continuous grind so losing a fight gives no loot but rerolls the next enemy group and continues instead of stopping.
+- `2026-07-01_1143_equipment-auto-grind-and-dust.md`: added continuous dungeon grinding, 500-item warehouse capacity, auto-dismantle by rarity threshold, and full-warehouse stop popup.
+- `2026-07-01_1132_game-ui-flow-contract-skill.md`: added the `game-ui-flow-contract` project skill and applied it to the equipment grind simulator as a page/click/formation redesign contract.
+- `2026-07-01_1122_equipment-ui-team-interaction-fix.md`: corrected equipment/team page interactions: hero click only selects, details open from team-page button, and active combat order uses front/back formation controls.
+- `2026-07-01_1110_equipment-dungeon-enemy-build-layer.md`: replaced the rejected dungeon enemy scaling direction with build-layer enemy construction using enemy attribute points and enemy gear budgets; no hard power gate and no direct stat multiplier.
+- `2026-07-01_1044_equipment-ui-build-layer-unification.md`: unified the equipment grind simulator's hero combat spec calculation with shared `build-layers.js`, so UI equipment bonuses use the same additive layer as analysis scripts.
 - `2026-07-01_2044_equipment-character-modal.md`: added a reusable character + equipment display modal to the equipment grind simulator, with center portrait, side equipment slots, four skill cards, and a seven-stat detail toggle.
 
 ## 2026-06-30

@@ -2,6 +2,10 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-02
+
+- `2026-07-02_0000_weapon-and-archetype-affix-audit.md`: confirmed the equipment grind simulator still has a single weapon slot rather than left/right hands, and audited all 12 archetype affixes by slot coverage, role coverage, direct build-layer hook, and corrected user rule that normal affixes need at least two real user roles.
+
 ## 2026-07-01
 
 - `2026-07-01_1513_equipment-affix-build-pool-pass.md`: rebuilt equipment grind affix generation around major attributes, small stats, and archetype affixes across 8 slots; added role-aware scoring and first late-dungeon budget correction.

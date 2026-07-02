@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-01_1513_equipment-affix-build-pool-pass.md`](reports/2026-07-01_1513_equipment-affix-build-pool-pass.md)
+[`reports/2026-07-02_0000_weapon-and-archetype-affix-audit.md`](reports/2026-07-02_0000_weapon-and-archetype-affix-audit.md)
 
-Last updated: 2026-07-01
+Last updated: 2026-07-02
 
-Current focus: equipment grind affix/build-pool pass. New loot generation uses major attributes, small stats, and archetype affixes across 8 slots, with role-aware scoring and build-layer conversion. Dungeon budget tuning has only received a first correction; fixed-team calibration is still needed.
+Current focus: equipment grind audit. The current simulator has one `weapon` slot, not left/right hands. The corrected affix rule is that every normal archetype affix must have at least two real user roles; `fireAmp`, `stealthDuration`, `lowHpDamage`, and `auraPower` currently fail this rule.

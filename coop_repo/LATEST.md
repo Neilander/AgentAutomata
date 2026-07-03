@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-02_2525_equipment-v2-loop-optimization-goal.md`](reports/2026-07-02_2525_equipment-v2-loop-optimization-goal.md)
+[`reports/2026-07-03_1848_equipment-grind-overall-report.md`](reports/2026-07-03_1848_equipment-grind-overall-report.md)
 
-Last updated: 2026-07-02
+Last updated: 2026-07-03
 
-Current focus: `刷装备V2` loop tuning goal completed. Thirst multiplier was strengthened and the selected `wave-supply` drop cadence reduced 8-seed average boredom from 469.375 to 38.125 while preserving staged progression.
+Current focus: Consolidated the equipment-grind work into one overview report covering generation, drops, recommendation validation, growth curve pacing, UX support, and remaining risks.

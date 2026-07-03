@@ -2,6 +2,34 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-03
+
+- `2026-07-03_1848_equipment-grind-overall-report.md`: consolidated equipment-grind generation, drops, recommended-power validation, growth-curve pacing, UX support, implementation files, and risks into one overview report.
+
+- `2026-07-03_1836_grand-battle-20v20-demo.md`: added a standalone `20v20 神装方阵` demo using current skill data, build layers, combat sim, and battle view with custom formation coordinates.
+
+- `2026-07-03_1814_equipment-v3-auto-equip.md`: added `刷装备V3` equipment-page auto-equip controls for the selected hero and active team, using role-aware item scoring over usable base stats and affixes.
+
+- `2026-07-03_1757_equipment-affix-focused-random-correction.md`: removed `刷装备V3` dungeon-themed affixes and replaced them with per-item focused random affix allocation, then regenerated concentration/drop ecology measurements.
+
+- `2026-07-03_1739_equipment-grind-v3-drop-ecology-retune.md`: retuned `刷装备V3` rarity/drop tables to delay high rarity, added dungeon-themed affix generation, and measured mythic output/theme concentration.
+
+- `2026-07-03_1700_equipment-grind-v3-recommendation-correction.md`: corrected misleading `刷装备V3` recommendations after D8 38k failed in play; active displayed values now use 70% similar-power combat buckets, with D8 set to 85800 and D10 flagged unresolved.
+
+- `2026-07-03_1613_equipment-grind-v3-dust-and-session-loot.md`: added `刷装备V3` warehouse one-click dusting by rarity and a battle-page session loot strip for kept equipment during manual/continuous grind.
+
+- `2026-07-03_1529_equipment-affix-display-merge.md`: merged duplicate same-type affixes in `刷装备V3` item detail and loot display without changing item data, scoring, or combat.
+
+- `2026-07-03_1342_equipment-grind-v3-flow-recommended-power.md`: changed `刷装备V3` recommendation basis to fresh-run first-clear p70, added a flow calibration script/report, and updated D1-D10 displayed recommended power.
+
+- `2026-07-03_1248_equipment-grind-v3-recommended-power.md`: recalculated `刷装备V3` dungeon recommended power with similar-power team tests, updated V3 power fields, and recorded D10 as an unresolved terminal-wall risk.
+
+- `2026-07-03_1221_equipment-grind-v3-encoding-fix.md`: fixed `刷装备V3` mojibake/page corruption, rebuilt V3 from clean V2, separated the save key, restored D10 only in V3, and browser-validated main/team/equipment/loot pages.
+- `2026-07-03_1202_equipment-grind-v3-split.md`: split the D10 output-pacing experiment into playable `刷装备V3`, restored V2 as the 9-dungeon baseline, added V3 routing/workbench entry, and verified the local page.
+- `2026-07-03_1150_equipment-output-pacing-d10.md`: moved task board focus to equipment output pacing, added D10 `终焉黑冠` as a late final bottleneck, and regenerated the 8-seed 100-run clear-stage curve.
+- `2026-07-03_1055_progression-curve-macro-skeleton.md`: added macro pacing skeleton rules to `progression-curve-aesthetics` and diagnosed the current `刷装备V2` curve against planned 100-run bottleneck anchors.
+- `2026-07-03_1042_equipment-v2-clear-curve-fix.md`: corrected the `刷装备V2` 8-run clear-stage curve so D9-cleared runs remain at D9 through run 100, added JSON source data, and regenerated the PNG/SVG previews.
+
 ## 2026-07-02
 
 - `2026-07-02_2525_equipment-v2-loop-optimization-goal.md`: completed the `刷装备V2` loop optimization goal, strengthened thirst multiplier, evaluated 12 candidates, and applied the `wave-supply` drop cadence.

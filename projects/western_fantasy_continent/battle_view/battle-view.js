@@ -393,7 +393,12 @@
       return specs.map((spec, index) => {
         const hero = this.normalizeSpec(spec, side, index);
         const slotIndex = Number.isFinite(spec.slotIndex) ? spec.slotIndex : index;
-        const slot = form[slotIndex % form.length];
+        const defaultSlot = form[slotIndex % form.length];
+        const slot = {
+          x: Number.isFinite(spec.homeX) ? spec.homeX : Number.isFinite(spec.x) ? spec.x : defaultSlot.x,
+          y: Number.isFinite(spec.homeY) ? spec.homeY : Number.isFinite(spec.y) ? spec.y : defaultSlot.y,
+          line: spec.line || defaultSlot.line,
+        };
         return {
           ...hero,
           unitId: `${side}_${index}`,

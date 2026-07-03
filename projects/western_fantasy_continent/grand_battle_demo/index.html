@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 20v20 神装方阵</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css">
+    <link rel="stylesheet" href="/grand_battle_demo/styles.css">
+  </head>
+  <body>
+    <main class="grand-battle">
+      <header class="topbar">
+        <div>
+          <a class="back-link" href="/workbench/">返回工作台</a>
+          <h1>20v20 神装方阵</h1>
+          <p>使用当前职业技能、当前战斗框架和统一数值层，双方 5x4 方阵满神装对冲。</p>
+        </div>
+        <div class="top-actions">
+          <button id="rerollBtn" type="button">换一组方阵</button>
+          <button id="previewBtn" type="button">重置预览</button>
+          <button id="startBtn" type="button" class="primary">开始团战</button>
+        </div>
+      </header>
+
+      <section class="battle-layout">
+        <section class="battle-shell">
+          <div id="battleMount" class="battle-mount"></div>
+        </section>
+        <aside class="side-panel">
+          <div class="panel-head">
+            <span>当前阵容</span>
+            <strong id="matchTitle">-</strong>
+          </div>
+          <div class="stat-grid">
+            <div><span>左军战力</span><strong id="leftPower">0</strong></div>
+            <div><span>右军战力</span><strong id="rightPower">0</strong></div>
+            <div><span>规模</span><strong>20v20</strong></div>
+            <div><span>装备</span><strong>神装</strong></div>
+          </div>
+          <div class="formation-list">
+            <h2>左军</h2>
+            <div id="leftList"></div>
+            <h2>右军</h2>
+            <div id="rightList"></div>
+          </div>
+          <div id="resultBox" class="result-box">等待开战</div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/mechanic-curves.js"></script>
+    <script src="/game_data/build-layers.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/battle_view/battle-view.js"></script>
+    <script src="/grand_battle_demo/grand-battle-demo.js"></script>
+  </body>
+</html>

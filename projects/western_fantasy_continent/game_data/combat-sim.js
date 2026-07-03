@@ -136,7 +136,12 @@ class CombatSimulation {
     return specs.map((spec, index) => {
       const role = this.unitProfile(spec);
       const slotIndex = Number.isFinite(spec.slotIndex) ? spec.slotIndex : index;
-      const slot = FORMATION[side][slotIndex % TEAM_SIZE];
+      const defaultSlot = FORMATION[side][slotIndex % TEAM_SIZE];
+      const slot = {
+        x: Number.isFinite(spec.homeX) ? spec.homeX : Number.isFinite(spec.x) ? spec.x : defaultSlot.x,
+        y: Number.isFinite(spec.homeY) ? spec.homeY : Number.isFinite(spec.y) ? spec.y : defaultSlot.y,
+        line: spec.line || defaultSlot.line,
+      };
       const maxHp = spec.maxHp || spec.hp || role.hp;
       const unit = {
         id: `${side}-${index + 1}`,

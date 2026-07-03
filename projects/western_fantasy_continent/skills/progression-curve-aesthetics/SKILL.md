@@ -30,6 +30,89 @@ The player should feel:
 - "I broke into the next tier and power jumped."
 - "Now I have a new ceiling to chase."
 
+## Macro Pacing Skeleton
+
+Before tuning individual drops or enemy numbers, define the intended playtime skeleton.
+Do not discover the curve only after simulation; first decide what the curve should roughly feel like.
+
+For a 100-run grind loop, specify:
+
+```text
+total experience length: 100 runs
+major bottleneck targets: run 20, run 50, run 90
+stage mapping: D4, D7, D10
+post-final-bottleneck feel: release / strong aftertaste / no new hard wall
+```
+
+Each major bottleneck is a planned pressure wall. It should not be a dead stop; it should feel like:
+
+```text
+"I am close, but I need one more useful upgrade or build improvement."
+```
+
+Between bottlenecks, design mini-waves:
+
+```text
+easy stage(s) -> satisfying lift
+medium stage(s) -> friction and replacement pressure
+hard stage -> bottleneck / near miss / chase
+breakthrough -> next tier opens
+```
+
+Important: the stretch before each bottleneck must be proportioned by slope, not just labeled after the fact.
+
+For each planned bottleneck anchor, divide the preceding segment into a planned curve:
+
+```text
+front-loaded lift -> gradual slowdown -> near-wall crawl -> bottleneck
+```
+
+This means the player should first climb quickly through easier stages, then slow down as upgrades become less obvious, then spend a controlled number of runs near the wall. A stage that happens to be reached around the target run is not enough.
+
+Example for a wall planned at run 20:
+
+```text
+runs 1-8: fast lift through easy content
+runs 9-14: slower improvement and partial upgrades
+runs 15-20: near-miss wall pressure
+run ~20: breakthrough into the next segment
+```
+
+Example for a wall planned at run 50:
+
+```text
+runs 21-32: fast lift after the previous breakthrough
+runs 33-42: slower replacement and build refinement
+runs 43-50: near-wall crawl
+run ~50: breakthrough
+```
+
+The slope should visibly compress before the bottleneck. If the line before a bottleneck is random, flat from the start, or dominated by sudden lucky jumps, the wave is not valid even if the final crossing time is close to the anchor.
+
+The last planned bottleneck should be followed by a reward-rich release segment rather than another hard wall. The player should leave with momentum and unfinished desire, not exhaustion.
+
+Suggested phase ratios inside a macro segment:
+
+| Segment part | Typical share | Player feel |
+| --- | ---: | --- |
+| lift / release | 35-45% | frequent upgrades, visible progress |
+| friction | 25-35% | upgrades slow but still happen |
+| bottleneck | 20-30% | near-miss pressure and chase-drop desire |
+
+Adjust by phase:
+
+- early game: more lift, shorter bottleneck
+- mid game: balanced lift and bottleneck
+- late game: longer chase, but avoid dead-flat boredom
+
+When reading a curve, judge both:
+
+- `local wave`: does this short segment have lift -> friction -> bottleneck -> breakthrough?
+- `macro skeleton`: do the major breakthroughs occur near the intended run anchors?
+
+If the curve has local waves but the anchors are wrong, it is still mispaced.
+If the anchors are right but every segment is flat, it is still emotionally weak.
+
 ## How To Create The Wave
 
 Use natural system structure, not artificial waiting.

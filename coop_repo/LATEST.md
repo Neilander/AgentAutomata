@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-02_1938_equipment-v2-followup-and-drop-bug.md`](reports/2026-07-02_1938_equipment-v2-followup-and-drop-bug.md)
+[`reports/2026-07-02_2525_equipment-v2-loop-optimization-goal.md`](reports/2026-07-02_2525_equipment-v2-loop-optimization-goal.md)
 
 Last updated: 2026-07-02
 
-Current focus: equipment generation v2 is implemented, but the current grind simulation's drop progression is wrong. It uses super-waterline score to decide drop tier, causing teams to keep receiving low-level drops. Next step is to separate loot source level from benchmark score.
+Current focus: `刷装备V2` loop tuning goal completed. Thirst multiplier was strengthened and the selected `wave-supply` drop cadence reduced 8-seed average boredom from 469.375 to 38.125 while preserving staged progression.

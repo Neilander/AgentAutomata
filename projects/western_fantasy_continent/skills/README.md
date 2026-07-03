@@ -17,6 +17,7 @@ Project skills are reusable workflows for this game. They are not global Codex s
 - `phenomenon-math-modeling/`: translates observed balance, UX, or player-behavior symptoms into rough value functions, variables, contribution channels, hypotheses, and validation metrics before proposing fixes.
 - `comparative-analysis/`: compares multiple attempts, observations, and math-modeling passes, then resolves contradictions, cancellations, measurement artifacts, and scope splits into a precise diagnosis.
 - `design-width-evaluator/`: judges whether a keyword, affix, skill mechanic, item stat, equipment rule, enemy mechanic, UI control, or reward type has enough real application scenarios for shared use, including current-user analysis, future-user analysis, and extreme saturation tests.
+- `progression-curve-aesthetics/`: designs and judges reward/stat/loot progression curves by player-feel structures such as early lift, bottleneck, chase-drop breakthrough, wave growth, plateau, and long-tail farming.
 
 ## Related Documents
 

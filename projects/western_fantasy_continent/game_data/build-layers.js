@@ -1,5 +1,5 @@
 const SKILL_DATA = typeof require === "function" ? require("./skill-data") : window.GAME_SKILL_DATA;
-const MECHANIC_CURVES = (typeof require === "function" ? require("./mechanic-curves") : window.GAME_MECHANIC_CURVES) || {
+const BUILD_LAYER_MECHANIC_CURVES = (typeof require === "function" ? require("./mechanic-curves") : window.GAME_MECHANIC_CURVES) || {
   hasMechanicCurve: () => false,
   mechanicCurveValue: (_id, value) => Number(value) || 0,
 };
@@ -170,7 +170,7 @@ function applyAffixValue(bundle, affix, source = "affix") {
     addMechanicModifier(bundle, `attribute:${id}`, value);
     return;
   }
-  if (MECHANIC_CURVES.hasMechanicCurve(id)) {
+  if (BUILD_LAYER_MECHANIC_CURVES.hasMechanicCurve(id)) {
     applyCurvedMechanicValue(bundle, id, value, source);
     return;
   }
@@ -179,7 +179,7 @@ function applyAffixValue(bundle, affix, source = "affix") {
 }
 
 function applyCurvedMechanicValue(bundle, id, points, source = "affix") {
-  const effect = MECHANIC_CURVES.mechanicCurveValue(id, points);
+  const effect = BUILD_LAYER_MECHANIC_CURVES.mechanicCurveValue(id, points);
   addMechanicModifier(bundle, id, points);
   bundle.debug.curvedMechanics = bundle.debug.curvedMechanics || {};
   bundle.debug.curvedMechanics[id] = {
@@ -329,12 +329,12 @@ function round(value, digits = 3) {
   return Number((Number(value) || 0).toFixed(digits));
 }
 
-const api = {
+const BUILD_LAYER_API = {
   ATTR_ORDER,
   ATTRS,
   ROLE_ATTRS,
   ATTRIBUTE_STAT_WEIGHTS,
-  MECHANIC_CURVES,
+  MECHANIC_CURVES: BUILD_LAYER_MECHANIC_CURVES,
   attributePointYield,
   normalizeAttributePoints,
   buildAttributeModifierBundle,
@@ -344,5 +344,5 @@ const api = {
   applyBuildLayers,
 };
 
-if (typeof module !== "undefined" && module.exports) module.exports = api;
-if (typeof window !== "undefined") window.GAME_BUILD_LAYERS = api;
+if (typeof module !== "undefined" && module.exports) module.exports = BUILD_LAYER_API;
+if (typeof window !== "undefined") window.GAME_BUILD_LAYERS = BUILD_LAYER_API;

@@ -4,6 +4,20 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-02
 
+- `2026-07-02_2525_equipment-v2-loop-optimization-goal.md`: completed the `刷装备V2` loop optimization goal, strengthened thirst multiplier, evaluated 12 candidates, and applied the `wave-supply` drop cadence.
+- `2026-07-02_2505_thirst-feedback-long-run.md`: added thirst-opportunity mechanics to the `刷装备V2` feedback simulation and ran 80-round on/off comparisons across three seeds.
+- `2026-07-02_2450_equipment-feedback-rule-correction.md`: corrected `刷装备V2` feedback simulation rules after user alignment: first clear +10, rarity unlock feedback, flat power feedback, and fatigue-style boredom.
+- `2026-07-02_2435_equipment-grind-v2-feedback-curve.md`: added and ran an automated `刷装备V2` grind-loop feedback simulation, tracking combat time tiers, first clears, new drop-layer unlocks, power feedback, and boredom across three seeds.
+- `2026-07-02_2415_equipment-grind-v2-calibrated-stage-budget.md`: added a real combat calibration script for `刷装备V2`, confirmed the prior D2 `5200` wall was over-tuned, and reduced D2-D9 enemy budgets with fixed-gear validation.
+- `2026-07-02_2359_equipment-grind-v2-stage-budget.md`: raised live `刷装备V2` dungeon enemy display power and build-layer budgets so early equipment gains should hit staged walls instead of sweeping the ladder.
+- `2026-07-02_2338_equipment-grind-v2-dungeon-scroll.md`: fixed `刷装备V2` lower-left dungeon list overlap by making the 9-stage list internally scrollable and browser-checking that cards no longer overlap.
+- `2026-07-02_2328_equipment-grind-v2-workbench.md`: copied the existing equipment grind simulator into `刷装备V2`, wired the 9-dungeon three-wave loot table into the live page, added the workbench/server route, and browser-smoke-tested rendering plus combat start.
+- `2026-07-02_2255_equipment-three-wave-budget.md`: retuned equipment dungeon/drop pacing through a 3-attempt budget to produce a three-wave progression curve, then regenerated the report and SVG curve.
+- `2026-07-02_2232_progression-curve-aesthetics-skill.md`: added the `progression-curve-aesthetics` project skill to preserve the preferred wave-shaped progression structure for loot/stat/reward tuning.
+- `2026-07-02_2220_equipment-grind-rarity-progression-test.md`: removed artificial dungeon wait gating, retuned rarity tables by dungeon tier, and reran the 24-tick grind curve; average end score is now 0.734 rather than near-full-clear.
+- `2026-07-02_2208_equipment-grind-dungeon-progression-curve.md`: fixed the equipment grind simulation so loot comes from staged dungeons with level/rarity ranges while the waterline is only used to score each grind tick.
+- `2026-07-02_2155_equipment-threshold-audit-correction.md`: audited the Mythic Lv.150 threshold result, confirming full 8-slot equipment and separating 48-sample clear from strict all-120 perfect clear.
+- `2026-07-02_2145_equipment-rarity-level-waterline-thresholds.md`: added a fixed rarity/level equipment threshold scanner and measured what gear bands can clear the current super-waterline bucket.
 - `2026-07-02_1938_equipment-v2-followup-and-drop-bug.md`: clarified that low super-waterline grind scores are caused by drop tier being tied to benchmark score, not weak 150 mythic gear; removed legacy percentage-style base stat production and confirmed forced 150 mythic teams beat the super bucket.
 - `2026-07-02_1928_equipment-generation-v2.md`: changed equipment generation so level drives base stats, rarity drives affix point count, direct small stats covered by major attributes are blocked from affix pools, and the super-waterline equipment simulation uses the same formula.
 - `2026-07-02_1910_global-mechanic-curves.md`: added a global mechanic curve asset so equipment affix points convert into real effects through shared diminishing curves; integrated it into build layers, equipment UI scoring, and super-waterline grind simulation scoring.

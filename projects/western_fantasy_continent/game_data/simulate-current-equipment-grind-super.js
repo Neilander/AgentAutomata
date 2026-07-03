@@ -14,10 +14,24 @@ const OUT_REPORT = path.join(OUT_DIR, "current-equipment-grind-super-8runs.md");
 
 const CONFIG = {
   ticks: Number(process.env.CURRENT_EQUIP_TICKS || 24),
-  itemsPerTeamPerTick: Number(process.env.CURRENT_EQUIP_ITEMS || 4),
+  itemsPerTeamPerTick: Number(process.env.CURRENT_EQUIP_ITEMS || 6),
   waterlineSample: Number(process.env.CURRENT_EQUIP_WATERLINE_SAMPLE || 48),
+  dungeonChallengeSample: Number(process.env.CURRENT_EQUIP_DUNGEON_SAMPLE || 12),
+  dungeonClearRate: Number(process.env.CURRENT_EQUIP_DUNGEON_CLEAR || 0.75),
   scoreWeights: { average: 0.45, best: 0.35, worst: 0.2 },
 };
+
+const DUNGEONS = [
+  { id: "d1_old-road", label: "旧路鼠窟", levelRange: [18, 28], rarityTable: { common: 0.9, rare: 0.095, epic: 0.005 }, pressureBand: [0.00, 0.2] },
+  { id: "d2_black-pine", label: "黑松哨站", levelRange: [26, 42], rarityTable: { common: 0.74, rare: 0.245, epic: 0.015 }, pressureBand: [0.20, 0.34] },
+  { id: "d3_rotflame", label: "腐火地窟", levelRange: [38, 58], rarityTable: { common: 0.42, rare: 0.48, epic: 0.095, legendary: 0.005 }, pressureBand: [0.32, 0.48] },
+  { id: "d4_outer-tomb", label: "王墓外环", levelRange: [58, 84], rarityTable: { rare: 0.54, epic: 0.38, legendary: 0.075, mythic: 0.005 }, pressureBand: [0.46, 0.6] },
+  { id: "d5-dragonbone", label: "龙骨浅层", levelRange: [80, 112], rarityTable: { rare: 0.16, epic: 0.58, legendary: 0.24, mythic: 0.02 }, pressureBand: [0.50, 0.66] },
+  { id: "d6-ash-crown", label: "灰冠深井", levelRange: [102, 136], rarityTable: { epic: 0.56, legendary: 0.38, mythic: 0.06 }, pressureBand: [0.56, 0.72] },
+  { id: "d7-starfall", label: "星坠祭坛", levelRange: [126, 158], rarityTable: { epic: 0.32, legendary: 0.53, mythic: 0.15 }, pressureBand: [0.66, 0.82] },
+  { id: "d8-king-night", label: "夜王门厅", levelRange: [148, 178], rarityTable: { epic: 0.1, legendary: 0.58, mythic: 0.32 }, pressureBand: [0.76, 0.94] },
+  { id: "d9-moonless-crown", label: "无月王冠", levelRange: [170, 198], rarityTable: { legendary: 0.46, mythic: 0.54 }, pressureBand: [0.88, 1.08] },
+];
 
 const SCENARIOS = [
   { id: "s1_fire_lowhp_wall", seed: 73129, teamIds: ["fireBurst", "bloodRage", "ironWall"] },
@@ -41,23 +55,37 @@ const TEAM_LABELS = {
 
 const { AFFIX_DEFS, SLOT_DATA, RARITIES } = loadCurrentEquipmentDefs();
 const SLOT_KEYS = Object.keys(SLOT_DATA);
-const EQUIPMENT_LEVEL_BY_TIER = { 1: 20, 2: 40, 3: 60, 4: 100, 5: 150 };
 const BLOCKED_DIRECT_AFFIXES = new Set(["physicalPower", "magicPower", "maxHp", "armor", "attackSpeed", "skillHaste"]);
 
 function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  const waterline = sampleWaterline(readJson(WATERLINE_FILE).teams, CONFIG.waterlineSample);
-  const runs = SCENARIOS.map((scenario) => runScenario(scenario, waterline));
+  const waterlineAll = readJson(WATERLINE_FILE).teams;
+  const scoringPool = excludeBossOutliers(waterlineAll);
+  const waterline = sampleWaterline(scoringPool, CONFIG.waterlineSample);
+  const dungeonChallenges = buildDungeonChallenges(scoringPool);
+  const runs = SCENARIOS.map((scenario) => runScenario(scenario, waterline, dungeonChallenges));
   const output = {
     schema: "western_fantasy_current_equipment_grind_super_8runs_v1",
     generatedAt: new Date().toISOString(),
     config: CONFIG,
     waterline: {
       file: path.relative(ROOT, WATERLINE_FILE).replace(/\\/g, "/"),
-      total: readJson(WATERLINE_FILE).teams.length,
+      total: waterlineAll.length,
+      scoringPool: scoringPool.length,
       sample: waterline.length,
+      excluded: waterlineAll.length - scoringPool.length,
+      excludedRule: "exclude Boss预算110 / boss110 outliers for this progression curve",
       avgPressure: round(avg(waterline.map((team) => team.evaluation?.pressureScore || 0)), 2),
     },
+    dungeons: DUNGEONS.map((dungeon, index) => ({
+      index: index + 1,
+      id: dungeon.id,
+      label: dungeon.label,
+      levelRange: dungeon.levelRange,
+      rarityTable: dungeon.rarityTable,
+      pressureBand: dungeon.pressureBand,
+      challengeCount: dungeonChallenges[index]?.length || 0,
+    })),
     affixReview: summarizeAffixCoverage(),
     runs,
     synthesis: synthesize(runs),
@@ -67,7 +95,7 @@ function main() {
   console.log(renderConsole(output));
 }
 
-function runScenario(scenario, waterline) {
+function runScenario(scenario, waterline, dungeonChallenges) {
   const rng = mulberry32(scenario.seed);
   const teams = scenario.teamIds.map((id) => ({
     id,
@@ -75,25 +103,27 @@ function runScenario(scenario, waterline) {
     inventory: [],
     equippedItemsByUnit: [],
     equippedTeam: clonePreset(id),
+    unlockedDungeonIndex: 0,
   }));
 
   const timeline = [];
   let lastScores = scoreAllTeams(teams, waterline, `${scenario.id}|initial`);
-  timeline.push(snapshot(0, 0, lastScores));
+  timeline.push(snapshot(0, lastScores));
 
   for (let tick = 1; tick <= CONFIG.ticks; tick += 1) {
-    const progressionScore = weightedProgressionScore(lastScores);
     for (const team of teams) {
+      const dungeon = DUNGEONS[team.unlockedDungeonIndex] || DUNGEONS[0];
       for (let i = 0; i < CONFIG.itemsPerTeamPerTick; i += 1) {
-        team.inventory.push(generateItem(dropTier(progressionScore), rarityTable(progressionScore), rng));
+        team.inventory.push(generateItemFromDungeon(dungeon, rng));
       }
       const equip = autoEquipTeam(team.id, team.inventory);
       team.equippedItemsByUnit = equip.itemsByUnit;
       team.equippedTeam = applyEquipmentToPreset(team.id, equip.itemsByUnit);
       team.equipSummary = equip.summary;
+      updateUnlockedDungeon(team, dungeonChallenges, `${scenario.id}|tick-${tick}|unlock`);
     }
     lastScores = scoreAllTeams(teams, waterline, `${scenario.id}|tick-${tick}`);
-    timeline.push(snapshot(tick, progressionScore, lastScores));
+    timeline.push(snapshot(tick, lastScores));
   }
 
   return {
@@ -143,8 +173,33 @@ function scoreTeam(team, mobs, seedPrefix) {
     avgDamage: Math.round(damage / mobs.length),
     avgDotDamage: Math.round(dotDamage / mobs.length),
     inventorySize: team.inventory.length,
+    unlockedDungeon: team.unlockedDungeonIndex + 1,
+    dungeonLabel: DUNGEONS[team.unlockedDungeonIndex]?.label || "",
     equipSummary: team.equipSummary || {},
   };
+}
+
+function updateUnlockedDungeon(team, dungeonChallenges, seedPrefix) {
+  const nextIndex = team.unlockedDungeonIndex + 1;
+  if (nextIndex >= DUNGEONS.length) return;
+  const challenge = dungeonChallenges[nextIndex] || [];
+  if (!challenge.length) return;
+  const clear = scoreDungeonChallenge(team, challenge, `${seedPrefix}|dungeon-${nextIndex + 1}`);
+  if (clear.score >= CONFIG.dungeonClearRate) team.unlockedDungeonIndex = nextIndex;
+}
+
+function scoreDungeonChallenge(team, challenge, seedPrefix) {
+  let wins = 0;
+  for (const mob of challenge) {
+    const result = simulateTeams(structuredClone(team.equippedTeam), structuredClone(mob.team), {
+      seed: `equipment-dungeon-unlock|${seedPrefix}|${team.id}|${mob.id}`,
+      randomizeStats: false,
+      maxTime: 70,
+      healthInterval: 1,
+    });
+    if (result.winner === "left") wins += 1;
+  }
+  return { wins, games: challenge.length, score: challenge.length ? wins / challenge.length : 0 };
 }
 
 function autoEquipTeam(presetId, inventory) {
@@ -198,17 +253,17 @@ function applyEquipmentToPreset(presetId, itemsByUnit) {
   });
 }
 
-function generateItem(tier, rarityTable, rng) {
+function generateItemFromDungeon(dungeon, rng) {
   const slotKey = pick(SLOT_KEYS, rng);
   const slot = SLOT_DATA[slotKey];
-  const rarity = chooseRarity(rarityTable, rng);
-  const equipmentLevel = equipmentLevelForTier(tier);
+  const rarity = chooseRarity(dungeon.rarityTable, rng);
+  const equipmentLevel = rollEquipmentLevel(dungeon.levelRange, rng);
   const affixes = pickAffixStats(slot.affixPool, rarity.affixes, rng).map((stat) => rollAffix(stat, equipmentLevel, rng));
-  const baseStats = rollBaseStats(slot, tier, rarity, rng);
+  const baseStats = rollBaseStats(slot, equipmentLevel, rng);
   return {
     id: `sim_item_${Math.floor(rng() * 1e12).toString(36)}`,
     slot: slotKey,
-    tier,
+    dungeon: dungeon.id,
     equipmentLevel,
     rarity: rarity.id,
     rarityLabel: rarity.label,
@@ -219,9 +274,8 @@ function generateItem(tier, rarityTable, rng) {
   };
 }
 
-function rollBaseStats(slot, tier, rarity, rng) {
+function rollBaseStats(slot, equipmentLevel, rng) {
   const baseStats = slot.baseOptions ? pick(slot.baseOptions, rng) : (slot.baseStats || []);
-  const equipmentLevel = equipmentLevelForTier(tier);
   return Object.fromEntries(baseStats.map((stat) => [stat, rollDirectStatValue(stat, equipmentLevel, rng)]));
 }
 
@@ -269,15 +323,11 @@ function rollDirectStatValue(stat, equipmentLevel, rng) {
   return percentStats().includes(stat) ? round(value, 3) : Math.max(1, Math.round(value));
 }
 
-function equipmentLevelForTier(tier) {
-  return EQUIPMENT_LEVEL_BY_TIER[tier] || Math.max(1, Math.round(Number(tier) || 1));
-}
-
 function itemScoreForRole(item, role) {
   const baseScore = Object.entries(item.baseStats || {}).reduce((sum, [stat, value]) => sum + normalizedStatScoreForRole(stat, value, role), 0);
   const affixScore = (item.affixes || []).reduce((sum, affix) => sum + normalizedStatScoreForRole(affix.stat, affix.value, role), 0);
   const rarityValue = { common: 1, rare: 1.35, epic: 1.7, legendary: 2.15, mythic: 2.65 }[item.rarity] || 1;
-  return item.tier * 22 + rarityValue * 18 + baseScore + affixScore;
+  return item.equipmentLevel * 0.28 + rarityValue * 18 + baseScore + affixScore;
 }
 
 function normalizedStatScoreForRole(stat, value, role) {
@@ -321,22 +371,6 @@ function normalizedStatScoreForRole(stat, value, role) {
   return (weights[stat] || 2.5) * curveValue;
 }
 
-function dropTier(score) {
-  if (score > 0.85) return 5;
-  if (score > 0.62) return 4;
-  if (score > 0.38) return 3;
-  if (score > 0.18) return 2;
-  return 1;
-}
-
-function rarityTable(score) {
-  if (score > 0.82) return { epic: 0.22, legendary: 0.48, mythic: 0.3 };
-  if (score > 0.58) return { epic: 0.48, legendary: 0.36, mythic: 0.16 };
-  if (score > 0.34) return { rare: 0.22, epic: 0.46, legendary: 0.25, mythic: 0.07 };
-  if (score > 0.15) return { rare: 0.52, epic: 0.34, legendary: 0.14 };
-  return { common: 0.62, rare: 0.28, epic: 0.1 };
-}
-
 function chooseRarity(table, rng) {
   const roll = rng();
   let cursor = 0;
@@ -347,10 +381,9 @@ function chooseRarity(table, rng) {
   return RARITIES.filter((rarity) => table[rarity.id]).pop() || RARITIES[0];
 }
 
-function snapshot(tick, progressionScore, scores) {
+function snapshot(tick, scores) {
   return {
     tick,
-    progressionScore: round(progressionScore),
     averageScore: scores.average,
     bestScore: scores.best,
     worstScore: scores.worst,
@@ -394,6 +427,8 @@ function summarizeTeams(timeline) {
       satisfyingJumps: jumps.filter((jump) => jump >= 0.05).length,
       maxJump: round(Math.max(...jumps, 0)),
       finalInventorySize: last.inventorySize,
+      finalDungeon: last.unlockedDungeon,
+      finalDungeonLabel: last.dungeonLabel,
       avgDamage: last.avgDamage,
       avgDotDamage: last.avgDotDamage,
       equipSummary: last.equipSummary,
@@ -455,9 +490,17 @@ function renderReport(output) {
   lines.push(`Generated at: ${output.generatedAt}`, "");
   lines.push("## Setup", "");
   lines.push(`- Super waterline sample: ${output.waterline.sample}/${output.waterline.total}`);
+  lines.push(`- Scoring pool after excluding boss outliers: ${output.waterline.scoringPool}/${output.waterline.total}`);
   lines.push(`- Avg sampled pressure: ${output.waterline.avgPressure}`);
   lines.push(`- Ticks: ${output.config.ticks}`);
   lines.push(`- Items per team per tick: ${output.config.itemsPerTeamPerTick}`);
+  lines.push(`- Dungeon unlock clear rate: ${output.config.dungeonClearRate}`);
+  lines.push("", "## Dungeons", "");
+  lines.push("| # | Dungeon | Item level range | Rarity table | Challenge mobs |");
+  lines.push("| ---: | --- | --- | --- | ---: |");
+  for (const dungeon of output.dungeons) {
+    lines.push(`| ${dungeon.index} | ${dungeon.label} | ${dungeon.levelRange[0]}-${dungeon.levelRange[1]} | ${formatRarityTable(dungeon.rarityTable)} | ${dungeon.challengeCount} |`);
+  }
   lines.push("", "## Synthesis", "");
   lines.push(`- Average end average: ${output.synthesis.aggregate.averageEndAverage}`);
   lines.push(`- Average end best: ${output.synthesis.aggregate.averageEndBest}`);
@@ -471,11 +514,20 @@ function renderReport(output) {
   for (const run of output.runs) {
     lines.push(`| ${run.id} | ${run.teamIds.join(", ")} | ${run.summary.start.averageScore} | ${run.summary.end.averageScore} | ${run.summary.end.bestScore} | ${run.summary.end.worstScore} | ${run.summary.deltaAverage} | ${run.summary.satisfyingJumps} | ${run.summary.plateauTicks} |`);
   }
+  lines.push("", "## Curve Samples", "");
+  lines.push("Each sampled row shows `tick: avg / worst / team dungeon+score` after that grind tick.");
+  for (const run of output.runs) {
+    lines.push("", `### ${run.id}`, "");
+    for (const row of run.timeline.filter((item) => item.tick === 0 || item.tick % 3 === 0 || item.tick === output.config.ticks)) {
+      const teams = row.teams.map((team) => `${team.id}:D${team.unlockedDungeon}/${team.score}`).join(", ");
+      lines.push(`- T${row.tick}: avg ${row.averageScore}, worst ${row.worstScore}; ${teams}`);
+    }
+  }
   lines.push("", "## Team End Scores", "");
   for (const run of output.runs) {
     lines.push(`### ${run.id}`, "");
     for (const team of run.teamSummaries) {
-      lines.push(`- ${team.id}: ${team.startScore} -> ${team.endScore}, delta ${team.delta}, jumps ${team.satisfyingJumps}, inventory ${team.finalInventorySize}`);
+      lines.push(`- ${team.id}: ${team.startScore} -> ${team.endScore}, delta ${team.delta}, jumps ${team.satisfyingJumps}, final dungeon ${team.finalDungeon} ${team.finalDungeonLabel}, inventory ${team.finalInventorySize}`);
     }
     lines.push("");
   }
@@ -561,16 +613,6 @@ function percentStats() {
   return Object.entries(AFFIX_DEFS).filter(([, def]) => def.percent).map(([id]) => id);
 }
 
-function weightedProgressionScore(scores) {
-  return clamp(
-    scores.average * CONFIG.scoreWeights.average
-      + scores.best * CONFIG.scoreWeights.best
-      + scores.worst * CONFIG.scoreWeights.worst,
-    0,
-    1,
-  );
-}
-
 function sampleWaterline(teams, count) {
   if (teams.length <= count) return teams;
   const sorted = [...teams].sort((a, b) => (a.evaluation?.pressureScore || 0) - (b.evaluation?.pressureScore || 0));
@@ -580,6 +622,43 @@ function sampleWaterline(teams, count) {
     result.push(sorted[index]);
   }
   return result;
+}
+
+function excludeBossOutliers(teams) {
+  return teams.filter((team) => team.boost?.id !== "boss110" && !String(team.boost?.label || "").includes("Boss预算110"));
+}
+
+function buildDungeonChallenges(teams) {
+  const sorted = [...teams].sort((a, b) => (a.evaluation?.pressureScore || 0) - (b.evaluation?.pressureScore || 0));
+  const min = sorted[0]?.evaluation?.pressureScore || 0;
+  const max = sorted[sorted.length - 1]?.evaluation?.pressureScore || 1;
+  return DUNGEONS.map((dungeon) => {
+    const [lo, hi] = dungeon.pressureBand;
+    const lowPressure = min + (max - min) * lo;
+    const highPressure = min + (max - min) * hi;
+    const center = (lowPressure + highPressure) / 2;
+    const band = sorted.filter((team) => {
+      const pressure = team.evaluation?.pressureScore || 0;
+      return pressure >= lowPressure && pressure <= highPressure;
+    });
+    if (band.length >= CONFIG.dungeonChallengeSample) return sampleWaterline(band, CONFIG.dungeonChallengeSample);
+    return sorted
+      .slice()
+      .sort((a, b) => Math.abs((a.evaluation?.pressureScore || 0) - center) - Math.abs((b.evaluation?.pressureScore || 0) - center))
+      .slice(0, CONFIG.dungeonChallengeSample)
+      .sort((a, b) => (a.evaluation?.pressureScore || 0) - (b.evaluation?.pressureScore || 0));
+  });
+}
+
+function rollEquipmentLevel([min, max], rng) {
+  return Math.round(min + rng() * (max - min));
+}
+
+function formatRarityTable(table) {
+  return Object.entries(table).map(([key, value]) => {
+    const perRun = 1 - ((1 - value) ** CONFIG.itemsPerTeamPerTick);
+    return `${key} ${round(value * 100, 1)}%/item (~${round(perRun * 100, 1)}%/run)`;
+  }).join(", ");
 }
 
 function pick(list, rng) {

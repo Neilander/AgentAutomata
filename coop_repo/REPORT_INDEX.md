@@ -4,6 +4,12 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-04
 
+- `2026-07-04_1902_special-relic-skill-width-uplift-revision.md`: revised `special-relic-design` with 20/40/30/10 width mix, bridge relics, normal/advanced/component/core grades, target uplift bands, and uplift-sum genericity caps.
+
+- `2026-07-04_1515_special-relic-design-skill.md`: added the `special-relic-design` project skill for first-clear special relics/unique passives, including 20/40/40 width mix and target/non-target testing across 0, half, and full gear.
+
+- `2026-07-04_1507_town-loop-app-shell-navigation.md`: converted only `town_loop V1` internal navigation toward app-shell page swaps so the global floating battle dock can persist while town pages change; shared skill/stat/combat data was not touched.
+
 - `2026-07-04_0047_town-loop-region-global-dock-unification.md`: unified `佣兵小镇 V1` active grind display so the region page also uses the floating battle dock, avoids double battle-view load, and fixes stale `isFighting` when stopping/restarting grind.
 
 ## 2026-07-03

@@ -18,6 +18,7 @@ Project skills are reusable workflows for this game. They are not global Codex s
 - `comparative-analysis/`: compares multiple attempts, observations, and math-modeling passes, then resolves contradictions, cancellations, measurement artifacts, and scope splits into a precise diagnosis.
 - `design-width-evaluator/`: judges whether a keyword, affix, skill mechanic, item stat, equipment rule, enemy mechanic, UI control, or reward type has enough real application scenarios for shared use, including current-user analysis, future-user analysis, and extreme saturation tests.
 - `progression-curve-aesthetics/`: designs and judges reward/stat/loot progression curves by player-feel structures such as early lift, bottleneck, chase-drop breakthrough, wave growth, plateau, and long-tail farming.
+- `special-relic-design/`: designs special relics and unique equipment passives by 20/40/30/10 width mix, relic grade, target uplift, uplift-sum genericity caps, and repeated target/near-target/standard-team testing.
 
 ## Related Documents
 

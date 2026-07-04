@@ -6,7 +6,8 @@
   const COMBAT = window.GAME_COMBAT_SIM || {};
   const SAVE_KEY = "agent_automata_town_loop_v2_team_slots";
   const BAG_CAPACITY = 500;
-  const page = document.body.dataset.page || "town";
+  let currentPage = document.body.dataset.page || "town";
+  let page = currentPage;
 
   const ROLE_LABELS = {
     warrior: "战士", knight: "骑士", berserker: "狂战士", assassin: "刺客", ranger: "游侠",
@@ -133,7 +134,7 @@
   };
 
   const els = {};
-  [
+  const ELEMENT_IDS = [
     "dayValue", "prosperityValue", "prosperityDelta", "teamPower", "grindState", "eventCount",
     "eventCards", "facilityCount", "facilityCards", "activityLog", "nextDayBtn", "resetTownBtn",
     "dropRateValue", "selectedRegionName", "regionList", "combatStatus", "combatTitle",
@@ -142,18 +143,93 @@
     "candidateCount", "equipCandidates", "autoEquipTeamBtn", "equippedCount", "rarityFilter",
     "sortMode", "dustCommonBtn", "dustRareBtn", "visibleItemCount", "itemGrid", "itemDetailTitle",
     "itemDetail", "recruitQuality", "qualityBand", "recruitCards", "recruitRules",
-  ].forEach((id) => { els[id] = document.querySelector(`#${id}`); });
+  ];
 
   init();
 
   function init() {
+    refreshEls();
     if (!loadState()) createNewTown(false);
     normalizeState();
+    bindShellNavigation();
     bindEvents();
     startBackgroundGrindTicker();
     renderAll();
-    if (page === "regions" && !state.activeGrind) previewRegionBattle();
+    if (currentPage === "regions" && !state.activeGrind) previewRegionBattle();
     if (state.activeGrind) window.setTimeout(() => runRegionBattle(true), 250);
+  }
+
+  function refreshEls() {
+    ELEMENT_IDS.forEach((id) => { els[id] = document.querySelector(`#${id}`); });
+  }
+
+  function bindShellNavigation() {
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest("a");
+      if (!link || !isTownRoute(link.href) || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      navigateShell(link.href);
+    });
+    window.addEventListener("popstate", () => navigateShell(location.href, { push: false }));
+  }
+
+  async function navigateShell(href, options = {}) {
+    const url = new URL(href, location.origin);
+    if (!isTownRoute(url.href)) {
+      location.href = url.href;
+      return;
+    }
+    const nextPage = pageFromPath(url.pathname);
+    const currentMain = document.querySelector(".town-shell");
+    if (!currentMain) {
+      location.href = url.href;
+      return;
+    }
+    try {
+      const response = await fetch(url.pathname, { cache: "no-cache" });
+      const html = await response.text();
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      const nextMain = doc.querySelector(".town-shell");
+      if (!response.ok || !nextMain) throw new Error("Town shell target not found");
+
+      stopDetachedPreviewBattle();
+      currentMain.replaceWith(nextMain);
+      document.body.dataset.page = nextPage;
+      document.title = doc.title || document.title;
+      currentPage = nextPage;
+      page = currentPage;
+      if (options.push !== false && location.pathname !== url.pathname) history.pushState({ page: nextPage }, "", url.pathname);
+      refreshEls();
+      bindEvents();
+      renderAll();
+      if (currentPage === "regions" && !state.activeGrind) previewRegionBattle();
+    } catch (error) {
+      console.warn("Town shell navigation fell back to full load:", error);
+      location.href = url.href;
+    }
+  }
+
+  function isTownRoute(href) {
+    try {
+      const url = new URL(href, location.origin);
+      return url.origin === location.origin && /^\/town_loop\/(?:$|(?:regions|team|warehouse|recruit)\.html$)/.test(url.pathname);
+    } catch {
+      return false;
+    }
+  }
+
+  function pageFromPath(pathname) {
+    if (pathname.endsWith("/regions.html")) return "regions";
+    if (pathname.endsWith("/team.html")) return "team";
+    if (pathname.endsWith("/warehouse.html")) return "warehouse";
+    if (pathname.endsWith("/recruit.html")) return "recruit";
+    return "town";
+  }
+
+  function stopDetachedPreviewBattle() {
+    if (!state.battleView || state.activeGrind) return;
+    state.battleView.stop?.(false);
+    state.battleView = null;
   }
 
   function loadState() {
@@ -247,11 +323,11 @@
 
   function renderAll() {
     renderStatus();
-    if (page === "town") renderTown();
-    if (page === "regions") renderRegions();
-    if (page === "team") renderTeam();
-    if (page === "warehouse") renderWarehouse();
-    if (page === "recruit") renderRecruit();
+    if (currentPage === "town") renderTown();
+    if (currentPage === "regions") renderRegions();
+    if (currentPage === "team") renderTeam();
+    if (currentPage === "warehouse") renderWarehouse();
+    if (currentPage === "recruit") renderRecruit();
   }
 
   function renderStatus() {
@@ -298,7 +374,7 @@
   function renderRegions() {
     const selected = currentRegion();
     setText(els.selectedRegionName, selected.name);
-    if (state.activeGrind && els.battleMount && !state.battleView) {
+    if (state.activeGrind && els.battleMount && state.battleView?.container !== els.battleMount) {
       els.battleMount.innerHTML = `<section class="battle-placeholder"><strong>挂机战斗正在浮窗中播放</strong><span>你可以继续选择地区、看掉落和调整刷级目标。</span></section>`;
     }
     if (els.regionList) {

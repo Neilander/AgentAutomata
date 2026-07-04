@@ -2,7 +2,21 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-04
+
+- `2026-07-04_0047_town-loop-region-global-dock-unification.md`: unified `佣兵小镇 V1` active grind display so the region page also uses the floating battle dock, avoids double battle-view load, and fixes stale `isFighting` when stopping/restarting grind.
+
 ## 2026-07-03
+
+- `2026-07-03_2323_town-loop-global-visible-battle.md`: added visible combat to all `佣兵小镇 V1` pages while grinding, using the region page's large battle panel and a compact global battle dock on management pages.
+
+- `2026-07-03_2310_town-loop-grind-feedback-fix.md`: fixed `佣兵小镇 V1` grind feedback so starting grind immediately launches visible combat on the region page, cross-page background ticks update top status, and warehouse/recruit pages load the shared combat simulator.
+
+- `2026-07-03_2220_town-loop-explicit-team-slot-fix.md`: fixed `佣兵小镇 V1` team prep so clicking a position writes an explicit `teamSlot`; selecting a hero and clicking `后排 2` now places that hero in `后排 2` rather than compacting by order.
+
+- `2026-07-03_2211_town-loop-team-recruit-correction.md`: corrected `佣兵小镇 V1` so initial heroes start at skill level 1, recruitment remains prosperity-gated, team prep uses four explicit slots, and skill levels scale combat power by 10% per average level above 1.
+
+- `2026-07-03_1316_town-loop-v1.md`: added `佣兵小镇 V1`, a five-screen town shell with day/prosperity/event cards, region grinding, team prep, warehouse, recruitment, and shared battle/equipment integration.
 
 - `2026-07-03_1848_equipment-grind-overall-report.md`: consolidated equipment-grind generation, drops, recommended-power validation, growth-curve pacing, UX support, implementation files, and risks into one overview report.
 

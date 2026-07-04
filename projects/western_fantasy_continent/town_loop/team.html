@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 队伍整备</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css?v=town_loop">
+    <link rel="stylesheet" href="/town_loop/styles.css">
+  </head>
+  <body data-page="team">
+    <main class="town-shell">
+      <header class="town-topbar">
+        <div>
+          <a class="back-link" href="/workbench/">工作台</a>
+          <h1>队伍整备</h1>
+          <p>选择四人小队、调整前后排、给角色换装。</p>
+        </div>
+        <nav class="town-nav">
+          <a href="/town_loop/">城镇</a>
+          <a href="/town_loop/regions.html">地区刷级</a>
+          <a class="active" href="/town_loop/team.html">队伍整备</a>
+          <a href="/town_loop/warehouse.html">装备仓库</a>
+          <a href="/town_loop/recruit.html">招募大厅</a>
+        </nav>
+      </header>
+
+      <section class="status-strip">
+        <div><span>第</span><strong id="dayValue">1 天</strong></div>
+        <div><span>繁荣度</span><strong id="prosperityValue">0</strong></div>
+        <div><span>小队战力</span><strong id="teamPower">0</strong></div>
+        <div><span>角色数</span><strong id="heroCount">0</strong></div>
+        <div><span>挂机状态</span><strong id="grindState">待命</strong></div>
+      </section>
+
+      <section class="team-layout">
+        <section class="team-board">
+          <div class="panel-head">
+            <span>当前小队 · 四个位置</span>
+            <div class="button-row">
+              <button id="autoEquipTeamBtn" type="button">小队一键穿装</button>
+            </div>
+          </div>
+          <div id="activeTeamBoard" class="active-team-board"></div>
+          <div id="rosterGrid" class="roster-grid"></div>
+        </section>
+        <aside class="hero-detail-panel">
+          <div class="panel-head"><span>角色信息</span><strong id="selectedHeroName">未选择</strong></div>
+          <div id="heroDetail" class="hero-detail"></div>
+          <div class="panel-head secondary"><span>可穿装备</span><strong id="candidateCount">0</strong></div>
+          <div id="equipCandidates" class="equip-candidates"></div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/mechanic-curves.js"></script>
+    <script src="/game_data/build-layers.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/battle_view/battle-view.js?v=town_loop"></script>
+    <script src="/town_loop/town-loop.js"></script>
+  </body>
+</html>

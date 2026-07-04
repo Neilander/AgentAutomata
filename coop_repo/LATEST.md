@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-03_1848_equipment-grind-overall-report.md`](reports/2026-07-03_1848_equipment-grind-overall-report.md)
+[`reports/2026-07-04_0047_town-loop-region-global-dock-unification.md`](reports/2026-07-04_0047_town-loop-region-global-dock-unification.md)
 
-Last updated: 2026-07-03
+Last updated: 2026-07-04
 
-Current focus: Consolidated the equipment-grind work into one overview report covering generation, drops, recommendation validation, growth curve pacing, UX support, and remaining risks.
+Current focus: Unified `佣兵小镇 V1` active grind display so every page, including region grinding, uses the floating battle dock. This avoids running two battle views at once and fixes stale fighting state when stopping/restarting grind.

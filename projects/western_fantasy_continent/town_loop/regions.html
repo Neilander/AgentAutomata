@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 地区刷级</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css?v=town_loop">
+    <link rel="stylesheet" href="/town_loop/styles.css">
+  </head>
+  <body data-page="regions">
+    <main class="town-shell battle-mode">
+      <header class="town-topbar">
+        <div>
+          <a class="back-link" href="/workbench/">工作台</a>
+          <h1>地区刷级</h1>
+          <p>无限刷怪，只有轻微每日掉落衰减。战斗使用统一 4v4 引擎。</p>
+        </div>
+        <nav class="town-nav">
+          <a href="/town_loop/">城镇</a>
+          <a class="active" href="/town_loop/regions.html">地区刷级</a>
+          <a href="/town_loop/team.html">队伍整备</a>
+          <a href="/town_loop/warehouse.html">装备仓库</a>
+          <a href="/town_loop/recruit.html">招募大厅</a>
+        </nav>
+      </header>
+
+      <section class="status-strip">
+        <div><span>第</span><strong id="dayValue">1 天</strong></div>
+        <div><span>繁荣度</span><strong id="prosperityValue">0</strong></div>
+        <div><span>小队战力</span><strong id="teamPower">0</strong></div>
+        <div><span>今日掉率</span><strong id="dropRateValue">100%</strong></div>
+        <div><span>挂机状态</span><strong id="grindState">待命</strong></div>
+      </section>
+
+      <section class="region-layout">
+        <aside class="region-list-panel">
+          <div class="panel-head"><span>地区</span><strong id="selectedRegionName">旧路鼠窟</strong></div>
+          <div id="regionList" class="region-list"></div>
+        </aside>
+
+        <section class="combat-card">
+          <div class="combat-toolbar">
+            <div>
+              <span id="combatStatus" class="status-pill">待命</span>
+              <strong id="combatTitle">选择地区后开刷</strong>
+            </div>
+            <div class="button-row">
+              <button id="toggleGrindBtn" type="button">开始挂机</button>
+              <button id="fightOnceBtn" class="primary" type="button">手动刷一次</button>
+            </div>
+          </div>
+          <div id="battleMount" class="battle-mount"></div>
+        </section>
+
+        <aside class="side-panel">
+          <div class="panel-head"><span>掉落与记录</span><strong id="inventoryCount">0</strong></div>
+          <div id="regionDetail" class="region-detail"></div>
+          <div id="activityLog" class="activity-log compact"></div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/mechanic-curves.js"></script>
+    <script src="/game_data/build-layers.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/battle_view/battle-view.js?v=town_loop"></script>
+    <script src="/town_loop/town-loop.js"></script>
+  </body>
+</html>

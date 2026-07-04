@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 装备仓库</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css?v=town_loop">
+    <link rel="stylesheet" href="/town_loop/styles.css">
+  </head>
+  <body data-page="warehouse">
+    <main class="town-shell">
+      <header class="town-topbar">
+        <div>
+          <a class="back-link" href="/workbench/">工作台</a>
+          <h1>装备仓库</h1>
+          <p>这里只看装备、筛选、分解和归属，不展开角色配置。</p>
+        </div>
+        <nav class="town-nav">
+          <a href="/town_loop/">城镇</a>
+          <a href="/town_loop/regions.html">地区刷级</a>
+          <a href="/town_loop/team.html">队伍整备</a>
+          <a class="active" href="/town_loop/warehouse.html">装备仓库</a>
+          <a href="/town_loop/recruit.html">招募大厅</a>
+        </nav>
+      </header>
+
+      <section class="status-strip">
+        <div><span>仓库</span><strong id="inventoryCount">0/500</strong></div>
+        <div><span>已装备</span><strong id="equippedCount">0</strong></div>
+        <div><span>小队战力</span><strong id="teamPower">0</strong></div>
+        <div><span>挂机状态</span><strong id="grindState">待命</strong></div>
+      </section>
+
+      <section class="warehouse-layout">
+        <aside class="filter-panel">
+          <div class="panel-head"><span>筛选</span><strong>bag</strong></div>
+          <label>稀有度
+            <select id="rarityFilter">
+              <option value="all">全部</option>
+              <option value="common">普通+</option>
+              <option value="rare">稀有+</option>
+              <option value="epic">史诗+</option>
+              <option value="legendary">传说+</option>
+              <option value="mythic">神话</option>
+            </select>
+          </label>
+          <label>排序
+            <select id="sortMode">
+              <option value="score">评分</option>
+              <option value="level">等级</option>
+              <option value="rarity">稀有度</option>
+            </select>
+          </label>
+          <button id="dustCommonBtn" type="button">分解普通</button>
+          <button id="dustRareBtn" type="button">分解稀有及以下</button>
+        </aside>
+        <section class="item-list-panel">
+          <div class="panel-head"><span>装备列表</span><strong id="visibleItemCount">0</strong></div>
+          <div id="itemGrid" class="item-grid"></div>
+        </section>
+        <aside class="item-detail-panel">
+          <div class="panel-head"><span>装备详情</span><strong id="itemDetailTitle">未选择</strong></div>
+          <div id="itemDetail" class="item-detail"></div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/mechanic-curves.js"></script>
+    <script src="/game_data/build-layers.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/battle_view/battle-view.js?v=town_loop"></script>
+    <script src="/town_loop/town-loop.js"></script>
+  </body>
+</html>

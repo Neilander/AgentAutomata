@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>西幻大陆 - 佣兵小镇</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css?v=town_loop">
+    <link rel="stylesheet" href="/town_loop/styles.css">
+  </head>
+  <body data-page="town">
+    <main class="town-shell">
+      <header class="town-topbar">
+        <div>
+          <a class="back-link" href="/workbench/">工作台</a>
+          <h1>佣兵小镇</h1>
+          <p>经营据点、观察事件、决定今天要不要继续刷。</p>
+        </div>
+        <nav class="town-nav">
+          <a class="active" href="/town_loop/">城镇</a>
+          <a href="/town_loop/regions.html">地区刷级</a>
+          <a href="/town_loop/team.html">队伍整备</a>
+          <a href="/town_loop/warehouse.html">装备仓库</a>
+          <a href="/town_loop/recruit.html">招募大厅</a>
+        </nav>
+      </header>
+
+      <section class="status-strip">
+        <div><span>第</span><strong id="dayValue">1 天</strong></div>
+        <div><span>繁荣度</span><strong id="prosperityValue">0</strong></div>
+        <div><span>每日变化</span><strong id="prosperityDelta">+0</strong></div>
+        <div><span>小队战力</span><strong id="teamPower">0</strong></div>
+        <div><span>挂机状态</span><strong id="grindState">待命</strong></div>
+      </section>
+
+      <section class="town-home-grid">
+        <aside class="side-panel">
+          <div class="panel-head">
+            <span>未来事件</span>
+            <strong id="eventCount">0</strong>
+          </div>
+          <div id="eventCards" class="event-stack"></div>
+        </aside>
+
+        <section class="town-stage">
+          <div class="stage-copy">
+            <span class="eyebrow">据点总览</span>
+            <h2>这里先留出城镇立绘和场景空间</h2>
+            <p>当前版本只放必要信息。后续可以在这里接小镇背景、角色立绘、天气、来访者和事件演出。</p>
+          </div>
+          <div class="town-actions">
+            <button id="nextDayBtn" class="primary" type="button">进入下一天</button>
+            <button id="resetTownBtn" type="button">重开小镇</button>
+          </div>
+        </section>
+
+        <aside class="side-panel">
+          <div class="panel-head">
+            <span>设施牌</span>
+            <strong id="facilityCount">0</strong>
+          </div>
+          <div id="facilityCards" class="facility-stack"></div>
+        </aside>
+      </section>
+
+      <section class="log-band">
+        <div class="panel-head"><span>近日记录</span><strong>log</strong></div>
+        <div id="activityLog" class="activity-log"></div>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/mechanic-curves.js"></script>
+    <script src="/game_data/build-layers.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/battle_view/battle-view.js?v=town_loop"></script>
+    <script src="/town_loop/town-loop.js"></script>
+  </body>
+</html>

@@ -55,6 +55,37 @@ Skill channel ~= skill value * skill efficiency
 Skill efficiency ~= cast frequency * timing quality * target quality
 ```
 
+For auto-battle damage relics, also use this rough output model:
+
+```text
+Total output ~= (basic damage * attack-speed coefficient + skill damage / attack-speed coefficient) * survival time
+```
+
+This is a design heuristic, not a final simulator formula. It is useful because many relics look simple in text but modify multiple multiplicative channels at once.
+
+When a relic affects low health, lifesteal, damage, or attack speed, inspect these relationships:
+
+```text
+Damage channel ~= basic damage * attack-speed coefficient + skill damage / attack-speed coefficient
+Survival time ~= effective remaining HP / enemy damage per second
+Lifesteal value ~= damage dealt * lifesteal efficiency
+Effective remaining HP ~= current HP + healing, shielding, damage prevented, and lifesteal gained over time
+```
+
+In real combat this often becomes a recursive or integral problem, because damage creates lifesteal, lifesteal extends survival time, and extra survival time creates more damage. The goal of the model is to identify the conversion path and feedback loop, not to solve the exact integral.
+
+Example diagnosis:
+
+```text
+Relic text: At low health, basic attacks gain damage and lifesteal based on missing health.
+Trigger: low health means survival time is already constrained.
+Payoff A: damage increases the damage channel.
+Payoff B: lifesteal increases survival time, and lifesteal scales from damage.
+Diagnosis: this relic improves two mutually reinforcing channels. Treat it as a positive-feedback core relic unless one payoff is removed.
+Simplified recovery version: At low health, basic attacks gain lifesteal based on missing health.
+Simplified burst version: At low health, basic attacks deal extra damage based on missing health.
+```
+
 Important interaction:
 
 ```text
@@ -234,4 +265,3 @@ If assassin prefers health/tenacity:
 ## Examples And References
 
 Read `references/modeling-examples.md` when examples or theoretical anchors are needed.
-

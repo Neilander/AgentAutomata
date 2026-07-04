@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-04_1902_special-relic-skill-width-uplift-revision.md`](reports/2026-07-04_1902_special-relic-skill-width-uplift-revision.md)
+[`reports/2026-07-04_1948_task-line-summary-update.md`](reports/2026-07-04_1948_task-line-summary-update.md)
 
 Last updated: 2026-07-04
 
-Current focus: Revised `special-relic-design` with the 20/40/30/10 width mix, bridge relics, relic grades, target uplift bands, and uplift-sum genericity caps.
+Current focus: Added missing task-board lines for gameplay signal system and mercenary town playtest loop.

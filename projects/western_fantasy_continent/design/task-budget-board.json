@@ -1,6 +1,6 @@
 {
   "schema": "agent_automata_task_budget_board_v2",
-  "updatedAt": "2026-07-03",
+  "updatedAt": "2026-07-04",
   "workflow": [
     "先围绕可玩的角色搭配定义本阶段体验目标。",
     "用统一 4v4 战斗验证队伍 combo、克制和强度感。",
@@ -19,6 +19,27 @@
       "name": "角色成长体系主线",
       "detail": "当前阶段：属性调试已收束，转入可玩的角色搭配玩法 v1；装备和新技能跟随玩法缺口推进。",
       "color": "gold",
+      "status": "active"
+    },
+    {
+      "id": "role-relic-angular-archetypes",
+      "name": "角色与藏品的棱角化、流派化",
+      "detail": "补充更有棱角的角色技能、角色变体、核心藏品和桥接藏品，把偏棋理的队伍搭配扩展成玩家可感知、可围绕构筑的显性 build。",
+      "color": "red",
+      "status": "active"
+    },
+    {
+      "id": "gameplay-signal-system",
+      "name": "玩法信号系统",
+      "detail": "为玩法过程记录可分析信号，并进一步把底层战斗、操作、奖励、失败和重复行为解析成乐趣、疲惫、乏味、压力、突破感等高层体验信号，供 AI 判断玩法质量；当前方向有效但暂时搁置。",
+      "color": "purple",
+      "status": "postponed"
+    },
+    {
+      "id": "mercenary-town-playtest-loop",
+      "name": "佣兵小镇玩法验证",
+      "detail": "把自动战斗、刷装备、队伍整备、招募、繁荣度、设施收益、事件压力和全局战斗浮窗串成一个可玩的城镇循环，验证它是否比单点系统更像完整游戏；已完成 V1 和 App Shell 方向，后续继续迭代体验。",
+      "color": "green",
       "status": "active"
     },
     {
@@ -1250,6 +1271,53 @@
       "skillFlow": [],
       "successCriteria": [],
       "lastEvidence": "2026-07-03 accept: Added D10 final bottleneck rather than over-hardening D9. 8-seed 100-run curve: D4 avg near 22.8, D7 avg near 46, D10 clears at 74/90/90 for 3 seeds; average curve now has a late D10 card point while D1-D9 baseline remains intact."
+    },
+    {
+      "id": "role-relic-angular-archetypes",
+      "name": "角色与藏品的棱角化、流派化",
+      "detail": "为当前偏泛化的角色与藏品补充更有棱角的技能、角色变体和核心/桥接藏品。目标是把现在偏棋理的队伍搭配扩展成玩家可感知的显性 build：死亡资源、普攻弹射、低血改写、献祭延迟、护盾代偿、燃烧引爆、毒死亡扩散等规则，让特定角色技能与特定藏品互相咬合。",
+      "type": "design",
+      "category": "design",
+      "lineId": "role-relic-angular-archetypes",
+      "parentId": "playable-team-composition-v1",
+      "sourceTaskId": "playable-team-composition-v1",
+      "outcome": "",
+      "nextAction": "",
+      "owner": "agent",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "medium",
+      "blastRadius": "medium",
+      "attemptBudget": 6,
+      "attemptsUsed": 0,
+      "status": "active",
+      "links": [
+        "projects/western_fantasy_continent/skills/special-relic-design/SKILL.md",
+        "projects/western_fantasy_continent/skills/skill-kit-design/SKILL.md",
+        "projects/western_fantasy_continent/skills/phenomenon-math-modeling/SKILL.md"
+      ],
+      "tags": [
+        "relics",
+        "skills",
+        "archetypes",
+        "builds",
+        "angular-design"
+      ],
+      "skillFlow": [
+        "skill-kit-design",
+        "special-relic-design",
+        "design-width-evaluator",
+        "phenomenon-math-modeling",
+        "archetype-signal-curve-design"
+      ],
+      "successCriteria": [
+        "至少提出3个有棱角角色/变体技能方向",
+        "至少提出10个按20/40/30/10分布的藏品候选",
+        "单build和桥接藏品必须包含规则改写或强限制，而不只是if X then Y加成",
+        "每个候选记录奖励的具体玩家选择、关键词预算、目标build、非目标负配合",
+        "用统一combat-sim/battle-view验证至少1个原型组合"
+      ],
+      "lastEvidence": "2026-07-04 discussion: current relic concepts trend too generic/mid-width because base roles are broad; create sharper role skills and relics so players can perceive explicit build engines, e.g. soul-priest death aura plus skeleton doll, ranger ricochet ultimate plus on-hit relics."
     }
   ]
 }

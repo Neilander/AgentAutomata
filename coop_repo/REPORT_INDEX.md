@@ -4,6 +4,16 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-04
 
+- `2026-07-04_1948_task-line-summary-update.md`: added task-board lines for `玩法信号系统` and `佣兵小镇玩法验证`, with signal work postponed and mercenary town validation active.
+
+- `2026-07-04_1940_role-relic-angular-task-line.md`: added active task-board line `角色与藏品的棱角化、流派化` for sharper role skills, role variants, core/bridge relics, and visible build engines beyond broad trigger components.
+
+- `2026-07-04_1930_relic-choice-and-output-modeling.md`: added AI-facing relic choice-resonance and keyword-budget checks to `special-relic-design`, plus a rough combat output formula and low-health feedback modeling notes to `phenomenon-math-modeling`.
+
+- `2026-07-04_1920_special-relic-concept-language-correction.md`: corrected `special-relic-design` so relic concepts start as clean one-sentence game actions, with probability, ratios, caps, cooldowns, and once-per-battle limits deferred to later validation.
+
+- `2026-07-04_1915_special-relic-readability-rules.md`: added `special-relic-design` readability rules for per-character relic target scope and simpler one-effect tuning, discouraging unclear single-ally cross-target effects and default "A but B" clauses.
+
 - `2026-07-04_1902_special-relic-skill-width-uplift-revision.md`: revised `special-relic-design` with 20/40/30/10 width mix, bridge relics, normal/advanced/component/core grades, target uplift bands, and uplift-sum genericity caps.
 
 - `2026-07-04_1515_special-relic-design-skill.md`: added the `special-relic-design` project skill for first-clear special relics/unique passives, including 20/40/40 width mix and target/non-target testing across 0, half, and full gear.

@@ -66,6 +66,43 @@ A good special relic should satisfy at least one:
 - **Formation rewrite**: makes front/back or target order matter in a new but readable way.
 - **Counter with side use**: answers a problem while still having ordinary value elsewhere.
 
+### Build Choice Resonance
+
+A strong relic should make the player feel "my build choice became powerful", not merely "this item has a large number." Before accepting a relic concept, identify the concrete player choice it rewards.
+
+Required check:
+
+```text
+Player choice being rewarded:
+Specific build pattern:
+  examples: basic-attack burn, skill burst burn, low-health basic attacks, mark focus fire, poison death spread, stealth execute
+Why this relic is not just generic power:
+What loop becomes more complete:
+What player-facing "I am strong" moment appears:
+```
+
+If the relic only helps a broad label such as "burn build" or "damage build", make it more specific. A good relic usually connects to a narrower play pattern, such as basic attacks applying burn, skills detonating burn, poison spreading on death, or marks enabling focused shots.
+
+### Keyword Budget
+
+At concept stage, split the relic into trigger condition and payoff effect, then count simple gameplay keywords. Simple keywords are established root terms the player already understands, such as low health, damage, basic attack, skill, burn, poison, mark, shield, healing, lifesteal, slow, execute, front row, and back row.
+
+Use this check:
+
+```text
+Trigger keywords:
+Payoff keywords:
+Total simple keywords:
+Target: 4 or fewer.
+If over budget:
+  preserve the experience goal;
+  model what payoff variable the relic is meant to improve;
+  merge or remove payoff terms that serve the same variable;
+  rewrite as one clean sentence.
+```
+
+Do not simplify by blindly deleting words. First identify the intended experience and the payoff variable. For example, if a low-health basic-attack relic says "gain damage and lifesteal based on missing health", decide whether the intended payoff is kill pressure or survival recovery. If the fantasy is "dangerous recovery", keep lifesteal and remove direct damage. If the fantasy is "reckless burst", keep damage and remove lifesteal. Keeping both makes it a stronger positive feedback engine and should be treated as a higher-risk core relic.
+
 Reject or redesign if:
 
 - It only says "more damage" or "more defense."
@@ -74,6 +111,31 @@ Reject or redesign if:
 - Four copies would make combat unreadable or break targeting.
 - It invalidates the build it is meant to counter.
 - It is secretly mandatory for every team at the same gear tier.
+
+## Effect Readability
+
+Because relics are equipped per character, their target scope must stay easy to reason about.
+
+Prefer these scopes:
+
+- **Self-applied relics**: the wearer triggers and receives the effect.
+- **Whole-team relics**: the wearer triggers a clearly team-level effect, such as a team shield, team heal, team haste window, or battlefield aura.
+- **Concrete formation relics**: the wearer affects a fixed readable relation, such as adjacent allies, same-row allies, front row, back row, or the protected carry.
+
+Avoid overusing relics where one unit triggers an effect that is granted to whichever single ally currently satisfies a condition, such as "when any ally drops below 35% HP, that ally gains lifesteal." These effects become hard to read when four characters can equip the same relic, because the player has to track many invisible cross-unit ownership and cooldown relationships.
+
+Single-ally targeting is allowed only when the relationship is the point of the relic and is visible in the build, such as a carry-support relic that always targets the team's declared carry or a formation relic that always targets the ally behind the wearer. If the effect is meant to be broad safety, make it whole-team. If it is meant to express the wearer's build, make it self-applied.
+
+Keep each relic's rule as one clean effect whenever possible. At the concept stage, describe the natural game action in one sentence before adding tuning details.
+
+Prefer simple effect language:
+
+- When the wearer applies burn, it can spread to a nearby enemy.
+- When the wearer breaks a shield, the target becomes easier to focus.
+- When the wearer enters low health, their next few attacks lifesteal.
+- When the wearer heals an ally, excess healing becomes a small shield.
+
+Avoid "A but B" clauses as the default balancing tool, such as "spread burn to an extra target, but that target takes reduced burn damage." If the concept is spread, write the spread plainly first. Probability, ratio, stack cap, internal cooldown, once-per-battle limits, and other tuning knobs belong later, when validation shows the clean effect is too strong, too frequent, or too hard to read. Add a drawback only when the drawback creates a meaningful build question rather than accounting noise.
 
 ## Required Test Matrix
 

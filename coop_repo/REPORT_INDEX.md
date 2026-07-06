@@ -2,6 +2,42 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-06
+
+- `2026-07-06_1944_prompt-benchmark-review.md`: ran 8 evaluator-prompt variants over the same Runs 1-7 candidate pool, recorded prompt-specific Top10 lists, and updated `/character_blind_lab/top10.html` so user blind picks can be compared against each prompt's taste profile.
+
+- `2026-07-06_1915_candidate-review-comparison.md`: ran three evaluator-agent reviews over the 70-candidate Runs 1-7 pool, aggregated a combined Top 10, and added `/character_blind_lab/top10.html` so the user can independently choose 10 candidates and compare against agent preference.
+
+- `2026-07-06_1752_candidate-merge-audit.md`: audited Runs 1-7 candidate packs, grouped 70 candidates into repeated mechanism/build-fantasy clusters, selected representatives/components, and added negative prompt guidance so future brainstorms avoid saturated shield-cannon, low-health return, frost-bounce, generic DOT, generic long-cast, and plain mark-hunter repeats.
+
+- `2026-07-06_1753_poe-charge-resource-loop-build-study.md`: added the seventh Path of Exile build-study artifact, using Power/Frenzy/Endurance Charges plus Rage/Berserk to document temporary internal resources, generation, uptime, spend timing, replacement risks, and resource-economy design lessons.
+
+- `2026-07-06_1749_poe-ailment-build-study.md`: added the sixth Path of Exile build-study artifact, using Ignite/Poison/Bleed to document ailment application engines, stack/replacement rules, duration, enemy mitigation, replacement risks, and status-effect design lessons.
+
+- `2026-07-06_1746_poe-deployed-entity-build-study.md`: added the fifth Path of Exile build-study artifact, using traps/mines/totems to document temporary deployed-entity engines, setup time, entity limits, activation reliability, replacement risks, and turret/trap design lessons.
+
+- `2026-07-06_1740_poe-spectre-summoner-build-study.md`: added the fourth Path of Exile build-study artifact, using Spectre Summoner to document externalized minion damage ownership, minion level/count/survival, commander tax, replacement risks, and companion-system design lessons.
+
+- `2026-07-06_1735_poe-cast-on-critical-strike-build-study.md`: added the third Path of Exile build-study artifact, using Cast on Critical Strike to document trigger breakpoint engines, hit/crit/cooldown/attack-rate alignment, replacement risks, and UI lessons for wasted triggers.
+
+- `2026-07-06_1732_poe-righteous-fire-build-study.md`: added the second Path of Exile build-study artifact, using Righteous Fire Chieftain to document self-upkeep, maximum fire resistance/regeneration as engine stats, replacement risks, and contrast against Toxic Rain Pathfinder.
+
+- `2026-07-06_1729_poe-toxic-rain-build-study.md`: added the first Path of Exile build-study artifact, using Toxic Rain Pathfinder to document build core, equipment slot responsibilities, replacement effects, budget progression, and transferable loot-system design lessons.
+
+- `2026-07-06_1651_character-brainstorm-pipeline-run7.md`: ran the seventh character brainstorm/screen/blind-review pipeline with four focused subagent directions, collected 32 raw ideas, screened 10 blind candidates, added candidate pack `2026-07-06_1651`, and updated the blind-lab manifest without touching official skill assets.
+
+- `2026-07-06_1619_character-brainstorm-pipeline-run6.md`: ran the sixth character brainstorm/screen/blind-review pipeline with 10 small-grain subagent directions batched by concurrency limit, collected 80 rough ideas with no subagent timeout, screened 10 blind candidates, added candidate pack `2026-07-06_1619`, and updated the blind-lab manifest without touching official skill assets.
+
+- `2026-07-06_1551_character-brainstorm-pipeline-run5.md`: ran the fifth character brainstorm/screen/blind-review pipeline as a second-pass hybrid round, recorded 32 fallback ideas after subagent timeout, screened 10 blind candidates, added candidate pack `2026-07-06_1551`, and updated the blind-lab manifest without touching official skill assets.
+
+- `2026-07-06_1519_character-brainstorm-pipeline-run4.md`: ran the fourth character brainstorm/screen/blind-review pipeline with an action-pose-first prompt, recorded 42 fallback ideas after subagent timeout, screened 10 blind candidates, added candidate pack `2026-07-06_1519`, and updated the blind-lab manifest without touching official skill assets.
+
+- `2026-07-06_1506_character-brainstorm-pipeline-run3.md`: ran the third character brainstorm/screen/blind-review pipeline with an equipment/relic-first prompt, recorded 40 fallback ideas after subagent timeout, screened 10 blind candidates, added candidate pack `2026-07-06_1506`, and updated the blind-lab manifest without touching official skill assets.
+
+- `2026-07-06_1438_character-brainstorm-pipeline-run2.md`: ran the second character brainstorm/screen/blind-review pipeline from the automation heartbeat, recorded 48 raw ideas, screened 10 blind candidates, added candidate pack `2026-07-06_1438`, and moved blind-lab run selection to `runs.json` without touching official skill assets.
+
+- `2026-07-06_1419_character-brainstorm-pipeline-run1.md`: manually ran the first character brainstorm/screen/blind-review pipeline, recorded 42 ideas, screened 10 blind candidates, created isolated candidate pack `2026-07-06_1419`, added an inspiration pool, and exposed `/character_blind_lab/`.
+
 ## 2026-07-04
 
 - `2026-07-04_1948_task-line-summary-update.md`: added task-board lines for `玩法信号系统` and `佣兵小镇玩法验证`, with signal work postponed and mercenary town validation active.

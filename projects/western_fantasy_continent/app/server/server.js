@@ -358,6 +358,7 @@ function routeStatic(req, res, url) {
     "/dps_lab",
     "/task_board",
     "/keyword_workbench",
+    "/character_blind_lab",
     "/life_simulator",
     "/game_data",
   ]);
@@ -401,6 +402,7 @@ function routeStatic(req, res, url) {
     "dps_lab",
     "task_board",
     "keyword_workbench",
+    "character_blind_lab",
     "life_simulator",
     "game_data",
   ];

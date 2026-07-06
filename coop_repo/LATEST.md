@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-04_1948_task-line-summary-update.md`](reports/2026-07-04_1948_task-line-summary-update.md)
+[`reports/2026-07-06_1944_prompt-benchmark-review.md`](reports/2026-07-06_1944_prompt-benchmark-review.md)
 
-Last updated: 2026-07-04
+Last updated: 2026-07-06
 
-Current focus: Added missing task-board lines for gameplay signal system and mercenary town playtest loop.
+Current focus: Prompt benchmark comparison over the candidate pool. The blind Top10 page now compares the user's picks against the old agent consensus and 8 different evaluator-prompt Top10 lists.

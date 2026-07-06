@@ -1,0 +1,217 @@
+{
+  "schema": "agent_automata_candidate_skill_pack_v1",
+  "runId": "2026-07-06_1551",
+  "sourcePrompt": "Second-pass hybrid design from strongest candidate veins.",
+  "candidates": [
+    {
+      "id": "2026-07-06_1551_molten_echo_guard",
+      "name": "熔盾连弦卫",
+      "role": "骑士 / 燃烧护盾猎标",
+      "outputPosture": "前排举盾吸收伤害，护盾化成燃烧回响射向被标记的敌人。",
+      "passive": {
+        "name": "熔盾回弦",
+        "text": "获得护盾时，对带有猎标的敌人发射一枚火焰回响。"
+      },
+      "smallSkill": {
+        "name": "烙印护阵",
+        "text": "获得护盾并标记当前目标；若目标燃烧，额外发射一次回响。"
+      },
+      "ultimate": {
+        "name": "炉心齐鸣",
+        "text": "短时间内每次护盾刷新都会向猎标目标发射火焰回响，回响可扩散燃烧。"
+      },
+      "promptTag": "burn-shield-mark-hybrid",
+      "screening": "通过：桥接燃烧、护盾、标记，但输出姿势仍是护盾发射回响。",
+      "hiddenBuildThought": "强化护盾频率、燃烧覆盖、猎标覆盖、火焰回响；弱点是无护盾时输出低。"
+    },
+    {
+      "id": "2026-07-06_1551_red_vein_boomerang",
+      "name": "赤脉回旋手",
+      "role": "游侠 / 低血回旋镖",
+      "outputPosture": "低血时连续投出回旋刃，回程命中让下一轮更快。",
+      "passive": {
+        "name": "赤脉归刃",
+        "text": "生命越低，回旋武器返回后的普攻速度提升越高。"
+      },
+      "smallSkill": {
+        "name": "放血回旋",
+        "text": "消耗少量当前生命投出回旋刃，去程和回程都造成物理伤害。"
+      },
+      "ultimate": {
+        "name": "濒血群刃",
+        "text": "首次进入低血时投出多枚回旋刃，回程命中会短暂锁住攻速增益。"
+      },
+      "promptTag": "low-hp-return-projectile",
+      "screening": "通过：低血风险和回旋弹道统一成一个姿势，不像机制堆叠。",
+      "hiddenBuildThought": "强化攻速、低血收益、回程命中、吸血/护盾；弱点是斩杀和路径差。"
+    },
+    {
+      "id": "2026-07-06_1551_twin_palm_thunder",
+      "name": "双掌雷珠师",
+      "role": "法师 / 交替施法雷珠",
+      "outputPosture": "左右手交替施法，每次交替都把雷珠压进敌群。",
+      "passive": {
+        "name": "异掌蓄雷",
+        "text": "连续使用不同元素技能会生成雷珠；重复同元素会降低雷珠生成效率。"
+      },
+      "smallSkill": {
+        "name": "左焰右霜",
+        "text": "交替释放火焰或冰霜短咒，命中后推动雷珠跳向附近敌人。"
+      },
+      "ultimate": {
+        "name": "双掌雷庭",
+        "text": "引爆所有雷珠，雷珠数量越多，后续短时间技能冷却越快。"
+      },
+      "promptTag": "alternating-spell-thunder-bead",
+      "screening": "通过：交替施法是主姿势，雷珠是清楚 payoff。",
+      "hiddenBuildThought": "强化技能急速、法强、元素交替、雷珠数量；弱点是技能循环被打断。"
+    },
+    {
+      "id": "2026-07-06_1551_braced_reload_guard",
+      "name": "架盾换弹卫",
+      "role": "骑士 / 护盾换弹爆发",
+      "outputPosture": "躲在盾后换弹，盾吸收越多，出盾后的弹幕越狠。",
+      "passive": {
+        "name": "盾后压弹",
+        "text": "拥有护盾时进入换弹会储存吸收伤害；换弹完成后转为额外弹丸。"
+      },
+      "smallSkill": {
+        "name": "盾匣装填",
+        "text": "获得护盾并开始换弹；完成后向当前目标连续射击。"
+      },
+      "ultimate": {
+        "name": "盾线倾泻",
+        "text": "短时间内每次护盾刷新都会缩短换弹时间，并提高下一轮弹幕段数。"
+      },
+      "promptTag": "shielded-reload-burst",
+      "screening": "通过：保护窗口直接转成爆发窗口，非常可测试。",
+      "hiddenBuildThought": "强化护盾、换弹安全、弹幕段数、攻速；弱点是护盾被驱散或换弹中断。"
+    },
+    {
+      "id": "2026-07-06_1551_frost_dragblade",
+      "name": "白霜拖刀者",
+      "role": "战士 / 冰霜蓄势重斩",
+      "outputPosture": "拖刀穿过霜痕，刀上积霜后砍出碎冰重斩。",
+      "passive": {
+        "name": "拖霜入刃",
+        "text": "攻击减速或冻结目标会积累霜刃层数；下一次蓄势斩消耗层数提高伤害。"
+      },
+      "smallSkill": {
+        "name": "霜线拖斩",
+        "text": "向前拖刀斩击，若目标被减速，则附加碎冰伤害。"
+      },
+      "ultimate": {
+        "name": "白霜暮斩",
+        "text": "蓄势后释放巨型冰斩，对冻结目标造成额外物理碎裂。"
+      },
+      "promptTag": "frost-dragblade-charge",
+      "screening": "通过：冰霜队里的物理重斩手，定位清楚。",
+      "hiddenBuildThought": "强化减速/冻结队友、物攻、蓄势、暴击；弱点是没有冰霜环境会平庸。"
+    },
+    {
+      "id": "2026-07-06_1551_echo_poison_bottler",
+      "name": "回响毒瓶师",
+      "role": "术士 / 标记毒爆扩散",
+      "outputPosture": "给敌人挂标记后投毒瓶，毒死时像回声一样传出去。",
+      "passive": {
+        "name": "毒响标记",
+        "text": "带有猎标的中毒敌人死亡时，会把一部分剩余毒伤回响到附近敌人。"
+      },
+      "smallSkill": {
+        "name": "标瓶投掷",
+        "text": "向当前目标投出毒瓶并施加猎标；若目标已中毒，则刷新持续时间。"
+      },
+      "ultimate": {
+        "name": "毒响连环",
+        "text": "短时间内毒响可以连续触发，但每次优先寻找未中毒目标。"
+      },
+      "promptTag": "mark-poison-death-echo",
+      "screening": "通过：标记和毒扩散合并为一个死亡回响姿势。",
+      "hiddenBuildThought": "强化毒伤、猎标覆盖、持续时间、击杀扩散；弱点是短战和净化。"
+    },
+    {
+      "id": "2026-07-06_1551_paper_moon_litany",
+      "name": "纸月连祷师",
+      "role": "法师 / 短咒连锁爆发",
+      "outputPosture": "连续念不同短咒，每次短咒都折出纸月，最后一口气切开。",
+      "passive": {
+        "name": "连祷折月",
+        "text": "连续施放不同技能会获得纸月层数；技能命中会消耗一层造成额外斩击。"
+      },
+      "smallSkill": {
+        "name": "短咒续页",
+        "text": "发出一枚短咒，若上一技能不同，则额外缩短下一次技能冷却。"
+      },
+      "ultimate": {
+        "name": "月页齐切",
+        "text": "消耗所有纸月层数，对多个敌人释放连续斩击。"
+      },
+      "promptTag": "spell-loop-sequence",
+      "screening": "通过：不同技能顺序和技能连发合并为一个清晰法师输出姿势。",
+      "hiddenBuildThought": "强化技能急速、法强、多技能循环、命中；弱点是技能池太窄时弱。"
+    },
+    {
+      "id": "2026-07-06_1551_marked_boomerang",
+      "name": "青羽猎标手",
+      "role": "游侠 / 猎标回旋输出",
+      "outputPosture": "回旋镖飞出去后反复追着猎标目标回弹。",
+      "passive": {
+        "name": "标羽归巢",
+        "text": "回旋武器返回时若路径上有猎标目标，会额外命中该目标一次。"
+      },
+      "smallSkill": {
+        "name": "青羽定标",
+        "text": "投出回旋镖并施加猎标；回程命中猎标目标会缩短冷却。"
+      },
+      "ultimate": {
+        "name": "群羽追标",
+        "text": "投出多枚回旋镖，所有回程优先穿过猎标目标。"
+      },
+      "promptTag": "mark-return-projectile",
+      "screening": "通过：比单纯回旋镖更有构筑方向，且不堆过多机制。",
+      "hiddenBuildThought": "强化猎标、回程命中、攻速、物攻；弱点是目标移动/分散导致路径差。"
+    },
+    {
+      "id": "2026-07-06_1551_low_hp_frost_kicker",
+      "name": "低血冰踢者",
+      "role": "战士 / 低血碎冰连踢",
+      "outputPosture": "低血时像疯了一样踢碎被冻结的敌人。",
+      "passive": {
+        "name": "濒血碎踢",
+        "text": "生命越低，攻击减速或冻结目标的速度越快。"
+      },
+      "smallSkill": {
+        "name": "破霜连脚",
+        "text": "踢击一名减速目标；低血时追加一次较弱踢击。"
+      },
+      "ultimate": {
+        "name": "血霜乱踢",
+        "text": "短时间内每次碎裂冻结目标都会恢复少量生命并提高下一次踢击速度。"
+      },
+      "promptTag": "low-hp-frost-shatter",
+      "screening": "通过：低血攻速转入冰霜碎裂，形成战士新副定位。",
+      "hiddenBuildThought": "强化低血收益、攻速、冰霜队友、物攻；弱点是无冰霜队友或被斩杀。"
+    },
+    {
+      "id": "2026-07-06_1551_shield_cannon_dragblade",
+      "name": "盾炮拖刀卫",
+      "role": "骑士 / 盾姿蓄炮斩",
+      "outputPosture": "架盾蓄压，同时拖刀蓄势，最后砍出带炮压的横斩。",
+      "passive": {
+        "name": "盾压入刃",
+        "text": "拥有护盾时受到伤害会积累盾压；下一次蓄势斩消耗盾压追加范围伤害。"
+      },
+      "smallSkill": {
+        "name": "盾姿拖斩",
+        "text": "获得护盾并蓄势横斩，护盾存在时间越久，斩击越强。"
+      },
+      "ultimate": {
+        "name": "炮压暮斩",
+        "text": "释放一次巨大横斩，消耗全部盾压并向前方追加一段炮击波。"
+      },
+      "promptTag": "shield-cannon-dragblade",
+      "screening": "通过：前排承压和重斩输出合一，姿态很清楚。",
+      "hiddenBuildThought": "强化护盾、承伤、蓄势、物攻；弱点是无人攻击或护盾被驱散。"
+    }
+  ]
+}

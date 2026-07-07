@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>场地效果测试场</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css?v=field_effect_lab_1">
+    <link rel="stylesheet" href="/field_effect_lab/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <a class="back-link" href="/workbench/">工作台</a>
+          <h1>场地效果测试场</h1>
+        </div>
+        <div class="top-actions">
+          <button id="baselineBtn" type="button">无场地开战</button>
+          <button id="fieldBtn" type="button" class="primary">应用场地开战</button>
+        </div>
+      </header>
+
+      <section class="layout">
+        <aside class="panel control-panel">
+          <label>
+            场地
+            <select id="fieldSelect"></select>
+          </label>
+          <label>
+            等级
+            <select id="levelSelect">
+              <option value="1">1 级：约 20% 提升</option>
+              <option value="2">2 级：约 40% 提升</option>
+              <option value="3">3 级：约 70% 提升</option>
+            </select>
+          </label>
+          <label>
+            我方预设
+            <select id="leftTeamSelect"></select>
+          </label>
+          <label>
+            敌方预设
+            <select id="rightTeamSelect"></select>
+          </label>
+          <div class="field-card" id="fieldInfo"></div>
+        </aside>
+
+        <section class="battle-panel">
+          <div id="battlefield" class="battle-host"></div>
+        </section>
+
+        <aside class="panel read-panel">
+          <h2>验收读法</h2>
+          <div id="readout" class="readout"></div>
+          <div class="note">
+            合格场地不应该让所有队都变强，也不应该只有一个死解。理想状态是 2-3 类队伍明显受益，其他队伍变化较小。
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/battle_view/battle-view.js?v=field_effect_lab_1"></script>
+    <script src="/game_data/field-effects.js"></script>
+    <script src="/field_effect_lab/field-effect-lab.js"></script>
+  </body>
+</html>

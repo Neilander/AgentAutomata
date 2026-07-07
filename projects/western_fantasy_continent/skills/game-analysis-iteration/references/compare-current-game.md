@@ -63,3 +63,58 @@ For each growth layer, ask:
 - What previous knowledge does it build on?
 - What new decision does it unlock?
 - What should not be introduced yet?
+
+## Method: Problem List And Dependency Check
+
+After checking the current game, do not jump from each problem directly to a fix. First produce a problem list with dependency information.
+
+Use this format:
+
+```text
+Problem:
+Evidence:
+Loop step affected:
+Player understanding stage affected:
+Problem type:
+  upstream | core | downstream | local polish
+Depends on:
+Blocks:
+Coupling:
+  high | medium | low
+Can be solved by direct explanation:
+  yes | no | partial
+Why direct explanation is or is not enough:
+Priority:
+  high | medium | low
+```
+
+Definitions:
+
+- `upstream`: affects the player's ability to form goals, understand what is being tested, or interpret later signals.
+- `core`: directly affects the main loop under analysis, such as loot choice, build adjustment, verification, or failure diagnosis.
+- `downstream`: depends on earlier problems being solved. Do not polish it first if the upstream meaning is still unclear.
+- `local polish`: improves comfort or clarity but does not change the loop's meaning.
+
+Dependency rule:
+
+```text
+In a linear player loop, later problems often depend on earlier problems.
+Do not prioritize a downstream solution just because it is easier to implement.
+Prefer fixing the earliest missing meaning signal that blocks later choices.
+```
+
+Important caution:
+
+```text
+Not every information problem can be solved by adding explanatory text.
+If the player needs to learn through comparison, repeated feedback, combat evidence, or a choice consequence, mark direct explanation as partial or no.
+Then the later implementation plan must design an experience, not only a label.
+```
+
+Example:
+
+```text
+Problem: Player cannot tell whether a drop matters.
+Direct explanation: partial.
+Reason: text can name likely users, but the player still needs comparison, equip delta, and later combat verification to believe the item mattered.
+```

@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-06_2345_project-game-analysis-iteration-skill.md`](reports/2026-07-06_2345_project-game-analysis-iteration-skill.md)
+[`reports/2026-07-07_1935_field-effect-20-validation.md`](reports/2026-07-07_1935_field-effect-20-validation.md)
 
-Last updated: 2026-07-06
+Last updated: 2026-07-07
 
-Current focus: Added the `game-analysis-iteration` project skill under Western Fantasy as a state-machine workflow for analysis, feedback gates, reviewer training, and iteration planning.
+Current focus: Expanded active field effects to 20 and reran validation; 17 fully pass, 3 are partial/tune-strength, no active effect is marked needs_redesign.

@@ -2,6 +2,28 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-07
+
+- `2026-07-07_1935_field-effect-20-validation.md`: expanded active field effects from 10 to 20, reran validation, and recorded uplift/breadth/status for each effect; 17 fully pass, 3 are partial, none need redesign.
+
+- `2026-07-07_1720_field-effect-candidate-implementation.md`: promoted Crown Relay and Many-Target Hall into active field-effect assets, kept Purging Rain inactive after validation failure, added trigger-role gating, and regenerated field-effect validation.
+
+- `2026-07-07_1604_field-effect-brainstorm-round.md`: ran a sixth design-only field-effect brainstorm focused on morale/retreat behavior, one-use battlefield devices, and long-term blessing/curse rules, producing Salvage Winch, Rout Line, and Rotating Expedition Writ as strongest next candidates.
+
+- `2026-07-07_1549_field-effect-brainstorm-round.md`: ran a fifth design-only field-effect brainstorm focused on enemy targeting behavior, continuous dungeon route rules, and waste/efficiency diagnosis, producing Idle-Cast Calibration, Glare of Threat, and Forked Danger Road as strongest next candidates.
+
+- `2026-07-07_1534_field-effect-brainstorm-round.md`: ran a fourth design-only field-effect brainstorm focused on boss phases, weakness/reversal diagnosis, and loot-loop reward diagnosis, producing Crownbreak Channel, Prism Reversal, and Battle Scar Index as strongest next candidates.
+
+- `2026-07-07_1516_field-effect-brainstorm-round.md`: ran a third design-only field-effect brainstorm focused on enemy ecology, objective rules, and diagnostic reward/hazard directions, producing Last Spark Fuse, Decapitation Writ, and Guarded Captain as strongest next candidates.
+
+- `2026-07-07_1459_field-effect-brainstorm-round.md`: ran a second design-only field-effect brainstorm focused on formation, death order, and resource-denial directions, producing Twin-Lane Bastion, Blackout Bell, Vengeance Bell, and Glass Aegis as strongest next candidates.
+
+- `2026-07-07_1444_field-effect-brainstorm-round.md`: ran a design-only field-effect brainstorm heartbeat with three subagents, consolidated 9 raw ideas into 5 non-duplicate directions, and recorded next-round forbidden repeats.
+
+- `2026-07-07_1438_field-effect-lab-and-validation.md`: added plug-in field-effect assets, validation matrix script, `/field_effect_lab/` workbench page, and recorded first-pass uplift/breadth results without touching official skills or base role stats.
+
+- `2026-07-07_1105_game-analysis-priority-coupling.md`: updated `game-analysis-iteration` so current-game analysis must list problems with upstream/core/downstream type, dependencies, coupling, priority, and whether direct explanation is enough before planning changes.
+
 ## 2026-07-06
 
 - `2026-07-06_2345_project-game-analysis-iteration-skill.md`: added `projects/western_fantasy_continent/skills/game-analysis-iteration/` as a project skill package for state-machine game analysis, feedback gates, reviewer training, and iteration planning.

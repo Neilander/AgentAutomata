@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-06_2104_top10-compare-panel-visibility.md`](reports/2026-07-06_2104_top10-compare-panel-visibility.md)
+[`reports/2026-07-06_2345_project-game-analysis-iteration-skill.md`](reports/2026-07-06_2345_project-game-analysis-iteration-skill.md)
 
 Last updated: 2026-07-06
 
-Current focus: Fixed Top10 compare feedback so the agent comparison panel appears directly below the controls and scrolls into view.
+Current focus: Added the `game-analysis-iteration` project skill under Western Fantasy as a state-machine workflow for analysis, feedback gates, reviewer training, and iteration planning.

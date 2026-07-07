@@ -4,6 +4,8 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-06
 
+- `2026-07-06_2345_project-game-analysis-iteration-skill.md`: added `projects/western_fantasy_continent/skills/game-analysis-iteration/` as a project skill package for state-machine game analysis, feedback gates, reviewer training, and iteration planning.
+
 - `2026-07-06_2104_top10-compare-panel-visibility.md`: moved `/character_blind_lab/top10.html` comparison results directly below the action row and scrolls them into view so `对比 agent` no longer appears unresponsive.
 
 - `2026-07-06_2058_top10-multi-step-selection.md`: updated `/character_blind_lab/top10.html` so the user can select more than 10 candidates, disable agent comparison above 10, and repeatedly narrow the selected pool with `下一步`.

@@ -9,10 +9,11 @@
 
   const state = {
     runs: DEFAULT_RUNS,
-    run: DEFAULT_RUNS[0],
+    run: { id: "mixed", label: "全部轮次洗混", url: "" },
     data: null,
     page: 0,
     selected: new Set(JSON.parse(localStorage.getItem("aa_blind_selected") || "[]")),
+    shuffleSeed: localStorage.getItem("aa_blind_shuffle_seed") || String(Date.now()),
   };
 
   const els = {
@@ -30,7 +31,9 @@
     await loadRuns();
     renderRunSelect();
     els.runSelect.addEventListener("change", async () => {
-      state.run = state.runs.find((run) => run.id === els.runSelect.value) || state.runs[0];
+      state.run = els.runSelect.value === "mixed"
+        ? mixedRun()
+        : state.runs.find((run) => run.id === els.runSelect.value) || mixedRun();
       state.page = 0;
       els.revealPanel.hidden = true;
       await loadRun();
@@ -58,16 +61,17 @@
       const manifest = await response.json();
       if (Array.isArray(manifest.runs) && manifest.runs.length) {
         state.runs = manifest.runs;
-        state.run = state.runs[0];
+        state.run = mixedRun();
       }
     } catch (error) {
       state.runs = DEFAULT_RUNS;
-      state.run = state.runs[0];
+      state.run = mixedRun();
     }
   }
 
   function renderRunSelect() {
-    els.runSelect.innerHTML = state.runs
+    const options = [mixedRun(), ...state.runs];
+    els.runSelect.innerHTML = options
       .map((run) => `<option value="${escapeHtml(run.id)}">${escapeHtml(run.label || run.id)}</option>`)
       .join("");
     els.runSelect.value = state.run.id;
@@ -75,13 +79,63 @@
 
   async function loadRun() {
     try {
-      const response = await fetch(state.run.url, { cache: "no-cache" });
-      if (!response.ok) throw new Error(`run ${response.status}`);
-      state.data = await response.json();
+      state.data = state.run.id === "mixed" ? await loadMixedRun() : await fetchRun(state.run);
     } catch (error) {
       state.data = { candidates: [], error: String(error) };
     }
     render();
+  }
+
+  function mixedRun() {
+    return { id: "mixed", label: "全部轮次洗混", url: "" };
+  }
+
+  async function fetchRun(run) {
+    const response = await fetch(run.url, { cache: "no-cache" });
+    if (!response.ok) throw new Error(`run ${response.status}`);
+    return response.json();
+  }
+
+  async function loadMixedRun() {
+    if (!localStorage.getItem("aa_blind_shuffle_seed")) {
+      localStorage.setItem("aa_blind_shuffle_seed", state.shuffleSeed);
+    }
+    const results = await Promise.all(state.runs.map(async (run) => {
+      try {
+        const data = await fetchRun(run);
+        const candidates = (data.candidates || []).map((candidate) => ({
+          ...candidate,
+          runId: run.id,
+          runLabel: run.label || run.id,
+        }));
+        return candidates;
+      } catch (error) {
+        console.warn("run load failed", run.url, error);
+        return [];
+      }
+    }));
+    return {
+      sourcePrompt: "mixed runs",
+      candidates: stableShuffle(results.flat(), state.shuffleSeed),
+    };
+  }
+
+  function stableShuffle(items, seedText) {
+    const scored = items.map((item, index) => ({
+      item,
+      score: hashString(`${seedText}:${item.id || index}`),
+    }));
+    scored.sort((a, b) => a.score - b.score);
+    return scored.map((entry) => entry.item);
+  }
+
+  function hashString(text) {
+    let hash = 2166136261;
+    for (let index = 0; index < text.length; index += 1) {
+      hash ^= text.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
   }
 
   function render() {
@@ -115,22 +169,48 @@
         <div>
           <div class="role-line">${escapeHtml(candidate.role || "Unknown role")}</div>
           <h2>${escapeHtml(candidate.name)}</h2>
-          <p>${escapeHtml(candidate.outputPosture || "")}</p>
+          <p>${escapeHtml(candidate.outputPosture || candidate.blindText || "")}</p>
         </div>
         <div class="skill-list">
-          ${renderSkill("Passive", candidate.passive)}
-          ${renderSkill("Skill", candidate.smallSkill)}
-          ${renderSkill("Ultimate", candidate.ultimate)}
+          ${renderSkills(candidate)}
         </div>
         <button class="select-btn" data-select="${escapeHtml(candidate.id)}" type="button">${selected ? "Selected" : "Like"}</button>
       </article>
     `;
   }
 
+  function renderSkills(candidate) {
+    const skills = normalizedSkills(candidate);
+    if (!skills.length) return `<div class="skill"><strong>技能</strong><span>暂无技能文本</span></div>`;
+    return skills.slice(0, 3).map((skill) => renderSkill(skill.slot, skill)).join("");
+  }
+
+  function normalizedSkills(candidate) {
+    if (Array.isArray(candidate?.skills)) {
+      return candidate.skills.map((skill, index) => ({
+        slot: skill.slot || ["被动", "小技能", "大招"][index] || "技能",
+        name: skill.name || "",
+        text: skill.text || skill.desc || "",
+      }));
+    }
+
+    return [
+      ["被动", candidate?.passive],
+      ["小技能", candidate?.smallSkill],
+      ["大招", candidate?.ultimate],
+    ]
+      .filter(([, skill]) => skill)
+      .map(([slot, skill]) => ({
+        slot,
+        name: skill.name || "",
+        text: skill.text || skill.desc || "",
+      }));
+  }
+
   function renderSkill(label, skill = {}) {
     return `
       <div class="skill">
-        <strong>${label} - ${escapeHtml(skill.name || "Unnamed")}</strong>
+        <strong>${escapeHtml(label)} - ${escapeHtml(skill.name || "Unnamed")}</strong>
         <span>${escapeHtml(skill.text || "")}</span>
       </div>
     `;

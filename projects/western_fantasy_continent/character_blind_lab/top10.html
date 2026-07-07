@@ -11,7 +11,7 @@
       <header class="topbar">
         <div>
           <h1>候选 Top10 盲选</h1>
-          <p>从全部候选里选 10 个。这里不显示评价 agent 的理由，选完后再对比：旧版综合 Top10、8 个不同评价 prompt，哪个更贴你的审美。</p>
+          <p>先从全部候选里粗选，可以超过 10 个；超过 10 个时进入下一步，在已选池里继续收窄。到 10 个以内后再对比 agent。</p>
         </div>
         <a href="/character_blind_lab/">返回盲测</a>
       </header>
@@ -20,9 +20,12 @@
         <strong id="countLabel">已选 0 / 10</strong>
         <div class="actions">
           <button id="clearBtn" type="button">清空</button>
+          <button id="nextBtn" type="button">下一步</button>
           <button id="compareBtn" type="button">对比 agent</button>
         </div>
       </section>
+
+      <section id="comparePanel" class="compare-panel" hidden></section>
 
       <section class="layout">
         <aside class="selected-panel">
@@ -33,8 +36,6 @@
           <div id="cards" class="candidate-grid" aria-live="polite"></div>
         </section>
       </section>
-
-      <section id="comparePanel" class="compare-panel" hidden></section>
     </main>
 
     <script src="/character_blind_lab/top10.js"></script>

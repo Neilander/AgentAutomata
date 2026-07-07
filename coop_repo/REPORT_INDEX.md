@@ -4,6 +4,20 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-06
 
+- `2026-07-06_2104_top10-compare-panel-visibility.md`: moved `/character_blind_lab/top10.html` comparison results directly below the action row and scrolls them into view so `对比 agent` no longer appears unresponsive.
+
+- `2026-07-06_2058_top10-multi-step-selection.md`: updated `/character_blind_lab/top10.html` so the user can select more than 10 candidates, disable agent comparison above 10, and repeatedly narrow the selected pool with `下一步`.
+
+- `2026-07-06_2048_user-liked-candidates.md`: recorded the user's 39 liked blind-lab candidates as a structured positive pool before final Top10 selection.
+
+- `2026-07-06_2040_blind-lab-mixed-runs.md`: changed `/character_blind_lab/` so the default candidate pool is a stable shuffled mix across all 7 runs instead of one run at a time, while keeping individual run selection as a dropdown option.
+
+- `2026-07-06_2032_blind-lab-skill-details.md`: fixed `/character_blind_lab/` so the main blind lab renders passive, small skill, and ultimate descriptions for both earlier structured candidates and Run 7 `skills` arrays.
+
+- `2026-07-06_2025_blind-top10-skill-details.md`: fixed `/character_blind_lab/top10.html` so flattened candidates hydrate passive, skill, and ultimate descriptions from original run files before rendering cards.
+
+- `2026-07-06_2010_project-overview-doc.md`: added `projects/western_fantasy_continent/PROJECT_OVERVIEW.md` as a durable project overview covering positioning, established combat/equipment/town-loop direction, UI preferences, collaboration rules, and hard lessons.
+
 - `2026-07-06_1944_prompt-benchmark-review.md`: ran 8 evaluator-prompt variants over the same Runs 1-7 candidate pool, recorded prompt-specific Top10 lists, and updated `/character_blind_lab/top10.html` so user blind picks can be compared against each prompt's taste profile.
 
 - `2026-07-06_1915_candidate-review-comparison.md`: ran three evaluator-agent reviews over the 70-candidate Runs 1-7 pool, aggregated a combined Top 10, and added `/character_blind_lab/top10.html` so the user can independently choose 10 candidates and compare against agent preference.

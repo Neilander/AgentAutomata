@@ -83,9 +83,9 @@
       this.render();
     }
 
-    start({ leftTeam = [], rightTeam = [], seed = "battle-view", title = "战斗", randomizeStats } = {}) {
+    start({ leftTeam = [], rightTeam = [], seed = "battle-view", title = "战斗", randomizeStats, fieldEffectId } = {}) {
       if (window.GAME_COMBAT_SIM?.CombatSimulation) {
-        this.startUnified({ leftTeam, rightTeam, seed, title, randomizeStats });
+        this.startUnified({ leftTeam, rightTeam, seed, title, randomizeStats, fieldEffectId });
         return;
       }
       this.stop(false);
@@ -117,7 +117,7 @@
       this.render();
     }
 
-    startUnified({ leftTeam = [], rightTeam = [], seed = "battle-view", title = "\u6218\u6597", randomizeStats } = {}) {
+    startUnified({ leftTeam = [], rightTeam = [], seed = "battle-view", title = "\u6218\u6597", randomizeStats, fieldEffectId } = {}) {
       if (!window.GAME_COMBAT_SIM?.CombatSimulation) {
         this.start({ leftTeam, rightTeam, seed, title });
         return;
@@ -128,6 +128,7 @@
         maxTime: this.maxTime,
         healthInterval: 0.5,
         randomizeStats,
+        fieldEffectId,
       });
       sim.time = 0;
       sim.nextId = 1;
@@ -135,6 +136,7 @@
       sim.signalBus.clear();
       sim.units = [...sim.makeTeam("left", leftTeam), ...sim.makeTeam("right", rightTeam)];
       if (sim.randomizeStats) sim.applyStatSwing();
+      sim.runtimeField?.setup?.();
 
       this.state.time = 0;
       this.state.result = null;

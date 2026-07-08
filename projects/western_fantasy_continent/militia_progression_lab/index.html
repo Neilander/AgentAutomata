@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>民兵成长实验室</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css">
+    <link rel="stylesheet" href="/militia_progression_lab/styles.css">
+  </head>
+  <body>
+    <main class="lab-shell">
+      <header class="topbar">
+        <div>
+          <a class="back-link" href="/workbench/">工作台</a>
+          <h1>民兵成长实验室</h1>
+          <p>独立验证：2 英雄 + 4 民兵、阶段刷装、质量关、场地卡点、救出新英雄。</p>
+        </div>
+        <div class="top-actions">
+          <button id="resetBtn" type="button">重置实验</button>
+          <button id="autoBtn" type="button" class="primary">自动试玩 18 轮</button>
+        </div>
+      </header>
+
+      <section class="main-grid">
+        <aside class="stage-panel">
+          <div class="panel-title">
+            <span>阶段路线</span>
+            <strong id="stageName">阶段 1</strong>
+          </div>
+          <div id="stageList" class="stage-list"></div>
+        </aside>
+
+        <section class="combat-panel">
+          <div class="combat-head">
+            <div>
+              <span id="statusPill" class="status-pill">待命</span>
+              <strong id="encounterTitle">选择关卡后开战</strong>
+            </div>
+            <div class="combat-actions">
+              <button id="grindBtn" type="button">刷当前充水关</button>
+              <button id="fightBtn" type="button" class="primary">挑战所选关</button>
+            </div>
+          </div>
+          <div id="encounterHint" class="encounter-hint"></div>
+          <div id="battleMount" class="battle-mount"></div>
+          <div class="loot-strip">
+            <div>
+              <span>本轮掉落</span>
+              <strong id="lootSummary">无</strong>
+            </div>
+            <div id="lootGrid" class="loot-grid"></div>
+          </div>
+        </section>
+
+        <aside class="team-panel">
+          <div class="panel-title">
+            <span>队伍与装备</span>
+            <strong id="teamPower">0</strong>
+          </div>
+          <div id="rosterList" class="roster-list"></div>
+          <div class="equip-actions">
+            <button id="autoEquipBtn" type="button">自动配装</button>
+            <span id="equipNote">优先给英雄，其次补民兵短板</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="signal-board">
+        <div class="signal-card">
+          <span>民兵认知</span>
+          <strong id="militiaSignal">未测试</strong>
+          <p id="militiaSignalDetail">观察盾民兵承伤、火花学徒输出/死亡、草药治疗。</p>
+        </div>
+        <div class="signal-card">
+          <span>装备成长</span>
+          <strong id="growthSignal">未测试</strong>
+          <p id="growthSignalDetail">观察每阶段白/蓝/紫装带来的战力跳变。</p>
+        </div>
+        <div class="signal-card">
+          <span>卡点理解</span>
+          <strong id="gateSignal">未测试</strong>
+          <p id="gateSignalDetail">观察是否换 1 个角色或救 1 个英雄后变好。</p>
+        </div>
+        <div class="signal-card wide">
+          <span>试玩日志</span>
+          <div id="runLog" class="run-log"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/runtime-field-effects.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/battle_view/battle-view.js"></script>
+    <script src="/militia_progression_lab/militia-progression-core.js"></script>
+    <script src="/militia_progression_lab/app.js"></script>
+  </body>
+</html>

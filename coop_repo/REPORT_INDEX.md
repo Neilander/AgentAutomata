@@ -4,6 +4,10 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-08
 
+- `2026-07-08_2039_stage2-guaranteed-epic.md`: added a one-time guaranteed purple item reward to the Stage 2 quality fight in the militia progression lab, preserving normal Stage 2 drop odds while creating a deterministic first-purple moment.
+
+- `2026-07-08_1815_militia-progression-lab.md`: added an independent militia early-game progression lab with 2 heroes + 4 militia, staged restrained loot, quality fights, field-effect gates, rescued heroes, signal panel, and Node self-play validation.
+
 - `2026-07-08_1725_field-effect-uplift-11-pass.md`: retuned the curated runtime field-effect pool to 11 usable effects and reran validation; most direct or same-field swap uplift evidence now sits around the target 10-30 point band.
 
 - `2026-07-08_1655_wildfire-backline-assassin.md`: validated the user's backline blink assassin idea for wildfire rings; added candidates and a same-field swap showing 76.0% -> 91.2% with a backline assassin delivery unit.

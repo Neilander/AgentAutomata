@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-07_2117_project-overview-cognition-route.md`](reports/2026-07-07_2117_project-overview-cognition-route.md)
+[`reports/2026-07-08_1725_field-effect-uplift-11-pass.md`](reports/2026-07-08_1725_field-effect-uplift-11-pass.md)
 
-Last updated: 2026-07-07
+Last updated: 2026-07-08
 
-Current focus: Updated the durable western fantasy project overview with the staged player cognition route and the next validation question: basic field effects should let players improve by changing one or two roles, not rebuilding everything.
+Current focus: Retuned the curated runtime field-effect pool to 11 usable effects, with most advantage evidence in the 10-30 point uplift band and two teaching-swap effects kept on watch.

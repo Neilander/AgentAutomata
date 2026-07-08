@@ -1,0 +1,2546 @@
+{
+  "schema": "western_fantasy_runtime_field_effect_advantage_v1",
+  "generatedAt": "2026-07-08T10:07:17.400Z",
+  "waterline": {
+    "source": "game_data/team_pools/mob-waterline-db.json",
+    "totalAvailable": 500,
+    "used": 500
+  },
+  "combatOptions": {
+    "randomizeStats": false,
+    "maxTime": 75
+  },
+  "method": "For every candidate team, run the same waterline without the field and then with the field. Also run one-role swap tests where both before and after teams use the same field effect.",
+  "effects": [
+    {
+      "id": "sentry_suppression",
+      "name": "哨塔压制",
+      "focus": "敌方后排在被近战贴住前更危险",
+      "expected": "刺客、冲锋骑士、能快速接触后排的队伍",
+      "topAdvantage": [
+        {
+          "id": "four_ranged_damage",
+          "absoluteLift": 0.114,
+          "relativeLift": 0.2135,
+          "baseRate": 0.534,
+          "fieldRate": 0.648
+        },
+        {
+          "id": "fireBurst",
+          "absoluteLift": 0.09,
+          "relativeLift": 0.1074,
+          "baseRate": 0.838,
+          "fieldRate": 0.928
+        },
+        {
+          "id": "cavalryBreak",
+          "absoluteLift": 0.086,
+          "relativeLift": 0.1894,
+          "baseRate": 0.454,
+          "fieldRate": 0.54
+        }
+      ],
+      "rows": [
+        {
+          "id": "four_ranged_damage",
+          "roles": [
+            "ranger",
+            "mage",
+            "warlock",
+            "alchemist"
+          ],
+          "baseWins": 267,
+          "fieldWins": 324,
+          "baseRate": 0.534,
+          "fieldRate": 0.648,
+          "absoluteLift": 0.114,
+          "relativeLift": 0.2135,
+          "flipsToWin": 80,
+          "flipsToLoss": 23,
+          "reason": "checks whether contact/diver access lowers backline pressure (four_ranged_damage)"
+        },
+        {
+          "id": "fireBurst",
+          "roles": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "baseWins": 419,
+          "fieldWins": 464,
+          "baseRate": 0.838,
+          "fieldRate": 0.928,
+          "absoluteLift": 0.09,
+          "relativeLift": 0.1074,
+          "flipsToWin": 57,
+          "flipsToLoss": 12,
+          "reason": "checks whether contact/diver access lowers backline pressure (fireBurst)"
+        },
+        {
+          "id": "cavalryBreak",
+          "roles": [
+            "knight",
+            "warrior",
+            "berserker",
+            "priest"
+          ],
+          "baseWins": 227,
+          "fieldWins": 270,
+          "baseRate": 0.454,
+          "fieldRate": 0.54,
+          "absoluteLift": 0.086,
+          "relativeLift": 0.1894,
+          "flipsToWin": 56,
+          "flipsToLoss": 13,
+          "reason": "checks whether contact/diver access lowers backline pressure (cavalryBreak)"
+        },
+        {
+          "id": "frostTrapField",
+          "roles": [
+            "ranger",
+            "mage",
+            "knight",
+            "bard"
+          ],
+          "baseWins": 322,
+          "fieldWins": 346,
+          "baseRate": 0.644,
+          "fieldRate": 0.692,
+          "absoluteLift": 0.048,
+          "relativeLift": 0.0745,
+          "flipsToWin": 53,
+          "flipsToLoss": 29,
+          "reason": "checks whether contact/diver access lowers backline pressure (frostTrapField)"
+        },
+        {
+          "id": "shadowExecute",
+          "roles": [
+            "knight",
+            "assassin",
+            "assassin",
+            "warlock"
+          ],
+          "baseWins": 322,
+          "fieldWins": 324,
+          "baseRate": 0.644,
+          "fieldRate": 0.648,
+          "absoluteLift": 0.004,
+          "relativeLift": 0.0062,
+          "flipsToWin": 51,
+          "flipsToLoss": 49,
+          "reason": "checks whether contact/diver access lowers backline pressure (shadowExecute)"
+        },
+        {
+          "id": "frontline_contact",
+          "roles": [
+            "knight",
+            "warrior",
+            "assassin",
+            "priest"
+          ],
+          "baseWins": 243,
+          "fieldWins": 235,
+          "baseRate": 0.486,
+          "fieldRate": 0.47,
+          "absoluteLift": -0.016,
+          "relativeLift": -0.0329,
+          "flipsToWin": 42,
+          "flipsToLoss": 50,
+          "reason": "checks whether contact/diver access lowers backline pressure (frontline_contact)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "fire_add_assassin",
+          "note": "same fire front, replace one caster with a backline engager",
+          "from": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "to": [
+            "warrior",
+            "knight",
+            "assassin",
+            "mage"
+          ],
+          "beforeWins": 464,
+          "afterWins": 361,
+          "beforeRate": 0.928,
+          "afterRate": 0.722,
+          "absoluteLift": -0.206,
+          "relativeLift": -0.222,
+          "flipsToWin": 2,
+          "flipsToLoss": 105
+        },
+        {
+          "id": "ranged_add_knight",
+          "note": "ranged damage core, add contact pressure",
+          "from": [
+            "ranger",
+            "mage",
+            "warlock",
+            "alchemist"
+          ],
+          "to": [
+            "knight",
+            "mage",
+            "warlock",
+            "alchemist"
+          ],
+          "beforeWins": 324,
+          "afterWins": 385,
+          "beforeRate": 0.648,
+          "afterRate": 0.77,
+          "absoluteLift": 0.122,
+          "relativeLift": 0.1883,
+          "flipsToWin": 97,
+          "flipsToLoss": 36
+        }
+      ],
+      "judgment": "哨塔压制 currently favors four_ranged_damage: 53.4% -> 64.8% (+11.4% abs, +21.4% rel); nearby fireBurst: 83.8% -> 92.8%."
+    },
+    {
+      "id": "heavy_shield_line",
+      "name": "重盾阵线",
+      "focus": "前排开局获得明显护盾",
+      "expected": "破盾、集火、持续输出队伍",
+      "topAdvantage": [
+        {
+          "id": "lightningTempo",
+          "absoluteLift": 0.138,
+          "relativeLift": 0.224,
+          "baseRate": 0.616,
+          "fieldRate": 0.754
+        },
+        {
+          "id": "shieldbreaker_mix",
+          "absoluteLift": 0.102,
+          "relativeLift": 0.2329,
+          "baseRate": 0.438,
+          "fieldRate": 0.54
+        },
+        {
+          "id": "cavalryBreak",
+          "absoluteLift": -0.036,
+          "relativeLift": -0.0793,
+          "baseRate": 0.454,
+          "fieldRate": 0.418
+        }
+      ],
+      "rows": [
+        {
+          "id": "lightningTempo",
+          "roles": [
+            "warrior",
+            "ranger",
+            "bard",
+            "ranger"
+          ],
+          "baseWins": 308,
+          "fieldWins": 377,
+          "baseRate": 0.616,
+          "fieldRate": 0.754,
+          "absoluteLift": 0.138,
+          "relativeLift": 0.224,
+          "flipsToWin": 86,
+          "flipsToLoss": 17,
+          "reason": "checks whether shield break or focused sustained damage converts front shields (lightningTempo)"
+        },
+        {
+          "id": "shieldbreaker_mix",
+          "roles": [
+            "knight",
+            "warrior",
+            "ranger",
+            "bard"
+          ],
+          "baseWins": 219,
+          "fieldWins": 270,
+          "baseRate": 0.438,
+          "fieldRate": 0.54,
+          "absoluteLift": 0.102,
+          "relativeLift": 0.2329,
+          "flipsToWin": 77,
+          "flipsToLoss": 26,
+          "reason": "checks whether shield break or focused sustained damage converts front shields (shieldbreaker_mix)"
+        },
+        {
+          "id": "cavalryBreak",
+          "roles": [
+            "knight",
+            "warrior",
+            "berserker",
+            "priest"
+          ],
+          "baseWins": 227,
+          "fieldWins": 209,
+          "baseRate": 0.454,
+          "fieldRate": 0.418,
+          "absoluteLift": -0.036,
+          "relativeLift": -0.0793,
+          "flipsToWin": 26,
+          "flipsToLoss": 44,
+          "reason": "checks whether shield break or focused sustained damage converts front shields (cavalryBreak)"
+        },
+        {
+          "id": "fireBurst",
+          "roles": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "baseWins": 419,
+          "fieldWins": 384,
+          "baseRate": 0.838,
+          "fieldRate": 0.768,
+          "absoluteLift": -0.07,
+          "relativeLift": -0.0835,
+          "flipsToWin": 20,
+          "flipsToLoss": 55,
+          "reason": "checks whether shield break or focused sustained damage converts front shields (fireBurst)"
+        },
+        {
+          "id": "duelChampion",
+          "roles": [
+            "warrior",
+            "knight",
+            "priest",
+            "bard"
+          ],
+          "baseWins": 216,
+          "fieldWins": 143,
+          "baseRate": 0.432,
+          "fieldRate": 0.286,
+          "absoluteLift": -0.146,
+          "relativeLift": -0.338,
+          "flipsToWin": 17,
+          "flipsToLoss": 90,
+          "reason": "checks whether shield break or focused sustained damage converts front shields (duelChampion)"
+        },
+        {
+          "id": "holySustain",
+          "roles": [
+            "knight",
+            "warrior",
+            "priest",
+            "priest"
+          ],
+          "baseWins": 214,
+          "fieldWins": 120,
+          "baseRate": 0.428,
+          "fieldRate": 0.24,
+          "absoluteLift": -0.188,
+          "relativeLift": -0.4393,
+          "flipsToWin": 11,
+          "flipsToLoss": 105,
+          "reason": "checks whether shield break or focused sustained damage converts front shields (holySustain)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "sustain_add_ranger",
+          "note": "drop one healer for shield-breaking ranged pressure",
+          "from": [
+            "knight",
+            "warrior",
+            "priest",
+            "priest"
+          ],
+          "to": [
+            "knight",
+            "warrior",
+            "ranger",
+            "priest"
+          ],
+          "beforeWins": 86,
+          "afterWins": 252,
+          "beforeRate": 0.172,
+          "afterRate": 0.504,
+          "absoluteLift": 0.332,
+          "relativeLift": 1.9302,
+          "flipsToWin": 167,
+          "flipsToLoss": 1
+        },
+        {
+          "id": "duel_add_ranger",
+          "note": "turn duel support into front shield pressure",
+          "from": [
+            "warrior",
+            "knight",
+            "priest",
+            "bard"
+          ],
+          "to": [
+            "warrior",
+            "ranger",
+            "priest",
+            "bard"
+          ],
+          "beforeWins": 128,
+          "afterWins": 186,
+          "beforeRate": 0.256,
+          "afterRate": 0.372,
+          "absoluteLift": 0.116,
+          "relativeLift": 0.4531,
+          "flipsToWin": 83,
+          "flipsToLoss": 25
+        }
+      ],
+      "judgment": "重盾阵线 currently favors lightningTempo: 61.6% -> 75.4% (+13.8% abs, +22.4% rel); nearby shieldbreaker_mix: 43.8% -> 54%."
+    },
+    {
+      "id": "pressure_corridor",
+      "name": "高压回廊",
+      "focus": "开局周期性压低全场血量",
+      "expected": "治疗、护盾、低血收益队伍",
+      "topAdvantage": [
+        {
+          "id": "holySustain",
+          "absoluteLift": 0.044,
+          "relativeLift": 0.1028,
+          "baseRate": 0.428,
+          "fieldRate": 0.472
+        },
+        {
+          "id": "crownCarry",
+          "absoluteLift": 0.042,
+          "relativeLift": 0.056,
+          "baseRate": 0.75,
+          "fieldRate": 0.792
+        },
+        {
+          "id": "fireBurst",
+          "absoluteLift": 0.042,
+          "relativeLift": 0.0501,
+          "baseRate": 0.838,
+          "fieldRate": 0.88
+        }
+      ],
+      "rows": [
+        {
+          "id": "holySustain",
+          "roles": [
+            "knight",
+            "warrior",
+            "priest",
+            "priest"
+          ],
+          "baseWins": 214,
+          "fieldWins": 236,
+          "baseRate": 0.428,
+          "fieldRate": 0.472,
+          "absoluteLift": 0.044,
+          "relativeLift": 0.1028,
+          "flipsToWin": 46,
+          "flipsToLoss": 24,
+          "reason": "checks whether healing, shielding, or low-HP engines convert early pressure (holySustain)"
+        },
+        {
+          "id": "crownCarry",
+          "roles": [
+            "knight",
+            "priest",
+            "bard",
+            "berserker"
+          ],
+          "baseWins": 375,
+          "fieldWins": 396,
+          "baseRate": 0.75,
+          "fieldRate": 0.792,
+          "absoluteLift": 0.042,
+          "relativeLift": 0.056,
+          "flipsToWin": 47,
+          "flipsToLoss": 26,
+          "reason": "checks whether healing, shielding, or low-HP engines convert early pressure (crownCarry)"
+        },
+        {
+          "id": "fireBurst",
+          "roles": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "baseWins": 419,
+          "fieldWins": 440,
+          "baseRate": 0.838,
+          "fieldRate": 0.88,
+          "absoluteLift": 0.042,
+          "relativeLift": 0.0501,
+          "flipsToWin": 42,
+          "flipsToLoss": 21,
+          "reason": "checks whether healing, shielding, or low-HP engines convert early pressure (fireBurst)"
+        },
+        {
+          "id": "scarletVanguard",
+          "roles": [
+            "berserker",
+            "warrior",
+            "mage",
+            "bard"
+          ],
+          "baseWins": 352,
+          "fieldWins": 370,
+          "baseRate": 0.704,
+          "fieldRate": 0.74,
+          "absoluteLift": 0.036,
+          "relativeLift": 0.0511,
+          "flipsToWin": 45,
+          "flipsToLoss": 27,
+          "reason": "checks whether healing, shielding, or low-HP engines convert early pressure (scarletVanguard)"
+        },
+        {
+          "id": "bloodRage",
+          "roles": [
+            "berserker",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "baseWins": 275,
+          "fieldWins": 272,
+          "baseRate": 0.55,
+          "fieldRate": 0.544,
+          "absoluteLift": -0.006,
+          "relativeLift": -0.0109,
+          "flipsToWin": 51,
+          "flipsToLoss": 54,
+          "reason": "checks whether healing, shielding, or low-HP engines convert early pressure (bloodRage)"
+        },
+        {
+          "id": "double_priest_berserker",
+          "roles": [
+            "berserker",
+            "warrior",
+            "priest",
+            "priest"
+          ],
+          "baseWins": 296,
+          "fieldWins": 289,
+          "baseRate": 0.592,
+          "fieldRate": 0.578,
+          "absoluteLift": -0.014,
+          "relativeLift": -0.0236,
+          "flipsToWin": 51,
+          "flipsToLoss": 58,
+          "reason": "checks whether healing, shielding, or low-HP engines convert early pressure (double_priest_berserker)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "rage_add_priest",
+          "note": "replace burst with recovery under opening pressure",
+          "from": [
+            "berserker",
+            "warrior",
+            "mage",
+            "bard"
+          ],
+          "to": [
+            "berserker",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "beforeWins": 247,
+          "afterWins": 272,
+          "beforeRate": 0.494,
+          "afterRate": 0.544,
+          "absoluteLift": 0.05,
+          "relativeLift": 0.1012,
+          "flipsToWin": 75,
+          "flipsToLoss": 50
+        },
+        {
+          "id": "frontline_add_priest",
+          "note": "keep frontline plan, replace burst with recovery",
+          "from": [
+            "knight",
+            "warrior",
+            "mage",
+            "bard"
+          ],
+          "to": [
+            "knight",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "beforeWins": 217,
+          "afterWins": 125,
+          "beforeRate": 0.434,
+          "afterRate": 0.25,
+          "absoluteLift": -0.184,
+          "relativeLift": -0.424,
+          "flipsToWin": 20,
+          "flipsToLoss": 112
+        }
+      ],
+      "judgment": "高压回廊 currently favors holySustain: 42.8% -> 47.2% (+4.4% abs, +10.3% rel); nearby crownCarry: 75% -> 79.2%."
+    },
+    {
+      "id": "delay_mud",
+      "name": "迟滞泥地",
+      "focus": "近战接敌变慢，控制更容易创造窗口",
+      "expected": "冰控、陷阱、远程持续输出队伍",
+      "topAdvantage": [
+        {
+          "id": "four_ranged_damage",
+          "absoluteLift": 0.206,
+          "relativeLift": 0.3858,
+          "baseRate": 0.534,
+          "fieldRate": 0.74
+        },
+        {
+          "id": "frostTrapField",
+          "absoluteLift": 0.13,
+          "relativeLift": 0.2019,
+          "baseRate": 0.644,
+          "fieldRate": 0.774
+        },
+        {
+          "id": "control_backline",
+          "absoluteLift": 0.062,
+          "relativeLift": 0.1938,
+          "baseRate": 0.32,
+          "fieldRate": 0.382
+        }
+      ],
+      "rows": [
+        {
+          "id": "four_ranged_damage",
+          "roles": [
+            "ranger",
+            "mage",
+            "warlock",
+            "alchemist"
+          ],
+          "baseWins": 267,
+          "fieldWins": 370,
+          "baseRate": 0.534,
+          "fieldRate": 0.74,
+          "absoluteLift": 0.206,
+          "relativeLift": 0.3858,
+          "flipsToWin": 104,
+          "flipsToLoss": 1,
+          "reason": "checks whether control/backline plans use delayed contact (four_ranged_damage)"
+        },
+        {
+          "id": "frostTrapField",
+          "roles": [
+            "ranger",
+            "mage",
+            "knight",
+            "bard"
+          ],
+          "baseWins": 322,
+          "fieldWins": 387,
+          "baseRate": 0.644,
+          "fieldRate": 0.774,
+          "absoluteLift": 0.13,
+          "relativeLift": 0.2019,
+          "flipsToWin": 83,
+          "flipsToLoss": 18,
+          "reason": "checks whether control/backline plans use delayed contact (frostTrapField)"
+        },
+        {
+          "id": "control_backline",
+          "roles": [
+            "knight",
+            "mage",
+            "alchemist",
+            "bard"
+          ],
+          "baseWins": 160,
+          "fieldWins": 191,
+          "baseRate": 0.32,
+          "fieldRate": 0.382,
+          "absoluteLift": 0.062,
+          "relativeLift": 0.1938,
+          "flipsToWin": 54,
+          "flipsToLoss": 23,
+          "reason": "checks whether control/backline plans use delayed contact (control_backline)"
+        },
+        {
+          "id": "bulwarkMarks",
+          "roles": [
+            "knight",
+            "ranger",
+            "ranger",
+            "bard"
+          ],
+          "baseWins": 196,
+          "fieldWins": 210,
+          "baseRate": 0.392,
+          "fieldRate": 0.42,
+          "absoluteLift": 0.028,
+          "relativeLift": 0.0714,
+          "flipsToWin": 42,
+          "flipsToLoss": 28,
+          "reason": "checks whether control/backline plans use delayed contact (bulwarkMarks)"
+        },
+        {
+          "id": "frostControl",
+          "roles": [
+            "knight",
+            "priest",
+            "mage",
+            "alchemist"
+          ],
+          "baseWins": 389,
+          "fieldWins": 401,
+          "baseRate": 0.778,
+          "fieldRate": 0.802,
+          "absoluteLift": 0.024,
+          "relativeLift": 0.0308,
+          "flipsToWin": 40,
+          "flipsToLoss": 28,
+          "reason": "checks whether control/backline plans use delayed contact (frostControl)"
+        },
+        {
+          "id": "crownCarry",
+          "roles": [
+            "knight",
+            "priest",
+            "bard",
+            "berserker"
+          ],
+          "baseWins": 375,
+          "fieldWins": 370,
+          "baseRate": 0.75,
+          "fieldRate": 0.74,
+          "absoluteLift": -0.01,
+          "relativeLift": -0.0133,
+          "flipsToWin": 26,
+          "flipsToLoss": 31,
+          "reason": "checks whether control/backline plans use delayed contact (crownCarry)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "melee_add_mage",
+          "note": "keep one front, replace one melee with control",
+          "from": [
+            "knight",
+            "warrior",
+            "ranger",
+            "bard"
+          ],
+          "to": [
+            "knight",
+            "mage",
+            "ranger",
+            "bard"
+          ],
+          "beforeWins": 197,
+          "afterWins": 314,
+          "beforeRate": 0.394,
+          "afterRate": 0.628,
+          "absoluteLift": 0.234,
+          "relativeLift": 0.5939,
+          "flipsToWin": 149,
+          "flipsToLoss": 32
+        },
+        {
+          "id": "marks_add_mage",
+          "note": "replace one mark slot with control",
+          "from": [
+            "knight",
+            "ranger",
+            "ranger",
+            "bard"
+          ],
+          "to": [
+            "knight",
+            "ranger",
+            "mage",
+            "bard"
+          ],
+          "beforeWins": 373,
+          "afterWins": 350,
+          "beforeRate": 0.746,
+          "afterRate": 0.7,
+          "absoluteLift": -0.046,
+          "relativeLift": -0.0617,
+          "flipsToWin": 32,
+          "flipsToLoss": 55
+        }
+      ],
+      "judgment": "迟滞泥地 currently favors four_ranged_damage: 53.4% -> 74% (+20.6% abs, +38.6% rel); nearby frostTrapField: 64.4% -> 77.4%."
+    },
+    {
+      "id": "war_drum_echo",
+      "name": "战鼓回声",
+      "focus": "连续普攻叠节奏",
+      "expected": "游侠、狂战、吟游加速普攻队伍",
+      "topAdvantage": [
+        {
+          "id": "basic_attack_core",
+          "absoluteLift": 0.16,
+          "relativeLift": 0.2941,
+          "baseRate": 0.544,
+          "fieldRate": 0.704
+        },
+        {
+          "id": "lightningTempo",
+          "absoluteLift": 0.114,
+          "relativeLift": 0.1851,
+          "baseRate": 0.616,
+          "fieldRate": 0.73
+        },
+        {
+          "id": "bulwarkMarks",
+          "absoluteLift": 0.094,
+          "relativeLift": 0.2398,
+          "baseRate": 0.392,
+          "fieldRate": 0.486
+        }
+      ],
+      "rows": [
+        {
+          "id": "basic_attack_core",
+          "roles": [
+            "warrior",
+            "ranger",
+            "ranger",
+            "bard"
+          ],
+          "baseWins": 272,
+          "fieldWins": 352,
+          "baseRate": 0.544,
+          "fieldRate": 0.704,
+          "absoluteLift": 0.16,
+          "relativeLift": 0.2941,
+          "flipsToWin": 88,
+          "flipsToLoss": 8,
+          "reason": "checks whether basic-attack tempo turns into real wins (basic_attack_core)"
+        },
+        {
+          "id": "lightningTempo",
+          "roles": [
+            "warrior",
+            "ranger",
+            "bard",
+            "ranger"
+          ],
+          "baseWins": 308,
+          "fieldWins": 365,
+          "baseRate": 0.616,
+          "fieldRate": 0.73,
+          "absoluteLift": 0.114,
+          "relativeLift": 0.1851,
+          "flipsToWin": 75,
+          "flipsToLoss": 18,
+          "reason": "checks whether basic-attack tempo turns into real wins (lightningTempo)"
+        },
+        {
+          "id": "bulwarkMarks",
+          "roles": [
+            "knight",
+            "ranger",
+            "ranger",
+            "bard"
+          ],
+          "baseWins": 196,
+          "fieldWins": 243,
+          "baseRate": 0.392,
+          "fieldRate": 0.486,
+          "absoluteLift": 0.094,
+          "relativeLift": 0.2398,
+          "flipsToWin": 81,
+          "flipsToLoss": 34,
+          "reason": "checks whether basic-attack tempo turns into real wins (bulwarkMarks)"
+        },
+        {
+          "id": "crownCarry",
+          "roles": [
+            "knight",
+            "priest",
+            "bard",
+            "berserker"
+          ],
+          "baseWins": 375,
+          "fieldWins": 402,
+          "baseRate": 0.75,
+          "fieldRate": 0.804,
+          "absoluteLift": 0.054,
+          "relativeLift": 0.072,
+          "flipsToWin": 56,
+          "flipsToLoss": 29,
+          "reason": "checks whether basic-attack tempo turns into real wins (crownCarry)"
+        },
+        {
+          "id": "fireBurst",
+          "roles": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "baseWins": 419,
+          "fieldWins": 417,
+          "baseRate": 0.838,
+          "fieldRate": 0.834,
+          "absoluteLift": -0.004,
+          "relativeLift": -0.0048,
+          "flipsToWin": 26,
+          "flipsToLoss": 28,
+          "reason": "checks whether basic-attack tempo turns into real wins (fireBurst)"
+        },
+        {
+          "id": "bloodRage",
+          "roles": [
+            "berserker",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "baseWins": 275,
+          "fieldWins": 273,
+          "baseRate": 0.55,
+          "fieldRate": 0.546,
+          "absoluteLift": -0.004,
+          "relativeLift": -0.0073,
+          "flipsToWin": 46,
+          "flipsToLoss": 48,
+          "reason": "checks whether basic-attack tempo turns into real wins (bloodRage)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "marks_add_bard",
+          "note": "replace passive recovery with attack rhythm",
+          "from": [
+            "knight",
+            "ranger",
+            "ranger",
+            "priest"
+          ],
+          "to": [
+            "knight",
+            "ranger",
+            "ranger",
+            "bard"
+          ],
+          "beforeWins": 320,
+          "afterWins": 413,
+          "beforeRate": 0.64,
+          "afterRate": 0.826,
+          "absoluteLift": 0.186,
+          "relativeLift": 0.2906,
+          "flipsToWin": 116,
+          "flipsToLoss": 23
+        },
+        {
+          "id": "rage_add_bard",
+          "note": "add attack rhythm to low-HP melee core",
+          "from": [
+            "berserker",
+            "warrior",
+            "priest",
+            "mage"
+          ],
+          "to": [
+            "berserker",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "beforeWins": 269,
+          "afterWins": 273,
+          "beforeRate": 0.538,
+          "afterRate": 0.546,
+          "absoluteLift": 0.008,
+          "relativeLift": 0.0149,
+          "flipsToWin": 51,
+          "flipsToLoss": 47
+        }
+      ],
+      "judgment": "战鼓回声 currently favors basic_attack_core: 54.4% -> 70.4% (+16% abs, +29.4% rel); nearby lightningTempo: 61.6% -> 73%."
+    },
+    {
+      "id": "blood_moon_rise",
+      "name": "血月升起",
+      "focus": "15 秒时低血单位获得短暂爆发窗口",
+      "expected": "低血狂战、能保低血核心的队伍",
+      "topAdvantage": [
+        {
+          "id": "crownCarry",
+          "absoluteLift": 0.138,
+          "relativeLift": 0.184,
+          "baseRate": 0.75,
+          "fieldRate": 0.888
+        },
+        {
+          "id": "low_hp_core",
+          "absoluteLift": 0.006,
+          "relativeLift": 0.0076,
+          "baseRate": 0.792,
+          "fieldRate": 0.798
+        },
+        {
+          "id": "bloodRage",
+          "absoluteLift": -0.004,
+          "relativeLift": -0.0073,
+          "baseRate": 0.55,
+          "fieldRate": 0.546
+        }
+      ],
+      "rows": [
+        {
+          "id": "crownCarry",
+          "roles": [
+            "knight",
+            "priest",
+            "bard",
+            "berserker"
+          ],
+          "baseWins": 375,
+          "fieldWins": 444,
+          "baseRate": 0.75,
+          "fieldRate": 0.888,
+          "absoluteLift": 0.138,
+          "relativeLift": 0.184,
+          "flipsToWin": 78,
+          "flipsToLoss": 9,
+          "reason": "checks whether low-HP carry windows become recoverable burst windows (crownCarry)"
+        },
+        {
+          "id": "low_hp_core",
+          "roles": [
+            "berserker",
+            "knight",
+            "priest",
+            "bard"
+          ],
+          "baseWins": 396,
+          "fieldWins": 399,
+          "baseRate": 0.792,
+          "fieldRate": 0.798,
+          "absoluteLift": 0.006,
+          "relativeLift": 0.0076,
+          "flipsToWin": 26,
+          "flipsToLoss": 23,
+          "reason": "checks whether low-HP carry windows become recoverable burst windows (low_hp_core)"
+        },
+        {
+          "id": "bloodRage",
+          "roles": [
+            "berserker",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "baseWins": 275,
+          "fieldWins": 273,
+          "baseRate": 0.55,
+          "fieldRate": 0.546,
+          "absoluteLift": -0.004,
+          "relativeLift": -0.0073,
+          "flipsToWin": 13,
+          "flipsToLoss": 15,
+          "reason": "checks whether low-HP carry windows become recoverable burst windows (bloodRage)"
+        },
+        {
+          "id": "holySustain",
+          "roles": [
+            "knight",
+            "warrior",
+            "priest",
+            "priest"
+          ],
+          "baseWins": 214,
+          "fieldWins": 205,
+          "baseRate": 0.428,
+          "fieldRate": 0.41,
+          "absoluteLift": -0.018,
+          "relativeLift": -0.0421,
+          "flipsToWin": 22,
+          "flipsToLoss": 31,
+          "reason": "checks whether low-HP carry windows become recoverable burst windows (holySustain)"
+        },
+        {
+          "id": "scarletVanguard",
+          "roles": [
+            "berserker",
+            "warrior",
+            "mage",
+            "bard"
+          ],
+          "baseWins": 352,
+          "fieldWins": 330,
+          "baseRate": 0.704,
+          "fieldRate": 0.66,
+          "absoluteLift": -0.044,
+          "relativeLift": -0.0625,
+          "flipsToWin": 13,
+          "flipsToLoss": 35,
+          "reason": "checks whether low-HP carry windows become recoverable burst windows (scarletVanguard)"
+        },
+        {
+          "id": "shadowExecute",
+          "roles": [
+            "knight",
+            "assassin",
+            "assassin",
+            "warlock"
+          ],
+          "baseWins": 322,
+          "fieldWins": 281,
+          "baseRate": 0.644,
+          "fieldRate": 0.562,
+          "absoluteLift": -0.082,
+          "relativeLift": -0.1273,
+          "flipsToWin": 15,
+          "flipsToLoss": 56,
+          "reason": "checks whether low-HP carry windows become recoverable burst windows (shadowExecute)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "rage_add_berserker",
+          "note": "replace stable fighter with low-HP carry",
+          "from": [
+            "warrior",
+            "knight",
+            "priest",
+            "bard"
+          ],
+          "to": [
+            "berserker",
+            "knight",
+            "priest",
+            "bard"
+          ],
+          "beforeWins": 145,
+          "afterWins": 399,
+          "beforeRate": 0.29,
+          "afterRate": 0.798,
+          "absoluteLift": 0.508,
+          "relativeLift": 1.7517,
+          "flipsToWin": 256,
+          "flipsToLoss": 2
+        },
+        {
+          "id": "scarlet_add_priest",
+          "note": "protect the blood moon target",
+          "from": [
+            "berserker",
+            "warrior",
+            "mage",
+            "bard"
+          ],
+          "to": [
+            "berserker",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "beforeWins": 242,
+          "afterWins": 273,
+          "beforeRate": 0.484,
+          "afterRate": 0.546,
+          "absoluteLift": 0.062,
+          "relativeLift": 0.1281,
+          "flipsToWin": 84,
+          "flipsToLoss": 53
+        }
+      ],
+      "judgment": "血月升起 currently favors crownCarry: 75% -> 88.8% (+13.8% abs, +18.4% rel); nearby low_hp_core: 79.2% -> 79.8%."
+    },
+    {
+      "id": "king_flag",
+      "name": "王旗落地",
+      "focus": "前排守旗，阵亡后全队反扑",
+      "expected": "强前排、殉道、反打队伍",
+      "topAdvantage": [
+        {
+          "id": "flag_guard_mix",
+          "absoluteLift": 0.148,
+          "relativeLift": 0.2803,
+          "baseRate": 0.528,
+          "fieldRate": 0.676
+        },
+        {
+          "id": "ironWall",
+          "absoluteLift": 0.106,
+          "relativeLift": 0.2488,
+          "baseRate": 0.426,
+          "fieldRate": 0.532
+        },
+        {
+          "id": "martyrFrontline",
+          "absoluteLift": 0.082,
+          "relativeLift": 0.2216,
+          "baseRate": 0.37,
+          "fieldRate": 0.452
+        }
+      ],
+      "rows": [
+        {
+          "id": "flag_guard_mix",
+          "roles": [
+            "knight",
+            "priest",
+            "warlock",
+            "ranger"
+          ],
+          "baseWins": 264,
+          "fieldWins": 338,
+          "baseRate": 0.528,
+          "fieldRate": 0.676,
+          "absoluteLift": 0.148,
+          "relativeLift": 0.2803,
+          "flipsToWin": 93,
+          "flipsToLoss": 19,
+          "reason": "checks whether front guard and death-rally plans become stronger (flag_guard_mix)"
+        },
+        {
+          "id": "ironWall",
+          "roles": [
+            "knight",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "baseWins": 213,
+          "fieldWins": 266,
+          "baseRate": 0.426,
+          "fieldRate": 0.532,
+          "absoluteLift": 0.106,
+          "relativeLift": 0.2488,
+          "flipsToWin": 80,
+          "flipsToLoss": 27,
+          "reason": "checks whether front guard and death-rally plans become stronger (ironWall)"
+        },
+        {
+          "id": "martyrFrontline",
+          "roles": [
+            "priest",
+            "warrior",
+            "warlock",
+            "ranger"
+          ],
+          "baseWins": 185,
+          "fieldWins": 226,
+          "baseRate": 0.37,
+          "fieldRate": 0.452,
+          "absoluteLift": 0.082,
+          "relativeLift": 0.2216,
+          "flipsToWin": 71,
+          "flipsToLoss": 30,
+          "reason": "checks whether front guard and death-rally plans become stronger (martyrFrontline)"
+        },
+        {
+          "id": "crownCarry",
+          "roles": [
+            "knight",
+            "priest",
+            "bard",
+            "berserker"
+          ],
+          "baseWins": 375,
+          "fieldWins": 402,
+          "baseRate": 0.75,
+          "fieldRate": 0.804,
+          "absoluteLift": 0.054,
+          "relativeLift": 0.072,
+          "flipsToWin": 47,
+          "flipsToLoss": 20,
+          "reason": "checks whether front guard and death-rally plans become stronger (crownCarry)"
+        },
+        {
+          "id": "fireBurst",
+          "roles": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "baseWins": 419,
+          "fieldWins": 433,
+          "baseRate": 0.838,
+          "fieldRate": 0.866,
+          "absoluteLift": 0.028,
+          "relativeLift": 0.0334,
+          "flipsToWin": 39,
+          "flipsToLoss": 25,
+          "reason": "checks whether front guard and death-rally plans become stronger (fireBurst)"
+        },
+        {
+          "id": "cavalryBreak",
+          "roles": [
+            "knight",
+            "warrior",
+            "berserker",
+            "priest"
+          ],
+          "baseWins": 227,
+          "fieldWins": 233,
+          "baseRate": 0.454,
+          "fieldRate": 0.466,
+          "absoluteLift": 0.012,
+          "relativeLift": 0.0264,
+          "flipsToWin": 50,
+          "flipsToLoss": 44,
+          "reason": "checks whether front guard and death-rally plans become stronger (cavalryBreak)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "attrition_add_knight",
+          "note": "add a real guard to trigger flag protection",
+          "from": [
+            "priest",
+            "warrior",
+            "warlock",
+            "ranger"
+          ],
+          "to": [
+            "knight",
+            "warrior",
+            "warlock",
+            "ranger"
+          ],
+          "beforeWins": 211,
+          "afterWins": 378,
+          "beforeRate": 0.422,
+          "afterRate": 0.756,
+          "absoluteLift": 0.334,
+          "relativeLift": 0.7915,
+          "flipsToWin": 177,
+          "flipsToLoss": 10
+        },
+        {
+          "id": "guard_add_knight",
+          "note": "replace fighter with a dedicated flag guard",
+          "from": [
+            "warrior",
+            "priest",
+            "warlock",
+            "ranger"
+          ],
+          "to": [
+            "knight",
+            "priest",
+            "warlock",
+            "ranger"
+          ],
+          "beforeWins": 236,
+          "afterWins": 338,
+          "beforeRate": 0.472,
+          "afterRate": 0.676,
+          "absoluteLift": 0.204,
+          "relativeLift": 0.4322,
+          "flipsToWin": 130,
+          "flipsToLoss": 28
+        }
+      ],
+      "judgment": "王旗落地 currently favors flag_guard_mix: 52.8% -> 67.6% (+14.8% abs, +28% rel); nearby ironWall: 42.6% -> 53.2%."
+    },
+    {
+      "id": "mirror_curse",
+      "name": "镜像诅咒",
+      "focus": "最高攻击单位输出时会反噬自己",
+      "expected": "多核、治疗、护盾、非单核爆发队伍",
+      "topAdvantage": [
+        {
+          "id": "fireBurst",
+          "absoluteLift": 0.06,
+          "relativeLift": 0.0716,
+          "baseRate": 0.838,
+          "fieldRate": 0.898
+        },
+        {
+          "id": "multi_core_safe",
+          "absoluteLift": 0.056,
+          "relativeLift": 0.1029,
+          "baseRate": 0.544,
+          "fieldRate": 0.6
+        },
+        {
+          "id": "holySustain",
+          "absoluteLift": 0.018,
+          "relativeLift": 0.0421,
+          "baseRate": 0.428,
+          "fieldRate": 0.446
+        }
+      ],
+      "rows": [
+        {
+          "id": "fireBurst",
+          "roles": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "baseWins": 419,
+          "fieldWins": 449,
+          "baseRate": 0.838,
+          "fieldRate": 0.898,
+          "absoluteLift": 0.06,
+          "relativeLift": 0.0716,
+          "flipsToWin": 47,
+          "flipsToLoss": 17,
+          "reason": "checks whether multi-core or sustain teams handle carry reflection better (fireBurst)"
+        },
+        {
+          "id": "multi_core_safe",
+          "roles": [
+            "knight",
+            "mage",
+            "ranger",
+            "priest"
+          ],
+          "baseWins": 272,
+          "fieldWins": 300,
+          "baseRate": 0.544,
+          "fieldRate": 0.6,
+          "absoluteLift": 0.056,
+          "relativeLift": 0.1029,
+          "flipsToWin": 74,
+          "flipsToLoss": 46,
+          "reason": "checks whether multi-core or sustain teams handle carry reflection better (multi_core_safe)"
+        },
+        {
+          "id": "holySustain",
+          "roles": [
+            "knight",
+            "warrior",
+            "priest",
+            "priest"
+          ],
+          "baseWins": 214,
+          "fieldWins": 223,
+          "baseRate": 0.428,
+          "fieldRate": 0.446,
+          "absoluteLift": 0.018,
+          "relativeLift": 0.0421,
+          "flipsToWin": 60,
+          "flipsToLoss": 51,
+          "reason": "checks whether multi-core or sustain teams handle carry reflection better (holySustain)"
+        },
+        {
+          "id": "shadowExecute",
+          "roles": [
+            "knight",
+            "assassin",
+            "assassin",
+            "warlock"
+          ],
+          "baseWins": 322,
+          "fieldWins": 321,
+          "baseRate": 0.644,
+          "fieldRate": 0.642,
+          "absoluteLift": -0.002,
+          "relativeLift": -0.0031,
+          "flipsToWin": 53,
+          "flipsToLoss": 54,
+          "reason": "checks whether multi-core or sustain teams handle carry reflection better (shadowExecute)"
+        },
+        {
+          "id": "crownCarry",
+          "roles": [
+            "knight",
+            "priest",
+            "bard",
+            "berserker"
+          ],
+          "baseWins": 375,
+          "fieldWins": 363,
+          "baseRate": 0.75,
+          "fieldRate": 0.726,
+          "absoluteLift": -0.024,
+          "relativeLift": -0.032,
+          "flipsToWin": 44,
+          "flipsToLoss": 56,
+          "reason": "checks whether multi-core or sustain teams handle carry reflection better (crownCarry)"
+        },
+        {
+          "id": "alchemyChaos",
+          "roles": [
+            "knight",
+            "alchemist",
+            "alchemist",
+            "mage"
+          ],
+          "baseWins": 377,
+          "fieldWins": 358,
+          "baseRate": 0.754,
+          "fieldRate": 0.716,
+          "absoluteLift": -0.038,
+          "relativeLift": -0.0504,
+          "flipsToWin": 40,
+          "flipsToLoss": 59,
+          "reason": "checks whether multi-core or sustain teams handle carry reflection better (alchemyChaos)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "single_carry_add_second_core",
+          "note": "add second damage core under mirror reflection",
+          "from": [
+            "knight",
+            "priest",
+            "bard",
+            "berserker"
+          ],
+          "to": [
+            "knight",
+            "priest",
+            "mage",
+            "berserker"
+          ],
+          "beforeWins": 325,
+          "afterWins": 404,
+          "beforeRate": 0.65,
+          "afterRate": 0.808,
+          "absoluteLift": 0.158,
+          "relativeLift": 0.2431,
+          "flipsToWin": 96,
+          "flipsToLoss": 17
+        },
+        {
+          "id": "execute_add_mage",
+          "note": "replace one assassin with a second non-reflected damage core",
+          "from": [
+            "knight",
+            "assassin",
+            "assassin",
+            "warlock"
+          ],
+          "to": [
+            "knight",
+            "assassin",
+            "mage",
+            "warlock"
+          ],
+          "beforeWins": 311,
+          "afterWins": 351,
+          "beforeRate": 0.622,
+          "afterRate": 0.702,
+          "absoluteLift": 0.08,
+          "relativeLift": 0.1286,
+          "flipsToWin": 73,
+          "flipsToLoss": 33
+        }
+      ],
+      "judgment": "镜像诅咒 currently favors fireBurst: 83.8% -> 89.8% (+6% abs, +7.2% rel); nearby multi_core_safe: 54.4% -> 60%."
+    },
+    {
+      "id": "hunting_whistle",
+      "name": "猎场鸣哨",
+      "focus": "后排低血目标周期性被猎杀标记",
+      "expected": "刺客、游侠、后排收割队伍",
+      "topAdvantage": [
+        {
+          "id": "bulwarkMarks",
+          "absoluteLift": 0.13,
+          "relativeLift": 0.3316,
+          "baseRate": 0.392,
+          "fieldRate": 0.522
+        },
+        {
+          "id": "lightningTempo",
+          "absoluteLift": 0.104,
+          "relativeLift": 0.1688,
+          "baseRate": 0.616,
+          "fieldRate": 0.72
+        },
+        {
+          "id": "hunt_backline",
+          "absoluteLift": 0.078,
+          "relativeLift": 0.1765,
+          "baseRate": 0.442,
+          "fieldRate": 0.52
+        }
+      ],
+      "rows": [
+        {
+          "id": "bulwarkMarks",
+          "roles": [
+            "knight",
+            "ranger",
+            "ranger",
+            "bard"
+          ],
+          "baseWins": 196,
+          "fieldWins": 261,
+          "baseRate": 0.392,
+          "fieldRate": 0.522,
+          "absoluteLift": 0.13,
+          "relativeLift": 0.3316,
+          "flipsToWin": 72,
+          "flipsToLoss": 7,
+          "reason": "checks whether backline hunting converts marks into kills (bulwarkMarks)"
+        },
+        {
+          "id": "lightningTempo",
+          "roles": [
+            "warrior",
+            "ranger",
+            "bard",
+            "ranger"
+          ],
+          "baseWins": 308,
+          "fieldWins": 360,
+          "baseRate": 0.616,
+          "fieldRate": 0.72,
+          "absoluteLift": 0.104,
+          "relativeLift": 0.1688,
+          "flipsToWin": 63,
+          "flipsToLoss": 11,
+          "reason": "checks whether backline hunting converts marks into kills (lightningTempo)"
+        },
+        {
+          "id": "hunt_backline",
+          "roles": [
+            "knight",
+            "assassin",
+            "ranger",
+            "bard"
+          ],
+          "baseWins": 221,
+          "fieldWins": 260,
+          "baseRate": 0.442,
+          "fieldRate": 0.52,
+          "absoluteLift": 0.078,
+          "relativeLift": 0.1765,
+          "flipsToWin": 48,
+          "flipsToLoss": 9,
+          "reason": "checks whether backline hunting converts marks into kills (hunt_backline)"
+        },
+        {
+          "id": "frostTrapField",
+          "roles": [
+            "ranger",
+            "mage",
+            "knight",
+            "bard"
+          ],
+          "baseWins": 322,
+          "fieldWins": 347,
+          "baseRate": 0.644,
+          "fieldRate": 0.694,
+          "absoluteLift": 0.05,
+          "relativeLift": 0.0776,
+          "flipsToWin": 35,
+          "flipsToLoss": 10,
+          "reason": "checks whether backline hunting converts marks into kills (frostTrapField)"
+        },
+        {
+          "id": "shadowExecute",
+          "roles": [
+            "knight",
+            "assassin",
+            "assassin",
+            "warlock"
+          ],
+          "baseWins": 322,
+          "fieldWins": 329,
+          "baseRate": 0.644,
+          "fieldRate": 0.658,
+          "absoluteLift": 0.014,
+          "relativeLift": 0.0217,
+          "flipsToWin": 23,
+          "flipsToLoss": 16,
+          "reason": "checks whether backline hunting converts marks into kills (shadowExecute)"
+        },
+        {
+          "id": "crownCarry",
+          "roles": [
+            "knight",
+            "priest",
+            "bard",
+            "berserker"
+          ],
+          "baseWins": 375,
+          "fieldWins": 375,
+          "baseRate": 0.75,
+          "fieldRate": 0.75,
+          "absoluteLift": 0,
+          "relativeLift": 0,
+          "flipsToWin": 12,
+          "flipsToLoss": 12,
+          "reason": "checks whether backline hunting converts marks into kills (crownCarry)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "marks_add_assassin",
+          "note": "replace a caster with a diver to cash in the whistle mark",
+          "from": [
+            "knight",
+            "ranger",
+            "mage",
+            "bard"
+          ],
+          "to": [
+            "knight",
+            "assassin",
+            "ranger",
+            "bard"
+          ],
+          "beforeWins": 354,
+          "afterWins": 260,
+          "beforeRate": 0.708,
+          "afterRate": 0.52,
+          "absoluteLift": -0.188,
+          "relativeLift": -0.2655,
+          "flipsToWin": 41,
+          "flipsToLoss": 135
+        },
+        {
+          "id": "tempo_add_ranger",
+          "note": "double down on marked backline pressure",
+          "from": [
+            "warrior",
+            "ranger",
+            "bard",
+            "mage"
+          ],
+          "to": [
+            "warrior",
+            "ranger",
+            "bard",
+            "ranger"
+          ],
+          "beforeWins": 277,
+          "afterWins": 360,
+          "beforeRate": 0.554,
+          "afterRate": 0.72,
+          "absoluteLift": 0.166,
+          "relativeLift": 0.2996,
+          "flipsToWin": 95,
+          "flipsToLoss": 12
+        }
+      ],
+      "judgment": "猎场鸣哨 currently favors bulwarkMarks: 39.2% -> 52.2% (+13% abs, +33.2% rel); nearby lightningTempo: 61.6% -> 72%."
+    },
+    {
+      "id": "ember_contagion",
+      "name": "余火传染",
+      "focus": "首个阵亡单位留下会传染的火种",
+      "expected": "治疗、控场、拖时间、火毒异常队伍",
+      "topAdvantage": [
+        {
+          "id": "holySustain",
+          "absoluteLift": 0.108,
+          "relativeLift": 0.2523,
+          "baseRate": 0.428,
+          "fieldRate": 0.536
+        },
+        {
+          "id": "frostControl",
+          "absoluteLift": 0.088,
+          "relativeLift": 0.1131,
+          "baseRate": 0.778,
+          "fieldRate": 0.866
+        },
+        {
+          "id": "alchemyChaos",
+          "absoluteLift": 0.074,
+          "relativeLift": 0.0981,
+          "baseRate": 0.754,
+          "fieldRate": 0.828
+        }
+      ],
+      "rows": [
+        {
+          "id": "holySustain",
+          "roles": [
+            "knight",
+            "warrior",
+            "priest",
+            "priest"
+          ],
+          "baseWins": 214,
+          "fieldWins": 268,
+          "baseRate": 0.428,
+          "fieldRate": 0.536,
+          "absoluteLift": 0.108,
+          "relativeLift": 0.2523,
+          "flipsToWin": 72,
+          "flipsToLoss": 18,
+          "reason": "checks whether sustain/status teams exploit the ember tempo (holySustain)"
+        },
+        {
+          "id": "frostControl",
+          "roles": [
+            "knight",
+            "priest",
+            "mage",
+            "alchemist"
+          ],
+          "baseWins": 389,
+          "fieldWins": 433,
+          "baseRate": 0.778,
+          "fieldRate": 0.866,
+          "absoluteLift": 0.088,
+          "relativeLift": 0.1131,
+          "flipsToWin": 62,
+          "flipsToLoss": 18,
+          "reason": "checks whether sustain/status teams exploit the ember tempo (frostControl)"
+        },
+        {
+          "id": "alchemyChaos",
+          "roles": [
+            "knight",
+            "alchemist",
+            "alchemist",
+            "mage"
+          ],
+          "baseWins": 377,
+          "fieldWins": 414,
+          "baseRate": 0.754,
+          "fieldRate": 0.828,
+          "absoluteLift": 0.074,
+          "relativeLift": 0.0981,
+          "flipsToWin": 53,
+          "flipsToLoss": 16,
+          "reason": "checks whether sustain/status teams exploit the ember tempo (alchemyChaos)"
+        },
+        {
+          "id": "fireBurst",
+          "roles": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "baseWins": 419,
+          "fieldWins": 453,
+          "baseRate": 0.838,
+          "fieldRate": 0.906,
+          "absoluteLift": 0.068,
+          "relativeLift": 0.0811,
+          "flipsToWin": 44,
+          "flipsToLoss": 10,
+          "reason": "checks whether sustain/status teams exploit the ember tempo (fireBurst)"
+        },
+        {
+          "id": "ember_sustain",
+          "roles": [
+            "knight",
+            "priest",
+            "alchemist",
+            "warlock"
+          ],
+          "baseWins": 260,
+          "fieldWins": 287,
+          "baseRate": 0.52,
+          "fieldRate": 0.574,
+          "absoluteLift": 0.054,
+          "relativeLift": 0.1038,
+          "flipsToWin": 57,
+          "flipsToLoss": 30,
+          "reason": "checks whether sustain/status teams exploit the ember tempo (ember_sustain)"
+        },
+        {
+          "id": "poisonBloom",
+          "roles": [
+            "knight",
+            "assassin",
+            "warlock",
+            "priest"
+          ],
+          "baseWins": 418,
+          "fieldWins": 437,
+          "baseRate": 0.836,
+          "fieldRate": 0.874,
+          "absoluteLift": 0.038,
+          "relativeLift": 0.0455,
+          "flipsToWin": 30,
+          "flipsToLoss": 11,
+          "reason": "checks whether sustain/status teams exploit the ember tempo (poisonBloom)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "status_add_priest",
+          "note": "replace burst caster with sustain to hold ember tempo",
+          "from": [
+            "knight",
+            "mage",
+            "warlock",
+            "alchemist"
+          ],
+          "to": [
+            "knight",
+            "priest",
+            "warlock",
+            "alchemist"
+          ],
+          "beforeWins": 374,
+          "afterWins": 262,
+          "beforeRate": 0.748,
+          "afterRate": 0.524,
+          "absoluteLift": -0.224,
+          "relativeLift": -0.2995,
+          "flipsToWin": 31,
+          "flipsToLoss": 143
+        },
+        {
+          "id": "frost_add_alchemist",
+          "note": "add status pressure around ember transfer",
+          "from": [
+            "knight",
+            "priest",
+            "mage",
+            "bard"
+          ],
+          "to": [
+            "knight",
+            "priest",
+            "mage",
+            "alchemist"
+          ],
+          "beforeWins": 174,
+          "afterWins": 260,
+          "beforeRate": 0.348,
+          "afterRate": 0.52,
+          "absoluteLift": 0.172,
+          "relativeLift": 0.4943,
+          "flipsToWin": 101,
+          "flipsToLoss": 15
+        }
+      ],
+      "judgment": "余火传染 currently favors holySustain: 42.8% -> 53.6% (+10.8% abs, +25.2% rel); nearby frostControl: 77.8% -> 86.6%."
+    },
+    {
+      "id": "death_inheritance",
+      "name": "Death Inheritance",
+      "focus": "Dead units pass part of their stats to the nearest living ally",
+      "expected": "martyr front line, sacrifice frontliners, protect-one-carry teams",
+      "topAdvantage": [
+        {
+          "id": "holySustain",
+          "absoluteLift": 0.082,
+          "relativeLift": 0.1916,
+          "baseRate": 0.428,
+          "fieldRate": 0.51
+        },
+        {
+          "id": "martyrFrontline",
+          "absoluteLift": 0.056,
+          "relativeLift": 0.1514,
+          "baseRate": 0.37,
+          "fieldRate": 0.426
+        },
+        {
+          "id": "inherit_carry",
+          "absoluteLift": 0.056,
+          "relativeLift": 0.0915,
+          "baseRate": 0.612,
+          "fieldRate": 0.668
+        }
+      ],
+      "rows": [
+        {
+          "id": "holySustain",
+          "roles": [
+            "knight",
+            "warrior",
+            "priest",
+            "priest"
+          ],
+          "baseWins": 214,
+          "fieldWins": 255,
+          "baseRate": 0.428,
+          "fieldRate": 0.51,
+          "absoluteLift": 0.082,
+          "relativeLift": 0.1916,
+          "flipsToWin": 70,
+          "flipsToLoss": 29,
+          "reason": "field advantage check (holySustain)"
+        },
+        {
+          "id": "martyrFrontline",
+          "roles": [
+            "priest",
+            "warrior",
+            "warlock",
+            "ranger"
+          ],
+          "baseWins": 185,
+          "fieldWins": 213,
+          "baseRate": 0.37,
+          "fieldRate": 0.426,
+          "absoluteLift": 0.056,
+          "relativeLift": 0.1514,
+          "flipsToWin": 75,
+          "flipsToLoss": 47,
+          "reason": "field advantage check (martyrFrontline)"
+        },
+        {
+          "id": "inherit_carry",
+          "roles": [
+            "warrior",
+            "priest",
+            "bard",
+            "berserker"
+          ],
+          "baseWins": 306,
+          "fieldWins": 334,
+          "baseRate": 0.612,
+          "fieldRate": 0.668,
+          "absoluteLift": 0.056,
+          "relativeLift": 0.0915,
+          "flipsToWin": 79,
+          "flipsToLoss": 51,
+          "reason": "field advantage check (inherit_carry)"
+        },
+        {
+          "id": "crownCarry",
+          "roles": [
+            "knight",
+            "priest",
+            "bard",
+            "berserker"
+          ],
+          "baseWins": 375,
+          "fieldWins": 384,
+          "baseRate": 0.75,
+          "fieldRate": 0.768,
+          "absoluteLift": 0.018,
+          "relativeLift": 0.024,
+          "flipsToWin": 67,
+          "flipsToLoss": 58,
+          "reason": "field advantage check (crownCarry)"
+        },
+        {
+          "id": "ironWall",
+          "roles": [
+            "knight",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "baseWins": 213,
+          "fieldWins": 201,
+          "baseRate": 0.426,
+          "fieldRate": 0.402,
+          "absoluteLift": -0.024,
+          "relativeLift": -0.0563,
+          "flipsToWin": 45,
+          "flipsToLoss": 57,
+          "reason": "field advantage check (ironWall)"
+        },
+        {
+          "id": "fireBurst",
+          "roles": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "baseWins": 419,
+          "fieldWins": 296,
+          "baseRate": 0.838,
+          "fieldRate": 0.592,
+          "absoluteLift": -0.246,
+          "relativeLift": -0.2936,
+          "flipsToWin": 7,
+          "flipsToLoss": 130,
+          "reason": "field advantage check (fireBurst)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "add_sacrifice_front",
+          "note": "keep the guard and add a frontliner whose death feeds nearby allies",
+          "from": [
+            "knight",
+            "mage",
+            "warlock",
+            "ranger"
+          ],
+          "to": [
+            "knight",
+            "warrior",
+            "warlock",
+            "ranger"
+          ],
+          "beforeWins": 262,
+          "afterWins": 342,
+          "beforeRate": 0.524,
+          "afterRate": 0.684,
+          "absoluteLift": 0.16,
+          "relativeLift": 0.3053,
+          "flipsToWin": 107,
+          "flipsToLoss": 27
+        },
+        {
+          "id": "carry_near_martyr",
+          "note": "replace burst with a martyr-style support near the carry line",
+          "from": [
+            "knight",
+            "warrior",
+            "mage",
+            "bard"
+          ],
+          "to": [
+            "knight",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "beforeWins": 137,
+          "afterWins": 126,
+          "beforeRate": 0.274,
+          "afterRate": 0.252,
+          "absoluteLift": -0.022,
+          "relativeLift": -0.0803,
+          "flipsToWin": 34,
+          "flipsToLoss": 45
+        }
+      ],
+      "judgment": "Death Inheritance currently favors holySustain: 42.8% -> 51% (+8.2% abs, +19.2% rel); nearby martyrFrontline: 37% -> 42.6%."
+    },
+    {
+      "id": "shield_detonation",
+      "name": "Shield Detonation",
+      "focus": "Overshielded units explode, consume their shield, and damage nearby enemies",
+      "expected": "knight, priest, shield stacking, defensive front-line teams",
+      "topAdvantage": [
+        {
+          "id": "shield_bomb",
+          "absoluteLift": 0.218,
+          "relativeLift": 0.5,
+          "baseRate": 0.436,
+          "fieldRate": 0.654
+        },
+        {
+          "id": "ironWall",
+          "absoluteLift": 0.12,
+          "relativeLift": 0.2817,
+          "baseRate": 0.426,
+          "fieldRate": 0.546
+        },
+        {
+          "id": "kingFlagMix",
+          "absoluteLift": 0.094,
+          "relativeLift": 0.6528,
+          "baseRate": 0.144,
+          "fieldRate": 0.238
+        }
+      ],
+      "rows": [
+        {
+          "id": "shield_bomb",
+          "roles": [
+            "knight",
+            "priest",
+            "priest",
+            "ranger"
+          ],
+          "baseWins": 218,
+          "fieldWins": 327,
+          "baseRate": 0.436,
+          "fieldRate": 0.654,
+          "absoluteLift": 0.218,
+          "relativeLift": 0.5,
+          "flipsToWin": 136,
+          "flipsToLoss": 27,
+          "reason": "field advantage check (shield_bomb)"
+        },
+        {
+          "id": "ironWall",
+          "roles": [
+            "knight",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "baseWins": 213,
+          "fieldWins": 273,
+          "baseRate": 0.426,
+          "fieldRate": 0.546,
+          "absoluteLift": 0.12,
+          "relativeLift": 0.2817,
+          "flipsToWin": 79,
+          "flipsToLoss": 19,
+          "reason": "field advantage check (ironWall)"
+        },
+        {
+          "id": "kingFlagMix",
+          "roles": [
+            "knight",
+            "priest",
+            "warrior",
+            "bard"
+          ],
+          "baseWins": 72,
+          "fieldWins": 119,
+          "baseRate": 0.144,
+          "fieldRate": 0.238,
+          "absoluteLift": 0.094,
+          "relativeLift": 0.6528,
+          "flipsToWin": 57,
+          "flipsToLoss": 10,
+          "reason": "field advantage check (kingFlagMix)"
+        },
+        {
+          "id": "holySustain",
+          "roles": [
+            "knight",
+            "warrior",
+            "priest",
+            "priest"
+          ],
+          "baseWins": 214,
+          "fieldWins": 261,
+          "baseRate": 0.428,
+          "fieldRate": 0.522,
+          "absoluteLift": 0.094,
+          "relativeLift": 0.2196,
+          "flipsToWin": 101,
+          "flipsToLoss": 54,
+          "reason": "field advantage check (holySustain)"
+        },
+        {
+          "id": "fireBurst",
+          "roles": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "baseWins": 419,
+          "fieldWins": 462,
+          "baseRate": 0.838,
+          "fieldRate": 0.924,
+          "absoluteLift": 0.086,
+          "relativeLift": 0.1026,
+          "flipsToWin": 53,
+          "flipsToLoss": 10,
+          "reason": "field advantage check (fireBurst)"
+        },
+        {
+          "id": "crownCarry",
+          "roles": [
+            "knight",
+            "priest",
+            "bard",
+            "berserker"
+          ],
+          "baseWins": 375,
+          "fieldWins": 384,
+          "baseRate": 0.75,
+          "fieldRate": 0.768,
+          "absoluteLift": 0.018,
+          "relativeLift": 0.024,
+          "flipsToWin": 49,
+          "flipsToLoss": 40,
+          "reason": "field advantage check (crownCarry)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "add_second_priest",
+          "note": "add more shield/heal generation to trigger detonations",
+          "from": [
+            "knight",
+            "warrior",
+            "priest",
+            "bard"
+          ],
+          "to": [
+            "knight",
+            "warrior",
+            "priest",
+            "priest"
+          ],
+          "beforeWins": 128,
+          "afterWins": 212,
+          "beforeRate": 0.256,
+          "afterRate": 0.424,
+          "absoluteLift": 0.168,
+          "relativeLift": 0.6562,
+          "flipsToWin": 98,
+          "flipsToLoss": 14
+        },
+        {
+          "id": "add_knight_bomb",
+          "note": "replace fighter with a shield anchor",
+          "from": [
+            "warrior",
+            "mage",
+            "priest",
+            "bard"
+          ],
+          "to": [
+            "knight",
+            "mage",
+            "priest",
+            "bard"
+          ],
+          "beforeWins": 81,
+          "afterWins": 175,
+          "beforeRate": 0.162,
+          "afterRate": 0.35,
+          "absoluteLift": 0.188,
+          "relativeLift": 1.1605,
+          "flipsToWin": 99,
+          "flipsToLoss": 5
+        }
+      ],
+      "judgment": "Shield Detonation currently favors shield_bomb: 43.6% -> 65.4% (+21.8% abs, +50% rel); nearby ironWall: 42.6% -> 54.6%."
+    },
+    {
+      "id": "wildfire_rings",
+      "name": "Wildfire Rings",
+      "focus": "Backline units carry expanding fire rings that burn everyone inside",
+      "expected": "fire/status teams, control teams, sustain teams, backline spacing puzzles",
+      "topAdvantage": [
+        {
+          "id": "wildfire_backline_assassin",
+          "absoluteLift": 0.302,
+          "relativeLift": 0.5763,
+          "baseRate": 0.524,
+          "fieldRate": 0.826
+        },
+        {
+          "id": "holySustain",
+          "absoluteLift": 0.188,
+          "relativeLift": 0.4393,
+          "baseRate": 0.428,
+          "fieldRate": 0.616
+        },
+        {
+          "id": "alchemyChaos",
+          "absoluteLift": 0.16,
+          "relativeLift": 0.2122,
+          "baseRate": 0.754,
+          "fieldRate": 0.914
+        }
+      ],
+      "rows": [
+        {
+          "id": "wildfire_backline_assassin",
+          "roles": [
+            "knight",
+            "priest",
+            "mage",
+            "assassin"
+          ],
+          "baseWins": 262,
+          "fieldWins": 413,
+          "baseRate": 0.524,
+          "fieldRate": 0.826,
+          "absoluteLift": 0.302,
+          "relativeLift": 0.5763,
+          "flipsToWin": 162,
+          "flipsToLoss": 11,
+          "reason": "field advantage check (wildfire_backline_assassin)"
+        },
+        {
+          "id": "holySustain",
+          "roles": [
+            "knight",
+            "warrior",
+            "priest",
+            "priest"
+          ],
+          "baseWins": 214,
+          "fieldWins": 308,
+          "baseRate": 0.428,
+          "fieldRate": 0.616,
+          "absoluteLift": 0.188,
+          "relativeLift": 0.4393,
+          "flipsToWin": 119,
+          "flipsToLoss": 25,
+          "reason": "field advantage check (holySustain)"
+        },
+        {
+          "id": "alchemyChaos",
+          "roles": [
+            "knight",
+            "alchemist",
+            "alchemist",
+            "mage"
+          ],
+          "baseWins": 377,
+          "fieldWins": 457,
+          "baseRate": 0.754,
+          "fieldRate": 0.914,
+          "absoluteLift": 0.16,
+          "relativeLift": 0.2122,
+          "flipsToWin": 89,
+          "flipsToLoss": 9,
+          "reason": "field advantage check (alchemyChaos)"
+        },
+        {
+          "id": "wildfire_control",
+          "roles": [
+            "knight",
+            "mage",
+            "alchemist",
+            "priest"
+          ],
+          "baseWins": 183,
+          "fieldWins": 259,
+          "baseRate": 0.366,
+          "fieldRate": 0.518,
+          "absoluteLift": 0.152,
+          "relativeLift": 0.4153,
+          "flipsToWin": 128,
+          "flipsToLoss": 52,
+          "reason": "field advantage check (wildfire_control)"
+        },
+        {
+          "id": "frostControl",
+          "roles": [
+            "knight",
+            "priest",
+            "mage",
+            "alchemist"
+          ],
+          "baseWins": 389,
+          "fieldWins": 462,
+          "baseRate": 0.778,
+          "fieldRate": 0.924,
+          "absoluteLift": 0.146,
+          "relativeLift": 0.1877,
+          "flipsToWin": 85,
+          "flipsToLoss": 12,
+          "reason": "field advantage check (frostControl)"
+        },
+        {
+          "id": "wildfire_assassin_delivery",
+          "roles": [
+            "knight",
+            "mage",
+            "warlock",
+            "assassin"
+          ],
+          "baseWins": 380,
+          "fieldWins": 447,
+          "baseRate": 0.76,
+          "fieldRate": 0.894,
+          "absoluteLift": 0.134,
+          "relativeLift": 0.1763,
+          "flipsToWin": 74,
+          "flipsToLoss": 7,
+          "reason": "field advantage check (wildfire_assassin_delivery)"
+        },
+        {
+          "id": "fireBurst",
+          "roles": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "baseWins": 419,
+          "fieldWins": 482,
+          "baseRate": 0.838,
+          "fieldRate": 0.964,
+          "absoluteLift": 0.126,
+          "relativeLift": 0.1504,
+          "flipsToWin": 63,
+          "flipsToLoss": 0,
+          "reason": "field advantage check (fireBurst)"
+        },
+        {
+          "id": "four_ranged_damage",
+          "roles": [
+            "ranger",
+            "mage",
+            "warlock",
+            "alchemist"
+          ],
+          "baseWins": 267,
+          "fieldWins": 243,
+          "baseRate": 0.534,
+          "fieldRate": 0.486,
+          "absoluteLift": -0.048,
+          "relativeLift": -0.0899,
+          "flipsToWin": 41,
+          "flipsToLoss": 65,
+          "reason": "field advantage check (four_ranged_damage)"
+        }
+      ],
+      "swapRows": [
+        {
+          "id": "add_control_to_fire",
+          "note": "replace one fire caster with control/status to hold enemies in the rings",
+          "from": [
+            "warrior",
+            "knight",
+            "mage",
+            "mage"
+          ],
+          "to": [
+            "warrior",
+            "knight",
+            "mage",
+            "alchemist"
+          ],
+          "beforeWins": 482,
+          "afterWins": 427,
+          "beforeRate": 0.964,
+          "afterRate": 0.854,
+          "absoluteLift": -0.11,
+          "relativeLift": -0.1141,
+          "flipsToWin": 0,
+          "flipsToLoss": 55
+        },
+        {
+          "id": "add_sustain_to_ranged",
+          "note": "add sustain so the backline survives its own rings",
+          "from": [
+            "ranger",
+            "mage",
+            "warlock",
+            "alchemist"
+          ],
+          "to": [
+            "ranger",
+            "mage",
+            "priest",
+            "warlock"
+          ],
+          "beforeWins": 243,
+          "afterWins": 133,
+          "beforeRate": 0.486,
+          "afterRate": 0.266,
+          "absoluteLift": -0.22,
+          "relativeLift": -0.4527,
+          "flipsToWin": 20,
+          "flipsToLoss": 130
+        },
+        {
+          "id": "add_backline_assassin_delivery",
+          "note": "replace one backline caster with a backline assassin who carries the fire ring into enemies",
+          "from": [
+            "knight",
+            "mage",
+            "warlock",
+            "alchemist"
+          ],
+          "to": [
+            "knight",
+            "mage",
+            "warlock",
+            "assassin"
+          ],
+          "beforeWins": 391,
+          "afterWins": 447,
+          "beforeRate": 0.782,
+          "afterRate": 0.894,
+          "absoluteLift": 0.112,
+          "relativeLift": 0.1432,
+          "flipsToWin": 75,
+          "flipsToLoss": 19
+        }
+      ],
+      "judgment": "Wildfire Rings currently favors wildfire_backline_assassin: 52.4% -> 82.6% (+30.2% abs, +57.6% rel); nearby holySustain: 42.8% -> 61.6%."
+    }
+  ]
+}

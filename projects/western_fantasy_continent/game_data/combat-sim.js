@@ -5,6 +5,9 @@ const SKILL_DATA = typeof window !== "undefined"
 const SIGNALS = typeof window !== "undefined"
   ? window.GAME_COMBAT_SIGNALS
   : require("./combat-signals");
+const RUNTIME_FIELDS = typeof window !== "undefined"
+  ? window.GAME_RUNTIME_FIELD_EFFECTS
+  : require("./runtime-field-effects");
 
 const TEAM_SIZE = 4;
 const MAX_TIME = 75;
@@ -50,6 +53,8 @@ class CombatSimulation {
     this.skills = SKILL_DATA.createSkillLibrary(this.api());
     this.randomizeStats = options.randomizeStats !== false;
     this.currentActionSource = null;
+    this.runtimeFieldEffectId = options.fieldEffectId || options.runtimeFieldEffect || null;
+    this.runtimeField = RUNTIME_FIELDS?.createRuntimeField?.(this.runtimeFieldEffectId, this) || null;
   }
 
   api() {
@@ -94,6 +99,7 @@ class CombatSimulation {
     this.signalBus.clear();
     this.units = [...this.makeTeam("left", leftTeam), ...this.makeTeam("right", rightTeam)];
     if (this.randomizeStats) this.applyStatSwing();
+    this.runtimeField?.setup?.();
 
     while (this.time < this.maxTime) {
       this.update(this.dt);
@@ -266,6 +272,7 @@ class CombatSimulation {
 
   update(dt) {
     this.time += dt;
+    this.runtimeField?.beforeUpdate?.(dt);
     for (const unit of this.actionOrder()) {
       this.tickStatuses(unit, dt);
       this.tickTimers(unit, dt);
@@ -517,6 +524,9 @@ class CombatSimulation {
     if (source.passive === "catalyst" && this.statusCount(target) > 0) value *= 1.06;
     value *= SKILL_DATA.passiveDamageMultiplier?.(source, target, this.api()) || 1;
     if (target.guardTimer > 0) value *= 0.72;
+    const context = { amount: value, type, label, visual, scaleWith };
+    this.runtimeField?.beforeHit?.(source, target, context);
+    value = context.amount;
     const mitigated = Math.max(1, value - target.armor * (type === "physical" ? 0.72 : 0.38));
     if (source?.hiddenTimer > 0 && this.isAlive(target)) {
       target.forcedTargetId = source.id;
@@ -573,6 +583,7 @@ class CombatSimulation {
       rawAmount: amount,
       type,
     }, this.api());
+    this.runtimeField?.afterDamage?.(source, target, { amount, remaining, blocked, type, label, hpBefore, hpAfter: target.hp });
     if (target.hp <= 0 && this.tryAutoRazorRoar(target, source)) return;
     if (target.hp <= 0) this.onDeath(target, source);
   }
@@ -642,6 +653,9 @@ class CombatSimulation {
 
   healUnit(unit, amount, label = "治疗", source = this.currentActionSource) {
     if (!unit || !this.isAlive(unit)) return;
+    const context = { amount, label };
+    this.runtimeField?.beforeHeal?.(source, unit, context);
+    amount = context.amount;
     const received = label === "吸血" ? 1 : (unit.receivedHealingMult || 1);
     const value = amount * received * this.passiveHealMultiplier(source, unit);
     const before = unit.hp;
@@ -667,6 +681,9 @@ class CombatSimulation {
 
   shield(unit, amount, label, source = this.currentActionSource) {
     if (!unit || !this.isAlive(unit)) return;
+    const context = { amount, label };
+    this.runtimeField?.beforeShield?.(source, unit, context);
+    amount = context.amount;
     const bonus = unit.passive === "fortressStance" ? 1.08 + (1 - this.hpRatio(unit)) * 0.12 : 1;
     const vulnerability = unit.shieldVulnerableTimer > 0 ? 0.75 : 1;
     const value = amount * (unit.receivedHealingMult || 1) * bonus * vulnerability * this.passiveShieldMultiplier(source, unit);
@@ -681,6 +698,7 @@ class CombatSimulation {
       skillName: label,
       shield: unit.shield,
     });
+    this.runtimeField?.afterShield?.(source, unit, { amount: value, label, shield: unit.shield });
   }
 
   breakShield(source, target, amount, label = "破盾") {
@@ -783,6 +801,7 @@ class CombatSimulation {
         targetRole: unit.role || "",
       },
     });
+    this.runtimeField?.afterDeath?.(unit, killer);
     this.tryShadowKillReset(killer, unit);
     if (unit.poison.stacks > 0) {
       this.alliesOf(killer || unit).filter((ally) => ally.passive === "hotbedPact" && this.isAlive(ally)).slice(0, 1).forEach((source) => {
@@ -942,7 +961,8 @@ class CombatSimulation {
   moveToward(unit, target, dt) {
     const distance = this.getDistance(unit, target);
     if (distance <= unit.range * 0.92) return;
-    const step = dt * (unit.roleName === "刺客" ? 10 : unit.slowTimer > 0 ? 4.2 : 7);
+    const fieldMoveMult = this.runtimeField?.moveSpeedMult?.(unit) ?? 1;
+    const step = dt * (unit.roleName === "刺客" ? 10 : unit.slowTimer > 0 ? 4.2 : 7) * fieldMoveMult;
     const dx = target.x - unit.x;
     const dy = target.y - unit.y;
     const move = Math.min(step, Math.max(0, distance - unit.range * 0.9));

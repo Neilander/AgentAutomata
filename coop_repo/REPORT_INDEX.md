@@ -2,6 +2,24 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-08
+
+- `2026-07-08_1725_field-effect-uplift-11-pass.md`: retuned the curated runtime field-effect pool to 11 usable effects and reran validation; most direct or same-field swap uplift evidence now sits around the target 10-30 point band.
+
+- `2026-07-08_1655_wildfire-backline-assassin.md`: validated the user's backline blink assassin idea for wildfire rings; added candidates and a same-field swap showing 76.0% -> 91.2% with a backline assassin delivery unit.
+
+- `2026-07-08_1635_three-inspired-runtime-fields.md`: recorded the user's seven stronger field-effect inspirations and implemented death inheritance, shield detonation, and wildfire rings as runtime field effects with 500-team validation.
+
+- `2026-07-08_1610_runtime-field-swap-validation.md`: retuned runtime field effects and added same-field one-role swap validation, measuring whether a player can change one role and improve under the same field.
+
+- `2026-07-08_1545_runtime-field-effects-validation.md`: implemented the approved 10 runtime field effects, added combat-sim hooks and a waterline advantage validator, and recorded which effects are ready, watchlisted, or need redesign.
+
+- `2026-07-08_0025_field-effect-baseline-tiers.md`: added baseline team strength tiers to field-effect-design, using the 17 original preset waterline scores and four-ranged comparison to prevent bad teaching contrasts.
+
+- `2026-07-08_0015_support-field-effect-rules-and-ranged-test.md`: updated field-effect-design with support-oriented constraints and tested four-ranged teams against standard teams and waterline; four-ranged is not universally weak.
+
+- `2026-07-08_0000_field-effect-design-skill.md`: added the field-effect-design project skill for early-game field effects, emphasizing one or two focused effects, fewer exception-heavy clauses, and separating experience design from numerical balance.
+
 ## 2026-07-07
 
 - `2026-07-07_2117_project-overview-cognition-route.md`: added the staged player cognition route and recorded the next validation question: after basic roles/equipment/rarity, basic field effects should enable improvement through one-to-two-role swaps.

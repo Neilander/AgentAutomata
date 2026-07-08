@@ -4,6 +4,14 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-07
 
+- `2026-07-07_2117_project-overview-cognition-route.md`: added the staged player cognition route and recorded the next validation question: after basic roles/equipment/rarity, basic field effects should enable improvement through one-to-two-role swaps.
+
+- `2026-07-07_1414_project-overview-product-strategy.md`: updated the durable western fantasy project overview with the latest strategic rule, product differentiation, build-closure priority, equipment purity/swap-friction concerns, and relics as the future explicit build layer.
+
+- `2026-07-07_1154_field-effect-playtest-lab-team-builder.md`: reworked `/field_effect_lab/` into a field-effect playtest table with top field selection, left/right four-slot team builders, an 8-role picker modal, and shared battle-view playback.
+
+- `2026-07-07_1136_field-effect-mechanism-review-rule.md`: updated `game-analysis-iteration` with a field-effect mechanism check and step-7 implementation-plan information concentration rule that flag default multi-stat "attribute soup" fields and prefer one clear player-facing idea.
+
 - `2026-07-07_1935_field-effect-20-validation.md`: expanded active field effects from 10 to 20, reran validation, and recorded uplift/breadth/status for each effect; 17 fully pass, 3 are partial, none need redesign.
 
 - `2026-07-07_1720_field-effect-candidate-implementation.md`: promoted Crown Relay and Many-Target Hall into active field-effect assets, kept Purging Rain inactive after validation failure, added trigger-role gating, and regenerated field-effect validation.

@@ -18,6 +18,7 @@ Important rules:
 
 - Do not change the dataset while comparing prompts.
 - Do not treat low overlap as a small tuning issue. If every prompt misses user choices, the judging frame is wrong.
+- When training field-effect reviewers, include negative examples where the effect is only a multi-stat package. The reviewer must learn to flag "attribute soup": many unrelated stat boosts that make intention hard to read. It should allow rare deliberate multi-stat special fields, but prefer mechanism, single-axis, or conversion fields as the normal pattern.
 
 ## Feedback Gate
 

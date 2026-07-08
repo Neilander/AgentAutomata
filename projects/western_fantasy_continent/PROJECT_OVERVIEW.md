@@ -18,6 +18,152 @@ The core is not an open world. The current goal is to connect several already-va
 
 The working style is small-step iteration. Add one verifiable anchor at a time.
 
+## Highest-Level Product Rule
+
+The original project core was agent automation. The updated strategic rule is:
+
+```text
+agent automation + extreme productization
+```
+
+When the user or an agent gets lost in a design decision, use this as the highest behavior rule:
+
+- either the work should improve or test agent automation capability;
+- or it should improve this game's product quality as a real product, not only as a game prototype.
+
+If a proposed change does neither, question it before implementing.
+
+## Current Product Strategy
+
+The game should be a simple, readable loot game that becomes deep through team configuration.
+
+The current differentiated product pain point is small but important:
+
+```text
+I got a character / equipment / relic. What can this thing do?
+```
+
+Many competing idle loot games expose choices too early: stat allocation, dense skill text, and many abstract options before the player has a reason to care. Broad users cannot be expected to carefully read skill descriptions at the start.
+
+This project should lean into the opposite advantage:
+
+- roles are immediately understandable;
+- priest heals;
+- knight tanks;
+- berserker deals risky damage;
+- mage casts;
+- assassin dives;
+- team strategy emerges from combinations, ratios, and positions.
+
+The target is:
+
+```text
+no learning barrier, easy to start, hard to master
+```
+
+This is similar to the strength of games where the player can play first and understand depth later. The player should not need to study before acting, but richer strategy should appear as party size, enemy pressure, relic count, and equipment depth grow.
+
+### Player Cognition Route
+
+The current product hypothesis is that the game should expose complexity in a staged cognition route. This route can change later, but future design should avoid jumping too far ahead too early.
+
+Current rough route:
+
+1. roles;
+2. equipment;
+3. rarity;
+4. basic field effects;
+5. support-role counterplay;
+6. equipment level;
+7. affixes;
+8. specialized jobs and skills;
+9. richer field effects;
+10. output-role and broader role counterplay;
+11. relics;
+12. relic rarity;
+13. relic combos;
+14. relic level;
+15. attribute-oriented equipment setups;
+16. battlefield ratio planning;
+17. large-battlefield-oriented equipment setups.
+
+The core early-game idea is that the player's main output logic should not need to change too much. The player can first keep a stable damage plan, then adjust supporting roles around the encounter.
+
+Example hypothesis:
+
+- if the enemy is an archer, the player may add a high-mobility role to close distance quickly;
+- if the enemy is slow but high-damage, the player may add a stun/control role instead.
+
+This keeps the player's output fantasy stable while teaching that support roles are tools for encounter answers.
+
+Current validation question:
+
+```text
+Given 8 basic roles, basic equipment, and rarity, what kinds of basic field effects can make the player improve a team by changing only one or two roles?
+```
+
+This question should guide the next field-effect and team-counterplay tests. The desired product behavior is not "read a complicated field rule and rebuild everything"; it is "notice the field, swap one or two roles, fight again, and feel the improvement."
+
+### Build Closure
+
+Because the game encourages frequent team adjustment, the product must answer:
+
+```text
+What is wrong with my current team?
+```
+
+The player needs a clear loop:
+
+1. build a team;
+2. fight;
+3. understand what failed or succeeded;
+4. change team / equipment / relics;
+5. verify again.
+
+This makes battle diagnosis, failure explanation, and visible combat feedback core product features rather than optional polish.
+
+### Equipment Product Direction
+
+Equipment should stay pure and convenient.
+
+Equipment can have detailed attributes, such as fire duration, mark crit, healing amplification, or attack speed, but the product role of equipment is still mostly attribute configuration. Avoid turning every equipment piece into a complex rules object.
+
+The equipment loop should eventually become:
+
+- early game: stack understandable attributes;
+- later game: farm for concentrated affixes;
+- later game: decide which attributes are most important for a specific team;
+- advanced game: use universal affixes or helper affixes to reduce build-friction.
+
+Fast equipment swapping is mandatory for the product direction. The exact interaction model is unresolved, but the target is clear: players should be encouraged to adjust builds without feeling punished by inventory friction.
+
+Open problem:
+
+```text
+When different encounters require different setups, how do we reduce repeated manual re-equipping?
+```
+
+Do not solve this prematurely, but keep it visible.
+
+### Relic Product Direction
+
+Implicit team logic is valuable, but long-term build depth cannot rely only on hidden chess-like reasoning.
+
+Relics are the future explicit build layer. They should make build engines visible and let the player feel that a configuration choice became powerful.
+
+Possible long-term shapes:
+
+- season-like relic pools;
+- 10-relic battles;
+- 20-relic battles;
+- extreme late tests such as 50 relics plus large-scale battles.
+
+The product promise is not "more complexity earlier." The promise is:
+
+```text
+play simply first, then discover configuration depth through visible payoffs.
+```
+
 ## Established Core
 
 ### Combat System

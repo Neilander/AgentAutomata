@@ -54,6 +54,51 @@ Guidance:
 - Use combat evidence when the player needs to believe a build is stronger because it performed better.
 - Use choice consequence when the lesson is "choosing this changes the next fight."
 
+## Information Concentration Rule
+
+When turning a diagnosis into an implemented game change, account for the player's limited attention.
+
+Core rule:
+
+```text
+If one piece of information can explain the design, do not explain it with two.
+When information count rises, the message becomes less concentrated and less clear.
+```
+
+Use this rule for UI, field effects, relics, enemy rules, dungeon modifiers, loot signals, and tutorial beats.
+
+Before accepting a change, write:
+
+```text
+Player-facing message:
+Number of distinct ideas:
+Can one idea explain it:
+  yes | no
+If no, why multiple ideas are necessary:
+What to remove or merge:
+```
+
+Guidance:
+
+- Prefer one readable mechanism over several stat boosts.
+- Prefer one primary stat axis over several loosely related axes.
+- Prefer one conversion rule over a package of bonuses.
+- Allow multi-stat packages only when the player's intended question is explicitly "how do I exploit these several levers together?"
+- Treat special cases such as Blood Moon-style fields as rare. They are not the default way to make different teams viable.
+- If a change needs several information channels, decide which one is primary and make the rest supporting, not equal-weight.
+
+For field effects specifically:
+
+```text
+Bad default:
+  This field gives HP, armor, damage, haste, and healing to a role group.
+
+Better:
+  This field makes frontliners much harder to kill.
+  This field makes every third spell echo.
+  This field converts shield gain into damage.
+```
+
 ## Output
 
 The implementation plan should end with:

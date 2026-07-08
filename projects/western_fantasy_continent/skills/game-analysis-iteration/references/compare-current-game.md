@@ -54,6 +54,50 @@ For each candidate system component, classify it as:
 
 Then check whether the current game has enough visible engines before adding subtle assistants.
 
+## Method: Field-Effect Mechanism Check
+
+Use this when reviewing dungeon field effects, level-wide buffs, battlefield rules, or environment modifiers.
+
+Core feedback:
+
+```text
+If most field effects add several unrelated stats at once, the player cannot read what the field actually does.
+Multi-stat fields are allowed as special cases, but they cannot be the default design language.
+```
+
+A field effect should usually have one readable main axis:
+
+- a mechanism rule, such as "shields explode", "first backline hit marks", "every third skill echoes", or "poison spreads on death";
+- a single primary stat axis, such as frontline HP, caster skill haste, basic attack speed, or healing received;
+- a clear conversion, such as shield -> damage, burn -> attack speed, healing overflow -> shield, or mark -> focus damage.
+
+Multi-stat fields are allowed only when the field is intentionally about combining several levers. Example: a "Blood Moon" type field can add physical power, attack speed, effect power, and received healing because the intended player question is "how do I exploit all four low-health/brawl levers?" This should be rare. If every field works this way, all fields become attribute soup.
+
+Required review format:
+
+```text
+Field:
+Player-facing one-line rule:
+Primary axis:
+  mechanism | single stat | conversion | multi-stat package
+Exact modified stats:
+Who can exploit it:
+Who cannot exploit it:
+Why this is not generic power:
+Can the player understand it at first glance:
+  yes | partial | no
+If partial/no, simplify by:
+  choosing one main axis | turning it into a mechanism | making it a rare special field
+```
+
+Reject or revise if:
+
+- the field buffs three or more unrelated stats without a clear unifying question;
+- the one-line rule cannot be stated without listing many hidden numbers;
+- the same design could be described as "these roles get a bunch of useful stats";
+- multiple fields in the same batch all use the same multi-stat package pattern;
+- the field only creates team preference through broad stat coverage rather than a visible mechanism, conversion, or testable play pattern.
+
 ## Method: Progression-Layer Check
 
 For each growth layer, ask:

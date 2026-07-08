@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>场地效果测试场</title>
-    <link rel="stylesheet" href="/battle_view/battle-view.css?v=field_effect_lab_1">
+    <title>场地效果试玩台</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css?v=field_effect_lab_2">
     <link rel="stylesheet" href="/field_effect_lab/styles.css">
   </head>
   <body>
@@ -12,58 +12,68 @@
       <header class="topbar">
         <div>
           <a class="back-link" href="/workbench/">工作台</a>
-          <h1>场地效果测试场</h1>
+          <h1>场地效果试玩台</h1>
         </div>
         <div class="top-actions">
-          <button id="baselineBtn" type="button">无场地开战</button>
-          <button id="fieldBtn" type="button" class="primary">应用场地开战</button>
+          <button id="startBtn" type="button" class="primary">开始战斗</button>
         </div>
       </header>
 
+      <section class="field-strip">
+        <label>
+          场地效果
+          <select id="fieldSelect"></select>
+        </label>
+        <label>
+          强度
+          <select id="levelSelect">
+            <option value="1">1 级</option>
+            <option value="2">2 级</option>
+            <option value="3">3 级</option>
+          </select>
+        </label>
+        <div class="field-card" id="fieldInfo"></div>
+      </section>
+
       <section class="layout">
-        <aside class="panel control-panel">
-          <label>
-            场地
-            <select id="fieldSelect"></select>
-          </label>
-          <label>
-            等级
-            <select id="levelSelect">
-              <option value="1">1 级：约 20% 提升</option>
-              <option value="2">2 级：约 40% 提升</option>
-              <option value="3">3 级：约 70% 提升</option>
-            </select>
-          </label>
-          <label>
-            我方预设
-            <select id="leftTeamSelect"></select>
-          </label>
-          <label>
-            敌方预设
-            <select id="rightTeamSelect"></select>
-          </label>
-          <div class="field-card" id="fieldInfo"></div>
+        <aside class="panel team-panel">
+          <div class="team-head">
+            <h2>左侧队伍</h2>
+            <button id="leftResetBtn" type="button">重置</button>
+          </div>
+          <div id="leftSlots" class="slot-grid"></div>
         </aside>
 
         <section class="battle-panel">
           <div id="battlefield" class="battle-host"></div>
         </section>
 
-        <aside class="panel read-panel">
-          <h2>验收读法</h2>
-          <div id="readout" class="readout"></div>
-          <div class="note">
-            合格场地不应该让所有队都变强，也不应该只有一个死解。理想状态是 2-3 类队伍明显受益，其他队伍变化较小。
+        <aside class="panel team-panel">
+          <div class="team-head">
+            <h2>右侧队伍</h2>
+            <button id="rightResetBtn" type="button">重置</button>
           </div>
+          <div id="rightSlots" class="slot-grid"></div>
         </aside>
       </section>
     </main>
+
+    <div id="roleModal" class="modal" hidden>
+      <div class="modal-backdrop" data-close="1"></div>
+      <section class="role-picker" role="dialog" aria-modal="true" aria-labelledby="rolePickerTitle">
+        <header>
+          <h2 id="rolePickerTitle">选择职业</h2>
+          <button id="closeModalBtn" type="button">关闭</button>
+        </header>
+        <div id="roleOptions" class="role-options"></div>
+      </section>
+    </div>
 
     <script src="/game_data/skill-assets.js"></script>
     <script src="/game_data/skill-data.js"></script>
     <script src="/game_data/combat-signals.js"></script>
     <script src="/game_data/combat-sim.js"></script>
-    <script src="/battle_view/battle-view.js?v=field_effect_lab_1"></script>
+    <script src="/battle_view/battle-view.js?v=field_effect_lab_2"></script>
     <script src="/game_data/field-effects.js"></script>
     <script src="/field_effect_lab/field-effect-lab.js"></script>
   </body>

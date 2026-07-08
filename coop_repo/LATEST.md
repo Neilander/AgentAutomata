@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-07_1935_field-effect-20-validation.md`](reports/2026-07-07_1935_field-effect-20-validation.md)
+[`reports/2026-07-07_2117_project-overview-cognition-route.md`](reports/2026-07-07_2117_project-overview-cognition-route.md)
 
 Last updated: 2026-07-07
 
-Current focus: Expanded active field effects to 20 and reran validation; 17 fully pass, 3 are partial/tune-strength, no active effect is marked needs_redesign.
+Current focus: Updated the durable western fantasy project overview with the staged player cognition route and the next validation question: basic field effects should let players improve by changing one or two roles, not rebuilding everything.

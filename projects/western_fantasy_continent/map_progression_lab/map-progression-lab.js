@@ -66,6 +66,33 @@
   let battleView = null;
   let waveTimers = [];
 
+  const allyOpeningSlots = [
+    { x: 18, y: 36, line: "前排" },
+    { x: 18, y: 64, line: "前排" },
+    { x: 2, y: 32, line: "后排" },
+    { x: 2, y: 68, line: "后排" },
+  ];
+
+  const fixedMarchSpeed = 8;
+  const marchContactRange = 22;
+
+  const battleTerrain = {
+    ground: [[-20, -12], [126, -14], [130, 112], [-22, 114]],
+    rocks: [
+      { tone: "light", points: [[6, 22], [11, 18], [18, 20], [20, 26], [15, 32], [8, 30]] },
+      { tone: "", points: [[23, 72], [30, 67], [38, 70], [41, 78], [34, 85], [25, 82]] },
+      { tone: "dark", points: [[61, 18], [67, 15], [75, 18], [78, 26], [73, 32], [64, 29]] },
+      { tone: "", points: [[82, 58], [90, 54], [98, 58], [100, 67], [93, 74], [84, 71]] },
+      { tone: "dark", points: [[11, 84], [17, 81], [23, 84], [25, 90], [20, 96], [12, 94]] },
+      { tone: "light", points: [[45, 43], [51, 39], [59, 42], [61, 50], [55, 56], [47, 53]] },
+    ],
+    lines: [
+      [[-4, 39], [14, 36], [32, 38], [51, 35]],
+      [[53, 82], [72, 79], [91, 80], [111, 76]],
+      [[34, 12], [52, 11], [70, 13], [88, 10]],
+    ],
+  };
+
   const els = {
     resetBtn: document.getElementById("resetBtn"),
     navButtons: document.querySelectorAll("[data-page]"),
@@ -568,7 +595,203 @@
       cameraSmoothing: 0.06,
       onFinish: () => {},
     });
+    installBattleCameraBounds(battleView);
+    installBattleTerrain(battleView);
+    installBattleMarchPatch(battleView);
+    installBattleCameraModes(battleView);
     return battleView;
+  }
+
+  function installBattleCameraBounds(view) {
+    if (!view || view._mapCameraBoundsPatchInstalled) return;
+    view.battleWorldBounds = (width, height) => {
+      const aspect = view.battleAspect(width, height);
+      return {
+        minX: -28 * aspect,
+        minY: -12,
+        maxX: 150 * aspect,
+        maxY: 112,
+      };
+    };
+    view._mapCameraBoundsPatchInstalled = true;
+  }
+
+  function installBattleMarchPatch(view) {
+    if (!view || view._mapMarchPatchInstalled) return;
+    const baseChooseTarget = view.chooseTarget.bind(view);
+    view.chooseTarget = (unit) => {
+      if (unit.side !== "ally") return baseChooseTarget(unit);
+      const foes = view.enemies(unit).filter((enemy) => view.alive(enemy));
+      if (!foes.length) return null;
+      return foes.sort(view.byDistance(unit))[0];
+    };
+    view.update = (dt) => {
+      view.state.time += dt;
+      for (const unit of view.state.units.filter((item) => view.alive(item))) {
+        view.tickStatus(unit, dt);
+        unit.attackCd -= dt * (unit.haste > 0 ? 1.4 : 1);
+        unit.skillCd = unit.skillCd.map((cd) => Math.max(0, cd - dt));
+        unit.ultCd = Math.max(0, unit.ultCd - dt);
+        for (const key of ["haste", "slow", "guard", "taunt", "immortal", "lifeSteal", "bloodFury", "whirlwind", "roarFury", "retaliationTimer", "bonusPowerTimer"]) {
+          unit[key] = Math.max(0, unit[key] - dt);
+        }
+        for (const key of ["hiddenTimer", "hiddenRetaliateTimer", "forcedTargetTimer"]) {
+          unit[key] = Math.max(0, unit[key] - dt);
+        }
+        if (unit.forcedTargetTimer <= 0) unit.forcedTargetId = null;
+        unit.counterCd = Math.max(0, unit.counterCd - dt);
+
+        if (unit.marchTarget) {
+          const contact = view.chooseTarget(unit);
+          const contactDistance = contact ? view.dist(unit, contact) : Infinity;
+          if (contactDistance <= Math.max(unit.range, marchContactRange)) {
+            unit.marchTarget = null;
+          } else {
+            moveMarchUnit(view, unit, unit.marchTarget, dt);
+            if (view.dist(unit, unit.marchTarget) <= 1.1) {
+              completeMarchTarget(unit);
+            }
+            continue;
+          }
+        }
+
+        const target = view.chooseTarget(unit);
+        if (!target) continue;
+        const distance = view.dist(unit, target);
+        if (distance > unit.range) {
+          view.moveToward(unit, target, dt);
+          continue;
+        }
+        if (unit.ultCd <= 0) view.cast(unit, target, "ult");
+        else if (unit.skillCd[0] <= 0) view.cast(unit, target, 0);
+        else if (unit.skillCd[1] <= 0) view.cast(unit, target, 1);
+        else if (unit.attackCd <= 0) view.basic(unit, target);
+      }
+      view.state.signalBus?.emitHealthSnapshots(view.state.units, view.state.time);
+      view.finishIfNeeded();
+    };
+    view._mapMarchPatchInstalled = true;
+  }
+
+  function installBattleCameraModes(view) {
+    if (!view || view._mapCameraModePatchInstalled) return;
+    view.updatePresentation = (dt) => {
+      view.syncPresentationViewport();
+      updateMapBattleCamera(view);
+      view.state.postStack?.update?.(dt * 1000);
+      view.updateVfxNodes(dt);
+    };
+    view._mapCameraModePatchInstalled = true;
+  }
+
+  function updateMapBattleCamera(view) {
+    if (!view?.state?.camera || !view.els?.field) return;
+    const allies = view.state.units.filter((unit) => unit.side === "ally" && view.alive(unit));
+    const enemies = view.state.units.filter((unit) => unit.side === "enemy" && view.alive(unit));
+    if (!allies.length) return;
+    const snapshot = view.state.camera.snapshot();
+    const defaultZoom = view.baseCameraZoom(snapshot.viewportWidth, snapshot.viewportHeight) * 1.04;
+    const allyBounds = unitBounds(allies);
+    const enemyCount = enemies.length || 1;
+    const leftAlly = allies.reduce((best, unit) => unit.x < best.x ? unit : best, allies[0]);
+    const rightAlly = allies.reduce((best, unit) => unit.x > best.x ? unit : best, allies[0]);
+    const enemiesRightOfLeft = enemies.filter((enemy) => enemy.x >= leftAlly.x).length / enemyCount;
+    const enemiesLeftOfRight = enemies.filter((enemy) => enemy.x <= rightAlly.x).length / enemyCount;
+    const alliesClustered = allyBounds.width <= 34 && allyBounds.height <= 48;
+
+    if (alliesClustered && enemies.length && enemiesRightOfLeft >= 0.8) {
+      moveCameraToHalfField(view, leftAlly, 1, defaultZoom);
+      return;
+    }
+    if (alliesClustered && enemies.length && enemiesLeftOfRight >= 0.8) {
+      moveCameraToHalfField(view, rightAlly, -1, defaultZoom);
+      return;
+    }
+
+    const active = [...allies, ...enemies];
+    const bounds = unitBounds(active);
+    const center = view.battleWorldPoint({ x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 });
+    view.state.camera.moveToward({
+      x: center.x,
+      y: center.y,
+      zoom: Math.max(snapshot.minZoom, Math.min(snapshot.maxZoom, defaultZoom * 0.66)),
+    }, 0.08);
+  }
+
+  function moveCameraToHalfField(view, anchorUnit, direction, defaultZoom) {
+    const snapshot = view.state.camera.snapshot();
+    const zoom = Math.max(snapshot.minZoom, Math.min(snapshot.maxZoom, defaultZoom));
+    const anchor = view.battleWorldPoint(anchorUnit);
+    const offsetWorldX = (snapshot.viewportWidth / zoom) * (5 / 16) * direction;
+    view.state.camera.moveToward({
+      x: anchor.x + offsetWorldX,
+      y: view.battleWorldPoint({ x: anchorUnit.x, y: 50 }).y,
+      zoom,
+    }, 0.08);
+  }
+
+  function unitBounds(units) {
+    return {
+      minX: Math.min(...units.map((unit) => unit.x)),
+      maxX: Math.max(...units.map((unit) => unit.x)),
+      minY: Math.min(...units.map((unit) => unit.y)),
+      maxY: Math.max(...units.map((unit) => unit.y)),
+      width: Math.max(...units.map((unit) => unit.x)) - Math.min(...units.map((unit) => unit.x)),
+      height: Math.max(...units.map((unit) => unit.y)) - Math.min(...units.map((unit) => unit.y)),
+    };
+  }
+
+  function installBattleTerrain(view) {
+    if (!view?.els?.worldLayer || view._mapTerrainInstalled) return;
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.classList.add("battle-terrain-layer");
+    svg.setAttribute("aria-hidden", "true");
+    view.els.worldLayer.insertBefore(svg, view.els.worldLayer.firstChild);
+    view._mapTerrainLayer = svg;
+    view._mapTerrainInstalled = true;
+    const originalRender = view.render.bind(view);
+    view.render = () => {
+      originalRender();
+      renderBattleTerrain(view);
+    };
+    renderBattleTerrain(view);
+  }
+
+  function renderBattleTerrain(view) {
+    const svg = view?._mapTerrainLayer;
+    const field = view?.els?.field;
+    if (!svg || !field) return;
+    const rect = field.getBoundingClientRect();
+    const width = Math.max(1, Math.round(rect.width));
+    const height = Math.max(1, Math.round(rect.height));
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.innerHTML = [
+      terrainPolygon(battleTerrain.ground, "battle-terrain-ground", view, width, height),
+      ...battleTerrain.rocks.map((rock) => terrainPolygon(rock.points, `battle-terrain-rock ${rock.tone}`.trim(), view, width, height)),
+      ...battleTerrain.lines.map((line) => terrainLine(line, view, width, height)),
+    ].join("");
+  }
+
+  function terrainPolygon(points, className, view, width, height) {
+    return `<polygon class="${className}" points="${points.map((point) => terrainPoint(point, view, width, height)).join(" ")}"></polygon>`;
+  }
+
+  function terrainLine(points, view, width, height) {
+    return `<polyline class="battle-terrain-line" points="${points.map((point) => terrainPoint(point, view, width, height)).join(" ")}"></polyline>`;
+  }
+
+  function terrainPoint(point, view, width, height) {
+    const [x, y] = point;
+    if (view.state?.camera?.worldToScreen && view.battleWorldPoint) {
+      const screen = view.state.camera.worldToScreen(view.battleWorldPoint({ x, y }));
+      return `${round(screen.x, 1)},${round(screen.y, 1)}`;
+    }
+    return `${round(x / 100 * width, 1)},${round(y / 100 * height, 1)}`;
+  }
+
+  function round(value, digits = 0) {
+    const factor = 10 ** digits;
+    return Math.round(value * factor) / factor;
   }
 
   function previewBattle() {
@@ -594,6 +817,7 @@
       rightTeam: waves[0].smallWaves[0].rightTeam.map((unit, index) => spawnSpec(unit, index, waves[0].smallWaves[0].rightTeam.length)),
       randomizeStats: false,
     });
+    queueExistingEnemies(view);
     waitForSmallWaveClear(view, waves, 0, 0);
   }
 
@@ -631,11 +855,14 @@
     if (!view || !view.state) return;
     const enemyOffset = view.state.units.filter((unit) => unit.side === "enemy").length;
     const incoming = view.makeUnits("enemy", specs.map((spec, index) => spawnSpec(spec, index, specs.length)));
+    const formation = enemyFormation(incoming);
     incoming.forEach((unit, index) => {
       unit.unitId = `enemy_wave_${enemyOffset + index}`;
       unit.id = unit.unitId;
-      unit.x = 96;
-      unit.y = 18 + ((index + 1) / (incoming.length + 1)) * 64;
+      const target = formation[index];
+      unit.x = 118 + index * 5;
+      unit.y = target.y;
+      unit.marchTarget = target;
       unit.attackCd = 1.1 + index * 0.05;
     });
     view.state.units.push(...incoming);
@@ -650,6 +877,36 @@
     view.render();
   }
 
+  function queueExistingEnemies(view) {
+    const enemies = view.state.units.filter((unit) => unit.side === "enemy" && view.alive(unit));
+    const formation = enemyFormation(enemies);
+    enemies.forEach((unit, index) => {
+      const target = formation[index];
+      unit.x = 118 + index * 5;
+      unit.y = target.y;
+      unit.marchTarget = target;
+    });
+    view.render();
+  }
+
+  function enemyFormation(units) {
+    const frontYs = [36, 64, 50];
+    const backYs = [34, 50, 66, 42, 58];
+    let front = 0;
+    let back = 0;
+    return units.map((unit) => {
+      const isBack = unit.range >= 20 || unit.line === "后排";
+      if (isBack) {
+        const y = backYs[back % backYs.length] + Math.floor(back / backYs.length) * 5;
+        back += 1;
+        return { x: 88, y, line: "后排" };
+      }
+      const y = frontYs[front % frontYs.length] + Math.floor(front / frontYs.length) * 5;
+      front += 1;
+      return { x: 74, y, line: "前排" };
+    });
+  }
+
   function waitForSmallWaveClear(view, bigWaves, bigIndex, smallIndex) {
     const bigWave = bigWaves[bigIndex];
     const smallWave = bigWave?.smallWaves?.[smallIndex];
@@ -659,11 +916,12 @@
       checks += 1;
       const aliveEnemies = view.state.units.filter((unit) => unit.side === "enemy" && view.alive(unit));
       const aliveAllies = view.state.units.filter((unit) => unit.side === "ally" && view.alive(unit));
+      const hasNextSmall = Boolean(bigWave.smallWaves[smallIndex + 1]);
       if (!aliveAllies.length) {
         window.clearInterval(poll);
         return;
       }
-      if (!aliveEnemies.length || checks > 34) {
+      if ((hasNextSmall ? aliveEnemies.length <= 2 : !aliveEnemies.length) || checks > 34) {
         window.clearInterval(poll);
         advanceWaveDirector(view, bigWaves, bigIndex, smallIndex);
       }
@@ -676,12 +934,9 @@
     const smallWave = bigWave.smallWaves[smallIndex];
     const nextSmall = bigWave.smallWaves[smallIndex + 1];
     if (nextSmall) {
-      const timer = window.setTimeout(() => {
-        els.waveStatus.textContent = nextSmall.title;
-        addEnemyWave(nextSmall.rightTeam, nextSmall.startTitle);
-        waitForSmallWaveClear(view, bigWaves, bigIndex, smallIndex + 1);
-      }, smallWave.nextDelay || 1600);
-      waveTimers.push(timer);
+      els.waveStatus.textContent = nextSmall.title;
+      addEnemyWave(nextSmall.rightTeam, nextSmall.startTitle);
+      waitForSmallWaveClear(view, bigWaves, bigIndex, smallIndex + 1);
       return;
     }
     const nextBig = bigWaves[bigIndex + 1];
@@ -694,8 +949,13 @@
     };
     if (bigWave.regroupAfter) {
       regroupAllies(view, `${bigWave.title}结束，队伍重新集结`, () => {
-        const timer = window.setTimeout(launchNextBig, smallWave.nextDelay || 1800);
-        waveTimers.push(timer);
+        const regroupPause = window.setTimeout(() => {
+          marchAlliesRight(view, () => {
+            const timer = window.setTimeout(launchNextBig, 420);
+            waveTimers.push(timer);
+          });
+        }, 500);
+        waveTimers.push(regroupPause);
       });
       return;
     }
@@ -704,44 +964,61 @@
 
   function regroupAllies(view, title, onComplete) {
     if (!view?.state?.units) return;
-    const slots = [
-      { x: 18, y: 38, line: "前排" },
-      { x: 18, y: 62, line: "前排" },
-      { x: 6, y: 38, line: "后排" },
-      { x: 6, y: 62, line: "后排" },
-    ];
-    const allies = view.state.units.filter((unit) => unit.side === "ally");
-    const start = allies.map((unit) => ({ x: unit.x, y: unit.y }));
+    const allies = view.state.units.filter((unit) => unit.side === "ally" && view.alive(unit));
+    if (!allies.length) return;
+    const anchor = leftmostUnit(allies);
+    const anchorSlot = openingSlotFor(anchor);
+    const currentCenterY = allies.reduce((sum, unit) => sum + unit.y, 0) / Math.max(1, allies.length);
+    const yOffset = currentCenterY - 50;
     allies.forEach((unit) => {
       unit.targetId = null;
       unit.attackAnim = 0;
+      const slot = openingSlotFor(unit);
+      unit.marchTarget = {
+        x: anchor.x + (slot.x - anchorSlot.x),
+        y: Math.max(22, Math.min(78, slot.y + yOffset)),
+        line: slot.line,
+      };
     });
     view.state.logs.unshift(title);
     els.waveStatus.textContent = title;
-    const startedAt = performance.now();
-    const duration = 950;
+    runOutOfCombatMarch(view, allies, { cameraMode: "rightHalf", label: title }, onComplete);
+  }
+
+  function marchAlliesRight(view, onComplete) {
+    const allies = view.state.units.filter((unit) => unit.side === "ally" && view.alive(unit));
+    if (!allies.length) return;
+    allies.forEach((unit) => {
+      unit.marchTarget = {
+        x: unit.x + 12,
+        y: unit.y,
+        line: unit.line,
+      };
+    });
+    view.state.logs.unshift("队伍保持四方阵向右推进。");
+    els.waveStatus.textContent = "队伍向右推进";
+    runOutOfCombatMarch(view, allies, { cameraMode: "rightHalf", label: "队伍向右推进" }, onComplete);
+  }
+
+  function runOutOfCombatMarch(view, units, options, onComplete) {
+    let last = performance.now();
     const step = (now) => {
-      const t = Math.min(1, (now - startedAt) / duration);
-      const ease = 1 - Math.pow(1 - t, 3);
-      allies.forEach((unit, index) => {
-        const slot = slots[index % slots.length];
-        unit.x = start[index].x + (slot.x - start[index].x) * ease;
-        unit.y = start[index].y + (slot.y - start[index].y) * ease;
-        unit.homeX = slot.x;
-        unit.homeY = slot.y;
-        unit.line = slot.line;
-      });
+      const dt = Math.min(0.2, (now - last) / 1000 || 0.016) * view.speed;
+      last = now;
+      let allArrived = true;
+      for (const unit of units.filter((item) => view.alive(item) && item.marchTarget)) {
+        moveMarchUnit(view, unit, unit.marchTarget, dt);
+        if (view.dist(unit, unit.marchTarget) <= 1.1) {
+          completeMarchTarget(unit);
+        } else {
+          allArrived = false;
+        }
+      }
       if (view.state.camera) {
-        const snapshot = view.state.camera.snapshot();
-        const center = view.battleWorldPoint ? view.battleWorldPoint({ x: 22, y: 50 }) : { x: 22, y: 50 };
-        view.state.camera.moveToward({
-          x: center.x,
-          y: center.y,
-          zoom: Math.max(snapshot.minZoom, Math.min(snapshot.maxZoom, snapshot.zoom * 0.97)),
-        }, 0.12);
+        moveOutOfCombatCamera(view, units, options);
       }
       view.render();
-      if (t < 1) {
+      if (!allArrived) {
         const raf = requestAnimationFrame(step);
         waveTimers.push(raf);
       } else if (onComplete) {
@@ -750,6 +1027,51 @@
     };
     const raf = requestAnimationFrame(step);
     waveTimers.push(raf);
+  }
+
+  function moveMarchUnit(view, unit, target, dt) {
+    const distance = view.dist(unit, target);
+    if (!distance) return;
+    const step = Math.min(distance, dt * fixedMarchSpeed);
+    unit.x += ((target.x - unit.x) / distance) * step;
+    unit.y += ((target.y - unit.y) / distance) * step;
+  }
+
+  function completeMarchTarget(unit) {
+    unit.x = unit.marchTarget.x;
+    unit.y = unit.marchTarget.y;
+    unit.homeX = unit.marchTarget.x;
+    unit.homeY = unit.marchTarget.y;
+    unit.line = unit.marchTarget.line || unit.line;
+    unit.marchTarget = null;
+  }
+
+  function moveOutOfCombatCamera(view, units, options = {}) {
+    const aliveUnits = units.filter((unit) => view.alive(unit));
+    if (options.cameraMode === "rightHalf" && aliveUnits.length) {
+      const snapshot = view.state.camera.snapshot();
+      const defaultZoom = view.baseCameraZoom(snapshot.viewportWidth, snapshot.viewportHeight) * 1.04;
+      moveCameraToHalfField(view, leftmostUnit(aliveUnits), 1, defaultZoom);
+      return;
+    }
+    if (Number.isFinite(options.cameraX)) {
+      const snapshot = view.state.camera.snapshot();
+      const center = view.battleWorldPoint ? view.battleWorldPoint({ x: options.cameraX, y: 50 }) : { x: options.cameraX, y: 50 };
+      view.state.camera.moveToward({
+        x: center.x,
+        y: center.y,
+        zoom: Math.max(snapshot.minZoom, Math.min(snapshot.maxZoom, snapshot.zoom)),
+      }, 0.12);
+    }
+  }
+
+  function leftmostUnit(units) {
+    return units.reduce((best, unit) => unit.x < best.x ? unit : best, units[0]);
+  }
+
+  function openingSlotFor(unit) {
+    const index = Number.isFinite(unit?.slotIndex) ? unit.slotIndex : 0;
+    return allyOpeningSlots[index % allyOpeningSlots.length];
   }
 
   function spawnSpec(spec, index, count) {

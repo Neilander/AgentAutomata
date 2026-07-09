@@ -108,6 +108,34 @@ For each growth layer, ask:
 - What new decision does it unlock?
 - What should not be introduced yet?
 
+## Method: Lock-Key Cognition Check
+
+Use `lock-key-cognition.md` when reviewing map progression, prisons, camps, process-level walls, boss gates, or other sequences where the player must solve a problem to earn a valuable reward.
+
+Do not check only the static designer chain:
+
+```text
+lock -> key -> treasure
+```
+
+Check the player's cognition over time:
+
+```text
+concepts -> knowledge -> behaviors -> failure memory -> attribution -> wake-up -> retry -> knowledge update
+```
+
+Minimum questions:
+
+- What concepts, knowledge, and behaviors does the player have before the lock?
+- What failure memory does the lock create?
+- Can the player attribute the failure using concepts they already know?
+- What key is visible and actionable under that current cognition?
+- Does obtaining the key wake the failure memory soon enough?
+- What knowledge updates after the player succeeds?
+- Does the lock have at least two heterogeneous solutions?
+
+If the answer depends on first impressions, update thresholds, or failure wake-up probability, read `lock-key-cognition.md` and use its review format.
+
 ## Method: Problem List And Dependency Check
 
 After checking the current game, do not jump from each problem directly to a fix. First produce a problem list with dependency information.

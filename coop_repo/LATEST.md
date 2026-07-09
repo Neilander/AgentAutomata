@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-09_1806_big-wave-small-wave-sequencing.md`](reports/2026-07-09_1806_big-wave-small-wave-sequencing.md)
+[`reports/2026-07-09_1358_lock-key-cognition-skill.md`](reports/2026-07-09_1358_lock-key-cognition-skill.md)
 
 Last updated: 2026-07-09
 
-Current focus: Large-map battle simulation now models big waves containing small waves; only big-wave completion triggers smooth regroup and camera lerp.
+Current focus: Project game-analysis skill now includes lock-key cognition review: concepts, knowledge first impressions, behavior, failure attribution, wake-up conditions, and knowledge updates.

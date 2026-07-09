@@ -4,6 +4,24 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-09
 
+- `2026-07-09_1358_lock-key-cognition-skill.md`: added a project skill reference for lock-key cognition review, including player concepts/knowledge/behaviors, first impressions, failure attribution, wake-up conditions, and knowledge updates.
+
+- `2026-07-09_1327_march-contact-state-fix.md`: separated `/map_progression_lab/` marching from contact behavior so march targets use fixed speed and units begin normal combat once enemies are within contact range.
+
+- `2026-07-09_1310_big-wave-regroup-relative-formation.md`: changed `/map_progression_lab/` big-wave transitions so allies regroup around the current leftmost ally using opening formation offsets, pause 0.5s, and march right under right-side half-field observation.
+
+- `2026-07-09_1303_map-camera-bounds-zoom.md`: widened `/map_progression_lab/` battle-simulation camera world bounds and pulled back half-field/siege observation zoom so the camera can move right without relying on a close view.
+
+- `2026-07-09_1256_half-field-camera-center.md`: fixed half-field camera centering so it uses a closer default zoom and centers about 5/16 screen width to the side of the leftmost/rightmost ally instead of being clamped to full-field center.
+
+- `2026-07-09_1248_nearest-target-camera-modes.md`: removed spawn-batch target locking and manual camera nudge, changed map-lab allies to nearest-enemy targeting, and added half-field versus siege battle camera modes.
+
+- `2026-07-09_1203_first-big-wave-target-camera.md`: fixed first-big-wave behavior so next small wave spawns at two remaining enemies, allies target the earlier enemy batch first, incoming enemies become targetable only after marching in, and the camera nudges right on new wave entry.
+
+- `2026-07-09_1158_map-wave-queue-march.md`: refined `/map_progression_lab/` wave behavior so next small waves spawn immediately at <=1 enemy, enemies enter from the right as queues/formations, and allies regroup/march by movement speed between big waves.
+
+- `2026-07-09_1133_map-battle-desert-reference.md`: added pale desert ground, gray rock clusters, and faint sand-line references to the `/map_progression_lab/` battle simulation so camera zoom and movement are easier to read.
+
 - `2026-07-09_1806_big-wave-small-wave-sequencing.md`: corrected `/map_progression_lab/` wave hierarchy so small waves do not regroup, big wave 1 contains two small waves, and only big-wave completion triggers animated ally regroup plus camera lerp.
 
 - `2026-07-09_1757_wave-sequence-regroup-before-next.md`: changed `/map_progression_lab/` battle waves from fixed-time spawning to clear-wave, regroup allies/reset camera, then spawn next wave.

@@ -51,6 +51,7 @@ Read only the files needed for the current state:
 - `references/experience.md`: Steam review analysis and guide/design reading.
 - `references/distillation.md`: loop analysis, system-role analysis, and progression-layer analysis.
 - `references/compare-current-game.md`: turning macro traits into detailed indicators against the current game.
+- `references/lock-key-cognition.md`: lock-key progression review using player cognition, failure attribution, wake-up conditions, and knowledge updates.
 - `references/reviewer-training.md`: fitting evaluator prompts/subagents to user feedback.
 - `references/implementation-plan.md`: placeholder for state 7.
 

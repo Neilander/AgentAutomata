@@ -89,6 +89,68 @@ p { margin: 0; color: var(--muted); }
   gap: 10px;
   padding: 12px;
 }
+.stage-list {
+  position: relative;
+  display: block;
+  min-height: 430px;
+  overflow: hidden;
+  cursor: grab;
+  background:
+    radial-gradient(circle at 20% 25%, rgba(214, 173, 71, 0.11), transparent 120px),
+    radial-gradient(circle at 75% 70%, rgba(132, 182, 255, 0.08), transparent 150px),
+    #10140d;
+}
+.stage-list:active { cursor: grabbing; }
+.map-world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 980px;
+  height: 560px;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.map-links {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.map-links line {
+  stroke: rgba(214, 173, 71, 0.34);
+  stroke-width: 2;
+  stroke-dasharray: 8 8;
+}
+.map-node {
+  position: absolute;
+  width: 142px;
+  min-height: 82px;
+  padding: 9px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  gap: 3px;
+  text-align: left;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.26);
+}
+.map-node span {
+  color: var(--gold-2);
+  font-size: 11px;
+}
+.map-node strong {
+  color: var(--text);
+  font-size: 14px;
+}
+.map-node small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.25;
+}
+.map-node.stage-active {
+  border-color: rgba(244, 214, 125, 0.72);
+}
+.map-node.locked {
+  opacity: 0.42;
+}
 .stage-card, .hero-card {
   border: 1px solid rgba(214, 173, 71, 0.24);
   background: #11140e;

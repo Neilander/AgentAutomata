@@ -58,6 +58,9 @@
   let state = normalizeState(loadState() || initialState());
   let selectedId = state.selectedId || "r1_main_1";
   let pan = state.pan || { x: -34, y: -92 };
+  let mapCamera = null;
+  let mapFocus = null;
+  let mapRaf = 0;
   let drag = null;
   let autoTimer = 0;
   let battleView = null;
@@ -161,20 +164,33 @@
     });
     els.mapStage.addEventListener("pointerdown", (event) => {
       if (event.target.closest("[data-node-id]")) return;
-      drag = { x: event.clientX, y: event.clientY, panX: pan.x, panY: pan.y };
+      setupMapCamera();
+      drag = { x: event.clientX, y: event.clientY };
       els.mapStage.classList.add("dragging");
       els.mapStage.setPointerCapture(event.pointerId);
     });
     els.mapStage.addEventListener("pointermove", (event) => {
-      if (!drag) return;
-      pan = clampPan({
-        x: drag.panX + event.clientX - drag.x,
-        y: drag.panY + event.clientY - drag.y,
-      });
-      applyPan();
+      if (!drag || !mapCamera) return;
+      mapCamera.panByScreen(event.clientX - drag.x, event.clientY - drag.y);
+      drag.x = event.clientX;
+      drag.y = event.clientY;
+      mapFocus = null;
+      renderMapCamera();
     });
     els.mapStage.addEventListener("pointerup", finishDrag);
     els.mapStage.addEventListener("pointercancel", finishDrag);
+    els.mapStage.addEventListener("wheel", (event) => {
+      setupMapCamera();
+      if (!mapCamera) return;
+      event.preventDefault();
+      const rect = els.mapStage.getBoundingClientRect();
+      const anchor = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      mapCamera.setZoom(mapCamera.snapshot().zoom * (event.deltaY > 0 ? 0.88 : 1.14), anchor);
+      mapFocus = null;
+      renderMapCamera();
+      saveCameraState();
+      saveState();
+    }, { passive: false });
     els.nodeLayer.addEventListener("click", (event) => {
       const button = event.target.closest("[data-node-id]");
       if (!button) return;
@@ -182,6 +198,7 @@
       state.selectedId = selectedId;
       saveState();
       render();
+      focusMapNode(selectedId);
     });
     els.fightBtn.addEventListener("click", () => {
       const current = findNode(selectedId);
@@ -192,8 +209,8 @@
     els.previewBattleBtn.addEventListener("click", previewBattle);
     els.playBattleBtn.addEventListener("click", playBattleWaves);
     window.addEventListener("resize", () => {
-      pan = clampPan(pan);
-      applyPan();
+      setupMapCamera();
+      renderMapCamera();
     });
   }
 
@@ -211,7 +228,7 @@
     try {
       els.mapStage.releasePointerCapture(event.pointerId);
     } catch {}
-    state.pan = pan;
+    saveCameraState();
     saveState();
   }
 
@@ -220,7 +237,8 @@
     selectedId = selected.id;
     state.selectedId = selectedId;
     const selectedRegion = regions.find((region) => region.id === selected.regionId) || regions[0];
-    applyPan();
+    const hadCamera = Boolean(mapCamera);
+    setupMapCamera();
     renderRegions(selectedRegion.id);
     renderLinks();
     renderNodes();
@@ -228,11 +246,12 @@
     renderNodePanel(selected);
     renderRewards();
     renderAutoButton();
+    focusMapNode(selectedId, !hadCamera);
   }
 
   function applyPan() {
-    pan = clampPan(pan);
-    els.mapCanvas.style.transform = `translate(${Math.round(pan.x)}px, ${Math.round(pan.y)}px)`;
+    setupMapCamera();
+    renderMapCamera();
   }
 
   function clampPan(value) {
@@ -242,6 +261,71 @@
     return {
       x: Math.max(minX, Math.min(24, value.x)),
       y: Math.max(minY, Math.min(24, value.y)),
+    };
+  }
+
+  function setupMapCamera() {
+    if (!window.AgentAutomataCamera2D?.createCamera2D || !els.mapStage) return;
+    const rect = els.mapStage.getBoundingClientRect();
+    const width = Math.max(1, rect.width || 720);
+    const height = Math.max(1, rect.height || 620);
+    if (!mapCamera) {
+      const saved = state.camera || {};
+      mapCamera = window.AgentAutomataCamera2D.createCamera2D({
+        x: Number.isFinite(saved.x) ? saved.x : MAP_WIDTH / 2,
+        y: Number.isFinite(saved.y) ? saved.y : MAP_HEIGHT / 2,
+        zoom: Number.isFinite(saved.zoom) ? saved.zoom : Math.max(0.52, Math.min(width / MAP_WIDTH, height / MAP_HEIGHT) * 1.08),
+        minZoom: 0.42,
+        maxZoom: 1.65,
+        viewportWidth: width,
+        viewportHeight: height,
+        worldBounds: { minX: 0, minY: 0, maxX: MAP_WIDTH, maxY: MAP_HEIGHT },
+      });
+      startMapCameraLoop();
+    } else {
+      mapCamera.setViewport(width, height);
+      mapCamera.setWorldBounds({ minX: 0, minY: 0, maxX: MAP_WIDTH, maxY: MAP_HEIGHT });
+    }
+  }
+
+  function focusMapNode(nodeId, instant = false) {
+    if (!mapCamera) return;
+    const item = findNode(nodeId);
+    if (!item) return;
+    const zoom = mapCamera.snapshot().zoom;
+    mapFocus = { x: item.x, y: item.y, zoom: Math.max(0.62, zoom) };
+    if (instant) {
+      mapCamera.setPosition(mapFocus.x, mapFocus.y).setZoom(mapFocus.zoom);
+      renderMapCamera();
+      saveCameraState();
+    }
+  }
+
+  function startMapCameraLoop() {
+    if (mapRaf) return;
+    const step = () => {
+      if (mapCamera && mapFocus) {
+        mapCamera.moveToward(mapFocus, 0.11);
+        renderMapCamera();
+      }
+      mapRaf = requestAnimationFrame(step);
+    };
+    mapRaf = requestAnimationFrame(step);
+  }
+
+  function renderMapCamera() {
+    if (!mapCamera || !els.mapCanvas) return;
+    const snapshot = mapCamera.snapshot();
+    els.mapCanvas.style.transform = `translate(${snapshot.viewportWidth / 2}px, ${snapshot.viewportHeight / 2}px) scale(${snapshot.zoom}) translate(${-snapshot.x}px, ${-snapshot.y}px)`;
+  }
+
+  function saveCameraState() {
+    if (!mapCamera) return;
+    const snapshot = mapCamera.snapshot();
+    state.camera = {
+      x: Math.round(snapshot.x),
+      y: Math.round(snapshot.y),
+      zoom: Number(snapshot.zoom.toFixed(3)),
     };
   }
 
@@ -480,6 +564,8 @@
       container: els.battleMount,
       maxTime: 32,
       speed: 1.25,
+      cameraMode: "fitUnits",
+      cameraSmoothing: 0.06,
       onFinish: () => {},
     });
     return battleView;
@@ -491,7 +577,7 @@
     mountBattle()?.preview({
       title: "敌群增援模拟",
       leftTeam: playerTeam(),
-      rightTeam: waveOne(),
+      rightTeam: smallWaveOne(),
     });
   }
 
@@ -499,29 +585,44 @@
     stopBattleWaves();
     const view = mountBattle();
     if (!view) return;
-    els.waveStatus.textContent = "第一段：4 个近战小怪";
+    const waves = battleWaves();
+    els.waveStatus.textContent = waves[0].smallWaves[0].title;
     view.start({
-      title: "固定时间敌潮开始：第一段 4 个近战小怪",
+      title: waves[0].smallWaves[0].startTitle,
       seed: `map-wave-fixed-${Date.now()}`,
       leftTeam: playerTeam(),
-      rightTeam: waveOne().map((unit, index) => spawnSpec(unit, index, 4)),
+      rightTeam: waves[0].smallWaves[0].rightTeam.map((unit, index) => spawnSpec(unit, index, waves[0].smallWaves[0].rightTeam.length)),
       randomizeStats: false,
     });
-    const waves = [
-      { title: "第二段：追加 3 近战 + 4 远程", rightTeam: waveTwo(), delay: 2400 },
-      { title: "终段：追加标准敌队", rightTeam: standardEnemyTeam(), delay: 7600 },
+    waitForSmallWaveClear(view, waves, 0, 0);
+  }
+
+  function battleWaves() {
+    return [
+      {
+        title: "大波 1：小怪试探",
+        regroupAfter: true,
+        smallWaves: [
+          { title: "大波 1-1：近战探路", startTitle: "敌潮开始：近战探路", rightTeam: smallWaveOne(), nextDelay: 1900 },
+          { title: "大波 1-2：混合骚扰", startTitle: "混合骚扰进场", rightTeam: smallWaveTwo(), nextDelay: 2400 },
+        ],
+      },
+      {
+        title: "大波 2：标准敌队",
+        regroupAfter: false,
+        smallWaves: [
+          { title: "大波 2：标准敌队压上", startTitle: "标准敌队压上", rightTeam: standardEnemyTeam(), nextDelay: 0 },
+        ],
+      },
     ];
-    for (const wave of waves) {
-      const timer = window.setTimeout(() => {
-        els.waveStatus.textContent = wave.title;
-        addEnemyWave(wave.rightTeam, wave.title);
-      }, wave.delay);
-      waveTimers.push(timer);
-    }
   }
 
   function stopBattleWaves() {
-    for (const timer of waveTimers) window.clearTimeout(timer);
+    for (const timer of waveTimers) {
+      window.clearTimeout(timer);
+      window.clearInterval(timer);
+      window.cancelAnimationFrame(timer);
+    }
     waveTimers = [];
   }
 
@@ -542,10 +643,113 @@
     view.state.result = null;
     if (!view.state.running && view.state.units.some((unit) => unit.side === "ally" && view.alive(unit))) {
       view.state.running = true;
-      view.state.lastFrame = performance.now();
+      if (view.resetPresentationClock) view.resetPresentationClock(performance.now());
+      else view.state.lastFrame = performance.now();
       view.state.raf = setInterval(() => view.tick(performance.now()), 33);
     }
     view.render();
+  }
+
+  function waitForSmallWaveClear(view, bigWaves, bigIndex, smallIndex) {
+    const bigWave = bigWaves[bigIndex];
+    const smallWave = bigWave?.smallWaves?.[smallIndex];
+    if (!smallWave) return;
+    let checks = 0;
+    const poll = window.setInterval(() => {
+      checks += 1;
+      const aliveEnemies = view.state.units.filter((unit) => unit.side === "enemy" && view.alive(unit));
+      const aliveAllies = view.state.units.filter((unit) => unit.side === "ally" && view.alive(unit));
+      if (!aliveAllies.length) {
+        window.clearInterval(poll);
+        return;
+      }
+      if (!aliveEnemies.length || checks > 34) {
+        window.clearInterval(poll);
+        advanceWaveDirector(view, bigWaves, bigIndex, smallIndex);
+      }
+    }, 650);
+    waveTimers.push(poll);
+  }
+
+  function advanceWaveDirector(view, bigWaves, bigIndex, smallIndex) {
+    const bigWave = bigWaves[bigIndex];
+    const smallWave = bigWave.smallWaves[smallIndex];
+    const nextSmall = bigWave.smallWaves[smallIndex + 1];
+    if (nextSmall) {
+      const timer = window.setTimeout(() => {
+        els.waveStatus.textContent = nextSmall.title;
+        addEnemyWave(nextSmall.rightTeam, nextSmall.startTitle);
+        waitForSmallWaveClear(view, bigWaves, bigIndex, smallIndex + 1);
+      }, smallWave.nextDelay || 1600);
+      waveTimers.push(timer);
+      return;
+    }
+    const nextBig = bigWaves[bigIndex + 1];
+    if (!nextBig) return;
+    const launchNextBig = () => {
+      const first = nextBig.smallWaves[0];
+      els.waveStatus.textContent = first.title;
+      addEnemyWave(first.rightTeam, first.startTitle);
+      waitForSmallWaveClear(view, bigWaves, bigIndex + 1, 0);
+    };
+    if (bigWave.regroupAfter) {
+      regroupAllies(view, `${bigWave.title}结束，队伍重新集结`, () => {
+        const timer = window.setTimeout(launchNextBig, smallWave.nextDelay || 1800);
+        waveTimers.push(timer);
+      });
+      return;
+    }
+    launchNextBig();
+  }
+
+  function regroupAllies(view, title, onComplete) {
+    if (!view?.state?.units) return;
+    const slots = [
+      { x: 18, y: 38, line: "前排" },
+      { x: 18, y: 62, line: "前排" },
+      { x: 6, y: 38, line: "后排" },
+      { x: 6, y: 62, line: "后排" },
+    ];
+    const allies = view.state.units.filter((unit) => unit.side === "ally");
+    const start = allies.map((unit) => ({ x: unit.x, y: unit.y }));
+    allies.forEach((unit) => {
+      unit.targetId = null;
+      unit.attackAnim = 0;
+    });
+    view.state.logs.unshift(title);
+    els.waveStatus.textContent = title;
+    const startedAt = performance.now();
+    const duration = 950;
+    const step = (now) => {
+      const t = Math.min(1, (now - startedAt) / duration);
+      const ease = 1 - Math.pow(1 - t, 3);
+      allies.forEach((unit, index) => {
+        const slot = slots[index % slots.length];
+        unit.x = start[index].x + (slot.x - start[index].x) * ease;
+        unit.y = start[index].y + (slot.y - start[index].y) * ease;
+        unit.homeX = slot.x;
+        unit.homeY = slot.y;
+        unit.line = slot.line;
+      });
+      if (view.state.camera) {
+        const snapshot = view.state.camera.snapshot();
+        const center = view.battleWorldPoint ? view.battleWorldPoint({ x: 22, y: 50 }) : { x: 22, y: 50 };
+        view.state.camera.moveToward({
+          x: center.x,
+          y: center.y,
+          zoom: Math.max(snapshot.minZoom, Math.min(snapshot.maxZoom, snapshot.zoom * 0.97)),
+        }, 0.12);
+      }
+      view.render();
+      if (t < 1) {
+        const raf = requestAnimationFrame(step);
+        waveTimers.push(raf);
+      } else if (onComplete) {
+        onComplete();
+      }
+    };
+    const raf = requestAnimationFrame(step);
+    waveTimers.push(raf);
   }
 
   function spawnSpec(spec, index, count) {
@@ -566,14 +770,14 @@
     ];
   }
 
-  function waveOne() {
-    return Array.from({ length: 4 }, (_, index) => weakMelee(index));
+  function smallWaveOne() {
+    return Array.from({ length: 3 }, (_, index) => weakMelee(index));
   }
 
-  function waveTwo() {
+  function smallWaveTwo() {
     return [
-      ...Array.from({ length: 3 }, (_, index) => weakMelee(index)),
-      ...Array.from({ length: 4 }, (_, index) => weakRanged(index)),
+      ...Array.from({ length: 2 }, (_, index) => weakMelee(index)),
+      ...Array.from({ length: 3 }, (_, index) => weakRanged(index)),
     ];
   }
 

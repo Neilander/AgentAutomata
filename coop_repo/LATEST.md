@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-09_1552_camera-modes-and-battle-compat.md`](reports/2026-07-09_1552_camera-modes-and-battle-compat.md)
+[`reports/2026-07-09_1806_big-wave-small-wave-sequencing.md`](reports/2026-07-09_1806_big-wave-small-wave-sequencing.md)
 
 Last updated: 2026-07-09
 
-Current focus: Added reusable camera modes and documented battle_view compatibility risks for game-time, camera projection, and VFX timing.
+Current focus: Large-map battle simulation now models big waves containing small waves; only big-wave completion triggers smooth regroup and camera lerp.

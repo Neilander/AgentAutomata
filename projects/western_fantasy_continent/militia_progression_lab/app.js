@@ -5,6 +5,10 @@
   let state = loadState() || CORE.createInitialState();
   let battleView = null;
   let pendingEncounterId = "";
+  let mapCamera = null;
+  let mapFocus = null;
+  let mapRaf = 0;
+  const MAP_WORLD = { width: 980, height: 560 };
 
   const $ = (id) => document.getElementById(id);
   const els = {
@@ -76,7 +80,18 @@
       saveState();
       render();
       preview();
+      focusMapEncounter(state.selectedEncounter);
     });
+    els.stageList.addEventListener("wheel", (event) => {
+      if (!mapCamera) return;
+      event.preventDefault();
+      const rect = els.stageList.getBoundingClientRect();
+      const anchor = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      const nextZoom = mapCamera.snapshot().zoom * (event.deltaY > 0 ? 0.88 : 1.14);
+      mapCamera.setZoom(nextZoom, anchor);
+      mapFocus = null;
+      renderMapCamera();
+    }, { passive: false });
   }
 
   function fight(visual) {
@@ -113,6 +128,8 @@
         container: els.battleMount,
         maxTime: 70,
         speed: 1.45,
+        cameraMode: "fitUnits",
+        cameraSmoothing: 0.055,
         onFinish: () => {
           if (!pendingEncounterId) return;
           const encounter = CORE.findEncounter(state, pendingEncounterId);
@@ -149,6 +166,102 @@
   }
 
   function renderStages() {
+    const unlocked = unlockedStageIndex();
+    const nodes = mapNodes();
+    const hadCamera = Boolean(mapCamera);
+    els.stageList.innerHTML = `
+      <div class="map-world" data-map-world>
+        <svg class="map-links" viewBox="0 0 ${MAP_WORLD.width} ${MAP_WORLD.height}" aria-hidden="true">
+          ${mapLinks(nodes).map((link) => `<line x1="${link.from.x}" y1="${link.from.y}" x2="${link.to.x}" y2="${link.to.y}"></line>`).join("")}
+        </svg>
+        ${nodes.map((node) => `
+          <button type="button" class="map-node ${node.stageIndex === state.selectedStage ? "stage-active" : ""} ${state.selectedEncounter === node.encounter.id ? "primary" : ""} ${node.stageIndex > unlocked ? "locked" : ""}"
+            data-map-node="${node.encounter.id}" data-stage="${node.stageIndex}" data-encounter="${node.encounter.id}"
+            style="left:${node.x}px;top:${node.y}px">
+            <span>${node.encounter.type}</span>
+            <strong>${node.encounter.name}</strong>
+            <small>${node.stage.name} · ${node.encounter.scale || 1}x</small>
+          </button>
+        `).join("")}
+      </div>
+    `;
+    setupMapCamera();
+    focusMapEncounter(state.selectedEncounter, !hadCamera);
+  }
+
+  function mapNodes() {
+    return CORE.STAGES.flatMap((stage, stageIndex) => {
+      const baseX = 150 + stageIndex * 330;
+      return stage.encounters.map((encounter, encounterIndex) => ({
+        stage,
+        stageIndex,
+        encounter,
+        x: baseX + encounterIndex * 58,
+        y: 116 + encounterIndex * 146 + (stageIndex % 2 ? 34 : 0),
+      }));
+    });
+  }
+
+  function mapLinks(nodes) {
+    const links = [];
+    for (let i = 1; i < nodes.length; i += 1) links.push({ from: nodes[i - 1], to: nodes[i] });
+    return links;
+  }
+
+  function setupMapCamera() {
+    if (!window.AgentAutomataCamera2D?.createCamera2D || !els.stageList) return;
+    const rect = els.stageList.getBoundingClientRect();
+    const width = Math.max(1, rect.width || 280);
+    const height = Math.max(1, rect.height || 390);
+    if (!mapCamera) {
+      mapCamera = window.AgentAutomataCamera2D.createCamera2D({
+        x: 150,
+        y: 230,
+        zoom: 0.82,
+        minZoom: 0.55,
+        maxZoom: 1.55,
+        viewportWidth: width,
+        viewportHeight: height,
+        worldBounds: { minX: 0, minY: 0, maxX: MAP_WORLD.width, maxY: MAP_WORLD.height },
+      });
+      startMapCameraLoop();
+    } else {
+      mapCamera.setViewport(width, height);
+    }
+  }
+
+  function focusMapEncounter(encounterId, instant = false) {
+    if (!mapCamera) return;
+    const node = mapNodes().find((item) => item.encounter.id === encounterId);
+    if (!node) return;
+    mapFocus = { x: node.x, y: node.y, zoom: Math.max(0.78, mapCamera.snapshot().zoom) };
+    if (instant) {
+      mapCamera.setPosition(mapFocus.x, mapFocus.y).setZoom(mapFocus.zoom);
+      renderMapCamera();
+    }
+  }
+
+  function startMapCameraLoop() {
+    if (mapRaf) return;
+    const step = () => {
+      if (mapCamera && mapFocus) {
+        mapCamera.moveToward(mapFocus, 0.1);
+        renderMapCamera();
+      }
+      mapRaf = requestAnimationFrame(step);
+    };
+    mapRaf = requestAnimationFrame(step);
+  }
+
+  function renderMapCamera() {
+    if (!mapCamera || !els.stageList) return;
+    const world = els.stageList.querySelector("[data-map-world]");
+    if (!world) return;
+    const snapshot = mapCamera.snapshot();
+    world.style.transform = `translate(${snapshot.viewportWidth / 2}px, ${snapshot.viewportHeight / 2}px) scale(${snapshot.zoom}) translate(${-snapshot.x}px, ${-snapshot.y}px)`;
+  }
+
+  function renderStagesOld() {
     const unlocked = unlockedStageIndex();
     els.stageList.innerHTML = CORE.STAGES.map((stage, stageIndex) => `
       <div class="stage-card ${stageIndex === state.selectedStage ? "active" : ""} ${stageIndex > unlocked ? "locked" : ""}">

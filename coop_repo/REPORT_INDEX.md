@@ -4,6 +4,20 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-09
 
+- `2026-07-09_1806_big-wave-small-wave-sequencing.md`: corrected `/map_progression_lab/` wave hierarchy so small waves do not regroup, big wave 1 contains two small waves, and only big-wave completion triggers animated ally regroup plus camera lerp.
+
+- `2026-07-09_1757_wave-sequence-regroup-before-next.md`: changed `/map_progression_lab/` battle waves from fixed-time spawning to clear-wave, regroup allies/reset camera, then spawn next wave.
+
+- `2026-07-09_1748_map-wave-regroup.md`: improved `/map_progression_lab/` battle simulation pacing with small/big waves, longer intervals, ally regroup after big-wave clear, left-side camera reset, and alive-only fit-units camera follow.
+
+- `2026-07-09_1736_map-progression-camera.md`: applied the shared 2D camera to the actual `/map_progression_lab/` map with drag, click focus, wheel zoom, persisted camera state, and fit-units camera follow for its wave battle simulation.
+
+- `2026-07-09_1718_militia-map-and-wave-camera.md`: connected the militia progression lab map to the shared 2D camera with click focus and wheel zoom, and added a lerped fit-units battle camera mode for militia wave fights.
+
+- `2026-07-09_1646_battle-camera-zoom-fix.md`: corrected the battle camera zoom model from fixed `1.x` to viewport-derived pixels-per-world-unit, tightened fit padding, and made units plus slash/ring VFX scale with camera zoom.
+
+- `2026-07-09_1623_battle-view-shared-camera-integration.md`: tried optional `shared/game_camera_2d` integration in the existing `battle_view`, including camera projection, scaled game-time VFX cleanup, post-processing mount, and `/shared/` static serving; syntax/tests passed, visual QA pending.
+
 - `2026-07-09_1552_camera-modes-and-battle-compat.md`: inspected `battle_view` compatibility, added reusable `camera-modes.js`, wired demo mode switching, and documented integration risks/order.
 
 - `2026-07-09_1541_game-time-slow-motion.md`: added reusable scaled `game-time.js` for whole-game slow motion, pause, temporary bullet-time, demo controls, docs, and tests.

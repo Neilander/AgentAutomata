@@ -18,8 +18,8 @@ const BERSERKER_RATIOS = BERSERKER_MODEL.ratios || {};
 const BERSERKER_PASSIVE = BERSERKER_MODEL.passive || {};
 
 const FORMATION = {
-  left: [{ x: 30, y: 36, line: "前排" }, { x: 30, y: 64, line: "前排" }, { x: 16, y: 32, line: "后排" }, { x: 16, y: 68, line: "后排" }],
-  right: [{ x: 70, y: 36, line: "前排" }, { x: 70, y: 64, line: "前排" }, { x: 84, y: 32, line: "后排" }, { x: 84, y: 68, line: "后排" }],
+  left: [{ x: 18, y: 36, line: "前排" }, { x: 18, y: 64, line: "前排" }, { x: 2, y: 32, line: "后排" }, { x: 2, y: 68, line: "后排" }],
+  right: [{ x: 82, y: 36, line: "前排" }, { x: 82, y: 64, line: "前排" }, { x: 98, y: 32, line: "后排" }, { x: 98, y: 68, line: "后排" }],
 };
 
 function simulatePresetMatchup(leftKey, rightKey, options = {}) {

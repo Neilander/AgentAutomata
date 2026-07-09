@@ -364,6 +364,7 @@ function routeStatic(req, res, url) {
     "/character_blind_lab",
     "/life_simulator",
     "/game_data",
+    "/shared",
   ]);
 
   if (slashRoutes.has(url.pathname)) {
@@ -414,7 +415,9 @@ function routeStatic(req, res, url) {
   ];
 
   const root = staticRoots.find((item) => url.pathname === `/${item}/` || url.pathname.startsWith(`/${item}/`));
-  if (root && url.pathname === `/${root}/`) {
+  if (url.pathname === "/shared/" || url.pathname.startsWith("/shared/")) {
+    targetPath = safeJoin(REPO_ROOT, decodeURIComponent(url.pathname.slice(1)));
+  } else if (root && url.pathname === `/${root}/`) {
     targetPath = path.join(PROJECT_ROOT, root, "index.html");
   } else if (root) {
     targetPath = safeJoin(PROJECT_ROOT, decodeURIComponent(url.pathname.slice(1)));

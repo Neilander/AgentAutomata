@@ -2,6 +2,43 @@
   const SLASH_BASE = "/effect_lab/assets/brackeys/particles/alpha";
   const SKILLS = window.GAME_SKILL_DATA || {};
   const SIGNALS = window.GAME_COMBAT_SIGNALS || {};
+  const CAMERA_2D = window.AgentAutomataCamera2D || null;
+  const CAMERA_MODES = window.AgentAutomataCameraModes || null;
+  const GAME_TIME = window.AgentAutomataGameTime || null;
+  const POST_PROCESSING = window.AgentAutomataPostProcessing || null;
+  const SHARED_PRESENTATION_SCRIPTS = [
+    "/shared/game_camera_2d/camera-core.js",
+    "/shared/game_camera_2d/camera-modes.js",
+    "/shared/game_camera_2d/game-time.js",
+    "/shared/game_camera_2d/post-processing.js",
+  ];
+  let sharedPresentationPromise = null;
+
+  function sharedPresentationReady() {
+    return Boolean(
+      window.AgentAutomataCamera2D?.createCamera2D &&
+      window.AgentAutomataCameraModes?.createCameraModeController &&
+      window.AgentAutomataGameTime?.createGameTime &&
+      window.AgentAutomataPostProcessing?.createPostProcessingStack
+    );
+  }
+
+  function loadSharedPresentationScripts() {
+    if (sharedPresentationReady()) return Promise.resolve(true);
+    if (sharedPresentationPromise) return sharedPresentationPromise;
+    sharedPresentationPromise = SHARED_PRESENTATION_SCRIPTS.reduce((chain, src) => chain.then(() => new Promise((resolve) => {
+      if ([...document.scripts].some((script) => script.src.endsWith(src))) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.head.appendChild(script);
+    })), Promise.resolve(true)).then(() => sharedPresentationReady());
+    return sharedPresentationPromise;
+  }
   const ROLE_ICONS = {
     knight: "🛡️", warrior: "⚔️", berserker: "🪓", assassin: "🗡️", ranger: "🏹",
     mage: "🔥", priest: "✨", warlock: "☠️", bard: "🎵", alchemist: "⚗️",
@@ -37,6 +74,13 @@
       this.onFinish = options.onFinish || (() => {});
       this.maxTime = options.maxTime || 70;
       this.speed = options.speed || 1;
+      this.presentationOptions = {
+        camera: options.camera !== false,
+        gameTime: options.gameTime !== false,
+        postProcessing: options.postProcessing !== false,
+        cameraMode: options.cameraMode || "fixed",
+        cameraSmoothing: options.cameraSmoothing ?? 0.075,
+      };
       this.state = {
         running: false,
         time: 0,
@@ -46,6 +90,11 @@
         result: null,
         raf: 0,
         signalBus: SIGNALS.createCombatSignalBus ? SIGNALS.createCombatSignalBus() : null,
+        vfxNodes: [],
+        camera: null,
+        cameraModes: null,
+        gameTime: null,
+        postStack: null,
       };
       this.sharedSkills = SKILLS.createSkillLibrary ? SKILLS.createSkillLibrary(this.skillApi()) : {};
       this.mount();
@@ -65,8 +114,10 @@
           <div class="battle-view-field" data-battle-field>
             <span class="battle-side-label left">我方阵线</span>
             <span class="battle-side-label right">敌方阵线</span>
-            <div class="battle-fx-layer" data-battle-fx></div>
-            <div class="battle-unit-layer" data-battle-units></div>
+            <div class="battle-camera-world" data-battle-world>
+              <div class="battle-fx-layer" data-battle-fx></div>
+              <div class="battle-unit-layer" data-battle-units></div>
+            </div>
           </div>
           <div class="battle-view-log" data-battle-log></div>
         </section>
@@ -76,11 +127,229 @@
         right: this.container.querySelector("[data-battle-right]"),
         state: this.container.querySelector("[data-battle-state]"),
         time: this.container.querySelector("[data-battle-time]"),
+        field: this.container.querySelector("[data-battle-field]"),
+        worldLayer: this.container.querySelector("[data-battle-world]"),
         unitLayer: this.container.querySelector("[data-battle-units]"),
         fxLayer: this.container.querySelector("[data-battle-fx]"),
         log: this.container.querySelector("[data-battle-log]"),
       };
+      this.setupPresentationRuntime();
       this.render();
+    }
+
+    setupPresentationRuntime() {
+      if (!this.els?.field) return;
+      if (this.state.presentationLoading) return;
+      const camera2D = window.AgentAutomataCamera2D || CAMERA_2D;
+      const cameraModes = window.AgentAutomataCameraModes || CAMERA_MODES;
+      const gameTime = window.AgentAutomataGameTime || GAME_TIME;
+      const postProcessing = window.AgentAutomataPostProcessing || POST_PROCESSING;
+      if (!sharedPresentationReady() && (this.presentationOptions.camera || this.presentationOptions.gameTime || this.presentationOptions.postProcessing)) {
+        this.state.presentationLoading = true;
+        loadSharedPresentationScripts().then((ready) => {
+          this.state.presentationLoading = false;
+          if (ready && this.els?.field && !this.state.camera && !this.state.gameTime && !this.state.postStack) {
+            this.setupPresentationRuntime();
+            this.render();
+          }
+        });
+        return;
+      }
+      const rect = this.els.field.getBoundingClientRect();
+      const width = Math.max(1, rect.width || this.els.field.clientWidth || 800);
+      const height = Math.max(1, rect.height || this.els.field.clientHeight || 360);
+      const baseZoom = this.baseCameraZoom(width, height);
+      const worldBounds = this.battleWorldBounds(width, height);
+
+      if (!this.state.camera && this.presentationOptions.camera && camera2D?.createCamera2D && cameraModes?.createCameraModeController) {
+        this.state.camera = camera2D.createCamera2D({
+          x: (worldBounds.maxX - worldBounds.minX) / 2,
+          y: 50,
+          zoom: baseZoom * 0.92,
+          minZoom: baseZoom * 0.68,
+          maxZoom: baseZoom * 1.22,
+          viewportWidth: width,
+          viewportHeight: height,
+          worldBounds,
+        });
+        this.setFixedBattleCamera(width, height);
+        this.container.classList.add("battle-camera-enabled");
+      }
+
+      if (!this.state.gameTime && this.presentationOptions.gameTime && gameTime?.createGameTime) {
+        this.state.gameTime = gameTime.createGameTime({
+          timeScale: this.speed,
+          minTimeScale: 0,
+          maxTimeScale: 6,
+          smoothing: 1,
+        });
+      }
+
+      if (!this.state.postStack && this.presentationOptions.postProcessing && postProcessing?.createPostProcessingStack) {
+        this.state.postStack = postProcessing.createPostProcessingStack({
+          viewport: this.els.field,
+          contentLayer: this.els.worldLayer,
+          zIndex: 8,
+        });
+      }
+    }
+
+    resetPresentationClock(now = performance.now()) {
+      if (this.state.gameTime) {
+        this.state.gameTime.setTimeScale(this.speed, { instant: true });
+        this.state.gameTime.reset(now);
+      }
+      this.state.lastFrame = now;
+    }
+
+    frameDelta(now) {
+      if (this.state.gameTime) {
+        this.state.gameTime.setTimeScale(this.speed, { instant: true });
+        const snapshot = this.state.gameTime.update(now);
+        return Math.min(0.2, (snapshot.deltaMs || 16 * this.speed) / 1000);
+      }
+      const dt = Math.min(0.2, ((now - this.state.lastFrame) / 1000 || 0.016)) * this.speed;
+      this.state.lastFrame = now;
+      return dt;
+    }
+
+    updatePresentation(dt) {
+      this.syncPresentationViewport();
+      if (this.presentationOptions.cameraMode === "fitUnits") {
+        this.followUnitBounds();
+      }
+      this.state.postStack?.update?.(dt * 1000);
+      this.updateVfxNodes(dt);
+    }
+
+    syncPresentationViewport() {
+      if (!this.state.camera || !this.els?.field) return;
+      const rect = this.els.field.getBoundingClientRect();
+      const width = Math.max(1, rect.width || this.els.field.clientWidth || 800);
+      const height = Math.max(1, rect.height || this.els.field.clientHeight || 360);
+      this.state.camera.setViewport(width, height);
+      this.state.camera.setWorldBounds(this.battleWorldBounds(width, height));
+      if (this.presentationOptions.cameraMode !== "fitUnits") this.setFixedBattleCamera(width, height);
+    }
+
+    baseCameraZoom(width, height) {
+      return Math.max(1, Math.min(width, height) / 100);
+    }
+
+    setFixedBattleCamera(width, height) {
+      if (!this.state.camera) return;
+      const worldBounds = this.battleWorldBounds(width, height);
+      this.state.camera
+        .setPosition((worldBounds.minX + worldBounds.maxX) / 2, 50)
+        .setZoom(this.baseCameraZoom(width, height) * 0.92);
+    }
+
+    followUnitBounds() {
+      if (!this.state.camera || !this.state.units.length) return;
+      const activeUnits = this.state.units.filter((unit) => this.alive(unit));
+      if (!activeUnits.length) return;
+      const points = activeUnits.map((unit) => ({
+        ...this.battleWorldPoint(unit),
+        radius: unit.unitKind === "militia" ? 4 : 5.5,
+      }));
+      this.state.camera.followBounds({ points }, {
+        padding: 16,
+        minZoom: this.baseCameraZoom(this.state.camera.snapshot().viewportWidth, this.state.camera.snapshot().viewportHeight) * 0.72,
+        maxZoom: this.baseCameraZoom(this.state.camera.snapshot().viewportWidth, this.state.camera.snapshot().viewportHeight) * 1.18,
+        smoothing: this.presentationOptions.cameraSmoothing,
+      });
+    }
+
+    battleAspect(width, height) {
+      return Math.max(1, width / Math.max(1, height));
+    }
+
+    battleWorldBounds(width, height) {
+      return { minX: 0, minY: 0, maxX: 100 * this.battleAspect(width, height), maxY: 100 };
+    }
+
+    battleWorldPoint(point) {
+      const snapshot = this.state.camera?.snapshot?.();
+      const width = snapshot?.viewportWidth || this.els?.field?.clientWidth || 800;
+      const height = snapshot?.viewportHeight || this.els?.field?.clientHeight || 360;
+      return {
+        x: point.x * this.battleAspect(width, height),
+        y: point.y,
+      };
+    }
+
+    visualCameraScale(minScale = 0.76, maxScale = 1.42) {
+      if (!this.state.camera || !this.els?.field) return 1;
+      const snapshot = this.state.camera.snapshot();
+      const baseZoom = this.baseCameraZoom(snapshot.viewportWidth || this.els.field.clientWidth || 800, snapshot.viewportHeight || this.els.field.clientHeight || 360);
+      return Math.max(minScale, Math.min(maxScale, snapshot.zoom / Math.max(1, baseZoom)));
+    }
+
+    unitCameraScale() {
+      return this.visualCameraScale(0.82, 1.08);
+    }
+
+    effectCameraScale() {
+      return this.visualCameraScale(0.8, 1.28);
+    }
+
+    pointStyle(point, yOffset = 0) {
+      if (this.state.camera) {
+        const screen = this.state.camera.worldToScreen(this.battleWorldPoint({ x: point.x, y: point.y + yOffset }));
+        return `left:0;top:0;transform:translate(${screen.x}px, ${screen.y}px) translate(-50%, -50%) scale(${this.unitCameraScale().toFixed(3)})`;
+      }
+      return `left:${point.x}%;top:${point.y + yOffset}%`;
+    }
+
+    placeNode(node, point, yOffset = 0, transformSuffix = "") {
+      if (this.state.camera) {
+        const screen = this.state.camera.worldToScreen(this.battleWorldPoint({ x: point.x, y: point.y + yOffset }));
+        node.style.left = `${screen.x}px`;
+        node.style.top = `${screen.y}px`;
+        if (transformSuffix) node.style.transform = `translate(-50%, -50%)${transformSuffix}`;
+      } else {
+        node.style.left = `${point.x}%`;
+        node.style.top = `${point.y + yOffset}%`;
+        if (transformSuffix) node.style.transform = `translate(-50%, -50%)${transformSuffix}`;
+      }
+    }
+
+    nodeDistance(a, b) {
+      if (this.state.camera) {
+        const from = this.state.camera.worldToScreen(this.battleWorldPoint(a));
+        const to = this.state.camera.worldToScreen(this.battleWorldPoint(b));
+        return Math.hypot(to.x - from.x, to.y - from.y);
+      }
+      return this.dist(a, b);
+    }
+
+    nodeAngle(a, b) {
+      if (this.state.camera) {
+        const from = this.state.camera.worldToScreen(this.battleWorldPoint(a));
+        const to = this.state.camera.worldToScreen(this.battleWorldPoint(b));
+        return Math.atan2(to.y - from.y, to.x - from.x);
+      }
+      return Math.atan2(b.y - a.y, b.x - a.x);
+    }
+
+    removeNodeLater(node, durationMs) {
+      if (!node) return;
+      if (!this.state.gameTime) {
+        setTimeout(() => node.remove(), durationMs);
+        return;
+      }
+      this.state.vfxNodes.push({ node, remainingMs: durationMs });
+    }
+
+    updateVfxNodes(dt) {
+      if (!this.state.vfxNodes.length) return;
+      const next = [];
+      for (const item of this.state.vfxNodes) {
+        item.remainingMs -= dt * 1000;
+        if (item.remainingMs <= 0 || !item.node.isConnected) item.node.remove();
+        else next.push(item);
+      }
+      this.state.vfxNodes = next;
     }
 
     start({ leftTeam = [], rightTeam = [], seed = "battle-view", title = "战斗", randomizeStats, fieldEffectId } = {}) {
@@ -98,7 +367,7 @@
         ...this.makeUnits("enemy", rightTeam),
       ];
       this.state.running = true;
-      this.state.lastFrame = performance.now();
+      this.resetPresentationClock(performance.now());
       this.state.seed = seed;
       this.render();
       this.state.raf = setInterval(() => this.tick(performance.now()), 33);
@@ -149,7 +418,7 @@
       this.state.unifiedSim = sim;
       this.state.lastSignalIndex = 0;
       this.state.running = true;
-      this.state.lastFrame = performance.now();
+      this.resetPresentationClock(performance.now());
       this.state.seed = seed;
       this.syncUnifiedUnits();
       this.render();
@@ -159,13 +428,13 @@
     tickUnified(now) {
       const sim = this.state.unifiedSim;
       if (!this.state.running || !sim) return;
-      const dt = Math.min(0.2, ((now - this.state.lastFrame) / 1000 || 0.016)) * this.speed;
-      this.state.lastFrame = now;
+      const dt = this.frameDelta(now);
       sim.update(dt);
       this.state.time = sim.time;
       this.syncUnifiedUnits();
       this.playUnifiedSignals();
       this.finishUnifiedIfNeeded();
+      this.updatePresentation(dt);
       this.render();
     }
 
@@ -341,6 +610,8 @@
       this.state.raf = 0;
       this.state.running = false;
       this.state.unifiedSim = null;
+      this.state.vfxNodes.forEach((item) => item.node?.remove?.());
+      this.state.vfxNodes = [];
       if (render) this.render();
     }
 
@@ -356,6 +627,7 @@
 
     destroy() {
       this.stop(false);
+      this.state.postStack?.destroy?.();
       this.container.innerHTML = "";
     }
 
@@ -390,8 +662,8 @@
 
     makeUnits(side, specs) {
       const form = side === "ally"
-        ? [{ x: 28, y: 35, line: "前排" }, { x: 28, y: 65, line: "前排" }, { x: 14, y: 35, line: "后排" }, { x: 14, y: 65, line: "后排" }, { x: 20, y: 50, line: "后排" }, { x: 36, y: 50, line: "前排" }]
-        : [{ x: 72, y: 35, line: "前排" }, { x: 72, y: 65, line: "前排" }, { x: 86, y: 35, line: "后排" }, { x: 86, y: 65, line: "后排" }, { x: 80, y: 50, line: "后排" }, { x: 64, y: 50, line: "前排" }];
+        ? [{ x: 18, y: 36, line: "前排" }, { x: 18, y: 64, line: "前排" }, { x: 2, y: 32, line: "后排" }, { x: 2, y: 68, line: "后排" }, { x: 10, y: 50, line: "后排" }, { x: 28, y: 50, line: "前排" }]
+        : [{ x: 82, y: 36, line: "前排" }, { x: 82, y: 64, line: "前排" }, { x: 98, y: 32, line: "后排" }, { x: 98, y: 68, line: "后排" }, { x: 90, y: 50, line: "后排" }, { x: 72, y: 50, line: "前排" }];
       return specs.map((spec, index) => {
         const hero = this.normalizeSpec(spec, side, index);
         const slotIndex = Number.isFinite(spec.slotIndex) ? spec.slotIndex : index;
@@ -496,9 +768,9 @@
 
     tick(now) {
       if (!this.state.running) return;
-      const dt = Math.min(0.2, ((now - this.state.lastFrame) / 1000 || 0.016)) * this.speed;
-      this.state.lastFrame = now;
+      const dt = this.frameDelta(now);
       this.update(dt);
+      this.updatePresentation(dt);
       this.render();
     }
 
@@ -799,7 +1071,7 @@
       this.els.left.textContent = String(this.state.units.filter((unit) => unit.side === "ally" && this.alive(unit)).length);
       this.els.right.textContent = String(this.state.units.filter((unit) => unit.side === "enemy" && this.alive(unit)).length);
       this.els.unitLayer.innerHTML = this.state.units.map((unit) => `
-        <div class="battle-unit ${unit.side === "enemy" ? "enemy" : ""} ${unit.unitKind === "militia" ? "militia-unit" : ""} ${unit.hiddenTimer > 0 ? "hidden" : ""} ${unit.guardTimer > 0 ? "guarded" : ""} ${this.alive(unit) ? "" : "dead"}" style="left:${unit.x}%;top:${unit.y}%">
+        <div class="battle-unit ${unit.side === "enemy" ? "enemy" : ""} ${unit.unitKind === "militia" ? "militia-unit" : ""} ${unit.hiddenTimer > 0 ? "hidden" : ""} ${unit.guardTimer > 0 ? "guarded" : ""} ${this.alive(unit) ? "" : "dead"}" style="${this.pointStyle(unit)}">
           <div class="battle-avatar">${unit.icon}</div>
           <div class="battle-unit-name">${unit.name}</div>
           <div class="battle-hp"><span style="width:${Math.max(0, unit.hpNow / unit.maxHp * 100)}%"></span></div>
@@ -813,10 +1085,9 @@
       const node = document.createElement("div");
       node.className = `battle-skill-label ${ult ? "ult" : ""}`;
       node.textContent = text;
-      node.style.left = `${unit.x}%`;
-      node.style.top = `${unit.y - 10}%`;
+      this.placeNode(node, unit, -10);
       this.els.fxLayer.appendChild(node);
-      setTimeout(() => node.remove(), ult ? 1050 : 780);
+      this.removeNodeLater(node, ult ? 1050 : 780);
       if (text && text !== "攻击") this.state.logs.unshift(`${unit.name}：${text}`);
     }
 
@@ -825,32 +1096,29 @@
       const node = document.createElement("div");
       node.className = `battle-floater ${cls}`;
       node.textContent = text;
-      node.style.left = `${unit.x}%`;
-      node.style.top = `${unit.y}%`;
+      this.placeNode(node, unit);
       this.els.fxLayer.appendChild(node);
-      setTimeout(() => node.remove(), 900);
+      this.removeNodeLater(node, 900);
     }
 
     ring(unit, color = "gold") {
       if (!unit || !this.els?.fxLayer) return;
       const node = document.createElement("div");
       node.className = `battle-vfx-ring battle-vfx-${color}`;
-      node.style.left = `${unit.x}%`;
-      node.style.top = `${unit.y}%`;
-      node.style.setProperty("--scale", "1");
+      this.placeNode(node, unit);
+      node.style.setProperty("--scale", this.effectCameraScale().toFixed(3));
       this.els.fxLayer.appendChild(node);
-      setTimeout(() => node.remove(), 720);
+      this.removeNodeLater(node, 720);
     }
 
     afterimage(before, unit, color = "purple") {
       if (!unit || !before || !this.els?.fxLayer) return;
       const node = document.createElement("div");
       node.className = `battle-vfx-afterimage battle-vfx-${color}`;
-      node.style.left = `${before.x}%`;
-      node.style.top = `${before.y}%`;
+      this.placeNode(node, before);
       node.textContent = unit.icon || "";
       this.els.fxLayer.appendChild(node);
-      setTimeout(() => node.remove(), 520);
+      this.removeNodeLater(node, 520);
     }
 
     slash(source, target, color = "gold") {
@@ -860,25 +1128,23 @@
       node.alt = "";
       node.onerror = () => node.remove();
       node.src = `${SLASH_BASE}/slash_02_a.png`;
-      node.style.left = `${(source.x + target.x) / 2}%`;
-      node.style.top = `${(source.y + target.y) / 2}%`;
-      node.style.setProperty("--angle", `${Math.atan2(target.y - source.y, target.x - source.x)}rad`);
-      node.style.setProperty("--scale", "1");
+      this.placeNode(node, { x: (source.x + target.x) / 2, y: (source.y + target.y) / 2 });
+      node.style.setProperty("--angle", `${this.nodeAngle(source, target)}rad`);
+      node.style.setProperty("--scale", this.effectCameraScale().toFixed(3));
       this.els.fxLayer.appendChild(node);
-      setTimeout(() => node.remove(), 480);
+      this.removeNodeLater(node, 480);
     }
 
     beam(source, target, color = "blue") {
       if (!source || !target || !this.els?.fxLayer) return;
       const node = document.createElement("div");
       node.className = `battle-vfx-beam battle-vfx-${color}`;
-      const length = this.dist(source, target);
-      node.style.left = `${source.x}%`;
-      node.style.top = `${source.y}%`;
-      node.style.width = `${length}%`;
-      node.style.transform = `rotate(${Math.atan2(target.y - source.y, target.x - source.x)}rad)`;
+      const length = this.nodeDistance(source, target);
+      this.placeNode(node, source);
+      node.style.width = this.state.camera ? `${length}px` : `${length}%`;
+      node.style.transform = `rotate(${this.nodeAngle(source, target)}rad)`;
       this.els.fxLayer.appendChild(node);
-      setTimeout(() => node.remove(), 360);
+      this.removeNodeLater(node, 360);
     }
 
     chooseTarget(unit) {

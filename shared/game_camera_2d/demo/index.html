@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Game Camera 2D Demo</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #080806;
+        --panel: #14130e;
+        --line: #56461c;
+        --gold: #d7b85d;
+        --text: #f2e6c8;
+        --muted: #a99b78;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Microsoft YaHei", Arial, sans-serif;
+        background: radial-gradient(circle at top, #1d1a10 0, var(--bg) 48%);
+        color: var(--text);
+      }
+
+      main {
+        width: min(1180px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 22px 0;
+      }
+
+      header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: 0;
+      }
+
+      .hint {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: 1px solid var(--line);
+        background: #1b160b;
+        color: var(--text);
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+
+      button.active {
+        border-color: var(--gold);
+        color: #ffe39b;
+        box-shadow: 0 0 0 1px rgba(215, 184, 93, 0.18) inset;
+      }
+
+      .camera-card {
+        border: 1px solid var(--line);
+        background: rgba(20, 19, 14, 0.76);
+      }
+
+      .panel-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 34px;
+        padding: 0 10px;
+        border-bottom: 1px solid rgba(86, 70, 28, 0.72);
+        color: var(--gold);
+        font-size: 13px;
+      }
+
+      #viewport {
+        position: relative;
+        width: 100%;
+        height: 620px;
+        overflow: hidden;
+        background: #10130e;
+        user-select: none;
+        touch-action: none;
+      }
+
+      #gridLayer {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(215, 184, 93, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(215, 184, 93, 0.1) 1px, transparent 1px);
+      }
+
+      #cameraSurface,
+      #worldLayer {
+        position: absolute;
+        inset: 0;
+        transform-origin: center;
+        pointer-events: none;
+      }
+
+      #cameraSurface {
+        z-index: 1;
+      }
+
+      #worldLayer {
+        z-index: 1;
+      }
+
+      .camera-border {
+        position: absolute;
+        inset: 0;
+        border: 3px solid #f4d36f;
+        box-shadow:
+          0 0 0 1px rgba(0, 0, 0, 0.8) inset,
+          0 0 32px rgba(244, 211, 111, 0.22) inset;
+        pointer-events: none;
+        z-index: 30;
+      }
+
+      .camera-border::before,
+      .camera-border::after {
+        content: "";
+        position: absolute;
+        background: rgba(244, 211, 111, 0.32);
+      }
+
+      .camera-border::before {
+        left: 50%;
+        top: 0;
+        width: 1px;
+        height: 100%;
+      }
+
+      .camera-border::after {
+        left: 0;
+        top: 50%;
+        width: 100%;
+        height: 1px;
+      }
+
+      .fixed-label {
+        position: absolute;
+        left: 12px;
+        top: 10px;
+        z-index: 21;
+        color: #ffe39b;
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        pointer-events: none;
+      }
+
+      .unit,
+      .world-dot,
+      .label,
+      .bounds {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform-origin: center;
+        pointer-events: none;
+      }
+
+      .unit {
+        width: 46px;
+        height: 46px;
+        margin-left: -23px;
+        margin-top: -23px;
+        display: grid;
+        place-items: center;
+        border: 2px solid #14120a;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 13px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      }
+
+      .ally { background: #3b8bdb; }
+      .enemy { background: #b94343; }
+
+      .world-dot {
+        width: 10px;
+        height: 10px;
+        margin-left: -5px;
+        margin-top: -5px;
+        border-radius: 50%;
+        background: var(--gold);
+        opacity: 0.9;
+      }
+
+      .label {
+        min-width: 160px;
+        padding: 5px 8px;
+        border: 1px solid rgba(215, 184, 93, 0.4);
+        background: rgba(8, 8, 6, 0.8);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .bounds {
+        border: 1px dashed rgba(215, 184, 93, 0.75);
+        background: rgba(215, 184, 93, 0.04);
+      }
+
+      .readout {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .stat {
+        border: 1px solid rgba(86, 70, 28, 0.75);
+        background: rgba(20, 19, 14, 0.8);
+        padding: 8px 10px;
+      }
+
+      .stat b {
+        display: block;
+        color: var(--gold);
+        font-size: 12px;
+        margin-bottom: 4px;
+      }
+
+      .stat span {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .post-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 800px) {
+        header {
+          align-items: start;
+          flex-direction: column;
+        }
+
+        #viewport {
+          height: 520px;
+        }
+
+        .readout {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <h1>Game Camera 2D</h1>
+          <div class="hint">金色方框固定不动；里面的网格、角色、原点会因为相机移动和缩放而改变位置。</div>
+        </div>
+        <div class="toolbar">
+          <button id="autoFitButton" class="active" type="button">相机跟随</button>
+          <button id="followAllyButton" type="button">跟随我方</button>
+          <button id="fixedModeButton" type="button">固定镜头</button>
+          <button id="wideButton" type="button">散开队形</button>
+          <button id="zoomPulseButton" class="active" type="button">自动缩放</button>
+          <button id="resetButton" type="button">重置相机</button>
+        </div>
+      </header>
+
+      <section class="camera-card">
+        <div class="panel-title">
+          <span>固定相机窗口</span>
+          <span>单位真实坐标不被改动</span>
+        </div>
+        <div id="viewport" aria-label="2D camera demo viewport">
+          <div id="cameraSurface">
+            <div id="worldLayer">
+              <div id="gridLayer"></div>
+              <div id="bounds" class="bounds"></div>
+              <div id="origin" class="world-dot"></div>
+              <div id="originLabel" class="label">world origin (0, 0)</div>
+            </div>
+          </div>
+          <div class="fixed-label">FIXED GAME VIEW</div>
+          <div class="camera-border"></div>
+        </div>
+      </section>
+
+      <div class="post-row">
+        <button id="warmGradeButton" type="button">暖色调色</button>
+        <button id="coldGradeButton" type="button">冰冷调色</button>
+        <button id="poisonOverlayButton" type="button">毒雾叠色</button>
+        <button id="vignetteButton" type="button">暗角</button>
+        <button id="flashButton" type="button">闪白</button>
+        <button id="shakeButton" type="button">震屏</button>
+        <button id="clearPostButton" type="button">清空后处理</button>
+      </div>
+
+      <div class="post-row">
+        <button id="normalTimeButton" class="active" type="button">1.0x 正常</button>
+        <button id="halfTimeButton" type="button">0.5x 慢放</button>
+        <button id="slowTimeButton" type="button">0.2x 慢放</button>
+        <button id="pauseTimeButton" type="button">暂停</button>
+        <button id="bulletTimeButton" type="button">子弹时间 1秒</button>
+      </div>
+
+      <div class="readout">
+        <div class="stat"><b>camera x</b><span id="cameraX">0</span></div>
+        <div class="stat"><b>camera y</b><span id="cameraY">0</span></div>
+        <div class="stat"><b>zoom</b><span id="cameraZoom">1</span></div>
+        <div class="stat"><b>time scale</b><span id="timeScale">1</span></div>
+        <div class="stat"><b>game time</b><span id="gameTime">0</span></div>
+        <div class="stat"><b>view bounds</b><span id="viewBounds">0</span></div>
+      </div>
+    </main>
+
+    <script src="../camera-core.js"></script>
+    <script src="../game-time.js"></script>
+    <script src="../camera-modes.js"></script>
+    <script src="../post-processing.js"></script>
+    <script src="./demo.js"></script>
+  </body>
+</html>

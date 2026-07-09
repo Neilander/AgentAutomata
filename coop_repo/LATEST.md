@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-08_2227_battle-camera-model-note.md`](reports/2026-07-08_2227_battle-camera-model-note.md)
+[`reports/2026-07-09_1552_camera-modes-and-battle-compat.md`](reports/2026-07-09_1552_camera-modes-and-battle-compat.md)
 
-Last updated: 2026-07-08
+Last updated: 2026-07-09
 
-Current focus: Recorded the withdrawn temporary battle-camera experiment and the desired future viewport/camera model for combat presentation.
+Current focus: Added reusable camera modes and documented battle_view compatibility risks for game-time, camera projection, and VFX timing.

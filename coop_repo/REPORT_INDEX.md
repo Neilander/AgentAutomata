@@ -2,6 +2,20 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-09
+
+- `2026-07-09_1552_camera-modes-and-battle-compat.md`: inspected `battle_view` compatibility, added reusable `camera-modes.js`, wired demo mode switching, and documented integration risks/order.
+
+- `2026-07-09_1541_game-time-slow-motion.md`: added reusable scaled `game-time.js` for whole-game slow motion, pause, temporary bullet-time, demo controls, docs, and tests.
+
+- `2026-07-09_1523_camera-post-processing-stack.md`: added a reusable DOM/CSS post-processing stack to `shared/game_camera_2d`, with color grade, color overlays, vignette, flash, shake, demo buttons, docs, and tests.
+
+- `2026-07-09_1304_camera-demo-fixed-game-view.md`: revised the shared 2D camera demo into a single fixed Game View style window where projected world content moves and scales inside the unmoving frame.
+
+- `2026-07-09_1253_camera-demo-viewport-clarity.md`: reworked the shared 2D camera demo into a world overview plus fixed viewport so the moving camera window is visually explicit.
+
+- `2026-07-09_0000_game-camera-2d.md`: added a reusable shared `game_camera_2d` module with world/screen coordinate conversion, smooth fit/follow behavior, a standalone demo, and Node validation.
+
 ## 2026-07-08
 
 - `2026-07-08_2227_battle-camera-model-note.md`: recorded that the temporary battle-simulation camera behavior is withdrawn and documented the desired future battle viewport model in the project overview.

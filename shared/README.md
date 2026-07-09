@@ -19,3 +19,7 @@ Recommended automation pattern:
 4. Let `departments.stats.api_call_logger` write usage to `logs/api_calls.jsonl`.
 
 The older workbench instruction set is treated as a workflow draft. Provider-specific details should live in clients and module metadata, not in prompts pasted into every task.
+
+## Game Development Modules
+
+- `shared/game_camera_2d/`: reusable HTML-game camera module. It keeps gameplay in world coordinates and converts to screen coordinates at render time, similar to a lightweight Unity-style 2D camera. Includes a standalone demo and Node tests.

@@ -4,6 +4,36 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-08
 
+- `2026-07-08_2227_battle-camera-model-note.md`: recorded that the temporary battle-simulation camera behavior is withdrawn and documented the desired future battle viewport model in the project overview.
+
+- `2026-07-08_1300_map-first-region-curve-space.md`: expanded the first region's upper-right shape and spread nodes 7-10 into a larger curve so the late-route cluster has more room.
+
+- `2026-07-08_1251_map-dashed-routes-solid-nodes.md`: unified all `/map_progression_lab/` route links as lightweight short dashed lines and changed locked nodes from transparent markers to solid dark markers.
+
+- `2026-07-08_1246_map-boss-link-style.md`: reduced boss-to-level map link weight by changing the thick solid line into a lighter short dashed guide line and validated it in a wide browser screenshot.
+
+- `2026-07-08_1243_map-endpoint-cluster-fix.md`: fixed the remaining first-region endpoint visual cluster by moving level 10 inward, separating the boss and next-region gate, and validating with a wide screenshot instead of only DOM rectangle checks.
+
+- `2026-07-08_1226_map-overlap-visual-fix.md`: cleaned up `/map_progression_lab/` visual overlaps by hiding ordinary mainline labels, offsetting named-node labels, moving the first old-mines gate away from the first boss cluster, and validating zero measured label/node overlaps in browser.
+
+- `2026-07-08_1218_map-flow-topology-redesign.md`: redesigned `/map_progression_lab/` node topology so each region route advances toward the next region boundary, making boss-to-next-gate adjacency structural instead of a one-off point move.
+
+- `2026-07-08_1214_map-boss-to-gate-adjacency.md`: corrected the map adjacency target from level10-boss to previous-region boss -> next-region gate, moving the first next-region gate near the prior boss.
+
+- `2026-07-08_1212_map-boss-link-tighten.md`: tightened boss node placement so bosses sit almost directly next to level 10 nodes and added stronger boss-link styling.
+
+- `2026-07-08_1206_map-boss-adjacency-fix.md`: moved boss nodes close to their level 10 prerequisites so local progression reads as adjacency, with cross-region unlock links kept secondary.
+
+- `2026-07-08_1155_map-drag-and-links.md`: reworked `/map_progression_lab/` with drag-to-pan, a larger spread-out canvas, and generated relationship lines for gates, mainline levels, branches, prison, bandit camps, bosses, and region unlocks.
+
+- `2026-07-08_1129_map-progression-lab.md`: added standalone `/map_progression_lab/` with Bezier-style adjacent regions, entrance gates, linear internal levels, branch rewards, prison rescue nodes, boss nodes, and auto-win challenge flow.
+
+- `2026-07-08_1052_militia-power-down.md`: tuned all starting militia down so they fill jobs worse than full heroes, and verified shield militia no longer improves any knight-containing preset in temporary waterline replacement checks.
+
+- `2026-07-08_1032_militia-battlefield-only-size.md`: corrected militia sizing so only battle-scene militia are smaller while right-side roster cards stay normal size.
+
+- `2026-07-08_1030_militia-small-icons.md`: shrunk militia roster and battle-view icons in the militia progression lab so militia visibly read as smaller than full heroes without changing combat stats.
+
 - `2026-07-08_2039_stage2-guaranteed-epic.md`: added a one-time guaranteed purple item reward to the Stage 2 quality fight in the militia progression lab, preserving normal Stage 2 drop odds while creating a deterministic first-purple moment.
 
 - `2026-07-08_1815_militia-progression-lab.md`: added an independent militia early-game progression lab with 2 heroes + 4 militia, staged restrained loot, quality fights, field-effect gates, rescued heroes, signal panel, and Node self-play validation.

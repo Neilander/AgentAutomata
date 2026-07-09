@@ -50,8 +50,8 @@
       role: "warrior",
       kind: "militia",
       icon: "🪵",
-      note: "很肉，几乎没有输出，只会给自己争取时间。",
-      override: { hp: 410, power: 8, physicalPower: 8, magicPower: 8, armor: 24, range: 12, small1: "heal", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop" },
+      note: "能临时挡线，但远不如正式骑士可靠。",
+      override: { hp: 330, power: 8, physicalPower: 8, magicPower: 8, armor: 8, range: 12, small1: "heal", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop" },
       slots: [1],
     },
     {
@@ -60,8 +60,8 @@
       role: "ranger",
       kind: "militia",
       icon: "🏹",
-      note: "脆弱后排，能点低血目标。",
-      override: { hp: 175, power: 24, physicalPower: 29, magicPower: 8, armor: 4, range: 44, small1: "markShot", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop" },
+      note: "脆弱后排，能补一点远程压力。",
+      override: { hp: 160, power: 16, physicalPower: 18, magicPower: 8, armor: 3, range: 42, small1: "markShot", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop" },
       slots: [3],
     },
     {
@@ -70,8 +70,8 @@
       role: "mage",
       kind: "militia",
       icon: "🕯️",
-      note: "极脆，但法强不差，站位错就暴毙。",
-      override: { hp: 135, power: 8, physicalPower: 6, magicPower: 42, armor: 2, range: 42, small1: "fireball", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop" },
+      note: "极脆，只能补一点法术伤害。",
+      override: { hp: 125, power: 8, physicalPower: 6, magicPower: 28, armor: 2, range: 40, small1: "fireball", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop" },
       slots: [],
     },
     {
@@ -81,7 +81,7 @@
       kind: "militia",
       icon: "🌿",
       note: "低配治疗，能续一点命但不能逆转战局。",
-      override: { hp: 170, power: 9, physicalPower: 6, magicPower: 24, armor: 4, range: 38, small1: "heal", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop" },
+      override: { hp: 155, power: 8, physicalPower: 6, magicPower: 18, armor: 3, range: 36, small1: "heal", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop" },
       slots: [],
     },
   ];
@@ -168,6 +168,7 @@
     const base = {
       role: unit.role,
       name: unit.name,
+      unitKind: unit.kind || "",
       roleName: unit.kind === "militia" ? "民兵" : (kit.role || unit.role),
       hp: kit.hp || 300,
       maxHp: kit.hp || 300,

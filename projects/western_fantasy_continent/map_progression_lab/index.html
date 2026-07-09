@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>大地图关卡实验室</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css">
+    <link rel="stylesheet" href="/map_progression_lab/styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="side-nav">
+        <a class="back-link" href="/workbench/">返回工作台</a>
+        <div class="brand">
+          <span>佣兵小镇</span>
+          <strong>边境地图</strong>
+        </div>
+        <nav>
+          <button type="button" data-page="disabled">城镇首页</button>
+          <button type="button" class="active" data-page="map">地区刷级</button>
+          <button type="button" data-page="battle">战斗模拟</button>
+          <button type="button" data-page="disabled">队伍整备</button>
+          <button type="button" data-page="disabled">装备仓库</button>
+          <button type="button" disabled>招募大厅</button>
+        </nav>
+      </aside>
+
+      <section class="map-panel">
+        <header class="topbar">
+          <div>
+            <h1>大地图关卡实验室</h1>
+            <p>先验证地图、关口、线性关卡、支线和固定奖励。战斗暂时自动胜利。</p>
+          </div>
+          <div class="top-actions">
+            <button id="resetBtn" type="button">重置地图</button>
+          </div>
+        </header>
+
+        <div id="mapStage" class="map-stage page-view active" data-view="map">
+          <div id="mapCanvas" class="map-canvas">
+            <svg class="region-svg" viewBox="0 0 1400 900" aria-hidden="true">
+              <defs>
+                <linearGradient id="regionA" x1="0" x2="1">
+                  <stop offset="0" stop-color="#29351f"></stop>
+                  <stop offset="1" stop-color="#3b4327"></stop>
+                </linearGradient>
+                <linearGradient id="regionB" x1="0" x2="1">
+                  <stop offset="0" stop-color="#46341f"></stop>
+                  <stop offset="1" stop-color="#514524"></stop>
+                </linearGradient>
+                <linearGradient id="regionC" x1="0" x2="1">
+                  <stop offset="0" stop-color="#26343f"></stop>
+                  <stop offset="1" stop-color="#2f283f"></stop>
+                </linearGradient>
+              </defs>
+              <path id="shape-r1" class="region-shape" data-region="r1" fill="url(#regionA)"
+                d="M74 160 C96 112 168 88 250 98 L528 124 C586 130 626 172 638 232 L646 582 C648 638 606 682 548 694 L165 744 C112 752 67 718 60 665 L28 420 C17 330 34 223 74 160 Z"></path>
+              <path id="shape-r2" class="region-shape" data-region="r2" fill="url(#regionB)"
+                d="M579 224 C604 174 662 150 724 164 L1004 226 C1058 238 1093 286 1088 341 L1058 694 C1054 745 1015 783 963 790 L542 850 C491 857 450 820 453 768 L518 690 C568 682 603 641 600 592 Z"></path>
+              <path id="shape-r3" class="region-shape" data-region="r3" fill="url(#regionC)"
+                d="M1088 341 C1120 299 1180 286 1226 314 L1340 383 C1378 406 1388 459 1361 497 L1196 746 C1167 789 1108 805 1062 778 L963 790 C1015 783 1054 745 1058 694 Z"></path>
+            </svg>
+            <svg id="linkLayer" class="link-layer" viewBox="0 0 1400 900" aria-hidden="true"></svg>
+            <div id="nodeLayer" class="node-layer"></div>
+          </div>
+          <div class="drag-hint">拖拽地图查看区域，点击节点查看关系</div>
+        </div>
+
+        <div id="battlePage" class="battle-page page-view" data-view="battle">
+          <div class="battle-sim-head">
+            <div>
+              <span id="waveStatus" class="status-pill">待命</span>
+              <strong>敌群增援模拟</strong>
+            </div>
+            <div class="battle-sim-actions">
+              <button id="previewBattleBtn" type="button">预览阵容</button>
+              <button id="playBattleBtn" type="button">播放三段敌潮</button>
+            </div>
+          </div>
+          <div id="battleMount" class="battle-mount"></div>
+          <div class="wave-strip">
+            <div><span>第一段</span><strong>4 近战小怪</strong></div>
+            <div><span>第二段</span><strong>3 近战 + 4 远程</strong></div>
+            <div><span>终段</span><strong>标准敌队</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="detail-panel">
+        <div class="panel-block">
+          <span class="eyebrow">当前地区</span>
+          <h2 id="regionTitle">灰鸦郊野</h2>
+          <p id="regionDesc">盗匪巡逻、哨塔和旧路口组成的新手外圈。</p>
+          <div id="regionState" class="state-line"></div>
+        </div>
+
+        <div class="panel-block selected-card">
+          <span class="eyebrow">选中关卡</span>
+          <h2 id="nodeTitle">选择地图节点</h2>
+          <p id="nodeDesc">点击可挑战节点查看奖励和解锁关系。</p>
+          <div id="nodeMeta" class="meta-grid"></div>
+          <button id="fightBtn" type="button" class="fight-btn" disabled>自动胜利</button>
+          <button id="autoFiveBtn" type="button" class="subtle-btn">自动挑战 5 关</button>
+        </div>
+
+        <div class="panel-block">
+          <span class="eyebrow">奖励记录</span>
+          <div id="rewardLog" class="reward-log"></div>
+        </div>
+      </aside>
+    </main>
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/battle_view/battle-view.js"></script>
+    <script src="/map_progression_lab/map-progression-lab.js"></script>
+  </body>
+</html>

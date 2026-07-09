@@ -306,6 +306,19 @@ If persistence is not yet possible, use two layers:
 
 The final direction should still be single-page App Shell.
 
+### Battle Camera Model
+
+The temporary map-lab idea of forcing allied units to stay fixed is withdrawn. The desired future model is a real battle camera / viewport system, not a unit-position hack.
+
+Target behavior:
+
+- during combat, the camera should normally stay stable;
+- if living units touch or threaten the viewport boundary, the camera may pan or zoom out to keep the important combat area visible;
+- after the units no longer touch the boundary, the camera may shrink back in smoothly;
+- outside active combat, the camera may reframe so the party sits toward the left side of the screen, creating room for the next enemy wave or encounter entrance.
+
+This means battle rendering should eventually separate world coordinates from screen coordinates. Unit AI movement should remain a combat concern; camera framing should be a presentation concern. Do not solve this by making allies stop moving, by manually accelerating only one side, or by rewriting combat rules for a single page.
+
 ## UI Direction
 
 Do not put every system on one page.

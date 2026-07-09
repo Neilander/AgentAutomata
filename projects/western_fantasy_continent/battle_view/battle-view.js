@@ -458,6 +458,7 @@
         name,
         roleKey,
         roleName,
+        unitKind: spec.unitKind || spec.kind || "",
         fantasy: spec.fantasy || "",
         icon: spec.iconText || ROLE_ICONS[roleKey] || (side === "ally" ? "⚔️" : "◆"),
         hp: Math.round(spec.maxHp || spec.hp || stats.hp || kit.hp || 300),
@@ -798,7 +799,7 @@
       this.els.left.textContent = String(this.state.units.filter((unit) => unit.side === "ally" && this.alive(unit)).length);
       this.els.right.textContent = String(this.state.units.filter((unit) => unit.side === "enemy" && this.alive(unit)).length);
       this.els.unitLayer.innerHTML = this.state.units.map((unit) => `
-        <div class="battle-unit ${unit.side === "enemy" ? "enemy" : ""} ${unit.hiddenTimer > 0 ? "hidden" : ""} ${unit.guardTimer > 0 ? "guarded" : ""} ${this.alive(unit) ? "" : "dead"}" style="left:${unit.x}%;top:${unit.y}%">
+        <div class="battle-unit ${unit.side === "enemy" ? "enemy" : ""} ${unit.unitKind === "militia" ? "militia-unit" : ""} ${unit.hiddenTimer > 0 ? "hidden" : ""} ${unit.guardTimer > 0 ? "guarded" : ""} ${this.alive(unit) ? "" : "dead"}" style="left:${unit.x}%;top:${unit.y}%">
           <div class="battle-avatar">${unit.icon}</div>
           <div class="battle-unit-name">${unit.name}</div>
           <div class="battle-hp"><span style="width:${Math.max(0, unit.hpNow / unit.maxHp * 100)}%"></span></div>

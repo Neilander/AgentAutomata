@@ -177,6 +177,31 @@ the test validates scripting, not cognition.
 
 For probabilistic combat locks, batch-test bypass rate in addition to individual playthroughs. A successful bypass can be valid, but the bypass route must remain coherent: optional keys must not stay permanently locked, goals must update correctly, and later teaching cannot assume the missed failure occurred.
 
+### Optional Branch Contract
+
+An optional branch creates combat friction, not map permission.
+
+```text
+optional branch:
+  may offer a strong key, character, or shortcut;
+  must not block mainline traversal;
+  must remain challengeable after failure and after first clear;
+  may grant its unique/core treasure only on first clear;
+  must leave a coherent bypass route for players who ignore it.
+```
+
+Do not judge bypass as an automatic design failure. Test the bypass as its own player route. Reject the structure only when later content assumes the player learned or collected something from a branch they were allowed to skip.
+
+### Runtime Character-Key Contract
+
+Before using a character as a key, inspect the running combat contract rather than the class name or fantasy text:
+
+```text
+targeting rule -> actual skill targets -> output/survival contribution -> visible combat signal
+```
+
+Confirm all four in code or telemetry. Never claim a character attacks the backline, breaks shields, protects allies, or controls an area unless the runtime actually does it. Build the lock around the capability that exists; if a new capability is needed, add it as explicit new content instead of silently rewriting the established character.
+
 ## 4. Failure Memory And Attribution
 
 When the player fails, record a failure memory.

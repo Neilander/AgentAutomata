@@ -4,25 +4,25 @@
     typeof module !== "undefined" ? require("../game_data/skill-data") : root.GAME_SKILL_DATA,
     typeof module !== "undefined" ? require("./map-progression-roster") : root.GAME_MAP_PROGRESSION_ROSTER,
     typeof module !== "undefined" ? require("../game_data/equipment-runtime") : root.GAME_EQUIPMENT_RUNTIME,
+    typeof module !== "undefined" ? require("./map-progression-encounters") : root.GAME_MAP_PROGRESSION_ENCOUNTERS,
   );
   if (typeof module !== "undefined") module.exports = value;
   else root.GAME_MAP_PROGRESSION_COGNITION = value;
-})(typeof globalThis !== "undefined" ? globalThis : this, function createCore(COMBAT_SIM, SKILL_DATA, ROSTER, EQUIPMENT) {
+})(typeof globalThis !== "undefined" ? globalThis : this, function createCore(COMBAT_SIM, SKILL_DATA, ROSTER, EQUIPMENT, ENCOUNTERS) {
 
   const nodes = makeNodes();
   const nodesById = Object.fromEntries(nodes.map((item) => [item.id, item]));
   function makeNodes() {
     const result = [];
     for (let index = 1; index <= 10; index += 1) {
-      let requires = index === 1 ? [] : [`r1_main_${index - 1}`];
-      if (index === 6) requires = ["r1_main_5", "r1_prison"];
+      const requires = index === 1 ? [] : [`r1_main_${index - 1}`];
       result.push({
         id: `r1_main_${index}`,
         name: `灰带郊野 ${index}`,
         type: "main",
         requires,
         rewardHint: index % 3 === 0 ? "可能出现蓝装" : "白装",
-        enemyHint: index === 7 ? "重盾前排与后排支援" : index <= 3 ? "两名近战和一名远程" : index <= 6 ? "近战、远程与治疗" : "完整四人敌队",
+        enemyHint: index === 7 ? "高生命高攻速蛮熊与三名弱支援" : index <= 3 ? "两名近战和一名远程" : index <= 6 ? "近战、远程与治疗" : "完整四人敌队",
       });
     }
     result.push(
@@ -31,16 +31,16 @@
         name: "旧塔军械营地",
         type: "branch",
         requires: ["r1_main_5"],
-        rewardHint: "较高等级装备，可能出现蓝装",
-        enemyHint: "重甲前排、战士、游侠和法师",
+        rewardHint: "首通固定获得破盾斧与裂甲护手；复战无首通奖励",
+        enemyHint: "持盾军械队",
       },
       {
         id: "r1_prison",
         name: "旧塔监狱",
         type: "branch",
         requires: ["r1_main_3"],
-        rewardHint: "营救一名新角色",
-        enemyHint: "战士、重甲前排和两名游侠",
+        rewardHint: "首通营救一名新角色；复战无首通奖励",
+        enemyHint: "狱门护盾、后排哨手与治疗",
       },
       {
         id: "r1_boss",
@@ -103,8 +103,7 @@
   }
 
   function nodeStatus(state, item) {
-    if (state.cleared[item.id]) return item.type === "main" ? "farmable" : "cleared";
-    if (item.id === "r1_bandit" && state.cleared.r1_main_5 && !state.flags.prisonFailed && !state.cleared.r1_prison) return "preview";
+    if (state.cleared[item.id]) return item.type === "main" ? "farmable" : ENCOUNTERS.isOneTimeBranch(item) ? "repeatable" : "cleared";
     if ((item.requires || []).every((id) => state.cleared[id])) return "available";
     return "locked";
   }
@@ -121,7 +120,7 @@
         enemyHint: item.enemyHint,
       }))
       .filter((item) => item.status !== "locked");
-    const challengeActions = visibleNodes.filter((item) => ["available", "farmable"].includes(item.status)).map((item) => `challenge:${item.id}`);
+    const challengeActions = visibleNodes.filter((item) => ["available", "farmable", "repeatable"].includes(item.status)).map((item) => `challenge:${item.id}`);
     const activeIds = new Set(state.teamSlots);
     const reserveIds = state.roster.filter((unit) => !activeIds.has(unit.id)).map((unit) => unit.id);
     const swapActions = state.flags.rangerRescued
@@ -130,6 +129,7 @@
     return {
       step: state.step,
       currentGoal: state.cleared.r1_boss ? "第一地区已完成" : nextGoal(state),
+      optionalOpportunities: optionalOpportunities(state),
       team: ROSTER.teamLabel(state.roster, state.teamSlots),
       roster: state.roster.map((unit) => ({ id: unit.id, name: unit.name, role: unit.role, kind: unit.kind, note: unit.note })),
       gear: {
@@ -145,22 +145,21 @@
   }
 
   function nextGoal(state) {
-    if (!state.cleared.r1_main_3) return "继续推进灰带郊野";
-    if (state.cleared.r1_prison && !state.teamSlots.includes("hero_ranger")) return "决定是否让新救出的游侠出战";
-    if (state.cleared.r1_prison) {
-      if (!state.cleared.r1_main_10) return "带着新队伍继续推进";
-      const bossFailure = state.cognition.failureMemories.find((memory) => memory.node === "r1_boss" && !memory.resolved);
-      if (bossFailure && gearScore(state) <= bossFailure.gearScore) return "刷取最近主线，获得可见装备提升后再挑战首领";
-      return "击败地区首领";
-    }
-    if (!state.flags.prisonFailed && !state.cleared.r1_prison) return "监狱中有一名可营救角色";
-    if (!state.cleared.r1_main_5) return "继续推进，寻找更好的装备来源";
-    if (!state.cleared.r1_bandit) return "军械营地可能提供攻坚装备";
-    if (!state.cleared.r1_prison) return "再次挑战监狱";
-    if (!state.cleared.r1_main_10) return "带着新队伍继续推进";
+    if (!state.cleared.r1_main_10) return "继续推进灰带郊野";
     const bossFailure = state.cognition.failureMemories.find((memory) => memory.node === "r1_boss" && !memory.resolved);
     if (bossFailure && gearScore(state) <= bossFailure.gearScore) return "刷取最近主线，获得可见装备提升后再挑战首领";
     return "击败地区首领";
+  }
+
+  function optionalOpportunities(state) {
+    const rows = [];
+    const prison = nodesById.r1_prison;
+    const camp = nodesById.r1_bandit;
+    const prisonStatus = nodeStatus(state, prison);
+    const campStatus = nodeStatus(state, camp);
+    if (["available", "repeatable"].includes(prisonStatus)) rows.push({ node: prison.id, status: prisonStatus, reason: state.cleared.r1_prison ? "可复战，首通角色已领取" : "可选救援：首通获得新角色" });
+    if (["available", "repeatable"].includes(campStatus)) rows.push({ node: camp.id, status: campStatus, reason: state.cleared.r1_bandit ? "可复战，首通军械已领取" : "可选军械：首通获得破盾与破甲装备" });
+    return rows;
   }
 
   function applyAction(rawState, actionText) {
@@ -169,7 +168,7 @@
     if (kind === "swap") return applySwapAction(state, actionText, id, value);
     if (kind !== "challenge" || !nodesById[id]) return actionError(state, actionText, "未知行动");
     const item = nodesById[id];
-    if (!["available", "farmable"].includes(nodeStatus(state, item))) return actionError(state, actionText, "该关卡当前不可挑战");
+    if (!["available", "farmable", "repeatable"].includes(nodeStatus(state, item))) return actionError(state, actionText, "该关卡当前不可挑战");
 
     state.step += 1;
     state.attempts[id] = (state.attempts[id] || 0) + 1;
@@ -193,20 +192,26 @@
       state.cognition.failureMemories.forEach((memory) => {
         if (memory.node === id) memory.resolved = true;
       });
-      const loot = rollLoot(state, item);
+      const repeatOneTimeBranch = !firstClear && ENCOUNTERS.isOneTimeBranch(item);
+      const loot = repeatOneTimeBranch
+        ? []
+        : id === "r1_bandit"
+          ? ENCOUNTERS.campFirstClearLoot(`r1_bandit_key_${state.attempts[id]}`)
+          : rollLoot(state, item);
       state.inventory.push(...loot);
-      autoEquip(state);
+      if (loot.length) autoEquip(state);
       event.loot = loot.map(publicLoot);
       event.gearAfter = gearScore(state);
       event.firstClear = firstClear;
-      if (id === "r1_prison") {
+      if (id === "r1_prison" && firstClear) {
         state.flags.rangerRescued = true;
         state.roster = ROSTER.rescueHero(state.roster, "ranger");
         if (!state.cognition.concepts.includes("角色名单")) state.cognition.concepts.push("角色名单");
         if (!state.cognition.behaviors.includes("调整队伍")) state.cognition.behaviors.push("调整队伍");
         event.reward = "营救游侠；游侠加入角色名单，当前队伍没有自动改变";
       }
-      learn(state, "掉落", "胜利后获得的装备会自动换上更强的部件", "观察装备变化");
+      if (loot.length) learn(state, "掉落", "胜利后获得的装备会自动换上更强的部件", "观察装备变化");
+      if (repeatOneTimeBranch) event.reward = "复战胜利；首通奖励已经领取，本次没有新的支线奖励";
     } else {
       state.failures[id] = (state.failures[id] || 0) + 1;
       if (id === "r1_prison") state.flags.prisonFailed = true;
@@ -216,7 +221,7 @@
         gearScore: gearScore(state),
         attributionPrompt: "只能使用当前已知概念解释失败",
         wakeCondition: id === "r1_prison" && !state.cleared.r1_bandit
-          ? "继续推进到主线 5，完成一次性军械营地后再尝试"
+          ? "可以立即重试，也可以继续主线到 5，取得军械营地首通装备后再尝试"
           : "发生可见的装备提升或学会新的队伍知识后再尝试",
       };
       state.cognition.failureMemories.unshift(memory);
@@ -232,8 +237,8 @@
       const totalDamage = event.contributions.reduce((sum, unit) => sum + (unit.damage || 0), 0);
       const share = totalDamage ? (ranger?.damage || 0) / totalDamage : 0;
       if (share >= 0.22) {
-        learn(state, "角色观察", `林地游侠在本次重盾战贡献了${Math.round(share * 100)}%伤害`, "在相似重盾关继续观察游侠");
-        event.roleProof = { rangerDamageShare: Math.round(share * 1000) / 1000, evidence: "本次战斗伤害占比" };
+        learn(state, "角色观察", `林地游侠在蛮熊战贡献了${Math.round(share * 100)}%伤害`, "在高生命单体目标前继续观察猎标与减速");
+        event.roleProof = { rangerDamageShare: Math.round(share * 1000) / 1000, evidence: "蛮熊战伤害占比" };
       }
     }
     state.history.unshift(event);
@@ -291,7 +296,8 @@
   }
 
   function enemyTeam(item) {
-    if (item.id === "r1_prison") return prisonMilitiaTeam();
+    if (item.id === "r1_prison") return ENCOUNTERS.prisonTeam();
+    if (item.id === "r1_main_7") return ENCOUNTERS.bearLockTeam();
     const roles = enemyRoles(item);
     const mult = enemyScale(item);
     return roles.map((role, index) => scaleSpec(enemySpec(role, index, item), mult));
@@ -308,6 +314,8 @@
   }
 
   function enemyScale(item) {
+    const override = ENCOUNTERS.enemyScaleOverride(item);
+    if (Number.isFinite(override)) return override;
     const mainNo = item.type === "main" ? Number(item.id.split("_").pop() || 1) : 7;
     const typeBonus = { main: 0, branch: 0.28, boss: 0.62 }[item.type] || 0;
     const prisonBump = item.id.includes("prison") ? 0.24 : 0;
@@ -364,11 +372,7 @@
   }
 
   function fieldEffect(item) {
-    if (item.id.includes("prison")) return "sentry_suppression";
-    if (item.id.includes("bandit")) return "heavy_shield_line";
-    if (item.id === "r1_main_7") return "heavy_shield_line";
-    if (item.type === "boss") return "pressure_corridor";
-    return "";
+    return ENCOUNTERS.fieldEffectId(item);
   }
 
   function rollLoot(state, item) {

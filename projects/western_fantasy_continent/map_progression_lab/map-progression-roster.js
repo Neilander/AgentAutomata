@@ -7,31 +7,31 @@
   else root.GAME_MAP_PROGRESSION_ROSTER = value;
 })(typeof globalThis !== "undefined" ? globalThis : this, function createRosterApi(SKILL_DATA, EQUIPMENT) {
   const ROSTER_SEED = [
-    hero("hero_knight", "银盾骑士", "knight", "完整前排英雄，有守护与大招。"),
+    hero("hero_warrior", "灰鸦战士", "warrior", "完整近战英雄，能打能扛，但没有骑士的守护能力。"),
     hero("hero_mage", "烬火法师", "mage", "完整输出英雄，负责清怪与爆发。"),
-    militia("militia_shield", "盾民兵", "warrior", "只能挡线，几乎没有输出。", {
-      hp: 330, power: 8, physicalPower: 8, magicPower: 8, armor: 8, range: 12,
+    militia("militia_barricade", "拒马民兵", "warrior", "只有血量和自救，几乎没有伤害，也不能保护队友。", {
+      hp: 390, power: 3, physicalPower: 3, magicPower: 3, armor: 8, range: 12,
       small1: "heal", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop",
     }),
-    militia("militia_bow", "弓民兵", "ranger", "脆弱后排，只能补充基础远程伤害。", {
-      hp: 160, power: 16, physicalPower: 18, magicPower: 8, armor: 3, range: 42,
-      small1: "markShot", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop",
-    }),
-    militia("militia_spark", "火花学徒", "mage", "法强尚可但极脆，适合赌输出。", {
-      hp: 125, power: 8, physicalPower: 6, magicPower: 28, armor: 2, range: 40,
-      small1: "fireball", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop",
+    militia("militia_spear", "短矛民兵", "warrior", "慢速单体近战，能补伤害但没有完整战士的作战能力。", {
+      hp: 220, power: 18, physicalPower: 20, magicPower: 5, armor: 5, range: 15,
+      attackSpeedMult: 0.82, small1: "powerStrike", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop",
     }),
     militia("militia_herb", "草药民兵", "priest", "低配治疗，只能延缓崩线。", {
       hp: 155, power: 8, physicalPower: 6, magicPower: 18, armor: 3, range: 36,
       small1: "heal", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop",
     }),
+    militia("militia_drum", "皮鼓民兵", "bard", "偶尔敲响战鼓，自己几乎没有输出。", {
+      hp: 145, power: 6, physicalPower: 5, magicPower: 10, armor: 2, range: 34,
+      small1: "tempoSong", small2: "enemyNoop", passive: "enemyDormantPassive", ultimate: "enemyNoop",
+    }),
   ];
 
   const HERO_REWARDS = {
-    ranger: hero("hero_ranger", "林地游侠", "ranger", "完整后排点杀英雄，适合替代弓民兵。"),
+    ranger: hero("hero_ranger", "林地游侠", "ranger", "完整远程物理英雄，持续盯住当前目标并累积猎标。"),
   };
 
-  const INITIAL_TEAM_SLOTS = ["hero_knight", "militia_shield", "hero_mage", "militia_bow"];
+  const INITIAL_TEAM_SLOTS = ["hero_warrior", "militia_barricade", "hero_mage", "militia_herb"];
 
   function hero(id, name, role, note) {
     return { id, name, role, kind: "hero", note, unlocked: true, equipment: {} };

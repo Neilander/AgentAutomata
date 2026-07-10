@@ -4,6 +4,8 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-10
 
+- `2026-07-10_1945_optional-lock-key-militia-bear.md`: replaced overlapping starter roles with incomplete militia, made Prison/Camp optional repeatable one-time-reward branches, added isolated Camp-key and bear encounters, and validated explorer/skip routes with real combat and regression invariants.
+
 - `2026-07-10_1730_map-equipment-loot-prison-retry.md`: exposed manual equipment management and per-battle loot history in separate pages, made Prison immediately retryable after failure, and browser-validated desktop/mobile behavior.
 
 - `2026-07-10_1650_militia-equipment-lock-key-loop.md`: completed the two-agent iterative Region 1 pass, integrating militia scarcity, formal equipment, one-time Camp key, manual Ranger recruitment, deterministic human/Agent combat parity, interruption recovery, and elimination-only Boss clears.

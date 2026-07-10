@@ -37,6 +37,14 @@ const EFFECTS = [
     ],
   },
   {
+    id: "old_tower_prison",
+    name: "旧塔狱门",
+    focus: "敌方前排持盾掩护后排哨手，破盾军械可以明显缩短攻坚时间",
+    expected: "破盾装备、持续盯住前排、快速接触后排",
+    candidates: [],
+    swaps: [],
+  },
+  {
     id: "pressure_corridor",
     name: "高压回廊",
     focus: "开局周期性压低全场血量",
@@ -249,10 +257,12 @@ function createRuntimeField(effectId, sim) {
     id: def.id,
     def,
     setup() {
-      if (def.id === "heavy_shield_line") {
+      if (def.id === "heavy_shield_line" || def.id === "old_tower_prison") {
         sim.units.filter((unit) => helpers.isFront(unit)).forEach((unit) => {
-          sim.shield(unit, unit.maxHp * 0.34, def.name, unit);
-          helpers.fieldSignal("重盾", unit, { amount: Math.round(unit.maxHp * 0.34) });
+          const ratio = def.id === "old_tower_prison" && unit.side === "right" ? 0.42 : def.id === "heavy_shield_line" ? 0.34 : 0;
+          if (!ratio) return;
+          sim.shield(unit, unit.maxHp * ratio, def.name, unit);
+          helpers.fieldSignal(def.id === "old_tower_prison" ? "狱门护盾" : "重盾", unit, { amount: Math.round(unit.maxHp * ratio) });
         });
       }
       if (def.id === "king_flag") {
@@ -335,6 +345,28 @@ function createRuntimeField(effectId, sim) {
           helpers.fieldSignal("哨塔失效", target, { source: source.id });
         }
         if (helpers.isBack(source) && !source.fieldSentryEngaged) context.amount *= 1.38;
+      }
+      if (def.id === "old_tower_prison") {
+        if (helpers.isBack(target) && helpers.isMelee(source) && !target.fieldSentryEngaged) {
+          target.fieldSentryEngaged = true;
+          helpers.fieldSignal("狱塔哨手被贴身", target, { source: source.id });
+        }
+        if (helpers.isBack(source) && !source.fieldSentryEngaged) context.amount *= 1.28;
+        if (target.shield > 0) {
+          const breakPoints = Number(source.mechanicModifiers?.shieldBreak || 0);
+          context.amount *= 1 + Math.min(0.7, breakPoints * 0.025);
+          if (breakPoints > 0 && !source.fieldShieldBreakSignaled) {
+            source.fieldShieldBreakSignaled = true;
+            helpers.fieldSignal("破盾军械生效", target, { source: source.id, points: breakPoints });
+          }
+        } else if ((target.armor || 0) > 0) {
+          const armorBreakPoints = Number(source.mechanicModifiers?.armorBreak || 0);
+          context.amount *= 1 + Math.min(0.45, armorBreakPoints * 0.018);
+          if (armorBreakPoints > 0 && !source.fieldArmorBreakSignaled) {
+            source.fieldArmorBreakSignaled = true;
+            helpers.fieldSignal("裂甲军械生效", target, { source: source.id, points: armorBreakPoints });
+          }
+        }
       }
       if (def.id === "heavy_shield_line" && target.shield > 0 && ["warrior", "ranger", "berserker"].includes(source.role)) {
         context.amount *= 2.2;

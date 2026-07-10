@@ -1,10 +1,11 @@
 (function initMapProgressionLab() {
-  const SAVE_KEY = "agent_automata_map_progression_lab_v3";
+  const SAVE_KEY = "agent_automata_map_progression_lab_v4";
   const MAP_WIDTH = 1400;
   const MAP_HEIGHT = 900;
   const AUTO_STEP_MS = 200;
   const ROSTER = window.GAME_MAP_PROGRESSION_ROSTER;
   const EQUIPMENT = window.GAME_EQUIPMENT_RUNTIME;
+  const ENCOUNTERS = window.GAME_MAP_PROGRESSION_ENCOUNTERS;
   const LABEL_PLACEMENTS = {
     r1_gate_west: { left: "calc(100% + 8px)", top: "50%", transform: "translateY(-50%)", align: "left" },
     r1_gate_south: { left: "50%", top: "calc(100% + 8px)", transform: "translateX(-50%)", align: "center" },
@@ -162,13 +163,13 @@
       `${regionNo}-${index + 1}`,
       point,
       "线性关卡",
-      regionId === "r1" && index === 6 ? "重盾敌人再次出现。这里用于验证新救出的游侠。" : index === 0 ? "地区内部第一关。" : "沿地区主线推进。",
+      regionId === "r1" && index === 6 ? "狂鬃蛮熊正在袭击道路。它生命高、攻击快，周围只有较弱的支援。" : index === 0 ? "地区内部第一关。" : "沿地区主线推进。",
       index % 3 === 2 ? ["蓝装"] : ["白装"],
       mainNodeRequires(regionId, index),
     ));
     const branches = [
-      node(`${regionId}_bandit`, regionId, "branch", regionId === "r1" ? "旧塔军械营地" : "强盗营地", extras.bandit, "支线营地", regionId === "r1" ? "深入郊野后发现的军械营地，首通可以集中补充攻坚装备。" : "固定品质装备奖励。先打主线第 4 关解锁。", regionId === "r1" ? ["2 件集中攻坚装备"] : ["1 紫装", "2 蓝装"], [regionId === "r1" ? `${regionId}_main_5` : `${regionId}_main_4`]),
-      node(`${regionId}_prison`, regionId, "branch", regionId === "r1" ? "旧塔监狱" : "监狱", extras.prison, "支线救援", regionId === "r1" ? "里面关着一名可救出的角色。先试着救人。" : "固定救出一个角色。先打主线第 5 关解锁。", [regionIndex === 0 ? "林地游侠" : regionIndex === 1 ? "破盾战士" : "晨祷牧师"], [regionId === "r1" ? `${regionId}_main_3` : `${regionId}_main_5`]),
+      node(`${regionId}_bandit`, regionId, "branch", regionId === "r1" ? "旧塔军械营地" : "强盗营地", extras.bandit, "可选支线", regionId === "r1" ? "可重复挑战的攻坚支线。首通获得破盾与破甲军械，之后复战不再发放首通奖励。" : "固定品质装备奖励。先打主线第 4 关解锁。", regionId === "r1" ? ["首通：破盾斧与裂甲护手"] : ["1 紫装", "2 蓝装"], [regionId === "r1" ? `${regionId}_main_5` : `${regionId}_main_4`]),
+      node(`${regionId}_prison`, regionId, "branch", regionId === "r1" ? "旧塔监狱" : "监狱", extras.prison, "可选支线", regionId === "r1" ? "可重复挑战的救援支线。首通救出一名新角色，之后复战不再发放首通奖励。" : "固定救出一个角色。先打主线第 5 关解锁。", [regionIndex === 0 ? "首通：林地游侠" : regionIndex === 1 ? "破盾战士" : "晨祷牧师"], [regionId === "r1" ? `${regionId}_main_3` : `${regionId}_main_5`]),
       node(`${regionId}_boss`, regionId, "boss", "地区 Boss", extras.boss, "Boss 关", "第 10 关之后的收束战。", ["高品质装备", "地区通关"], [`${regionId}_main_10`]),
     ];
     return [...gates, ...line, ...branches];
@@ -176,8 +177,6 @@
 
   function mainNodeRequires(regionId, index) {
     if (index === 0) return [];
-    const nodeNo = index + 1;
-    if (regionId === "r1" && nodeNo === 6) return ["r1_main_5", "r1_prison"];
     return [`${regionId}_main_${index}`];
   }
 
@@ -553,7 +552,7 @@
 
   function renderNodePanel(item) {
     const status = nodeStatus(item);
-    const available = status === "available" || status === "farmable";
+    const available = status === "available" || status === "farmable" || status === "repeatable";
     const display = nodeDisplay(item);
     els.nodeTitle.textContent = item.name;
     els.nodeDesc.textContent = display.desc;
@@ -584,12 +583,10 @@
     for (const region of regions) {
       for (const gate of region.gates) pairs.push({ from: gate, to: `${region.id}_main_1`, kind: "gate", bend: gate.endsWith("south") ? 34 : -22 });
       for (let index = 1; index < 10; index += 1) {
-        if (region.id === "r1" && index === 5) continue;
         pairs.push({ from: `${region.id}_main_${index}`, to: `${region.id}_main_${index + 1}`, kind: "main", bend: index % 2 ? 10 : -10 });
       }
       pairs.push({ from: region.id === "r1" ? "r1_main_5" : `${region.id}_main_4`, to: `${region.id}_bandit`, kind: "branch", bend: -34 });
       pairs.push({ from: region.id === "r1" ? "r1_main_3" : `${region.id}_main_5`, to: `${region.id}_prison`, kind: "branch", bend: 34 });
-      if (region.id === "r1") pairs.push({ from: "r1_prison", to: "r1_main_6", kind: "main", bend: -14 });
       pairs.push({ from: `${region.id}_main_10`, to: `${region.id}_boss`, kind: "boss", bend: 10 });
     }
     pairs.push({ from: "r1_boss", to: "r2_gate_north", kind: "region", bend: -12 });
@@ -645,15 +642,10 @@
   function isAvailable(item) {
     const region = regions.find((entry) => entry.id === item.regionId);
     if (!region || !isRegionUnlocked(region)) return false;
-    if (state.cleared[item.id]) return item.type === "main";
-    if (isR1BanditPreview(item)) return false;
+    if (state.cleared[item.id]) return item.type === "main" || ENCOUNTERS.isOneTimeBranch(item);
     if (item.type === "gate") return true;
     if (!regionInteriorUnlocked(region)) return false;
     return (item.requires || []).every((id) => state.cleared[id]);
-  }
-
-  function isR1BanditPreview(item) {
-    return item.id === "r1_bandit" && state.cleared.r1_main_5 && !state.flags.r1PrisonFailed && !state.cleared.r1_prison;
   }
 
   function shouldFirstFailPrison(item) {
@@ -669,8 +661,9 @@
   function settleNodeAttempt(item, combatResult) {
     recordTeamExperiment(item, combatResult);
     if (!combatResult.win) return failNode(item, combatResult);
+    const firstClear = !state.cleared[item.id];
     clearNode(item);
-    grantNodeRewards(item, combatResult);
+    grantNodeRewards(item, combatResult, firstClear);
     return { type: "clear", id: item.id, combat: combatResult };
   }
 
@@ -706,7 +699,7 @@
 
   function nextFocusAfterClear(item) {
     if (item.id === "r1_main_3") return "r1_prison";
-    if (item.id === "r1_main_5") return state.flags.r1PrisonFailed ? "r1_bandit" : "r1_prison";
+    if (item.id === "r1_main_5") return state.flags.r1PrisonFailed ? "r1_bandit" : "r1_main_6";
     if (item.id === "r1_bandit") return "r1_prison";
     if (item.id === "r1_prison") return "r1_main_6";
     return "";
@@ -754,21 +747,20 @@
   }
 
   function nodeStatus(item) {
-    if (state.cleared[item.id]) return item.type === "main" ? "farmable" : "cleared";
-    if (isR1BanditPreview(item)) return "preview";
+    if (state.cleared[item.id]) return item.type === "main" ? "farmable" : ENCOUNTERS.isOneTimeBranch(item) ? "repeatable" : "cleared";
     if (isAvailable(item)) return "available";
     return "locked";
   }
 
   function statusName(status) {
-    return { cleared: "已完成", farmable: "可重复刷取", available: "可挑战", preview: "预备线索", locked: "锁定" }[status] || status;
+    return { cleared: "已完成", farmable: "可重复刷取", repeatable: "可复战（无首通奖励）", available: "可挑战", locked: "锁定" }[status] || status;
   }
 
   function nodeDisplay(item) {
     if (item.id === "r1_bandit") {
       return {
-        desc: state.flags.r1PrisonFailed ? "旧塔军械也许能帮你重新攻进监狱。" : "附近的军械营地，也许有攻坚装备。先确认旧塔监狱的阻力。",
-        rewards: ["2 件集中攻坚装备"],
+        desc: "可选攻坚支线。首通固定获得破盾与破甲军械；可以复战，但首通奖励只领取一次。",
+        rewards: ["首通：破盾斧与裂甲护手"],
       };
     }
     if (item.id === "r1_prison" && state.flags.r1PrisonFailed && !state.cleared.r1_bandit) {
@@ -779,7 +771,9 @@
     }
     if (item.id === "r1_main_7") {
       return {
-        desc: "重盾敌人再次出现。这里用于验证新救出的游侠。",
+        desc: state.flags.rangerRescued
+          ? "狂鬃蛮熊生命高、攻击快。你已经见过游侠的减速与猎标，可以观察它是否更快压住蛮熊，但这不是唯一解。"
+          : "狂鬃蛮熊生命高、攻击快，周围只有较弱的支援。观察哪种队伍能更快压住它。",
         rewards: item.rewards,
       };
     }
@@ -788,8 +782,8 @@
 
   function fightButtonText(item, status) {
     if (status === "farmable") return "再次刷取";
+    if (status === "repeatable") return "再次挑战";
     if (state.cleared[item.id]) return "已胜利";
-    if (status === "preview") return "先试旧塔监狱";
     if (!isAvailable(item)) return "尚未解锁";
     if (shouldFirstFailPrison(item)) return "尝试救人";
     return "开始战斗";
@@ -805,10 +799,10 @@
   function enemyPreview(item) {
     if (item.type === "boss") return "骑士、战士、法师和牧师";
     if (item.type === "gate") return "4 个守门敌人";
-    if (item.id.includes("bandit")) return "重甲前排、战士、游侠和法师";
-    if (item.id.includes("prison")) return "战士、重甲前排和两名游侠";
+    if (item.id.includes("bandit")) return "持盾军械队，首通掉落攻坚装备";
+    if (item.id.includes("prison")) return "狱门护盾、后排哨手与治疗";
     const index = Number(item.name.split("-")[1] || 1);
-    if (item.id === "r1_main_7") return "重盾前排与后排支援";
+    if (item.id === "r1_main_7") return "高生命高攻速蛮熊与三名弱支援";
     if (index <= 3) return "两名近战和一名远程";
     if (index <= 6) return "近战、远程与治疗";
     return "完整四人敌队";
@@ -1398,7 +1392,8 @@
   }
 
   function nodeEnemyTeam(item) {
-    if (item.id === "r1_prison") return prisonMilitiaTeam();
+    if (item.id === "r1_prison") return ENCOUNTERS.prisonTeam();
+    if (item.id === "r1_main_7") return ENCOUNTERS.bearLockTeam();
     const roles = nodeEnemyRoles(item);
     const scale = nodeEnemyScale(item);
     return roles.map((role, index) => scaleCombatSpec(enemySpec(role, index, item), scale));
@@ -1416,6 +1411,8 @@
   }
 
   function nodeEnemyScale(item) {
+    const override = ENCOUNTERS.enemyScaleOverride(item);
+    if (Number.isFinite(override)) return override;
     const regionBase = { r1: 0.62, r2: 1.25, r3: 2.05 }[item.regionId] || 1;
     const mainNo = item.type === "main" ? Number(item.name.split("-")[1] || 1) : 7;
     const typeBonus = { gate: 0.08, main: 0, branch: 0.28, boss: 0.62 }[item.type] || 0;
@@ -1480,19 +1477,23 @@
   }
 
   function nodeFieldEffect(item) {
-    if (item.id.includes("prison")) return "sentry_suppression";
-    if (item.id.includes("bandit")) return "heavy_shield_line";
-    if (item.id === "r1_main_7") return "heavy_shield_line";
-    if (item.type === "boss") return "pressure_corridor";
-    return "";
+    return ENCOUNTERS.fieldEffectId(item);
   }
 
-  function grantNodeRewards(item, combatResult) {
-    const loot = rollNodeLoot(item);
+  function grantNodeRewards(item, combatResult, firstClear) {
+    if (!firstClear && ENCOUNTERS.isOneTimeBranch(item)) {
+      state.rewards.unshift(`${item.name}复战胜利；首通奖励已经领取，本次没有新的支线奖励。`);
+      saveState();
+      render();
+      return;
+    }
+    const loot = item.id === "r1_bandit"
+      ? ENCOUNTERS.campFirstClearLoot(`r1_bandit_key_${state.attempts[item.id] || 1}`)
+      : rollNodeLoot(item);
     state.inventory.push(...loot);
     autoEquipBestItems();
     recordLootBatch(item, loot);
-    if (item.id === "r1_prison") {
+    if (item.id === "r1_prison" && firstClear) {
       state.flags.rangerRescued = true;
       state.roster = ROSTER.rescueHero(state.roster, "ranger");
       state.rewards.unshift("林地游侠已加入角色名单。当前队伍没有自动改变，请由你决定是否替换出战角色。");
@@ -1504,7 +1505,7 @@
     state.rewards.unshift(`${item.name}：真实战斗 ${combatResult.duration} 秒胜利（${verdict}）；掉落 ${lootText}，已记录到战利品页；我方强度 ${combatResult.playerPower} / 敌方 ${combatResult.enemyPower}${damageText}`);
     saveState();
     render();
-    if (item.id === "r1_prison") window.setTimeout(openTeamDialog, 80);
+    if (item.id === "r1_prison" && firstClear) window.setTimeout(openTeamDialog, 80);
   }
 
   function openTeamDialog() {

@@ -4,6 +4,24 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-09
 
+- `2026-07-09_2053_map-cognition-v2-2-review-gate.md`: integrated two subagent reviews for V2.2, keeping M6 blue-quality signal as a candidate gated behind M5/user-playtest validation.
+
+- `2026-07-09_2047_map-cognition-v2-2-candidate.md`: created a non-implemented V2.2 candidate where M6 later teaches blue reward as a milestone quality signal, explicitly gated behind user playtest of the hardened first loop.
+
+- `2026-07-09_2013_map-cognition-hardened-implementation.md`: implemented the hardened first-region map-lab lock-key flow, added preview-only Camp before Prison first-fail, stopped auto-challenge on Prison failure, bumped the lab save key to v3, and appended bypass-hardening notes to the lock-key cognition reference.
+
+- `2026-07-09_1933_map-cognition-subagent-hardening.md`: integrated late subagent reviews, upgraded Camp from soft-order to preview-only until Prison first-fail, and set the next implementation pass to use the hardened first-region map-lab plan.
+
+- `2026-07-09_1927_map-cognition-implementation-review.md`: reviewed the V1.2 + V2.1 map-lab implementation plan, found a serious mainline-bypass risk after M4, and corrected the plan so `r1_main_5` waits for Prison clear while Prison first-fail stops auto-challenge.
+
+- `2026-07-09_1808_map-cognition-implementation-plan.md`: drafted an implementation-facing first-region map-lab plan for V1.2 + V2.1, but subagent review timed out so code changes are deferred.
+
+- `2026-07-09_1529_map-cognition-v1-2-accepted-v2-1.md`: reviewed V1.2 and V2 with two subagents, accepted V1.2 for implementation-test, and created V2.1 as a narrow rarity-as-reward-quality slice.
+
+- `2026-07-09_1453_map-cognition-v1-2-v2-gate.md`: reviewed V1.1/V2 with two subagents, created V1.2 Prison-first soft-order baseline, and appended a lock-key cognition timing constraint.
+
+- `2026-07-09_1417_map-cognition-v1.md`: created the first versioned map cognition/lock-key design slice, ran two subagent reviews, and revised V1 into V1.1 so Prison/character is visible before camp equipment key consumption.
+
 - `2026-07-09_1358_lock-key-cognition-skill.md`: added a project skill reference for lock-key cognition review, including player concepts/knowledge/behaviors, first impressions, failure attribution, wake-up conditions, and knowledge updates.
 
 - `2026-07-09_1327_march-contact-state-fix.md`: separated `/map_progression_lab/` marching from contact behavior so march targets use fixed speed and units begin normal combat once enemies are within contact range.

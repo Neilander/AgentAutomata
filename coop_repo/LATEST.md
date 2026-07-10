@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-09_1358_lock-key-cognition-skill.md`](reports/2026-07-09_1358_lock-key-cognition-skill.md)
+[`reports/2026-07-09_2053_map-cognition-v2-2-review-gate.md`](reports/2026-07-09_2053_map-cognition-v2-2-review-gate.md)
 
 Last updated: 2026-07-09
 
-Current focus: Project game-analysis skill now includes lock-key cognition review: concepts, knowledge first impressions, behavior, failure attribution, wake-up conditions, and knowledge updates.
+Current focus: hardened first-region map-lab flow still needs user playtest. V2.2/M6 blue-quality signal is reviewed as a candidate but must not be implemented until M5 role proof is validated or made visibly real.

@@ -175,6 +175,22 @@ One node can be a key in one relationship and a lock in another relationship.
 It should not be both lock and key in the same relationship.
 ```
 
+Timing constraint:
+
+```text
+Static lock-key validity is not enough.
+A key is cognitively meaningful only if the player has seen, anticipated, or failed the corresponding lock before consuming the key.
+If a key is consumed first, it is likely learned as a generic reward rather than as a solution.
+```
+
+When a lock and its key appear together, check salience and action order:
+
+```text
+The lock/treasure should usually be the main desire point.
+The key should read as preparation, support, or response.
+If the key uses a known concept and the lock uses a new concept, players may naturally choose the key first unless the lock is visually or procedurally prioritized.
+```
+
 Example layered chain:
 
 ```text
@@ -283,3 +299,40 @@ Reject or revise if:
 - the key does not wake the relevant failure memory;
 - success does not update the player's knowledge;
 - the only fallback is the same solution with bigger numbers.
+
+## 9. Bypass Hardening Notes
+
+Append-only rule added after the first map-lab implementation review:
+
+```text
+For the first teaching instance of a new lock-key relationship,
+soft salience may be insufficient if the bypass uses already-known concepts.
+```
+
+When reviewing an intended lock, check not only the intended key, but also:
+
+```text
+mainline continuation:
+  Can the player keep doing the already-known default action and skip the lock?
+
+known-reward bypass:
+  Can the player consume a visible key or side reward before the failure memory exists,
+  especially when that key uses a known concept like equipment -> power?
+```
+
+If the intended lock teaches a new concept and the bypass uses a known reward axis, prefer:
+
+```text
+preview-only keys until first failure;
+temporary mainline pause;
+auto-action stop on the first failure moment;
+explicit focus on the new lock/treasure before the key is consumed.
+```
+
+Do not let automation compress:
+
+```text
+failure -> key consumption -> retry success
+```
+
+into one unreadable burst. The player must be able to perceive the failure memory moment.

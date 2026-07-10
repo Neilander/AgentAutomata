@@ -1,5 +1,5 @@
 (function initMapProgressionLab() {
-  const SAVE_KEY = "agent_automata_map_progression_lab_v2";
+  const SAVE_KEY = "agent_automata_map_progression_lab_v3";
   const MAP_WIDTH = 1400;
   const MAP_HEIGHT = 900;
   const AUTO_STEP_MS = 200;
@@ -138,16 +138,23 @@
       `${regionNo}-${index + 1}`,
       point,
       "线性关卡",
-      index === 0 ? "地区内部第一关。" : "沿地区主线推进。",
+      regionId === "r1" && index === 4 ? "救出旧塔监狱里的角色后，验证新角色带来的战斗过程变化。" : index === 0 ? "地区内部第一关。" : "沿地区主线推进。",
       index % 3 === 2 ? ["蓝装"] : ["白装", "金币"],
-      index === 0 ? [] : [`${regionId}_main_${index}`],
+      mainNodeRequires(regionId, index),
     ));
     const branches = [
-      node(`${regionId}_bandit`, regionId, "branch", "强盗营地", extras.bandit, "支线营地", "固定品质装备奖励。先打主线第 4 关解锁。", ["1 紫装", "2 蓝装"], [`${regionId}_main_4`]),
-      node(`${regionId}_prison`, regionId, "branch", "监狱", extras.prison, "支线救援", "固定救出一个角色。先打主线第 5 关解锁。", [regionIndex === 0 ? "林地游侠" : regionIndex === 1 ? "破盾战士" : "晨祷牧师"], [`${regionId}_main_5`]),
+      node(`${regionId}_bandit`, regionId, "branch", regionId === "r1" ? "旧塔军械营地" : "强盗营地", extras.bandit, "支线营地", regionId === "r1" ? "附近的军械营地，也许有攻坚装备。" : "固定品质装备奖励。先打主线第 4 关解锁。", regionId === "r1" ? ["2 高等级白装", "1 蓝装"] : ["1 紫装", "2 蓝装"], [`${regionId}_main_4`]),
+      node(`${regionId}_prison`, regionId, "branch", regionId === "r1" ? "旧塔监狱" : "监狱", extras.prison, "支线救援", regionId === "r1" ? "里面关着一名可救出的角色。先试着救人。" : "固定救出一个角色。先打主线第 5 关解锁。", [regionIndex === 0 ? "林地游侠" : regionIndex === 1 ? "破盾战士" : "晨祷牧师"], [regionId === "r1" ? `${regionId}_main_4` : `${regionId}_main_5`]),
       node(`${regionId}_boss`, regionId, "boss", "地区 Boss", extras.boss, "Boss 关", "第 10 关之后的收束战。", ["大量金币", "稀有装备"], [`${regionId}_main_10`]),
     ];
     return [...gates, ...line, ...branches];
+  }
+
+  function mainNodeRequires(regionId, index) {
+    if (index === 0) return [];
+    const nodeNo = index + 1;
+    if (regionId === "r1" && nodeNo === 5) return ["r1_prison"];
+    return [`${regionId}_main_${index}`];
   }
 
   function node(id, regionId, type, name, pos, label, desc, rewards, requires = []) {
@@ -158,6 +165,7 @@
     return {
       cleared: {},
       rewards: [],
+      flags: { r1PrisonFailed: false },
       selectedId: "r1_main_1",
       pan: { x: -34, y: -92 },
     };
@@ -169,6 +177,7 @@
       ...value,
       cleared: value.cleared || {},
       rewards: value.rewards || [],
+      flags: { ...initialState().flags, ...(value.flags || {}) },
       pan: value.pan || { x: -34, y: -92 },
     };
   }
@@ -230,7 +239,7 @@
     els.fightBtn.addEventListener("click", () => {
       const current = findNode(selectedId);
       if (!current || !isAvailable(current) || state.cleared[current.id]) return;
-      clearNode(current);
+      attemptNode(current);
     });
     els.autoFiveBtn.addEventListener("click", () => autoChallenge(5));
     els.previewBattleBtn.addEventListener("click", previewBattle);
@@ -417,16 +426,17 @@
   function renderNodePanel(item) {
     const status = nodeStatus(item);
     const available = status === "available";
+    const display = nodeDisplay(item);
     els.nodeTitle.textContent = item.name;
-    els.nodeDesc.textContent = item.desc;
+    els.nodeDesc.textContent = display.desc;
     els.nodeMeta.innerHTML = `
       <div class="meta-chip">类型<strong>${item.label}</strong></div>
       <div class="meta-chip">状态<strong>${statusName(status)}</strong></div>
-      <div class="meta-chip">奖励<strong>${item.rewards.join("、")}</strong></div>
+      <div class="meta-chip">奖励<strong>${display.rewards.join("、")}</strong></div>
       <div class="meta-chip">敌人结构<strong>${enemyPreview(item)}</strong></div>
     `;
     els.fightBtn.disabled = !available;
-    els.fightBtn.textContent = state.cleared[item.id] ? "已胜利" : available ? "自动胜利" : "尚未解锁";
+    els.fightBtn.textContent = fightButtonText(item, status);
   }
 
   function renderAutoButton() {
@@ -446,10 +456,12 @@
     for (const region of regions) {
       for (const gate of region.gates) pairs.push({ from: gate, to: `${region.id}_main_1`, kind: "gate", bend: gate.endsWith("south") ? 34 : -22 });
       for (let index = 1; index < 10; index += 1) {
+        if (region.id === "r1" && index === 4) continue;
         pairs.push({ from: `${region.id}_main_${index}`, to: `${region.id}_main_${index + 1}`, kind: "main", bend: index % 2 ? 10 : -10 });
       }
       pairs.push({ from: `${region.id}_main_4`, to: `${region.id}_bandit`, kind: "branch", bend: -34 });
-      pairs.push({ from: `${region.id}_main_5`, to: `${region.id}_prison`, kind: "branch", bend: 34 });
+      pairs.push({ from: region.id === "r1" ? "r1_main_4" : `${region.id}_main_5`, to: `${region.id}_prison`, kind: "branch", bend: 34 });
+      if (region.id === "r1") pairs.push({ from: "r1_prison", to: "r1_main_5", kind: "main", bend: -14 });
       pairs.push({ from: `${region.id}_main_10`, to: `${region.id}_boss`, kind: "boss", bend: 10 });
     }
     pairs.push({ from: "r1_boss", to: "r2_gate_north", kind: "region", bend: -12 });
@@ -459,6 +471,8 @@
 
   function linkStatus(from, to) {
     if (state.cleared[to.id]) return "cleared";
+    if (nodeStatus(to) === "preview") return "preview";
+    if (isR1PrisonWaitingForCamp(to)) return "locked";
     if (isAvailable(to) || state.cleared[from.id]) return "available";
     return "locked";
   }
@@ -505,18 +519,55 @@
     const region = regions.find((entry) => entry.id === item.regionId);
     if (!region || !isRegionUnlocked(region)) return false;
     if (state.cleared[item.id]) return false;
+    if (isR1BanditPreview(item)) return false;
+    if (isR1PrisonWaitingForCamp(item)) return false;
     if (item.type === "gate") return true;
     if (!regionInteriorUnlocked(region)) return false;
     return (item.requires || []).every((id) => state.cleared[id]);
   }
 
+  function isR1BanditPreview(item) {
+    return item.id === "r1_bandit" && state.cleared.r1_main_4 && !state.flags.r1PrisonFailed;
+  }
+
+  function shouldFirstFailPrison(item) {
+    return item.id === "r1_prison" && !state.flags.r1PrisonFailed && !state.cleared.r1_bandit;
+  }
+
+  function isR1PrisonWaitingForCamp(item) {
+    return item.id === "r1_prison" && state.flags.r1PrisonFailed && !state.cleared.r1_bandit;
+  }
+
+  function attemptNode(item) {
+    if (shouldFirstFailPrison(item)) {
+      state.flags.r1PrisonFailed = true;
+      selectedId = "r1_bandit";
+      state.selectedId = selectedId;
+      state.rewards.unshift("旧塔监狱：战力还不够，也许附近的军械能帮助攻坚。");
+      saveState();
+      render();
+      focusMapNode(selectedId);
+      return { type: "failure", id: item.id };
+    }
+    clearNode(item);
+    return { type: "clear", id: item.id };
+  }
+
   function clearNode(item) {
     state.cleared[item.id] = true;
-    selectedId = item.id;
+    selectedId = nextFocusAfterClear(item) || item.id;
     state.selectedId = selectedId;
-    state.rewards.unshift(`${item.name}：${item.rewards.join("、")}`);
+    state.rewards.unshift(`${item.name}：${nodeDisplay(item).rewards.join("、")}`);
     saveState();
     render();
+    focusMapNode(selectedId);
+  }
+
+  function nextFocusAfterClear(item) {
+    if (item.id === "r1_main_4") return "r1_prison";
+    if (item.id === "r1_bandit") return "r1_prison";
+    if (item.id === "r1_prison") return "r1_main_5";
+    return "";
   }
 
   function autoChallenge(count) {
@@ -529,9 +580,9 @@
         render();
         return;
       }
-      clearNode(next);
+      const result = attemptNode(next);
       remaining -= 1;
-      if (remaining <= 0) {
+      if (result.type === "failure" || remaining <= 0) {
         stopAutoChallenge();
         render();
         return;
@@ -561,12 +612,43 @@
 
   function nodeStatus(item) {
     if (state.cleared[item.id]) return "cleared";
+    if (isR1BanditPreview(item)) return "preview";
     if (isAvailable(item)) return "available";
     return "locked";
   }
 
   function statusName(status) {
-    return { cleared: "已完成", available: "可挑战", locked: "锁定" }[status] || status;
+    return { cleared: "已完成", available: "可挑战", preview: "预备线索", locked: "锁定" }[status] || status;
+  }
+
+  function nodeDisplay(item) {
+    if (item.id === "r1_bandit") {
+      return {
+        desc: state.flags.r1PrisonFailed ? "旧塔军械也许能帮你重新攻进监狱。" : "附近的军械营地，也许有攻坚装备。先确认旧塔监狱的阻力。",
+        rewards: ["2 高等级白装", "1 蓝装"],
+      };
+    }
+    if (item.id === "r1_prison" && state.flags.r1PrisonFailed && !state.cleared.r1_bandit) {
+      return {
+        desc: "刚才攻坚失败了。先去旧塔军械营地准备装备，再回来救人。",
+        rewards: item.rewards,
+      };
+    }
+    if (item.id === "r1_main_5") {
+      return {
+        desc: "救出林地游侠后，观察新角色如何更早处理后排威胁。",
+        rewards: item.rewards,
+      };
+    }
+    return { desc: item.desc, rewards: item.rewards };
+  }
+
+  function fightButtonText(item, status) {
+    if (state.cleared[item.id]) return "已胜利";
+    if (status === "preview") return "先试旧塔监狱";
+    if (!isAvailable(item)) return "尚未解锁";
+    if (shouldFirstFailPrison(item)) return "尝试救人";
+    return "自动胜利";
   }
 
   function nodeIcon(item) {

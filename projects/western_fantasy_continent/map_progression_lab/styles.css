@@ -45,11 +45,18 @@ button:disabled { opacity: 0.42; cursor: not-allowed; }
   margin: 0 auto;
   padding: 14px 0 26px;
 }
+.app-shell.wide-page { grid-template-columns: 210px minmax(760px, 1fr); }
+.app-shell.wide-page .detail-panel { display: none; }
+.app-shell.wide-page .map-panel { grid-column: 2; }
 
 .side-nav, .map-panel, .detail-panel {
   border: 1px solid var(--line);
   background: rgba(23, 23, 15, 0.94);
 }
+.side-nav, .map-panel, .detail-panel,
+.equipment-page, .loot-page,
+.equipment-workspace, .equipped-pane,
+.inventory-pane, .equipment-inspector { min-width: 0; }
 
 .side-nav {
   min-height: calc(100vh - 28px);
@@ -75,6 +82,10 @@ button:disabled { opacity: 0.42; cursor: not-allowed; }
   background: linear-gradient(180deg, #f4d67d, #a77a27);
   font-weight: 800;
 }
+.side-nav nav button.has-new {
+  color: var(--gold-2);
+  border-color: rgba(244, 214, 125, 0.62);
+}
 
 .map-panel {
   min-height: calc(100vh - 28px);
@@ -95,6 +106,210 @@ p { margin-top: 6px; color: var(--muted); line-height: 1.55; }
 
 .page-view { display: none; }
 .page-view.active { display: block; }
+
+.equipment-page,
+.loot-page {
+  flex: 1;
+  min-height: 720px;
+  padding: 18px;
+  background: #10130d;
+}
+.equipment-head,
+.loot-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(214, 173, 71, 0.24);
+}
+.equipment-head h2,
+.loot-head h2 { font-size: 22px; }
+.equipment-head p,
+.loot-head p { font-size: 13px; }
+.equipment-head button {
+  color: #171006;
+  border-color: var(--gold-2);
+  background: var(--gold);
+  font-weight: 800;
+}
+.equipment-character-strip {
+  display: flex;
+  gap: 8px;
+  min-height: 112px;
+  padding: 14px 0;
+  overflow-x: auto;
+  max-width: 100%;
+}
+.equipment-hero {
+  position: relative;
+  flex: 0 0 190px;
+  min-height: 92px;
+  padding: 10px 10px 10px 46px;
+  border-color: rgba(214, 173, 71, 0.2);
+  background: #151810;
+  text-align: left;
+}
+.equipment-hero > span {
+  position: absolute;
+  left: 10px;
+  top: 11px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid rgba(214, 173, 71, 0.35);
+  border-radius: 50%;
+  color: var(--gold-2);
+}
+.equipment-hero strong,
+.equipment-hero small,
+.equipment-hero em { display: block; }
+.equipment-hero strong { color: var(--text); font-size: 14px; }
+.equipment-hero small {
+  min-height: 34px;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+.equipment-hero em { margin-top: 5px; color: var(--gold-2); font-size: 11px; font-style: normal; }
+.equipment-hero.active::after {
+  content: "出战";
+  position: absolute;
+  right: 7px;
+  top: 7px;
+  color: var(--green);
+  font-size: 10px;
+}
+.equipment-hero.selected { border-color: var(--gold-2); background: #292312; }
+.equipment-workspace {
+  display: grid;
+  grid-template-columns: 310px minmax(360px, 1fr) 290px;
+  min-height: 500px;
+  border-top: 1px solid rgba(214, 173, 71, 0.2);
+}
+.equipped-pane,
+.inventory-pane,
+.equipment-inspector { padding: 14px; }
+.inventory-pane,
+.equipment-inspector { border-left: 1px solid rgba(214, 173, 71, 0.2); }
+.pane-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.pane-title span { color: var(--muted); font-size: 12px; }
+.pane-title strong { color: var(--gold-2); font-size: 14px; }
+.equipment-slot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.equipment-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 76px;
+  padding: 8px;
+  background: #14170f;
+  text-align: left;
+}
+.equipment-slot:disabled { opacity: 1; cursor: default; }
+.equipment-slot > span { flex: 0 0 30px; font-size: 23px; text-align: center; }
+.equipment-slot div { min-width: 0; }
+.equipment-slot small,
+.equipment-slot strong,
+.equipment-slot em { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.equipment-slot small { color: var(--muted); font-size: 10px; }
+.equipment-slot strong { margin-top: 3px; color: var(--text); font-size: 11px; }
+.equipment-slot em { margin-top: 4px; color: var(--muted); font-size: 9px; font-style: normal; }
+.equipment-slot.selected,
+.inventory-cell.selected { outline: 2px solid var(--gold-2); outline-offset: 1px; }
+.equipment-inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 70px);
+  grid-auto-rows: 70px;
+  align-content: start;
+  gap: 8px;
+  min-height: 260px;
+  max-height: 470px;
+  overflow-y: auto;
+}
+.inventory-cell {
+  position: relative;
+  display: grid;
+  width: 70px;
+  height: 70px;
+  place-items: center;
+  padding: 5px;
+  background: #12150e;
+}
+.inventory-cell > span { font-size: 25px; }
+.inventory-cell small { position: absolute; left: 5px; bottom: 4px; color: var(--muted); font-size: 9px; }
+.inventory-cell b { position: absolute; right: 5px; top: 4px; font-size: 9px; font-weight: 500; }
+.inventory-empty {
+  grid-column: 1 / -1;
+  padding: 24px 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.equipment-inspector { background: #11140e; }
+.inspector-empty { padding: 28px 4px; }
+.inspector-empty span { color: var(--gold-2); font-weight: 700; }
+.inspector-empty p { font-size: 12px; }
+.item-title { display: flex; gap: 10px; align-items: center; padding-bottom: 12px; border-bottom: 1px solid rgba(214, 173, 71, 0.18); }
+.item-title > span { font-size: 30px; }
+.item-title small,
+.item-title strong { display: block; }
+.item-title small { color: var(--muted); font-size: 11px; }
+.item-title strong { margin-top: 4px; font-size: 15px; }
+.item-owner,
+.item-compare { display: flex; justify-content: space-between; gap: 10px; margin-top: 12px; color: var(--muted); font-size: 12px; }
+.item-owner strong { color: var(--text); }
+.item-stat-list { margin-top: 12px; border-top: 1px solid rgba(214, 173, 71, 0.14); }
+.item-stat-list div { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid rgba(214, 173, 71, 0.1); font-size: 12px; }
+.item-stat-list span { color: var(--muted); }
+.item-stat-list strong { color: var(--gold-2); }
+.item-compare { padding: 10px; border: 1px solid rgba(214, 173, 71, 0.18); }
+.item-compare.gain strong { color: var(--green); }
+.item-compare.loss strong { color: var(--red); }
+.primary-equipment-action { width: 100%; margin-top: 12px; color: #171006; border-color: var(--gold-2); background: var(--gold); font-weight: 800; }
+
+.loot-head > strong { color: var(--gold-2); font-size: 18px; }
+.loot-batch-list { display: grid; gap: 12px; max-height: 650px; padding-top: 14px; overflow-y: auto; }
+.loot-batch { border: 1px solid rgba(214, 173, 71, 0.2); background: #12150e; }
+.loot-batch.latest { border-color: rgba(244, 214, 125, 0.72); }
+.loot-batch > header { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 11px 13px; border-bottom: 1px solid rgba(214, 173, 71, 0.16); }
+.loot-batch header span,
+.loot-batch header strong { display: block; }
+.loot-batch header span,
+.loot-batch header small { color: var(--muted); font-size: 11px; }
+.loot-batch header strong { margin-top: 3px; color: var(--text); }
+.loot-item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; padding: 10px; }
+.loot-item { position: relative; display: flex; align-items: center; gap: 9px; min-width: 0; min-height: 76px; padding: 9px 9px 24px; background: #151810; text-align: left; }
+.loot-item > span { flex: 0 0 34px; font-size: 25px; text-align: center; }
+.loot-item div { min-width: 0; }
+.loot-item small,
+.loot-item strong,
+.loot-item em { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.loot-item small { color: var(--muted); font-size: 10px; }
+.loot-item strong { margin-top: 3px; font-size: 12px; }
+.loot-item em { margin-top: 4px; color: var(--muted); font-size: 9px; font-style: normal; }
+.loot-item b { position: absolute; left: 9px; bottom: 6px; color: var(--green); font-size: 10px; font-weight: 500; }
+.loot-empty { padding: 60px 18px; text-align: center; color: var(--muted); }
+.loot-empty strong { color: var(--gold-2); }
+.loot-empty p { font-size: 12px; }
+
+.rarity-common { border-color: rgba(190, 185, 165, 0.42); }
+.rarity-rare { border-color: rgba(75, 151, 255, 0.72); }
+.rarity-epic { border-color: rgba(183, 93, 255, 0.76); }
+.rarity-legendary { border-color: rgba(255, 158, 62, 0.8); }
+.rarity-mythic { border-color: rgba(255, 80, 92, 0.86); }
+.rarity-rare b { color: var(--blue); }
+.rarity-epic b { color: var(--purple); }
+.rarity-legendary b { color: #ffb15e; }
+.rarity-mythic b { color: #ff6670; }
 
 .map-stage {
   position: relative;
@@ -347,6 +562,51 @@ p { margin-top: 6px; color: var(--muted); line-height: 1.55; }
   font-size: 14px;
 }
 
+.team-dialog {
+  width: min(860px, calc(100vw - 36px));
+  padding: 0;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  background: #12140e;
+  color: var(--text);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.72);
+}
+.team-dialog::backdrop { background: rgba(4, 5, 3, 0.78); }
+.team-dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(214, 173, 71, 0.25);
+}
+.team-dialog-head span { display: block; color: var(--muted); font-size: 12px; }
+.team-dialog-head strong { display: block; margin-top: 5px; font-size: 18px; }
+.team-dialog-head button { width: 38px; height: 38px; padding: 0; font-size: 24px; }
+.team-dialog section { padding: 16px 18px; }
+.team-dialog section + section { border-top: 1px solid rgba(214, 173, 71, 0.18); }
+.team-dialog h2 { margin-bottom: 10px; font-size: 15px; }
+.team-slot-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.team-roster-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.team-unit {
+  min-height: 94px;
+  padding: 11px;
+  border: 1px solid rgba(214, 173, 71, 0.22);
+  border-radius: 6px;
+  background: #171910;
+  text-align: left;
+}
+.team-unit.selected { border-color: var(--gold-2); background: #2a2413; }
+.team-unit.active::after { content: "出战"; float: right; color: var(--green); font-size: 11px; }
+.team-unit strong, .team-unit span, .team-unit small { display: block; }
+.team-unit span { margin-top: 4px; color: var(--gold-2); font-size: 12px; }
+.team-unit small { margin-top: 6px; color: var(--muted); line-height: 1.4; }
+
+@media (max-width: 760px) {
+  .team-slot-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .team-roster-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 .detail-panel {
   min-height: calc(100vh - 28px);
   padding: 14px;
@@ -420,6 +680,25 @@ p { margin-top: 6px; color: var(--muted); line-height: 1.55; }
     min-height: auto;
   }
   .side-nav nav {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
+  .app-shell.wide-page { grid-template-columns: 1fr; }
+  .app-shell.wide-page .map-panel { grid-column: 1; }
+  .equipment-workspace { grid-template-columns: 260px minmax(320px, 1fr); }
+  .equipment-inspector { grid-column: 1 / -1; border-left: 0; border-top: 1px solid rgba(214, 173, 71, 0.2); }
+}
+
+@media (max-width: 760px) {
+  .side-nav nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .side-nav nav button { min-width: 0; padding: 8px; overflow-wrap: anywhere; }
+  .equipment-page,
+  .loot-page { min-height: 620px; padding: 12px; }
+  .equipment-head,
+  .loot-head { align-items: flex-start; }
+  .equipment-head button { flex: 0 0 104px; padding: 8px; }
+  .equipment-workspace { grid-template-columns: 1fr; }
+  .inventory-pane,
+  .equipment-inspector { border-left: 0; border-top: 1px solid rgba(214, 173, 71, 0.2); }
+  .equipment-slot-grid { grid-template-columns: 1fr; }
+  .loot-item-grid { grid-template-columns: 1fr; }
 }

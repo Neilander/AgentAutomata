@@ -95,6 +95,7 @@
         cameraModes: null,
         gameTime: null,
         postStack: null,
+        unifiedAccumulator: 0,
       };
       this.sharedSkills = SKILLS.createSkillLibrary ? SKILLS.createSkillLibrary(this.skillApi()) : {};
       this.mount();
@@ -416,6 +417,7 @@
         ...this.makeUnits("enemy", rightTeam),
       ];
       this.state.unifiedSim = sim;
+      this.state.unifiedAccumulator = 0;
       this.state.lastSignalIndex = 0;
       this.state.running = true;
       this.resetPresentationClock(performance.now());
@@ -428,13 +430,24 @@
     tickUnified(now) {
       const sim = this.state.unifiedSim;
       if (!this.state.running || !sim) return;
-      const dt = this.frameDelta(now);
-      sim.update(dt);
+      const frameDt = this.frameDelta(now);
+      const fixedDt = Math.max(0.001, Number(sim.dt) || 0.08);
+      this.state.unifiedAccumulator = Math.min(
+        fixedDt * 8,
+        this.state.unifiedAccumulator + frameDt,
+      );
+      while (this.state.unifiedAccumulator >= fixedDt && sim.time < this.maxTime) {
+        sim.update(fixedDt);
+        this.state.unifiedAccumulator -= fixedDt;
+        const leftAlive = sim.units.some((unit) => unit.side === "left" && sim.isAlive(unit));
+        const rightAlive = sim.units.some((unit) => unit.side === "right" && sim.isAlive(unit));
+        if (!leftAlive || !rightAlive) break;
+      }
       this.state.time = sim.time;
       this.syncUnifiedUnits();
       this.playUnifiedSignals();
       this.finishUnifiedIfNeeded();
-      this.updatePresentation(dt);
+      this.updatePresentation(frameDt);
       this.render();
     }
 
@@ -610,6 +623,7 @@
       this.state.raf = 0;
       this.state.running = false;
       this.state.unifiedSim = null;
+      this.state.unifiedAccumulator = 0;
       this.state.vfxNodes.forEach((item) => item.node?.remove?.());
       this.state.vfxNodes = [];
       if (render) this.render();

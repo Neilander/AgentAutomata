@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-10_1225_camp-one-shot-main-farming.md`](reports/2026-07-10_1225_camp-one-shot-main-farming.md)
+[`reports/2026-07-10_1730_map-equipment-loot-prison-retry.md`](reports/2026-07-10_1730_map-equipment-loot-prison-retry.md)
 
 Last updated: 2026-07-10
 
-Current focus: Camp is now a one-time key encounter; only cleared main nodes are repeat-farmable. Next design question: whether deeper main nodes inside a region should improve item level, rarity, count, or only enemy difficulty.
+Current focus: Human players now have separate equipment and loot pages with manual swapping and drop ownership; Prison remains retryable after failure while Camp stays the recommended key route. Next step is user replay of the first-region loop.

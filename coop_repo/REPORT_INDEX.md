@@ -4,6 +4,10 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-10
 
+- `2026-07-10_1730_map-equipment-loot-prison-retry.md`: exposed manual equipment management and per-battle loot history in separate pages, made Prison immediately retryable after failure, and browser-validated desktop/mobile behavior.
+
+- `2026-07-10_1650_militia-equipment-lock-key-loop.md`: completed the two-agent iterative Region 1 pass, integrating militia scarcity, formal equipment, one-time Camp key, manual Ranger recruitment, deterministic human/Agent combat parity, interruption recovery, and elimination-only Boss clears.
+
 - `2026-07-10_1225_camp-one-shot-main-farming.md`: corrected Camp to a one-time key encounter, kept repeat farming on main nodes, redirected later Prison failures to the latest main node, and recorded Region 1-3 main drop tables.
 
 - `2026-07-10_1208_dual-agent-map-cognition-debug.md`: ran two baseline and two post-tuning knowledge-bounded player agents, added reusable cognition session/batch tools, turned Prison/Camp into a real combat-and-farming loop, corrected false UI signals, and recorded remaining observation/action parity risks.

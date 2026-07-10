@@ -3,6 +3,8 @@
   const MAP_WIDTH = 1400;
   const MAP_HEIGHT = 900;
   const AUTO_STEP_MS = 200;
+  const ROSTER = window.GAME_MAP_PROGRESSION_ROSTER;
+  const EQUIPMENT = window.GAME_EQUIPMENT_RUNTIME;
   const LABEL_PLACEMENTS = {
     r1_gate_west: { left: "calc(100% + 8px)", top: "50%", transform: "translateY(-50%)", align: "left" },
     r1_gate_south: { left: "50%", top: "calc(100% + 8px)", transform: "translateX(-50%)", align: "center" },
@@ -64,6 +66,7 @@
   let drag = null;
   let autoTimer = 0;
   let battleView = null;
+  let pendingHumanNode = null;
   let waveTimers = [];
 
   const allyOpeningSlots = [
@@ -93,38 +96,11 @@
     ],
   };
 
-  const rarityTable = {
-    common: { name: "白装", score: 1, mult: 1 },
-    blue: { name: "蓝装", score: 2, mult: 1.55 },
-    rare: { name: "稀有", score: 3, mult: 2.35 },
-    epic: { name: "紫装", score: 5, mult: 3.8 },
-  };
-
-  const regionDropRules = {
-    r1: {
-      main: { level: [1, 8], rates: { common: 0.82, blue: 0.17, rare: 0.01, epic: 0 }, count: 2 },
-      branch: { level: [5, 12], rates: { common: 0.62, blue: 0.32, rare: 0.06, epic: 0 }, count: 3 },
-      boss: { level: [10, 16], rates: { common: 0.5, blue: 0.38, rare: 0.1, epic: 0.02 }, count: 4 },
-    },
-    r2: {
-      gate: { level: [10, 18], rates: { common: 0.58, blue: 0.33, rare: 0.08, epic: 0.01 }, count: 3 },
-      main: { level: [12, 24], rates: { common: 0.52, blue: 0.36, rare: 0.1, epic: 0.02 }, count: 3 },
-      branch: { level: [18, 30], rates: { common: 0.42, blue: 0.38, rare: 0.16, epic: 0.04 }, count: 4 },
-      boss: { level: [26, 38], rates: { common: 0.32, blue: 0.4, rare: 0.2, epic: 0.08 }, count: 5 },
-    },
-    r3: {
-      gate: { level: [26, 38], rates: { common: 0.38, blue: 0.4, rare: 0.18, epic: 0.04 }, count: 4 },
-      main: { level: [30, 48], rates: { common: 0.34, blue: 0.38, rare: 0.22, epic: 0.06 }, count: 4 },
-      branch: { level: [42, 58], rates: { common: 0.25, blue: 0.38, rare: 0.27, epic: 0.1 }, count: 5 },
-      boss: { level: [54, 70], rates: { common: 0.18, blue: 0.35, rare: 0.32, epic: 0.15 }, count: 6 },
-    },
-  };
-
-  const gearSlots = ["weapon", "armor", "focus", "boots"];
-
   const els = {
+    appShell: document.querySelector(".app-shell"),
     resetBtn: document.getElementById("resetBtn"),
     navButtons: document.querySelectorAll("[data-page]"),
+    pageViews: document.querySelectorAll("[data-view]"),
     mapStage: document.getElementById("mapStage"),
     battlePage: document.getElementById("battlePage"),
     mapCanvas: document.getElementById("mapCanvas"),
@@ -143,9 +119,28 @@
     waveStatus: document.getElementById("waveStatus"),
     previewBattleBtn: document.getElementById("previewBattleBtn"),
     playBattleBtn: document.getElementById("playBattleBtn"),
+    teamManageBtn: document.getElementById("teamManageBtn"),
+    teamDialog: document.getElementById("teamDialog"),
+    closeTeamDialogBtn: document.getElementById("closeTeamDialogBtn"),
+    teamSlotList: document.getElementById("teamSlotList"),
+    teamRosterList: document.getElementById("teamRosterList"),
+    equipmentNavBtn: document.getElementById("equipmentNavBtn"),
+    lootNavBtn: document.getElementById("lootNavBtn"),
+    equipmentPage: document.getElementById("equipmentPage"),
+    equipmentCharacterStrip: document.getElementById("equipmentCharacterStrip"),
+    equipmentHeroName: document.getElementById("equipmentHeroName"),
+    equipmentSlotGrid: document.getElementById("equipmentSlotGrid"),
+    inventoryCount: document.getElementById("inventoryCount"),
+    equipmentInventoryGrid: document.getElementById("equipmentInventoryGrid"),
+    equipmentInspector: document.getElementById("equipmentInspector"),
+    optimizeEquipmentBtn: document.getElementById("optimizeEquipmentBtn"),
+    lootPage: document.getElementById("lootPage"),
+    lootTotalCount: document.getElementById("lootTotalCount"),
+    lootBatchList: document.getElementById("lootBatchList"),
   };
 
   bind();
+  recoverInterruptedEncounter();
   render();
 
   function makeRegionNodes(regionId, regionIndex, linePoints, extras) {
@@ -167,13 +162,13 @@
       `${regionNo}-${index + 1}`,
       point,
       "线性关卡",
-      regionId === "r1" && index === 4 ? "重盾敌人再次出现。观察林地游侠如何持续击穿护盾。" : index === 0 ? "地区内部第一关。" : "沿地区主线推进。",
+      regionId === "r1" && index === 6 ? "重盾敌人再次出现。这里用于验证新救出的游侠。" : index === 0 ? "地区内部第一关。" : "沿地区主线推进。",
       index % 3 === 2 ? ["蓝装"] : ["白装"],
       mainNodeRequires(regionId, index),
     ));
     const branches = [
-      node(`${regionId}_bandit`, regionId, "branch", regionId === "r1" ? "旧塔军械营地" : "强盗营地", extras.bandit, "支线营地", regionId === "r1" ? "附近的军械营地，也许有攻坚装备。" : "固定品质装备奖励。先打主线第 4 关解锁。", regionId === "r1" ? ["2 高等级白装", "1 蓝装"] : ["1 紫装", "2 蓝装"], [`${regionId}_main_4`]),
-      node(`${regionId}_prison`, regionId, "branch", regionId === "r1" ? "旧塔监狱" : "监狱", extras.prison, "支线救援", regionId === "r1" ? "里面关着一名可救出的角色。先试着救人。" : "固定救出一个角色。先打主线第 5 关解锁。", [regionIndex === 0 ? "林地游侠" : regionIndex === 1 ? "破盾战士" : "晨祷牧师"], [regionId === "r1" ? `${regionId}_main_4` : `${regionId}_main_5`]),
+      node(`${regionId}_bandit`, regionId, "branch", regionId === "r1" ? "旧塔军械营地" : "强盗营地", extras.bandit, "支线营地", regionId === "r1" ? "深入郊野后发现的军械营地，首通可以集中补充攻坚装备。" : "固定品质装备奖励。先打主线第 4 关解锁。", regionId === "r1" ? ["2 件集中攻坚装备"] : ["1 紫装", "2 蓝装"], [regionId === "r1" ? `${regionId}_main_5` : `${regionId}_main_4`]),
+      node(`${regionId}_prison`, regionId, "branch", regionId === "r1" ? "旧塔监狱" : "监狱", extras.prison, "支线救援", regionId === "r1" ? "里面关着一名可救出的角色。先试着救人。" : "固定救出一个角色。先打主线第 5 关解锁。", [regionIndex === 0 ? "林地游侠" : regionIndex === 1 ? "破盾战士" : "晨祷牧师"], [regionId === "r1" ? `${regionId}_main_3` : `${regionId}_main_5`]),
       node(`${regionId}_boss`, regionId, "boss", "地区 Boss", extras.boss, "Boss 关", "第 10 关之后的收束战。", ["高品质装备", "地区通关"], [`${regionId}_main_10`]),
     ];
     return [...gates, ...line, ...branches];
@@ -182,7 +177,7 @@
   function mainNodeRequires(regionId, index) {
     if (index === 0) return [];
     const nodeNo = index + 1;
-    if (regionId === "r1" && nodeNo === 5) return ["r1_prison"];
+    if (regionId === "r1" && nodeNo === 6) return ["r1_main_5", "r1_prison"];
     return [`${regionId}_main_${index}`];
   }
 
@@ -192,13 +187,22 @@
 
   function initialState() {
     return {
+      seed: "player",
       cleared: {},
       rewards: [],
       flags: { r1PrisonFailed: false },
       attempts: {},
       failures: {},
+      pendingEncounter: null,
       inventory: [],
       equipped: {},
+      lootHistory: [],
+      lootUnread: 0,
+      roster: ROSTER.createInitialRoster(),
+      teamSlots: [...ROSTER.INITIAL_TEAM_SLOTS],
+      selectedTeamSlot: 3,
+      selectedEquipmentHeroId: ROSTER.INITIAL_TEAM_SLOTS[0],
+      selectedEquipmentItemId: null,
       knowledge: {
         equipmentTriedAfterFail: false,
         roleTriedAfterGearFail: false,
@@ -219,6 +223,13 @@
       failures: value.failures || {},
       inventory: value.inventory || [],
       equipped: value.equipped || {},
+      lootHistory: Array.isArray(value.lootHistory) ? value.lootHistory : [],
+      lootUnread: Math.max(0, Number(value.lootUnread) || 0),
+      roster: ROSTER.normalizeRoster(value.roster),
+      teamSlots: ROSTER.normalizeTeamSlots(value.teamSlots, value.roster),
+      selectedTeamSlot: Math.max(0, Math.min(3, Number(value.selectedTeamSlot) || 0)),
+      selectedEquipmentHeroId: value.selectedEquipmentHeroId || ROSTER.INITIAL_TEAM_SLOTS[0],
+      selectedEquipmentItemId: value.selectedEquipmentItemId || null,
       knowledge: { ...initialState().knowledge, ...(value.knowledge || {}) },
       pan: value.pan || { x: -34, y: -92 },
     };
@@ -234,11 +245,18 @@
     }
     els.resetBtn.addEventListener("click", () => {
       stopAutoChallenge();
+      stopBattleWaves();
+      pendingHumanNode = null;
+      if (battleView) {
+        battleView.onFinish = () => {};
+        battleView.stop(false);
+      }
       state = initialState();
       selectedId = state.selectedId;
       pan = state.pan;
       saveState();
       render();
+      switchPage("map");
     });
     els.mapStage.addEventListener("pointerdown", (event) => {
       if (event.target.closest("[data-node-id]")) return;
@@ -280,12 +298,62 @@
     });
     els.fightBtn.addEventListener("click", () => {
       const current = findNode(selectedId);
-      if (!current || !isAvailable(current) || state.cleared[current.id]) return;
-      attemptNode(current);
+      if (!current || !isAvailable(current)) return;
+      startHumanNodeBattle(current);
     });
     els.autoFiveBtn.addEventListener("click", () => autoChallenge(5));
     els.previewBattleBtn.addEventListener("click", previewBattle);
     els.playBattleBtn.addEventListener("click", playBattleWaves);
+    els.teamManageBtn.addEventListener("click", openTeamDialog);
+    els.closeTeamDialogBtn.addEventListener("click", () => els.teamDialog.close());
+    els.teamSlotList.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-team-slot]");
+      if (!button) return;
+      state.selectedTeamSlot = Number(button.dataset.teamSlot) || 0;
+      saveState();
+      renderTeamDialog();
+    });
+    els.teamRosterList.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-roster-id]");
+      if (button) replaceSelectedTeamSlot(button.dataset.rosterId);
+    });
+    els.equipmentCharacterStrip.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-equipment-hero]");
+      if (!button) return;
+      state.selectedEquipmentHeroId = button.dataset.equipmentHero;
+      state.selectedEquipmentItemId = null;
+      saveState();
+      renderEquipmentPage();
+    });
+    els.equipmentPage.addEventListener("click", (event) => {
+      const itemButton = event.target.closest("[data-equipment-item]");
+      if (itemButton) {
+        state.selectedEquipmentItemId = itemButton.dataset.equipmentItem;
+        saveState();
+        renderEquipmentPage();
+        return;
+      }
+      const action = event.target.closest("[data-equipment-action]")?.dataset.equipmentAction;
+      if (action === "equip") equipSelectedItem();
+      if (action === "unequip") unequipSelectedItem();
+    });
+    els.optimizeEquipmentBtn.addEventListener("click", () => {
+      autoEquipBestItems();
+      state.selectedEquipmentItemId = null;
+      state.rewards.unshift("已按职业需求重新优化当前出战队装备。");
+      saveState();
+      render();
+    });
+    els.lootBatchList.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-loot-item]");
+      if (!button) return;
+      state.selectedEquipmentItemId = button.dataset.lootItem;
+      const location = findEquipmentItem(state.selectedEquipmentItemId);
+      if (location?.ownerId) state.selectedEquipmentHeroId = location.ownerId;
+      saveState();
+      switchPage("equipment");
+      renderEquipmentPage();
+    });
     window.addEventListener("resize", () => {
       setupMapCamera();
       renderMapCamera();
@@ -293,10 +361,22 @@
   }
 
   function switchPage(page) {
+    if (pendingHumanNode && page !== "battle") return;
+    if (page !== "battle") {
+      stopBattleWaves();
+      if (battleView && !pendingHumanNode) battleView.stop(false);
+    }
     for (const button of els.navButtons) button.classList.toggle("active", button.dataset.page === page);
-    els.mapStage.classList.toggle("active", page === "map");
-    els.battlePage.classList.toggle("active", page === "battle");
+    for (const view of els.pageViews) view.classList.toggle("active", view.dataset.view === page);
+    els.appShell.classList.toggle("wide-page", page === "equipment" || page === "loot");
+    if (page === "loot") {
+      state.lootUnread = 0;
+      saveState();
+      renderLootNav();
+    }
     if (page === "battle") previewBattle();
+    if (page === "equipment") renderEquipmentPage();
+    if (page === "loot") renderLootPage();
   }
 
   function finishDrag(event) {
@@ -324,6 +404,10 @@
     renderNodePanel(selected);
     renderRewards();
     renderAutoButton();
+    renderTeamDialog();
+    renderEquipmentPage();
+    renderLootPage();
+    renderLootNav();
     focusMapNode(selectedId, !hadCamera);
   }
 
@@ -500,12 +584,12 @@
     for (const region of regions) {
       for (const gate of region.gates) pairs.push({ from: gate, to: `${region.id}_main_1`, kind: "gate", bend: gate.endsWith("south") ? 34 : -22 });
       for (let index = 1; index < 10; index += 1) {
-        if (region.id === "r1" && index === 4) continue;
+        if (region.id === "r1" && index === 5) continue;
         pairs.push({ from: `${region.id}_main_${index}`, to: `${region.id}_main_${index + 1}`, kind: "main", bend: index % 2 ? 10 : -10 });
       }
-      pairs.push({ from: `${region.id}_main_4`, to: `${region.id}_bandit`, kind: "branch", bend: -34 });
-      pairs.push({ from: region.id === "r1" ? "r1_main_4" : `${region.id}_main_5`, to: `${region.id}_prison`, kind: "branch", bend: 34 });
-      if (region.id === "r1") pairs.push({ from: "r1_prison", to: "r1_main_5", kind: "main", bend: -14 });
+      pairs.push({ from: region.id === "r1" ? "r1_main_5" : `${region.id}_main_4`, to: `${region.id}_bandit`, kind: "branch", bend: -34 });
+      pairs.push({ from: region.id === "r1" ? "r1_main_3" : `${region.id}_main_5`, to: `${region.id}_prison`, kind: "branch", bend: 34 });
+      if (region.id === "r1") pairs.push({ from: "r1_prison", to: "r1_main_6", kind: "main", bend: -14 });
       pairs.push({ from: `${region.id}_main_10`, to: `${region.id}_boss`, kind: "boss", bend: 10 });
     }
     pairs.push({ from: "r1_boss", to: "r2_gate_north", kind: "region", bend: -12 });
@@ -516,7 +600,6 @@
   function linkStatus(from, to) {
     if (state.cleared[to.id]) return "cleared";
     if (nodeStatus(to) === "preview") return "preview";
-    if (isR1PrisonWaitingForCamp(to)) return "locked";
     if (isAvailable(to) || state.cleared[from.id]) return "available";
     return "locked";
   }
@@ -564,31 +647,39 @@
     if (!region || !isRegionUnlocked(region)) return false;
     if (state.cleared[item.id]) return item.type === "main";
     if (isR1BanditPreview(item)) return false;
-    if (isR1PrisonWaitingForCamp(item)) return false;
     if (item.type === "gate") return true;
     if (!regionInteriorUnlocked(region)) return false;
     return (item.requires || []).every((id) => state.cleared[id]);
   }
 
   function isR1BanditPreview(item) {
-    return item.id === "r1_bandit" && state.cleared.r1_main_4 && !state.flags.r1PrisonFailed && !state.cleared.r1_prison;
+    return item.id === "r1_bandit" && state.cleared.r1_main_5 && !state.flags.r1PrisonFailed && !state.cleared.r1_prison;
   }
 
   function shouldFirstFailPrison(item) {
     return item.id === "r1_prison" && !state.flags.r1PrisonFailed && !state.cleared.r1_bandit;
   }
 
-  function isR1PrisonWaitingForCamp(item) {
-    return item.id === "r1_prison" && state.flags.r1PrisonFailed && !state.cleared.r1_bandit;
-  }
-
   function attemptNode(item) {
     state.attempts[item.id] = (state.attempts[item.id] || 0) + 1;
     const combatResult = resolveNodeCombat(item);
+    return settleNodeAttempt(item, combatResult);
+  }
+
+  function settleNodeAttempt(item, combatResult) {
+    recordTeamExperiment(item, combatResult);
     if (!combatResult.win) return failNode(item, combatResult);
     clearNode(item);
     grantNodeRewards(item, combatResult);
     return { type: "clear", id: item.id, combat: combatResult };
+  }
+
+  function recordTeamExperiment(item, combatResult) {
+    if (!state.flags.teamChangedSinceBattle) return;
+    const rangerUsed = state.teamSlots.includes("hero_ranger");
+    state.rewards.unshift(`队伍调整验证：${item.name}${combatResult.win ? "胜利" : "失败"}，${rangerUsed ? "林地游侠已出战" : "林地游侠未出战"}。`);
+    state.flags.teamChangedSinceBattle = false;
+    state.knowledge.roleTriedAfterGearFail = true;
   }
 
   function clearNode(item) {
@@ -614,9 +705,10 @@
   }
 
   function nextFocusAfterClear(item) {
-    if (item.id === "r1_main_4") return "r1_prison";
+    if (item.id === "r1_main_3") return "r1_prison";
+    if (item.id === "r1_main_5") return state.flags.r1PrisonFailed ? "r1_bandit" : "r1_prison";
     if (item.id === "r1_bandit") return "r1_prison";
-    if (item.id === "r1_prison") return "r1_main_5";
+    if (item.id === "r1_prison") return "r1_main_6";
     return "";
   }
 
@@ -676,18 +768,18 @@
     if (item.id === "r1_bandit") {
       return {
         desc: state.flags.r1PrisonFailed ? "旧塔军械也许能帮你重新攻进监狱。" : "附近的军械营地，也许有攻坚装备。先确认旧塔监狱的阻力。",
-        rewards: ["2 高等级白装", "1 蓝装"],
+        rewards: ["2 件集中攻坚装备"],
       };
     }
     if (item.id === "r1_prison" && state.flags.r1PrisonFailed && !state.cleared.r1_bandit) {
       return {
-        desc: "刚才攻坚失败了。先去旧塔军械营地准备装备，再回来救人。",
+        desc: "刚才攻坚失败了。你可以直接重试；更稳妥的路线是继续推进并取得旧塔军械营地的装备。",
         rewards: item.rewards,
       };
     }
-    if (item.id === "r1_main_5") {
+    if (item.id === "r1_main_7") {
       return {
-        desc: "重盾敌人再次出现。观察林地游侠如何持续击穿护盾。",
+        desc: "重盾敌人再次出现。这里用于验证新救出的游侠。",
         rewards: item.rewards,
       };
     }
@@ -716,6 +808,7 @@
     if (item.id.includes("bandit")) return "重甲前排、战士、游侠和法师";
     if (item.id.includes("prison")) return "战士、重甲前排和两名游侠";
     const index = Number(item.name.split("-")[1] || 1);
+    if (item.id === "r1_main_7") return "重盾前排与后排支援";
     if (index <= 3) return "两名近战和一名远程";
     if (index <= 6) return "近战、远程与治疗";
     return "完整四人敌队";
@@ -725,7 +818,7 @@
     if (battleView || !window.GAME_BATTLE_VIEW?.mount || !els.battleMount) return battleView;
     battleView = window.GAME_BATTLE_VIEW.mount({
       container: els.battleMount,
-      maxTime: 32,
+      maxTime: 70,
       speed: 1.25,
       cameraMode: "fitUnits",
       cameraSmoothing: 0.06,
@@ -931,9 +1024,12 @@
   }
 
   function previewBattle() {
+    if (pendingHumanNode) return;
     stopBattleWaves();
     els.waveStatus.textContent = "预览";
-    mountBattle()?.preview({
+    const view = mountBattle();
+    if (view) view.onFinish = () => {};
+    view?.preview({
       title: "敌群增援模拟",
       leftTeam: playerTeam(),
       rightTeam: smallWaveOne(),
@@ -941,9 +1037,11 @@
   }
 
   function playBattleWaves() {
+    if (pendingHumanNode) return;
     stopBattleWaves();
     const view = mountBattle();
     if (!view) return;
+    view.onFinish = () => {};
     const waves = battleWaves();
     els.waveStatus.textContent = waves[0].smallWaves[0].title;
     view.start({
@@ -1227,32 +1325,80 @@
       return { win: false, duration: 0, leftHp: 0, rightHp: 1, reason: "combat_sim_missing" };
     }
     const result = simulator.simulateTeams(leftTeam, rightTeam, {
-      seed: `map-node|${item.id}|${state.attempts[item.id] || 0}|${gearScore()}`,
+      seed: `map-node|${item.id}|${state.attempts[item.id] || 0}|${gearScore()}|${state.seed}`,
       randomizeStats: false,
       fieldEffectId: nodeFieldEffect(item),
       maxTime: 70,
     });
     return {
       ...result,
-      win: result.winner === "left",
+      win: result.winner === "left" && !(item.type === "boss" && combatResolution(result) === "time_limit"),
+      resolution: combatResolution(result),
       enemyPower: Math.round(rightTeam.reduce((sum, unit) => sum + compactSpecPower(unit), 0)),
       playerPower: Math.round(leftTeam.reduce((sum, unit) => sum + compactSpecPower(unit), 0)),
     };
   }
 
+  function startHumanNodeBattle(item) {
+    if (pendingHumanNode) return;
+    stopBattleWaves();
+    const view = mountBattle();
+    if (!view) {
+      attemptNode(item);
+      return;
+    }
+    view.onFinish = () => {};
+    view.stop(false);
+    state.attempts[item.id] = (state.attempts[item.id] || 0) + 1;
+    state.pendingEncounter = {
+      id: item.id,
+      attempt: state.attempts[item.id],
+      gearScore: gearScore(),
+    };
+    saveState();
+    const leftTeam = progressionPlayerTeam();
+    const rightTeam = nodeEnemyTeam(item);
+    const seed = `map-node|${item.id}|${state.attempts[item.id] || 0}|${gearScore()}|${state.seed}`;
+    pendingHumanNode = item;
+    switchPage("battle");
+    els.waveStatus.textContent = `${item.name} · 战斗中`;
+    view.maxTime = 70;
+    view.onFinish = (result) => finishHumanNodeBattle(item, result, leftTeam, rightTeam);
+    view.start({ leftTeam, rightTeam, seed, title: item.name, randomizeStats: false, fieldEffectId: nodeFieldEffect(item) });
+  }
+
+  function finishHumanNodeBattle(item, result, leftTeam, rightTeam) {
+    if (pendingHumanNode?.id !== item.id) return;
+    const combatResult = {
+      ...result,
+      win: result?.winner === "left" && !(item.type === "boss" && combatResolution(result) === "time_limit"),
+      resolution: combatResolution(result),
+      enemyPower: Math.round(rightTeam.reduce((sum, unit) => sum + compactSpecPower(unit), 0)),
+      playerPower: Math.round(leftTeam.reduce((sum, unit) => sum + compactSpecPower(unit), 0)),
+    };
+    pendingHumanNode = null;
+    state.pendingEncounter = null;
+    const outcome = settleNodeAttempt(item, combatResult);
+    const label = combatResult.win ? (combatResult.resolution === "time_limit" ? "时限判定胜利" : "胜利") : "失败";
+    els.waveStatus.textContent = `${item.name} · ${label}`;
+    window.setTimeout(() => {
+      switchPage("map");
+      render();
+    }, outcome?.type === "failure" ? 1400 : 1100);
+  }
+
+  function combatResolution(result) {
+    const leftAlive = result?.metrics?.leftAlive || 0;
+    const rightAlive = result?.metrics?.rightAlive || 0;
+    return Number(result?.duration || 0) >= 69.8 && leftAlive > 0 && rightAlive > 0 ? "time_limit" : "elimination";
+  }
+
   function progressionPlayerTeam() {
-    const gearMult = 1 + gearScore() / 260;
-    const hasRanger = Boolean(state.cleared.r1_prison);
-    const team = [
-      { name: "Silver Knight", roleKey: "knight", role: "knight", roleName: "knight", hp: 520, power: 46, armor: 18, range: 9, slotIndex: 0 },
-      { name: "Berserker", roleKey: "berserker", role: "berserker", roleName: "berserker", hp: 430, power: 58, armor: 10, range: 9, slotIndex: 1 },
-      { name: hasRanger ? "Forest Ranger" : "Ember Mage", roleKey: hasRanger ? "ranger" : "mage", role: hasRanger ? "ranger" : "mage", roleName: hasRanger ? "ranger" : "mage", hp: hasRanger ? 340 : 310, power: hasRanger ? 58 : 64, armor: hasRanger ? 7 : 5, range: hasRanger ? 34 : 28, slotIndex: 2 },
-      { name: "Dawn Priest", roleKey: "priest", role: "priest", roleName: "priest", hp: 340, power: 42, armor: 6, range: 25, slotIndex: 3 },
-    ];
-    return team.map((unit) => scaleCombatSpec(withRoleKit(unit), gearMult));
+    return ROSTER.buildTeam(state.roster, state.teamSlots, 1);
   }
 
   function nodeEnemyTeam(item) {
+    if (item.id === "r1_prison") return prisonMilitiaTeam();
     const roles = nodeEnemyRoles(item);
     const scale = nodeEnemyScale(item);
     return roles.map((role, index) => scaleCombatSpec(enemySpec(role, index, item), scale));
@@ -1263,7 +1409,7 @@
     if (item.type === "gate") return ["warrior", "warrior", "ranger", "priest"];
     if (item.id.includes("bandit")) return ["knight", "warrior", "ranger", "mage"];
     if (item.id.includes("prison")) return ["warrior", "knight", "ranger", "ranger"];
-    const mainNo = Number(item.name.split("-")[1] || 1);
+    const mainNo = Number(item.id.split("_").pop() || 1);
     if (mainNo <= 3) return ["warrior", "warrior", "ranger"];
     if (mainNo <= 6) return ["warrior", "warrior", "ranger", "priest"];
     return ["knight", "warrior", "ranger", "mage"];
@@ -1275,6 +1421,7 @@
     const typeBonus = { gate: 0.08, main: 0, branch: 0.28, boss: 0.62 }[item.type] || 0;
     const prisonBump = item.id.includes("prison") ? 0.24 : 0;
     const scale = regionBase + mainNo * 0.055 + typeBonus + prisonBump;
+    if (item.type === "boss") return scale * 1.22;
     return item.id.includes("prison") ? scale * 2.05 : scale;
   }
 
@@ -1335,7 +1482,7 @@
   function nodeFieldEffect(item) {
     if (item.id.includes("prison")) return "sentry_suppression";
     if (item.id.includes("bandit")) return "heavy_shield_line";
-    if (item.id === "r1_main_5") return "heavy_shield_line";
+    if (item.id === "r1_main_7") return "heavy_shield_line";
     if (item.type === "boss") return "pressure_corridor";
     return "";
   }
@@ -1344,73 +1491,306 @@
     const loot = rollNodeLoot(item);
     state.inventory.push(...loot);
     autoEquipBestItems();
-    if (item.id === "r1_prison") state.flags.rangerRescued = true;
-    const lootText = loot.map((entry) => `${entry.name}+${entry.power}`).join(" / ") || "无装备";
-    state.rewards.unshift(`${item.name}：真实战斗 ${combatResult.duration} 秒胜利；掉落 ${lootText}；我方强度 ${combatResult.playerPower} / 敌方 ${combatResult.enemyPower}`);
+    recordLootBatch(item, loot);
+    if (item.id === "r1_prison") {
+      state.flags.rangerRescued = true;
+      state.roster = ROSTER.rescueHero(state.roster, "ranger");
+      state.rewards.unshift("林地游侠已加入角色名单。当前队伍没有自动改变，请由你决定是否替换出战角色。");
+    }
+    const lootText = loot.map((entry) => entry.name).join(" / ") || "无装备";
+    const topDamage = (combatResult.units || []).filter((unit) => unit.side === "left" || unit.side === "ally").sort((a, b) => b.damageDone - a.damageDone)[0];
+    const damageText = topDamage ? `；最高伤害 ${topDamage.name} ${Math.round(topDamage.damageDone)}` : "";
+    const verdict = combatResult.resolution === "time_limit" ? "时限结束后按剩余生命判定胜利" : "击败全部敌人";
+    state.rewards.unshift(`${item.name}：真实战斗 ${combatResult.duration} 秒胜利（${verdict}）；掉落 ${lootText}，已记录到战利品页；我方强度 ${combatResult.playerPower} / 敌方 ${combatResult.enemyPower}${damageText}`);
+    saveState();
+    render();
+    if (item.id === "r1_prison") window.setTimeout(openTeamDialog, 80);
+  }
+
+  function openTeamDialog() {
+    if (!state.flags.rangerRescued || !els.teamDialog) return;
+    renderTeamDialog();
+    if (!els.teamDialog.open) els.teamDialog.showModal();
+  }
+
+  function renderTeamDialog() {
+    if (!els.teamManageBtn) return;
+    els.teamManageBtn.disabled = !state.flags.rangerRescued;
+    els.teamManageBtn.textContent = state.flags.rangerRescued ? "队伍整备" : "队伍整备（未开放）";
+    const activeIds = new Set(state.teamSlots);
+    const byId = Object.fromEntries(state.roster.map((unit) => [unit.id, unit]));
+    els.teamSlotList.innerHTML = state.teamSlots.map((id, slotIndex) => {
+      const unit = byId[id];
+      return `<button type="button" class="team-unit${state.selectedTeamSlot === slotIndex ? " selected" : ""}" data-team-slot="${slotIndex}">
+        <strong>${slotIndex < 2 ? "前排" : "后排"} ${slotIndex % 2 + 1}</strong>
+        <span>${unit?.name || "空位"}</span>
+        <small>${unit?.kind === "militia" ? "民兵" : "英雄"} · ${unit?.note || "选择角色"}</small>
+      </button>`;
+    }).join("");
+    els.teamRosterList.innerHTML = state.roster.map((unit) => `<button type="button" class="team-unit${activeIds.has(unit.id) ? " active" : ""}" data-roster-id="${unit.id}">
+      <strong>${unit.name}</strong>
+      <span>${unit.kind === "militia" ? "民兵" : "英雄"} · ${unit.role}</span>
+      <small>${unit.note}</small>
+    </button>`).join("");
+  }
+
+  function replaceSelectedTeamSlot(heroId) {
+    const before = [...state.teamSlots];
+    state.teamSlots = ROSTER.assignTeamSlot(state.roster, state.teamSlots, state.selectedTeamSlot, heroId);
+    if (before.join("|") === state.teamSlots.join("|")) return;
+    const result = EQUIPMENT.autoEquip(state.roster, state.teamSlots, state.inventory);
+    state.roster = result.roster;
+    state.inventory = result.inventory;
+    state.flags.teamChangedSinceBattle = true;
+    const unit = state.roster.find((candidate) => candidate.id === heroId);
+    state.rewards.unshift(`你将${unit?.name || "角色"}换入小队。下一场真实战斗会验证这次调整。`);
     saveState();
     render();
   }
 
+  function renderEquipmentPage() {
+    if (!els.equipmentPage) return;
+    const activeIds = new Set(state.teamSlots);
+    const orderedRoster = [...state.roster].sort((a, b) => Number(activeIds.has(b.id)) - Number(activeIds.has(a.id)));
+    let hero = state.roster.find((unit) => unit.id === state.selectedEquipmentHeroId) || orderedRoster[0];
+    if (!hero) return;
+    state.selectedEquipmentHeroId = hero.id;
+    els.equipmentHeroName.textContent = `${hero.name} · ${hero.kind === "militia" ? "民兵" : "英雄"}`;
+    els.equipmentCharacterStrip.innerHTML = orderedRoster.map((unit) => {
+      const score = Object.values(unit.equipment || {}).reduce((sum, item) => sum + EQUIPMENT.itemScoreForRole(item, unit.role), 0);
+      return `<button type="button" class="equipment-hero${unit.id === hero.id ? " selected" : ""}${activeIds.has(unit.id) ? " active" : ""}" data-equipment-hero="${unit.id}">
+        <span>${unit.kind === "militia" ? "兵" : "英"}</span>
+        <strong>${unit.name}</strong>
+        <small>${unit.note}</small>
+        <em>装备 ${Math.round(score)}</em>
+      </button>`;
+    }).join("");
+
+    els.equipmentSlotGrid.innerHTML = Object.entries(EQUIPMENT.SLOT_DATA).map(([slot, data]) => {
+      const item = hero.equipment?.[slot];
+      return `<button type="button" class="equipment-slot rarity-${item?.rarity || "empty"}${item?.id === state.selectedEquipmentItemId ? " selected" : ""}" ${item ? `data-equipment-item="${item.id}"` : "disabled"}>
+        <span>${equipmentIcon(slot)}</span>
+        <div><small>${data.label}</small><strong>${item?.name || "空"}</strong>${item ? `<em>${compactItemStats(item)}</em>` : ""}</div>
+      </button>`;
+    }).join("");
+
+    const inventory = [...state.inventory].sort(compareEquipmentItems);
+    els.inventoryCount.textContent = `${inventory.length} 件`;
+    els.equipmentInventoryGrid.innerHTML = inventory.length
+      ? inventory.map((item) => equipmentGridCell(item, "equipment-item")).join("")
+      : `<div class="inventory-empty">仓库目前为空。已自动装备的物品显示在角色部位中。</div>`;
+    renderEquipmentInspector(hero);
+  }
+
+  function renderEquipmentInspector(hero) {
+    const location = findEquipmentItem(state.selectedEquipmentItemId);
+    if (!location) {
+      els.equipmentInspector.innerHTML = `<div class="inspector-empty"><span>选择装备</span><p>点击已装备部位或仓库格子查看属性与比较。</p></div>`;
+      return;
+    }
+    const item = location.item;
+    const current = hero.equipment?.[item.slot];
+    const selectedScore = EQUIPMENT.itemScoreForRole(item, hero.role);
+    const currentScore = current ? EQUIPMENT.itemScoreForRole(current, hero.role) : 0;
+    const delta = Math.round(selectedScore - currentScore);
+    const owner = location.ownerId ? state.roster.find((unit) => unit.id === location.ownerId) : null;
+    const isCurrentOwner = owner?.id === hero.id;
+    els.equipmentInspector.innerHTML = `
+      <div class="item-title rarity-${item.rarity}">
+        <span>${equipmentIcon(item.slot)}</span>
+        <div><small>${item.rarityLabel} · ${item.slotLabel}</small><strong>${item.name}</strong></div>
+      </div>
+      <div class="item-owner">当前去向<strong>${owner ? `${owner.name}已装备` : "仓库"}</strong></div>
+      <div class="item-stat-list">${itemStatRows(item)}</div>
+      <div class="item-compare ${delta >= 0 ? "gain" : "loss"}">
+        <span>对 ${hero.name}</span><strong>${delta >= 0 ? "+" : ""}${delta}</strong>
+      </div>
+      <button type="button" class="primary-equipment-action" data-equipment-action="${isCurrentOwner ? "unequip" : "equip"}">
+        ${isCurrentOwner ? "卸下到仓库" : `装备给${hero.name}`}
+      </button>`;
+  }
+
+  function renderLootPage() {
+    if (!els.lootPage) return;
+    const total = state.lootHistory.reduce((sum, batch) => sum + batch.items.length, 0);
+    els.lootTotalCount.textContent = `${total} 件记录`;
+    els.lootBatchList.innerHTML = state.lootHistory.length
+      ? state.lootHistory.map((batch, batchIndex) => `<section class="loot-batch${batchIndex === 0 ? " latest" : ""}">
+          <header><div><span>${batchIndex === 0 ? "最近掉落" : `第 ${state.lootHistory.length - batchIndex} 组`}</span><strong>${batch.nodeName}</strong></div><small>第 ${batch.attempt} 次挑战 · ${batch.items.length} 件</small></header>
+          <div class="loot-item-grid">${batch.items.map((item) => {
+            const location = findEquipmentItem(item.id);
+            const owner = location?.ownerId ? state.roster.find((unit) => unit.id === location.ownerId) : null;
+            return `<button type="button" class="loot-item rarity-${item.rarity}" data-loot-item="${item.id}">
+              <span>${equipmentIcon(item.slot)}</span>
+              <div><small>${item.rarityLabel} · Lv.${item.equipmentLevel}</small><strong>${item.name}</strong><em>${compactItemStats(item)}</em></div>
+              <b>${owner ? `${owner.name}已装备` : "仓库"}</b>
+            </button>`;
+          }).join("")}</div>
+        </section>`).join("")
+      : `<div class="loot-empty"><strong>还没有战利品</strong><p>赢得下一场战斗后，掉落会按场次出现在这里。</p></div>`;
+  }
+
+  function renderLootNav() {
+    if (!els.lootNavBtn) return;
+    els.lootNavBtn.textContent = state.lootUnread > 0 ? `战利品 (${state.lootUnread})` : "战利品";
+    els.lootNavBtn.classList.toggle("has-new", state.lootUnread > 0);
+  }
+
+  function recordLootBatch(item, loot) {
+    if (!loot.length) return;
+    state.lootHistory.unshift({
+      id: `${item.id}_${state.attempts[item.id] || 0}`,
+      nodeId: item.id,
+      nodeName: item.name,
+      attempt: state.attempts[item.id] || 0,
+      items: loot.map((entry) => ({ ...entry, baseStats: { ...(entry.baseStats || {}) }, affixes: (entry.affixes || []).map((affix) => ({ ...affix })) })),
+    });
+    state.lootHistory = state.lootHistory.slice(0, 60);
+    state.lootUnread += loot.length;
+  }
+
+  function equipSelectedItem() {
+    const hero = state.roster.find((unit) => unit.id === state.selectedEquipmentHeroId);
+    const location = findEquipmentItem(state.selectedEquipmentItemId);
+    if (!hero || !location) return;
+    const item = location.item;
+    if (location.ownerId) {
+      const source = state.roster.find((unit) => unit.id === location.ownerId);
+      if (source?.equipment?.[item.slot]?.id === item.id) delete source.equipment[item.slot];
+    } else {
+      state.inventory = state.inventory.filter((entry) => entry.id !== item.id);
+    }
+    const displaced = hero.equipment?.[item.slot];
+    if (displaced && displaced.id !== item.id && !state.inventory.some((entry) => entry.id === displaced.id)) state.inventory.push(displaced);
+    hero.equipment = { ...(hero.equipment || {}), [item.slot]: item };
+    state.rewards.unshift(`${hero.name}装备了${item.name}。`);
+    saveState();
+    render();
+  }
+
+  function unequipSelectedItem() {
+    const hero = state.roster.find((unit) => unit.id === state.selectedEquipmentHeroId);
+    const location = findEquipmentItem(state.selectedEquipmentItemId);
+    if (!hero || location?.ownerId !== hero.id) return;
+    const item = location.item;
+    delete hero.equipment[item.slot];
+    if (!state.inventory.some((entry) => entry.id === item.id)) state.inventory.push(item);
+    state.rewards.unshift(`${hero.name}卸下了${item.name}。`);
+    saveState();
+    render();
+  }
+
+  function findEquipmentItem(itemId) {
+    if (!itemId) return null;
+    for (const unit of state.roster) {
+      const item = Object.values(unit.equipment || {}).find((entry) => entry.id === itemId);
+      if (item) return { item, ownerId: unit.id };
+    }
+    const item = state.inventory.find((entry) => entry.id === itemId);
+    return item ? { item, ownerId: null } : null;
+  }
+
+  function equipmentGridCell(item, attribute) {
+    return `<button type="button" class="inventory-cell rarity-${item.rarity}${item.id === state.selectedEquipmentItemId ? " selected" : ""}" data-${attribute}="${item.id}" title="${item.name}">
+      <span>${equipmentIcon(item.slot)}</span><small>Lv.${item.equipmentLevel}</small><b>${item.rarityLabel}</b>
+    </button>`;
+  }
+
+  function equipmentIcon(slot) {
+    return { weapon: "🗡️", helm: "🪖", chest: "🛡️", gloves: "🧤", legs: "👖", boots: "🥾", ring: "💍", charm: "🔮" }[slot] || "◆";
+  }
+
+  function compactItemStats(item) {
+    const base = Object.entries(item.baseStats || {}).map(([stat, value]) => `${equipmentStatLabel(stat)} +${value}`);
+    const affixes = combinedAffixes(item).slice(0, 2).map((affix) => `${affix.label} +${affix.value}`);
+    return [...base, ...affixes].join(" · ");
+  }
+
+  function itemStatRows(item) {
+    const base = Object.entries(item.baseStats || {}).map(([stat, value]) => `<div><span>${equipmentStatLabel(stat)}</span><strong>+${value}</strong></div>`);
+    const affixes = combinedAffixes(item).map((affix) => `<div><span>${affix.label}</span><strong>+${affix.value}</strong></div>`);
+    return [...base, ...affixes].join("");
+  }
+
+  function combinedAffixes(item) {
+    const groups = new Map();
+    for (const affix of item.affixes || []) {
+      const key = affix.stat || affix.id;
+      const previous = groups.get(key) || { label: affix.label || equipmentStatLabel(key), value: 0 };
+      previous.value += Number(affix.value) || 0;
+      groups.set(key, previous);
+    }
+    return [...groups.values()];
+  }
+
+  function equipmentStatLabel(stat) {
+    return { physicalPower: "物理强度", magicPower: "法术强度", maxHp: "生命", armor: "护甲" }[stat] || EQUIPMENT.AFFIX_DEFS?.[stat]?.label || stat;
+  }
+
+  function compareEquipmentItems(a, b) {
+    const rarity = (EQUIPMENT.RARITY_BY_ID[b.rarity]?.rank || 0) - (EQUIPMENT.RARITY_BY_ID[a.rarity]?.rank || 0);
+    return rarity || b.equipmentLevel - a.equipmentLevel || a.slot.localeCompare(b.slot);
+  }
+
   function rollNodeLoot(item) {
     const rule = dropRuleForNode(item);
-    const rng = seededMapRandom(`${item.id}|${state.attempts[item.id] || 0}|${state.inventory.length}`);
-    return Array.from({ length: rule.count }, (_, index) => makeLootItem(item, rule, rng, index));
+    return EQUIPMENT.generateItems(rule, `${state.seed}|${item.id}|${state.attempts[item.id] || 0}|${state.inventory.length}`, `${item.id}_${state.attempts[item.id] || 0}`);
   }
 
   function dropRuleForNode(item) {
-    const region = regionDropRules[item.regionId] || regionDropRules.r1;
-    return region[item.type] || region.main;
-  }
-
-  function makeLootItem(item, rule, rng, index) {
-    const rarity = rollRarity(rule.rates, rng());
-    const rarityInfo = rarityTable[rarity] || rarityTable.common;
-    const level = Math.round(rule.level[0] + (rule.level[1] - rule.level[0]) * rng());
-    const slot = gearSlots[Math.floor(rng() * gearSlots.length) % gearSlots.length];
-    const power = Math.max(1, Math.round((level * 0.72 + rarityInfo.score * 2.5) * rarityInfo.mult));
-    return {
-      id: `${item.id}_${state.attempts[item.id] || 0}_${index}_${rarity}`,
-      name: `${rarityInfo.name}${slotName(slot)}Lv${level}`,
-      rarity,
-      level,
-      slot,
-      power,
-      source: item.id,
-    };
-  }
-
-  function rollRarity(rates, value) {
-    let cursor = 0;
-    for (const rarity of ["common", "blue", "rare", "epic"]) {
-      cursor += rates[rarity] || 0;
-      if (value <= cursor) return rarity;
-    }
-    return "common";
+    if (item.id === "r1_bandit") return { level: [10, 16], rates: { common: 0.4, rare: 0.58, epic: 0.02 }, count: 2 };
+    if (item.id === "r1_prison") return { level: [9, 15], rates: { common: 0.55, rare: 0.43, epic: 0.02 }, count: 2 };
+    if (item.type === "boss") return { level: [14, 22], rates: { common: 0.3, rare: 0.65, epic: 0.05 }, count: 4 };
+    const mainNo = Number(item.id.split("_").pop() || 1);
+    if (mainNo <= 2) return { level: [1, 4], rates: { common: 0.98, rare: 0.02 }, count: 2 };
+    if (mainNo <= 4) return { level: [3, 7], rates: { common: 0.94, rare: 0.06 }, count: 2 };
+    if (mainNo <= 6) return { level: [5, 10], rates: { common: 0.9, rare: 0.1 }, count: 2 };
+    if (mainNo <= 8) return { level: [7, 12], rates: { common: 0.86, rare: 0.14 }, count: 2 };
+    return { level: [9, 15], rates: { common: 0.82, rare: 0.17, epic: 0.01 }, count: 2 };
   }
 
   function autoEquipBestItems() {
-    for (const item of state.inventory) {
-      const current = state.equipped[item.slot];
-      if (!current || item.power > current.power) state.equipped[item.slot] = item;
+    const result = EQUIPMENT.autoEquip(state.roster, state.teamSlots, state.inventory);
+    state.roster = result.roster;
+    state.inventory = result.inventory;
+  }
+
+  function recoverInterruptedEncounter() {
+    const interrupted = state.pendingEncounter;
+    if (!interrupted?.id) return;
+    const item = findNode(interrupted.id);
+    state.pendingEncounter = null;
+    if (!item || state.cleared[item.id]) {
+      saveState();
+      return;
     }
+    state.failures[item.id] = (state.failures[item.id] || 0) + 1;
+    if (item.id === "r1_prison") state.flags.r1PrisonFailed = true;
+    selectedId = latestClearedMain(item)?.id || previousFarmNode(item)?.id || item.id;
+    state.selectedId = selectedId;
+    state.knowledge.equipmentTriedAfterFail = true;
+    state.rewards.unshift(`${item.name}的战斗被中断，按撤退处理；没有获得奖励。`);
+    saveState();
   }
 
   function gearScore() {
-    return Object.values(state.equipped || {}).reduce((sum, item) => sum + (item.power || 0), 0);
+    return EQUIPMENT.teamEquipmentScore(state.roster, state.teamSlots);
   }
 
   function gearSummary() {
-    const labels = { weapon: "武", armor: "甲", focus: "器", boots: "靴" };
-    return gearSlots.map((slot) => `${labels[slot]}${state.equipped?.[slot]?.power || 0}`).join(" / ");
+    return EQUIPMENT.equipmentSummary(state.roster, state.teamSlots);
   }
 
   function nextBehaviorAfterFailure(item, combatResult) {
     const failCount = state.failures[item.id] || 1;
     const gear = gearScore();
     if (item.id === "r1_prison" && !state.cleared.r1_bandit) {
+      const campReady = state.cleared.r1_main_5;
       return {
-        focusId: "r1_bandit",
-        log: `监狱真实战斗失败（${combatResult.duration} 秒）。当前已知办法：去军械营地刷装，装备提升后再试。`,
+        focusId: campReady ? "r1_bandit" : "r1_main_4",
+        log: campReady
+          ? `监狱真实战斗失败（${combatResult.duration} 秒）。军械营地已经出现，取得攻坚装备后再试。`
+          : `监狱真实战斗失败（${combatResult.duration} 秒）。当前只知道装备能提升战力，继续推进郊野寻找更好的装备来源。`,
       };
     }
     if (item.id === "r1_prison" && state.cleared.r1_bandit) {
@@ -1453,10 +1833,6 @@
     return (unit.maxHp || unit.hp || 0) * 0.22 + (unit.power || 0) * 5.5 + (unit.armor || 0) * 6;
   }
 
-  function slotName(slot) {
-    return { weapon: "Weapon", armor: "Armor", focus: "Charm", boots: "Boots" }[slot] || slot;
-  }
-
   function seededMapRandom(seedText) {
     let seed = 2166136261;
     for (let i = 0; i < seedText.length; i += 1) {
@@ -1470,6 +1846,19 @@
       value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
       return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
     };
+  }
+
+  function prisonMilitiaTeam() {
+    const noop = "enemyNoop";
+    const dormant = "enemyDormantPassive";
+    const scale = 3.2;
+    const units = [
+      { name: "狱门盾兵", role: "warrior", hp: 300, physicalPower: 8, magicPower: 8, armor: 9, range: 12, small1: "heal" },
+      { name: "狱卒弓兵1", role: "ranger", hp: 155, physicalPower: 18, magicPower: 8, armor: 3, range: 42, small1: "markShot" },
+      { name: "狱卒弓兵2", role: "ranger", hp: 155, physicalPower: 18, magicPower: 8, armor: 3, range: 42, small1: "markShot" },
+      { name: "狱医", role: "priest", hp: 150, physicalPower: 6, magicPower: 18, armor: 3, range: 36, small1: "heal" },
+    ];
+    return units.map((unit, slotIndex) => scaleCombatSpec({ ...unit, power: Math.max(unit.physicalPower, unit.magicPower), small2: noop, passive: dormant, ultimate: noop, slotIndex }, scale));
   }
 
   function playerTeam() {

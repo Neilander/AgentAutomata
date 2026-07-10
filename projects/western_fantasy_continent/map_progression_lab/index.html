@@ -19,8 +19,9 @@
           <button type="button" data-page="disabled">城镇首页</button>
           <button type="button" class="active" data-page="map">地区刷级</button>
           <button type="button" data-page="battle">战斗模拟</button>
-          <button type="button" data-page="disabled">队伍整备</button>
-          <button type="button" data-page="disabled">装备仓库</button>
+          <button id="teamManageBtn" type="button" disabled>队伍整备</button>
+          <button id="equipmentNavBtn" type="button" data-page="equipment">装备仓库</button>
+          <button id="lootNavBtn" type="button" data-page="loot">战利品</button>
           <button type="button" disabled>招募大厅</button>
         </nav>
       </aside>
@@ -84,6 +85,47 @@
             <div><span>大波 2</span><strong>标准敌队</strong></div>
           </div>
         </div>
+
+        <div id="equipmentPage" class="equipment-page page-view" data-view="equipment">
+          <header class="equipment-head">
+            <div>
+              <span class="eyebrow">角色配装</span>
+              <h2>装备仓库</h2>
+              <p>选择角色和装备，比较后手动换装。</p>
+            </div>
+            <button id="optimizeEquipmentBtn" type="button">一键优化出战队</button>
+          </header>
+          <div id="equipmentCharacterStrip" class="equipment-character-strip"></div>
+          <div class="equipment-workspace">
+            <section class="equipped-pane">
+              <div class="pane-title">
+                <span>当前角色</span>
+                <strong id="equipmentHeroName">-</strong>
+              </div>
+              <div id="equipmentSlotGrid" class="equipment-slot-grid"></div>
+            </section>
+            <section class="inventory-pane">
+              <div class="pane-title">
+                <span>仓库</span>
+                <strong id="inventoryCount">0 件</strong>
+              </div>
+              <div id="equipmentInventoryGrid" class="equipment-inventory-grid"></div>
+            </section>
+            <aside id="equipmentInspector" class="equipment-inspector"></aside>
+          </div>
+        </div>
+
+        <div id="lootPage" class="loot-page page-view" data-view="loot">
+          <header class="loot-head">
+            <div>
+              <span class="eyebrow">战斗收获</span>
+              <h2>战利品记录</h2>
+              <p>按战斗查看掉落，以及装备目前由谁使用。</p>
+            </div>
+            <strong id="lootTotalCount">0 件</strong>
+          </header>
+          <div id="lootBatchList" class="loot-batch-list"></div>
+        </div>
       </section>
 
       <aside class="detail-panel">
@@ -109,11 +151,32 @@
         </div>
       </aside>
     </main>
+    <dialog id="teamDialog" class="team-dialog">
+      <div class="team-dialog-head">
+        <div>
+          <span>队伍整备</span>
+          <strong>选择出战位置，再选择替换角色</strong>
+        </div>
+        <button id="closeTeamDialogBtn" type="button" aria-label="关闭">×</button>
+      </div>
+      <section>
+        <h2>当前小队</h2>
+        <div id="teamSlotList" class="team-slot-list"></div>
+      </section>
+      <section>
+        <h2>角色名单</h2>
+        <div id="teamRosterList" class="team-roster-list"></div>
+      </section>
+    </dialog>
     <script src="/game_data/skill-assets.js"></script>
     <script src="/game_data/skill-data.js"></script>
     <script src="/game_data/combat-signals.js"></script>
     <script src="/game_data/runtime-field-effects.js"></script>
     <script src="/game_data/combat-sim.js"></script>
+    <script src="/game_data/mechanic-curves.js"></script>
+    <script src="/game_data/build-layers.js"></script>
+    <script src="/game_data/equipment-runtime.js"></script>
+    <script src="/map_progression_lab/map-progression-roster.js"></script>
     <script src="/shared/game_camera_2d/camera-core.js"></script>
     <script src="/battle_view/battle-view.js"></script>
     <script src="/map_progression_lab/map-progression-lab.js"></script>

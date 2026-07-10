@@ -93,6 +93,35 @@
     ],
   };
 
+  const rarityTable = {
+    common: { name: "白装", score: 1, mult: 1 },
+    blue: { name: "蓝装", score: 2, mult: 1.55 },
+    rare: { name: "稀有", score: 3, mult: 2.35 },
+    epic: { name: "紫装", score: 5, mult: 3.8 },
+  };
+
+  const regionDropRules = {
+    r1: {
+      main: { level: [1, 8], rates: { common: 0.82, blue: 0.17, rare: 0.01, epic: 0 }, count: 2 },
+      branch: { level: [5, 12], rates: { common: 0.62, blue: 0.32, rare: 0.06, epic: 0 }, count: 3 },
+      boss: { level: [10, 16], rates: { common: 0.5, blue: 0.38, rare: 0.1, epic: 0.02 }, count: 4 },
+    },
+    r2: {
+      gate: { level: [10, 18], rates: { common: 0.58, blue: 0.33, rare: 0.08, epic: 0.01 }, count: 3 },
+      main: { level: [12, 24], rates: { common: 0.52, blue: 0.36, rare: 0.1, epic: 0.02 }, count: 3 },
+      branch: { level: [18, 30], rates: { common: 0.42, blue: 0.38, rare: 0.16, epic: 0.04 }, count: 4 },
+      boss: { level: [26, 38], rates: { common: 0.32, blue: 0.4, rare: 0.2, epic: 0.08 }, count: 5 },
+    },
+    r3: {
+      gate: { level: [26, 38], rates: { common: 0.38, blue: 0.4, rare: 0.18, epic: 0.04 }, count: 4 },
+      main: { level: [30, 48], rates: { common: 0.34, blue: 0.38, rare: 0.22, epic: 0.06 }, count: 4 },
+      branch: { level: [42, 58], rates: { common: 0.25, blue: 0.38, rare: 0.27, epic: 0.1 }, count: 5 },
+      boss: { level: [54, 70], rates: { common: 0.18, blue: 0.35, rare: 0.32, epic: 0.15 }, count: 6 },
+    },
+  };
+
+  const gearSlots = ["weapon", "armor", "focus", "boots"];
+
   const els = {
     resetBtn: document.getElementById("resetBtn"),
     navButtons: document.querySelectorAll("[data-page]"),
@@ -138,14 +167,14 @@
       `${regionNo}-${index + 1}`,
       point,
       "线性关卡",
-      regionId === "r1" && index === 4 ? "救出旧塔监狱里的角色后，验证新角色带来的战斗过程变化。" : index === 0 ? "地区内部第一关。" : "沿地区主线推进。",
-      index % 3 === 2 ? ["蓝装"] : ["白装", "金币"],
+      regionId === "r1" && index === 4 ? "重盾敌人再次出现。观察林地游侠如何持续击穿护盾。" : index === 0 ? "地区内部第一关。" : "沿地区主线推进。",
+      index % 3 === 2 ? ["蓝装"] : ["白装"],
       mainNodeRequires(regionId, index),
     ));
     const branches = [
       node(`${regionId}_bandit`, regionId, "branch", regionId === "r1" ? "旧塔军械营地" : "强盗营地", extras.bandit, "支线营地", regionId === "r1" ? "附近的军械营地，也许有攻坚装备。" : "固定品质装备奖励。先打主线第 4 关解锁。", regionId === "r1" ? ["2 高等级白装", "1 蓝装"] : ["1 紫装", "2 蓝装"], [`${regionId}_main_4`]),
       node(`${regionId}_prison`, regionId, "branch", regionId === "r1" ? "旧塔监狱" : "监狱", extras.prison, "支线救援", regionId === "r1" ? "里面关着一名可救出的角色。先试着救人。" : "固定救出一个角色。先打主线第 5 关解锁。", [regionIndex === 0 ? "林地游侠" : regionIndex === 1 ? "破盾战士" : "晨祷牧师"], [regionId === "r1" ? `${regionId}_main_4` : `${regionId}_main_5`]),
-      node(`${regionId}_boss`, regionId, "boss", "地区 Boss", extras.boss, "Boss 关", "第 10 关之后的收束战。", ["大量金币", "稀有装备"], [`${regionId}_main_10`]),
+      node(`${regionId}_boss`, regionId, "boss", "地区 Boss", extras.boss, "Boss 关", "第 10 关之后的收束战。", ["高品质装备", "地区通关"], [`${regionId}_main_10`]),
     ];
     return [...gates, ...line, ...branches];
   }
@@ -166,6 +195,14 @@
       cleared: {},
       rewards: [],
       flags: { r1PrisonFailed: false },
+      attempts: {},
+      failures: {},
+      inventory: [],
+      equipped: {},
+      knowledge: {
+        equipmentTriedAfterFail: false,
+        roleTriedAfterGearFail: false,
+      },
       selectedId: "r1_main_1",
       pan: { x: -34, y: -92 },
     };
@@ -178,6 +215,11 @@
       cleared: value.cleared || {},
       rewards: value.rewards || [],
       flags: { ...initialState().flags, ...(value.flags || {}) },
+      attempts: value.attempts || {},
+      failures: value.failures || {},
+      inventory: value.inventory || [],
+      equipped: value.equipped || {},
+      knowledge: { ...initialState().knowledge, ...(value.knowledge || {}) },
       pan: value.pan || { x: -34, y: -92 },
     };
   }
@@ -420,12 +462,14 @@
       <div class="state-chip">入口关口<strong>${region.gates.length ? `${gatesCleared}/${region.gates.length}` : "起始地区"}</strong></div>
       <div class="state-chip">关卡进度<strong>${cleared}/${nodes.length}</strong></div>
       <div class="state-chip">Boss<strong>${state.cleared[`${region.id}_boss`] ? "已击破" : "未击破"}</strong></div>
+      <div class="state-chip">装备强度<strong>${gearScore()}</strong></div>
+      <div class="state-chip">当前装备<strong>${gearSummary()}</strong></div>
     `;
   }
 
   function renderNodePanel(item) {
     const status = nodeStatus(item);
-    const available = status === "available";
+    const available = status === "available" || status === "farmable";
     const display = nodeDisplay(item);
     els.nodeTitle.textContent = item.name;
     els.nodeDesc.textContent = display.desc;
@@ -448,7 +492,7 @@
   function renderRewards() {
     els.rewardLog.innerHTML = state.rewards.length
       ? state.rewards.slice(0, 18).map((line) => `<div>${line}</div>`).join("")
-      : "<div>暂无奖励。先点击可挑战关卡自动胜利。</div>";
+      : "<div>暂无奖励。选择可挑战关卡开始真实战斗。</div>";
   }
 
   function linkPairs() {
@@ -518,7 +562,7 @@
   function isAvailable(item) {
     const region = regions.find((entry) => entry.id === item.regionId);
     if (!region || !isRegionUnlocked(region)) return false;
-    if (state.cleared[item.id]) return false;
+    if (state.cleared[item.id]) return item.type === "main";
     if (isR1BanditPreview(item)) return false;
     if (isR1PrisonWaitingForCamp(item)) return false;
     if (item.type === "gate") return true;
@@ -527,7 +571,7 @@
   }
 
   function isR1BanditPreview(item) {
-    return item.id === "r1_bandit" && state.cleared.r1_main_4 && !state.flags.r1PrisonFailed;
+    return item.id === "r1_bandit" && state.cleared.r1_main_4 && !state.flags.r1PrisonFailed && !state.cleared.r1_prison;
   }
 
   function shouldFirstFailPrison(item) {
@@ -539,28 +583,34 @@
   }
 
   function attemptNode(item) {
-    if (shouldFirstFailPrison(item)) {
-      state.flags.r1PrisonFailed = true;
-      selectedId = "r1_bandit";
-      state.selectedId = selectedId;
-      state.rewards.unshift("旧塔监狱：战力还不够，也许附近的军械能帮助攻坚。");
-      saveState();
-      render();
-      focusMapNode(selectedId);
-      return { type: "failure", id: item.id };
-    }
+    state.attempts[item.id] = (state.attempts[item.id] || 0) + 1;
+    const combatResult = resolveNodeCombat(item);
+    if (!combatResult.win) return failNode(item, combatResult);
     clearNode(item);
-    return { type: "clear", id: item.id };
+    grantNodeRewards(item, combatResult);
+    return { type: "clear", id: item.id, combat: combatResult };
   }
 
   function clearNode(item) {
     state.cleared[item.id] = true;
     selectedId = nextFocusAfterClear(item) || item.id;
     state.selectedId = selectedId;
-    state.rewards.unshift(`${item.name}：${nodeDisplay(item).rewards.join("、")}`);
     saveState();
     render();
     focusMapNode(selectedId);
+  }
+
+  function failNode(item, combatResult) {
+    state.failures[item.id] = (state.failures[item.id] || 0) + 1;
+    if (item.id === "r1_prison") state.flags.r1PrisonFailed = true;
+    const next = nextBehaviorAfterFailure(item, combatResult);
+    selectedId = next.focusId || item.id;
+    state.selectedId = selectedId;
+    state.rewards.unshift(next.log);
+    saveState();
+    render();
+    focusMapNode(selectedId);
+    return { type: "failure", id: item.id, combat: combatResult };
   }
 
   function nextFocusAfterClear(item) {
@@ -607,18 +657,19 @@
     const regionIndex = regions.findIndex((region) => region.id === item.regionId);
     const typeOrder = { gate: 0, main: 1, branch: 2, boss: 3 };
     const mainNo = item.type === "main" ? Number(item.name.split("-")[1] || 0) : 0;
-    return regionIndex * 1000 + (typeOrder[item.type] ?? 9) * 100 + mainNo;
+    const repeatPenalty = state.cleared[item.id] ? 500 : 0;
+    return regionIndex * 1000 + repeatPenalty + (typeOrder[item.type] ?? 9) * 100 + mainNo;
   }
 
   function nodeStatus(item) {
-    if (state.cleared[item.id]) return "cleared";
+    if (state.cleared[item.id]) return item.type === "main" ? "farmable" : "cleared";
     if (isR1BanditPreview(item)) return "preview";
     if (isAvailable(item)) return "available";
     return "locked";
   }
 
   function statusName(status) {
-    return { cleared: "已完成", available: "可挑战", preview: "预备线索", locked: "锁定" }[status] || status;
+    return { cleared: "已完成", farmable: "可重复刷取", available: "可挑战", preview: "预备线索", locked: "锁定" }[status] || status;
   }
 
   function nodeDisplay(item) {
@@ -636,7 +687,7 @@
     }
     if (item.id === "r1_main_5") {
       return {
-        desc: "救出林地游侠后，观察新角色如何更早处理后排威胁。",
+        desc: "重盾敌人再次出现。观察林地游侠如何持续击穿护盾。",
         rewards: item.rewards,
       };
     }
@@ -644,11 +695,12 @@
   }
 
   function fightButtonText(item, status) {
+    if (status === "farmable") return "再次刷取";
     if (state.cleared[item.id]) return "已胜利";
     if (status === "preview") return "先试旧塔监狱";
     if (!isAvailable(item)) return "尚未解锁";
     if (shouldFirstFailPrison(item)) return "尝试救人";
-    return "自动胜利";
+    return "开始战斗";
   }
 
   function nodeIcon(item) {
@@ -659,12 +711,14 @@
   }
 
   function enemyPreview(item) {
-    if (item.type === "boss") return "先 4 个护卫，后 6 个援军，再 Boss";
+    if (item.type === "boss") return "骑士、战士、法师和牧师";
     if (item.type === "gate") return "4 个守门敌人";
-    if (item.id.includes("bandit")) return "先 4 个强盗，后 6 个营地援军";
-    if (item.id.includes("prison")) return "3 个看守，救援后撤离";
+    if (item.id.includes("bandit")) return "重甲前排、战士、游侠和法师";
+    if (item.id.includes("prison")) return "战士、重甲前排和两名游侠";
     const index = Number(item.name.split("-")[1] || 1);
-    return index >= 7 ? "先 4 个小怪，后 6 个增援" : "4 个小怪";
+    if (index <= 3) return "两名近战和一名远程";
+    if (index <= 6) return "近战、远程与治疗";
+    return "完整四人敌队";
   }
 
   function mountBattle() {
@@ -1162,6 +1216,259 @@
       homeX: 92 + (index % 2) * 4,
       homeY: 18 + ((index + 1) / (count + 1)) * 64,
       slotIndex: index,
+    };
+  }
+
+  function resolveNodeCombat(item) {
+    const simulator = window.GAME_COMBAT_SIM;
+    const leftTeam = progressionPlayerTeam();
+    const rightTeam = nodeEnemyTeam(item);
+    if (!simulator?.simulateTeams) {
+      return { win: false, duration: 0, leftHp: 0, rightHp: 1, reason: "combat_sim_missing" };
+    }
+    const result = simulator.simulateTeams(leftTeam, rightTeam, {
+      seed: `map-node|${item.id}|${state.attempts[item.id] || 0}|${gearScore()}`,
+      randomizeStats: false,
+      fieldEffectId: nodeFieldEffect(item),
+      maxTime: 70,
+    });
+    return {
+      ...result,
+      win: result.winner === "left",
+      enemyPower: Math.round(rightTeam.reduce((sum, unit) => sum + compactSpecPower(unit), 0)),
+      playerPower: Math.round(leftTeam.reduce((sum, unit) => sum + compactSpecPower(unit), 0)),
+    };
+  }
+
+  function progressionPlayerTeam() {
+    const gearMult = 1 + gearScore() / 260;
+    const hasRanger = Boolean(state.cleared.r1_prison);
+    const team = [
+      { name: "Silver Knight", roleKey: "knight", role: "knight", roleName: "knight", hp: 520, power: 46, armor: 18, range: 9, slotIndex: 0 },
+      { name: "Berserker", roleKey: "berserker", role: "berserker", roleName: "berserker", hp: 430, power: 58, armor: 10, range: 9, slotIndex: 1 },
+      { name: hasRanger ? "Forest Ranger" : "Ember Mage", roleKey: hasRanger ? "ranger" : "mage", role: hasRanger ? "ranger" : "mage", roleName: hasRanger ? "ranger" : "mage", hp: hasRanger ? 340 : 310, power: hasRanger ? 58 : 64, armor: hasRanger ? 7 : 5, range: hasRanger ? 34 : 28, slotIndex: 2 },
+      { name: "Dawn Priest", roleKey: "priest", role: "priest", roleName: "priest", hp: 340, power: 42, armor: 6, range: 25, slotIndex: 3 },
+    ];
+    return team.map((unit) => scaleCombatSpec(withRoleKit(unit), gearMult));
+  }
+
+  function nodeEnemyTeam(item) {
+    const roles = nodeEnemyRoles(item);
+    const scale = nodeEnemyScale(item);
+    return roles.map((role, index) => scaleCombatSpec(enemySpec(role, index, item), scale));
+  }
+
+  function nodeEnemyRoles(item) {
+    if (item.type === "boss") return ["knight", "warrior", "mage", "priest"];
+    if (item.type === "gate") return ["warrior", "warrior", "ranger", "priest"];
+    if (item.id.includes("bandit")) return ["knight", "warrior", "ranger", "mage"];
+    if (item.id.includes("prison")) return ["warrior", "knight", "ranger", "ranger"];
+    const mainNo = Number(item.name.split("-")[1] || 1);
+    if (mainNo <= 3) return ["warrior", "warrior", "ranger"];
+    if (mainNo <= 6) return ["warrior", "warrior", "ranger", "priest"];
+    return ["knight", "warrior", "ranger", "mage"];
+  }
+
+  function nodeEnemyScale(item) {
+    const regionBase = { r1: 0.62, r2: 1.25, r3: 2.05 }[item.regionId] || 1;
+    const mainNo = item.type === "main" ? Number(item.name.split("-")[1] || 1) : 7;
+    const typeBonus = { gate: 0.08, main: 0, branch: 0.28, boss: 0.62 }[item.type] || 0;
+    const prisonBump = item.id.includes("prison") ? 0.24 : 0;
+    const scale = regionBase + mainNo * 0.055 + typeBonus + prisonBump;
+    return item.id.includes("prison") ? scale * 2.05 : scale;
+  }
+
+  function enemySpec(role, index, item) {
+    const base = {
+      warrior: { name: "Bandit Shield", hp: 230, power: 24, physicalPower: 26, magicPower: 8, armor: 10, range: 13 },
+      knight: { name: "Heavy Bandit", hp: 310, power: 22, physicalPower: 22, magicPower: 8, armor: 18, range: 12 },
+      ranger: { name: "Road Archer", hp: 150, power: 24, physicalPower: 27, magicPower: 8, armor: 4, range: 42 },
+      mage: { name: "Torch Adept", hp: 135, power: 8, physicalPower: 6, magicPower: 34, armor: 3, range: 42 },
+      priest: { name: "Herb Raider", hp: 165, power: 8, physicalPower: 6, magicPower: 22, armor: 4, range: 38 },
+      warlock: { name: "Hex Miner", hp: 170, power: 8, physicalPower: 6, magicPower: 30, armor: 5, range: 40 },
+      alchemist: { name: "Mine Alchemist", hp: 175, power: 8, physicalPower: 6, magicPower: 28, armor: 5, range: 39 },
+    }[role] || { name: "Raider", hp: 200, power: 20, physicalPower: 20, magicPower: 8, armor: 6, range: 14 };
+    const kit = roleKit(role);
+    const fullKit = item.type === "boss" || item.id.includes("prison");
+    const passiveKit = fullKit || item.id.includes("bandit");
+    return {
+      ...base,
+      ...kit,
+      name: `${base.name} ${index + 1}`,
+      role,
+      roleKey: role,
+      roleName: base.name,
+      maxHp: base.hp,
+      passive: passiveKit ? kit.passive : "enemyDormantPassive",
+      ultimate: fullKit ? kit.ultimate : "enemyNoop",
+      slotIndex: index,
+    };
+  }
+
+  function withRoleKit(unit) {
+    return { ...roleKit(unit.role), ...unit };
+  }
+
+  function roleKit(role) {
+    const kit = window.GAME_SKILL_DATA?.roleKits?.[role]?.kit || {};
+    return {
+      small1: kit.small1,
+      small2: kit.small2,
+      passive: kit.passive,
+      ultimate: kit.ultimate,
+    };
+  }
+
+  function scaleCombatSpec(spec, mult) {
+    const hp = Math.max(1, Math.round((spec.hp || spec.maxHp || 1) * mult));
+    return {
+      ...spec,
+      hp,
+      maxHp: hp,
+      power: Math.max(1, Math.round((spec.power || 1) * mult)),
+      physicalPower: Math.max(1, Math.round((spec.physicalPower || spec.power || 1) * mult)),
+      magicPower: Math.max(1, Math.round((spec.magicPower || spec.power || 1) * mult)),
+      armor: Math.max(0, Math.round((spec.armor || 0) * (0.85 + mult * 0.15))),
+    };
+  }
+
+  function nodeFieldEffect(item) {
+    if (item.id.includes("prison")) return "sentry_suppression";
+    if (item.id.includes("bandit")) return "heavy_shield_line";
+    if (item.id === "r1_main_5") return "heavy_shield_line";
+    if (item.type === "boss") return "pressure_corridor";
+    return "";
+  }
+
+  function grantNodeRewards(item, combatResult) {
+    const loot = rollNodeLoot(item);
+    state.inventory.push(...loot);
+    autoEquipBestItems();
+    if (item.id === "r1_prison") state.flags.rangerRescued = true;
+    const lootText = loot.map((entry) => `${entry.name}+${entry.power}`).join(" / ") || "无装备";
+    state.rewards.unshift(`${item.name}：真实战斗 ${combatResult.duration} 秒胜利；掉落 ${lootText}；我方强度 ${combatResult.playerPower} / 敌方 ${combatResult.enemyPower}`);
+    saveState();
+    render();
+  }
+
+  function rollNodeLoot(item) {
+    const rule = dropRuleForNode(item);
+    const rng = seededMapRandom(`${item.id}|${state.attempts[item.id] || 0}|${state.inventory.length}`);
+    return Array.from({ length: rule.count }, (_, index) => makeLootItem(item, rule, rng, index));
+  }
+
+  function dropRuleForNode(item) {
+    const region = regionDropRules[item.regionId] || regionDropRules.r1;
+    return region[item.type] || region.main;
+  }
+
+  function makeLootItem(item, rule, rng, index) {
+    const rarity = rollRarity(rule.rates, rng());
+    const rarityInfo = rarityTable[rarity] || rarityTable.common;
+    const level = Math.round(rule.level[0] + (rule.level[1] - rule.level[0]) * rng());
+    const slot = gearSlots[Math.floor(rng() * gearSlots.length) % gearSlots.length];
+    const power = Math.max(1, Math.round((level * 0.72 + rarityInfo.score * 2.5) * rarityInfo.mult));
+    return {
+      id: `${item.id}_${state.attempts[item.id] || 0}_${index}_${rarity}`,
+      name: `${rarityInfo.name}${slotName(slot)}Lv${level}`,
+      rarity,
+      level,
+      slot,
+      power,
+      source: item.id,
+    };
+  }
+
+  function rollRarity(rates, value) {
+    let cursor = 0;
+    for (const rarity of ["common", "blue", "rare", "epic"]) {
+      cursor += rates[rarity] || 0;
+      if (value <= cursor) return rarity;
+    }
+    return "common";
+  }
+
+  function autoEquipBestItems() {
+    for (const item of state.inventory) {
+      const current = state.equipped[item.slot];
+      if (!current || item.power > current.power) state.equipped[item.slot] = item;
+    }
+  }
+
+  function gearScore() {
+    return Object.values(state.equipped || {}).reduce((sum, item) => sum + (item.power || 0), 0);
+  }
+
+  function gearSummary() {
+    const labels = { weapon: "武", armor: "甲", focus: "器", boots: "靴" };
+    return gearSlots.map((slot) => `${labels[slot]}${state.equipped?.[slot]?.power || 0}`).join(" / ");
+  }
+
+  function nextBehaviorAfterFailure(item, combatResult) {
+    const failCount = state.failures[item.id] || 1;
+    const gear = gearScore();
+    if (item.id === "r1_prison" && !state.cleared.r1_bandit) {
+      return {
+        focusId: "r1_bandit",
+        log: `监狱真实战斗失败（${combatResult.duration} 秒）。当前已知办法：去军械营地刷装，装备提升后再试。`,
+      };
+    }
+    if (item.id === "r1_prison" && state.cleared.r1_bandit) {
+      const farmNode = latestClearedMain(item);
+      return {
+        focusId: farmNode?.id || item.id,
+        log: `监狱在一次性营地奖励后仍然失败（${combatResult.duration}s）。营地已经完成，去最近的主线关刷出新装备后再重试。`,
+      };
+    }
+    if (failCount <= 1) {
+      state.knowledge.equipmentTriedAfterFail = true;
+      return {
+        focusId: previousFarmNode(item)?.id || item.id,
+        log: `${item.name}失败。当前装备强度 ${gear}；先执行已知行为：刷取并换上更强装备。`,
+      };
+    }
+    state.knowledge.roleTriedAfterGearFail = true;
+    return {
+      focusId: nearestRoleNode(item)?.id || previousFarmNode(item)?.id || item.id,
+      log: `${item.name}在装备提升后再次失败；现在可以怀疑队伍结构，并寻找角色或支线解法。`,
+    };
+  }
+
+  function previousFarmNode(item) {
+    const available = nextAvailableNodes().filter((nodeItem) => nodeItem.id !== item.id && nodeItem.type !== "boss");
+    return available[0] || allNodes().find((nodeItem) => state.cleared[nodeItem.id] && nodeItem.regionId === item.regionId);
+  }
+
+  function latestClearedMain(item) {
+    return allNodes()
+      .filter((nodeItem) => nodeItem.regionId === item.regionId && nodeItem.type === "main" && state.cleared[nodeItem.id])
+      .sort((a, b) => Number(b.name.split("-")[1] || 0) - Number(a.name.split("-")[1] || 0))[0];
+  }
+
+  function nearestRoleNode(item) {
+    return allNodes().find((nodeItem) => nodeItem.regionId === item.regionId && nodeItem.id.includes("prison") && !state.cleared[nodeItem.id]);
+  }
+
+  function compactSpecPower(unit) {
+    return (unit.maxHp || unit.hp || 0) * 0.22 + (unit.power || 0) * 5.5 + (unit.armor || 0) * 6;
+  }
+
+  function slotName(slot) {
+    return { weapon: "Weapon", armor: "Armor", focus: "Charm", boots: "Boots" }[slot] || slot;
+  }
+
+  function seededMapRandom(seedText) {
+    let seed = 2166136261;
+    for (let i = 0; i < seedText.length; i += 1) {
+      seed ^= seedText.charCodeAt(i);
+      seed = Math.imul(seed, 16777619);
+    }
+    return () => {
+      seed += 0x6D2B79F5;
+      let value = seed;
+      value = Math.imul(value ^ (value >>> 15), value | 1);
+      value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+      return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
     };
   }
 

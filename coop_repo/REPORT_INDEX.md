@@ -2,6 +2,14 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-10
+
+- `2026-07-10_1225_camp-one-shot-main-farming.md`: corrected Camp to a one-time key encounter, kept repeat farming on main nodes, redirected later Prison failures to the latest main node, and recorded Region 1-3 main drop tables.
+
+- `2026-07-10_1208_dual-agent-map-cognition-debug.md`: ran two baseline and two post-tuning knowledge-bounded player agents, added reusable cognition session/batch tools, turned Prison/Camp into a real combat-and-farming loop, corrected false UI signals, and recorded remaining observation/action parity risks.
+
+- `2026-07-10_1056_map-real-combat-cognition-loop.md`: connected `/map_progression_lab/` node challenges to real combat resolution, added lightweight loot/auto-equip/failure memory state, documented node enemy/drop rules, and updated lock-key cognition with knowledge-bounded player-agent behavior.
+
 ## 2026-07-09
 
 - `2026-07-09_2053_map-cognition-v2-2-review-gate.md`: integrated two subagent reviews for V2.2, keeping M6 blue-quality signal as a candidate gated behind M5/user-playtest validation.

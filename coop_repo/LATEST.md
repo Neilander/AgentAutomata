@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-09_2053_map-cognition-v2-2-review-gate.md`](reports/2026-07-09_2053_map-cognition-v2-2-review-gate.md)
+[`reports/2026-07-10_1225_camp-one-shot-main-farming.md`](reports/2026-07-10_1225_camp-one-shot-main-farming.md)
 
-Last updated: 2026-07-09
+Last updated: 2026-07-10
 
-Current focus: hardened first-region map-lab flow still needs user playtest. V2.2/M6 blue-quality signal is reviewed as a candidate but must not be implemented until M5 role proof is validated or made visibly real.
+Current focus: Camp is now a one-time key encounter; only cleared main nodes are repeat-farmable. Next design question: whether deeper main nodes inside a region should improve item level, rarity, count, or only enemy difficulty.

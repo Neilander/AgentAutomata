@@ -86,6 +86,97 @@ If a behavior has produced a useful result before, repeat probability rises when
 
 This is a modeling rule, not a UI rule. Use it to check whether the map naturally leads the player to the intended action.
 
+### Smart-But-Knowledge-Bounded Player Agent
+
+When a subagent or script playtests a progression loop, do not model the player as a fixed route executor. Model a player that is smart, but only inside the concepts, knowledge, behaviors, and memories the game has already taught.
+
+Use this behavior loop:
+
+```text
+observe current goal and visible choices
+choose the lowest-cost known behavior that plausibly advances the goal
+run the real combat / real system result
+if success:
+  record the action as useful
+  update knowledge from visible reward and combat outcome
+if failure:
+  record a failure memory with attribution using only known concepts
+  choose the next known behavior with a different explanation axis
+  retry only when the wake condition is met
+```
+
+Required escalation examples:
+
+- If the player fails once and already knows `equipment -> power`, the next likely behavior is farm/equip, not team redesign.
+- If the player fails after visible equipment changes, update the memory to `equipment tried but insufficient`; then role/team changes can become plausible if the player knows characters or roles matter.
+- If the player has not learned role value yet, do not assume they will solve a wall by optimizing composition.
+- If the player has learned a field effect or enemy structure, they may switch to a team that visibly answers that structure.
+
+This rule matters for automation:
+
+```text
+Do not let a test agent use designer knowledge before the game teaches it.
+Do not let a test agent repeat the same failed action without a new wake condition.
+Do not mark a progression chain valid unless the player's next behavior follows from visible knowledge.
+```
+
+### Player-Agent Validation Contract
+
+Player-agent simulation is only valid when its observation and action space match the playable page.
+
+Required parity checks:
+
+```text
+observation parity:
+  every fact given to the agent must be visible or inferable in the real UI
+
+action parity:
+  every behavior listed in cognition must have a real executable action
+
+system parity:
+  battles, drops, equipment changes, and unlocks must use the real runtime rules
+
+memory parity:
+  the agent may remember observed events, but not hidden designer intent
+```
+
+Examples of invalid optimistic simulation:
+
+- the agent sees exact equipment-slot strength while the page only shows a total number;
+- cognition says `change team`, but the page has no team-change action;
+- the agent receives an explicit current goal that the actual page never communicates;
+- the report calls a battle a role proof without a contribution signal or comparison the player can perceive;
+- the test enemy has disabled skills while the design report describes it as a full enemy team.
+
+Run at least two different bounded player policies for important teaching segments:
+
+```text
+goal-driven player:
+  prefers new visible goals and avoids purposeless farming
+
+cautious loot player:
+  farms for a concrete weak slot or after a recorded failure,
+  but stops after repeated no-improvement results
+```
+
+Record for each run:
+
+- number of real decision points (`available actions > 1`);
+- first failure and the concepts available for attribution;
+- state change that woke each retry;
+- whether the intended key was used;
+- whether the player bypassed the teaching lock;
+- whether a bypass permanently hid or invalidated later content.
+
+Important interpretation rule:
+
+```text
+If two agents follow the same route because every step has only one action,
+the test validates scripting, not cognition.
+```
+
+For probabilistic combat locks, batch-test bypass rate in addition to individual playthroughs. A successful bypass can be valid, but the bypass route must remain coherent: optional keys must not stay permanently locked, goals must update correctly, and later teaching cannot assume the missed failure occurred.
+
 ## 4. Failure Memory And Attribution
 
 When the player fails, record a failure memory.

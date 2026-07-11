@@ -2,7 +2,17 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-11
+
+- `2026-07-11_0140_first-level-effort-v0.md`: froze provisional E/W/P/Q/R/k/A ranges, added a real-combat first-level analyzer, and implemented an independently reviewed playable candidate that reduces one-hit enemies from 46% to 5.7%.
+
 ## 2026-07-10
+
+- `2026-07-10_2354_player-cognition-simulation-skill.md`: created and GPT-5.5-forward-tested a standalone player cognition skill covering learned knowledge, E/W rhythm, subjective process, negative quality, adaptive reward expectations, temporal credit assignment, and independent review.
+
+- `2026-07-10_2052_feedback-cognition-v4.md`: completed the runnable feedback/cognition V4 model after four calibration passes, knowledge-bounded player traces, and an independent plausibility review that accepted the focused first-failure correction.
+
+- `2026-07-10_1230_first-level-wave-combat.md`: replaced the first node's static enemy team with a real two-big-wave/three-entry weak-enemy battle, added unified-combat reinforcements, and measured a 9.0-second deterministic average.
 
 - `2026-07-10_1945_optional-lock-key-militia-bear.md`: replaced overlapping starter roles with incomplete militia, made Prison/Camp optional repeatable one-time-reward branches, added isolated Camp-key and bear encounters, and validated explorer/skip routes with real combat and regression invariants.
 

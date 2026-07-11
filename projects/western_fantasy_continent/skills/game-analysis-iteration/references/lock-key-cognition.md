@@ -1,5 +1,7 @@
 # Lock-Key Cognition Check
 
+> The general player cognition and experience model now lives in `../../player-cognition-simulation/SKILL.md`. Use that skill for new cognition-state, effort-rhythm, learned-expectation, emotion, and abandonment work. The overlapping sections below remain as the validated historical baseline; apply this file specifically to lock, key, treasure, bypass, and map-order questions.
+
 Use this reference when designing or reviewing world-map progression, side branches, prisons, camps, boss gates, tutorial beats, or any sequence where the player must solve a problem before receiving a valuable reward.
 
 Core idea:
@@ -452,3 +454,357 @@ failure -> key consumption -> retry success
 ```
 
 into one unreadable burst. The player must be able to perceive the failure memory moment.
+
+## 10. Feedback Stock, Event Intensity, And Abandonment
+
+Append-only model added after the first playable wave-combat feedback pass.
+
+The player agent must model not only what the player knows and chooses, but whether the game produces enough wanted state change over simulated real game time. Apply this model to combat and world-map decisions.
+
+### State
+
+```text
+FeedbackState = {
+  value: number,                    // normalized to [0, max_value]
+  max_value: number,
+  game_time: seconds,
+  last_decay_time: seconds,
+  decay_per_5s: number,             // higher means a stricter player
+  event_records: Map<EventKey, EventRecord>,
+  local_failures: Map<FailedObject, number>,
+  total_failures: number,
+  abandoned: boolean
+}
+
+EventRecord = {
+  trigger_count: number,
+  base_intensity: number,
+  freshness: number,                // [0, 1], starts at 1
+  last_trigger_time: seconds,
+  total_feedback_granted: number
+}
+```
+
+Keep this beside `concepts`, `knowledge`, `behaviors`, and `failure_memories`. Cognition explains what the player wants and how failure is attributed. Feedback state measures whether those events remain rewarding enough to sustain play.
+
+### Real-Time Decay
+
+AI execution speed is irrelevant. Use elapsed in-game time from the real system or combat result.
+
+```text
+decay_ticks = floor((current_game_time - last_decay_time) / 5)
+feedback.value = max(0, feedback.value - decay_ticks * decay_per_5s)
+last_decay_time += decay_ticks * 5
+```
+
+Process decay and events chronologically. A 30-second battle incurs about six decay ticks even if the agent computes the result instantly.
+
+```text
+higher decay_per_5s = stricter player who needs more frequent or stronger feedback
+lower decay_per_5s = more tolerant player
+```
+
+Do not settle one universal strictness yet. Run several values and fit them against human feedback.
+
+### Perceivable Feedback Events
+
+Grant feedback only for a player-perceivable state change. Include combat and world-map events:
+
+```text
+combat:
+  kill:normal_enemy
+  kill:elite_enemy
+  cast:<perceived_skill>
+  survive:danger_window
+
+progression:
+  loot:equipment
+  loot:rare_equipment
+  equip:power_upgrade
+  clear:level
+  unlock:character
+
+world/map decisions:
+  discover:node_family
+  decision:first_main_route
+  decision:side_branch
+  decision:retry_after_failure
+  decision:change_team
+  unlock:region
+```
+
+Event keys are perception categories, not arbitrary implementation IDs. Similar normal-monster deaths share a key. A visibly distinct elite kill may use another key. Do not split keys merely to evade habituation.
+
+Each event family tracks repetition independently. Repeated normal kills reduce normal-kill feedback but do not reduce equipment-drop or map-decision feedback.
+
+### Linear Habituation
+
+For each event trigger:
+
+```text
+event_gain = base_intensity
+           * current_desire_multiplier(state, event_key)
+           * freshness
+
+feedback.value = min(max_value, feedback.value + event_gain)
+trigger_count += 1
+freshness = max(0, freshness - 0.10)
+```
+
+First hypothesis:
+
+```text
+first trigger: 100% freshness
+second trigger: 90%
+...
+tenth trigger: 10%
+later triggers: 0% until relevance is restored
+```
+
+Do not merge simultaneous events. A skill cast that kills an enemy may grant both `cast:<skill>` and `kill:normal_enemy`, because the player perceived two state changes.
+
+### Base Intensity And Current Desire
+
+Separate stable event importance from temporary need:
+
+```text
+base_intensity:
+  ordinary feedback strength of an event family
+
+current_desire_multiplier:
+  how much the player currently wants the event under the known goal,
+  inventory state, failure attribution, first impressions, and available actions
+```
+
+An initial ordering may be:
+
+```text
+normal enemy kill < ordinary skill cast < useful equipment < character unlock
+```
+
+This is not a fixed global ranking. Equipment desire falls when slots are filled, drops stop improving the team, or the player no longer attributes the problem to equipment. A rare label without a perceived upgrade does not automatically grant full equipment feedback.
+
+Use only known cognition when calculating desire. If the player does not know a stat, role, rarity, or field effect matters, do not award extra desire for its hidden designer value.
+
+### Failure Recovery
+
+Failure can make exhausted actions relevant again, but only through current attribution.
+
+On failure of object `g`:
+
+```text
+local_failures[g] += 1
+total_failures += 1
+
+related_events = events that plausibly answer g under the player's current
+                 concepts, knowledge, attribution, and available behaviors
+
+for each related event e:
+  event_records[e].freshness = min(1, event_records[e].freshness + recovery_per_failure)
+
+initial recovery_per_failure = 0.40
+```
+
+`0.40` means forty percentage points. Preserve `trigger_count` for analysis; recover current freshness instead of erasing history. Multiple relevant failures can accumulate recovery up to `1.0`.
+
+Example:
+
+```text
+normal-kill freshness = 0
+player fails a power-attributed process level
+farming normal enemies is a known route to power or equipment
+normal-kill freshness becomes 0.40
+```
+
+An unrelated failure must not restore every event. The attribution graph decides what becomes wanted again.
+
+### Abandonment Check
+
+Check abandonment at each failure. Probability rises with cumulative failure and falls with feedback stock at the failure moment.
+
+```text
+feedback_ratio = feedback.value / feedback.max_value
+
+abandon_logit = base_abandon_bias
+              + local_failure_weight * local_failures[failed_object]
+              + total_failure_weight * total_failures
+              - feedback_protection_weight * feedback_ratio
+
+abandon_probability = sigmoid(abandon_logit)
+```
+
+Use a seeded roll in automated playtests. Keep all coefficients configurable.
+
+Evaluation order:
+
+```text
+1. advance the real-time feedback clock to the failure timestamp;
+2. record failure counts;
+3. calculate abandonment from feedback at that moment;
+4. if the player continues, restore related event freshness by at least 0.40;
+5. update failure memory and choose the next behavior.
+```
+
+Future feedback restored by failure does not protect the player from abandoning at the same failure. It represents renewed motivation after deciding to continue.
+
+Failure is not automatically positive feedback. Count a consolation reward, knowledge reveal, or near-miss signal only if the real game visibly presents it.
+
+### Player-Agent Execution Contract
+
+Every simulated action returns a real-time event trace:
+
+```text
+ActionResult = {
+  duration_seconds: number,
+  events: [{ time_offset, event_key, visible_magnitude?, metadata? }],
+  outcome: success | failure | retreat,
+  failed_object?: string
+}
+```
+
+Process:
+
+```text
+for action in player_route:
+  run the real system/combat
+  sort visible events by time_offset
+  advance decay to each event timestamp
+  grant event feedback
+  advance decay to action end
+  include visible world/map decision and unlock events
+  if failure:
+    run abandonment check
+    if not abandoned:
+      restore related event freshness
+      update failure memory and continue cognition loop
+```
+
+If runtime signals do not expose event timing, record that as a validation limitation. Never collapse an entire battle into time zero or award all kill feedback at battle completion.
+
+### Required Trace And Diagnostics
+
+For each decay, event, and failure, record:
+
+```text
+game_time
+feedback_before
+decay_amount
+event_key
+event_trigger_count
+base_intensity
+desire_multiplier
+freshness_before
+feedback_gain
+feedback_after
+failed_object
+local_failure_count
+abandon_probability
+abandon_roll
+```
+
+Review at least:
+
+- longest interval without positive feedback;
+- time spent at zero or below a low-feedback threshold;
+- feedback contribution by combat, progression, and world-decision families;
+- event families exhausted before an encounter ends;
+- feedback at each failure and abandonment probability by failure count;
+- whether the intended key creates wanted feedback before abandonment;
+- whether adding more enemies only adds zero-freshness repetition;
+- whether a map choice changes expected feedback rather than only changing labels.
+
+Use this model when a segment is described as `too long`, `boring`, `not rewarding`, `easy but tiring`, or when a lock-key route may be cognitively valid but emotionally flat. Win rate and duration alone cannot validate those complaints.
+
+### Forward-Tested Corrections
+
+Append-only corrections accepted after V1-V4 player/reviewer loops:
+
+```text
+feedback stock != freshness != fatigue != frustration != expectation != abandonment
+```
+
+Keep them separate:
+
+- `feedback stock`: current positive-feedback reserve after real-time decay and event gains;
+- `freshness`: per-event-family repetition multiplier;
+- `fatigue`: sustained low-feedback time, long no-positive-feedback intervals, and low recent event diversity;
+- `frustration`: active unresolved failure pressure;
+- `expectation`: a visible promised possibility plus later fulfilled/missed resolution;
+- `abandonment`: a stochastic decision checked at failure, not an emotion label.
+
+Do not derive emotion from feedback stock alone. At minimum, expose:
+
+```text
+current_low_feedback_seconds
+max_low_feedback_streak
+longest_no_positive_interval
+recent_positive_event_diversity
+active_failure_count
+```
+
+A player can be fatigued while feedback stock is still moderate. Conversely, a brief low stock should not automatically mean fatigue.
+
+Failure recovery must be attribution-bounded:
+
+```text
+power/equipment attribution may restore:
+  normal-kill farming
+  main-clear progress
+  equipment drops
+  equipment upgrades
+  farm-after-failure decisions
+
+do not restore by default:
+  every previously seen skill cast
+  character unlock
+  team-change decisions
+  role-proof events
+```
+
+Restore a skill/role event only when the player's known attribution specifically points to skill execution or role composition. The first accepted hypothesis remains `+0.40` freshness per relevant failure, capped at `1.0`.
+
+Separate pre-roll emotion from abandonment:
+
+```text
+pre_abandon_emotion
+abandon_probability
+abandon_roll
+abandoned
+```
+
+Never describe one low-probability seeded abandon as the deterministic route outcome. Batch-test probability before generalizing.
+
+Track visible expectations explicitly:
+
+```text
+expectation_created
+expectation_fulfilled | expectation_missed
+expectation_strength
+feedback_delta
+```
+
+A `possible rare drop` hint is not a guaranteed reward. A miss may apply a small disappointment cost, especially under low feedback, but must not be treated as a full failure.
+
+Record narrow knowledge created by visible counter relationships. Example:
+
+```text
+visible prison shield + named shield-break equipment
+-> knowledge: named counter equipment may answer a similar visible obstacle
+```
+
+Do not generalize this into hidden designer knowledge about every shield or every encounter.
+
+### Calibration Loop
+
+Use this loop when tuning feedback values, recovery, strictness, or abandonment:
+
+```text
+analyze current mechanism/numbers
+-> adjust one version
+-> run knowledge-bounded player agents and preserve raw cognition/emotion traces
+-> pass only raw traces plus model rules to an independent human-plausibility reviewer
+-> classify findings as mechanism, parameter, content, or test limitation
+-> revise and repeat
+```
+
+Keep player and reviewer roles separate. Player agents choose actions from visible observations. Reviewer agents receive the player records after play and must distinguish typical mechanisms from low-probability seeded tails.

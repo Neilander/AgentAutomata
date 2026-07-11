@@ -68,6 +68,7 @@
   let autoTimer = 0;
   let battleView = null;
   let pendingHumanNode = null;
+  let pendingHumanWaveRun = null;
   let waveTimers = [];
 
   const allyOpeningSlots = [
@@ -163,7 +164,11 @@
       `${regionNo}-${index + 1}`,
       point,
       "线性关卡",
-      regionId === "r1" && index === 6 ? "狂鬃蛮熊正在袭击道路。它生命高、攻击快，周围只有较弱的支援。" : index === 0 ? "地区内部第一关。" : "沿地区主线推进。",
+      regionId === "r1" && index === 0
+        ? "两大波弱小散兵分三次进入战场，用来快速建立清怪节奏。"
+        : regionId === "r1" && index === 6
+          ? "狂鬃蛮熊正在袭击道路。它生命高、攻击快，周围只有较弱的支援。"
+          : index === 0 ? "地区内部第一关。" : "沿地区主线推进。",
       index % 3 === 2 ? ["蓝装"] : ["白装"],
       mainNodeRequires(regionId, index),
     ));
@@ -246,6 +251,7 @@
       stopAutoChallenge();
       stopBattleWaves();
       pendingHumanNode = null;
+      pendingHumanWaveRun = null;
       if (battleView) {
         battleView.onFinish = () => {};
         battleView.stop(false);
@@ -802,6 +808,7 @@
     if (item.id.includes("bandit")) return "持盾军械队，首通掉落攻坚装备";
     if (item.id.includes("prison")) return "狱门护盾、后排哨手与治疗";
     const index = Number(item.name.split("-")[1] || 1);
+    if (item.id === "r1_main_1") return "2 个大波、3 次进场的弱小散兵";
     if (item.id === "r1_main_7") return "高生命高攻速蛮熊与三名弱支援";
     if (index <= 3) return "两名近战和一名远程";
     if (index <= 6) return "近战、远程与治疗";
@@ -1351,14 +1358,124 @@
     };
     saveState();
     const leftTeam = progressionPlayerTeam();
-    const rightTeam = nodeEnemyTeam(item);
+    const nodeWaves = item.id === "r1_main_1" ? ENCOUNTERS.firstRoadWaves() : null;
+    const rightTeam = nodeWaves
+      ? nodeWaves.flatMap((bigWave) => bigWave.smallWaves.flatMap((smallWave) => smallWave.rightTeam))
+      : nodeEnemyTeam(item);
+    const openingTeam = nodeWaves ? nodeWaves[0].smallWaves[0].rightTeam : rightTeam;
     const seed = `map-node|${item.id}|${state.attempts[item.id] || 0}|${gearScore()}|${state.seed}`;
     pendingHumanNode = item;
     switchPage("battle");
-    els.waveStatus.textContent = `${item.name} · 战斗中`;
+    els.waveStatus.textContent = nodeWaves ? nodeWaves[0].smallWaves[0].title : `${item.name} · 战斗中`;
     view.maxTime = 70;
-    view.onFinish = (result) => finishHumanNodeBattle(item, result, leftTeam, rightTeam);
-    view.start({ leftTeam, rightTeam, seed, title: item.name, randomizeStats: false, fieldEffectId: nodeFieldEffect(item) });
+    if (nodeWaves) {
+      pendingHumanWaveRun = { itemId: item.id, waves: nodeWaves, bigIndex: 0, smallIndex: 0, leftTeam, rightTeam };
+      view.onFinish = (result) => handleHumanWaveFinish(item, result);
+    } else {
+      pendingHumanWaveRun = null;
+      view.onFinish = (result) => finishHumanNodeBattle(item, result, leftTeam, rightTeam);
+    }
+    view.start({ leftTeam, rightTeam: openingTeam, seed, title: item.name, randomizeStats: false, fieldEffectId: nodeFieldEffect(item) });
+    if (nodeWaves) watchHumanSmallWave(view);
+  }
+
+  function watchHumanSmallWave(view) {
+    const run = pendingHumanWaveRun;
+    const bigWave = run?.waves?.[run.bigIndex];
+    const smallWave = bigWave?.smallWaves?.[run.smallIndex];
+    const nextSmall = bigWave?.smallWaves?.[run.smallIndex + 1];
+    if (!run || !smallWave || !nextSmall) return;
+    const poll = window.setInterval(() => {
+      const sim = view.state?.unifiedSim;
+      if (!sim || pendingHumanWaveRun !== run) {
+        window.clearInterval(poll);
+        return;
+      }
+      const alliesAlive = sim.units.some((unit) => unit.side === "left" && sim.isAlive(unit));
+      const enemiesAlive = sim.units.filter((unit) => unit.side === "right" && sim.isAlive(unit)).length;
+      if (!alliesAlive) {
+        window.clearInterval(poll);
+        return;
+      }
+      if (enemiesAlive <= (smallWave.spawnWhenRemaining ?? 1)) {
+        window.clearInterval(poll);
+        run.smallIndex += 1;
+        addHumanEnemyWave(view, nextSmall);
+        watchHumanSmallWave(view);
+      }
+    }, 120);
+    waveTimers.push(poll);
+  }
+
+  function addHumanEnemyWave(view, smallWave) {
+    els.waveStatus.textContent = smallWave.title;
+    const specs = smallWave.rightTeam.map((spec, index) => ({
+      ...spec,
+      homeX: 112 + index * 4,
+      homeY: 28 + ((index + 1) / (smallWave.rightTeam.length + 1)) * 44,
+      slotIndex: index,
+    }));
+    view.addUnifiedReinforcements("right", specs, smallWave.startTitle);
+  }
+
+  function handleHumanWaveFinish(item, result) {
+    const run = pendingHumanWaveRun;
+    if (!run || run.itemId !== item.id) return;
+    const bigWave = run.waves[run.bigIndex];
+    const nextSmall = bigWave.smallWaves[run.smallIndex + 1];
+    const timedOut = Number(result?.duration || 0) >= 69.8;
+    if (result?.winner !== "left" || timedOut) {
+      pendingHumanWaveRun = null;
+      finishHumanNodeBattle(item, result, run.leftTeam, run.rightTeam);
+      return;
+    }
+    if (nextSmall) {
+      run.smallIndex += 1;
+      addHumanEnemyWave(battleView, nextSmall);
+      watchHumanSmallWave(battleView);
+      return;
+    }
+    const nextBig = run.waves[run.bigIndex + 1];
+    if (!nextBig) {
+      pendingHumanWaveRun = null;
+      finishHumanNodeBattle(item, result, run.leftTeam, run.rightTeam);
+      return;
+    }
+    const launchNextBig = () => {
+      if (pendingHumanWaveRun !== run) return;
+      syncDisplayAlliesToUnified(battleView);
+      run.bigIndex += 1;
+      run.smallIndex = 0;
+      addHumanEnemyWave(battleView, nextBig.smallWaves[0]);
+      watchHumanSmallWave(battleView);
+    };
+    if (!bigWave.regroupAfter) {
+      launchNextBig();
+      return;
+    }
+    regroupAllies(battleView, `${bigWave.title}结束，队伍重新集结`, () => {
+      const regroupPause = window.setTimeout(() => {
+        marchAlliesRight(battleView, () => {
+          const launchTimer = window.setTimeout(launchNextBig, 420);
+          waveTimers.push(launchTimer);
+        });
+      }, 500);
+      waveTimers.push(regroupPause);
+    });
+  }
+
+  function syncDisplayAlliesToUnified(view) {
+    const sim = view?.state?.unifiedSim;
+    if (!sim) return;
+    for (const displayUnit of view.state.units.filter((unit) => unit.side === "ally" && view.alive(unit))) {
+      const combatUnit = sim.units.find((unit) => unit.id === displayUnit.simId);
+      if (!combatUnit) continue;
+      combatUnit.x = displayUnit.x;
+      combatUnit.y = displayUnit.y;
+      combatUnit.homeX = displayUnit.x;
+      combatUnit.homeY = displayUnit.y;
+      combatUnit.line = displayUnit.line;
+    }
   }
 
   function finishHumanNodeBattle(item, result, leftTeam, rightTeam) {
@@ -1370,6 +1487,8 @@
       enemyPower: Math.round(rightTeam.reduce((sum, unit) => sum + compactSpecPower(unit), 0)),
       playerPower: Math.round(leftTeam.reduce((sum, unit) => sum + compactSpecPower(unit), 0)),
     };
+    stopBattleWaves();
+    pendingHumanWaveRun = null;
     pendingHumanNode = null;
     state.pendingEncounter = null;
     const outcome = settleNodeAttempt(item, combatResult);

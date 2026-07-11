@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-10_1945_optional-lock-key-militia-bear.md`](reports/2026-07-10_1945_optional-lock-key-militia-bear.md)
+[`reports/2026-07-11_0140_first-level-effort-v0.md`](reports/2026-07-11_0140_first-level-effort-v0.md)
 
-Last updated: 2026-07-10
+Last updated: 2026-07-11
 
-Current focus: Region 1 now uses two complete heroes plus incomplete militia, optional repeatable Prison/Camp branches with one-time rewards, a real Camp equipment key, and a Ranger-vs-bear proof encounter. Next step is a human explorer-route versus skip-route pacing comparison.
+Current focus: `r1_main_1` now has an AI-reviewed Effort V0 playable candidate: slightly higher enemy durability and earlier small-wave overlap reduce one-hit enemies from 46% to 5.7% while preserving guaranteed success. Next evidence must be a human check of whether the longest damage gap is meaningful presentation or dead time.

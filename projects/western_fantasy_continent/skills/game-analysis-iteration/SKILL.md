@@ -51,7 +51,7 @@ Read only the files needed for the current state:
 - `references/experience.md`: Steam review analysis and guide/design reading.
 - `references/distillation.md`: loop analysis, system-role analysis, and progression-layer analysis.
 - `references/compare-current-game.md`: turning macro traits into detailed indicators against the current game.
-- `references/lock-key-cognition.md`: lock-key progression review using player cognition, failure attribution, wake-up conditions, and knowledge updates.
+- `references/lock-key-cognition.md`: lock-key progression review using player cognition, failure attribution, wake-up conditions, feedback decay, event habituation, abandonment, and knowledge updates.
 - `references/reviewer-training.md`: fitting evaluator prompts/subagents to user feedback.
 - `references/implementation-plan.md`: placeholder for state 7.
 
@@ -61,3 +61,7 @@ Read only the files needed for the current state:
 - Do not turn every criticism into a change request. First verify whether the problem exists and whether changing it serves the target loop.
 - Do not keep analyzing after a feedback gate fails. Return to the relevant earlier state.
 - Do not invent state 7 details beyond the current placeholder unless the user asks to enrich it.
+
+## Composed Skills
+
+When a comparison or lock-key review requires a full player trace, invoke the sibling `player-cognition-simulation` skill first. Use its cognition state and E/W/P/Q/R/k/A experience model as the player layer, then apply this skill's lock-key checks to the resulting trace.

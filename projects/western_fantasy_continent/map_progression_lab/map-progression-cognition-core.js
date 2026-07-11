@@ -22,7 +22,7 @@
         type: "main",
         requires,
         rewardHint: index % 3 === 0 ? "可能出现蓝装" : "白装",
-        enemyHint: index === 7 ? "高生命高攻速蛮熊与三名弱支援" : index <= 3 ? "两名近战和一名远程" : index <= 6 ? "近战、远程与治疗" : "完整四人敌队",
+        enemyHint: index === 1 ? "两大波、三次进场的弱小散兵" : index === 7 ? "高生命高攻速蛮熊与三名弱支援" : index <= 3 ? "两名近战和一名远程" : index <= 6 ? "近战、远程与治疗" : "完整四人敌队",
       });
     }
     result.push(
@@ -184,6 +184,7 @@
       gearBefore: gearScore(state),
       resolution: combat.resolution,
       contributions: (combat.units || []).filter((unit) => unit.side === "left").map((unit) => ({ name: unit.name, role: unit.role, damage: unit.damageDone })).sort((a, b) => b.damage - a.damage),
+      feedbackSignals: visibleFeedbackSignals(combat.signals),
     };
 
     if (combat.win) {
@@ -209,6 +210,9 @@
         if (!state.cognition.concepts.includes("角色名单")) state.cognition.concepts.push("角色名单");
         if (!state.cognition.behaviors.includes("调整队伍")) state.cognition.behaviors.push("调整队伍");
         event.reward = "营救游侠；游侠加入角色名单，当前队伍没有自动改变";
+      }
+      if (id === "r1_bandit" && firstClear) {
+        learn(state, "针对性装备", "具名破盾与破甲装备可能解决可见的护盾与护甲障碍", "在相似敌情下检查针对性装备");
       }
       if (loot.length) learn(state, "掉落", "胜利后获得的装备会自动换上更强的部件", "观察装备变化");
       if (repeatOneTimeBranch) event.reward = "复战胜利；首通奖励已经领取，本次没有新的支线奖励";
@@ -270,6 +274,18 @@
     if (!state.cognition.concepts.includes(concept)) state.cognition.concepts.push(concept);
     if (!state.cognition.knowledge.includes(knowledge)) state.cognition.knowledge.push(knowledge);
     if (!state.cognition.behaviors.includes(behavior)) state.cognition.behaviors.push(behavior);
+  }
+
+  function visibleFeedbackSignals(signals) {
+    return (signals || []).flatMap((signal) => {
+      if (signal.kind === "skill" && signal.source?.side === "left") {
+        return [{ time: signal.time, type: "skill_cast", skillKey: signal.skillKey || signal.skillName || "unknown", skillName: signal.skillName || "技能" }];
+      }
+      if (signal.kind === "death" && signal.target?.side === "right") {
+        return [{ time: signal.time, type: "enemy_kill", targetName: signal.target.name || "敌人", sourceName: signal.source?.name || "" }];
+      }
+      return [];
+    });
   }
 
   function resolveCombat(state, item) {

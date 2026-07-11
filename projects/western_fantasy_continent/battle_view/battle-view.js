@@ -427,6 +427,40 @@
       this.state.raf = setInterval(() => this.tickUnified(performance.now()), 33);
     }
 
+    addUnifiedReinforcements(side, specs = [], title = "增援") {
+      const sim = this.state.unifiedSim;
+      if (!sim || !specs.length || !["left", "right"].includes(side)) return [];
+      const nextIndex = sim.units
+        .filter((unit) => unit.side === side)
+        .reduce((max, unit) => Math.max(max, Number(unit.index) + 1 || 0), 0);
+      const incoming = sim.makeTeam(side, specs);
+      incoming.forEach((unit, index) => {
+        unit.index = nextIndex + index;
+        unit.id = `${side}-${unit.index + 1}`;
+      });
+      sim.units.push(...incoming);
+
+      const displaySide = side === "left" ? "ally" : "enemy";
+      const displayUnits = this.makeUnits(displaySide, specs);
+      displayUnits.forEach((unit, index) => {
+        const combatUnit = incoming[index];
+        unit.unitId = `${displaySide}_${combatUnit.index}`;
+        unit.id = unit.unitId;
+        unit.simId = combatUnit.id;
+      });
+      this.state.units.push(...displayUnits);
+      this.state.result = null;
+      this.state.logs.unshift(`${title}进场。`);
+      if (!this.state.running && sim.units.some((unit) => unit.side !== side && sim.isAlive(unit))) {
+        this.state.running = true;
+        this.resetPresentationClock(performance.now());
+        this.state.raf = setInterval(() => this.tickUnified(performance.now()), 33);
+      }
+      this.syncUnifiedUnits();
+      this.render();
+      return incoming;
+    }
+
     tickUnified(now) {
       const sim = this.state.unifiedSim;
       if (!this.state.running || !sim) return;
@@ -456,7 +490,8 @@
       if (!sim) return;
       const sideMap = { left: "ally", right: "enemy" };
       for (const combatUnit of sim.units || []) {
-        const unit = this.state.units.find((item) => item.side === sideMap[combatUnit.side] && item.unitId.endsWith(`_${combatUnit.index}`));
+        const unit = this.state.units.find((item) => item.simId === combatUnit.id)
+          || this.state.units.find((item) => item.side === sideMap[combatUnit.side] && item.unitId.endsWith(`_${combatUnit.index}`));
         if (!unit) continue;
         unit.x = combatUnit.x;
         unit.y = combatUnit.y;

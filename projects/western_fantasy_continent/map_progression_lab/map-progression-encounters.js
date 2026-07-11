@@ -106,6 +106,68 @@
     return units.map((unit, slotIndex) => completeSpec(unit, slotIndex));
   }
 
+  function firstRoadWaves() {
+    return [
+      {
+        title: "大波 1：路边散兵",
+        regroupAfter: true,
+        smallWaves: [
+          { title: "大波 1-1：短刀试探", startTitle: "三名短刀散兵从路边冲来", rightTeam: weakRoadGroup(3, 0), spawnWhenRemaining: 2 },
+          { title: "大波 1-2：投石跟进", startTitle: "后续散兵排成小队跟进", rightTeam: [...weakRoadGroup(1, 3), ...weakRoadRanged(2, 0)] },
+        ],
+      },
+      {
+        title: "大波 2：残兵反扑",
+        regroupAfter: false,
+        smallWaves: [
+          { title: "大波 2：残兵反扑", startTitle: "最后一队混合散兵进入战场", rightTeam: [...weakRoadGroup(2, 4), ...weakRoadRanged(2, 2)] },
+        ],
+      },
+    ];
+  }
+
+  function weakRoadGroup(count, offset) {
+    return Array.from({ length: count }, (_, index) => ({
+      name: `郊野短刀兵 ${offset + index + 1}`,
+      role: "warrior",
+      roleKey: "warrior",
+      roleName: "短刀散兵",
+      iconText: "刀",
+      hp: 41,
+      maxHp: 41,
+      power: 9,
+      physicalPower: 10,
+      magicPower: 3,
+      armor: 0,
+      range: 12,
+      small1: "enemyNoop",
+      small2: "enemyNoop",
+      passive: "enemyDormantPassive",
+      ultimate: "enemyNoop",
+    }));
+  }
+
+  function weakRoadRanged(count, offset) {
+    return Array.from({ length: count }, (_, index) => ({
+      name: `郊野投石手 ${offset + index + 1}`,
+      role: "ranger",
+      roleKey: "ranger",
+      roleName: "投石散兵",
+      iconText: "石",
+      hp: 30,
+      maxHp: 30,
+      power: 8,
+      physicalPower: 9,
+      magicPower: 3,
+      armor: 0,
+      range: 32,
+      small1: "enemyNoop",
+      small2: "enemyNoop",
+      passive: "enemyDormantPassive",
+      ultimate: "enemyNoop",
+    }));
+  }
+
   function campFirstClearLoot(idPrefix = "r1_bandit_key") {
     return [
       {
@@ -154,5 +216,5 @@
     return item?.id === "r1_boss" ? 1.53 : null;
   }
 
-  return { bearLockTeam, campFirstClearLoot, enemyScaleOverride, fieldEffectId, isOneTimeBranch, prisonTeam };
+  return { bearLockTeam, campFirstClearLoot, enemyScaleOverride, fieldEffectId, firstRoadWaves, isOneTimeBranch, prisonTeam };
 });

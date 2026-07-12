@@ -51,6 +51,8 @@ function chooseAction(observation, policy = "explorer") {
   const rangerSwap = actions.find((action) => action === "swap:3:hero_ranger");
   if (rangerSwap && !observation.team.includes("林地游侠")) return rangerSwap;
   const availableNodes = observation.visibleNodes.filter((item) => item.status === "available");
+  const mergeNode = availableNodes.find((item) => item.id === "r1_main_9");
+  if (mergeNode) return "challenge:r1_main_9";
   const lastEvent = observation.lastEvent;
   const banditNode = availableNodes.find((item) => item.id === "r1_bandit");
   if (lastEvent?.node === "r1_prison" && lastEvent.outcome === "loss" && banditNode) return "challenge:r1_bandit";
@@ -88,6 +90,8 @@ function chooseAction(observation, policy = "explorer") {
 
 function chooseMainlineAction(observation) {
   const available = observation.visibleNodes.filter((item) => item.status === "available");
+  const mergeNode = available.find((item) => item.id === "r1_main_9");
+  if (mergeNode) return "challenge:r1_main_9";
   const main = available
     .filter((item) => item.type === "main")
     .sort((a, b) => Number(a.id.split("_").pop()) - Number(b.id.split("_").pop()))[0];

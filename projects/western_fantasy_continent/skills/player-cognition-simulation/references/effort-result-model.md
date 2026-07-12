@@ -36,26 +36,32 @@ These variables answer different questions:
 - `R`: how valuable was the outcome right now?
 - `kP`: what outcome did the player learn to expect for that process?
 
+Before assigning these values, read `signal-growth-agency-model.md`. It defines perceptual signal H, damage baselines, growth, progression, hypotheses, and agency. H is not an additional term in the final experience equation.
+
 ## 2. Modeling E And W
 
 Do not define E as all active time and W as all bad time.
 
-For each short segment, estimate an effort intensity `e_i` from 0 to 1 using visible demands:
+For the first runnable version, count effort from an explicit reasoning chain:
 
 ```text
-e_i = attention * meaningful_information * decision_or_stakes * legibility
+E_decision = valid reasoning steps:
+  visible problem
+  -> known plausible cause
+  -> available behavior
+  -> observable hypothesis
+
+E_verify = 1 when the player compares evidence with the hypothesis target
+E = E_decision + E_verify
 ```
 
-Then estimate:
+Routine execution between these cognitive events is W-dominant. Record W in subjective time; do not manufacture E merely to fill the interval.
 
-```text
-E_i = subjective_duration_i * e_i
-W_i = subjective_duration_i * (1 - e_i)
-```
+`W` can contain clear routine signals, recovery, anticipation, observation, or pacing. A normal auto-attack can produce H and progression while remaining W-dominant. It becomes harmful only when its ratio, placement, or meaning violates the expected rhythm. Continuous E can also be harmful through overload.
 
-`W` can be useful recovery, anticipation, observation, or pacing. It becomes harmful only when its ratio, placement, or meaning violates the expected rhythm. Continuous E can also be harmful through overload.
+A result is not effort. A chosen build producing a five-target kill can close prior decision E and create verification E, but the kill itself belongs to R. A random five-target kill is H, R, and surprise; it may trigger a new reasoning chain afterward.
 
-Treat `EWWW EWWW` as one plausible low-complexity rhythm, not a universal target. Different activities learn different target patterns.
+Treat decision -> routine execution -> verification as one plausible low-complexity rhythm, not a universal target. Different activities create different hypotheses and learned patterns.
 
 ## 3. Subjective Process Amount
 
@@ -64,11 +70,11 @@ Time is the first measurable input, but perceived time changes with cognitive lo
 Start with:
 
 ```text
-P_i = real_seconds_i * time_expansion(e_i) + explicit_cognitive_operations_i
-time_expansion(e_i) = 1 + lambda_effort * e_i
+P = cognitive_process_weight * (E_decision + E_verify)
+  + low_load_time_weight * W
 ```
 
-Use `explicit_cognitive_operations` for meaningful comparisons, decisions, target switches, equipment checks, or remembered plans that are not captured by duration alone.
+Do not count button presses. E counts reasoning transitions and explicit hypothesis comparison. Keep weights provisional until traces justify a more detailed time-expansion model.
 
 Do not count invisible simulation work. Count only what the player could perceive or think about.
 
@@ -232,16 +238,10 @@ Use this only as a replaceable project ruler for the first playable calibration 
 When E and W are measured in visible real-time seconds:
 
 ```text
-P = 1.4 * E + 0.6 * W + decision_units
+P = 1.0 * E + 0.6 * W
 ```
 
-Initial decision-unit anchors:
-
-```text
-minor recognition or confirmation: 0.5
-meaningful comparison or choice: 1.5
-complex multi-variable decision: 3.0
-```
+Treat this linear expression as a reporting approximation. E is a count of valid cognitive steps in this version; W is subjective low-load time. Do not pretend the units are universal human constants.
 
 ### Effort quality
 
@@ -256,7 +256,7 @@ Use `Q` in `[-1, 1]`:
  0.70 ..  1.00: exceptional and uncommon
 ```
 
-For the first auto-battle level, target `Q = 0.30 .. 0.60` and an E share near `30% .. 40%`. Treat an `EWWW`-like rhythm as a starting hypothesis. Do not equate damage-event gaps with W; use them only as a warning proxy until presentation is observed.
+For the first auto-battle level, do not target an arbitrary E share. Infer E from valid decision-chain steps and explicit hypothesis comparison. A first passive observation may be mostly W while still containing clear H and progression R. Do not equate damage-event gaps with W; use them only as a warning proxy until presentation is observed.
 
 ### Result anchors
 

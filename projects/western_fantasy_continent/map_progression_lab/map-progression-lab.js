@@ -1,11 +1,12 @@
 (function initMapProgressionLab() {
-  const SAVE_KEY = "agent_automata_map_progression_lab_v4";
+  const SAVE_KEY = "agent_automata_map_progression_lab_v6";
   const MAP_WIDTH = 1400;
   const MAP_HEIGHT = 900;
   const AUTO_STEP_MS = 200;
   const ROSTER = window.GAME_MAP_PROGRESSION_ROSTER;
   const EQUIPMENT = window.GAME_EQUIPMENT_RUNTIME;
   const ENCOUNTERS = window.GAME_MAP_PROGRESSION_ENCOUNTERS;
+  const PLAYER_STATE = window.GAME_MAP_PROGRESSION_PLAYER_STATE;
   const LABEL_PLACEMENTS = {
     r1_gate_west: { left: "calc(100% + 8px)", top: "50%", transform: "translateY(-50%)", align: "left" },
     r1_gate_south: { left: "50%", top: "calc(100% + 8px)", transform: "translateX(-50%)", align: "center" },
@@ -30,9 +31,9 @@
       desc: "盗匪巡逻、哨塔和旧路口组成的新手外圈。",
       gates: [],
       nodes: makeRegionNodes("r1", 0, [
-        [160, 580], [214, 530], [268, 482], [322, 438], [376, 394],
-        [430, 350], [492, 326], [538, 288], [574, 246], [596, 202],
-      ], { bandit: [396, 520], prison: [420, 270], boss: [688, 172] }),
+        [160, 580], [220, 525], [285, 470], [350, 420], [415, 370],
+        [480, 320], [548, 255], [548, 385], [620, 320], [680, 258],
+      ], { bandit: [430, 510], prison: [390, 255], boss: [765, 215] }),
     },
     {
       id: "r2",
@@ -117,6 +118,12 @@
     fightBtn: document.getElementById("fightBtn"),
     autoFiveBtn: document.getElementById("autoFiveBtn"),
     rewardLog: document.getElementById("rewardLog"),
+    playerEmotion: document.getElementById("playerEmotion"),
+    playerFeedbackValue: document.getElementById("playerFeedbackValue"),
+    playerCombatExpectation: document.getElementById("playerCombatExpectation"),
+    playerConfidence: document.getElementById("playerConfidence"),
+    playerProcessRead: document.getElementById("playerProcessRead"),
+    playerStateChanges: document.getElementById("playerStateChanges"),
     battleMount: document.getElementById("battleMount"),
     waveStatus: document.getElementById("waveStatus"),
     previewBattleBtn: document.getElementById("previewBattleBtn"),
@@ -172,6 +179,11 @@
       index % 3 === 2 ? ["蓝装"] : ["白装"],
       mainNodeRequires(regionId, index),
     ));
+    if (regionId === "r1") {
+      line[7].requires = ["r1_main_6"];
+      line[8].requires = [];
+      line[8].requiresAny = ["r1_main_7", "r1_main_8"];
+    }
     const branches = [
       node(`${regionId}_bandit`, regionId, "branch", regionId === "r1" ? "旧塔军械营地" : "强盗营地", extras.bandit, "可选支线", regionId === "r1" ? "可重复挑战的攻坚支线。首通获得破盾与破甲军械，之后复战不再发放首通奖励。" : "固定品质装备奖励。先打主线第 4 关解锁。", regionId === "r1" ? ["首通：破盾斧与裂甲护手"] : ["1 紫装", "2 蓝装"], [regionId === "r1" ? `${regionId}_main_5` : `${regionId}_main_4`]),
       node(`${regionId}_prison`, regionId, "branch", regionId === "r1" ? "旧塔监狱" : "监狱", extras.prison, "可选支线", regionId === "r1" ? "可重复挑战的救援支线。首通救出一名新角色，之后复战不再发放首通奖励。" : "固定救出一个角色。先打主线第 5 关解锁。", [regionIndex === 0 ? "首通：林地游侠" : regionIndex === 1 ? "破盾战士" : "晨祷牧师"], [regionId === "r1" ? `${regionId}_main_3` : `${regionId}_main_5`]),
@@ -186,7 +198,7 @@
   }
 
   function node(id, regionId, type, name, pos, label, desc, rewards, requires = []) {
-    return { id, regionId, type, name, x: pos[0], y: pos[1], label, desc, rewards, requires };
+    return { id, regionId, type, name, x: pos[0], y: pos[1], label, desc, rewards, requires, requiresAny: [] };
   }
 
   function initialState() {
@@ -211,6 +223,7 @@
         equipmentTriedAfterFail: false,
         roleTriedAfterGearFail: false,
       },
+      playerExpectation: PLAYER_STATE.createState("map-player"),
       selectedId: "r1_main_1",
       pan: { x: -34, y: -92 },
     };
@@ -235,6 +248,7 @@
       selectedEquipmentHeroId: value.selectedEquipmentHeroId || ROSTER.INITIAL_TEAM_SLOTS[0],
       selectedEquipmentItemId: value.selectedEquipmentItemId || null,
       knowledge: { ...initialState().knowledge, ...(value.knowledge || {}) },
+      playerExpectation: PLAYER_STATE.normalizeState(value.playerExpectation, value.seed || "map-player"),
       pan: value.pan || { x: -34, y: -92 },
     };
   }
@@ -408,6 +422,7 @@
     renderRegionPanel(selectedRegion);
     renderNodePanel(selected);
     renderRewards();
+    renderExpectedPlayerState();
     renderAutoButton();
     renderTeamDialog();
     renderEquipmentPage();
@@ -584,12 +599,37 @@
       : "<div>暂无奖励。选择可挑战关卡开始真实战斗。</div>";
   }
 
+  function renderExpectedPlayerState() {
+    if (!els.playerStateChanges) return;
+    const view = PLAYER_STATE.view(state.playerExpectation);
+    els.playerEmotion.textContent = view.emotion;
+    els.playerFeedbackValue.textContent = `${Math.round(view.feedback)}/100`;
+    els.playerCombatExpectation.textContent = view.ordinaryEnemyContract;
+    els.playerConfidence.textContent = view.confidence;
+    els.playerProcessRead.textContent = view.processRead;
+    els.playerStateChanges.innerHTML = view.changes.length
+      ? view.changes.map((change) => `
+        <div class="player-state-change ${change.kind || "neutral"}">
+          <div class="player-state-change-head"><strong>${change.label}</strong><span>${change.before} → ${change.after}</span></div>
+          <p>${change.cause}</p>
+        </div>
+      `).join("")
+      : `<div class="player-state-change"><p>等待玩家产生可观察行为。</p></div>`;
+  }
+
   function linkPairs() {
     const pairs = [];
     for (const region of regions) {
       for (const gate of region.gates) pairs.push({ from: gate, to: `${region.id}_main_1`, kind: "gate", bend: gate.endsWith("south") ? 34 : -22 });
-      for (let index = 1; index < 10; index += 1) {
-        pairs.push({ from: `${region.id}_main_${index}`, to: `${region.id}_main_${index + 1}`, kind: "main", bend: index % 2 ? 10 : -10 });
+      if (region.id === "r1") {
+        for (let index = 1; index < 6; index += 1) pairs.push({ from: `r1_main_${index}`, to: `r1_main_${index + 1}`, kind: "main", bend: index % 2 ? 10 : -10 });
+        pairs.push({ from: "r1_main_6", to: "r1_main_7", kind: "main", bend: -16 });
+        pairs.push({ from: "r1_main_6", to: "r1_main_8", kind: "main", bend: 18 });
+        pairs.push({ from: "r1_main_7", to: "r1_main_9", kind: "main", bend: 18 });
+        pairs.push({ from: "r1_main_8", to: "r1_main_9", kind: "main", bend: -18 });
+        pairs.push({ from: "r1_main_9", to: "r1_main_10", kind: "main", bend: -10 });
+      } else {
+        for (let index = 1; index < 10; index += 1) pairs.push({ from: `${region.id}_main_${index}`, to: `${region.id}_main_${index + 1}`, kind: "main", bend: index % 2 ? 10 : -10 });
       }
       pairs.push({ from: region.id === "r1" ? "r1_main_5" : `${region.id}_main_4`, to: `${region.id}_bandit`, kind: "branch", bend: -34 });
       pairs.push({ from: region.id === "r1" ? "r1_main_3" : `${region.id}_main_5`, to: `${region.id}_prison`, kind: "branch", bend: 34 });
@@ -651,7 +691,9 @@
     if (state.cleared[item.id]) return item.type === "main" || ENCOUNTERS.isOneTimeBranch(item);
     if (item.type === "gate") return true;
     if (!regionInteriorUnlocked(region)) return false;
-    return (item.requires || []).every((id) => state.cleared[id]);
+    const requiredAll = (item.requires || []).every((id) => state.cleared[id]);
+    const requiredAny = !(item.requiresAny || []).length || item.requiresAny.some((id) => state.cleared[id]);
+    return requiredAll && requiredAny;
   }
 
   function shouldFirstFailPrison(item) {
@@ -665,6 +707,7 @@
   }
 
   function settleNodeAttempt(item, combatResult) {
+    state.playerExpectation = PLAYER_STATE.recordBattle(state.playerExpectation, item, combatResult);
     recordTeamExperiment(item, combatResult);
     if (!combatResult.win) return failNode(item, combatResult);
     const firstClear = !state.cleared[item.id];
@@ -741,7 +784,11 @@
   }
 
   function nextAvailableNodes() {
-    return allNodes().filter((item) => isAvailable(item)).sort((a, b) => nodeRank(a) - nodeRank(b));
+    const rows = allNodes().filter((item) => isAvailable(item));
+    const mergeAvailable = rows.some((item) => item.id === "r1_main_9");
+    return rows
+      .filter((item) => !mergeAvailable || (item.id !== "r1_main_7" && item.id !== "r1_main_8"))
+      .sort((a, b) => nodeRank(a) - nodeRank(b));
   }
 
   function nodeRank(item) {
@@ -1601,6 +1648,7 @@
 
   function grantNodeRewards(item, combatResult, firstClear) {
     if (!firstClear && ENCOUNTERS.isOneTimeBranch(item)) {
+      state.playerExpectation = PLAYER_STATE.recordLoot(state.playerExpectation, item, [], { firstClear: false });
       state.rewards.unshift(`${item.name}复战胜利；首通奖励已经领取，本次没有新的支线奖励。`);
       saveState();
       render();
@@ -1617,6 +1665,10 @@
       state.roster = ROSTER.rescueHero(state.roster, "ranger");
       state.rewards.unshift("林地游侠已加入角色名单。当前队伍没有自动改变，请由你决定是否替换出战角色。");
     }
+    state.playerExpectation = PLAYER_STATE.recordLoot(state.playerExpectation, item, loot, {
+      firstClear,
+      characterUnlocked: item.id === "r1_prison" && firstClear,
+    });
     const lootText = loot.map((entry) => entry.name).join(" / ") || "无装备";
     const topDamage = (combatResult.units || []).filter((unit) => unit.side === "left" || unit.side === "ally").sort((a, b) => b.damageDone - a.damageDone)[0];
     const damageText = topDamage ? `；最高伤害 ${topDamage.name} ${Math.round(topDamage.damageDone)}` : "";
@@ -1628,15 +1680,15 @@
   }
 
   function openTeamDialog() {
-    if (!state.flags.rangerRescued || !els.teamDialog) return;
+    if (!els.teamDialog) return;
     renderTeamDialog();
     if (!els.teamDialog.open) els.teamDialog.showModal();
   }
 
   function renderTeamDialog() {
     if (!els.teamManageBtn) return;
-    els.teamManageBtn.disabled = !state.flags.rangerRescued;
-    els.teamManageBtn.textContent = state.flags.rangerRescued ? "队伍整备" : "队伍整备（未开放）";
+    els.teamManageBtn.disabled = false;
+    els.teamManageBtn.textContent = "队伍整备";
     const activeIds = new Set(state.teamSlots);
     const byId = Object.fromEntries(state.roster.map((unit) => [unit.id, unit]));
     els.teamSlotList.innerHTML = state.teamSlots.map((id, slotIndex) => {
@@ -1783,6 +1835,7 @@
     const displaced = hero.equipment?.[item.slot];
     if (displaced && displaced.id !== item.id && !state.inventory.some((entry) => entry.id === displaced.id)) state.inventory.push(displaced);
     hero.equipment = { ...(hero.equipment || {}), [item.slot]: item };
+    state.playerExpectation = PLAYER_STATE.recordEquipmentChange(state.playerExpectation, hero.name, item.name, true);
     state.rewards.unshift(`${hero.name}装备了${item.name}。`);
     saveState();
     render();
@@ -1795,6 +1848,7 @@
     const item = location.item;
     delete hero.equipment[item.slot];
     if (!state.inventory.some((entry) => entry.id === item.id)) state.inventory.push(item);
+    state.playerExpectation = PLAYER_STATE.recordEquipmentChange(state.playerExpectation, hero.name, item.name, false);
     state.rewards.unshift(`${hero.name}卸下了${item.name}。`);
     saveState();
     render();
@@ -1904,34 +1958,54 @@
   function nextBehaviorAfterFailure(item, combatResult) {
     const failCount = state.failures[item.id] || 1;
     const gear = gearScore();
+    const evidence = failureEvidence(combatResult);
     if (item.id === "r1_prison" && !state.cleared.r1_bandit) {
       const campReady = state.cleared.r1_main_5;
       return {
         focusId: campReady ? "r1_bandit" : "r1_main_4",
         log: campReady
-          ? `监狱真实战斗失败（${combatResult.duration} 秒）。军械营地已经出现，取得攻坚装备后再试。`
-          : `监狱真实战斗失败（${combatResult.duration} 秒）。当前只知道装备能提升战力，继续推进郊野寻找更好的装备来源。`,
+          ? `监狱真实战斗失败（${combatResult.duration} 秒）。${evidence}军械营地已经出现，取得攻坚装备后再试。`
+          : `监狱真实战斗失败（${combatResult.duration} 秒）。${evidence}当前只知道装备能提升战力，继续推进郊野寻找更好的装备来源。`,
       };
     }
     if (item.id === "r1_prison" && state.cleared.r1_bandit) {
       const farmNode = latestClearedMain(item);
       return {
         focusId: farmNode?.id || item.id,
-        log: `监狱在一次性营地奖励后仍然失败（${combatResult.duration}s）。营地已经完成，去最近的主线关刷出新装备后再重试。`,
+        log: `监狱在一次性营地奖励后仍然失败（${combatResult.duration}s）。${evidence}营地已经完成，去最近的主线关刷出新装备后再重试。`,
       };
     }
     if (failCount <= 1) {
       state.knowledge.equipmentTriedAfterFail = true;
       return {
         focusId: previousFarmNode(item)?.id || item.id,
-        log: `${item.name}失败。当前装备强度 ${gear}；先执行已知行为：刷取并换上更强装备。`,
+        log: `${item.name}失败。${evidence}当前装备强度 ${gear}；先执行已知行为：刷取并换上更强装备。`,
       };
     }
     state.knowledge.roleTriedAfterGearFail = true;
     return {
       focusId: nearestRoleNode(item)?.id || previousFarmNode(item)?.id || item.id,
-      log: `${item.name}在装备提升后再次失败；现在可以怀疑队伍结构，并寻找角色或支线解法。`,
+      log: `${item.name}在装备提升后再次失败。${evidence}现在可以怀疑队伍结构，并寻找角色或支线解法。`,
     };
+  }
+
+  function failureEvidence(combatResult) {
+    const firstDeath = (combatResult.signals || []).find((signal) => signal.kind === "death" && signal.target?.side === "left");
+    const incoming = (combatResult.signals || []).filter((signal) => signal.kind === "damage" && signal.source?.side === "right" && signal.target?.side === "left");
+    const types = { 物理: 0, 法术: 0, 效果: 0 };
+    for (const signal of incoming) {
+      const tags = signal.tags || [];
+      const key = tags.some((tag) => tag === "dot" || tag === "burn" || tag === "poison")
+        ? "效果"
+        : tags.some((tag) => tag === "magic" || tag === "fire" || tag === "frost" || tag === "lightning") ? "法术" : "物理";
+      types[key] += Number(signal.amount) || 0;
+    }
+    const dominant = Object.entries(types).sort((a, b) => b[1] - a[1])[0]?.[0] || "未知";
+    const survivors = (combatResult.units || []).filter((unit) => unit.side === "right" && unit.alive);
+    const survivalText = survivors.length ? `敌方仍有 ${survivors.length} 人存活` : "敌方已接近被击破";
+    if (combatResult.resolution === "time_limit") return `战斗达到时限，${survivalText}，主要承受${dominant}伤害；`;
+    if (firstDeath) return `${firstDeath.target?.name || "我方单位"}在 ${Math.round(firstDeath.time * 10) / 10} 秒率先阵亡，${survivalText}，主要承受${dominant}伤害；`;
+    return `${survivalText}，主要承受${dominant}伤害；`;
   }
 
   function previousFarmNode(item) {

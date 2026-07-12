@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-11_0140_first-level-effort-v0.md`](reports/2026-07-11_0140_first-level-effort-v0.md)
+[`reports/2026-07-12_0118_first-region-v5-map-loop.md`](reports/2026-07-12_0118_first-region-v5-map-loop.md)
 
-Last updated: 2026-07-11
+Last updated: 2026-07-12
 
-Current focus: `r1_main_1` now has an AI-reviewed Effort V0 playable candidate: slightly higher enemy durability and earlier small-wave overlap reduce one-hit enemies from 46% to 5.7% while preserving guaranteed success. Next evidence must be a human check of whether the longest damage gap is meaningful presentation or dead time.
+Current focus: Region 1 now uses real combat plus cognition-v5 route simulation from opening through the first boss, including start-of-game roster changes, an optional Prison/Camp lock-key loop, a two-route fork, failure diagnosis evidence, and replay-only hypothesis verification. Next evidence should be a blind human playthrough of this first-region loop.

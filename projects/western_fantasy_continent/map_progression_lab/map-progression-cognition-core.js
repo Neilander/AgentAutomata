@@ -15,14 +15,21 @@
   function makeNodes() {
     const result = [];
     for (let index = 1; index <= 10; index += 1) {
-      const requires = index === 1 ? [] : [`r1_main_${index - 1}`];
+      const requires = index === 1
+        ? []
+        : index === 8
+          ? ["r1_main_6"]
+          : index === 9
+            ? []
+            : [`r1_main_${index - 1}`];
       result.push({
         id: `r1_main_${index}`,
         name: `灰带郊野 ${index}`,
         type: "main",
         requires,
+        requiresAny: index === 9 ? ["r1_main_7", "r1_main_8"] : [],
         rewardHint: index % 3 === 0 ? "可能出现蓝装" : "白装",
-        enemyHint: index === 1 ? "两大波、三次进场的弱小散兵" : index === 7 ? "高生命高攻速蛮熊与三名弱支援" : index <= 3 ? "两名近战和一名远程" : index <= 6 ? "近战、远程与治疗" : "完整四人敌队",
+        enemyHint: index === 1 ? "两大波、三次进场的弱小散兵" : index === 7 ? "高生命高攻速蛮熊与三名弱支援" : index === 8 ? "两名脆弱施法者与远程支援" : index <= 3 ? "两名近战和一名远程" : index <= 6 ? "近战、远程与治疗" : "完整四人敌队",
       });
     }
     result.push(
@@ -104,7 +111,9 @@
 
   function nodeStatus(state, item) {
     if (state.cleared[item.id]) return item.type === "main" ? "farmable" : ENCOUNTERS.isOneTimeBranch(item) ? "repeatable" : "cleared";
-    if ((item.requires || []).every((id) => state.cleared[id])) return "available";
+    const requiredAll = (item.requires || []).every((id) => state.cleared[id]);
+    const requiredAny = !(item.requiresAny || []).length || item.requiresAny.some((id) => state.cleared[id]);
+    if (requiredAll && requiredAny) return "available";
     return "locked";
   }
 
@@ -123,9 +132,7 @@
     const challengeActions = visibleNodes.filter((item) => ["available", "farmable", "repeatable"].includes(item.status)).map((item) => `challenge:${item.id}`);
     const activeIds = new Set(state.teamSlots);
     const reserveIds = state.roster.filter((unit) => !activeIds.has(unit.id)).map((unit) => unit.id);
-    const swapActions = state.flags.rangerRescued
-      ? reserveIds.flatMap((heroId) => state.teamSlots.map((_, slotIndex) => `swap:${slotIndex}:${heroId}`))
-      : [];
+    const swapActions = reserveIds.flatMap((heroId) => state.teamSlots.map((_, slotIndex) => `swap:${slotIndex}:${heroId}`));
     return {
       step: state.step,
       currentGoal: state.cleared.r1_boss ? "第一地区已完成" : nextGoal(state),
@@ -185,6 +192,8 @@
       resolution: combat.resolution,
       contributions: (combat.units || []).filter((unit) => unit.side === "left").map((unit) => ({ name: unit.name, role: unit.role, damage: unit.damageDone })).sort((a, b) => b.damage - a.damage),
       feedbackSignals: visibleFeedbackSignals(combat.signals),
+      performance: combatPerformance(combat),
+      diagnosis: combatDiagnosis(combat),
     };
 
     if (combat.win) {
@@ -245,12 +254,20 @@
         event.roleProof = { rangerDamageShare: Math.round(share * 1000) / 1000, evidence: "蛮熊战伤害占比" };
       }
     }
+    if (id === "r1_main_8" && state.teamSlots.includes("hero_mage") && combat.win) {
+      const mage = event.contributions.find((unit) => unit.role === "mage");
+      const totalDamage = event.contributions.reduce((sum, unit) => sum + (unit.damage || 0), 0);
+      const share = totalDamage ? (mage?.damage || 0) / totalDamage : 0;
+      if (share >= 0.32) {
+        learn(state, "角色观察", `法师在脆弱群体战贡献了 ${Math.round(share * 100)}% 伤害`, "面对多名脆弱敌人时继续观察范围伤害");
+        event.roleProof = { mageDamageShare: Math.round(share * 1000) / 1000, evidence: "脆弱群体战伤害占比" };
+      }
+    }
     state.history.unshift(event);
     return { ok: true, state, observation: observe(state), event };
   }
 
   function applySwapAction(state, actionText, slotText, heroId) {
-    if (!state.flags.rangerRescued) return actionError(state, actionText, "尚未开放队伍整备");
     const slotIndex = Number(slotText);
     if (!Number.isInteger(slotIndex) || slotIndex < 0 || slotIndex > 3 || !state.roster.some((unit) => unit.id === heroId)) return actionError(state, actionText, "无效的队伍替换");
     const before = [...state.teamSlots];
@@ -307,6 +324,46 @@
     };
   }
 
+  function combatPerformance(combat) {
+    const damage = (combat.signals || []).filter((signal) => signal.kind === "damage" && signal.source?.side === "left" && signal.target?.side === "right" && Number(signal.amount) > 0);
+    const amounts = damage.map((signal) => Number(signal.amount)).sort((a, b) => a - b);
+    const relative = damage.map((signal) => Number(signal.amount) / Math.max(1, Number(signal.hpBefore) || 1));
+    return {
+      d50: percentile(amounts, 0.5),
+      d90: percentile(amounts, 0.9),
+      frequency: combat.duration > 0 ? Math.round(damage.length / combat.duration * 1000) / 1000 : 0,
+      impact: relative.length ? Math.round(relative.reduce((sum, value) => sum + value, 0) / relative.length * 1000) / 1000 : 0,
+      hitCount: damage.length,
+      killCount: (combat.signals || []).filter((signal) => signal.kind === "death" && signal.target?.side === "right").length,
+    };
+  }
+
+  function combatDiagnosis(combat) {
+    const incoming = (combat.signals || []).filter((signal) => signal.kind === "damage" && signal.source?.side === "right" && signal.target?.side === "left");
+    const totals = { physical: 0, magic: 0, effect: 0 };
+    for (const signal of incoming) {
+      const amount = Number(signal.amount) || 0;
+      if ((signal.tags || []).some((tag) => tag === "dot" || tag === "burn" || tag === "poison")) totals.effect += amount;
+      else if ((signal.tags || []).some((tag) => tag === "magic" || tag === "fire" || tag === "frost" || tag === "lightning")) totals.magic += amount;
+      else totals.physical += amount;
+    }
+    const firstAllyDeath = (combat.signals || []).find((signal) => signal.kind === "death" && signal.target?.side === "left");
+    const enemySurvivors = (combat.units || []).filter((unit) => unit.side === "right" && unit.alive).map((unit) => ({ name: unit.name, role: unit.role, hpRatio: Math.round((unit.hpRatio || 0) * 1000) / 1000 }));
+    const dominantDamage = Object.entries(totals).sort((a, b) => b[1] - a[1])[0]?.[0] || "none";
+    return {
+      firstAllyDeath: firstAllyDeath ? { time: Math.round(firstAllyDeath.time * 100) / 100, name: firstAllyDeath.target?.name || "", killer: firstAllyDeath.source?.name || "" } : null,
+      incomingDamage: Object.fromEntries(Object.entries(totals).map(([key, value]) => [key, Math.round(value * 10) / 10])),
+      dominantDamage,
+      enemySurvivors,
+    };
+  }
+
+  function percentile(values, ratio) {
+    if (!values.length) return 0;
+    const index = Math.max(0, Math.min(values.length - 1, Math.ceil(values.length * ratio) - 1));
+    return Math.round(values[index] * 1000) / 1000;
+  }
+
   function playerTeam(state) {
     return ROSTER.buildTeam(state.roster, state.teamSlots, 1);
   }
@@ -326,6 +383,7 @@
     const mainNo = Number(item.id.split("_").pop() || 1);
     if (mainNo <= 3) return ["warrior", "warrior", "ranger"];
     if (mainNo <= 6) return ["warrior", "warrior", "ranger", "priest"];
+    if (mainNo === 8) return ["warrior", "ranger", "mage", "mage"];
     return ["knight", "warrior", "ranger", "mage"];
   }
 

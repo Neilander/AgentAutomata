@@ -11,9 +11,9 @@ Model the player as a learning agent, not as a designer who already knows the sy
 
 1. Define the bounded episode being tested: one fight, one map decision, one reward loop, or one failure-and-retry loop.
 2. Initialize only the cognition available before the episode. Read `references/cognition-state.md`.
-3. Divide the episode into locally meaningful segments. Record simulated real time and visible state changes.
-4. For each segment, estimate effective effort `E`, low-load time `W`, subjective process amount `P`, and effort quality `Q`. Read `references/effort-result-model.md`.
-5. Calculate process feedback, subjective result `R`, learned exchange rate `k`, signed expectation mismatch, and total episode experience.
+3. Convert visible combat events into perceptual signals, comparable performance observations, progression, growth, and agency. Read `references/signal-growth-agency-model.md`.
+4. Divide the episode into locally meaningful segments. Count the explicit problem -> cause -> behavior -> hypothesis decision chain and the later hypothesis comparison before estimating `E`, `W`, `P`, and `Q`. Read `references/effort-result-model.md`.
+5. Calculate progression and growth result `R`, learned exchange rate `k`, signed expectation mismatch, and total episode experience.
 6. Update concepts, knowledge, behaviors, first impressions, expectations, event freshness, failure memories, and wake-up conditions.
 7. Select the next action using only the updated state. Never use hidden designer intent or future rewards.
 8. Produce the required trace and run an independent plausibility review. Read `references/simulation-protocol.md`.
@@ -38,6 +38,7 @@ A(delta) = positive_scale * max(delta, 0)^positive_power
 
 Treat these as separate quantities:
 
+- `H`: perceptual signal strength; evidence, not effort or direct reward.
 - `E`: meaningful, attention-demanding effort.
 - `W`: low-load time; neutral until judged by ratio and distribution.
 - `P`: subjectively perceived process amount, including time-perception slowdown during effort.
@@ -49,6 +50,11 @@ Treat these as separate quantities:
 ## Hard Rules
 
 - Do not equate elapsed time with process amount. Effort changes perceived time and cognitive load.
+- Do not classify a clear or spectacular signal as E by default. In the first runnable version, E requires a valid decision-chain step or explicit hypothesis verification.
+- Keep H out of the final additive experience formula. Route it through clarity/Q, understood progression or growth/R, evidence updates, and expectation mismatch.
+- Count cognitive comparisons and model updates, not physical button presses.
+- Compare growth with the old baseline, deliver feedback, then update freshness and baselines.
+- Freeze baselines by meaningful feedback exposures, not battles or levels.
 - Do not treat `W` as a direct penalty. Recovery space can improve quality; badly proportioned or clustered `W` can reduce quality.
 - Keep `Q` independent of total process amount. A one-second episode can have high quality; a twenty-day episode can have negative quality.
 - Allow `Q < 0`. Repeating a painful process must accumulate negative experience rather than becoming positive through duration.
@@ -68,8 +74,10 @@ Use these project tools when executable simulation is needed:
 - `projects/western_fantasy_continent/game_data/feedback-cognition-model.js`
 - `projects/western_fantasy_continent/game_data/analyze-map-feedback-cognition.js`
 - `projects/western_fantasy_continent/game_data/test-feedback-cognition-model.js`
+- `projects/western_fantasy_continent/game_data/player-cognition-v5-sandbox.js`
+- `projects/western_fantasy_continent/game_data/test-player-cognition-v5-sandbox.js`
 
-The current runtime is `feedback-v4`. The E/W/P/Q/R/k/A model in this skill is the next conceptual layer and must not be claimed as implemented in V4 until the runtime is explicitly upgraded and tested.
+The production-facing runtime is still `feedback-v4`. The V5 sandbox is an isolated, independently reviewed calibration surface for H, E/W/P/Q/R/k/A, freshness, growth, hypotheses, and deterministic next-action checks. Do not claim that the live map or V4 implements V5 until explicitly integrated.
 
 ## Skill Composition
 

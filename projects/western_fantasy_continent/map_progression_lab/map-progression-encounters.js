@@ -106,39 +106,49 @@
     return units.map((unit, slotIndex) => completeSpec(unit, slotIndex));
   }
 
-  function firstRoadWaves() {
+  const FIRST_ROAD_PROFILES = {
+    paper_v0: { meleeHp: 30, rangedHp: 22, armor: 0, spawnWhenRemaining: 1 },
+    effort_v0: { meleeHp: 41, rangedHp: 30, armor: 0, spawnWhenRemaining: 2 },
+    effort_v1: { meleeHp: 92, rangedHp: 68, armor: 2, spawnWhenRemaining: 2 },
+    effort_v2: { meleeHp: 216, rangedHp: 214, armor: 2, spawnWhenRemaining: 3 },
+  };
+
+  function firstRoadWaves(profileInput = "effort_v2") {
+    const profile = typeof profileInput === "string"
+      ? (FIRST_ROAD_PROFILES[profileInput] || FIRST_ROAD_PROFILES.effort_v2)
+      : { ...FIRST_ROAD_PROFILES.effort_v2, ...(profileInput || {}) };
     return [
       {
         title: "大波 1：路边散兵",
         regroupAfter: true,
         smallWaves: [
-          { title: "大波 1-1：短刀试探", startTitle: "三名短刀散兵从路边冲来", rightTeam: weakRoadGroup(3, 0), spawnWhenRemaining: 2 },
-          { title: "大波 1-2：投石跟进", startTitle: "后续散兵排成小队跟进", rightTeam: [...weakRoadGroup(1, 3), ...weakRoadRanged(2, 0)] },
+          { title: "大波 1-1：短刀试探", startTitle: "三名短刀散兵从路边冲来", rightTeam: weakRoadGroup(3, 0, profile), spawnWhenRemaining: profile.spawnWhenRemaining },
+          { title: "大波 1-2：投石跟进", startTitle: "后续散兵排成小队跟进", rightTeam: [...weakRoadGroup(1, 3, profile), ...weakRoadRanged(2, 0, profile)] },
         ],
       },
       {
         title: "大波 2：残兵反扑",
         regroupAfter: false,
         smallWaves: [
-          { title: "大波 2：残兵反扑", startTitle: "最后一队混合散兵进入战场", rightTeam: [...weakRoadGroup(2, 4), ...weakRoadRanged(2, 2)] },
+          { title: "大波 2：残兵反扑", startTitle: "最后一队混合散兵进入战场", rightTeam: [...weakRoadGroup(2, 4, profile), ...weakRoadRanged(2, 2, profile)] },
         ],
       },
     ];
   }
 
-  function weakRoadGroup(count, offset) {
+  function weakRoadGroup(count, offset, profile) {
     return Array.from({ length: count }, (_, index) => ({
       name: `郊野短刀兵 ${offset + index + 1}`,
       role: "warrior",
       roleKey: "warrior",
       roleName: "短刀散兵",
       iconText: "刀",
-      hp: 41,
-      maxHp: 41,
+      hp: profile.meleeHp,
+      maxHp: profile.meleeHp,
       power: 9,
       physicalPower: 10,
       magicPower: 3,
-      armor: 0,
+      armor: profile.armor,
       range: 12,
       small1: "enemyNoop",
       small2: "enemyNoop",
@@ -147,19 +157,19 @@
     }));
   }
 
-  function weakRoadRanged(count, offset) {
+  function weakRoadRanged(count, offset, profile) {
     return Array.from({ length: count }, (_, index) => ({
       name: `郊野投石手 ${offset + index + 1}`,
       role: "ranger",
       roleKey: "ranger",
       roleName: "投石散兵",
       iconText: "石",
-      hp: 30,
-      maxHp: 30,
+      hp: profile.rangedHp,
+      maxHp: profile.rangedHp,
       power: 8,
       physicalPower: 9,
       magicPower: 3,
-      armor: 0,
+      armor: profile.armor,
       range: 32,
       small1: "enemyNoop",
       small2: "enemyNoop",
@@ -213,8 +223,8 @@
   }
 
   function enemyScaleOverride(item) {
-    return item?.id === "r1_boss" ? 1.53 : null;
+    return item?.id === "r1_boss" ? 1.38 : null;
   }
 
-  return { bearLockTeam, campFirstClearLoot, enemyScaleOverride, fieldEffectId, firstRoadWaves, isOneTimeBranch, prisonTeam };
+  return { FIRST_ROAD_PROFILES, bearLockTeam, campFirstClearLoot, enemyScaleOverride, fieldEffectId, firstRoadWaves, isOneTimeBranch, prisonTeam };
 });

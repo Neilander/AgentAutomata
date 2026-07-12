@@ -2,7 +2,23 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-12
+
+- `2026-07-12_0118_first-region-v5-map-loop.md`: redesigned Region 1 into an optional lock-key plus fork/merge loop, connected real combat evidence to cognition-v5, iterated with two player agents, and validated multiple boss solutions.
+
+- `2026-07-12_0006_player-cognition-v5-sandbox.md`: built and iterated an isolated player-cognition V5 sandbox through three subagent review rounds, ending with accepted base values and a minimum action loop.
+
 ## 2026-07-11
+
+- `2026-07-11_2338_simplified-decision-verification-effort.md`: simplified E into a discrete reasoning chain plus explicit hypothesis verification, and added attribution/behavior/hypothesis state.
+
+- `2026-07-11_2257_signal-growth-agency-effort-skill.md`: formalized perceptual H, adaptive growth baselines, decision/verification/interpretation E, progression, ROI, and Agency in the player cognition skill.
+
+- `2026-07-11_1608_first-level-ten-hit-experiment.md`: added a reversible ten-hit first-level profile, balanced melee/ranged durability, and browser-validated 9.9 visible hits per enemy.
+
+- `2026-07-11_1555_remove-first-level-damage-scaling.md`: removed the rejected enemy damage coefficient from first-level fitting and reconfirmed the 4-5-hit target using durability and wave pacing only.
+
+- `2026-07-11_1528_first-level-effort-v1-player-state.md`: fitted first-level enemies to a 4-5 visible-hit contract, added causal expected-player-state observability, and browser/regression validated the result.
 
 - `2026-07-11_0140_first-level-effort-v0.md`: froze provisional E/W/P/Q/R/k/A ranges, added a real-combat first-level analyzer, and implemented an independently reviewed playable candidate that reduces one-hit enemies from 46% to 5.7%.
 

@@ -5,6 +5,8 @@ description: Debug tutorial, test, and onboarding combat levels for Western Fant
 
 # Tutorial Level Debug
 
+Use this skill to diagnose and revise a tutorial encounter. Before accepting the revised level, run `../level-experience-validation/SKILL.md` to prove the lesson across the legal or sampled team state space and the frozen emotion model.
+
 ## Core Rule
 
 Do not solve a tutorial or test level by changing raw enemy/player stats first.

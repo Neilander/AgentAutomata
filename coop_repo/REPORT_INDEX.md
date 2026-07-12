@@ -2,7 +2,19 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-13
+
+- `2026-07-13_0221_player-cognition-v1-event-loop.md`: expanded the cognition graph with H, reactive E/mechanical W, unified event expectations, structured knowledge, multi-goal value, emotion routing, and failure fear.
+
+- `2026-07-13_0122_player-cognition-v0-loop-diagram.md`: froze the node-based cognition/action loop with continuous execution, interruption, result settlement, verification, attribution, and state-update ordering.
+
 ## 2026-07-12
+
+- `2026-07-12_2317_player-cognition-concept-reference.md`: added the foundational cognition-loop explanation and a hard distinction between game-event validation and direct psychological-parameter unit tests.
+
+- `2026-07-12_1759_player-model-vertex-validity-audit.md`: built a 30-vertex causal audit with two blind player agents, full coefficient sensitivity, fixed-time growth isolation, and a complex-versus-simple ablation; found H salience/goal and Agency are currently diagnostic-only.
+
+- `2026-07-12_1429_level-validation-and-probability-expectation-skill.md`: added exhaustive/sampled real-combat level validation, matched-pair role checks, emotion acceptance gates, and a general probability-event expectation model upstream of A.
 
 - `2026-07-12_0118_first-region-v5-map-loop.md`: redesigned Region 1 into an optional lock-key plus fork/merge loop, connected real combat evidence to cognition-v5, iterated with two player agents, and validated multiple boss solutions.
 

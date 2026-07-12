@@ -1,0 +1,313 @@
+{
+  "schema": "player_model_ablation_comparison_v1",
+  "note": "The simple score is a deliberate P/R-only ablation (R - time decay), not a reconstruction of a historical model version.",
+  "summary": {
+    "total": 30,
+    "complexOnly": 4,
+    "bothBlind": 9,
+    "sameDirection": 17,
+    "differentDirection": 0
+  },
+  "rows": [
+    {
+      "testId": "p_enemy_hp",
+      "designChange": "Reduce ordinary enemy HP",
+      "family": "p",
+      "complexDelta": 1.8521,
+      "simpleDelta": 1.2438,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "p_travel_wait",
+      "designChange": "Reduce pre-contact travel time",
+      "family": "p",
+      "complexDelta": 1.6319,
+      "simpleDelta": 1.05,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "p_decision_chain",
+      "designChange": "Add a complete visible reasoning chain",
+      "family": "p",
+      "complexDelta": 2.1038,
+      "simpleDelta": 0,
+      "complexDirection": "up",
+      "simpleDirection": "flat",
+      "distinction": "complex_only"
+    },
+    {
+      "testId": "p_verification",
+      "designChange": "Make the chosen hypothesis testable and confirmed",
+      "family": "p",
+      "complexDelta": 2.8035,
+      "simpleDelta": 1.2,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "q_perceptual_clarity",
+      "designChange": "Make the same decision feedback visually clear",
+      "family": "q",
+      "complexDelta": 0.88,
+      "simpleDelta": 0,
+      "complexDirection": "up",
+      "simpleDirection": "flat",
+      "distinction": "complex_only"
+    },
+    {
+      "testId": "q_causal_clarity",
+      "designChange": "Make cause and result attribution explicit",
+      "family": "q",
+      "complexDelta": 1.3677,
+      "simpleDelta": 0.27,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "q_progress_readability",
+      "designChange": "Expose progress toward the current goal",
+      "family": "q",
+      "complexDelta": 1.2786,
+      "simpleDelta": 0.287,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "q_dead_repetition",
+      "designChange": "Replace repeated dead time with varied useful actions",
+      "family": "q",
+      "complexDelta": 2.165,
+      "simpleDelta": 0,
+      "complexDirection": "up",
+      "simpleDirection": "flat",
+      "distinction": "complex_only"
+    },
+    {
+      "testId": "q_incomprehension",
+      "designChange": "Turn unreadable combat into interpretable combat",
+      "family": "q",
+      "complexDelta": 3.942,
+      "simpleDelta": 0,
+      "complexDirection": "up",
+      "simpleDirection": "flat",
+      "distinction": "complex_only"
+    },
+    {
+      "testId": "h_salience",
+      "designChange": "Increase visual salience without changing information",
+      "family": "h",
+      "complexDelta": 0,
+      "simpleDelta": 0,
+      "complexDirection": "flat",
+      "simpleDirection": "flat",
+      "distinction": "both_blind"
+    },
+    {
+      "testId": "h_goal_relevance",
+      "designChange": "Make the same signal directly relevant to the active goal",
+      "family": "h",
+      "complexDelta": 0,
+      "simpleDelta": 0,
+      "complexDirection": "flat",
+      "simpleDirection": "flat",
+      "distinction": "both_blind"
+    },
+    {
+      "testId": "r_progression_amount",
+      "designChange": "Increase objective progress delivered by the encounter",
+      "family": "r",
+      "complexDelta": 0.9828,
+      "simpleDelta": 0.405,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "r_progression_freshness",
+      "designChange": "Turn repeated progress into a fresh milestone",
+      "family": "r",
+      "complexDelta": 0.4934,
+      "simpleDelta": 0.202,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "r_growth_bundle",
+      "designChange": "Increase equipment damage per hit",
+      "family": "r",
+      "complexDelta": 3.8262,
+      "simpleDelta": 1.9801,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "r_growth_frequency",
+      "designChange": "Increase attack frequency while holding hit damage",
+      "family": "r",
+      "complexDelta": 3.0703,
+      "simpleDelta": 1.3197,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "r_growth_peak",
+      "designChange": "Add periodic burst hits without changing ordinary hits",
+      "family": "r",
+      "complexDelta": 1.5483,
+      "simpleDelta": 0.6555,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "r_growth_impact",
+      "designChange": "Fight lower-HP targets so each unchanged hit removes more relative health",
+      "family": "r",
+      "complexDelta": 0.6388,
+      "simpleDelta": 0.2749,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "r_baseline_confidence",
+      "designChange": "Confirm the old performance baseline before comparing growth",
+      "family": "r",
+      "complexDelta": 2.4176,
+      "simpleDelta": 1.0624,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "r_growth_freshness",
+      "designChange": "Make the same growth event fresh rather than repeatedly exposed",
+      "family": "r",
+      "complexDelta": 1.2077,
+      "simpleDelta": 0.5298,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "r_verification_freshness",
+      "designChange": "Confirm a fresh rather than repeatedly proven hypothesis",
+      "family": "r",
+      "complexDelta": 2.3277,
+      "simpleDelta": 0.96,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "r_other_result",
+      "designChange": "Add an understood non-progression reward",
+      "family": "r",
+      "complexDelta": 4.6868,
+      "simpleDelta": 2,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "a_positive_mismatch",
+      "designChange": "Give a reward much larger than the learned exchange rate predicts",
+      "family": "a",
+      "complexDelta": 8.2474,
+      "simpleDelta": 4,
+      "complexDirection": "up",
+      "simpleDirection": "up",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "a_negative_mismatch",
+      "designChange": "Remove expected result while preserving effort",
+      "family": "a",
+      "complexDelta": -8.3535,
+      "simpleDelta": -3.506,
+      "complexDirection": "down",
+      "simpleDirection": "down",
+      "distinction": "same_direction"
+    },
+    {
+      "testId": "agency_desire",
+      "designChange": "Increase desire for the active goal",
+      "family": "agency",
+      "complexDelta": 0,
+      "simpleDelta": 0,
+      "complexDirection": "flat",
+      "simpleDirection": "flat",
+      "distinction": "both_blind"
+    },
+    {
+      "testId": "agency_gap",
+      "designChange": "Make the perceived gap meaningful",
+      "family": "agency",
+      "complexDelta": 0,
+      "simpleDelta": 0,
+      "complexDirection": "flat",
+      "simpleDirection": "flat",
+      "distinction": "both_blind"
+    },
+    {
+      "testId": "agency_clarity",
+      "designChange": "Clarify the current problem",
+      "family": "agency",
+      "complexDelta": 0,
+      "simpleDelta": 0,
+      "complexDirection": "flat",
+      "simpleDirection": "flat",
+      "distinction": "both_blind"
+    },
+    {
+      "testId": "agency_path",
+      "designChange": "Reveal a path to improvement",
+      "family": "agency",
+      "complexDelta": 0,
+      "simpleDelta": 0,
+      "complexDirection": "flat",
+      "simpleDirection": "flat",
+      "distinction": "both_blind"
+    },
+    {
+      "testId": "agency_causal_control",
+      "designChange": "Increase trust that the action causes the result",
+      "family": "agency",
+      "complexDelta": 0,
+      "simpleDelta": 0,
+      "complexDirection": "flat",
+      "simpleDirection": "flat",
+      "distinction": "both_blind"
+    },
+    {
+      "testId": "agency_improvement",
+      "designChange": "Increase expected improvement from the action",
+      "family": "agency",
+      "complexDelta": 0,
+      "simpleDelta": 0,
+      "complexDirection": "flat",
+      "simpleDirection": "flat",
+      "distinction": "both_blind"
+    },
+    {
+      "testId": "agency_cost",
+      "designChange": "Reduce perceived action cost",
+      "family": "agency",
+      "complexDelta": 0,
+      "simpleDelta": 0,
+      "complexDirection": "flat",
+      "simpleDirection": "flat",
+      "distinction": "both_blind"
+    }
+  ]
+}

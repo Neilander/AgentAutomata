@@ -7,6 +7,8 @@ description: Simulate how a knowledge-bounded player learns concepts, chooses ac
 
 Model the player as a learning agent, not as a designer who already knows the systems. Trace what the player can observe, what they infer, how much subjective process they experience, what result they expect, and how the resulting experience changes the next action.
 
+Before modeling or explaining the system, read [references/model-concepts-explained.md](references/model-concepts-explained.md). It defines the full signal → perception → concept → knowledge → affordance → hypothesis → behavior → verification → emotion loop, and distinguishes gameplay validation from direct parameter unit tests.
+
 ## Required Workflow
 
 1. Define the bounded episode being tested: one fight, one map decision, one reward loop, or one failure-and-retry loop.
@@ -15,6 +17,8 @@ Model the player as a learning agent, not as a designer who already knows the sy
 4. Divide the episode into locally meaningful segments. Count the explicit problem -> cause -> behavior -> hypothesis decision chain and the later hypothesis comparison before estimating `E`, `W`, `P`, and `Q`. Read `references/effort-result-model.md`.
 5. Calculate progression and growth result `R`, learned exchange rate `k`, signed expectation mismatch, and total episode experience.
 6. Update concepts, knowledge, behaviors, first impressions, expectations, event freshness, failure memories, and wake-up conditions.
+
+For loot drops, critical hits, rare encounters, procs, and other repeated probability events, read [references/probability-expectation.md](references/probability-expectation.md). The cognition layer maintains event-family probability beliefs and counters; `A` only evaluates observed result against the prior expectation.
 7. Select the next action using only the updated state. Never use hidden designer intent or future rewards.
 8. Produce the required trace and run an independent plausibility review. Read `references/simulation-protocol.md`.
 

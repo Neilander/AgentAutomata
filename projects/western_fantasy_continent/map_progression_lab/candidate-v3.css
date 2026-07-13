@@ -1,0 +1,106 @@
+:root {
+  color-scheme: dark;
+  font-family: "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  background: #0d1210;
+  color: #e7e9df;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 1120px; background: #0d1210; }
+button, a { font: inherit; }
+button { cursor: pointer; }
+
+.candidate-shell { min-height: 100vh; display: grid; grid-template-rows: auto auto 1fr; }
+.topbar {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  border-bottom: 1px solid #30382f;
+  background: #121814;
+}
+.topbar > div:first-child { display: flex; align-items: baseline; gap: 18px; }
+.topbar a { color: #aeb8a8; text-decoration: none; font-size: 13px; }
+.topbar h1 { margin: 0; font-size: 20px; letter-spacing: 0; }
+.top-actions { display: flex; align-items: center; gap: 12px; color: #8e9b8b; font-size: 12px; }
+.top-actions button, .battle-head button {
+  border: 1px solid #6f853d;
+  background: #6f853d;
+  color: #fff;
+  padding: 8px 14px;
+}
+.top-actions button { border-color: #485247; background: transparent; }
+
+.node-rail {
+  display: flex;
+  gap: 8px;
+  min-height: 102px;
+  overflow-x: auto;
+  padding: 12px 18px;
+  border-bottom: 1px solid #30382f;
+  background: #101511;
+}
+.node-button {
+  flex: 0 0 154px;
+  min-height: 74px;
+  padding: 10px;
+  text-align: left;
+  color: #d7dbd0;
+  border: 1px solid #374036;
+  background: #161d17;
+}
+.node-button strong, .node-button span { display: block; }
+.node-button strong { margin-bottom: 7px; font-size: 14px; }
+.node-button span { color: #93a08f; font-size: 11px; line-height: 1.45; }
+.node-button.available { border-color: #789449; }
+.node-button.farmable, .node-button.repeatable { border-color: #526653; }
+.node-button.selected { outline: 2px solid #d2b95f; outline-offset: -2px; }
+
+.play-layout { min-height: 0; display: grid; grid-template-columns: 220px minmax(620px, 1fr) 290px; }
+.team-pane, .cognition-pane { min-height: 0; overflow-y: auto; padding: 16px; background: #111713; }
+.team-pane { border-right: 1px solid #30382f; }
+.cognition-pane { border-left: 1px solid #30382f; }
+.pane-head, .battle-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pane-head { margin-bottom: 12px; color: #9aa697; font-size: 12px; }
+.pane-head strong { color: #d4be69; }
+.reserve-head { margin-top: 22px; }
+.team-unit, .reserve-unit {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid #293129;
+}
+.unit-index { color: #71806f; font-size: 12px; }
+.team-unit strong, .reserve-unit strong { display: block; font-size: 14px; }
+.team-unit span, .reserve-unit span { color: #8e9a8b; font-size: 11px; }
+.swap-actions { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.swap-actions button { padding: 5px 0; border: 1px solid #3e493d; background: #1b241c; color: #bec7b9; font-size: 11px; }
+
+.battle-pane { min-width: 0; padding: 16px; background: #0d1210; }
+.battle-head { height: 48px; margin-bottom: 12px; }
+.battle-head span, .battle-head strong { display: block; }
+.battle-head span { color: #8e9a8b; font-size: 11px; }
+.battle-head strong { margin-top: 3px; }
+.battle-head button:disabled { cursor: default; border-color: #343b34; background: #252b26; color: #777f78; }
+.battle-mount { height: min(60vh, 600px); min-height: 430px; border: 1px solid #343d34; background: #101612; }
+.encounter-read { min-height: 48px; padding: 12px 2px; color: #a7b1a3; font-size: 12px; line-height: 1.55; }
+
+.cognition-pane section { padding: 12px 0; border-bottom: 1px solid #293129; }
+.cognition-pane label { color: #788576; font-size: 11px; }
+.cognition-pane p { margin: 7px 0 0; line-height: 1.6; font-size: 13px; }
+.result-block { margin-top: 7px; color: #cbd2c6; font-size: 12px; line-height: 1.6; }
+.result-block.win { color: #9dc97f; }
+.result-block.loss { color: #d58b7b; }
+.knowledge-list { display: grid; gap: 7px; margin-top: 8px; }
+.knowledge-list div { padding-left: 10px; border-left: 2px solid #59664f; color: #b2bbb0; font-size: 12px; line-height: 1.5; }
+details { margin-top: 14px; }
+summary { cursor: pointer; color: #9aa697; font-size: 12px; }
+.event-history { display: grid; gap: 7px; margin-top: 10px; }
+.event-history div { color: #8d998a; font-size: 11px; line-height: 1.5; }
+
+@media (max-width: 1280px) {
+  .play-layout { grid-template-columns: 190px minmax(600px, 1fr) 250px; }
+  .battle-mount { min-height: 400px; }
+}

@@ -517,7 +517,9 @@
     }
 
     playUnifiedSignal(signal) {
-      if (signal.kind === "health") return;
+      const presentation = SIGNALS.describePresentation?.(signal);
+      if (presentation && !presentation.visible) return;
+      if (!presentation && signal.kind === "health") return;
       const source = this.displayUnitForRef(signal.source);
       const target = this.displayUnitForRef(signal.target);
       const tags = signal.tags || [];
@@ -589,6 +591,13 @@
         } else {
           this.ring(target, "gold");
         }
+        return;
+      }
+      if (signal.kind === "field") {
+        const anchorUnit = source || target;
+        if (!anchorUnit) return;
+        this.floater(anchorUnit, signal.text || signal.skillName || "场地效果", "gold");
+        this.ring(anchorUnit, "gold");
         return;
       }
       if (signal.kind === "death" && target) this.floater(target, "\u5012\u4e0b", "");

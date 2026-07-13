@@ -71,6 +71,7 @@ const GAME_COMBAT_SIGNALS = (() => {
       amount: Number(input.amount || 0),
       skillKey: input.skillKey || null,
       skillName: input.skillName || "",
+      text: input.text || "",
       hpBefore: input.hpBefore,
       hpAfter: input.hpAfter,
       hp: input.hp,
@@ -109,7 +110,65 @@ const GAME_COMBAT_SIGNALS = (() => {
     };
   }
 
-  return { createCombatSignalBus, unitRef, unitMeta };
+  function describePresentation(signal) {
+    const kind = signal?.kind || "event";
+    const tags = new Set(signal?.tags || []);
+    const specialMovement = kind === "movement" && ["shadowReset", "shadowStep", "hidden", "blink"].some((tag) => tags.has(tag));
+    const sourceVisible = Boolean(signal.source?.id);
+    const targetVisible = Boolean(signal.target?.id);
+    const visible = (kind === "skill" && sourceVisible)
+      || (["damage", "heal", "shield", "status", "field", "death"].includes(kind) && targetVisible)
+      || (specialMovement && sourceVisible);
+    if (!visible) return {
+      contract: "battle_view_unified_signal_v1",
+      visible: false,
+      reason: kind === "health" ? "state_synced_without_discrete_feedback" : "no_playUnifiedSignal_branch",
+    };
+    const hasNumber = ["damage", "heal", "shield"].includes(kind) && Number(signal.amount || 0) !== 0;
+    const hasText = ["skill", "damage", "heal", "shield", "status", "field", "death"].includes(kind);
+    const motion = kind === "skill" || kind === "damage" || kind === "heal" || kind === "shield" || kind === "status" || kind === "field" || kind === "death" || specialMovement;
+    const fontPx = tags.has("ultimate") ? 14 : kind === "skill" ? 12 : hasText ? 13 : 0;
+    const animationSeconds = kind === "skill" ? 0.78 : ["damage", "heal", "shield", "status", "field", "death"].includes(kind) ? 0.9 : 0.72;
+    const colorToken = tags.has("fire") || tags.has("burn") ? "fire"
+      : tags.has("poison") ? "poison"
+        : kind === "heal" ? "heal"
+          : kind === "shield" ? "shield"
+            : tags.has("hidden") ? "purple" : "default";
+    const anchor = kind === "field" && signal.source?.id
+      ? signal.source.id
+      : signal.target?.id || signal.source?.id || "battlefield";
+    return {
+      contract: "battle_view_unified_signal_v1",
+      visible: true,
+      hasNumber,
+      hasText,
+      hasSource: Boolean(signal.source?.id),
+      hasTarget: Boolean(signal.target?.id),
+      hasHealthDelta: Number.isFinite(signal.hpBefore) && Number.isFinite(signal.hpAfter),
+      hasAnimation: motion,
+      renderEvidence: {
+        cssClass: kind === "skill" ? "battle-skill-label" : hasText ? "battle-floater" : "battle-vfx-ring",
+        fontPx,
+        animationSeconds,
+        colorToken,
+        moving: motion,
+      },
+      attentionZone: anchor,
+      renderer: rendererForSignal(kind, tags, specialMovement),
+    };
+  }
+
+  function rendererForSignal(kind, tags, specialMovement) {
+    if (kind === "skill") return "label+skill_fx";
+    if (kind === "damage") return tags.has("dot") ? "floater+ring" : "floater+slash";
+    if (kind === "heal" || kind === "shield" || kind === "status") return "floater_or_ring";
+    if (kind === "field") return "floater+ring";
+    if (kind === "death") return "death_floater";
+    if (specialMovement) return "afterimage+ring";
+    return "none";
+  }
+
+  return { createCombatSignalBus, unitRef, unitMeta, describePresentation };
 })();
 
 if (typeof window !== "undefined") window.GAME_COMBAT_SIGNALS = GAME_COMBAT_SIGNALS;

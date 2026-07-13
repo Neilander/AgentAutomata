@@ -4,6 +4,32 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-13
 
+- `2026-07-13_1208_player-model-validation-loop-lock.md`: added a hash-guarded immutable automation requirement that restores real-event emotion-to-behavior validation as the sole objective and prohibits browser/UI drift.
+
+- `2026-07-13_1158_candidate-single-battle-settlement.md`: removed duplicate human-candidate combat simulation, added display/core settlement parity, and preserved Frozen V3 with two scoped acceptances.
+
+- `2026-07-13_1130_phase2-combined-playable-candidate.md`: assembled the three accepted Region 1 candidates, resolved their Boss-gate interaction, added a separate playable page, and passed 60-route plus independent review.
+
+- `2026-07-13_0750_phase2-midlock-ab.md`: accepted a candidate-only Main 6 soft lock with visible Bandit keys, healthy bypass width, reliable retry recovery, and bounded counter-learning claims.
+
+- `2026-07-13_0701_phase2-ranger-onboarding-ab.md`: accepted an isolated reliable Ranger rescue-to-proof chain under Frozen V3; recorded stronger milestone emotion and the remaining lossless-region pacing risk.
+
+- `2026-07-13_0621_player-cognition-v3-freeze.md`: added bounded voluntary new-character experimentation, visible-only combat verification, multi-unlock sequencing, and froze V3 after two independent acceptances.
+
+- `2026-07-13_0538_character-affordance-reopens-v3.md`: proved Frozen V2 cannot act on a visible new-character swap affordance, preserved the accepted equipment candidate, and reopened Phase 1 for V3.
+
+- `2026-07-13_0516_phase2-boss-preparation-ab.md`: under Frozen V2, replaced stale post-Boss Main3 repetition with an isolated visible Main9 preparation candidate; passed paired, long-tail, and independent review.
+
+- `2026-07-13_0446_player-cognition-v2-freeze.md`: added visible growth-based failed-goal wake-up, hidden-power rejection, useful preparation, and terminal conclusion; passed two independent reviews and froze V2.
+
+- `2026-07-13_0408_phase2-baseline-reopens-v2.md`: ran the Frozen V1 full-region baseline, found a universal terminal-action attractor and missing growth-based Boss reconsideration, preserved V1, and reopened Phase 1 for V2.
+
+- `2026-07-13_0356_player-cognition-phase1-pass-freeze.md`: completed renderer-grounded H, dry/interruption controls, real event-derived emotion-to-action evidence, two independent acceptances, and Frozen V1 hashes.
+
+- `2026-07-13_0317_player-cognition-behavior-closure.md`: closed real cognition-to-action selection with multi-goal switching, validated E/hypotheses, a Prison-failure counterfactual, and two independent behavior acceptances; Phase 1 remains open.
+
+- `2026-07-13_0251_player-cognition-real-event-slice.md`: connected transient real combat/reward events to H, strict knowledge, unified expectations, appraisal, emotion, and post-feedback learning; Phase 1 remains open until cognition changes the next action.
+
 - `2026-07-13_0221_player-cognition-v1-event-loop.md`: expanded the cognition graph with H, reactive E/mechanical W, unified event expectations, structured knowledge, multi-goal value, emotion routing, and failure fear.
 
 - `2026-07-13_0122_player-cognition-v0-loop-diagram.md`: froze the node-based cognition/action loop with continuous execution, interruption, result settlement, verification, attribution, and state-update ordering.

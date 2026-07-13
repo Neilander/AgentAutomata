@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>第一地区候选 V3</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css">
+    <link rel="stylesheet" href="/map_progression_lab/candidate-v3.css">
+  </head>
+  <body>
+    <main class="candidate-shell">
+      <header class="topbar">
+        <div>
+          <a href="/workbench/">返回工作台</a>
+          <h1>灰带郊野 · 候选 V3</h1>
+        </div>
+        <div class="top-actions">
+          <span id="saveState">独立存档</span>
+          <button id="resetBtn" type="button">重置</button>
+        </div>
+      </header>
+
+      <nav id="nodeRail" class="node-rail" aria-label="可挑战关卡"></nav>
+
+      <section class="play-layout">
+        <aside class="team-pane">
+          <div class="pane-head">
+            <span>当前队伍</span>
+            <strong id="gearScore">装备 0</strong>
+          </div>
+          <div id="teamList" class="team-list"></div>
+          <div class="pane-head reserve-head">
+            <span>候补角色</span>
+          </div>
+          <div id="reserveList" class="reserve-list"></div>
+        </aside>
+
+        <section class="battle-pane">
+          <div class="battle-head">
+            <div>
+              <span id="battleStatus">选择上方关卡</span>
+              <strong id="selectedTitle">尚未选择</strong>
+            </div>
+            <button id="fightBtn" type="button" disabled>开始战斗</button>
+          </div>
+          <div id="battleMount" class="battle-mount"></div>
+          <div id="encounterRead" class="encounter-read">选择一个可挑战节点查看敌人与奖励。</div>
+        </section>
+
+        <aside class="cognition-pane">
+          <div class="pane-head">
+            <span>认知调试</span>
+            <strong id="stepCount">第 0 步</strong>
+          </div>
+          <section>
+            <label>当前目标</label>
+            <p id="currentGoal"></p>
+          </section>
+          <section>
+            <label>最近结果</label>
+            <div id="latestResult" class="result-block">尚无战斗结果</div>
+          </section>
+          <section>
+            <label>已形成知识</label>
+            <div id="knowledgeList" class="knowledge-list"></div>
+          </section>
+          <details>
+            <summary>完整事件记录</summary>
+            <div id="eventHistory" class="event-history"></div>
+          </details>
+        </aside>
+      </section>
+    </main>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/runtime-field-effects.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/game_data/mechanic-curves.js"></script>
+    <script src="/game_data/build-layers.js"></script>
+    <script src="/game_data/equipment-runtime.js"></script>
+    <script src="/map_progression_lab/map-progression-encounters.js"></script>
+    <script src="/map_progression_lab/map-progression-roster.js"></script>
+    <script src="/shared/game_camera_2d/camera-core.js"></script>
+    <script src="/battle_view/battle-view.js"></script>
+    <script src="/map_progression_lab/map-progression-cognition-core-phase2-combined.js"></script>
+    <script src="/map_progression_lab/candidate-v3.js"></script>
+  </body>
+</html>

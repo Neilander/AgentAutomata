@@ -45,6 +45,14 @@ const EFFECTS = [
     swaps: [],
   },
   {
+    id: "heavy_shield_lock",
+    name: "重盾锁阵",
+    focus: "候选关卡专用：重盾阻力与命名破盾军械形成可验证锁钥",
+    expected: "现有构筑可绕过；失败路线通过军械营地获得破盾与裂甲钥匙",
+    candidates: [],
+    swaps: [],
+  },
+  {
     id: "pressure_corridor",
     name: "高压回廊",
     focus: "开局周期性压低全场血量",
@@ -257,9 +265,9 @@ function createRuntimeField(effectId, sim) {
     id: def.id,
     def,
     setup() {
-      if (def.id === "heavy_shield_line" || def.id === "old_tower_prison") {
+      if (def.id === "heavy_shield_line" || def.id === "heavy_shield_lock" || def.id === "old_tower_prison") {
         sim.units.filter((unit) => helpers.isFront(unit)).forEach((unit) => {
-          const ratio = def.id === "old_tower_prison" && unit.side === "right" ? 0.42 : def.id === "heavy_shield_line" ? 0.34 : 0;
+          const ratio = def.id === "old_tower_prison" && unit.side === "right" ? 0.42 : ["heavy_shield_line", "heavy_shield_lock"].includes(def.id) ? 0.34 : 0;
           if (!ratio) return;
           sim.shield(unit, unit.maxHp * ratio, def.name, unit);
           helpers.fieldSignal(def.id === "old_tower_prison" ? "狱门护盾" : "重盾", unit, { amount: Math.round(unit.maxHp * ratio) });
@@ -368,7 +376,26 @@ function createRuntimeField(effectId, sim) {
           }
         }
       }
-      if (def.id === "heavy_shield_line" && target.shield > 0 && ["warrior", "ranger", "berserker"].includes(source.role)) {
+      if (def.id === "heavy_shield_lock") {
+        if (target.shield > 0) {
+          const breakPoints = Number(source.mechanicModifiers?.shieldBreak || 0);
+          context.amount *= 1 + Math.min(0.7, breakPoints * 0.025);
+          const signalKey = `shieldBreak:${source.side}`;
+          if (breakPoints > 0 && !state.flags[signalKey]) {
+            state.flags[signalKey] = true;
+            helpers.fieldSignal("破盾军械生效", target, { source: source.id, points: breakPoints });
+          }
+        } else if ((target.armor || 0) > 0) {
+          const armorBreakPoints = Number(source.mechanicModifiers?.armorBreak || 0);
+          context.amount *= 1 + Math.min(0.45, armorBreakPoints * 0.018);
+          const signalKey = `armorBreak:${source.side}`;
+          if (armorBreakPoints > 0 && !state.flags[signalKey]) {
+            state.flags[signalKey] = true;
+            helpers.fieldSignal("裂甲军械生效", target, { source: source.id, points: armorBreakPoints });
+          }
+        }
+      }
+      if (["heavy_shield_line", "heavy_shield_lock"].includes(def.id) && target.shield > 0 && ["warrior", "ranger", "berserker"].includes(source.role)) {
         context.amount *= 2.2;
       }
       if (def.id === "war_drum_echo" && source._actionSignal?.tags?.includes("basic")) {
@@ -490,10 +517,11 @@ function createHelpers(sim, def) {
       sim.takeDamage(null, unit, amount, "field", label);
     },
     fieldSignal(text, unit, meta = {}) {
+      const sourceUnit = meta.source ? sim.units.find((candidate) => candidate.id === meta.source) : null;
       sim.emitSignal({
         kind: "field",
         tags: ["field", def.id],
-        source: null,
+        source: sourceUnit ? { id: sourceUnit.id, side: sourceUnit.side, index: sourceUnit.index, role: sourceUnit.role, name: sourceUnit.name } : null,
         target: unit ? { id: unit.id, side: unit.side, index: unit.index, role: unit.role, name: unit.name } : null,
         text,
         skillName: def.name,

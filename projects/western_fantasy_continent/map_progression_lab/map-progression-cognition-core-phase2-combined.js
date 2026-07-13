@@ -111,6 +111,7 @@
   }
 
   function nodeStatus(state, item) {
+    if (item.id === "r1_main_9" && state.cleared[item.id] && isBossRecoveryActive(state)) return "available";
     if (state.cleared[item.id]) return item.type === "main" ? "farmable" : ENCOUNTERS.isOneTimeBranch(item) ? "repeatable" : "cleared";
     const requiredAll = (item.requires || []).every((id) => state.cleared[id]);
     const requiredAny = !(item.requiresAny || []).length || item.requiresAny.some((id) => state.cleared[id]);
@@ -126,7 +127,7 @@
         name: item.name,
         type: item.type,
         status: nodeStatus(state, item),
-        rewardHint: item.rewardHint,
+        rewardHint: rewardHintForNode(state, item),
         enemyHint: item.enemyHint,
       }))
       .filter((item) => item.status !== "locked");
@@ -180,7 +181,9 @@
 
     state.step += 1;
     state.attempts[id] = (state.attempts[id] || 0) + 1;
-    const combat = resolveCombat(state, item);
+    const combat = options.resolvedCombat
+      ? normalizeResolvedCombat(options.resolvedCombat, item)
+      : resolveCombat(state, item);
     const event = {
       step: state.step,
       action: actionText,
@@ -195,6 +198,7 @@
       feedbackSignals: visibleFeedbackSignals(combat.signals),
       performance: combatPerformance(combat),
       diagnosis: combatDiagnosis(combat),
+      combatSource: options.resolvedCombat ? "displayed_battle" : "core_simulation",
     };
     if (combat.win) {
       const firstClear = !state.cleared[id];
@@ -206,7 +210,7 @@
       const loot = repeatOneTimeBranch
         ? []
         : id === "r1_bandit"
-          ? ENCOUNTERS.campFirstClearLoot(`r1_bandit_key_${state.attempts[id]}`)
+          ? midlockCampLoot(`r1_bandit_key_${state.attempts[id]}`)
           : rollLoot(state, item);
       state.inventory.push(...loot);
       event.lootOpportunity = !repeatOneTimeBranch && id !== "r1_bandit";
@@ -247,7 +251,7 @@
       event.teamExperiment = { team: ROSTER.teamLabel(state.roster, state.teamSlots), outcome: event.outcome, node: id };
       state.flags.pendingTeamExperiment = false;
     }
-    if (id === "r1_main_7" && state.teamSlots.includes("hero_ranger") && combat.win) {
+    if (id === "r1_main_4" && state.teamSlots.includes("hero_ranger") && combat.win) {
       const ranger = event.contributions.find((unit) => unit.name === "林地游侠");
       const totalDamage = event.contributions.reduce((sum, unit) => sum + (unit.damage || 0), 0);
       const share = totalDamage ? (ranger?.damage || 0) / totalDamage : 0;
@@ -329,6 +333,36 @@
     };
   }
 
+  function normalizeResolvedCombat(rawCombat, item) {
+    const combat = structuredClone(rawCombat || {});
+    const units = Array.isArray(combat.units) ? combat.units : [];
+    const leftAlive = Number.isFinite(combat.metrics?.leftAlive)
+      ? Number(combat.metrics.leftAlive)
+      : units.filter((unit) => unit.side === "left" && unit.alive).length;
+    const rightAlive = Number.isFinite(combat.metrics?.rightAlive)
+      ? Number(combat.metrics.rightAlive)
+      : units.filter((unit) => unit.side === "right" && unit.alive).length;
+    const duration = Math.max(0, Number(combat.duration || 0));
+    const resolution = duration >= 69.8 && leftAlive > 0 && rightAlive > 0 ? "time_limit" : "elimination";
+    const leftHp = Number(combat.leftHp || 0);
+    const rightHp = Number(combat.rightHp || 0);
+    const winner = combat.winner === "left" || combat.winner === "right"
+      ? combat.winner
+      : leftHp >= rightHp ? "left" : "right";
+    return {
+      ...combat,
+      winner,
+      duration,
+      leftHp,
+      rightHp,
+      units,
+      signals: Array.isArray(combat.signals) ? combat.signals : [],
+      metrics: { ...(combat.metrics || {}), leftAlive, rightAlive },
+      win: winner === "left" && !(item.type === "boss" && resolution === "time_limit"),
+      resolution,
+    };
+  }
+
   function cognitionAnalysis(signals, item, event, attempt) {
     return {
       schema: "map_cognition_analysis_v1",
@@ -366,7 +400,7 @@
         id: `${item.id}:attempt:${Number(attempt || 0)}:combat:${index + 1}`,
         sequence: index + 1,
         time: cognitionRound(signal.time),
-        type: signal.kind,
+        type: signal.kind === "field" ? "status" : signal.kind,
         subject: cognitionUnitRef(signal.source),
         environment: {
           region: "region_1",
@@ -376,18 +410,19 @@
           fieldEffect: fieldEffect(item) || "none",
         },
         behavior: {
-          kind: signal.kind === "skill" ? "skill_cast" : signal.skillKey ? "skill_effect" : signal.kind,
-          key: signal.skillKey || signal.kind,
-          name: signal.skillName || "",
+          kind: signal.kind === "field" ? "field_effect" : signal.kind === "skill" ? "skill_cast" : signal.skillKey ? "skill_effect" : signal.kind,
+          key: signal.kind === "field" ? `field:${signal.text || signal.skillName || "effect"}` : signal.skillKey || signal.kind,
+          name: signal.text || signal.skillName || "",
           tags: [...(signal.tags || [])],
         },
         result: {
-          kind: signal.kind,
+          kind: signal.kind === "field" ? "field_effect" : signal.kind,
           amount: cognitionRound(signal.amount || 0),
           target: cognitionUnitRef(signal.target),
           hpBefore: Number.isFinite(signal.hpBefore) ? cognitionRound(signal.hpBefore) : null,
           hpAfter: Number.isFinite(signal.hpAfter) ? cognitionRound(signal.hpAfter) : null,
           occurred: true,
+          meta: { ...(signal.meta || {}) },
         },
         presentation,
       }));
@@ -452,10 +487,19 @@
   }
 
   function enemyTeam(item) {
-    if (item.id === "r1_prison") return ENCOUNTERS.prisonTeam();
-    if (item.id === "r1_main_7") return ENCOUNTERS.bearLockTeam();
+    // Candidate-only onboarding tune: preserve the encounter composition while
+    // making the first visible rescue attempt viable at the Main 3 equipment band.
+    if (item.id === "r1_prison") return ENCOUNTERS.prisonTeam().map((spec) => scaleSpec(spec, 0.84));
+    if (item.id === "r1_main_4") return ENCOUNTERS.bearLockTeam().map((spec) => scaleSpec(spec, 0.72));
+    if (item.id === "r1_main_6") {
+      const roles = ["knight", "knight", "priest", "ranger"];
+      return roles.map((role, index) => scaleSpec(enemySpec(role, index, item), enemyScale(item) * 2.1));
+    }
     const roles = enemyRoles(item);
     const mult = enemyScale(item);
+    // Combined-candidate only: the accepted Bandit key raises the whole team enough
+    // to erase the later boss-recovery beat, so restore a visible terminal gate here.
+    if (item.type === "boss") return roles.map((role, index) => scaleSpec(enemySpec(role, index, item), mult * 1.18));
     return roles.map((role, index) => scaleSpec(enemySpec(role, index, item), mult));
   }
 
@@ -529,11 +573,32 @@
   }
 
   function fieldEffect(item) {
+    if (item.id === "r1_main_6") return "heavy_shield_lock";
     return ENCOUNTERS.fieldEffectId(item);
   }
 
+  function midlockCampLoot(idPrefix) {
+    return [
+      ...ENCOUNTERS.campFirstClearLoot(idPrefix),
+      {
+        id: `${idPrefix}_ranger_weapon`,
+        slot: "weapon",
+        slotLabel: "武器",
+        equipmentLevel: 14,
+        rarity: "rare",
+        rarityLabel: "稀有",
+        name: "裂盾长弓 Lv.14",
+        baseStats: { physicalPower: 7 },
+        affixes: [
+          { id: "shieldBreak", stat: "shieldBreak", label: "破盾", category: "specialist", level: 1, value: 24 },
+          { id: "markPower", stat: "markPower", label: "标记强度", category: "archetype", level: 1, value: 2 },
+        ],
+      },
+    ];
+  }
+
   function rollLoot(state, item) {
-    const rule = dropRuleForNode(item);
+    const rule = dropRuleForNode(item, state);
     return EQUIPMENT.generateItems(rule, `${state.seed}|${item.id}|${state.attempts[item.id]}|${state.inventory.length}`, `${item.id}_${state.attempts[item.id]}`);
   }
 
@@ -547,7 +612,10 @@
     return EQUIPMENT.teamEquipmentScore(state.roster, state.teamSlots);
   }
 
-  function dropRuleForNode(item) {
+  function dropRuleForNode(item, state = null) {
+    if (isBossRecoveryActive(state) && item.id === "r1_main_9") {
+      return { level: [10, 16], rates: { common: 0.7, rare: 0.28, epic: 0.02 }, count: 4 };
+    }
     if (item.id === "r1_bandit") return { level: [10, 16], rates: { common: 0.4, rare: 0.58, epic: 0.02 }, count: 2 };
     if (item.id === "r1_prison") return { level: [9, 15], rates: { common: 0.55, rare: 0.43, epic: 0.02 }, count: 2 };
     if (item.type === "boss") return { level: [14, 22], rates: { common: 0.3, rare: 0.65, epic: 0.05 }, count: 4 };
@@ -557,6 +625,16 @@
     if (mainNo <= 6) return { level: [5, 10], rates: { common: 0.9, rare: 0.1 }, count: 2 };
     if (mainNo <= 8) return { level: [7, 12], rates: { common: 0.86, rare: 0.14 }, count: 2 };
     return { level: [9, 15], rates: { common: 0.82, rare: 0.17, epic: 0.01 }, count: 2 };
+  }
+
+  function rewardHintForNode(state, item) {
+    if (isBossRecoveryActive(state) && item.id === "r1_main_9") return "首领整备点：4件 Lv10-16 装备，稀有率提升";
+    return item.rewardHint;
+  }
+
+  function isBossRecoveryActive(state) {
+    const memory = state?.cognition?.failureMemories?.find((row) => row.node === "r1_boss" && !row.resolved);
+    return Boolean(memory && gearScore(state) < Number(memory.gearScore || 0) * 1.3);
   }
 
   function publicLoot(item) {

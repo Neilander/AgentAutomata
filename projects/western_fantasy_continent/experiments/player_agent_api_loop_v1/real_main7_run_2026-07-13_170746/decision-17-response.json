@@ -1,0 +1,39 @@
+{
+  "action": "challenge:r1_bandit",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "主线6连续失败，当前目标仍需要找到可验证的成长路径。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "主线6两次都是我方全灭、敌方4人存活，单件生命装备没有改变胜负。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "主线6的普通小怪在两次战斗中都产生了大量护盾，相关可见差异已成为待审查候选。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "旧塔军械营地明确显示首通固定奖励破盾斧与裂甲护手，可提供不同于继续堆生命的手段。"
+    }
+  ],
+  "alternatives": [
+    {
+      "action": "equip:militia_barricade:r1_main_1_1_1",
+      "reason": "现有低级护手也有少量破盾，但收益规模有限。"
+    },
+    {
+      "action": "challenge:r1_main_5",
+      "reason": "可反复刷普通装备，但掉落方向不确定。"
+    }
+  ],
+  "hypothesis": {
+    "id": "main6-shield-counter-path-1",
+    "problem": "主线6连续两次全灭且敌方全部存活",
+    "cause": "敌方持续护盾可能让现有输出难以形成击杀",
+    "resultKind": "obtain_shield_counter_equipment",
+    "target": "r1_bandit"
+  }
+}

@@ -18,6 +18,12 @@ The core is not an open world. The current goal is to connect several already-va
 
 The working style is small-step iteration. Add one verifiable anchor at a time.
 
+## Executable Player Model
+
+The current code-owned AI playtest loop has a durable entry point at `PLAYER_MODEL_RUNTIME.md` and a machine-readable manifest at `player_model_runtime.json`.
+
+Do not replace it with an agent narrating a whole playthrough. Code owns game state, signal interpretation, cognition, emotion, and knowledge; AI is called only for one decision and the later evidence-bound attribution. Run its listed regression before using player-model results in design work.
+
 ## Highest-Level Product Rule
 
 The original project core was agent automation. The updated strategic rule is:

@@ -5,6 +5,8 @@ description: Simulate how a knowledge-bounded player learns concepts, chooses ac
 
 # Player Cognition Simulation
 
+When game events are converted into player knowledge, read [references/signal-concept-interpretation.md](references/signal-concept-interpretation.md). The signal interpreter must map raw engine entities to player-visible concepts before expectation, emotion, knowledge, attribution, or decision code can consume them.
+
 Model the player as a learning agent, not as a designer who already knows the systems. Trace what the player can observe, what they infer, how much subjective process they experience, what result they expect, and how the resulting experience changes the next action.
 
 Before modeling or explaining the system, read [references/model-concepts-explained.md](references/model-concepts-explained.md). It defines the full signal → perception → concept → knowledge → affordance → hypothesis → behavior → verification → emotion loop, and distinguishes gameplay validation from direct parameter unit tests.
@@ -13,7 +15,7 @@ Before modeling or explaining the system, read [references/model-concepts-explai
 
 1. Define the bounded episode being tested: one fight, one map decision, one reward loop, or one failure-and-retry loop.
 2. Initialize only the cognition available before the episode. Read `references/cognition-state.md`.
-3. Convert visible combat events into perceptual signals, comparable performance observations, progression, growth, and agency. Read `references/signal-growth-agency-model.md`.
+3. Convert raw game events into player-visible concepts, then into perceptual signals, comparable performance observations, progression, growth, and agency. Read `references/signal-concept-interpretation.md` before `references/signal-growth-agency-model.md`.
 4. Divide the episode into locally meaningful segments. Count the explicit problem -> cause -> behavior -> hypothesis decision chain and the later hypothesis comparison before estimating `E`, `W`, `P`, and `Q`. Read `references/effort-result-model.md`.
 5. Calculate progression and growth result `R`, learned exchange rate `k`, signed expectation mismatch, and total episode experience.
 6. Update concepts, knowledge, behaviors, first impressions, expectations, event freshness, failure memories, and wake-up conditions.
@@ -68,10 +70,14 @@ Treat these as separate quantities:
 - Learn `k` from first impressions, explicit promises, and repeated outcomes. Never use one universal constant for every activity.
 - Keep feedback stock, freshness, fatigue, frustration, expectation, abandonment probability, abandonment roll, and terminal abandonment separate.
 - Attribute failure only through concepts already known to the simulated player.
+- Never let disposable entity IDs, internal enemy names, or engine role strings cross the signal interpreter into emotion, knowledge, attribution, or decision inputs.
+- Keep raw audit events separate from player-semantic events. Post-hoc knowledge filtering is not concept interpretation.
 - Treat all constants as hypotheses until calibrated against traces or human feedback.
 - Do not let the player agent approve its own trace. A separate reviewer must issue `accept`, `revise`, or `reject`; otherwise mark independent review as not run.
 
 ## Existing Runtime Surfaces
+
+The current executable AI-playtest integration reference is registered in `projects/western_fantasy_continent/PLAYER_MODEL_RUNTIME.md` and `projects/western_fantasy_continent/player_model_runtime.json`. Read those files before using or extending the code-owned decision/attribution loop.
 
 Use these project tools when executable simulation is needed:
 

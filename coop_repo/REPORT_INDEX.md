@@ -4,6 +4,22 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-13
 
+- `2026-07-13_1927_real-boss-cognition-loop.md`: continued the same fresh cognition session through Main 10 and two Boss attempts, preserved explicit equipment causality, and passed a 30-cycle/120-file integrity audit; the Boss was reached but not cleared.
+
+- `2026-07-13_1757_real-main7-cognition-loop.md`: completed a fresh 20-action real loop through Main 7, persisted every decision/attribution and raw/semantic event log, added per-action knowledge/concept deltas, and passed an integrity audit without reusing old responses.
+
+- `2026-07-13_1652_persisted-player-model-runtime-entry.md`: made the executable AI playtest runtime durable through project agent instructions, a canonical run contract, a machine-readable manifest, overview registration, and a passing entrypoint regression.
+
+- `2026-07-13_1638_signal-concept-interpreter.md`: added concept-first signal interpretation, separated raw audit events from player-semantic events, and proved internal enemy identities do not enter emotion, agent requests, or causal knowledge.
+
+- `2026-07-13_1553_causal-knowledge-and-manual-equipment-loop.md`: corrected canonical knowledge causality, separated loot from explicit equipment growth, added combat contribution/enemy threat/unlock facts, and passed the two-cycle regression plus independent re-review.
+
+- `2026-07-13_1426_player-agent-api-minimal-loop.md`: implemented and live-ran a two-cycle code-owned cognition loop with AI called only for structured decisions and evidence-bound attribution.
+
+- `2026-07-13_1324_player-model-fixed-tape-a-audit.md`: fixed real event tapes showed A changes emotion but none of 285 selected actions, supporting a narrow diagnostic-only classification with two independent PASS reviews.
+
+- `2026-07-13_1255_player-model-midlock-emotion-rejection.md`: reconstructed the Frozen V3 Main 6 emotional arc, found result-only scoring reproduces the same routes and verdict, and recorded two independent REJECT reviews.
+
 - `2026-07-13_1208_player-model-validation-loop-lock.md`: added a hash-guarded immutable automation requirement that restores real-event emotion-to-behavior validation as the sole objective and prohibits browser/UI drift.
 
 - `2026-07-13_1158_candidate-single-battle-settlement.md`: removed duplicate human-candidate combat simulation, added display/core settlement parity, and preserved Frozen V3 with two scoped acceptances.

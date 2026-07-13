@@ -1,0 +1,39 @@
+{
+  "action": "equip:hero_warrior:r1_bandit_key_1_weapon",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "需要改变主线6连续全灭的结果。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "打通军械营地只让破盾装备进入库存，已装备战力尚未变化。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "旧塔破盾斧的推荐适配分为133.8，高于库存中裂盾长弓113.8和裂甲护手106.8。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "把最高适配的破盾斧交给灰鸦战士，可以直接强化主力物理输出并针对战报中的大量护盾。"
+    }
+  ],
+  "alternatives": [
+    {
+      "action": "equip:hero_warrior:r1_bandit_key_1_gloves",
+      "reason": "提供破甲和坚韧，但当前适配收益低于破盾斧。"
+    },
+    {
+      "action": "equip:militia_barricade:r1_bandit_key_1_weapon",
+      "reason": "同样适配，但拒马民兵此前伤害贡献低，优先给主力战士更容易验证输出变化。"
+    }
+  ],
+  "hypothesis": {
+    "id": "main6-shield-counter-path-1",
+    "problem": "主线6连续两次全灭且敌方全部存活",
+    "cause": "敌方持续护盾使现有输出难以形成击杀",
+    "resultKind": "combat_outcome_improves",
+    "target": "r1_main_6"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "action": "challenge:r1_boss",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "当前目标仍是击败灰带首领。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "首次挑战时两名前排已进入低血但全队未完成击杀；随后主力战士获得 7 点物理强度，战力从 601 提升到 673。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "在其余配置不变的条件下重试，可以直接检验输出强化是否跨过首个击杀阈值。"
+    }
+  ],
+  "alternatives": [
+    {
+      "action": "equip:militia_barricade:r1_main_9_1_1",
+      "reason": "继续堆生存会同时改变另一变量，无法验证刚完成的输出调整。"
+    },
+    {
+      "action": "challenge:r1_prison",
+      "reason": "监狱不是当前 Boss 假设的直接验证。"
+    }
+  ],
+  "hypothesis": {
+    "id": "hypothesis:boss_frontline_kill_threshold",
+    "problem": "Boss 战造成大量伤害但零击杀",
+    "cause": "主力物理输出不足以在减员前跨过敌方前排击杀阈值",
+    "resultKind": "combat_result",
+    "target": "r1_boss"
+  }
+}

@@ -13,6 +13,7 @@ Continue the real-signal player-model work as a strict loop: change game design,
 
 - Added a dedicated automation-loop directory with a locked canonical requirement document.
 - Added a SHA-256 drift guard; every scheduled run must verify it before and after work.
+- Added a project-wide folder contract for all future recurring loops.
 - Explicitly prohibited webpage/UI/browser/Chrome/screenshot/server work unless the user is present and explicitly asks for it.
 - Restored the immediate task to analyzing existing Frozen V3 real-event traces and comparing full-model results with a simple baseline or targeted ablation.
 - Defined a strict acceptance standard requiring traceable emotion changes and resulting behavior under the same frozen model.
@@ -23,10 +24,12 @@ Continue the real-signal player-model work as a strict loop: change game design,
 - `projects/western_fantasy_continent/automation_loops/player_model_validation/REQUIREMENTS.sha256`: drift-detection hash.
 - `projects/western_fantasy_continent/automation_loops/player_model_validation/STATE.md`: current recovery phase and next action.
 - `projects/western_fantasy_continent/automation_loops/player_model_validation/runs/.gitkeep`: append-only run evidence directory.
+- `projects/western_fantasy_continent/automation_loops/README.md`: required structure and drift rules for future automation loops.
 
 ## Validation
 
 - SHA-256 generated for the exact locked requirement file: `a3f5127f4873467bb10be12664717f11cdf3238eccfa538a86515d25424d83c3`.
+- `IMMUTABLE_REQUIREMENTS.md` and `REQUIREMENTS.sha256` are locally read-only; explicit user-directed maintenance must deliberately unlock them.
 - Existing unrelated dirty worktree changes were not modified or reverted.
 - No browser, Chrome, screenshot, server, or webpage validation was run.
 
@@ -43,4 +46,3 @@ The loop now has a stable invariant outside mutable handoff recommendations. A r
 ## Recommended Next Step
 
 Run the first recovery iteration: select one existing paired design comparison, reconstruct its event-to-emotion-to-behavior timeline, and compare Frozen V3 against a simple baseline or targeted ablation without adding gameplay or UI features.
-

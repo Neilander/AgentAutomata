@@ -1,0 +1,39 @@
+{
+  "action": "equip:militia_barricade:r1_main_5_1_0",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "当前目标是继续推进灰带郊野，主线6尚未通过。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "主线6首次挑战我方全灭、敌方4人存活，当前配置需要改变。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "库存中的普通护符 Lv.7 提供20生命，拒马民兵当前该部位为空且属于推荐适配角色。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "先增强前排拒马民兵的生存，再重试可验证配置变化是否改善主线6结果。"
+    }
+  ],
+  "alternatives": [
+    {
+      "action": "equip:militia_barricade:r1_main_1_1_1",
+      "reason": "可填补另一个空部位，但装备等级和当前适配收益更低。"
+    },
+    {
+      "action": "challenge:r1_main_6",
+      "reason": "可以直接重试，但没有改变已知失败配置。"
+    }
+  ],
+  "hypothesis": {
+    "id": "main6-frontline-survival-1",
+    "problem": "当前队伍在主线6全灭且未击杀敌人",
+    "cause": "拒马民兵缺少生命装备，前排可能过早倒下",
+    "resultKind": "combat_outcome_improves",
+    "target": "r1_main_6"
+  }
+}

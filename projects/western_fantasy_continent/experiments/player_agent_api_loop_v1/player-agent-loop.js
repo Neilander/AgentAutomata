@@ -1,0 +1,960 @@
+const CORE = require("../../map_progression_lab/map-progression-cognition-core-phase2-midlock");
+const RUNTIME = require("../../game_data/player-cognition-v3-event-runtime");
+const ADAPTER = require("../../game_data/map-cognition-v3-event-adapter");
+const EQUIPMENT = require("../../game_data/equipment-runtime");
+const SIGNAL_INTERPRETER = require("./signal-concept-interpreter");
+
+const SCHEMA = "player_agent_api_loop_v1";
+
+function createSession(seed = "player-agent-api-loop", maxCycles = 2) {
+  return {
+    schema: SCHEMA,
+    seed,
+    maxCycles,
+    cycle: 0,
+    phase: "decision",
+    gameState: CORE.initialState(seed),
+    cognitionState: RUNTIME.createState(seed),
+    conceptState: SIGNAL_INTERPRETER.createConceptState(),
+    knowledgeBase: [],
+    history: [],
+    pendingAttribution: null,
+    apiCalls: [],
+  };
+}
+
+function getPendingRequest(sessionInput) {
+  const session = cloneAndValidate(sessionInput);
+  if (session.phase === "complete") return { type: "complete", cycle: session.cycle };
+  if (session.phase === "decision") return buildDecisionRequest(session);
+  if (session.phase === "attribution") return buildAttributionRequest(session);
+  throw new Error(`unknown phase: ${session.phase}`);
+}
+
+function applyDecisionResponse(sessionInput, responseInput) {
+  const session = cloneAndValidate(sessionInput);
+  if (session.phase !== "decision") throw new Error(`expected decision phase, got ${session.phase}`);
+
+  const knowledgeBeforeAction = clone(session.knowledgeBase);
+  const conceptStateBeforeAction = clone(session.conceptState);
+  const observation = observeGame(session.gameState);
+  const response = normalizeDecisionResponse(responseInput);
+  if (!(observation.allowedActions || []).includes(response.action)) {
+    throw new Error(`decision agent returned unavailable action: ${response.action}`);
+  }
+
+  const emotionBeforeDecision = Number(session.cognitionState.emotion.value);
+  const gameStateBefore = clone(session.gameState);
+  const decision = {
+    id: `ai-decision:${session.cycle + 1}:${response.action}`,
+    time: Number(session.gameState.step || 0),
+    action: response.action,
+    goalId: response.goalId,
+    choiceMode: "ai_api_decision",
+    environment: {
+      region: "region_1",
+      step: observation.step || 0,
+      goal: observation.currentGoal || "",
+    },
+    alternatives: response.alternatives,
+    reasoningChain: response.reasoningChain,
+    hypothesis: response.hypothesis,
+  };
+
+  const afterDecision = RUNTIME.applyDecision(session.cognitionState, decision);
+  const emotionAfterDecision = Number(afterDecision.emotion.value);
+  const result = runPlayerAction(session.gameState, response.action, afterDecision, session.conceptState);
+  if (!result.ok) throw new Error(`game rejected action ${response.action}: ${result.error || "unknown"}`);
+
+  const record = {
+    cycle: session.cycle + 1,
+    decisionRequest: buildDecisionRequest(session),
+    decisionResponse: response,
+    action: response.action,
+    outcome: result.event.outcome,
+    emotionBeforeDecision: round(emotionBeforeDecision),
+    emotionAfterDecision: round(emotionAfterDecision),
+    emotionAfterEvents: round(result.cognitionState.emotion.value),
+    automaticEmotionDelta: round(result.cognitionState.emotion.value - emotionAfterDecision),
+    rawEventLog: result.rawEventLog,
+    eventLog: result.eventLog,
+    conceptInterpretation: result.conceptInterpretation,
+    eventTrace: summarizeNewTrace(afterDecision, result.cognitionState),
+    gameEvent: result.event,
+    attribution: null,
+  };
+
+  session.gameState = result.state;
+  session.cognitionState = result.cognitionState;
+  session.conceptState = result.conceptState;
+  session.history.push(record);
+  const knowledgeIds = updateKnowledgeFromFeedback(session, record, {
+    gameStateBefore,
+    gameStateAfter: result.state,
+  });
+  compactKnowledgeBase(session.knowledgeBase);
+  record.learningDelta = buildLearningDelta({
+    knowledgeBefore: knowledgeBeforeAction,
+    knowledgeAfter: session.knowledgeBase,
+    conceptStateBefore: conceptStateBeforeAction,
+    conceptStateAfter: session.conceptState,
+    interpretation: result.conceptInterpretation,
+  });
+  session.pendingAttribution = {
+    cycle: session.cycle + 1,
+    historyIndex: session.history.length - 1,
+    action: response.action,
+    outcome: result.event.outcome,
+    eventIds: result.eventLog.map((row) => row.id),
+    knowledgeIds,
+  };
+  session.phase = "attribution";
+  session.apiCalls.push({ type: "decision", cycle: session.cycle + 1, response });
+  return session;
+}
+
+function applyAttributionResponse(sessionInput, responseInput) {
+  const session = cloneAndValidate(sessionInput);
+  if (session.phase !== "attribution" || !session.pendingAttribution) {
+    throw new Error(`expected attribution phase, got ${session.phase}`);
+  }
+
+  const response = normalizeAttributionResponse(responseInput);
+  const pending = session.pendingAttribution;
+  const invalidEvidence = response.evidenceEventIds.filter((id) => !pending.eventIds.includes(id));
+  if (invalidEvidence.length) throw new Error(`attribution used unknown evidence: ${invalidEvidence.join(", ")}`);
+  if (!response.evidenceEventIds.length) throw new Error("attribution must cite at least one visible event id");
+  if (!pending.knowledgeIds.includes(response.knowledgeId)) {
+    throw new Error(`attribution selected knowledge outside this action: ${response.knowledgeId}`);
+  }
+  const targetKnowledge = session.knowledgeBase.find((row) => row.id === response.knowledgeId);
+  if (!targetKnowledge) throw new Error(`attribution selected unknown knowledge: ${response.knowledgeId}`);
+  const unrelatedEvidence = response.evidenceEventIds.filter((id) => !targetKnowledge.evidenceEventIds.includes(id));
+  if (unrelatedEvidence.length) {
+    throw new Error(`attribution evidence does not support ${response.knowledgeId}: ${unrelatedEvidence.join(", ")}`);
+  }
+
+  const attribution = {
+    id: `ai-attribution:${pending.cycle}`,
+    knowledgeId: response.knowledgeId,
+    cause: response.primaryCause,
+    confidence: response.confidence,
+    evidenceEventIds: response.evidenceEventIds,
+    alternativeCauses: response.alternativeCauses,
+    nextTest: response.nextTest,
+    learnedAfterFeedback: true,
+  };
+  targetKnowledge.attributions.push(attribution);
+  session.history[pending.historyIndex].attribution = attribution;
+  session.apiCalls.push({ type: "attribution", cycle: pending.cycle, response });
+  session.cycle += 1;
+  session.pendingAttribution = null;
+  session.phase = session.cycle >= session.maxCycles ? "complete" : "decision";
+  return session;
+}
+
+function buildDecisionRequest(session) {
+  const observation = observeGame(session.gameState);
+  return {
+    type: "decision",
+    schema: "player_decision_request_v1",
+    cycle: session.cycle + 1,
+    instruction: "Choose exactly one allowed action. Use only supplied observations and knowledge. Do not calculate or set emotion.",
+    playerState: {
+      emotion: round(session.cognitionState.emotion.value),
+      activeGoalId: session.cognitionState.activeGoalId,
+      goals: session.cognitionState.goals,
+      knowledge: session.knowledgeBase,
+      eventStatisticsCount: session.cognitionState.knowledge.length,
+      failureMemories: session.cognitionState.failureMemories,
+      hypotheses: session.cognitionState.hypotheses,
+    },
+    observation: {
+      step: observation.step,
+      currentGoal: observation.currentGoal,
+      team: observation.team,
+      gear: observation.gear,
+      inventory: observation.inventory,
+      visibleNodes: observation.visibleNodes,
+      allowedActions: observation.allowedActions,
+    },
+    responseContract: {
+      action: "one exact value from observation.allowedActions",
+      goalId: "one visible goal id",
+      reasoningChain: [{ kind: "goal|knowledge|evidence|affordance|comparison|hypothesis", evidence: "short factual evidence" }],
+      alternatives: [{ action: "allowed action", reason: "short reason" }],
+      hypothesis: "null or {id, problem, cause, resultKind, target}",
+    },
+  };
+}
+
+function buildAttributionRequest(session) {
+  const pending = session.pendingAttribution;
+  const record = session.history[pending.historyIndex];
+  return {
+    type: "attribution",
+    schema: "player_attribution_request_v1",
+    cycle: pending.cycle,
+    instruction: "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+    action: record.action,
+    outcome: record.outcome,
+    emotionBeforeAction: record.emotionAfterDecision,
+    emotionAfterEvents: record.emotionAfterEvents,
+    existingKnowledge: session.knowledgeBase,
+    eventStatisticsCount: session.cognitionState.knowledge.length,
+    visibleEvents: buildAttributionEvidence(record),
+    responseContract: {
+      knowledgeId: "one exact id from existingKnowledge created by this action",
+      primaryCause: "short causal statement",
+      confidence: "number from 0 to 1",
+      evidenceEventIds: ["one or more exact visible event ids"],
+      alternativeCauses: ["optional alternatives"],
+      nextTest: "one falsifiable follow-up or empty string",
+    },
+  };
+}
+
+function observeGame(rawState) {
+  const state = clone(rawState);
+  const observation = CORE.observe(state);
+  const equipActions = [];
+  const inventory = (state.inventory || []).map((item) => {
+    const candidates = state.roster.map((hero) => {
+      equipActions.push(`equip:${hero.id}:${item.id}`);
+      return {
+        heroId: hero.id,
+        heroName: hero.name,
+        role: hero.role,
+        fitScore: round(EQUIPMENT.itemScoreForRole(item, hero.role)),
+      };
+    }).sort((a, b) => b.fitScore - a.fitScore);
+    return {
+      ...EQUIPMENT.publicItem(item),
+      bestFits: candidates.slice(0, 3),
+    };
+  });
+  return {
+    ...observation,
+    inventory,
+    allowedActions: [...equipActions, ...(observation.allowedActions || [])],
+  };
+}
+
+function runPlayerAction(rawState, action, cognitionState, conceptState) {
+  if (String(action).startsWith("equip:")) return runEquipAction(rawState, action, cognitionState, conceptState);
+  return runCoreActionWithoutAutoEquip(rawState, action, cognitionState, conceptState);
+}
+
+function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, conceptState) {
+  const before = clone(rawState);
+  const beforeItemIds = new Set(allEquipmentItems(before).map((item) => item.id));
+  const result = CORE.applyAction(before, action, { captureVisibleSignals: true });
+  if (!result.ok) return { ...result, cognitionState };
+
+  const generatedItems = allEquipmentItems(result.state).filter((item) => !beforeItemIds.has(item.id));
+  restoreManualEquipmentState(result.state, rawState, generatedItems);
+  result.state.cognition.knowledge = (result.state.cognition.knowledge || [])
+    .filter((row) => !String(row).includes("自动换上"));
+  const gearAfter = CORE.gearScore(result.state);
+  result.event.gearBefore = CORE.gearScore(rawState);
+  result.event.gearAfter = gearAfter;
+  if (result.analysis?.settlement) {
+    result.analysis.settlement.gearBefore = CORE.gearScore(rawState);
+    result.analysis.settlement.gearAfter = gearAfter;
+    result.analysis.settlement.gearDelta = gearAfter - CORE.gearScore(rawState);
+  }
+  result.observation = observeGame(result.state);
+
+  const nodeId = String(action).split(":")[1];
+  const node = CORE.nodes.find((item) => item.id === nodeId);
+  const rawEventLog = ADAPTER.buildMapEventLog(action, result.event, {
+    analysis: result.analysis,
+    nodeType: node?.type || (String(action).startsWith("swap:") ? "team" : "map"),
+  });
+  appendMapUnlockEvent(rawEventLog, action, result.event, rawState, result.state);
+  rawEventLog.sort((a, b) => a.time - b.time || String(a.id).localeCompare(String(b.id)));
+  const interpreted = SIGNAL_INTERPRETER.interpretEventLog(rawEventLog, conceptState, {
+    node: nodeId,
+    nodeType: node?.type || "map",
+  });
+  const eventLog = interpreted.events;
+  return {
+    ...result,
+    cognitionState: RUNTIME.ingestEvents(cognitionState, eventLog),
+    conceptState: interpreted.state,
+    conceptInterpretation: interpreted.interpretation,
+    rawEventLog,
+    eventLog,
+  };
+}
+
+function appendMapUnlockEvent(eventLog, action, event, beforeState, afterState) {
+  if (!String(action).startsWith("challenge:") || event.outcome !== "win") return;
+  const beforeIds = new Set(CORE.observe(beforeState).visibleNodes.map((item) => item.id));
+  const unlockedNodes = CORE.observe(afterState).visibleNodes.filter((item) => !beforeIds.has(item.id)).map((item) => item.id);
+  if (!unlockedNodes.length) return;
+  eventLog.push({
+    id: `map_unlock:${event.node}:${event.step}`,
+    time: Math.max(0, Number(event.duration || 0)) + 0.075,
+    type: "map_unlock",
+    subject: { id: "player_squad", name: "player squad", side: "left", role: "player_squad" },
+    environment: { region: "region_1", node: event.node, phase: "map_progression" },
+    behavior: { kind: "clear_level", key: action, target: event.node },
+    result: { kind: "map_unlock", occurred: true, clearedNode: event.node, unlockedNodes },
+    presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
+  });
+}
+
+function runEquipAction(rawState, action, cognitionState, conceptState) {
+  const state = clone(rawState);
+  const [, heroId, itemId] = String(action).split(":");
+  const hero = state.roster.find((unit) => unit.id === heroId);
+  const itemIndex = state.inventory.findIndex((item) => item.id === itemId);
+  if (!hero || itemIndex < 0) return { ok: false, state, cognitionState, error: "invalid explicit equip action" };
+
+  const gearBefore = CORE.gearScore(state);
+  const item = state.inventory.splice(itemIndex, 1)[0];
+  hero.equipment = { ...(hero.equipment || {}) };
+  const replacedItem = hero.equipment[item.slot] || null;
+  if (replacedItem) state.inventory.push(replacedItem);
+  hero.equipment[item.slot] = item;
+  state.step += 1;
+  const gearAfter = CORE.gearScore(state);
+  const event = {
+    step: state.step,
+    action,
+    outcome: "equipped",
+    heroId,
+    heroName: hero.name,
+    item: EQUIPMENT.publicItem(item),
+    replacedItem: replacedItem ? EQUIPMENT.publicItem(replacedItem) : null,
+    gearBefore,
+    gearAfter,
+  };
+  state.history.unshift(event);
+  const rawEventLog = buildEquipEventLog(event);
+  const interpreted = SIGNAL_INTERPRETER.interpretEventLog(rawEventLog, conceptState, {
+    environment: "equipment",
+  });
+  const eventLog = interpreted.events;
+  return {
+    ok: true,
+    state,
+    event,
+    observation: observeGame(state),
+    rawEventLog,
+    eventLog,
+    conceptState: interpreted.state,
+    conceptInterpretation: interpreted.interpretation,
+    cognitionState: RUNTIME.ingestEvents(cognitionState, eventLog),
+  };
+}
+
+function buildEquipEventLog(event) {
+  const expectationKey = `equip_action:${event.step}:${event.item.id}`;
+  const subject = { id: "player", name: "player", role: "player" };
+  const environment = { region: "region_1", phase: "equipment", heroId: event.heroId };
+  const behavior = { kind: "equip_item", key: event.action, target: event.heroId };
+  return [{
+    id: `${expectationKey}:start`,
+    time: 0,
+    type: "action_start",
+    subject,
+    environment,
+    behavior,
+    result: { kind: "action_started", occurred: true },
+    presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
+    process: { decisionCount: 0, reactiveCount: 0, mechanicalSeconds: 0 },
+    expectation: { phase: "open", key: expectationKey, deadline: "action_end" },
+    directResult: false,
+    learn: false,
+  }, {
+    id: `${expectationKey}:result`,
+    time: 0.05,
+    type: "equipment_change",
+    subject,
+    environment,
+    behavior,
+    result: {
+      kind: "item_equipped",
+      occurred: true,
+      heroId: event.heroId,
+      heroName: event.heroName,
+      itemId: event.item.id,
+      itemName: event.item.name,
+      before: event.gearBefore,
+      after: event.gearAfter,
+      amount: event.gearAfter - event.gearBefore,
+    },
+    presentation: { visible: true, hasSource: true, hasTarget: true, hasNumber: true, hasAnimation: true },
+  }, {
+    id: `${expectationKey}:summary`,
+    time: 0.08,
+    type: "action_summary",
+    subject,
+    environment,
+    behavior,
+    result: {
+      kind: "action_summary",
+      occurred: true,
+      boundary: "normal_end",
+      observedPower: event.gearAfter,
+      components: [{ kind: "item_equipped", amount: event.gearAfter - event.gearBefore }],
+    },
+    presentation: { visible: true, hasSource: true, hasTarget: true, hasNumber: true, hasAnimation: false },
+    process: { decisionCount: 0, reactiveCount: 0, mechanicalSeconds: 0.08 },
+    expectation: { phase: "close", key: expectationKey, deadline: "action_end" },
+    directResult: false,
+  }];
+}
+
+function restoreManualEquipmentState(nextState, previousState, generatedItems) {
+  const previousById = new Map(previousState.roster.map((unit) => [unit.id, unit]));
+  nextState.roster = nextState.roster.map((unit) => ({
+    ...unit,
+    equipment: clone(previousById.get(unit.id)?.equipment || {}),
+  }));
+  nextState.inventory = [...clone(previousState.inventory || []), ...clone(generatedItems)];
+}
+
+function allEquipmentItems(state) {
+  return [
+    ...(state.inventory || []),
+    ...(state.roster || []).flatMap((unit) => Object.values(unit.equipment || {})),
+  ];
+}
+
+function normalizeDecisionResponse(input) {
+  const response = typeof input === "string" ? JSON.parse(input) : clone(input);
+  if (!response || typeof response.action !== "string") throw new Error("decision response requires action");
+  const reasoningChain = Array.isArray(response.reasoningChain)
+    ? response.reasoningChain.filter((row) => row && typeof row.kind === "string" && typeof row.evidence === "string")
+    : [];
+  if (!reasoningChain.length) throw new Error("decision response requires a structured reasoningChain");
+  return {
+    action: response.action,
+    goalId: typeof response.goalId === "string" ? response.goalId : "grow_and_progress",
+    reasoningChain,
+    alternatives: Array.isArray(response.alternatives) ? response.alternatives : [],
+    hypothesis: response.hypothesis && typeof response.hypothesis === "object" ? response.hypothesis : null,
+  };
+}
+
+function normalizeAttributionResponse(input) {
+  const response = typeof input === "string" ? JSON.parse(input) : clone(input);
+  if (!response || typeof response.primaryCause !== "string" || !response.primaryCause.trim()) {
+    throw new Error("attribution response requires primaryCause");
+  }
+  if (typeof response.knowledgeId !== "string" || !response.knowledgeId) {
+    throw new Error("attribution response requires knowledgeId");
+  }
+  return {
+    knowledgeId: response.knowledgeId,
+    primaryCause: response.primaryCause.trim(),
+    confidence: clamp(response.confidence, 0, 1),
+    evidenceEventIds: Array.isArray(response.evidenceEventIds) ? response.evidenceEventIds.map(String) : [],
+    alternativeCauses: Array.isArray(response.alternativeCauses) ? response.alternativeCauses.map(String) : [],
+    nextTest: typeof response.nextTest === "string" ? response.nextTest : "",
+  };
+}
+
+function summarizeNewTrace(beforeState, afterState) {
+  return afterState.trace.slice(beforeState.trace.length).map((row) => ({
+    eventId: row.eventId,
+    type: row.type,
+    accepted: row.accepted,
+    H: row.H,
+    result: row.tuple?.result?.kind || null,
+    processEmotion: round(row.processEmotion),
+    acquiredEmotion: round(row.acquiredEmotion),
+    expectationEmotion: round(row.expectationEmotion),
+    emotionDelta: round(row.emotionDelta),
+    emotionBefore: round(row.emotionBefore),
+    emotionAfter: round(row.emotionAfter),
+    learningOrder: row.learningOrder,
+  }));
+}
+
+function summarizeRuntimeKnowledge(row) {
+  return {
+    pattern: row.pattern,
+    samples: row.samples,
+    confidence: round(row.confidence),
+    meanUtility: round(row.meanUtility),
+    estimatedSuccess: round(row.estimatedSuccess),
+  };
+}
+
+function selectRuntimeKnowledge(rows, limit) {
+  return [...(rows || [])]
+    .sort((a, b) => knowledgePriority(b) - knowledgePriority(a))
+    .slice(0, limit)
+    .map(summarizeRuntimeKnowledge);
+}
+
+function updateKnowledgeFromFeedback(session, record, context) {
+  if (record.action.startsWith("challenge:")) return learnFromChallenge(session.knowledgeBase, record, context);
+  if (record.action.startsWith("equip:")) return learnFromEquipment(session.knowledgeBase, record, context);
+  if (record.action.startsWith("swap:")) return learnFromTeamSwap(session.knowledgeBase, record, context);
+  return [];
+}
+
+function learnFromChallenge(knowledgeBase, record, context) {
+  const before = context.gameStateBefore;
+  const after = context.gameStateAfter;
+  const node = record.gameEvent.node || record.action.split(":")[1];
+  const teamMembers = before.teamSlots.map((id) => unitRef(before.roster.find((unit) => unit.id === id))).filter(Boolean);
+  const resultEventId = record.eventLog.find((row) => row.type === "combat_result")?.id;
+  const summaryEventId = record.eventLog.find((row) => row.type === "action_summary")?.id;
+  const unlockEventId = record.eventLog.find((row) => row.type === "map_unlock")?.id;
+  const lootEventIds = record.eventLog.filter((row) => row.type === "loot").map((row) => row.id);
+  const unlockedNodes = CORE.observe(after).visibleNodes
+    .filter((item) => !CORE.observe(before).visibleNodes.some((old) => old.id === item.id))
+    .map((item) => item.id);
+  const drops = (record.gameEvent.loot || []).map((item) => ({
+    id: item.id,
+    name: item.name,
+    slot: item.slot,
+    rarity: item.rarity,
+    level: item.level,
+  }));
+  const sharedEnvironment = { region: "region_1", node, phase: "combat", team: teamMembers.map((unit) => unit.id) };
+  const patternEnvironment = { region: "region_1", encounterBand: encounterBand(node), phase: "combat_pattern" };
+  const ids = [];
+
+  const encounter = mergeKnowledgeObservation(knowledgeBase, {
+    subject: { id: "player_squad", members: teamMembers },
+    environment: { ...sharedEnvironment, phase: "encounter" },
+    behavior: { kind: "challenge_level", key: record.action, target: node },
+  }, {
+    outcome: record.outcome,
+    duration: Number(record.gameEvent.duration || 0),
+    survivors: record.gameEvent.survivors || null,
+    resolution: record.gameEvent.resolution || null,
+    firstClear: Boolean(record.gameEvent.firstClear),
+  }, [resultEventId, summaryEventId].filter(Boolean));
+  ids.push(encounter.id);
+
+  if (record.outcome === "win") {
+    if (unlockEventId && unlockedNodes.length) ids.push(mergeKnowledgeObservation(knowledgeBase, {
+      subject: { id: "player_squad", members: teamMembers },
+      environment: { region: "region_1", node, phase: "map_progression" },
+      behavior: { kind: "clear_level", key: record.action, target: node },
+    }, {
+      outcome: "win",
+      unlockedNodes,
+      clearedNode: node,
+    }, [unlockEventId]).id);
+
+    ids.push(mergeKnowledgeObservation(knowledgeBase, {
+      subject: { id: "player_squad", members: teamMembers },
+      environment: { region: "region_1", node, phase: "loot_drop" },
+      behavior: { kind: "clear_level", key: record.action, target: node },
+    }, {
+      outcome: "loot_obtained",
+      drops,
+      inventoryCountBefore: before.inventory.length,
+      inventoryCountAfter: after.inventory.length,
+      equippedPowerBefore: CORE.gearScore(before),
+      equippedPowerAfter: CORE.gearScore(after),
+      powerChanged: CORE.gearScore(before) !== CORE.gearScore(after),
+    }, [resultEventId, ...lootEventIds].filter(Boolean)).id);
+  }
+
+  const totalDamage = (record.gameEvent.contributions || []).reduce((sum, row) => sum + Number(row.damage || 0), 0);
+  const playerActorEffects = aggregateActorEffects(record.eventLog, "left");
+  (record.gameEvent.contributions || []).forEach((contribution, rankIndex) => {
+    const unit = findUnitByContribution(before.roster, contribution);
+    const effects = playerActorEffects.find((row) => row.name === contribution.name) || emptyActorEffects();
+    const evidence = combatEvidenceForSubject(record.eventLog, unit?.id, contribution.name);
+    ids.push(mergeKnowledgeObservation(knowledgeBase, {
+      subject: unitRef(unit) || { id: `unit:${contribution.name}`, name: contribution.name, role: contribution.role },
+      environment: patternEnvironment,
+      behavior: { kind: "combat_participation", key: `fight:${unit?.id || contribution.name}`, target: "enemy_squad" },
+    }, {
+      outcome: "combat_contribution",
+      damage: round(contribution.damage),
+      damageShare: totalDamage ? round(contribution.damage / totalDamage) : 0,
+      damageRank: rankIndex + 1,
+      teamDamage: round(totalDamage),
+      healing: round(effects.healing),
+      shielding: round(effects.shielding),
+      kills: effects.kills,
+      skillCasts: effects.skillCasts,
+    }, evidence).id);
+  });
+
+  ids.push(mergeKnowledgeObservation(knowledgeBase, {
+    subject: { id: "player_squad", members: teamMembers },
+    environment: sharedEnvironment,
+    behavior: { kind: "attack_enemy_squad", key: `team_damage:${node}` },
+  }, {
+    outcome: "damage_profile",
+    ...(record.gameEvent.performance || {}),
+    totalDamage: round(totalDamage),
+  }, record.eventLog.filter((row) => row.type === "damage" && row.subject?.side === "left").map((row) => row.id)).id);
+
+  ids.push(mergeKnowledgeObservation(knowledgeBase, {
+    subject: { id: `enemy_squad:${node}`, name: "enemy squad" },
+    environment: { ...sharedEnvironment, team: undefined },
+    behavior: { kind: "attack_player_squad", key: `enemy_attack:${node}`, target: "player_squad" },
+  }, {
+    outcome: "threat_profile",
+    ...(record.gameEvent.diagnosis || {}),
+    enemySurvivorCount: Number(record.gameEvent.survivors?.enemy || 0),
+  }, record.eventLog.filter((row) => row.type === "damage" && row.subject?.side === "right").map((row) => row.id)).id);
+
+  const enemyConcepts = aggregateEnemyConcepts(record.eventLog, record.conceptInterpretation).sort((a, b) => b.damage - a.damage);
+  const totalEnemyDamage = enemyConcepts.reduce((sum, row) => sum + row.damage, 0);
+  enemyConcepts.forEach((enemy, rankIndex) => {
+    const damageShare = totalEnemyDamage ? enemy.damage / totalEnemyDamage : 0;
+    if (damageShare < 0.25 && enemy.kills === 0) return;
+    ids.push(mergeKnowledgeObservation(knowledgeBase, {
+      subject: { id: `concept:${enemy.conceptId}`, name: enemy.name, conceptId: enemy.conceptId },
+      environment: patternEnvironment,
+      behavior: { kind: "fight_player_squad", key: `enemy_concept_threat:${enemy.conceptId}`, target: "player_squad" },
+    }, {
+      outcome: "enemy_concept_threat",
+      observedUnitCount: enemy.observedUnitCount,
+      damage: round(enemy.damage),
+      damageShare: round(damageShare),
+      threatRank: rankIndex + 1,
+      healing: round(enemy.healing),
+      shielding: round(enemy.shielding),
+      kills: enemy.kills,
+      skillCasts: enemy.skillCasts,
+      observedTargets: [...enemy.damageTargets],
+      supportTargets: [...enemy.supportTargets],
+    }, enemy.eventIds).id);
+  });
+
+  return ids;
+}
+
+function learnFromEquipment(knowledgeBase, record, context) {
+  const event = record.gameEvent;
+  const hero = context.gameStateAfter.roster.find((unit) => unit.id === event.heroId);
+  const row = mergeKnowledgeObservation(knowledgeBase, {
+    subject: { id: "player", role: "player" },
+    environment: { region: "region_1", phase: "equipment", hero: unitRef(hero) },
+    behavior: { kind: "equip_item", key: record.action, itemId: event.item?.id, target: event.heroId },
+  }, {
+    outcome: "item_equipped",
+    item: event.item,
+    replacedItem: event.replacedItem || null,
+    equippedPowerBefore: event.gearBefore,
+    equippedPowerAfter: event.gearAfter,
+    powerDelta: event.gearAfter - event.gearBefore,
+  }, record.eventLog.map((item) => item.id));
+  return [row.id];
+}
+
+function learnFromTeamSwap(knowledgeBase, record, context) {
+  const row = mergeKnowledgeObservation(knowledgeBase, {
+    subject: { id: "player", role: "player" },
+    environment: { region: "region_1", phase: "team_management" },
+    behavior: { kind: "swap_team_member", key: record.action },
+  }, {
+    outcome: "team_changed",
+    teamBefore: record.gameEvent.teamBefore,
+    teamAfter: record.gameEvent.teamAfter,
+    equippedPowerBefore: CORE.gearScore(context.gameStateBefore),
+    equippedPowerAfter: CORE.gearScore(context.gameStateAfter),
+  }, record.eventLog.map((item) => item.id));
+  return [row.id];
+}
+
+function aggregateActorEffects(eventLog, side) {
+  const rows = new Map();
+  for (const event of eventLog) {
+    if (event.subject?.side !== side || !event.subject?.id) continue;
+    const row = rows.get(event.subject.id) || {
+      id: event.subject.id,
+      name: event.subject.name || event.subject.id,
+      role: event.subject.role || "unknown",
+      damage: 0,
+      healing: 0,
+      shielding: 0,
+      kills: 0,
+      skillCasts: 0,
+      damageTargets: new Set(),
+      supportTargets: new Set(),
+      eventIds: [],
+    };
+    if (event.type === "damage") row.damage += Number(event.result?.amount || 0);
+    if (event.type === "heal") row.healing += Number(event.result?.amount || 0);
+    if (event.type === "shield") row.shielding += Number(event.result?.amount || 0);
+    if (event.type === "death" && event.result?.target?.side !== side) row.kills += 1;
+    if (event.type === "skill") row.skillCasts += 1;
+    if (event.type === "damage" && event.result?.target?.name) row.damageTargets.add(event.result.target.name);
+    if (["heal", "shield"].includes(event.type) && event.result?.target?.name) row.supportTargets.add(event.result.target.name);
+    row.eventIds.push(event.id);
+    rows.set(event.subject.id, row);
+  }
+  return [...rows.values()];
+}
+
+function aggregateEnemyConcepts(eventLog, interpretation = {}) {
+  const concepts = new Map();
+  for (const actor of aggregateActorEffects(eventLog, "right")) {
+    const conceptId = actor.id.startsWith("concept:") ? actor.id.slice("concept:".length) : "enemy_minion_generic";
+    const row = concepts.get(conceptId) || {
+      conceptId,
+      name: actor.name || "普通小怪",
+      observedUnitCount: Number(interpretation.entityCounts?.[conceptId] || 0),
+      damage: 0,
+      healing: 0,
+      shielding: 0,
+      kills: 0,
+      skillCasts: 0,
+      damageTargets: new Set(),
+      supportTargets: new Set(),
+      eventIds: [],
+    };
+    row.damage += actor.damage;
+    row.healing += actor.healing;
+    row.shielding += actor.shielding;
+    row.kills += actor.kills;
+    row.skillCasts += actor.skillCasts;
+    actor.damageTargets.forEach((target) => row.damageTargets.add(target));
+    actor.supportTargets.forEach((target) => row.supportTargets.add(target));
+    row.eventIds.push(...actor.eventIds);
+    concepts.set(conceptId, row);
+  }
+  return [...concepts.values()];
+}
+
+function emptyActorEffects() {
+  return { damage: 0, healing: 0, shielding: 0, kills: 0, skillCasts: 0 };
+}
+
+function mergeKnowledgeObservation(knowledgeBase, tuple, observation, evidenceEventIds) {
+  const key = knowledgeKey(tuple);
+  let row = knowledgeBase.find((item) => item.key === key);
+  if (!row) {
+    row = {
+      id: `knowledge:${nextKnowledgeId(knowledgeBase)}`,
+      key,
+      subject: tuple.subject,
+      environment: tuple.environment,
+      behavior: tuple.behavior,
+      result: {
+        sampleCount: 0,
+        outcomeDistribution: {},
+        observations: [],
+      },
+      evidenceEventIds: [],
+      attributions: [],
+    };
+    knowledgeBase.push(row);
+  }
+  row.result.sampleCount += 1;
+  if (observation.outcome) {
+    row.result.outcomeDistribution[observation.outcome] = (row.result.outcomeDistribution[observation.outcome] || 0) + 1;
+  }
+  row.result.observations.push(observation);
+  if (row.result.observations.length > 8) row.result.observations.splice(0, row.result.observations.length - 8);
+  row.evidenceEventIds.push(...evidenceEventIds.filter((id) => id && !row.evidenceEventIds.includes(id)));
+  return row;
+}
+
+function nextKnowledgeId(knowledgeBase) {
+  return knowledgeBase.reduce((max, row) => {
+    const value = Number(String(row.id || "").split(":").pop());
+    return Number.isFinite(value) ? Math.max(max, value) : max;
+  }, 0) + 1;
+}
+
+function knowledgeKey(tuple) {
+  return [
+    tuple.subject?.id || "unknown_subject",
+    tuple.environment?.region || "unknown_region",
+    tuple.environment?.node || tuple.environment?.encounterBand || "unknown_environment",
+    tuple.environment?.phase || "unknown_phase",
+    tuple.behavior?.kind || "unknown_behavior",
+    tuple.behavior?.key || "unknown_key",
+  ].join("|");
+}
+
+function compactKnowledgeBase(knowledgeBase) {
+  const lowLevelKinds = new Set(["skill_cast", "skill_effect", "damage"]);
+  const lowLevelOutcomes = new Set(["observed_combat_effect", "enemy_threat_contribution"]);
+  for (let index = knowledgeBase.length - 1; index >= 0; index -= 1) {
+    const latest = knowledgeBase[index].result?.observations?.at(-1);
+    if (lowLevelKinds.has(knowledgeBase[index].behavior?.kind) || lowLevelOutcomes.has(latest?.outcome)) {
+      knowledgeBase.splice(index, 1);
+    }
+  }
+}
+
+function buildLearningDelta({ knowledgeBefore, knowledgeAfter, conceptStateBefore, conceptStateAfter, interpretation }) {
+  const beforeKnowledgeByKey = new Map((knowledgeBefore || []).map((row) => [row.key, row]));
+  const addedKnowledge = [];
+  const updatedKnowledge = [];
+  for (const row of knowledgeAfter || []) {
+    const before = beforeKnowledgeByKey.get(row.key);
+    if (!before) {
+      addedKnowledge.push(summarizeCanonicalKnowledge(row));
+      continue;
+    }
+    if (knowledgeRevision(before) !== knowledgeRevision(row)) {
+      updatedKnowledge.push({
+        ...summarizeCanonicalKnowledge(row),
+        previousSampleCount: Number(before.result?.sampleCount || 0),
+      });
+    }
+  }
+
+  const beforeConceptIds = new Set((conceptStateBefore?.concepts || []).map((row) => row.id));
+  const addedConcepts = (conceptStateAfter?.concepts || [])
+    .filter((row) => !beforeConceptIds.has(row.id))
+    .map((row) => ({ id: row.id, label: row.label, definition: row.definition }));
+  const beforeCandidates = conceptStateBefore?.candidates || {};
+  const changedCandidates = Object.entries(conceptStateAfter?.candidates || {})
+    .filter(([key, value]) => JSON.stringify(beforeCandidates[key] || null) !== JSON.stringify(value))
+    .map(([, value]) => clone(value));
+
+  const matched = new Map();
+  for (const decision of interpretation?.decisions || []) {
+    const row = matched.get(decision.conceptId) || {
+      conceptId: decision.conceptId,
+      label: decision.conceptLabel,
+      observedEntityCount: 0,
+      evidenceEventIds: [],
+    };
+    row.observedEntityCount += 1;
+    for (const evidence of decision.visibleEvidence || []) {
+      if (evidence.eventId && !row.evidenceEventIds.includes(evidence.eventId)) row.evidenceEventIds.push(evidence.eventId);
+    }
+    matched.set(decision.conceptId, row);
+  }
+
+  return {
+    addedKnowledge,
+    updatedKnowledge,
+    matchedConcepts: [...matched.values()],
+    addedConcepts,
+    changedConceptCandidates: changedCandidates,
+    conceptLibraryChanged: addedConcepts.length > 0,
+    knowledgeCountBefore: (knowledgeBefore || []).length,
+    knowledgeCountAfter: (knowledgeAfter || []).length,
+  };
+}
+
+function summarizeCanonicalKnowledge(row) {
+  return {
+    id: row.id,
+    subject: clone(row.subject),
+    environment: clone(row.environment),
+    behavior: clone(row.behavior),
+    latestResult: clone(row.result?.observations?.at(-1) || null),
+    sampleCount: Number(row.result?.sampleCount || 0),
+    evidenceEventIds: clone(row.evidenceEventIds || []),
+  };
+}
+
+function knowledgeRevision(row) {
+  return JSON.stringify({
+    sampleCount: row.result?.sampleCount,
+    latest: row.result?.observations?.at(-1),
+    evidenceEventIds: row.evidenceEventIds,
+  });
+}
+
+function encounterBand(node) {
+  if (/^r1_main_[1-4]$/.test(node)) return "region_1_early_main";
+  if (/^r1_main_[5-8]$/.test(node)) return "region_1_mid_main";
+  if (/^r1_main_(9|10)$/.test(node)) return "region_1_late_main";
+  if (node === "r1_boss") return "region_1_boss";
+  return "region_1_optional_branch";
+}
+
+function unitRef(unit) {
+  if (!unit) return null;
+  return { id: unit.id, name: unit.name, role: unit.role, kind: unit.kind };
+}
+
+function findUnitByContribution(roster, contribution) {
+  return roster.find((unit) => unit.name === contribution.name)
+    || roster.find((unit) => unit.role === contribution.role);
+}
+
+function combatEvidenceForSubject(eventLog, subjectId, subjectName) {
+  return eventLog.filter((row) => (
+    (subjectId && row.subject?.id === subjectId)
+    || (subjectName && row.subject?.name === subjectName)
+  )).map((row) => row.id);
+}
+
+function knowledgePriority(row) {
+  const outcomeWeight = Number(row.outcomeTrials || 0) > 0 ? 2 : 0;
+  return outcomeWeight
+    + Number(row.confidence || 0)
+    + Math.min(1, Math.abs(Number(row.meanUtility || 0)) * 4)
+    + Math.min(0.5, Number(row.count || 0) / 20);
+}
+
+function summarizeEvent(row) {
+  return {
+    id: row.id,
+    time: row.time,
+    type: row.type,
+    subject: row.subject?.name || row.subject?.id || null,
+    behavior: row.behavior?.name || row.behavior?.kind || null,
+    result: compactResult(row.result),
+  };
+}
+
+function buildAttributionEvidence(record) {
+  const alwaysKeep = new Set(["combat_result", "loot_outcome", "loot", "equipment_change", "map_unlock", "character_unlock", "action_summary"]);
+  const traceById = new Map(record.eventTrace.map((row) => [row.eventId, row]));
+  const salient = record.eventLog.filter((event) => {
+    const trace = traceById.get(event.id);
+    if (alwaysKeep.has(event.type)) return true;
+    if (!trace?.accepted) return false;
+    return event.type === "death"
+      || Number(trace.H || 0) >= 0.2
+      || Math.abs(Number(trace.emotionDelta || 0)) >= 0.02;
+  });
+  return salient.slice(-18).map((event) => {
+    const trace = traceById.get(event.id);
+    return {
+      ...summarizeEvent(event),
+      H: round(trace?.H),
+      emotionDelta: round(trace?.emotionDelta),
+    };
+  });
+}
+
+function compactResult(result = {}) {
+  const value = {
+    kind: result.kind || null,
+    occurred: result.occurred !== false,
+  };
+  for (const key of ["amount", "before", "after", "rarity", "itemName", "observedPower", "boundary", "firstClear", "clearedNode", "unlockedNodes"]) {
+    if (result[key] != null) value[key] = result[key];
+  }
+  if (result.target) value.target = result.target.name || result.target.id || null;
+  if (result.survivors) value.survivors = result.survivors;
+  if (Array.isArray(result.components)) value.components = result.components.map((row) => ({ kind: row.kind, amount: row.amount }));
+  return value;
+}
+
+function cloneAndValidate(input) {
+  const session = clone(input);
+  if (!session || session.schema !== SCHEMA) throw new Error("invalid player agent loop session");
+  if (!session.conceptState) session.conceptState = SIGNAL_INTERPRETER.createConceptState();
+  return session;
+}
+
+function clone(value) { return structuredClone(value); }
+function clamp(value, min, max) { return Math.max(min, Math.min(max, Number(value) || 0)); }
+function round(value, digits = 4) { return Number(Number(value || 0).toFixed(digits)); }
+
+module.exports = {
+  SCHEMA,
+  applyAttributionResponse,
+  applyDecisionResponse,
+  createSession,
+  getPendingRequest,
+};

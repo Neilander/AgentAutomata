@@ -81,6 +81,17 @@ const audit = {
   reachedBoss: session.history.some((row) => row.action === "challenge:r1_boss"),
   clearedBoss: Boolean(session.gameState?.cleared?.r1_boss),
   bossAttempts: session.history.filter((row) => row.action === "challenge:r1_boss").length,
+  actionCounts: countActions(session.history),
+  teamSwapActions: session.history.filter((row) => row.action.startsWith("swap:")).map((row) => ({ cycle: row.cycle, action: row.action })),
+  characterUnlocks: session.history.flatMap((row) => (row.eventLog || [])
+    .filter((event) => event.type === "character_unlock")
+    .map((event) => ({ cycle: row.cycle, character: event.result?.character, heroId: event.result?.heroId }))),
+  mageSwapActions: session.history.filter((row) => row.action.startsWith("swap:") && row.action.endsWith(":hero_mage")).map((row) => row.cycle),
+  rangerSwapActions: session.history.filter((row) => row.action.startsWith("swap:") && row.action.endsWith(":hero_ranger")).map((row) => row.cycle),
+  characterExperimentResults: session.history.flatMap((row) => (row.eventLog || [])
+    .filter((event) => event.type === "team_experiment_result")
+    .map((event) => ({ cycle: row.cycle, ...event.result }))),
+  main1WaveSummary: session.history.find((row) => row.action === "challenge:r1_main_1")?.gameEvent?.waveSummary || [],
   requiredFileCount: requiredFiles.length,
   missingFiles: requiredFiles.filter((name) => !fs.existsSync(path.join(runDir, name))),
   historyRowsWithLearningDelta: session.history.filter((row) => row.learningDelta).length,
@@ -98,7 +109,7 @@ const audit = {
   responseSessionMismatches,
   responseHashMatchesOutsideRun,
   responseHashes,
-  note: "Response files were created in this unique run directory. Decisions and attributions were supplied turn-by-turn by the current assistant; combat, loot, emotion, canonical knowledge, and concept interpretation were computed by repository code.",
+  note: "Response files were created in this unique run directory. Decisions and attributions were supplied turn-by-turn by an external player agent; combat, loot, emotion, canonical knowledge, and concept interpretation were computed by repository code.",
 };
 
 const traceJsonName = `action-knowledge-concept-trace${outputSuffix}.json`;
@@ -141,7 +152,7 @@ function renderMarkdown(currentSession, rows, currentAudit) {
     "## 真实性边界",
     "",
     "- 每次 decision/attribution 请求都由运行时代码根据当时状态生成。",
-    "- 当前助手逐次读取请求并新写响应；没有调用旧响应或复制旧会话。",
+    "- 外部玩家agent逐次读取请求并新写响应；没有调用旧响应或复制旧会话。",
     "- 战斗胜负、战报、掉落、情绪、知识更新和概念解释均由仓库运行时代码计算。",
     "- AI/助手只选择允许的行为并提供证据约束的归因，不能填写胜负、掉落或情绪。",
     "- 归因证据必须属于所选知识；跨知识混写的归因会被校验器拒绝，修正后才能写入会话。",
@@ -171,6 +182,13 @@ function renderMarkdown(currentSession, rows, currentAudit) {
   lines.push(`- 候选概念: ${candidates.map((item) => `${item.id} / 证据${item.evidenceCount} / ${item.status}`).join("；") || "无"}`);
   lines.push("- 本轮没有自动批准任何新概念；治疗、治疗+护盾、护盾仍保留为候选。", "");
   lines.push("## 审计", "");
+  lines.push(`- 行为分布: ${JSON.stringify(currentAudit.actionCounts)}`);
+  lines.push(`- 换人行为: ${currentAudit.teamSwapActions.length ? JSON.stringify(currentAudit.teamSwapActions) : "无"}`);
+  lines.push(`- 角色解锁: ${currentAudit.characterUnlocks.length ? JSON.stringify(currentAudit.characterUnlocks) : "无"}`);
+  lines.push(`- 法师换入轮次: ${currentAudit.mageSwapActions.length ? currentAudit.mageSwapActions.join("、") : "无"}`);
+  lines.push(`- 游侠换入轮次: ${currentAudit.rangerSwapActions.length ? currentAudit.rangerSwapActions.join("、") : "无"}`);
+  lines.push(`- 新角色战斗验证: ${currentAudit.characterExperimentResults.length ? JSON.stringify(currentAudit.characterExperimentResults) : "无"}`);
+  lines.push(`- 主线1进场: ${currentAudit.main1WaveSummary.length ? currentAudit.main1WaveSummary.map((row) => `${row.unitCount}人@${row.time}s`).join("；") : "非波次或无记录"}`);
   lines.push(`- ${currentAudit.requiredFileCount}个请求/响应文件缺失: ${currentAudit.missingFiles.length ? currentAudit.missingFiles.join("、") : "无"}`);
   lines.push(`- 行为都有知识/概念增量: ${currentAudit.historyRowsWithLearningDelta}/${currentSession.cycle}`);
   lines.push(`- 行为都有原始日志和概念解释后日志: ${currentAudit.historyRowsWithRawAndSemanticLogs}/${currentSession.cycle}`);
@@ -218,6 +236,14 @@ function formatConceptMatches(items) {
 function formatCandidates(items) {
   if (!items.length) return "无";
   return items.map((item) => `${item.id}：证据${item.evidenceCount}，${item.status}`).join("；");
+}
+
+function countActions(history) {
+  return history.reduce((counts, row) => {
+    const kind = String(row.action || "unknown").split(":")[0];
+    counts[kind] = (counts[kind] || 0) + 1;
+    return counts;
+  }, {});
 }
 
 function sha256(buffer) {

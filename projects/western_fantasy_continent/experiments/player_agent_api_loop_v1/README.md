@@ -22,6 +22,12 @@ The AI is not allowed to set emotion or PQRA values. The decision response must 
 
 ## Causal Knowledge Rules
 
+- Fresh sessions start with one complete Warrior hero plus four militia. The active squad is Warrior, Barricade Militia, Spear Militia, and Herb Militia; Drum Militia begins in reserve.
+- Main 1 uses the same two-big-wave, three-entry encounter data as the playable map. Its ten weak enemies enter as 3, then 3 when the opening group falls to two survivors, then 4 after the first big wave is cleared; every entry produces a visible cognition event.
+- Clearing Main 2 for the first time adds the complete Mage hero to the roster without changing the active squad. The Mage unlock, available swap actions, and subsequent combat contribution remain explicit player-visible evidence.
+- Decision requests include structured team slots and the full unlocked roster with role, unit kind, positioning, equipment occupancy, active/reserve state, and concise role descriptions.
+- Decision requests do not expose evaluator-owned character experiments or the explicit `discover_new_capabilities` goal. The agent sees only the unlock, roster facts, role descriptions, legal swap actions, and hypotheses it created itself.
+- Character swap experiments remain in private `evaluatorState`, where they can audit unlock -> swap -> combat evidence without instructing the player agent what to test.
 - Clearing a level causes map unlocks and loot drops. There is no invented `receive_reward` player behavior.
 - Loot is placed in inventory. It never changes equipped power by itself.
 - `equip:<heroId>:<itemId>` is an explicit player decision. Only that action may move an item from inventory to a hero and change equipped power.
@@ -57,12 +63,16 @@ Run `node verify-causal-loop.js` for the regression check. The current accepted 
 
 ## Long-Run Evidence
 
-The current fresh long run is `real_main7_run_2026-07-13_170746/` with seed `real-main7-2026-07-13-170746`.
+The current onboarding run is `role_wave_run_2026-07-13_105247/` with seed `role-wave-2026-07-13-105247`.
 
 - It contains 30 complete decision/attribution cycles, 60 logical external-agent calls, and 120 persisted request/response files.
-- The same session advanced from Main 1 through Main 10, unlocked the regional Boss, and challenged it twice.
-- The Boss was reached but not cleared. Attempt one used equipped power 601; attempt two used 673 after one explicit offensive equipment change. Both ended in a 21.12-second loss with four enemies alive.
-- The run ended with 103 canonical knowledge rows and no invalid subject-environment-behavior-result tuples.
+- Main 1 ran all three entries in one continuous combat: 3 enemies at 0 seconds, 3 at 6.96 seconds, and 4 at 23.68 seconds. The squad cleared it in 37.44 seconds.
+- Clearing Main 2 exposed the Mage as a complete reserve hero. The external agent voluntarily replaced Spear Militia with Mage on cycle 5, then verified Mage on Main 3 on cycle 8; Mage dealt 338.95 damage and led the squad.
+- The same session cleared Main 1 through Main 10. The 30-cycle cap arrived after two Main 10 equipment actions, so the regional Boss was not attempted.
+- Main 6 exposed a causal-confounding risk: the unchanged squad and equipped power lost on cycle 17, immediately retried on cycle 18, and won because attempt number changes the combat seed. Failure can therefore disappear without a player learning or applying a key.
+- The run ended with 90 canonical knowledge rows and no missing evidence files or invalid subject-environment-behavior-result tuples.
 - Loot never changed equipped power without a separate `equip` decision.
-- `ACTION_KNOWLEDGE_CONCEPT_TRACE.md` preserves the earlier Main 7 snapshot. `ACTION_KNOWLEDGE_CONCEPT_TRACE_TO_BOSS.md` and `run-audit-to-boss.json` contain the 30-cycle continuation and integrity audit.
-- Decisions and attributions were supplied turn by turn by the current assistant. Combat, loot, emotion, concepts, knowledge consolidation, and state transitions were computed by repository code.
+- `ACTION_KNOWLEDGE_CONCEPT_TRACE.md`, `run-audit.json`, and `AGENT_RUN_NOTES.md` contain the complete action trace, integrity audit, and player-agent notes.
+- Decisions and attributions were supplied through a single isolated player sub-agent. Combat, loot, emotion, concepts, knowledge consolidation, and state transitions were computed by repository code; the sub-agent was closed after completing the run.
+
+The earlier Boss-pressure comparison remains under `real_main7_run_2026-07-13_170746/`. It reached the regional Boss twice in 30 cycles but did not clear it; use it as historical evidence for late-region pressure, not as evidence for the current starter-roster and Mage-onboarding flow.

@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-13_1927_real-boss-cognition-loop.md`](reports/2026-07-13_1927_real-boss-cognition-loop.md)
+[`reports/2026-07-13_1112_player-agent-role-wave-long-run.md`](reports/2026-07-13_1112_player-agent-role-wave-long-run.md)
 
 Last updated: 2026-07-13
 
-Current focus: the executable player-agent loop now has a fresh 30-action Main 1-to-Boss run with two failed Boss attempts, per-action knowledge/concept deltas, and a 120-file integrity audit; future work should compare one structural Boss response at a time without overwriting this evidence.
+Current focus: the role-visible starter and Main 2 Mage onboarding passed a fresh 30-cycle run, including a voluntary Mage swap and combat proof. The highest-value next issue is Main 6 retry causality: an unchanged immediate retry flipped from loss to win because attempt number changed the combat seed, bypassing any learned or applied key.

@@ -28,6 +28,7 @@
   ];
 
   const HERO_REWARDS = {
+    mage: hero("hero_mage", "烬火法师", "mage", "完整输出英雄，负责清怪与爆发。"),
     ranger: hero("hero_ranger", "林地游侠", "ranger", "完整远程物理英雄，持续盯住当前目标并累积猎标。"),
   };
 

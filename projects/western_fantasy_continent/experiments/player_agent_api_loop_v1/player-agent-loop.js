@@ -13,8 +13,9 @@ function createSession(seed = "player-agent-api-loop", maxCycles = 2) {
     maxCycles,
     cycle: 0,
     phase: "decision",
-    gameState: CORE.initialState(seed),
+    gameState: CORE.initialState(seed, { starterVariant: "player_agent_role_wave" }),
     cognitionState: RUNTIME.createState(seed),
+    evaluatorState: createEvaluatorState(),
     conceptState: SIGNAL_INTERPRETER.createConceptState(),
     knowledgeBase: [],
     history: [],
@@ -63,7 +64,7 @@ function applyDecisionResponse(sessionInput, responseInput) {
 
   const afterDecision = RUNTIME.applyDecision(session.cognitionState, decision);
   const emotionAfterDecision = Number(afterDecision.emotion.value);
-  const result = runPlayerAction(session.gameState, response.action, afterDecision, session.conceptState);
+  const result = runPlayerAction(session.gameState, response.action, afterDecision, session.conceptState, session.evaluatorState);
   if (!result.ok) throw new Error(`game rejected action ${response.action}: ${result.error || "unknown"}`);
 
   const record = {
@@ -86,6 +87,7 @@ function applyDecisionResponse(sessionInput, responseInput) {
 
   session.gameState = result.state;
   session.cognitionState = result.cognitionState;
+  session.evaluatorState = result.evaluatorState;
   session.conceptState = result.conceptState;
   session.history.push(record);
   const knowledgeIds = updateKnowledgeFromFeedback(session, record, {
@@ -155,6 +157,10 @@ function applyAttributionResponse(sessionInput, responseInput) {
 
 function buildDecisionRequest(session) {
   const observation = observeGame(session.gameState);
+  const goals = session.cognitionState.goals.filter((goal) => goal.id !== "discover_new_capabilities");
+  const activeGoalId = goals.some((goal) => goal.id === session.cognitionState.activeGoalId)
+    ? session.cognitionState.activeGoalId
+    : goals[0]?.id || "grow_and_progress";
   return {
     type: "decision",
     schema: "player_decision_request_v1",
@@ -162,20 +168,23 @@ function buildDecisionRequest(session) {
     instruction: "Choose exactly one allowed action. Use only supplied observations and knowledge. Do not calculate or set emotion.",
     playerState: {
       emotion: round(session.cognitionState.emotion.value),
-      activeGoalId: session.cognitionState.activeGoalId,
-      goals: session.cognitionState.goals,
+      activeGoalId,
+      goals,
       knowledge: session.knowledgeBase,
       eventStatisticsCount: session.cognitionState.knowledge.length,
       failureMemories: session.cognitionState.failureMemories,
-      hypotheses: session.cognitionState.hypotheses,
+      hypotheses: visiblePlayerHypotheses(session.cognitionState.hypotheses),
     },
     observation: {
       step: observation.step,
       currentGoal: observation.currentGoal,
       team: observation.team,
+      teamSlots: observation.teamSlots,
+      roster: observation.roster,
       gear: observation.gear,
       inventory: observation.inventory,
       visibleNodes: observation.visibleNodes,
+      optionalOpportunities: observation.optionalOpportunities,
       allowedActions: observation.allowedActions,
     },
     responseContract: {
@@ -217,6 +226,31 @@ function buildAttributionRequest(session) {
 function observeGame(rawState) {
   const state = clone(rawState);
   const observation = CORE.observe(state);
+  const slotLabels = ["前排1", "前排2", "后排1", "后排2"];
+  const teamSlotById = new Map(state.teamSlots.map((heroId, slotIndex) => [heroId, slotIndex]));
+  const rosterById = new Map(state.roster.map((hero) => [hero.id, hero]));
+  const roster = (observation.roster || []).map((hero) => {
+    const teamSlot = teamSlotById.has(hero.id) ? teamSlotById.get(hero.id) : null;
+    return {
+      ...hero,
+      isActive: teamSlot != null,
+      teamSlot,
+      slotLabel: teamSlot == null ? null : slotLabels[teamSlot],
+      equippedSlots: Object.keys(rosterById.get(hero.id)?.equipment || {}),
+    };
+  });
+  const teamSlots = state.teamSlots.map((heroId, slotIndex) => {
+    const hero = roster.find((unit) => unit.id === heroId);
+    return {
+      slotIndex,
+      slotLabel: slotLabels[slotIndex],
+      heroId,
+      heroName: hero?.name || heroId,
+      role: hero?.role || "unknown",
+      kind: hero?.kind || "unknown",
+      note: hero?.note || "",
+    };
+  });
   const equipActions = [];
   const inventory = (state.inventory || []).map((item) => {
     const candidates = state.roster.map((hero) => {
@@ -235,18 +269,22 @@ function observeGame(rawState) {
   });
   return {
     ...observation,
+    roster,
+    teamSlots,
     inventory,
     allowedActions: [...equipActions, ...(observation.allowedActions || [])],
   };
 }
 
-function runPlayerAction(rawState, action, cognitionState, conceptState) {
-  if (String(action).startsWith("equip:")) return runEquipAction(rawState, action, cognitionState, conceptState);
-  return runCoreActionWithoutAutoEquip(rawState, action, cognitionState, conceptState);
+function runPlayerAction(rawState, action, cognitionState, conceptState, evaluatorState) {
+  if (String(action).startsWith("equip:")) return runEquipAction(rawState, action, cognitionState, conceptState, evaluatorState);
+  return runCoreActionWithoutAutoEquip(rawState, action, cognitionState, conceptState, evaluatorState);
 }
 
-function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, conceptState) {
+function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, conceptState, evaluatorStateInput) {
   const before = clone(rawState);
+  const evaluatorState = clone(evaluatorStateInput || createEvaluatorState());
+  const activeExperiment = evaluatorState.affordanceExperiments.find((row) => row.status === "awaiting_combat") || null;
   const beforeItemIds = new Set(allEquipmentItems(before).map((item) => item.id));
   const result = CORE.applyAction(before, action, { captureVisibleSignals: true });
   if (!result.ok) return { ...result, cognitionState };
@@ -267,9 +305,13 @@ function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, concept
 
   const nodeId = String(action).split(":")[1];
   const node = CORE.nodes.find((item) => item.id === nodeId);
+  const experimentContribution = activeExperiment ? ADAPTER.summarizeExperimentContribution(result, activeExperiment) : null;
   const rawEventLog = ADAPTER.buildMapEventLog(action, result.event, {
     analysis: result.analysis,
     nodeType: node?.type || (String(action).startsWith("swap:") ? "team" : "map"),
+    activeExperiment,
+    heroPresent: activeExperiment ? result.state.teamSlots.includes(activeExperiment.heroId) : null,
+    experimentContribution,
   });
   appendMapUnlockEvent(rawEventLog, action, result.event, rawState, result.state);
   rawEventLog.sort((a, b) => a.time - b.time || String(a.id).localeCompare(String(b.id)));
@@ -278,9 +320,11 @@ function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, concept
     nodeType: node?.type || "map",
   });
   const eventLog = interpreted.events;
+  const nextCognitionState = removeEvaluatorScaffolding(RUNTIME.ingestEvents(cognitionState, eventLog));
   return {
     ...result,
-    cognitionState: RUNTIME.ingestEvents(cognitionState, eventLog),
+    cognitionState: nextCognitionState,
+    evaluatorState: updateEvaluatorState(evaluatorState, rawEventLog),
     conceptState: interpreted.state,
     conceptInterpretation: interpreted.interpretation,
     rawEventLog,
@@ -305,7 +349,7 @@ function appendMapUnlockEvent(eventLog, action, event, beforeState, afterState) 
   });
 }
 
-function runEquipAction(rawState, action, cognitionState, conceptState) {
+function runEquipAction(rawState, action, cognitionState, conceptState, evaluatorState) {
   const state = clone(rawState);
   const [, heroId, itemId] = String(action).split(":");
   const hero = state.roster.find((unit) => unit.id === heroId);
@@ -347,7 +391,69 @@ function runEquipAction(rawState, action, cognitionState, conceptState) {
     conceptState: interpreted.state,
     conceptInterpretation: interpreted.interpretation,
     cognitionState: RUNTIME.ingestEvents(cognitionState, eventLog),
+    evaluatorState: clone(evaluatorState || createEvaluatorState()),
   };
+}
+
+function createEvaluatorState() {
+  return { affordanceExperiments: [] };
+}
+
+function updateEvaluatorState(stateInput, eventLog) {
+  const state = clone(stateInput || createEvaluatorState());
+  state.affordanceExperiments = state.affordanceExperiments || [];
+  for (const event of eventLog || []) {
+    if (event.result?.kind === "character_unlock") {
+      const character = String(event.result.heroId || event.result.character || "").trim();
+      if (!character) continue;
+      const heroId = character.startsWith("hero_") ? character : `hero_${character}`;
+      if (state.affordanceExperiments.some((row) => row.heroId === heroId)) continue;
+      state.affordanceExperiments.push({
+        id: `team-experiment:${heroId}`,
+        kind: "new_character_swap",
+        heroId,
+        status: "available",
+        sourceEventId: event.id,
+        selectedAction: null,
+        combatEvidence: null,
+      });
+      continue;
+    }
+    if (event.result?.kind === "team_changed") {
+      const experiment = state.affordanceExperiments.find((row) => row.heroId === event.result.heroId && row.status === "available");
+      if (!experiment) continue;
+      experiment.status = "awaiting_combat";
+      experiment.selectedAction = event.behavior?.key || null;
+      experiment.swapEventId = event.id;
+      continue;
+    }
+    if (event.result?.kind === "team_experiment_result") {
+      const experiment = state.affordanceExperiments.find((row) => row.id === event.result.experimentId && row.status === "awaiting_combat");
+      if (!experiment) continue;
+      experiment.status = "resolved";
+      experiment.combatEvidence = {
+        eventId: event.id,
+        node: event.result.node,
+        outcome: event.result.outcome,
+        heroPresent: event.result.heroPresent !== false,
+      };
+    }
+  }
+  return state;
+}
+
+function removeEvaluatorScaffolding(state) {
+  state.affordanceExperiments = [];
+  state.hypotheses = (state.hypotheses || []).filter((row) => !(
+    row.action === null
+    && row.resultKind === "team_experiment_contribution"
+    && String(row.id || "").startsWith("verify-team-experiment:")
+  ));
+  return state;
+}
+
+function visiblePlayerHypotheses(rows) {
+  return (rows || []).filter((row) => row.action);
 }
 
 function buildEquipEventLog(event) {
@@ -507,6 +613,7 @@ function learnFromChallenge(knowledgeBase, record, context) {
   const resultEventId = record.eventLog.find((row) => row.type === "combat_result")?.id;
   const summaryEventId = record.eventLog.find((row) => row.type === "action_summary")?.id;
   const unlockEventId = record.eventLog.find((row) => row.type === "map_unlock")?.id;
+  const characterUnlockEventId = record.eventLog.find((row) => row.type === "character_unlock")?.id;
   const lootEventIds = record.eventLog.filter((row) => row.type === "loot").map((row) => row.id);
   const unlockedNodes = CORE.observe(after).visibleNodes
     .filter((item) => !CORE.observe(before).visibleNodes.some((old) => old.id === item.id))
@@ -559,6 +666,16 @@ function learnFromChallenge(knowledgeBase, record, context) {
       equippedPowerAfter: CORE.gearScore(after),
       powerChanged: CORE.gearScore(before) !== CORE.gearScore(after),
     }, [resultEventId, ...lootEventIds].filter(Boolean)).id);
+
+    if (characterUnlockEventId && record.gameEvent.characterUnlock) ids.push(mergeKnowledgeObservation(knowledgeBase, {
+      subject: { id: "player_squad", members: teamMembers },
+      environment: { region: "region_1", node, phase: "character_reward" },
+      behavior: { kind: "clear_level", key: record.action, target: node },
+    }, {
+      outcome: "character_unlocked",
+      character: record.gameEvent.characterUnlock,
+      activeTeamChanged: false,
+    }, [characterUnlockEventId]).id);
   }
 
   const totalDamage = (record.gameEvent.contributions || []).reduce((sum, row) => sum + Number(row.damage || 0), 0);
@@ -931,7 +1048,7 @@ function compactResult(result = {}) {
     kind: result.kind || null,
     occurred: result.occurred !== false,
   };
-  for (const key of ["amount", "before", "after", "rarity", "itemName", "observedPower", "boundary", "firstClear", "clearedNode", "unlockedNodes"]) {
+  for (const key of ["amount", "before", "after", "rarity", "itemName", "observedPower", "boundary", "firstClear", "clearedNode", "unlockedNodes", "character", "heroId", "characterName"]) {
     if (result[key] != null) value[key] = result[key];
   }
   if (result.target) value.target = result.target.name || result.target.id || null;
@@ -944,6 +1061,12 @@ function cloneAndValidate(input) {
   const session = clone(input);
   if (!session || session.schema !== SCHEMA) throw new Error("invalid player agent loop session");
   if (!session.conceptState) session.conceptState = SIGNAL_INTERPRETER.createConceptState();
+  if (!session.evaluatorState) {
+    session.evaluatorState = {
+      affordanceExperiments: clone(session.cognitionState?.affordanceExperiments || []),
+    };
+  }
+  session.cognitionState = removeEvaluatorScaffolding(session.cognitionState);
   return session;
 }
 

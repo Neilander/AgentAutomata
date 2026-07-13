@@ -110,7 +110,7 @@
     paper_v0: { meleeHp: 30, rangedHp: 22, armor: 0, spawnWhenRemaining: 1 },
     effort_v0: { meleeHp: 41, rangedHp: 30, armor: 0, spawnWhenRemaining: 2 },
     effort_v1: { meleeHp: 92, rangedHp: 68, armor: 2, spawnWhenRemaining: 2 },
-    effort_v2: { meleeHp: 216, rangedHp: 214, armor: 2, spawnWhenRemaining: 3 },
+    effort_v2: { meleeHp: 216, rangedHp: 214, armor: 2, spawnWhenRemaining: 2 },
   };
 
   function firstRoadWaves(profileInput = "effort_v2") {

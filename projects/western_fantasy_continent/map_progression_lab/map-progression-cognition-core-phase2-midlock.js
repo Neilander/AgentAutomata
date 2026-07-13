@@ -62,7 +62,11 @@
     return result;
   }
 
-  function initialState(seed = "player") {
+  function initialState(seed = "player", options = {}) {
+    const playerAgentRoleWave = options.starterVariant === "player_agent_role_wave";
+    const initialRoster = playerAgentRoleWave
+      ? ROSTER.createInitialRoster().filter((unit) => unit.id !== "hero_mage")
+      : ROSTER.createInitialRoster();
     return {
       schema: "map_cognition_session_v1",
       seed,
@@ -72,9 +76,11 @@
       failures: {},
       inventory: [],
       equipped: {},
-      roster: ROSTER.createInitialRoster(),
-      teamSlots: [...ROSTER.INITIAL_TEAM_SLOTS],
-      flags: { prisonFailed: false, rangerRescued: false, pendingTeamExperiment: false },
+      roster: initialRoster,
+      teamSlots: playerAgentRoleWave
+        ? ["hero_warrior", "militia_barricade", "militia_spear", "militia_herb"]
+        : [...ROSTER.INITIAL_TEAM_SLOTS],
+      flags: { playerAgentRoleWave, mageRecruited: false, prisonFailed: false, rangerRescued: false, pendingTeamExperiment: false },
       cognition: {
         concepts: ["关卡", "战斗", "装备", "战力", "监狱", "营地"],
         knowledge: ["胜利可以推进地图", "装备能够提高队伍强度", "监狱里可能关着新角色"],
@@ -196,6 +202,7 @@
       feedbackSignals: visibleFeedbackSignals(combat.signals),
       performance: combatPerformance(combat),
       diagnosis: combatDiagnosis(combat),
+      waveSummary: combat.waveSummary || [],
     };
     if (combat.win) {
       const firstClear = !state.cleared[id];
@@ -215,11 +222,20 @@
       event.loot = loot.map(publicLoot);
       event.gearAfter = gearScore(state);
       event.firstClear = firstClear;
+      if (state.flags.playerAgentRoleWave && id === "r1_main_2" && firstClear) {
+        state.flags.mageRecruited = true;
+        state.roster = ROSTER.rescueHero(state.roster, "mage");
+        if (!state.cognition.concepts.includes("角色名单")) state.cognition.concepts.push("角色名单");
+        if (!state.cognition.behaviors.includes("调整队伍")) state.cognition.behaviors.push("调整队伍");
+        event.characterUnlock = { id: "mage", heroId: "hero_mage", name: "烬火法师" };
+        event.reward = "烬火法师加入角色名单，当前队伍没有自动改变";
+      }
       if (id === "r1_prison" && firstClear) {
         state.flags.rangerRescued = true;
         state.roster = ROSTER.rescueHero(state.roster, "ranger");
         if (!state.cognition.concepts.includes("角色名单")) state.cognition.concepts.push("角色名单");
         if (!state.cognition.behaviors.includes("调整队伍")) state.cognition.behaviors.push("调整队伍");
+        event.characterUnlock = { id: "ranger", heroId: "hero_ranger", name: "林地游侠" };
         event.reward = "营救游侠；游侠加入角色名单，当前队伍没有自动改变";
       }
       if (id === "r1_bandit" && firstClear) {
@@ -313,16 +329,18 @@
 
   function resolveCombat(state, item) {
     const leftTeam = playerTeam(state);
-    const rightTeam = enemyTeam(item);
-    const result = COMBAT_SIM.simulateTeams(leftTeam, rightTeam, {
+    const options = {
       seed: `map-node|${item.id}|${state.attempts[item.id] || 0}|${gearScore(state)}|${state.seed}`,
       randomizeStats: false,
       fieldEffectId: fieldEffect(item),
       maxTime: 70,
-    });
+    };
+    const result = state.flags.playerAgentRoleWave && item.id === "r1_main_1"
+      ? COMBAT_SIM.simulateWaveTeams(leftTeam, ENCOUNTERS.firstRoadWaves(), options)
+      : COMBAT_SIM.simulateTeams(leftTeam, enemyTeam(item), options);
     const leftAlive = result.metrics?.leftAlive || 0;
     const rightAlive = result.metrics?.rightAlive || 0;
-    const resolution = result.duration >= 69.8 && leftAlive > 0 && rightAlive > 0 ? "time_limit" : "elimination";
+    const resolution = result.waveComplete === false || (result.duration >= 69.8 && leftAlive > 0 && rightAlive > 0) ? "time_limit" : "elimination";
     return {
       ...result,
       win: result.winner === "left" && !(item.type === "boss" && resolution === "time_limit"),

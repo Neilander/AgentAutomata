@@ -84,7 +84,11 @@ function buildMapEventLog(action, resultEvent, options = {}) {
     });
   }
 
-  const unlockedCharacter = event.outcome === "win" && event.firstClear && node === "r1_prison";
+  const characterUnlock = event.characterUnlock
+    || (event.outcome === "win" && event.firstClear && node === "r1_prison"
+      ? { id: "ranger", heroId: "hero_ranger", name: "林地游侠" }
+      : null);
+  const unlockedCharacter = event.outcome === "win" && event.firstClear && characterUnlock;
   if (unlockedCharacter) {
     rows.push({
       id: `${expectationKey}:character`,
@@ -93,7 +97,13 @@ function buildMapEventLog(action, resultEvent, options = {}) {
       subject,
       environment: { ...environment, phase: "reward" },
       behavior: { kind: "encounter_reward", key: `reward:${node}`, name: "character rescue" },
-      result: { kind: "character_unlock", occurred: true, character: "ranger" },
+      result: {
+        kind: "character_unlock",
+        occurred: true,
+        character: characterUnlock.id,
+        heroId: characterUnlock.heroId,
+        characterName: characterUnlock.name,
+      },
       presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
     });
   }

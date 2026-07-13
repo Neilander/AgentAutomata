@@ -1,0 +1,35 @@
+{
+  "action": "swap:2:hero_mage",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "grow_and_progress is visible as the current goal context for cycle 5."
+    },
+    {
+      "kind": "affordance",
+      "evidence": "烬火法师 is a complete mage hero in reserve and the swap action is allowed."
+    },
+    {
+      "kind": "comparison",
+      "evidence": "短矛民兵 is a militia warrior, so replacing that slot tests whether the complete hero improves the team."
+    }
+  ],
+  "alternatives": [
+    {
+      "action": "equip:hero_warrior:r1_main_2_1_1",
+      "reason": "This is allowed, but it has less immediate value than the chosen action from the visible state."
+    },
+    {
+      "action": "equip:militia_barricade:r1_main_2_1_1",
+      "reason": "This is allowed, but it has less immediate value than the chosen action from the visible state."
+    }
+  ],
+  "hypothesis": {
+    "id": "test_hero_mage_swap",
+    "problem": "The party still contains militia members and may benefit from a complete hero.",
+    "cause": "烬火法师 has a complete hero kit while the replaced slot is militia.",
+    "resultKind": "combat_contribution",
+    "target": "hero_mage"
+  }
+}

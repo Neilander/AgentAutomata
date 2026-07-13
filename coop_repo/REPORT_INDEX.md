@@ -4,6 +4,10 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-13
 
+- `2026-07-13_1112_player-agent-role-wave-long-run.md`: connected Main 1's continuous 3/3/4 wave encounter to the player-agent loop, then completed and audited a fresh 30-cycle run in which the agent voluntarily swapped in the Main 2 Mage and verified its contribution; exposed unchanged-retry combat variance at Main 6 as the next causal issue.
+
+- `2026-07-13_1040_player-agent-role-visibility-main2-mage.md`: exposed stable roster/slot/role data to the decision agent, changed fresh Midlock sessions to one Warrior plus four militia, granted an optional Mage after Main 2, and regression-verified the explicit Mage swap-to-combat evidence chain.
+
 - `2026-07-13_1927_real-boss-cognition-loop.md`: continued the same fresh cognition session through Main 10 and two Boss attempts, preserved explicit equipment causality, and passed a 30-cycle/120-file integrity audit; the Boss was reached but not cleared.
 
 - `2026-07-13_1757_real-main7-cognition-loop.md`: completed a fresh 20-action real loop through Main 7, persisted every decision/attribution and raw/semantic event log, added per-action knowledge/concept deltas, and passed an integrity audit without reusing old responses.

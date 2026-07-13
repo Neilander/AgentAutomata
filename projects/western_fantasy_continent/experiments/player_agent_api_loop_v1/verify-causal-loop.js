@@ -2,6 +2,19 @@ const assert = require("node:assert/strict");
 const LOOP = require("./player-agent-loop");
 
 let session = LOOP.createSession("causal-loop-test", 2);
+const initialRequest = LOOP.getPendingRequest(session);
+assert.equal(initialRequest.observation.roster.length, 5, "initial roster should contain one full hero and four militia");
+assert.equal(initialRequest.observation.roster.some((unit) => unit.id === "hero_mage"), false, "Mage must not exist before Main 2");
+assert.deepEqual(initialRequest.observation.teamSlots.map((slot) => slot.heroId), [
+  "hero_warrior",
+  "militia_barricade",
+  "militia_spear",
+  "militia_herb",
+]);
+assert(initialRequest.observation.roster.every((unit) => unit.note), "decision agent must see every role description");
+assert.equal(initialRequest.observation.roster.find((unit) => unit.id === "militia_drum").isActive, false);
+assert.equal("affordanceExperiments" in initialRequest.playerState, false, "evaluator experiments must never enter the player request");
+assert.equal(initialRequest.playerState.goals.some((goal) => goal.id === "discover_new_capabilities"), false, "the natural-swap test must not expose a discovery goal");
 session = LOOP.applyDecisionResponse(session, {
   action: "challenge:r1_main_1",
   goalId: "grow_and_progress",
@@ -11,6 +24,11 @@ session = LOOP.applyDecisionResponse(session, {
 });
 
 assert.equal(session.gameState.inventory.length, 2, "clearing Main 1 should place two items in inventory");
+assert.equal(session.history[0].gameEvent.performance.killCount, 10, "Main 1 must execute all ten wave enemies");
+assert.equal(session.history[0].gameEvent.resolution, "elimination");
+assert.deepEqual(session.history[0].gameEvent.waveSummary.map((row) => row.unitCount), [3, 3, 4]);
+assert(session.history[0].gameEvent.waveSummary[1].time > 0.5, "the second entry must wait until the opening group is reduced");
+assert.equal(session.history[0].eventLog.filter((row) => row.behavior.tags?.includes("reinforcement")).length, 3, "all wave entries must be visible to cognition");
 assert.equal(equippedCount(session.gameState), 0, "loot must not auto-equip");
 assert.equal(session.gameState.history[0].gearAfter, 0, "loot alone must not change equipped power");
 assert.equal(session.knowledgeBase.some((row) => row.behavior.kind === "receive_reward"), false);
@@ -25,15 +43,16 @@ const progressionFact = session.knowledgeBase.find((row) => row.environment.phas
 assert.deepEqual(progressionFact.result.observations[0].unlockedNodes, ["r1_main_2"]);
 assert.deepEqual(progressionFact.evidenceEventIds, ["map_unlock:r1_main_1:1"]);
 const threatFacts = session.knowledgeBase.filter((row) => row.result.observations[0].outcome === "enemy_concept_threat");
-assert(threatFacts.length >= 2);
-assert.deepEqual(threatFacts.map((row) => row.result.observations[0].threatRank).sort((a, b) => a - b), [1, 2]);
-assert.deepEqual(threatFacts.map((row) => row.subject.name).sort(), ["近战小怪", "远程小怪"]);
-assert(session.history[0].rawEventLog.some((row) => /盗匪|路匪/.test(row.subject?.name || "")), "raw audit log should retain engine identities");
-assert.equal(session.history[0].eventLog.some((row) => /盗匪|路匪/.test(JSON.stringify(row))), false, "player semantic events must not leak engine enemy identities");
-assert.equal(session.knowledgeBase.some((row) => /盗匪|路匪/.test(JSON.stringify(row))), false, "knowledge must be learned from concepts, not engine enemy identities");
+assert.equal(threatFacts.length, 1);
+assert.equal(threatFacts[0].result.observations[0].observedUnitCount, 10);
+assert.equal(threatFacts[0].subject.name, "普通小怪");
+const engineEnemyPattern = /盗匪|路匪|郊野短刀兵|郊野投石手/;
+assert(session.history[0].rawEventLog.some((row) => engineEnemyPattern.test(row.subject?.name || "")), "raw audit log should retain engine identities");
+assert.equal(session.history[0].eventLog.some((row) => engineEnemyPattern.test(JSON.stringify(row))), false, "player semantic events must not leak engine enemy identities");
+assert.equal(session.knowledgeBase.some((row) => engineEnemyPattern.test(JSON.stringify(row))), false, "knowledge must be learned from concepts, not engine enemy identities");
 assert(session.history[0].conceptInterpretation.decisions.every((row) => row.visibleEvidence.every((evidence) => evidence.eventId)), "concept matches must cite visible events");
-assert.equal(session.history[0].learningDelta.addedKnowledge.length, 11, "first challenge must persist its exact knowledge additions");
-assert.deepEqual(session.history[0].learningDelta.matchedConcepts.map((row) => row.label).sort(), ["近战小怪", "远程小怪"]);
+assert.equal(session.history[0].learningDelta.addedKnowledge.length, 10, "first challenge must persist its exact knowledge additions");
+assert.deepEqual(session.history[0].learningDelta.matchedConcepts.map((row) => row.label).sort(), ["普通小怪"]);
 assert.equal(session.history[0].learningDelta.conceptLibraryChanged, false, "matching an existing concept is not concept creation");
 const herbContribution = session.knowledgeBase.find((row) => row.subject.id === "militia_herb" && row.behavior.kind === "combat_participation");
 assert(herbContribution.result.observations[0].healing > 0, "low damage must not erase support contribution");
@@ -98,6 +117,47 @@ session = LOOP.applyAttributionResponse(session, {
 assert.equal(session.phase, "complete");
 assert.equal(session.cycle, 2);
 
+let onboarding = LOOP.createSession("main2-mage-onboarding-test", 4);
+onboarding = chooseAndAttribute(onboarding, "challenge:r1_main_1");
+onboarding = LOOP.applyDecisionResponse(onboarding, decisionFor("challenge:r1_main_2"));
+const main2Record = onboarding.history.at(-1);
+assert.equal(main2Record.outcome, "win", "starter team must be able to earn the Main 2 Mage");
+assert.equal(main2Record.gameEvent.characterUnlock?.heroId, "hero_mage");
+assert(main2Record.eventLog.some((row) => row.type === "character_unlock" && row.result.character === "mage"));
+assert(onboarding.knowledgeBase.some((row) => row.environment.phase === "character_reward"
+  && row.result.observations.some((observation) => observation.character?.heroId === "hero_mage")));
+onboarding = attributePending(onboarding);
+
+const postMain2Request = LOOP.getPendingRequest(onboarding);
+const visibleMage = postMain2Request.observation.roster.find((unit) => unit.id === "hero_mage");
+assert.deepEqual(visibleMage, {
+  id: "hero_mage",
+  name: "烬火法师",
+  role: "mage",
+  kind: "hero",
+  note: "完整输出英雄，负责清怪与爆发。",
+  isActive: false,
+  teamSlot: null,
+  slotLabel: null,
+  equippedSlots: [],
+});
+assert(postMain2Request.observation.allowedActions.includes("swap:2:hero_mage"));
+assert.equal("affordanceExperiments" in postMain2Request.playerState, false);
+assert.equal(postMain2Request.playerState.hypotheses.some((row) => String(row.id).includes("team-experiment")), false);
+assert(onboarding.evaluatorState.affordanceExperiments.some((row) => row.heroId === "hero_mage" && row.status === "available"));
+
+onboarding = chooseAndAttribute(onboarding, "swap:2:hero_mage");
+const postSwapRequest = LOOP.getPendingRequest(onboarding);
+assert.equal(postSwapRequest.playerState.hypotheses.some((row) => String(row.id).includes("team-experiment")), false, "the evaluator must not tell the player agent to verify its swap");
+assert(onboarding.evaluatorState.affordanceExperiments.some((row) => row.heroId === "hero_mage" && row.status === "awaiting_combat"));
+onboarding = LOOP.applyDecisionResponse(onboarding, decisionFor("challenge:r1_main_3"));
+const experimentEvent = onboarding.history.at(-1).eventLog.find((row) => row.type === "team_experiment_result");
+assert.equal(onboarding.history.at(-1).outcome, "win");
+assert.equal(experimentEvent.result.heroId, "hero_mage");
+assert(experimentEvent.result.contribution.damage > 0, "Mage experiment must record visible combat contribution");
+assert.equal(onboarding.cognitionState.affordanceExperiments.length, 0);
+assert(onboarding.evaluatorState.affordanceExperiments.some((row) => row.heroId === "hero_mage" && row.status === "resolved"));
+
 let repeated = LOOP.createSession("knowledge-dedup-test", 9);
 for (let cycle = 0; cycle < 9; cycle += 1) {
   repeated = LOOP.applyDecisionResponse(repeated, {
@@ -119,11 +179,11 @@ for (let cycle = 0; cycle < 9; cycle += 1) {
     nextTest: "",
   });
 }
-assert.equal(repeated.knowledgeBase.length, 11, "repeating one encounter must update existing knowledge instead of creating detail spam");
+assert.equal(repeated.knowledgeBase.length, 10, "repeating one encounter must update existing knowledge instead of creating detail spam");
 assert(repeated.knowledgeBase.every((row) => row.result.observations.length <= 8), "knowledge history must stay bounded");
 assert.equal(repeated.knowledgeBase.some((row) => ["skill_cast", "skill_effect", "damage"].includes(row.behavior.kind)), false);
 assert.equal(repeated.knowledgeBase.some((row) => /^right-/.test(row.subject.id)), false, "individual disposable enemies must not become long-term knowledge");
-assert.equal(repeated.knowledgeBase.some((row) => /盗匪|路匪/.test(JSON.stringify(row))), false, "repeated knowledge must remain concept-level");
+assert.equal(repeated.knowledgeBase.some((row) => engineEnemyPattern.test(JSON.stringify(row))), false, "repeated knowledge must remain concept-level");
 
 console.log(JSON.stringify({
   result: "PASS",
@@ -138,4 +198,31 @@ console.log(JSON.stringify({
 
 function equippedCount(state) {
   return state.roster.reduce((sum, unit) => sum + Object.keys(unit.equipment || {}).length, 0);
+}
+
+function decisionFor(action) {
+  return {
+    action,
+    goalId: "grow_and_progress",
+    reasoningChain: [{ kind: "affordance", evidence: `Exercise visible action ${action}.` }],
+    alternatives: [],
+    hypothesis: null,
+  };
+}
+
+function chooseAndAttribute(sessionInput, action) {
+  return attributePending(LOOP.applyDecisionResponse(sessionInput, decisionFor(action)));
+}
+
+function attributePending(sessionInput) {
+  const pending = sessionInput.pendingAttribution;
+  const knowledge = sessionInput.knowledgeBase.find((row) => row.id === pending.knowledgeIds[0]);
+  return LOOP.applyAttributionResponse(sessionInput, {
+    knowledgeId: knowledge.id,
+    primaryCause: "The visible result followed the selected action.",
+    confidence: 0.9,
+    evidenceEventIds: knowledge.evidenceEventIds.slice(0, 2),
+    alternativeCauses: [],
+    nextTest: "",
+  });
 }

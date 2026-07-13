@@ -33,6 +33,11 @@ function simulateTeams(leftTeam, rightTeam, options = {}) {
   return sim.run(leftTeam, rightTeam);
 }
 
+function simulateWaveTeams(leftTeam, waves, options = {}) {
+  const sim = new CombatSimulation(options);
+  return sim.runWaves(leftTeam, waves);
+}
+
 function clonePreset(key) {
   const preset = SKILL_DATA.presets[key];
   if (!preset) throw new Error(`Unknown preset: ${key}`);
@@ -108,6 +113,97 @@ class CombatSimulation {
       if (!left || !right) break;
     }
 
+    return this.buildResult();
+  }
+
+  runWaves(leftTeam, wavesInput) {
+    const waves = structuredClone(wavesInput || []);
+    const firstSmallWave = waves[0]?.smallWaves?.[0];
+    if (!firstSmallWave) return this.run(leftTeam, []);
+
+    this.time = 0;
+    this.nextId = 1;
+    this.logs = [];
+    this.signalBus.clear();
+    this.units = [...this.makeTeam("left", leftTeam), ...this.makeTeam("right", firstSmallWave.rightTeam || [])];
+    if (this.randomizeStats) this.applyStatSwing();
+    this.runtimeField?.setup?.();
+
+    let bigIndex = 0;
+    let smallIndex = 0;
+    let nextRightIndex = this.units.filter((unit) => unit.side === "right").length;
+    const waveSummary = [];
+    this.recordWaveEntry(waveSummary, waves[0], firstSmallWave, bigIndex, smallIndex, firstSmallWave.rightTeam?.length || 0);
+
+    while (this.time < this.maxTime) {
+      this.update(this.dt);
+      const alliesAlive = this.units.some((unit) => unit.side === "left" && this.isAlive(unit));
+      if (!alliesAlive) break;
+
+      const enemiesAlive = this.units.filter((unit) => unit.side === "right" && this.isAlive(unit)).length;
+      const currentBigWave = waves[bigIndex];
+      const currentSmallWave = currentBigWave.smallWaves[smallIndex];
+      const nextSmallWave = currentBigWave.smallWaves[smallIndex + 1];
+      if (nextSmallWave && enemiesAlive <= (currentSmallWave.spawnWhenRemaining ?? 1)) {
+        smallIndex += 1;
+        this.addReinforcements("right", nextSmallWave.rightTeam || [], nextRightIndex);
+        nextRightIndex += nextSmallWave.rightTeam?.length || 0;
+        this.recordWaveEntry(waveSummary, currentBigWave, nextSmallWave, bigIndex, smallIndex, nextSmallWave.rightTeam?.length || 0);
+        continue;
+      }
+      if (enemiesAlive > 0) continue;
+
+      const nextBigWave = waves[bigIndex + 1];
+      if (!nextBigWave) break;
+      bigIndex += 1;
+      smallIndex = 0;
+      const openingWave = nextBigWave.smallWaves[0];
+      this.addReinforcements("right", openingWave.rightTeam || [], nextRightIndex);
+      nextRightIndex += openingWave.rightTeam?.length || 0;
+      this.recordWaveEntry(waveSummary, nextBigWave, openingWave, bigIndex, smallIndex, openingWave.rightTeam?.length || 0);
+    }
+
+    const finalBigWave = waves[bigIndex];
+    const allEntriesStarted = bigIndex === waves.length - 1 && smallIndex === finalBigWave.smallWaves.length - 1;
+    const enemiesAlive = this.units.some((unit) => unit.side === "right" && this.isAlive(unit));
+    const waveComplete = allEntriesStarted && !enemiesAlive;
+    const result = this.buildResult({ waveSummary, waveComplete });
+    if (!waveComplete) result.winner = "right";
+    return result;
+  }
+
+  addReinforcements(side, specs, nextIndex) {
+    const incoming = this.makeTeam(side, specs);
+    incoming.forEach((unit, index) => {
+      unit.index = nextIndex + index;
+      unit.id = `${side}-${unit.index + 1}`;
+    });
+    this.units.push(...incoming);
+    return incoming;
+  }
+
+  recordWaveEntry(summary, bigWave, smallWave, bigIndex, smallIndex, unitCount) {
+    const entry = {
+      bigIndex,
+      smallIndex,
+      bigTitle: bigWave?.title || `Wave ${bigIndex + 1}`,
+      title: smallWave?.title || `Wave ${bigIndex + 1}-${smallIndex + 1}`,
+      startTitle: smallWave?.startTitle || smallWave?.title || "Enemy reinforcements arrived",
+      time: round(this.time),
+      unitCount,
+    };
+    summary.push(entry);
+    const target = this.units.find((unit) => unit.side === "right" && unit.index >= this.units.filter((unit) => unit.side === "right").length - unitCount);
+    this.emitSignal({
+      kind: "status",
+      tags: ["status", "wave", "reinforcement"],
+      target: SIGNALS.unitRef(target),
+      text: entry.startTitle,
+      meta: { bigIndex, smallIndex, unitCount, waveTitle: entry.title },
+    });
+  }
+
+  buildResult(extra = {}) {
     const leftHp = this.sideHpScore("left");
     const rightHp = this.sideHpScore("right");
     const winner = leftHp >= rightHp ? "left" : "right";
@@ -135,6 +231,7 @@ class CombatSimulation {
       signals: this.signalBus.signals,
       summary: this.signalBus.summary(),
       metrics: this.metrics(),
+      ...extra,
     };
   }
 
@@ -1240,7 +1337,7 @@ function seededRandom(seedText) {
   };
 }
 
-return { CombatSimulation, simulatePresetMatchup, simulateTeams, clonePreset };
+return { CombatSimulation, simulatePresetMatchup, simulateTeams, simulateWaveTeams, clonePreset };
 })();
 
 if (typeof window !== "undefined") window.GAME_COMBAT_SIM = GAME_COMBAT_SIM;

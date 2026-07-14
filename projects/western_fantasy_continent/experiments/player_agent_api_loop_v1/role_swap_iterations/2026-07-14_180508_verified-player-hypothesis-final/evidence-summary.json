@@ -1,0 +1,123 @@
+{
+  "schema": "player_hypothesis_evidence_summary_v1",
+  "authoritativeRun": "2026-07-14_180508_verified-player-hypothesis-final",
+  "seed": "restored-lock-key-2026-07-14_135948",
+  "maxCycles": 35,
+  "completedCycles": 24,
+  "replayedPrefix": {
+    "cycles": 20,
+    "responseFiles": "1-response.json through 40-response.json",
+    "note": "Legacy hypotheses rejected by the old runtime are preserved in source responses; applied-response files record the null-hypothesis compatibility replay."
+  },
+  "freshAgentCycles": [
+    {
+      "cycle": 21,
+      "action": "swap:1:hero_ranger",
+      "outcome": "team_changed",
+      "decisionInput": "41-compact.json",
+      "response": "41-response.json",
+      "emotionBeforeDecision": 50.4572,
+      "emotionAfterDecision": 50.6172,
+      "emotionAfterEvents": 50.6172,
+      "EDecision": 4,
+      "EVerify": 0
+    },
+    {
+      "cycle": 22,
+      "action": "equip:hero_ranger:r1_bandit_key_1_ranger_weapon",
+      "outcome": "equipped",
+      "decisionInput": "43-compact.json",
+      "response": "43-response.json",
+      "emotionBeforeDecision": 50.6172,
+      "emotionAfterDecision": 50.6572,
+      "emotionAfterEvents": 50.6558,
+      "EDecision": 1,
+      "EVerify": 0
+    },
+    {
+      "cycle": 23,
+      "action": "challenge:r1_main_6",
+      "outcome": "win",
+      "decisionInput": "45-compact.json",
+      "response": "45-response.json",
+      "emotionBeforeDecision": 50.6558,
+      "emotionAfterDecision": 50.6958,
+      "emotionAfterEvents": 51.6778,
+      "EDecision": 1,
+      "EVerify": 1
+    },
+    {
+      "cycle": 24,
+      "action": "challenge:r1_main_7",
+      "outcome": "win",
+      "decisionInput": "47-compact.json",
+      "response": "47-response.json",
+      "emotionBeforeDecision": 51.6778,
+      "emotionAfterDecision": 51.8378,
+      "emotionAfterEvents": 52.6423,
+      "EDecision": 4,
+      "EVerify": 1
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "hypothesis:ranger_contribution:21",
+      "scope": "next_combat",
+      "target": "hero_ranger",
+      "condition": {
+        "metric": "damageShare",
+        "operator": ">",
+        "value": 0.0334
+      },
+      "status": "confirmed",
+      "evidenceEventId": "team-experiment:23:team-experiment:hero_ranger",
+      "observedValue": 0.3817,
+      "settlement": {
+        "damage": 1108.008,
+        "teamDamage": 2902.572,
+        "damageShare": 0.3817331663090528,
+        "damageRank": 1
+      }
+    },
+    {
+      "id": "hypothesis:ranger_single_target_rank:24",
+      "scope": "current_action",
+      "target": "hero_ranger",
+      "condition": {
+        "metric": "damageRank",
+        "operator": "==",
+        "value": 1
+      },
+      "status": "confirmed",
+      "evidenceEventId": "team-experiment:24:player-hypothesis:hypothesis:ranger_single_target_rank:24",
+      "observedValue": 1,
+      "settlement": {
+        "damage": 466.265,
+        "teamDamage": 1064.787,
+        "damageShare": 0.43789509075524025,
+        "damageRank": 1
+      }
+    }
+  ],
+  "emotion": {
+    "final": 52.642313609889925,
+    "hypothesisFormationDelta": 0.16,
+    "verificationDeltaPerComparison": 0.06,
+    "note": "These are current model outputs, not human-calibrated excitement values."
+  },
+  "validation": {
+    "explicitHypotheses": 2,
+    "confirmed": 2,
+    "EVerifyEvents": 2,
+    "independentReviewerVerdicts": ["PASS", "PASS"],
+    "remainingRisk": "Contribution metrics do not prove that the Ranger alone caused either victory."
+  },
+  "replay": {
+    "instructions": "Create a fresh player_agent_api_loop_v1 session with this seed and maxCycles, then apply response files in numeric order. Decision responses are odd-numbered and attribution responses are even-numbered.",
+    "requiredArtifacts": [
+      "1-response.json through 48-response.json",
+      "legacy applied-response files where present",
+      "current player-agent-loop runtime"
+    ]
+  }
+}

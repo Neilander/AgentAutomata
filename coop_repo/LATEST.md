@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-13_1112_player-agent-role-wave-long-run.md`](reports/2026-07-13_1112_player-agent-role-wave-long-run.md)
+[`reports/2026-07-13_2115_prison-role-visibility-paused.md`](reports/2026-07-13_2115_prison-role-visibility-paused.md)
 
 Last updated: 2026-07-13
 
-Current focus: the role-visible starter and Main 2 Mage onboarding passed a fresh 30-cycle run, including a voluntary Mage swap and combat proof. The highest-value next issue is Main 6 retry causality: an unchanged immediate retry flipped from loss to win because attempt number changed the combat seed, bypassing any learned or applied key.
+Current focus: paused by user. The player-agent Prison now visibly identifies its sustained-single-target Ranger reward and all regressions pass, but the fresh run stopped after two cycles before that choice appeared. The candidate is `HOLD`; do not restart an Agent or automation without explicit user direction.

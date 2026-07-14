@@ -4,6 +4,10 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-13
 
+- `2026-07-13_2115_prison-role-visibility-paused.md`: made the optional Prison's Ranger function player-visible without changing combat or access, passed regressions, then stopped and closed the sole Agent after two cycles; the candidate remains HOLD because the relevant choice was never reached.
+
+- `2026-07-13_1839_role-swap-main4-single-target-partial.md`: added a player-agent-only sustained-single-target Main 4 and proved its Ranger/Mage contrast, then preserved a boundary-clean partial run showing that generic Prison reward visibility still lets known equipment bypass the intended role lesson while emotion remains healthy.
+
 - `2026-07-13_1112_player-agent-role-wave-long-run.md`: connected Main 1's continuous 3/3/4 wave encounter to the player-agent loop, then completed and audited a fresh 30-cycle run in which the agent voluntarily swapped in the Main 2 Mage and verified its contribution; exposed unchanged-retry combat variance at Main 6 as the next causal issue.
 
 - `2026-07-13_1040_player-agent-role-visibility-main2-mage.md`: exposed stable roster/slot/role data to the decision agent, changed fresh Midlock sessions to one Warrior plus four militia, granted an optional Mage after Main 2, and regression-verified the explicit Mage swap-to-combat evidence chain.

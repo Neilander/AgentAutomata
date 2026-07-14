@@ -1,0 +1,116 @@
+{
+  "schema": "role_swap_iteration_audit_v1",
+  "runDir": "/Users/a23544/Documents/GitHub/AgentAutomata/projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/role_swap_iterations/2026-07-13_204922_prison-role-visible",
+  "seed": "role-swap-prison-role-visible-2026-07-13-204922",
+  "phase": "decision",
+  "completedCycles": 2,
+  "recordedActions": 2,
+  "finalTeam": [
+    "hero_warrior",
+    "militia_barricade",
+    "militia_spear",
+    "militia_herb"
+  ],
+  "clearedNodes": [
+    "r1_main_1"
+  ],
+  "unlocks": [],
+  "swaps": [],
+  "combatProofs": [],
+  "privateEvaluator": {
+    "affordanceExperiments": []
+  },
+  "playerExperimentState": [],
+  "playerHypotheses": [
+    {
+      "id": "h_cycle1_push_first_weak_node_for_gear",
+      "status": "refuted",
+      "action": "challenge:r1_main_1",
+      "problem": "队伍没有装备且成长进度为 0。",
+      "cause": "当前只看到一个弱小散兵主线节点，替补皮鼓民兵自身几乎没有输出。",
+      "resultKind": "progress_and_gear_probe",
+      "target": "challenge:r1_main_1",
+      "evidence": [
+        {
+          "eventId": "map_action:r1_main_1:1:summary",
+          "expected": "progress_and_gear_probe",
+          "observed": [
+            "action_summary",
+            "combat_win"
+          ],
+          "confirmed": false
+        }
+      ],
+      "resolvedAt": 37.44
+    },
+    {
+      "id": "h_cycle2_equip_rare_charm_on_healer_before_r1_main_2",
+      "status": "refuted",
+      "action": "equip:militia_herb:r1_main_1_1_1",
+      "problem": "新节点 r1_main_2 已解锁但队伍装备分数仍为 0。",
+      "cause": "库存中稀有护符 Lv.4 对 active 草药民兵显示最高适配，且草药民兵是唯一治疗位。",
+      "resultKind": "gear_power_stability_probe",
+      "target": "equip:militia_herb:r1_main_1_1_1",
+      "evidence": [
+        {
+          "eventId": "equip_action:2:r1_main_1_1_1:summary",
+          "expected": "gear_power_stability_probe",
+          "observed": [
+            "action_summary",
+            "item_equipped"
+          ],
+          "confirmed": false
+        }
+      ],
+      "resolvedAt": 0.08
+    }
+  ],
+  "knowledgeCount": 11,
+  "knowledgeAddedByCycle": [
+    {
+      "cycle": 1,
+      "added": 10,
+      "matchedConcepts": [
+        "普通小怪"
+      ]
+    },
+    {
+      "cycle": 2,
+      "added": 1,
+      "matchedConcepts": []
+    }
+  ],
+  "emotion": {
+    "initial": 38,
+    "final": 39.5421,
+    "minimum": 38,
+    "maximum": 39.5421,
+    "largestAutomaticDrop": 0,
+    "largestAutomaticGain": 1.1635,
+    "trajectory": [
+      {
+        "cycle": 1,
+        "action": "challenge:r1_main_1",
+        "outcome": "win",
+        "beforeDecision": 38,
+        "afterDecision": 38.16,
+        "afterEvents": 39.3235,
+        "automaticDelta": 1.1635
+      },
+      {
+        "cycle": 2,
+        "action": "equip:militia_herb:r1_main_1_1_1",
+        "outcome": "equipped",
+        "beforeDecision": 39.3235,
+        "afterDecision": 39.4835,
+        "afterEvents": 39.5421,
+        "automaticDelta": 0.0586
+      }
+    ]
+  },
+  "informationBoundary": {
+    "checkedRequestCount": 3,
+    "leaks": [],
+    "pass": true
+  }
+}

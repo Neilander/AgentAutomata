@@ -1,5 +1,8 @@
 const assert = require("node:assert/strict");
 const LOOP = require("./player-agent-loop");
+const COMBAT_SIM = require("../../game_data/combat-sim");
+const ENCOUNTERS = require("../../map_progression_lab/map-progression-encounters");
+const ROSTER = require("../../map_progression_lab/map-progression-roster");
 
 let session = LOOP.createSession("causal-loop-test", 2);
 const initialRequest = LOOP.getPendingRequest(session);
@@ -117,7 +120,7 @@ session = LOOP.applyAttributionResponse(session, {
 assert.equal(session.phase, "complete");
 assert.equal(session.cycle, 2);
 
-let onboarding = LOOP.createSession("main2-mage-onboarding-test", 4);
+let onboarding = LOOP.createSession("main2-mage-onboarding-test", 5);
 onboarding = chooseAndAttribute(onboarding, "challenge:r1_main_1");
 onboarding = LOOP.applyDecisionResponse(onboarding, decisionFor("challenge:r1_main_2"));
 const main2Record = onboarding.history.at(-1);
@@ -157,6 +160,36 @@ assert.equal(experimentEvent.result.heroId, "hero_mage");
 assert(experimentEvent.result.contribution.damage > 0, "Mage experiment must record visible combat contribution");
 assert.equal(onboarding.cognitionState.affordanceExperiments.length, 0);
 assert(onboarding.evaluatorState.affordanceExperiments.some((row) => row.heroId === "hero_mage" && row.status === "resolved"));
+onboarding = attributePending(onboarding);
+const postMain3Request = LOOP.getPendingRequest(onboarding);
+assert.equal(
+  postMain3Request.observation.visibleNodes.find((node) => node.id === "r1_main_4")?.enemyHint,
+  "一头高生命蛮熊；需要对同一目标保持持续输出",
+);
+assert.equal(
+  postMain3Request.observation.visibleNodes.find((node) => node.id === "r1_prison")?.rewardHint,
+  "首通营救林地游侠：持续锁定单体并累积猎标；复战无首通奖励",
+);
+assert.equal(
+  postMain3Request.observation.optionalOpportunities.find((row) => row.node === "r1_prison")?.reason,
+  "可选救援：首通营救擅长持续单体输出的林地游侠",
+);
+
+const teachingEnemy = ENCOUNTERS.rangerTeachingTeam();
+assert.equal(teachingEnemy.length, 1);
+assert.equal(teachingEnemy[0].hp, 850);
+const teachingRoster = ROSTER.rescueHero(ROSTER.createInitialRoster(), "ranger");
+let mageWins = 0;
+let rangerWins = 0;
+for (let index = 0; index < 20; index += 1) {
+  const options = { seed: `ranger-teaching-${index}`, randomizeStats: false, maxTime: 70 };
+  const mageTeam = ROSTER.buildTeam(teachingRoster, ["hero_warrior", "militia_barricade", "hero_mage", "militia_herb"]);
+  const rangerTeam = ROSTER.buildTeam(teachingRoster, ["hero_warrior", "militia_barricade", "hero_ranger", "militia_herb"]);
+  if (COMBAT_SIM.simulateTeams(mageTeam, teachingEnemy, options).winner === "left") mageWins += 1;
+  if (COMBAT_SIM.simulateTeams(rangerTeam, teachingEnemy, options).winner === "left") rangerWins += 1;
+}
+assert(rangerWins >= 18, `Ranger should reliably solve the visible single-target lock; wins=${rangerWins}`);
+assert(mageWins <= 5, `Mage should not erase the single-target teaching contrast; wins=${mageWins}`);
 
 let repeated = LOOP.createSession("knowledge-dedup-test", 9);
 for (let cycle = 0; cycle < 9; cycle += 1) {

@@ -1,0 +1,323 @@
+{
+  "schema": "role_swap_iteration_audit_v1",
+  "runDir": "/Users/a23544/Documents/GitHub/AgentAutomata/projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/role_swap_iterations/2026-07-13_130420_main4-single-target",
+  "seed": "role-swap-main4-single-target-2026-07-13-130420",
+  "phase": "attribution",
+  "completedCycles": 12,
+  "recordedActions": 13,
+  "finalTeam": [
+    "hero_warrior",
+    "militia_barricade",
+    "hero_mage",
+    "militia_herb"
+  ],
+  "clearedNodes": [
+    "r1_main_1",
+    "r1_main_2",
+    "r1_main_3",
+    "r1_main_4"
+  ],
+  "unlocks": [
+    {
+      "cycle": 4,
+      "heroId": "hero_mage",
+      "character": "mage"
+    }
+  ],
+  "swaps": [
+    {
+      "cycle": 5,
+      "action": "swap:2:hero_mage",
+      "reasoningChain": [
+        {
+          "kind": "goal",
+          "evidence": "灰带郊野 3 已开放，目标仍是继续推进。"
+        },
+        {
+          "kind": "affordance",
+          "evidence": "烬火法师是新解锁的完整输出英雄，说明里负责清怪与爆发。"
+        },
+        {
+          "kind": "comparison",
+          "evidence": "短矛民兵是慢速单体近战且不是完整战士；把完整输出英雄放入后排1更像升级。"
+        },
+        {
+          "kind": "evidence",
+          "evidence": "保留灰鸦战士和拒马民兵在前排，草药民兵继续提供低配治疗。"
+        }
+      ],
+      "alternatives": [
+        {
+          "action": "equip:militia_barricade:r1_main_2_1_1",
+          "reason": "可以先分配头盔，但新完整英雄的队伍价值更值得立刻测试。"
+        },
+        {
+          "action": "challenge:r1_main_3",
+          "reason": "可以直接推进，但刚解锁的完整 Mage 明显可能改善输出结构。"
+        }
+      ],
+      "hypothesis": {
+        "id": "hypothesis:mage-over-spear",
+        "problem": "后续节点可能需要比短矛民兵更强的清怪和爆发。",
+        "cause": "用完整输出英雄烬火法师替换后排短矛民兵。",
+        "resultKind": "team_composition_improvement",
+        "target": "r1_main_3"
+      }
+    }
+  ],
+  "combatProofs": [
+    {
+      "cycle": 8,
+      "kind": "team_experiment_result",
+      "occurred": true,
+      "experimentId": "team-experiment:hero_mage",
+      "heroId": "hero_mage",
+      "heroPresent": true,
+      "node": "r1_main_3",
+      "outcome": "win",
+      "contribution": {
+        "observed": true,
+        "damage": 321.31,
+        "heal": 0,
+        "shield": 0,
+        "skillCount": 4
+      },
+      "components": [
+        {
+          "kind": "team_experiment_contribution"
+        }
+      ]
+    }
+  ],
+  "privateEvaluator": {
+    "affordanceExperiments": [
+      {
+        "id": "team-experiment:hero_mage",
+        "kind": "new_character_swap",
+        "heroId": "hero_mage",
+        "status": "resolved",
+        "sourceEventId": "map_action:r1_main_2:4:character",
+        "selectedAction": "swap:2:hero_mage",
+        "combatEvidence": {
+          "eventId": "team-experiment:8:team-experiment:hero_mage",
+          "node": "r1_main_3",
+          "outcome": "win",
+          "heroPresent": true
+        },
+        "swapEventId": "team-change:5:hero_mage"
+      }
+    ]
+  },
+  "playerExperimentState": [],
+  "playerHypotheses": [],
+  "knowledgeCount": 38,
+  "knowledgeAddedByCycle": [
+    {
+      "cycle": 1,
+      "added": 10,
+      "matchedConcepts": [
+        "普通小怪"
+      ]
+    },
+    {
+      "cycle": 2,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 3,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 4,
+      "added": 8,
+      "matchedConcepts": [
+        "远程小怪",
+        "近战小怪"
+      ]
+    },
+    {
+      "cycle": 5,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 6,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 7,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 8,
+      "added": 6,
+      "matchedConcepts": [
+        "远程小怪",
+        "近战小怪"
+      ]
+    },
+    {
+      "cycle": 9,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 10,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 11,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 12,
+      "added": 5,
+      "matchedConcepts": [
+        "近战小怪"
+      ]
+    },
+    {
+      "cycle": 13,
+      "added": 1,
+      "matchedConcepts": []
+    }
+  ],
+  "emotion": {
+    "initial": 38,
+    "final": 43.9234,
+    "minimum": 38,
+    "maximum": 43.9248,
+    "largestAutomaticDrop": -0.0014,
+    "largestAutomaticGain": 3.5125,
+    "trajectory": [
+      {
+        "cycle": 1,
+        "action": "challenge:r1_main_1",
+        "outcome": "win",
+        "beforeDecision": 38,
+        "afterDecision": 38.04,
+        "afterEvents": 38.6085,
+        "automaticDelta": 0.5685
+      },
+      {
+        "cycle": 2,
+        "action": "equip:hero_warrior:r1_main_1_1_0",
+        "outcome": "equipped",
+        "beforeDecision": 38.6085,
+        "afterDecision": 38.6485,
+        "afterEvents": 38.6471,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 3,
+        "action": "equip:hero_warrior:r1_main_1_1_1",
+        "outcome": "equipped",
+        "beforeDecision": 38.6471,
+        "afterDecision": 38.6871,
+        "afterEvents": 38.6857,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 4,
+        "action": "challenge:r1_main_2",
+        "outcome": "win",
+        "beforeDecision": 38.6857,
+        "afterDecision": 38.7257,
+        "afterEvents": 42.2382,
+        "automaticDelta": 3.5125
+      },
+      {
+        "cycle": 5,
+        "action": "swap:2:hero_mage",
+        "outcome": "team_changed",
+        "beforeDecision": 42.2382,
+        "afterDecision": 42.2782,
+        "afterEvents": 42.2782,
+        "automaticDelta": 0
+      },
+      {
+        "cycle": 6,
+        "action": "equip:militia_barricade:r1_main_2_1_1",
+        "outcome": "equipped",
+        "beforeDecision": 42.2782,
+        "afterDecision": 42.3182,
+        "afterEvents": 42.3168,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 7,
+        "action": "equip:militia_barricade:r1_main_2_1_0",
+        "outcome": "equipped",
+        "beforeDecision": 42.3168,
+        "afterDecision": 42.3568,
+        "afterEvents": 42.3554,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 8,
+        "action": "challenge:r1_main_3",
+        "outcome": "win",
+        "beforeDecision": 42.3554,
+        "afterDecision": 42.3954,
+        "afterEvents": 43.266,
+        "automaticDelta": 0.8706
+      },
+      {
+        "cycle": 9,
+        "action": "equip:hero_warrior:r1_main_3_1_1",
+        "outcome": "equipped",
+        "beforeDecision": 43.266,
+        "afterDecision": 43.306,
+        "afterEvents": 43.3046,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 10,
+        "action": "equip:hero_warrior:r1_main_3_1_0",
+        "outcome": "equipped",
+        "beforeDecision": 43.3046,
+        "afterDecision": 43.3446,
+        "afterEvents": 43.3432,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 11,
+        "action": "equip:militia_barricade:r1_main_1_1_0",
+        "outcome": "equipped",
+        "beforeDecision": 43.3432,
+        "afterDecision": 43.3832,
+        "afterEvents": 43.3818,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 12,
+        "action": "challenge:r1_main_4",
+        "outcome": "win",
+        "beforeDecision": 43.3818,
+        "afterDecision": 43.4218,
+        "afterEvents": 43.8848,
+        "automaticDelta": 0.463
+      },
+      {
+        "cycle": 13,
+        "action": "equip:militia_barricade:r1_main_4_1_1",
+        "outcome": "equipped",
+        "beforeDecision": 43.8848,
+        "afterDecision": 43.9248,
+        "afterEvents": 43.9234,
+        "automaticDelta": -0.0014
+      }
+    ]
+  },
+  "informationBoundary": {
+    "checkedRequestCount": 13,
+    "leaks": [],
+    "pass": true
+  }
+}

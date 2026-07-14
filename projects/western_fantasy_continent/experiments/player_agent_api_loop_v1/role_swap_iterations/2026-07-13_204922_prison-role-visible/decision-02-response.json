@@ -1,0 +1,55 @@
+{
+  "action": "equip:militia_herb:r1_main_1_1_1",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "当前目标仍是继续推进灰带郊野，grow_and_progress 进度为 0.12。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "上一次 challenge:r1_main_1 以 4 名玩家存活、0 名敌人存活获胜，并解锁了 r1_main_2。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "当前装备分数仍为 0，全部 active 成员装备槽为 0，但库存里已有稀有护符 Lv.4。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "稀有护符 Lv.4 的 bestFits 中草药民兵为 active 成员且 fitScore 为 35.8，高于灰鸦战士的 23.8。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "允许动作包含 equip:militia_herb:r1_main_1_1_1，可在挑战 r1_main_2 前先提高当前队伍强度。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "先把最高品质且适配草药民兵的护符装备到唯一治疗位，可能提高后续推进 r1_main_2 的稳定性。"
+    }
+  ],
+  "alternatives": [
+    {
+      "action": "challenge:r1_main_2",
+      "reason": "可以直接推进新节点，但当前仍是 0 装备，先装备库存稀有物品更稳。"
+    },
+    {
+      "action": "equip:hero_warrior:r1_main_1_1_0",
+      "reason": "普通护手适配战士，但物品等级和稀有度低于稀有护符。"
+    },
+    {
+      "action": "equip:militia_barricade:r1_main_1_1_0",
+      "reason": "拒马民兵可用护手增加前排属性，但其伤害贡献最低且护手只是普通 Lv.2。"
+    },
+    {
+      "action": "swap:2:militia_drum",
+      "reason": "皮鼓民兵收益未验证，替换短矛会失去上次第二高伤害来源。"
+    }
+  ],
+  "hypothesis": {
+    "id": "h_cycle2_equip_rare_charm_on_healer_before_r1_main_2",
+    "problem": "新节点 r1_main_2 已解锁但队伍装备分数仍为 0。",
+    "cause": "库存中稀有护符 Lv.4 对 active 草药民兵显示最高适配，且草药民兵是唯一治疗位。",
+    "resultKind": "gear_power_stability_probe",
+    "target": "equip:militia_herb:r1_main_1_1_1"
+  }
+}

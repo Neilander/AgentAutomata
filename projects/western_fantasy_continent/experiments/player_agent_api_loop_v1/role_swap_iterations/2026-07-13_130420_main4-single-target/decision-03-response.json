@@ -1,0 +1,39 @@
+{
+  "action": "equip:hero_warrior:r1_main_1_1_1",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "当前目标是推进灰带郊野，灰带郊野 2 已开放。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "灰鸦战士已被证明是队伍主力，并且装备护手后战力从 0 提升到 37。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "普通靴子 Lv.3 提供 maxHp 9 和 armor 1，且灰鸦战士是 bestFits 之一。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "新节点有两名近战和一名远程，先强化前排主力的生命和护甲比马上重打已清节点更有价值。"
+    }
+  ],
+  "alternatives": [
+    {
+      "action": "challenge:r1_main_2",
+      "reason": "可以现在推进，但背包里还有一件可穿装备，先穿上更稳。"
+    },
+    {
+      "action": "equip:militia_barricade:r1_main_1_1_1",
+      "reason": "拒马民兵是前排，但上一战输出和核心作用都低于灰鸦战士。"
+    }
+  ],
+  "hypothesis": {
+    "id": "hypothesis:frontline-stack",
+    "problem": "r1_main_2 的近战和远程组合可能更考验前排存活。",
+    "cause": "把生命和护甲靴子也给灰鸦战士。",
+    "resultKind": "survivability_improvement",
+    "target": "r1_main_2"
+  }
+}

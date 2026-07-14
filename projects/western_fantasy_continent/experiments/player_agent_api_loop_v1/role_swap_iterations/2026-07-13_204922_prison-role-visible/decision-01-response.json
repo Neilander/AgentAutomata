@@ -1,0 +1,51 @@
+{
+  "action": "challenge:r1_main_1",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "当前目标是继续推进灰带郊野，且 grow_and_progress 进度为 0。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "唯一可见可挑战节点是 r1_main_1，状态为 available。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "灰带郊野 1 的敌人提示是两大波、三次进场的弱小散兵，奖励提示是白装。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "可替换上场的皮鼓民兵自己几乎没有输出，而当前队伍已有战士、拒马、短矛和草药治疗。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "在没有装备和额外知识时，先打低级主线节点比把任一当前成员换成低输出皮鼓民兵更可能推进并获得第一批装备。"
+    }
+  ],
+  "alternatives": [
+    {
+      "action": "swap:0:militia_drum",
+      "reason": "会移除完整近战英雄灰鸦战士，明显削弱队伍核心。"
+    },
+    {
+      "action": "swap:1:militia_drum",
+      "reason": "会放弃前排血量和自救，换来几乎没有输出的皮鼓民兵，收益不明。"
+    },
+    {
+      "action": "swap:2:militia_drum",
+      "reason": "会减少一个可补伤害的短矛民兵，皮鼓民兵的战鼓收益尚未证明足以弥补。"
+    },
+    {
+      "action": "swap:3:militia_drum",
+      "reason": "会移除唯一治疗单位草药民兵，降低队伍续航。"
+    }
+  ],
+  "hypothesis": {
+    "id": "h_cycle1_push_first_weak_node_for_gear",
+    "problem": "队伍没有装备且成长进度为 0。",
+    "cause": "当前只看到一个弱小散兵主线节点，替补皮鼓民兵自身几乎没有输出。",
+    "resultKind": "progress_and_gear_probe",
+    "target": "challenge:r1_main_1"
+  }
+}

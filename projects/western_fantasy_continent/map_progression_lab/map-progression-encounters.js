@@ -106,6 +106,16 @@
     return units.map((unit, slotIndex) => completeSpec(unit, slotIndex));
   }
 
+  function rangerTeachingTeam() {
+    const bear = bearLockTeam().find((unit) => unit.role === "berserker");
+    return [{
+      ...bear,
+      name: "狂鬃熊王",
+      hp: 850,
+      maxHp: 850,
+    }];
+  }
+
   const FIRST_ROAD_PROFILES = {
     paper_v0: { meleeHp: 30, rangedHp: 22, armor: 0, spawnWhenRemaining: 1 },
     effort_v0: { meleeHp: 41, rangedHp: 30, armor: 0, spawnWhenRemaining: 2 },
@@ -226,5 +236,5 @@
     return item?.id === "r1_boss" ? 1.38 : null;
   }
 
-  return { FIRST_ROAD_PROFILES, bearLockTeam, campFirstClearLoot, enemyScaleOverride, fieldEffectId, firstRoadWaves, isOneTimeBranch, prisonTeam };
+  return { FIRST_ROAD_PROFILES, bearLockTeam, campFirstClearLoot, enemyScaleOverride, fieldEffectId, firstRoadWaves, isOneTimeBranch, prisonTeam, rangerTeachingTeam };
 });

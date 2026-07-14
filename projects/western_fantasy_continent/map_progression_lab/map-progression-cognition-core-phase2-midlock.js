@@ -134,7 +134,7 @@
         type: item.type,
         status: nodeStatus(state, item),
         rewardHint: rewardHintForNode(state, item),
-        enemyHint: item.enemyHint,
+        enemyHint: enemyHintForNode(state, item),
       }))
       .filter((item) => item.status !== "locked");
     const challengeActions = visibleNodes.filter((item) => ["available", "farmable", "repeatable"].includes(item.status)).map((item) => `challenge:${item.id}`);
@@ -172,9 +172,22 @@
     const camp = nodesById.r1_bandit;
     const prisonStatus = nodeStatus(state, prison);
     const campStatus = nodeStatus(state, camp);
-    if (["available", "repeatable"].includes(prisonStatus)) rows.push({ node: prison.id, status: prisonStatus, reason: state.cleared.r1_prison ? "可复战，首通角色已领取" : "可选救援：首通获得新角色" });
+    if (["available", "repeatable"].includes(prisonStatus)) rows.push({ node: prison.id, status: prisonStatus, reason: prisonOpportunityReason(state) });
     if (["available", "repeatable"].includes(campStatus)) rows.push({ node: camp.id, status: campStatus, reason: state.cleared.r1_bandit ? "可复战，首通军械已领取" : "可选军械：首通获得破盾与破甲装备" });
     return rows;
+  }
+
+  function enemyHintForNode(state, item) {
+    if (state.flags.playerAgentRoleWave && item.id === "r1_main_4") {
+      return "一头高生命蛮熊；需要对同一目标保持持续输出";
+    }
+    return item.enemyHint;
+  }
+
+  function prisonOpportunityReason(state) {
+    if (state.cleared.r1_prison) return "可复战，首通角色已领取";
+    if (state.flags.playerAgentRoleWave) return "可选救援：首通营救擅长持续单体输出的林地游侠";
+    return "可选救援：首通获得新角色";
   }
 
   function applyAction(rawState, actionText, options = {}) {
@@ -337,7 +350,7 @@
     };
     const result = state.flags.playerAgentRoleWave && item.id === "r1_main_1"
       ? COMBAT_SIM.simulateWaveTeams(leftTeam, ENCOUNTERS.firstRoadWaves(), options)
-      : COMBAT_SIM.simulateTeams(leftTeam, enemyTeam(item), options);
+      : COMBAT_SIM.simulateTeams(leftTeam, enemyTeam(item, state), options);
     const leftAlive = result.metrics?.leftAlive || 0;
     const rightAlive = result.metrics?.rightAlive || 0;
     const resolution = result.waveComplete === false || (result.duration >= 69.8 && leftAlive > 0 && rightAlive > 0) ? "time_limit" : "elimination";
@@ -471,7 +484,8 @@
     return ROSTER.buildTeam(state.roster, state.teamSlots, 1);
   }
 
-  function enemyTeam(item) {
+  function enemyTeam(item, state = null) {
+    if (state?.flags?.playerAgentRoleWave && item.id === "r1_main_4") return ENCOUNTERS.rangerTeachingTeam();
     // Candidate-only onboarding tune: preserve the encounter composition while
     // making the first visible rescue attempt viable at the Main 3 equipment band.
     if (item.id === "r1_prison") return ENCOUNTERS.prisonTeam().map((spec) => scaleSpec(spec, 0.84));
@@ -611,6 +625,9 @@
 
   function rewardHintForNode(state, item) {
     if (isBossRecoveryActive(state) && item.id === "r1_main_9") return "首领整备点：3件 Lv10-16 装备，稀有率提升";
+    if (state.flags.playerAgentRoleWave && item.id === "r1_prison" && !state.cleared.r1_prison) {
+      return "首通营救林地游侠：持续锁定单体并累积猎标；复战无首通奖励";
+    }
     return item.rewardHint;
   }
 

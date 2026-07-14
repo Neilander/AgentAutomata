@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const LOOP = require("./player-agent-loop");
 
-const [, , command, sessionPathInput, payloadPathInput, optionInput] = process.argv;
+const [, , command, sessionPathInput, payloadPathInput, optionInput, priorRequestInput] = process.argv;
 if (!command || !sessionPathInput) usage();
 
 const sessionPath = path.resolve(sessionPathInput);
@@ -11,6 +11,13 @@ if (command === "init") {
   const seed = payloadPathInput || "player-agent-api-loop-two-cycle";
   const maxCycles = Number.isFinite(Number(optionInput)) && Number(optionInput) > 0 ? Number(optionInput) : 2;
   writeJson(sessionPath, LOOP.createSession(seed, maxCycles));
+  printStatus(sessionPath);
+} else if (command === "init-chapter2") {
+  const seed = payloadPathInput || "player-agent-api-loop-chapter2";
+  const maxCycles = Number.isFinite(Number(optionInput)) && Number(optionInput) > 0 ? Number(optionInput) : 24;
+  const priorRequest = priorRequestInput ? readJson(path.resolve(priorRequestInput)) : null;
+  const priorPlayerState = priorRequest?.playerState || priorRequest;
+  writeJson(sessionPath, LOOP.createChapter2Session(seed, maxCycles, priorPlayerState));
   printStatus(sessionPath);
 } else if (command === "request") {
   const session = readJson(sessionPath);
@@ -72,5 +79,5 @@ function printStatus(filePath) {
   process.stdout.write(`${JSON.stringify({ phase: session.phase, completedCycles: session.cycle, sessionPath: filePath })}\n`);
 }
 function usage() {
-  throw new Error("usage: node cli.js <init|request|decision|attribution|summary> <session.json> [payload.json|seed] [maxCycles]");
+  throw new Error("usage: node cli.js <init|init-chapter2|request|decision|attribution|summary> <session.json> [payload.json|seed] [maxCycles] [prior-request.json]");
 }

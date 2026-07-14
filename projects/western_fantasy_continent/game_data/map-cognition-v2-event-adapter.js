@@ -21,7 +21,7 @@ function buildMapEventLog(action, resultEvent, options = {}) {
       time: Math.max(0, Number(event.duration || 0)) + 0.07,
       type: "gear_growth",
       subject: { id: "player_squad", name: "player squad", side: "left", role: "player_squad" },
-      environment: { region: "region_1", node: event.node, nodeType: options.nodeType || "main", phase: "reward" },
+      environment: { region: options.region || "region_1", node: event.node, nodeType: options.nodeType || "main", phase: "reward" },
       behavior: { kind: "encounter_reward", key: `reward:${event.node}`, name: "equipment growth" },
       result: {
         kind: "power_growth",

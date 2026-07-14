@@ -30,6 +30,8 @@
   const HERO_REWARDS = {
     mage: hero("hero_mage", "烬火法师", "mage", "完整输出英雄，负责清怪与爆发。"),
     ranger: hero("hero_ranger", "林地游侠", "ranger", "完整远程物理英雄，持续盯住当前目标并累积猎标。"),
+    knight: hero("hero_knight", "白垒骑士", "knight", "完整守护英雄，能承接集火、制造护盾并稳定前排。"),
+    priest: hero("hero_priest", "晨祷牧师", "priest", "完整治愈英雄，能持续治疗、制造护盾并保护低血队友。"),
   };
 
   const INITIAL_TEAM_SLOTS = ["hero_warrior", "militia_barricade", "hero_mage", "militia_herb"];

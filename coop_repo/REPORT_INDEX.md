@@ -4,6 +4,8 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-14
 
+- `2026-07-14_2315_chapter2-frozen-player-cross-key-validation.md`: completes the Frozen-player Chapter 2 cross-key design, two-round Agent playtest iteration, role/field/equipment teaching validation, and remaining risks.
+
 - `2026-07-14_1817_player-hypothesis-loop-repaired.md`: repaired the explicit player hypothesis lifecycle, aligned contribution verification with authoritative combat settlement, and passed a fresh Ranger run with two precommitted hypotheses, two real confirmations, two EVerify events, and two independent reviews.
 
 - `2026-07-14_1641_ranger-hypothesis-loop-audit.md`: corrected the Ranger run interpretation: three AI-submitted hypotheses were rejected, no player hypothesis or EVerify settlement occurred, and the apparent verification belonged only to hidden evaluator state.

@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-14_1817_player-hypothesis-loop-repaired.md`](reports/2026-07-14_1817_player-hypothesis-loop-repaired.md)
+[`reports/2026-07-14_2315_chapter2-frozen-player-cross-key-validation.md`](reports/2026-07-14_2315_chapter2-frozen-player-cross-key-validation.md)
 
 Last updated: 2026-07-14
 
-Current focus: The explicit player-hypothesis loop is repaired and verified in a fresh Ranger run. Player hypotheses now persist across actions, settle from authoritative combat evidence, emit EVerify, and remain visible to later decisions. Next evaluate confirmable versus refutable hypotheses under a frozen model and check whether learned results change subsequent choices.
+Current focus: Chapter 2's independent AI-play version is designed and validated under Frozen V3. Its double-rescue cross-key structure teaches Knight, Priest, shield detonation, king flag, equipment levels, and Epic fit without changing formal skill values or the player model. Next review the design evidence before integrating it into the human-play map layer.

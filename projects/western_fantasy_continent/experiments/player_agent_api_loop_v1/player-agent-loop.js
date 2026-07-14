@@ -1,4 +1,5 @@
-const CORE = require("../../map_progression_lab/map-progression-cognition-core-phase2-midlock");
+const REGION_1_CORE = require("../../map_progression_lab/map-progression-cognition-core-phase2-midlock");
+const REGION_2_CORE = require("../../map_progression_lab/map-progression-chapter2-core");
 const RUNTIME = require("../../game_data/player-cognition-v3-event-runtime");
 const ADAPTER = require("../../game_data/map-cognition-v3-event-adapter");
 const EQUIPMENT = require("../../game_data/equipment-runtime");
@@ -13,7 +14,7 @@ function createSession(seed = "player-agent-api-loop", maxCycles = 2) {
     maxCycles,
     cycle: 0,
     phase: "decision",
-    gameState: CORE.initialState(seed, { starterVariant: "player_agent_role_wave" }),
+    gameState: REGION_1_CORE.initialState(seed, { starterVariant: "player_agent_role_wave" }),
     cognitionState: RUNTIME.createState(seed),
     evaluatorState: createEvaluatorState(),
     conceptState: SIGNAL_INTERPRETER.createConceptState(),
@@ -53,7 +54,7 @@ function applyDecisionResponse(sessionInput, responseInput) {
     goalId: response.goalId,
     choiceMode: "ai_api_decision",
     environment: {
-      region: "region_1",
+      region: gameRegion(session.gameState),
       step: observation.step || 0,
       goal: observation.currentGoal || "",
     },
@@ -220,6 +221,7 @@ function buildDecisionRequest(session) {
 function buildAttributionRequest(session) {
   const pending = session.pendingAttribution;
   const record = session.history[pending.historyIndex];
+  const attributableKnowledge = session.knowledgeBase.filter((row) => pending.knowledgeIds.includes(row.id));
   return {
     type: "attribution",
     schema: "player_attribution_request_v1",
@@ -229,7 +231,7 @@ function buildAttributionRequest(session) {
     outcome: record.outcome,
     emotionBeforeAction: record.emotionAfterDecision,
     emotionAfterEvents: record.emotionAfterEvents,
-    existingKnowledge: session.knowledgeBase,
+    existingKnowledge: attributableKnowledge,
     eventStatisticsCount: session.cognitionState.knowledge.length,
     visibleEvents: buildAttributionEvidence(record),
     responseContract: {
@@ -245,7 +247,7 @@ function buildAttributionRequest(session) {
 
 function observeGame(rawState) {
   const state = clone(rawState);
-  const observation = CORE.observe(state);
+  const observation = gameCore(state).observe(state);
   const slotLabels = ["前排1", "前排2", "后排1", "后排2"];
   const teamSlotById = new Map(state.teamSlots.map((heroId, slotIndex) => [heroId, slotIndex]));
   const rosterById = new Map(state.roster.map((hero) => [hero.id, hero]));
@@ -275,13 +277,19 @@ function observeGame(rawState) {
   const inventory = (state.inventory || []).map((item) => {
     const candidates = state.roster.map((hero) => {
       equipActions.push(`equip:${hero.id}:${item.id}`);
+      const equippedItem = rosterById.get(hero.id)?.equipment?.[item.slot] || null;
+      const fitScore = EQUIPMENT.itemScoreForRole(item, hero.role);
+      const currentFitScore = equippedItem ? EQUIPMENT.itemScoreForRole(equippedItem, hero.role) : 0;
       return {
         heroId: hero.id,
         heroName: hero.name,
         role: hero.role,
-        fitScore: round(EQUIPMENT.itemScoreForRole(item, hero.role)),
+        fitScore: round(fitScore),
+        currentItem: equippedItem?.name || "空",
+        currentFitScore: round(currentFitScore),
+        fitDelta: round(fitScore - currentFitScore),
       };
-    }).sort((a, b) => b.fitScore - a.fitScore);
+    }).sort((a, b) => b.fitDelta - a.fitDelta || b.fitScore - a.fitScore);
     return {
       ...EQUIPMENT.publicItem(item),
       bestFits: candidates.slice(0, 3),
@@ -303,6 +311,7 @@ function runPlayerAction(rawState, action, cognitionState, conceptState, evaluat
 
 function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, conceptState, evaluatorStateInput) {
   const before = clone(rawState);
+  const core = gameCore(before);
   const evaluatorState = clone(evaluatorStateInput || createEvaluatorState());
   const evaluatorExperiment = evaluatorState.affordanceExperiments.find((row) => row.status === "awaiting_combat") || null;
   const playerHypothesis = pendingPlayerCombatHypothesis(cognitionState, action);
@@ -312,28 +321,29 @@ function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, concept
       : { id: `player-hypothesis:${playerHypothesis.id}`, heroId: playerHypothesis.target, source: "player" })
     : evaluatorExperiment;
   const beforeItemIds = new Set(allEquipmentItems(before).map((item) => item.id));
-  const result = CORE.applyAction(before, action, { captureVisibleSignals: true });
+  const result = core.applyAction(before, action, { captureVisibleSignals: true });
   if (!result.ok) return { ...result, cognitionState };
 
   const generatedItems = allEquipmentItems(result.state).filter((item) => !beforeItemIds.has(item.id));
   restoreManualEquipmentState(result.state, rawState, generatedItems);
   result.state.cognition.knowledge = (result.state.cognition.knowledge || [])
     .filter((row) => !String(row).includes("自动换上"));
-  const gearAfter = CORE.gearScore(result.state);
-  result.event.gearBefore = CORE.gearScore(rawState);
+  const gearAfter = core.gearScore(result.state);
+  result.event.gearBefore = core.gearScore(rawState);
   result.event.gearAfter = gearAfter;
   if (result.analysis?.settlement) {
-    result.analysis.settlement.gearBefore = CORE.gearScore(rawState);
+    result.analysis.settlement.gearBefore = core.gearScore(rawState);
     result.analysis.settlement.gearAfter = gearAfter;
-    result.analysis.settlement.gearDelta = gearAfter - CORE.gearScore(rawState);
+    result.analysis.settlement.gearDelta = gearAfter - core.gearScore(rawState);
   }
   result.observation = observeGame(result.state);
 
   const nodeId = String(action).split(":")[1];
-  const node = CORE.nodes.find((item) => item.id === nodeId);
+  const node = core.nodes.find((item) => item.id === nodeId);
   const experimentContribution = activeExperiment ? ADAPTER.summarizeExperimentContribution(result, activeExperiment) : null;
   const rawEventLog = ADAPTER.buildMapEventLog(action, result.event, {
     analysis: result.analysis,
+    region: gameRegion(result.state),
     nodeType: node?.type || (String(action).startsWith("swap:") ? "team" : "map"),
     activeExperiment,
     heroPresent: activeExperiment ? result.state.teamSlots.includes(activeExperiment.heroId) : null,
@@ -360,15 +370,16 @@ function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, concept
 
 function appendMapUnlockEvent(eventLog, action, event, beforeState, afterState) {
   if (!String(action).startsWith("challenge:") || event.outcome !== "win") return;
-  const beforeIds = new Set(CORE.observe(beforeState).visibleNodes.map((item) => item.id));
-  const unlockedNodes = CORE.observe(afterState).visibleNodes.filter((item) => !beforeIds.has(item.id)).map((item) => item.id);
+  const core = gameCore(afterState);
+  const beforeIds = new Set(core.observe(beforeState).visibleNodes.map((item) => item.id));
+  const unlockedNodes = core.observe(afterState).visibleNodes.filter((item) => !beforeIds.has(item.id)).map((item) => item.id);
   if (!unlockedNodes.length) return;
   eventLog.push({
     id: `map_unlock:${event.node}:${event.step}`,
     time: Math.max(0, Number(event.duration || 0)) + 0.075,
     type: "map_unlock",
     subject: { id: "player_squad", name: "player squad", side: "left", role: "player_squad" },
-    environment: { region: "region_1", node: event.node, phase: "map_progression" },
+    environment: { region: gameRegion(afterState), node: event.node, phase: "map_progression" },
     behavior: { kind: "clear_level", key: action, target: event.node },
     result: { kind: "map_unlock", occurred: true, clearedNode: event.node, unlockedNodes },
     presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
@@ -377,19 +388,20 @@ function appendMapUnlockEvent(eventLog, action, event, beforeState, afterState) 
 
 function runEquipAction(rawState, action, cognitionState, conceptState, evaluatorState) {
   const state = clone(rawState);
+  const core = gameCore(state);
   const [, heroId, itemId] = String(action).split(":");
   const hero = state.roster.find((unit) => unit.id === heroId);
   const itemIndex = state.inventory.findIndex((item) => item.id === itemId);
   if (!hero || itemIndex < 0) return { ok: false, state, cognitionState, error: "invalid explicit equip action" };
 
-  const gearBefore = CORE.gearScore(state);
+  const gearBefore = core.gearScore(state);
   const item = state.inventory.splice(itemIndex, 1)[0];
   hero.equipment = { ...(hero.equipment || {}) };
   const replacedItem = hero.equipment[item.slot] || null;
   if (replacedItem) state.inventory.push(replacedItem);
   hero.equipment[item.slot] = item;
   state.step += 1;
-  const gearAfter = CORE.gearScore(state);
+  const gearAfter = core.gearScore(state);
   const event = {
     step: state.step,
     action,
@@ -402,7 +414,7 @@ function runEquipAction(rawState, action, cognitionState, conceptState, evaluato
     gearAfter,
   };
   state.history.unshift(event);
-  const rawEventLog = buildEquipEventLog(event);
+  const rawEventLog = buildEquipEventLog(event, gameRegion(state));
   const interpreted = SIGNAL_INTERPRETER.interpretEventLog(rawEventLog, conceptState, {
     environment: "equipment",
   });
@@ -491,10 +503,10 @@ function pendingPlayerCombatHypothesis(state, action) {
     && row.target) || null;
 }
 
-function buildEquipEventLog(event) {
+function buildEquipEventLog(event, region = "region_1") {
   const expectationKey = `equip_action:${event.step}:${event.item.id}`;
   const subject = { id: "player", name: "player", role: "player" };
-  const environment = { region: "region_1", phase: "equipment", heroId: event.heroId };
+  const environment = { region, phase: "equipment", heroId: event.heroId };
   const behavior = { kind: "equip_item", key: event.action, target: event.heroId };
   return [{
     id: `${expectationKey}:start`,
@@ -578,6 +590,45 @@ function normalizeDecisionResponse(input) {
     reasoningChain,
     alternatives: Array.isArray(response.alternatives) ? response.alternatives : [],
     hypothesis: normalizeDecisionHypothesis(response.hypothesis),
+  };
+}
+
+function createChapter2Session(seed = "player-agent-api-loop-chapter2", maxCycles = 24, priorPlayerState = null) {
+  const session = createSession(seed, maxCycles);
+  session.gameState = REGION_2_CORE.initialState(seed);
+  if (priorPlayerState) inheritPriorPlayerState(session, priorPlayerState);
+  return session;
+}
+
+function inheritPriorPlayerState(session, prior) {
+  const emotion = Number(prior.emotion);
+  if (Number.isFinite(emotion)) session.cognitionState.emotion.value = emotion;
+  if (Array.isArray(prior.goals) && prior.goals.length) {
+    session.cognitionState.goals = clone(prior.goals);
+    session.cognitionState.activeGoalId = prior.activeGoalId || prior.goals[0].id;
+  }
+  session.cognitionState.failureMemories = clone(prior.failureMemories || []);
+  session.cognitionState.hypotheses = clone(prior.hypotheses || []).filter((row) => row.status !== "pending");
+  session.knowledgeBase = (prior.knowledge || []).map((row, index) => normalizeInheritedKnowledge(row, index));
+}
+
+function normalizeInheritedKnowledge(row, index) {
+  const latest = row.result?.latestObservation || row.result?.observations?.at?.(-1) || {};
+  const result = {
+    sampleCount: Number(row.result?.sampleCount || 1),
+    outcomeDistribution: clone(row.result?.outcomeDistribution || {}),
+    observations: row.result?.observations ? clone(row.result.observations) : [clone(latest)],
+  };
+  const attributions = clone(row.attributions || (row.latestAttribution ? [row.latestAttribution] : []));
+  return {
+    id: row.id || `knowledge:${index + 1}`,
+    key: row.key || `inherited|${row.id || index + 1}`,
+    subject: clone(row.subject || {}),
+    environment: clone(row.environment || {}),
+    behavior: clone(row.behavior || {}),
+    result,
+    evidenceEventIds: clone(row.evidenceEventIds || []),
+    attributions,
   };
 }
 
@@ -689,6 +740,8 @@ function updateKnowledgeFromFeedback(session, record, context) {
 function learnFromChallenge(knowledgeBase, record, context) {
   const before = context.gameStateBefore;
   const after = context.gameStateAfter;
+  const core = gameCore(after);
+  const region = gameRegion(after);
   const node = record.gameEvent.node || record.action.split(":")[1];
   const teamMembers = before.teamSlots.map((id) => unitRef(before.roster.find((unit) => unit.id === id))).filter(Boolean);
   const resultEventId = record.eventLog.find((row) => row.type === "combat_result")?.id;
@@ -696,8 +749,8 @@ function learnFromChallenge(knowledgeBase, record, context) {
   const unlockEventId = record.eventLog.find((row) => row.type === "map_unlock")?.id;
   const characterUnlockEventId = record.eventLog.find((row) => row.type === "character_unlock")?.id;
   const lootEventIds = record.eventLog.filter((row) => row.type === "loot").map((row) => row.id);
-  const unlockedNodes = CORE.observe(after).visibleNodes
-    .filter((item) => !CORE.observe(before).visibleNodes.some((old) => old.id === item.id))
+  const unlockedNodes = core.observe(after).visibleNodes
+    .filter((item) => !core.observe(before).visibleNodes.some((old) => old.id === item.id))
     .map((item) => item.id);
   const drops = (record.gameEvent.loot || []).map((item) => ({
     id: item.id,
@@ -706,8 +759,8 @@ function learnFromChallenge(knowledgeBase, record, context) {
     rarity: item.rarity,
     level: item.level,
   }));
-  const sharedEnvironment = { region: "region_1", node, phase: "combat", team: teamMembers.map((unit) => unit.id) };
-  const patternEnvironment = { region: "region_1", encounterBand: encounterBand(node), phase: "combat_pattern" };
+  const sharedEnvironment = { region, node, phase: "combat", team: teamMembers.map((unit) => unit.id) };
+  const patternEnvironment = { region, encounterBand: encounterBand(node), phase: "combat_pattern" };
   const ids = [];
 
   const encounter = mergeKnowledgeObservation(knowledgeBase, {
@@ -726,7 +779,7 @@ function learnFromChallenge(knowledgeBase, record, context) {
   if (record.outcome === "win") {
     if (unlockEventId && unlockedNodes.length) ids.push(mergeKnowledgeObservation(knowledgeBase, {
       subject: { id: "player_squad", members: teamMembers },
-      environment: { region: "region_1", node, phase: "map_progression" },
+      environment: { region, node, phase: "map_progression" },
       behavior: { kind: "clear_level", key: record.action, target: node },
     }, {
       outcome: "win",
@@ -736,21 +789,21 @@ function learnFromChallenge(knowledgeBase, record, context) {
 
     ids.push(mergeKnowledgeObservation(knowledgeBase, {
       subject: { id: "player_squad", members: teamMembers },
-      environment: { region: "region_1", node, phase: "loot_drop" },
+      environment: { region, node, phase: "loot_drop" },
       behavior: { kind: "clear_level", key: record.action, target: node },
     }, {
       outcome: "loot_obtained",
       drops,
       inventoryCountBefore: before.inventory.length,
       inventoryCountAfter: after.inventory.length,
-      equippedPowerBefore: CORE.gearScore(before),
-      equippedPowerAfter: CORE.gearScore(after),
-      powerChanged: CORE.gearScore(before) !== CORE.gearScore(after),
+      equippedPowerBefore: core.gearScore(before),
+      equippedPowerAfter: core.gearScore(after),
+      powerChanged: core.gearScore(before) !== core.gearScore(after),
     }, [resultEventId, ...lootEventIds].filter(Boolean)).id);
 
     if (characterUnlockEventId && record.gameEvent.characterUnlock) ids.push(mergeKnowledgeObservation(knowledgeBase, {
       subject: { id: "player_squad", members: teamMembers },
-      environment: { region: "region_1", node, phase: "character_reward" },
+      environment: { region, node, phase: "character_reward" },
       behavior: { kind: "clear_level", key: record.action, target: node },
     }, {
       outcome: "character_unlocked",
@@ -760,6 +813,21 @@ function learnFromChallenge(knowledgeBase, record, context) {
   }
 
   const totalDamage = (record.gameEvent.contributions || []).reduce((sum, row) => sum + Number(row.damage || 0), 0);
+
+  const fieldEvents = record.eventLog.filter((row) => row.type === "field" || row.result?.kind === "field_effect");
+  if (fieldEvents.length) {
+    const field = record.gameEvent.fieldEffect || { id: fieldEvents[0].environment?.fieldEffect || "unknown", name: fieldEvents[0].behavior?.name || "场地效果" };
+    ids.push(mergeKnowledgeObservation(knowledgeBase, {
+      subject: { id: `field:${field.id || "unknown"}`, name: field.name || "场地效果" },
+      environment: { region, node, phase: "field_rule" },
+      behavior: { kind: "affect_battle", key: `field:${field.id || "unknown"}`, target: "both_teams" },
+    }, {
+      outcome: "field_effect_observed",
+      rule: field.rule || "",
+      signalCount: fieldEvents.length,
+      visibleSignals: [...new Set(fieldEvents.map((row) => row.behavior?.name || row.result?.kind).filter(Boolean))].slice(0, 8),
+    }, fieldEvents.map((row) => row.id)).id);
+  }
   const playerActorEffects = aggregateActorEffects(record.eventLog, "left");
   (record.gameEvent.contributions || []).forEach((contribution) => {
     const unit = findUnitByContribution(before.roster, contribution);
@@ -833,9 +901,10 @@ function learnFromChallenge(knowledgeBase, record, context) {
 function learnFromEquipment(knowledgeBase, record, context) {
   const event = record.gameEvent;
   const hero = context.gameStateAfter.roster.find((unit) => unit.id === event.heroId);
+  const region = gameRegion(context.gameStateAfter);
   const row = mergeKnowledgeObservation(knowledgeBase, {
     subject: { id: "player", role: "player" },
-    environment: { region: "region_1", phase: "equipment", hero: unitRef(hero) },
+    environment: { region, phase: "equipment", hero: unitRef(hero) },
     behavior: { kind: "equip_item", key: record.action, itemId: event.item?.id, target: event.heroId },
   }, {
     outcome: "item_equipped",
@@ -849,16 +918,18 @@ function learnFromEquipment(knowledgeBase, record, context) {
 }
 
 function learnFromTeamSwap(knowledgeBase, record, context) {
+  const core = gameCore(context.gameStateAfter);
+  const region = gameRegion(context.gameStateAfter);
   const row = mergeKnowledgeObservation(knowledgeBase, {
     subject: { id: "player", role: "player" },
-    environment: { region: "region_1", phase: "team_management" },
+    environment: { region, phase: "team_management" },
     behavior: { kind: "swap_team_member", key: record.action },
   }, {
     outcome: "team_changed",
     teamBefore: record.gameEvent.teamBefore,
     teamAfter: record.gameEvent.teamAfter,
-    equippedPowerBefore: CORE.gearScore(context.gameStateBefore),
-    equippedPowerAfter: CORE.gearScore(context.gameStateAfter),
+    equippedPowerBefore: core.gearScore(context.gameStateBefore),
+    equippedPowerAfter: core.gearScore(context.gameStateAfter),
   }, record.eventLog.map((item) => item.id));
   return [row.id];
 }
@@ -1061,11 +1132,24 @@ function knowledgeRevision(row) {
 }
 
 function encounterBand(node) {
+  if (node === "r2_entry") return "region_2_entry";
+  if (/^r2_(knight|priest)_rescue$/.test(node)) return "region_2_rescue";
+  if (/^r2_(shield|flag)_trial$/.test(node)) return "region_2_field_trial";
+  if (node === "r2_confluence") return "region_2_confluence";
+  if (node === "r2_boss") return "region_2_boss";
   if (/^r1_main_[1-4]$/.test(node)) return "region_1_early_main";
   if (/^r1_main_[5-8]$/.test(node)) return "region_1_mid_main";
   if (/^r1_main_(9|10)$/.test(node)) return "region_1_late_main";
   if (node === "r1_boss") return "region_1_boss";
   return "region_1_optional_branch";
+}
+
+function gameCore(state) {
+  return state?.schema === "map_cognition_chapter2_v1" ? REGION_2_CORE : REGION_1_CORE;
+}
+
+function gameRegion(state) {
+  return state?.schema === "map_cognition_chapter2_v1" ? "region_2" : "region_1";
 }
 
 function unitRef(unit) {
@@ -1130,7 +1214,7 @@ function compactResult(result = {}) {
     kind: result.kind || null,
     occurred: result.occurred !== false,
   };
-  for (const key of ["amount", "before", "after", "rarity", "itemName", "observedPower", "boundary", "firstClear", "clearedNode", "unlockedNodes", "character", "heroId", "characterName"]) {
+  for (const key of ["amount", "before", "after", "rarity", "itemName", "equipmentLevel", "baseStats", "affixCount", "observedPower", "boundary", "firstClear", "clearedNode", "unlockedNodes", "character", "heroId", "characterName"]) {
     if (result[key] != null) value[key] = result[key];
   }
   if (result.target) value.target = result.target.name || result.target.id || null;
@@ -1160,6 +1244,7 @@ module.exports = {
   SCHEMA,
   applyAttributionResponse,
   applyDecisionResponse,
+  createChapter2Session,
   createSession,
   getPendingRequest,
 };

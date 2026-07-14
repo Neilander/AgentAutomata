@@ -12,7 +12,7 @@ function buildMapEventLog(action, resultEvent, options = {}) {
       time: 0.04,
       type: "team_change",
       subject: { id: "player_squad", role: "player_squad", side: "left" },
-      environment: { region: "region_1", phase: "team" },
+      environment: { region: options.region || "region_1", phase: "team" },
       behavior: { kind: "team_management", key: String(action) },
       result: {
         kind: "team_changed",
@@ -31,7 +31,7 @@ function buildMapEventLog(action, resultEvent, options = {}) {
       time: Math.max(0, Number(event.duration || 0)) + 0.06,
       type: "team_experiment_result",
       subject: { id: "player_squad", role: "player_squad", side: "left" },
-      environment: { region: "region_1", node: event.node, phase: "result" },
+      environment: { region: options.region || "region_1", node: event.node, phase: "result" },
       behavior: { kind: "team_experiment", key: String(action) },
       result: {
         kind: "team_experiment_result",

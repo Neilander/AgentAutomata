@@ -7,7 +7,7 @@ function buildMapEventLog(action, resultEvent, options = {}) {
   const nodeType = options.nodeType || "main";
   const expectationKey = `map_action:${node}:${event.step || 0}`;
   const subject = { id: "player_squad", name: "player squad", side: "left", role: "player_squad" };
-  const environment = { region: "region_1", node, nodeType, phase: "world" };
+  const environment = { region: options.region || "region_1", node, nodeType, phase: "world" };
   const behavior = { kind: "map_action", key: String(action || "unknown"), name: String(action || "") };
   const rows = [{
     id: `${expectationKey}:start`,
@@ -79,7 +79,16 @@ function buildMapEventLog(action, resultEvent, options = {}) {
       subject,
       environment: { ...environment, phase: "reward" },
       behavior: { kind: "encounter_reward", key: `reward:${node}`, name: "encounter reward" },
-      result: { kind: "loot", occurred: true, rarity, itemId: item.id || "", itemName: item.name || "" },
+      result: {
+        kind: "loot",
+        occurred: true,
+        rarity,
+        itemId: item.id || "",
+        itemName: item.name || "",
+        equipmentLevel: Number(item.equipmentLevel || item.level || 0),
+        baseStats: item.baseStats || {},
+        affixCount: Array.isArray(item.affixes) ? item.affixes.length : 0,
+      },
       presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
     });
   }
@@ -147,7 +156,7 @@ function compactCombatSignals(signals) {
       }
       continue;
     }
-    if (["death", "skill", "movement", "status"].includes(signal.type)) discrete.push(normalizeCombatResult(signal));
+    if (["death", "skill", "movement", "status", "field"].includes(signal.type)) discrete.push(normalizeCombatResult(signal));
   }
   return [...grouped.values().map(normalizeCombatResult), ...discrete].sort((a, b) => a.time - b.time || Number(a.sequence || 0) - Number(b.sequence || 0) || a.id.localeCompare(b.id));
 }

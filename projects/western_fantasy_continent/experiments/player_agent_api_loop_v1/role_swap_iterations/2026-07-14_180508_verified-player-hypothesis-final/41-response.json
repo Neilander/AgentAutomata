@@ -1,0 +1,53 @@
+{
+  "action": "swap:1:hero_ranger",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "The active goal is to grow and progress, with the next main encounter available."
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "The Ranger was just unlocked, did not join the active team automatically, and has no recorded combat contribution."
+    },
+    {
+      "kind": "evidence",
+      "evidence": "The Ranger is described as a complete ranged physical hero, while the active barricade militia previously had 0.0334 damageShare and is described as dealing almost no damage."
+    },
+    {
+      "kind": "affordance",
+      "evidence": "swap:1:hero_ranger legally places the Ranger into the active team for a later combat."
+    },
+    {
+      "kind": "comparison",
+      "evidence": "This swap preserves the active warrior, mage, and healer while replacing the low-damage barricade militia; challenging Main 6 now would not test the Ranger."
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "In the next combat, the Ranger should exceed the replaced militia's observed 0.0334 damageShare."
+    }
+  ],
+  "alternatives": [
+    {
+      "action": "equip:hero_ranger:r1_bandit_key_1_ranger_weapon",
+      "reason": "Prepare the Ranger before selecting it."
+    },
+    {
+      "action": "challenge:r1_main_6",
+      "reason": "Continue without testing the Ranger."
+    }
+  ],
+  "hypothesis": {
+    "id": "hypothesis:ranger_contribution:21",
+    "problem": "The newly unlocked Ranger's combat contribution is unknown.",
+    "cause": "Replacing the low-damage barricade militia with the complete ranged physical Ranger should increase that slot's damage contribution.",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_ranger",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageShare",
+      "operator": ">",
+      "value": 0.0334
+    }
+  }
+}

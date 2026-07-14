@@ -1,0 +1,108 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 6,
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "swap:2:hero_mage",
+  "outcome": "team_changed",
+  "emotionBeforeAction": 42.1646,
+  "emotionAfterEvents": 42.1646,
+  "candidateKnowledge": [
+    {
+      "id": "knowledge:22",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_1",
+        "phase": "team_management"
+      },
+      "behavior": {
+        "kind": "swap_team_member",
+        "key": "swap:2:hero_mage"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "team_changed": 1
+        },
+        "latestObservation": {
+          "outcome": "team_changed",
+          "teamBefore": [
+            "hero_warrior",
+            "militia_barricade",
+            "militia_spear",
+            "militia_herb"
+          ],
+          "teamAfter": [
+            "hero_warrior",
+            "militia_barricade",
+            "hero_mage",
+            "militia_herb"
+          ],
+          "equippedPowerBefore": 87,
+          "equippedPowerAfter": 87
+        }
+      },
+      "evidenceEventIds": [
+        "map_action:2:6:result",
+        "map_action:2:6:start",
+        "team-change:6:hero_mage",
+        "map_action:2:6:summary"
+      ],
+      "latestAttribution": null
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "map_action:2:6:result",
+      "time": 0,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "swap:2:hero_mage",
+      "result": {
+        "kind": "action_changed",
+        "occurred": true,
+        "observedPower": 87,
+        "boundary": "normal_end",
+        "firstClear": false
+      },
+      "H": 0.6412,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:2:6:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "swap:2:hero_mage",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 87,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "action_changed"
+          }
+        ]
+      },
+      "H": 0.5063,
+      "emotionDelta": 0
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "auditNote": "candidateKnowledge contains only rows citing at least one currently visible event; exact ids remain unchanged."
+}

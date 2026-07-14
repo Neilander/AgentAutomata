@@ -1,0 +1,579 @@
+{
+  "schema": "role_swap_iteration_audit_v1",
+  "runDir": "D:\\GithubDesktop\\AgentAutomata\\projects\\western_fantasy_continent\\experiments\\player_agent_api_loop_v1\\role_swap_iterations\\2026-07-14_135948_restored-lock-key",
+  "seed": "restored-lock-key-2026-07-14_135948",
+  "phase": "decision",
+  "completedCycles": 24,
+  "recordedActions": 24,
+  "finalTeam": [
+    "hero_warrior",
+    "militia_barricade",
+    "hero_ranger",
+    "militia_herb"
+  ],
+  "clearedNodes": [
+    "r1_main_1",
+    "r1_main_2",
+    "r1_main_3",
+    "r1_main_4",
+    "r1_main_5",
+    "r1_bandit",
+    "r1_prison",
+    "r1_main_6",
+    "r1_main_7"
+  ],
+  "unlocks": [
+    {
+      "cycle": 4,
+      "heroId": "hero_mage",
+      "character": "mage"
+    },
+    {
+      "cycle": 20,
+      "heroId": "hero_ranger",
+      "character": "ranger"
+    }
+  ],
+  "swaps": [
+    {
+      "cycle": 6,
+      "action": "swap:2:hero_mage",
+      "reasoningChain": [
+        {
+          "kind": "evidence",
+          "evidence": "A new complete Mage hero is visible in reserve."
+        },
+        {
+          "kind": "comparison",
+          "evidence": "The active Spear Militia is described as an incomplete slow single-target unit, while the Mage is a complete clearing and burst hero."
+        },
+        {
+          "kind": "goal",
+          "evidence": "Testing the stronger complete hero can improve the squad before Main 3."
+        }
+      ],
+      "alternatives": [
+        {
+          "action": "equip:hero_warrior:r1_main_2_1_1",
+          "reason": "The remaining weapon visibly fits the active Warrior."
+        },
+        {
+          "action": "challenge:r1_main_3",
+          "reason": "The next main node is available without preparation."
+        }
+      ],
+      "hypothesis": {
+        "id": "test-mage-over-spear",
+        "problem": "The militia damage slot may be weak",
+        "cause": "A complete Mage should contribute more than the incomplete Spear Militia",
+        "resultKind": "team_experiment_contribution",
+        "target": "hero_mage"
+      }
+    },
+    {
+      "cycle": 21,
+      "action": "swap:2:hero_ranger",
+      "reasoningChain": [
+        {
+          "kind": "evidence",
+          "evidence": "The newly rescued Ranger is a complete hero described as sustaining focus and accumulating marks on one target."
+        },
+        {
+          "kind": "comparison",
+          "evidence": "Replacing the burst-oriented Mage tests a distinct output role while preserving the Warrior, frontline militia, and healer."
+        },
+        {
+          "kind": "goal",
+          "evidence": "The Ranger must be manually selected before its promised role can be verified."
+        }
+      ],
+      "alternatives": [
+        {
+          "action": "equip:hero_ranger:r1_bandit_key_1_ranger_weapon",
+          "reason": "The reserved bow fits the Ranger, but equipment should follow active-team selection."
+        },
+        {
+          "action": "challenge:r1_main_6",
+          "reason": "Mainline progress is available, but it would not test the rescued character while the Ranger remains in reserve."
+        }
+      ],
+      "hypothesis": {
+        "id": "test-ranger-role",
+        "problem": "The rescued Ranger's combat value is unknown",
+        "cause": "A complete sustained single-target Ranger should contribute differently from the burst Mage",
+        "resultKind": "team_experiment_contribution",
+        "target": "hero_ranger"
+      }
+    }
+  ],
+  "combatProofs": [
+    {
+      "cycle": 8,
+      "kind": "team_experiment_result",
+      "occurred": true,
+      "experimentId": "team-experiment:hero_mage",
+      "heroId": "hero_mage",
+      "heroPresent": true,
+      "node": "r1_main_3",
+      "outcome": "win",
+      "contribution": {
+        "observed": true,
+        "damage": 331.39000000000004,
+        "heal": 0,
+        "shield": 0,
+        "skillCount": 4
+      },
+      "components": [
+        {
+          "kind": "team_experiment_contribution"
+        }
+      ]
+    },
+    {
+      "cycle": 23,
+      "kind": "team_experiment_result",
+      "occurred": true,
+      "experimentId": "team-experiment:hero_ranger",
+      "heroId": "hero_ranger",
+      "heroPresent": true,
+      "node": "r1_main_6",
+      "outcome": "win",
+      "contribution": {
+        "observed": true,
+        "damage": 806.4979000000001,
+        "heal": 0,
+        "shield": 0,
+        "skillCount": 9
+      },
+      "components": [
+        {
+          "kind": "team_experiment_contribution"
+        }
+      ]
+    }
+  ],
+  "privateEvaluator": {
+    "affordanceExperiments": [
+      {
+        "id": "team-experiment:hero_mage",
+        "kind": "new_character_swap",
+        "heroId": "hero_mage",
+        "status": "resolved",
+        "sourceEventId": "map_action:r1_main_2:4:character",
+        "selectedAction": "swap:2:hero_mage",
+        "combatEvidence": {
+          "eventId": "team-experiment:8:team-experiment:hero_mage",
+          "node": "r1_main_3",
+          "outcome": "win",
+          "heroPresent": true
+        },
+        "swapEventId": "team-change:6:hero_mage"
+      },
+      {
+        "id": "team-experiment:hero_ranger",
+        "kind": "new_character_swap",
+        "heroId": "hero_ranger",
+        "status": "resolved",
+        "sourceEventId": "map_action:r1_prison:20:character",
+        "selectedAction": "swap:2:hero_ranger",
+        "combatEvidence": {
+          "eventId": "team-experiment:23:team-experiment:hero_ranger",
+          "node": "r1_main_6",
+          "outcome": "win",
+          "heroPresent": true
+        },
+        "swapEventId": "team-change:21:hero_ranger"
+      }
+    ]
+  },
+  "playerExperimentState": [],
+  "playerHypotheses": [],
+  "knowledgeCount": 81,
+  "knowledgeAddedByCycle": [
+    {
+      "cycle": 1,
+      "added": 10,
+      "matchedConcepts": [
+        "普通小怪"
+      ]
+    },
+    {
+      "cycle": 2,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 3,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 4,
+      "added": 8,
+      "matchedConcepts": [
+        "远程小怪",
+        "近战小怪"
+      ]
+    },
+    {
+      "cycle": 5,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 6,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 7,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 8,
+      "added": 6,
+      "matchedConcepts": [
+        "远程小怪",
+        "近战小怪"
+      ]
+    },
+    {
+      "cycle": 9,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 10,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 11,
+      "added": 8,
+      "matchedConcepts": [
+        "普通小怪",
+        "远程小怪"
+      ]
+    },
+    {
+      "cycle": 12,
+      "added": 5,
+      "matchedConcepts": [
+        "远程小怪",
+        "近战小怪",
+        "普通小怪"
+      ]
+    },
+    {
+      "cycle": 13,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 14,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 15,
+      "added": 1,
+      "matchedConcepts": [
+        "普通小怪",
+        "远程小怪"
+      ]
+    },
+    {
+      "cycle": 16,
+      "added": 11,
+      "matchedConcepts": [
+        "远程小怪",
+        "近战小怪",
+        "普通小怪"
+      ]
+    },
+    {
+      "cycle": 17,
+      "added": 5,
+      "matchedConcepts": [
+        "普通小怪",
+        "近战小怪",
+        "远程小怪"
+      ]
+    },
+    {
+      "cycle": 18,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 19,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 20,
+      "added": 2,
+      "matchedConcepts": [
+        "普通小怪",
+        "远程小怪"
+      ]
+    },
+    {
+      "cycle": 21,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 22,
+      "added": 1,
+      "matchedConcepts": []
+    },
+    {
+      "cycle": 23,
+      "added": 7,
+      "matchedConcepts": [
+        "普通小怪",
+        "远程小怪"
+      ]
+    },
+    {
+      "cycle": 24,
+      "added": 5,
+      "matchedConcepts": [
+        "近战小怪"
+      ]
+    }
+  ],
+  "emotion": {
+    "initial": 38,
+    "final": 51.743,
+    "minimum": 38,
+    "maximum": 51.743,
+    "largestAutomaticDrop": -1.4481,
+    "largestAutomaticGain": 5.4685,
+    "trajectory": [
+      {
+        "cycle": 1,
+        "action": "challenge:r1_main_1",
+        "outcome": "win",
+        "beforeDecision": 38,
+        "afterDecision": 38,
+        "afterEvents": 38.5749,
+        "automaticDelta": 0.5749
+      },
+      {
+        "cycle": 2,
+        "action": "equip:hero_warrior:r1_main_1_1_0",
+        "outcome": "equipped",
+        "beforeDecision": 38.5749,
+        "afterDecision": 38.5749,
+        "afterEvents": 38.5735,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 3,
+        "action": "equip:militia_herb:r1_main_1_1_1",
+        "outcome": "equipped",
+        "beforeDecision": 38.5735,
+        "afterDecision": 38.5735,
+        "afterEvents": 38.5721,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 4,
+        "action": "challenge:r1_main_2",
+        "outcome": "win",
+        "beforeDecision": 38.5721,
+        "afterDecision": 38.5721,
+        "afterEvents": 42.086,
+        "automaticDelta": 3.5139
+      },
+      {
+        "cycle": 5,
+        "action": "equip:militia_herb:r1_main_2_1_0",
+        "outcome": "equipped",
+        "beforeDecision": 42.086,
+        "afterDecision": 42.126,
+        "afterEvents": 42.1246,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 6,
+        "action": "swap:2:hero_mage",
+        "outcome": "team_changed",
+        "beforeDecision": 42.1246,
+        "afterDecision": 42.1646,
+        "afterEvents": 42.1646,
+        "automaticDelta": 0
+      },
+      {
+        "cycle": 7,
+        "action": "equip:hero_warrior:r1_main_2_1_1",
+        "outcome": "equipped",
+        "beforeDecision": 42.1646,
+        "afterDecision": 42.1646,
+        "afterEvents": 42.1632,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 8,
+        "action": "challenge:r1_main_3",
+        "outcome": "win",
+        "beforeDecision": 42.1632,
+        "afterDecision": 42.1632,
+        "afterEvents": 43.0309,
+        "automaticDelta": 0.8677
+      },
+      {
+        "cycle": 9,
+        "action": "equip:militia_barricade:r1_main_3_1_0",
+        "outcome": "equipped",
+        "beforeDecision": 43.0309,
+        "afterDecision": 43.0709,
+        "afterEvents": 43.0695,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 10,
+        "action": "equip:hero_warrior:r1_main_3_1_1",
+        "outcome": "equipped",
+        "beforeDecision": 43.0695,
+        "afterDecision": 43.0695,
+        "afterEvents": 43.0681,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 11,
+        "action": "challenge:r1_prison",
+        "outcome": "loss",
+        "beforeDecision": 43.0681,
+        "afterDecision": 43.0681,
+        "afterEvents": 41.62,
+        "automaticDelta": -1.4481
+      },
+      {
+        "cycle": 12,
+        "action": "challenge:r1_main_4",
+        "outcome": "win",
+        "beforeDecision": 41.62,
+        "afterDecision": 41.62,
+        "afterEvents": 42.5655,
+        "automaticDelta": 0.9455
+      },
+      {
+        "cycle": 13,
+        "action": "equip:hero_warrior:r1_main_4_1_0",
+        "outcome": "equipped",
+        "beforeDecision": 42.5655,
+        "afterDecision": 42.5655,
+        "afterEvents": 42.5641,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 14,
+        "action": "equip:militia_barricade:r1_main_4_1_1",
+        "outcome": "equipped",
+        "beforeDecision": 42.5641,
+        "afterDecision": 42.5641,
+        "afterEvents": 42.5627,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 15,
+        "action": "challenge:r1_prison",
+        "outcome": "loss",
+        "beforeDecision": 42.5627,
+        "afterDecision": 42.5627,
+        "afterEvents": 41.251,
+        "automaticDelta": -1.3117
+      },
+      {
+        "cycle": 16,
+        "action": "challenge:r1_main_5",
+        "outcome": "win",
+        "beforeDecision": 41.251,
+        "afterDecision": 41.251,
+        "afterEvents": 42.3561,
+        "automaticDelta": 1.1051
+      },
+      {
+        "cycle": 17,
+        "action": "challenge:r1_bandit",
+        "outcome": "win",
+        "beforeDecision": 42.3561,
+        "afterDecision": 42.3961,
+        "afterEvents": 44.6715,
+        "automaticDelta": 2.2754
+      },
+      {
+        "cycle": 18,
+        "action": "equip:hero_warrior:r1_bandit_key_1_weapon",
+        "outcome": "equipped",
+        "beforeDecision": 44.6715,
+        "afterDecision": 44.7115,
+        "afterEvents": 44.7101,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 19,
+        "action": "equip:hero_warrior:r1_bandit_key_1_gloves",
+        "outcome": "equipped",
+        "beforeDecision": 44.7101,
+        "afterDecision": 44.7101,
+        "afterEvents": 44.7087,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 20,
+        "action": "challenge:r1_prison",
+        "outcome": "win",
+        "beforeDecision": 44.7087,
+        "afterDecision": 44.7087,
+        "afterEvents": 50.1772,
+        "automaticDelta": 5.4685
+      },
+      {
+        "cycle": 21,
+        "action": "swap:2:hero_ranger",
+        "outcome": "team_changed",
+        "beforeDecision": 50.1772,
+        "afterDecision": 50.2172,
+        "afterEvents": 50.2172,
+        "automaticDelta": 0
+      },
+      {
+        "cycle": 22,
+        "action": "equip:hero_ranger:r1_bandit_key_1_ranger_weapon",
+        "outcome": "equipped",
+        "beforeDecision": 50.2172,
+        "afterDecision": 50.2172,
+        "afterEvents": 50.2158,
+        "automaticDelta": -0.0014
+      },
+      {
+        "cycle": 23,
+        "action": "challenge:r1_main_6",
+        "outcome": "win",
+        "beforeDecision": 50.2158,
+        "afterDecision": 50.2158,
+        "afterEvents": 51.0748,
+        "automaticDelta": 0.859
+      },
+      {
+        "cycle": 24,
+        "action": "challenge:r1_main_7",
+        "outcome": "win",
+        "beforeDecision": 51.0748,
+        "afterDecision": 51.0748,
+        "afterEvents": 51.743,
+        "automaticDelta": 0.6682
+      }
+    ]
+  },
+  "informationBoundary": {
+    "checkedRequestCount": 0,
+    "leaks": [],
+    "pass": true
+  }
+}

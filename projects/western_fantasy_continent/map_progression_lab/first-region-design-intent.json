@@ -1,0 +1,64 @@
+{
+  "schema": "first_region_design_intent_v1",
+  "map": "r1",
+  "primaryLesson": "主动取得、手动换上并在真实战斗中验证林地游侠",
+  "immutable": {
+    "visibility": {
+      "prisonAfter": "r1_main_3",
+      "campAfter": "r1_main_5"
+    },
+    "causalOrder": [
+      "see_prison_and_ranger_reward",
+      "attempt_or_remember_prison",
+      "continue_main_4_and_main_5",
+      "obtain_camp_equipment_key",
+      "clear_prison",
+      "rescue_ranger_to_roster",
+      "manually_swap_ranger",
+      "validate_ranger_after_acquisition_window"
+    ],
+    "optionalBranches": ["r1_prison", "r1_bandit"],
+    "branchesDoNotGrantMainlinePermission": true,
+    "uniqueRewardsAreFirstClearOnly": true,
+    "rescuedHeroesDoNotAutoSwap": true,
+    "validationNode": "r1_main_7",
+    "validationCannotBeSkippedByMain8": true,
+    "validationMustOccurAfter": ["r1_main_3", "r1_main_5"]
+  },
+  "mutable": [
+    "enemy_composition",
+    "enemy_stats",
+    "drop_rates",
+    "drop_levels",
+    "hint_wording",
+    "presentation",
+    "soft_lock_strength"
+  ],
+  "acceptance": {
+    "main4AndMain5ProgressWithoutRanger": true,
+    "rangerMateriallyImprovesMain7": true,
+    "nonRangerRouteRemainsPossible": true,
+    "requiresKnowledgeBoundedPlayerSimulationAfterEveryDesignChange": true
+  },
+  "latestValidation": {
+    "run": "../experiments/player_agent_api_loop_v1/role_swap_iterations/2026-07-14_135948_restored-lock-key",
+    "seed": "restored-lock-key-2026-07-14_135948",
+    "completedDecisionCycles": 24,
+    "observedPath": [
+      "prison_loss",
+      "main4_and_main5_progress",
+      "camp_first_clear",
+      "equip_camp_keys",
+      "prison_win",
+      "manual_ranger_swap",
+      "equip_ranger_bow",
+      "main7_role_validation"
+    ],
+    "main7": {
+      "outcome": "win",
+      "rangerDamageShare": 0.5724,
+      "rangerDamageRank": 1,
+      "rangerDeliveredKill": true
+    }
+  }
+}

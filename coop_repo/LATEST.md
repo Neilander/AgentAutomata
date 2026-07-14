@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-13_2115_prison-role-visibility-paused.md`](reports/2026-07-13_2115_prison-role-visibility-paused.md)
+[`reports/2026-07-14_1817_player-hypothesis-loop-repaired.md`](reports/2026-07-14_1817_player-hypothesis-loop-repaired.md)
 
-Last updated: 2026-07-13
+Last updated: 2026-07-14
 
-Current focus: paused by user. The player-agent Prison now visibly identifies its sustained-single-target Ranger reward and all regressions pass, but the fresh run stopped after two cycles before that choice appeared. The candidate is `HOLD`; do not restart an Agent or automation without explicit user direction.
+Current focus: The explicit player-hypothesis loop is repaired and verified in a fresh Ranger run. Player hypotheses now persist across actions, settle from authoritative combat evidence, emit EVerify, and remain visible to later decisions. Next evaluate confirmable versus refutable hypotheses under a frozen model and check whether learned results change subsequent choices.

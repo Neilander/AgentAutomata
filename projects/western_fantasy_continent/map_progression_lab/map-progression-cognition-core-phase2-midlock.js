@@ -11,6 +11,9 @@
   else root.GAME_MAP_PROGRESSION_COGNITION = value;
 })(typeof globalThis !== "undefined" ? globalThis : this, function createCore(COMBAT_SIM, SKILL_DATA, ROSTER, EQUIPMENT, ENCOUNTERS, SIGNAL_PRESENTATION) {
 
+  // First-region causal invariants live beside this file in FIRST_REGION_DESIGN_INTENT.md.
+  // Keep the Ranger validation after the Prison/Camp acquisition window.
+
   const nodes = makeNodes();
   const nodesById = Object.fromEntries(nodes.map((item) => [item.id, item]));
   function makeNodes() {
@@ -19,7 +22,7 @@
       const requires = index === 1
         ? []
         : index === 8
-          ? ["r1_main_6"]
+          ? ["r1_main_7"]
           : index === 9
             ? []
             : [`r1_main_${index - 1}`];
@@ -178,7 +181,7 @@
   }
 
   function enemyHintForNode(state, item) {
-    if (state.flags.playerAgentRoleWave && item.id === "r1_main_4") {
+    if (state.flags.playerAgentRoleWave && item.id === "r1_main_7") {
       return "一头高生命蛮熊；需要对同一目标保持持续输出";
     }
     return item.enemyHint;
@@ -277,7 +280,7 @@
       event.teamExperiment = { team: ROSTER.teamLabel(state.roster, state.teamSlots), outcome: event.outcome, node: id };
       state.flags.pendingTeamExperiment = false;
     }
-    if (id === "r1_main_4" && state.teamSlots.includes("hero_ranger") && combat.win) {
+    if (id === "r1_main_7" && state.teamSlots.includes("hero_ranger") && combat.win) {
       const ranger = event.contributions.find((unit) => unit.name === "林地游侠");
       const totalDamage = event.contributions.reduce((sum, unit) => sum + (unit.damage || 0), 0);
       const share = totalDamage ? (ranger?.damage || 0) / totalDamage : 0;
@@ -485,14 +488,17 @@
   }
 
   function enemyTeam(item, state = null) {
-    if (state?.flags?.playerAgentRoleWave && item.id === "r1_main_4") return ENCOUNTERS.rangerTeachingTeam();
-    // Candidate-only onboarding tune: preserve the encounter composition while
-    // making the first visible rescue attempt viable at the Main 3 equipment band.
-    if (item.id === "r1_prison") return ENCOUNTERS.prisonTeam().map((spec) => scaleSpec(spec, 0.84));
+    if (state?.flags?.playerAgentRoleWave && item.id === "r1_main_7") return ENCOUNTERS.rangerTeachingTeam();
+    if (state?.flags?.playerAgentRoleWave && item.id === "r1_main_4") {
+      const roles = enemyRoles(item);
+      return roles.map((role, index) => scaleSpec(enemySpec(role, index, item), enemyScale(item)));
+    }
+    // Preserve a low-probability early rescue while making Camp gear the reliable key.
+    if (item.id === "r1_prison") return ENCOUNTERS.prisonTeam().map((spec) => scaleSpec(spec, 0.97));
     if (item.id === "r1_main_4") return ENCOUNTERS.bearLockTeam().map((spec) => scaleSpec(spec, 0.72));
     if (item.id === "r1_main_6") {
       const roles = ["knight", "knight", "priest", "ranger"];
-      return roles.map((role, index) => scaleSpec(enemySpec(role, index, item), enemyScale(item) * 2.1));
+      return roles.map((role, index) => scaleSpec(enemySpec(role, index, item), enemyScale(item) * 1.9));
     }
     const roles = enemyRoles(item);
     const mult = enemyScale(item);

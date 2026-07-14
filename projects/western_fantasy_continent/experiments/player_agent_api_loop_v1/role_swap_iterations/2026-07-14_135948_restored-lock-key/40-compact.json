@@ -1,0 +1,782 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 20,
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "challenge:r1_prison",
+  "outcome": "win",
+  "emotionBeforeAction": 44.7087,
+  "emotionAfterEvents": 50.1772,
+  "candidateKnowledge": [
+    {
+      "id": "knowledge:32",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_prison",
+        "phase": "encounter",
+        "team": [
+          "hero_warrior",
+          "militia_barricade",
+          "hero_mage",
+          "militia_herb"
+        ]
+      },
+      "behavior": {
+        "kind": "challenge_level",
+        "key": "challenge:r1_prison",
+        "target": "r1_prison"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "loss": 2,
+          "win": 1
+        },
+        "latestObservation": {
+          "outcome": "win",
+          "duration": 24.08,
+          "survivors": {
+            "player": 4,
+            "enemy": 0
+          },
+          "resolution": "elimination",
+          "firstClear": true
+        }
+      },
+      "evidenceEventIds": [
+        "map_action:r1_prison:15:result",
+        "map_action:r1_prison:15:summary",
+        "map_action:r1_prison:20:result",
+        "map_action:r1_prison:20:summary"
+      ],
+      "latestAttribution": {
+        "id": "ai-attribution:15",
+        "knowledgeId": "knowledge:32",
+        "cause": "The Prison remained unsolved after a 36.6% equipped-power gain; the entire squad died with three enemies remaining, refuting ordinary Main 4 gear as a sufficient key.",
+        "confidence": 0.98,
+        "evidenceEventIds": [
+          "map_action:r1_prison:15:result",
+          "map_action:r1_prison:15:summary"
+        ],
+        "alternativeCauses": [
+          "The Prison may require a more targeted preparation source rather than another small generic power increase."
+        ],
+        "nextTest": "Advance through Main 5 and inspect any newly exposed branch or targeted reward before another retry.",
+        "learnedAfterFeedback": true
+      }
+    },
+    {
+      "id": "knowledge:33",
+      "subject": {
+        "id": "hero_mage",
+        "name": "烬火法师",
+        "role": "mage",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_mage",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 4,
+        "outcomeDistribution": {
+          "combat_contribution": 4
+        },
+        "latestObservation": {
+          "outcome": "combat_contribution",
+          "damage": 1275.617,
+          "damageShare": 0.4257,
+          "damageRank": 2,
+          "teamDamage": 2996.64,
+          "healing": 0,
+          "shielding": 0,
+          "kills": 2,
+          "skillCasts": 8
+        }
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:3:combat:588",
+        "r1_prison:attempt:3:combat:589",
+        "r1_prison:attempt:3:combat:590",
+        "r1_prison:attempt:3:combat:591"
+      ],
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:34",
+      "subject": {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_warrior",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 4,
+        "outcomeDistribution": {
+          "combat_contribution": 4
+        },
+        "latestObservation": {
+          "outcome": "combat_contribution",
+          "damage": 1453.189,
+          "damageShare": 0.4849,
+          "damageRank": 1,
+          "teamDamage": 2996.64,
+          "healing": 0,
+          "shielding": 0,
+          "kills": 2,
+          "skillCasts": 8
+        }
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:3:combat:500",
+        "r1_prison:attempt:3:combat:501",
+        "r1_prison:attempt:3:combat:541",
+        "r1_prison:attempt:3:combat:576"
+      ],
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:37",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_prison",
+        "phase": "combat",
+        "team": [
+          "hero_warrior",
+          "militia_barricade",
+          "hero_mage",
+          "militia_herb"
+        ]
+      },
+      "behavior": {
+        "kind": "attack_enemy_squad",
+        "key": "team_damage:r1_prison"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "damage_profile": 3
+        },
+        "latestObservation": {
+          "outcome": "damage_profile",
+          "d50": 22.8,
+          "d90": 55.872,
+          "frequency": 3.779,
+          "impact": 0.426,
+          "hitCount": 91,
+          "killCount": 4,
+          "totalDamage": 2996.64
+        }
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:3:combat:585",
+        "r1_prison:attempt:3:combat:587",
+        "r1_prison:attempt:3:combat:588",
+        "r1_prison:attempt:3:combat:590"
+      ],
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:38",
+      "subject": {
+        "id": "enemy_squad:r1_prison",
+        "name": "enemy squad"
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_prison",
+        "phase": "combat"
+      },
+      "behavior": {
+        "kind": "attack_player_squad",
+        "key": "enemy_attack:r1_prison",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "threat_profile": 3
+        },
+        "latestObservation": {
+          "outcome": "threat_profile",
+          "firstAllyDeath": null,
+          "incomingDamage": {
+            "physical": 1071.7,
+            "magic": 0,
+            "effect": 0
+          },
+          "dominantDamage": "physical",
+          "enemySurvivors": [],
+          "enemySurvivorCount": 0
+        }
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:3:combat:551",
+        "r1_prison:attempt:3:combat:564",
+        "r1_prison:attempt:3:combat:566",
+        "r1_prison:attempt:3:combat:586"
+      ],
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:39",
+      "subject": {
+        "id": "concept:enemy_minion_ranged",
+        "name": "远程小怪",
+        "conceptId": "enemy_minion_ranged"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_ranged",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 4,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 4
+        },
+        "latestObservation": {
+          "outcome": "enemy_concept_threat",
+          "observedUnitCount": 2,
+          "damage": 857.092,
+          "damageShare": 0.7998,
+          "threatRank": 1,
+          "healing": 0,
+          "shielding": 178.08,
+          "kills": 0,
+          "skillCasts": 9,
+          "observedTargets": [
+            "拒马民兵",
+            "灰鸦战士"
+          ],
+          "supportTargets": [
+            "远程小怪"
+          ]
+        }
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:3:combat:562",
+        "r1_prison:attempt:3:combat:563",
+        "r1_prison:attempt:3:combat:564",
+        "r1_prison:attempt:3:combat:586"
+      ],
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:66",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_prison",
+        "phase": "loot_drop"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r1_prison",
+        "target": "r1_prison"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "loot_obtained": 1
+        },
+        "latestObservation": {
+          "outcome": "loot_obtained",
+          "drops": [
+            {
+              "id": "r1_prison_3_0",
+              "name": "普通护手 Lv.10",
+              "slot": "gloves",
+              "rarity": "common",
+              "level": 10
+            },
+            {
+              "id": "r1_prison_3_1",
+              "name": "普通戒指 Lv.11",
+              "slot": "ring",
+              "rarity": "common",
+              "level": 11
+            }
+          ],
+          "inventoryCountBefore": 5,
+          "inventoryCountAfter": 7,
+          "equippedPowerBefore": 419,
+          "equippedPowerAfter": 419,
+          "powerChanged": false
+        }
+      },
+      "evidenceEventIds": [
+        "map_action:r1_prison:20:result",
+        "map_action:r1_prison:20:loot:1",
+        "map_action:r1_prison:20:loot:2"
+      ],
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:67",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_prison",
+        "phase": "character_reward"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r1_prison",
+        "target": "r1_prison"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "character_unlocked": 1
+        },
+        "latestObservation": {
+          "outcome": "character_unlocked",
+          "character": {
+            "id": "ranger",
+            "heroId": "hero_ranger",
+            "name": "林地游侠"
+          },
+          "activeTeamChanged": false
+        }
+      },
+      "evidenceEventIds": [
+        "map_action:r1_prison:20:character"
+      ],
+      "latestAttribution": null
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "r1_prison:attempt:3:combat:335",
+      "time": 13.6,
+      "type": "damage",
+      "subject": "烬火法师",
+      "behavior": "燃烧",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 6.45,
+        "target": "远程小怪"
+      },
+      "H": 0.2023,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r1_prison:attempt:3:combat:361",
+      "time": 14.64,
+      "type": "damage",
+      "subject": "烬火法师",
+      "behavior": "燃烧",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 6.45,
+        "target": "远程小怪"
+      },
+      "H": 0.2023,
+      "emotionDelta": 0.0001
+    },
+    {
+      "id": "r1_prison:attempt:3:combat:391",
+      "time": 16.08,
+      "type": "death",
+      "subject": "灰鸦战士",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.2401,
+      "emotionDelta": 0.0451
+    },
+    {
+      "id": "r1_prison:attempt:3:combat:486",
+      "time": 19.92,
+      "type": "status",
+      "subject": "灰鸦战士",
+      "behavior": "战旗冲锋",
+      "result": {
+        "kind": "status",
+        "occurred": true,
+        "amount": 3.5,
+        "target": "烬火法师"
+      },
+      "H": 0.2466,
+      "emotionDelta": -0.0012
+    },
+    {
+      "id": "r1_prison:attempt:3:combat:487",
+      "time": 19.92,
+      "type": "status",
+      "subject": "灰鸦战士",
+      "behavior": "战旗冲锋",
+      "result": {
+        "kind": "status",
+        "occurred": true,
+        "amount": 3.5,
+        "target": "草药民兵"
+      },
+      "H": 0.2466,
+      "emotionDelta": -0.0009
+    },
+    {
+      "id": "r1_prison:attempt:3:combat:501",
+      "time": 20.16,
+      "type": "death",
+      "subject": "灰鸦战士",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "远程小怪"
+      },
+      "H": 0.1019,
+      "emotionDelta": 0.0166
+    },
+    {
+      "id": "r1_prison:attempt:3:combat:532",
+      "time": 21.28,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.96,
+        "target": "拒马民兵"
+      },
+      "H": 0.286,
+      "emotionDelta": -0.0005
+    },
+    {
+      "id": "r1_prison:attempt:3:combat:566",
+      "time": 22.8,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.96,
+        "target": "拒马民兵"
+      },
+      "H": 0.286,
+      "emotionDelta": -0.0007
+    },
+    {
+      "id": "r1_prison:attempt:3:combat:586",
+      "time": 23.84,
+      "type": "damage",
+      "subject": "远程小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 14.38,
+        "target": "灰鸦战士"
+      },
+      "H": 0.286,
+      "emotionDelta": -0.0083
+    },
+    {
+      "id": "map_action:r1_prison:20:result",
+      "time": 24.08,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "challenge:r1_prison",
+      "result": {
+        "kind": "combat_win",
+        "occurred": true,
+        "observedPower": 419,
+        "boundary": "normal_end",
+        "firstClear": true,
+        "survivors": {
+          "player": 4,
+          "enemy": 0
+        }
+      },
+      "H": 0.7172,
+      "emotionDelta": 0.5931
+    },
+    {
+      "id": "r1_prison:attempt:3:combat:589",
+      "time": 24.08,
+      "type": "death",
+      "subject": "烬火法师",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "远程小怪"
+      },
+      "H": 0.2813,
+      "emotionDelta": 0.0459
+    },
+    {
+      "id": "r1_prison:attempt:3:combat:591",
+      "time": 24.08,
+      "type": "death",
+      "subject": "烬火法师",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.2401,
+      "emotionDelta": 0.0364
+    },
+    {
+      "id": "r1_prison:attempt:3:combat:592",
+      "time": 24.08,
+      "type": "skill",
+      "subject": "普通小怪",
+      "behavior": "急救",
+      "result": {
+        "kind": "skill",
+        "occurred": true,
+        "amount": 0,
+        "target": "拒马民兵"
+      },
+      "H": 0.2664,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:r1_prison:20:loot-outcome",
+      "time": 24.084999999999997,
+      "type": "loot_outcome",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "probability_outcome",
+        "occurred": true,
+        "components": []
+      },
+      "H": 0.4349,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:r1_prison:20:loot:1",
+      "time": 24.09,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "common",
+        "itemName": "普通护手 Lv.10"
+      },
+      "H": 0.6946,
+      "emotionDelta": 0.2074
+    },
+    {
+      "id": "map_action:r1_prison:20:loot:2",
+      "time": 24.099999999999998,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "common",
+        "itemName": "普通戒指 Lv.11"
+      },
+      "H": 0.6946,
+      "emotionDelta": 0.1803
+    },
+    {
+      "id": "map_action:r1_prison:20:character",
+      "time": 24.119999999999997,
+      "type": "character_unlock",
+      "subject": "player squad",
+      "behavior": "character rescue",
+      "result": {
+        "kind": "character_unlock",
+        "occurred": true,
+        "character": "ranger",
+        "heroId": "hero_ranger",
+        "characterName": "林地游侠"
+      },
+      "H": 0.755,
+      "emotionDelta": 3.2565
+    },
+    {
+      "id": "map_action:r1_prison:20:summary",
+      "time": 24.159999999999997,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "challenge:r1_prison",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 419,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "combat_win"
+          },
+          {
+            "kind": "character_unlock"
+          }
+        ]
+      },
+      "H": 0.5663,
+      "emotionDelta": 1.0641
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "auditNote": "candidateKnowledge contains only rows citing at least one currently visible event; exact ids remain unchanged."
+}

@@ -3,6 +3,7 @@ const LOOP = require("./player-agent-loop");
 const COMBAT_SIM = require("../../game_data/combat-sim");
 const ENCOUNTERS = require("../../map_progression_lab/map-progression-encounters");
 const ROSTER = require("../../map_progression_lab/map-progression-roster");
+const DESIGN_INTENT = require("../../map_progression_lab/first-region-design-intent.json");
 
 let session = LOOP.createSession("causal-loop-test", 2);
 const initialRequest = LOOP.getPendingRequest(session);
@@ -149,22 +150,65 @@ assert.equal("affordanceExperiments" in postMain2Request.playerState, false);
 assert.equal(postMain2Request.playerState.hypotheses.some((row) => String(row.id).includes("team-experiment")), false);
 assert(onboarding.evaluatorState.affordanceExperiments.some((row) => row.heroId === "hero_mage" && row.status === "available"));
 
-onboarding = chooseAndAttribute(onboarding, "swap:2:hero_mage");
+assert.throws(() => LOOP.applyDecisionResponse(onboarding, {
+  action: "swap:2:hero_mage",
+  goalId: "grow_and_progress",
+  reasoningChain: [{ kind: "hypothesis", evidence: "Mage may contribute damage." }],
+  alternatives: [],
+  hypothesis: {
+    id: "invalid-mage-hypothesis",
+    problem: "Mage value is unknown.",
+    cause: "Mage may deal damage.",
+    resultKind: "team_experiment_contribution",
+    target: "hero_mage",
+    verificationScope: "next_combat",
+    targetCondition: { metric: "damage", operator: ">", value: 0 },
+  },
+}), /decision hypothesis rejected/, "an incomplete reasoning chain must not silently discard a hypothesis");
+
+onboarding = LOOP.applyDecisionResponse(onboarding, hypothesisDecisionFor("swap:2:hero_mage", {
+  id: "player-test-mage-contribution",
+  problem: "The newly rescued Mage's combat value is unknown.",
+  cause: "Putting the Mage in the active team should produce visible spell damage in the next battle.",
+  resultKind: "team_experiment_contribution",
+  target: "hero_mage",
+  verificationScope: "next_combat",
+  targetCondition: { metric: "damage", operator: ">", value: 0 },
+}));
+onboarding = attributePending(onboarding);
 const postSwapRequest = LOOP.getPendingRequest(onboarding);
 assert.equal(postSwapRequest.playerState.hypotheses.some((row) => String(row.id).includes("team-experiment")), false, "the evaluator must not tell the player agent to verify its swap");
+const pendingMageHypothesis = postSwapRequest.playerState.hypotheses.find((row) => row.id === "player-test-mage-contribution");
+assert.equal(pendingMageHypothesis.status, "pending", "the player's delayed hypothesis must survive the swap action");
+assert.equal(pendingMageHypothesis.verificationScope, "next_combat");
 assert(onboarding.evaluatorState.affordanceExperiments.some((row) => row.heroId === "hero_mage" && row.status === "awaiting_combat"));
 onboarding = LOOP.applyDecisionResponse(onboarding, decisionFor("challenge:r1_main_3"));
 const experimentEvent = onboarding.history.at(-1).eventLog.find((row) => row.type === "team_experiment_result");
+const hypothesisTrace = onboarding.history.at(-1).eventTrace.find((row) => row.hypothesisVerification
+  .some((verification) => verification.id === "player-test-mage-contribution"));
+const mageSettledContribution = onboarding.history.at(-1).gameEvent.contributions.find((row) => row.name === visibleMage.name);
+const settledTeamDamage = onboarding.history.at(-1).gameEvent.contributions.reduce((sum, row) => sum + row.damage, 0);
+const settledMageRank = 1 + onboarding.history.at(-1).gameEvent.contributions
+  .filter((row) => row.damage > mageSettledContribution.damage).length;
 assert.equal(onboarding.history.at(-1).outcome, "win");
 assert.equal(experimentEvent.result.heroId, "hero_mage");
 assert(experimentEvent.result.contribution.damage > 0, "Mage experiment must record visible combat contribution");
+assert.equal(experimentEvent.result.contribution.damage, mageSettledContribution.damage, "experiment damage must match authoritative combat settlement");
+assert.equal(experimentEvent.result.contribution.teamDamage, settledTeamDamage);
+assert.equal(experimentEvent.result.contribution.damageRank, settledMageRank);
+assert.equal(hypothesisTrace.EVerify, 1, "a measured next-combat comparison must produce one EVerify");
+assert.equal(hypothesisTrace.hypothesisVerification[0].status, "confirmed");
+assert.equal(hypothesisTrace.hypothesisVerification[0].observedValue, experimentEvent.result.contribution.damage);
+assert.equal(onboarding.cognitionState.hypotheses.find((row) => row.id === "player-test-mage-contribution").status, "confirmed");
 assert.equal(onboarding.cognitionState.affordanceExperiments.length, 0);
 assert(onboarding.evaluatorState.affordanceExperiments.some((row) => row.heroId === "hero_mage" && row.status === "resolved"));
 onboarding = attributePending(onboarding);
 const postMain3Request = LOOP.getPendingRequest(onboarding);
-assert.equal(
+assert.equal(postMain3Request.playerState.hypotheses.find((row) => row.id === "player-test-mage-contribution").status, "confirmed", "the next decision must see the verified result");
+assert.notEqual(
   postMain3Request.observation.visibleNodes.find((node) => node.id === "r1_main_4")?.enemyHint,
   "一头高生命蛮熊；需要对同一目标保持持续输出",
+  "Main 4 must not require the Ranger before the Prison/Camp acquisition window",
 );
 assert.equal(
   postMain3Request.observation.visibleNodes.find((node) => node.id === "r1_prison")?.rewardHint,
@@ -174,10 +218,13 @@ assert.equal(
   postMain3Request.observation.optionalOpportunities.find((row) => row.node === "r1_prison")?.reason,
   "可选救援：首通营救擅长持续单体输出的林地游侠",
 );
+assert.equal(DESIGN_INTENT.immutable.validationNode, "r1_main_7");
+assert.equal(DESIGN_INTENT.immutable.branchesDoNotGrantMainlinePermission, true);
+assert.deepEqual(DESIGN_INTENT.immutable.optionalBranches, ["r1_prison", "r1_bandit"]);
 
 const teachingEnemy = ENCOUNTERS.rangerTeachingTeam();
 assert.equal(teachingEnemy.length, 1);
-assert.equal(teachingEnemy[0].hp, 850);
+assert.equal(teachingEnemy[0].hp, 1000);
 const teachingRoster = ROSTER.rescueHero(ROSTER.createInitialRoster(), "ranger");
 let mageWins = 0;
 let rangerWins = 0;
@@ -188,8 +235,8 @@ for (let index = 0; index < 20; index += 1) {
   if (COMBAT_SIM.simulateTeams(mageTeam, teachingEnemy, options).winner === "left") mageWins += 1;
   if (COMBAT_SIM.simulateTeams(rangerTeam, teachingEnemy, options).winner === "left") rangerWins += 1;
 }
-assert(rangerWins >= 18, `Ranger should reliably solve the visible single-target lock; wins=${rangerWins}`);
-assert(mageWins <= 5, `Mage should not erase the single-target teaching contrast; wins=${mageWins}`);
+assert(rangerWins >= 8, `The naked Ranger team should retain visible single-target value; wins=${rangerWins}`);
+assert(rangerWins >= mageWins + 8, `Ranger should clearly outperform Mage before progression gear; ranger=${rangerWins}, mage=${mageWins}`);
 
 let repeated = LOOP.createSession("knowledge-dedup-test", 9);
 for (let cycle = 0; cycle < 9; cycle += 1) {
@@ -240,6 +287,22 @@ function decisionFor(action) {
     reasoningChain: [{ kind: "affordance", evidence: `Exercise visible action ${action}.` }],
     alternatives: [],
     hypothesis: null,
+  };
+}
+
+function hypothesisDecisionFor(action, hypothesis) {
+  return {
+    action,
+    goalId: "grow_and_progress",
+    reasoningChain: [
+      { kind: "goal", evidence: "Improve the active squad and continue progression." },
+      { kind: "knowledge", evidence: "The newly unlocked hero has not yet fought in the active team." },
+      { kind: "affordance", evidence: `${action} can place that hero into the active team.` },
+      { kind: "comparison", evidence: "Keeping the current unit would not test the new hero's contribution." },
+      { kind: "hypothesis", evidence: "The next combat can measure the new hero's contribution." },
+    ],
+    alternatives: [{ action: "challenge:r1_main_3", reason: "Continue without testing the new hero." }],
+    hypothesis,
   };
 }
 

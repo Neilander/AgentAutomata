@@ -1,0 +1,25 @@
+{
+  "action": "challenge:r1_main_7",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    { "kind": "goal", "evidence": "Main 7 is the available main encounter for continued progression." },
+    { "kind": "knowledge", "evidence": "The confirmed Ranger hypothesis recorded 0.3817 damageShare, above its 0.0334 target." },
+    { "kind": "evidence", "evidence": "The Ranger ranked first in damage during Main 6 and is described as tracking one target while accumulating marks." },
+    { "kind": "affordance", "evidence": "Main 7 presents one high-health bear and explicitly requires sustained damage against the same target." },
+    { "kind": "comparison", "evidence": "Main 7 directly matches the Ranger's sustained-target behavior; repeating Main 6 would not progress, while equipping gloves would delay the encounter." },
+    { "kind": "hypothesis", "evidence": "Main 7 can distinctly test whether the Ranger remains the top-ranked damage dealer against a single high-health target." }
+  ],
+  "alternatives": [
+    { "action": "equip:hero_ranger:r1_main_5_1_1", "reason": "Add another item before the encounter." },
+    { "action": "challenge:r1_main_6", "reason": "Repeat the previous encounter." }
+  ],
+  "hypothesis": {
+    "id": "hypothesis:ranger_single_target_rank:24",
+    "problem": "It is unknown whether the Ranger's confirmed contribution extends to top-ranked damage against a high-health single target.",
+    "cause": "The Ranger's target tracking and accumulating marks should suit Main 7's sustained same-target requirement.",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_ranger",
+    "verificationScope": "current_action",
+    "targetCondition": { "metric": "damageRank", "operator": "==", "value": 1 }
+  }
+}

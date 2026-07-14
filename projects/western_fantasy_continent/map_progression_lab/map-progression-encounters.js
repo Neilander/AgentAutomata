@@ -111,8 +111,8 @@
     return [{
       ...bear,
       name: "狂鬃熊王",
-      hp: 850,
-      maxHp: 850,
+      hp: 1000,
+      maxHp: 1000,
     }];
   }
 

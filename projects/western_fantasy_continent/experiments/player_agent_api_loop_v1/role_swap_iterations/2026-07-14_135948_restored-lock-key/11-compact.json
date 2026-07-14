@@ -1,0 +1,1535 @@
+{
+  "type": "decision",
+  "schema": "player_decision_request_v1",
+  "cycle": 6,
+  "instruction": "Choose exactly one allowed action. Use only supplied observations and knowledge. Do not calculate or set emotion.",
+  "playerState": {
+    "emotion": 42.1246,
+    "activeGoalId": "grow_and_progress",
+    "goals": [
+      {
+        "id": "grow_and_progress",
+        "objectiveValue": 1,
+        "subjectiveValue": 0.35,
+        "progress": 0.32
+      }
+    ],
+    "failureMemories": [],
+    "hypotheses": [],
+    "knowledge": [
+      {
+        "id": "knowledge:1",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_spear",
+              "name": "短矛民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_1",
+          "phase": "encounter",
+          "team": [
+            "hero_warrior",
+            "militia_barricade",
+            "militia_spear",
+            "militia_herb"
+          ]
+        },
+        "behavior": {
+          "kind": "challenge_level",
+          "key": "challenge:r1_main_1",
+          "target": "r1_main_1"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "win": 1
+          },
+          "latestObservation": {
+            "outcome": "win",
+            "duration": 37.36,
+            "survivors": {
+              "player": 4,
+              "enemy": 0
+            },
+            "resolution": "elimination",
+            "firstClear": true
+          }
+        },
+        "evidenceEventIds": [
+          "map_action:r1_main_1:1:result",
+          "map_action:r1_main_1:1:summary"
+        ],
+        "latestAttribution": {
+          "id": "ai-attribution:1",
+          "knowledgeId": "knowledge:1",
+          "cause": "The active squad eliminated the enemy squad before losing any member, producing the observed win.",
+          "confidence": 0.98,
+          "evidenceEventIds": [
+            "map_action:r1_main_1:1:result",
+            "map_action:r1_main_1:1:summary"
+          ],
+          "alternativeCauses": [
+            "The encounter may have posed a low enough physical threat that the starting squad composition was not decisive."
+          ],
+          "nextTest": "Equip the obtained gear and compare survival and completion against the next available main encounter.",
+          "learnedAfterFeedback": true
+        }
+      },
+      {
+        "id": "knowledge:2",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_spear",
+              "name": "短矛民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_1",
+          "phase": "map_progression"
+        },
+        "behavior": {
+          "kind": "clear_level",
+          "key": "challenge:r1_main_1",
+          "target": "r1_main_1"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "win": 1
+          },
+          "latestObservation": {
+            "outcome": "win",
+            "unlockedNodes": [
+              "r1_main_2"
+            ],
+            "clearedNode": "r1_main_1"
+          }
+        },
+        "evidenceEventIds": [
+          "map_unlock:r1_main_1:1"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:3",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_spear",
+              "name": "短矛民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_1",
+          "phase": "loot_drop"
+        },
+        "behavior": {
+          "kind": "clear_level",
+          "key": "challenge:r1_main_1",
+          "target": "r1_main_1"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "loot_obtained": 1
+          },
+          "latestObservation": {
+            "outcome": "loot_obtained",
+            "drops": [
+              {
+                "id": "r1_main_1_1_0",
+                "name": "普通护手 Lv.3",
+                "slot": "gloves",
+                "rarity": "common",
+                "level": 3
+              },
+              {
+                "id": "r1_main_1_1_1",
+                "name": "普通护符 Lv.3",
+                "slot": "charm",
+                "rarity": "common",
+                "level": 3
+              }
+            ],
+            "inventoryCountBefore": 0,
+            "inventoryCountAfter": 2,
+            "equippedPowerBefore": 0,
+            "equippedPowerAfter": 0,
+            "powerChanged": false
+          }
+        },
+        "evidenceEventIds": [
+          "map_action:r1_main_1:1:result",
+          "map_action:r1_main_1:1:loot:1",
+          "map_action:r1_main_1:1:loot:2"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:4",
+        "subject": {
+          "id": "hero_warrior",
+          "name": "灰鸦战士",
+          "role": "warrior",
+          "kind": "hero"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "combat_participation",
+          "key": "fight:hero_warrior",
+          "target": "enemy_squad"
+        },
+        "result": {
+          "sampleCount": 2,
+          "outcomeDistribution": {
+            "combat_contribution": 2
+          },
+          "latestObservation": {
+            "outcome": "combat_contribution",
+            "damage": 316.287,
+            "damageShare": 0.6534,
+            "damageRank": 1,
+            "teamDamage": 484.088,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 3,
+            "skillCasts": 5
+          }
+        },
+        "evidenceEventIds": [
+          "r1_main_2:attempt:1:combat:318",
+          "r1_main_2:attempt:1:combat:319",
+          "r1_main_2:attempt:1:combat:320",
+          "r1_main_2:attempt:1:combat:321"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:5",
+        "subject": {
+          "id": "militia_spear",
+          "name": "短矛民兵",
+          "role": "warrior",
+          "kind": "militia"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "combat_participation",
+          "key": "fight:militia_spear",
+          "target": "enemy_squad"
+        },
+        "result": {
+          "sampleCount": 2,
+          "outcomeDistribution": {
+            "combat_contribution": 2
+          },
+          "latestObservation": {
+            "outcome": "combat_contribution",
+            "damage": 106.752,
+            "damageShare": 0.2205,
+            "damageRank": 2,
+            "teamDamage": 484.088,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 2
+          }
+        },
+        "evidenceEventIds": [
+          "r1_main_2:attempt:1:combat:247",
+          "r1_main_2:attempt:1:combat:248",
+          "r1_main_2:attempt:1:combat:249",
+          "r1_main_2:attempt:1:combat:301"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:6",
+        "subject": {
+          "id": "militia_herb",
+          "name": "草药民兵",
+          "role": "priest",
+          "kind": "militia"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "combat_participation",
+          "key": "fight:militia_herb",
+          "target": "enemy_squad"
+        },
+        "result": {
+          "sampleCount": 2,
+          "outcomeDistribution": {
+            "combat_contribution": 2
+          },
+          "latestObservation": {
+            "outcome": "combat_contribution",
+            "damage": 40.166,
+            "damageShare": 0.083,
+            "damageRank": 3,
+            "teamDamage": 484.088,
+            "healing": 123.66,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 2
+          }
+        },
+        "evidenceEventIds": [
+          "r1_main_2:attempt:1:combat:203",
+          "r1_main_2:attempt:1:combat:213",
+          "r1_main_2:attempt:1:combat:250",
+          "r1_main_2:attempt:1:combat:317"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:7",
+        "subject": {
+          "id": "militia_barricade",
+          "name": "拒马民兵",
+          "role": "warrior",
+          "kind": "militia"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "combat_participation",
+          "key": "fight:militia_barricade",
+          "target": "enemy_squad"
+        },
+        "result": {
+          "sampleCount": 2,
+          "outcomeDistribution": {
+            "combat_contribution": 2
+          },
+          "latestObservation": {
+            "outcome": "combat_contribution",
+            "damage": 20.883,
+            "damageShare": 0.0431,
+            "damageRank": 4,
+            "teamDamage": 484.088,
+            "healing": 78.61,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 2
+          }
+        },
+        "evidenceEventIds": [
+          "r1_main_2:attempt:1:combat:201",
+          "r1_main_2:attempt:1:combat:227",
+          "r1_main_2:attempt:1:combat:228",
+          "r1_main_2:attempt:1:combat:236"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:8",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_spear",
+              "name": "短矛民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_1",
+          "phase": "combat",
+          "team": [
+            "hero_warrior",
+            "militia_barricade",
+            "militia_spear",
+            "militia_herb"
+          ]
+        },
+        "behavior": {
+          "kind": "attack_enemy_squad",
+          "key": "team_damage:r1_main_1"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "damage_profile": 1
+          },
+          "latestObservation": {
+            "outcome": "damage_profile",
+            "d50": 14.76,
+            "d90": 42.96,
+            "frequency": 2.73,
+            "impact": 0.576,
+            "hitCount": 102,
+            "killCount": 10,
+            "totalDamage": 2362.361
+          }
+        },
+        "evidenceEventIds": [
+          "r1_main_1:attempt:1:combat:996",
+          "r1_main_1:attempt:1:combat:997",
+          "r1_main_1:attempt:1:combat:1017",
+          "r1_main_1:attempt:1:combat:1018"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:9",
+        "subject": {
+          "id": "enemy_squad:r1_main_1",
+          "name": "enemy squad"
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_1",
+          "phase": "combat"
+        },
+        "behavior": {
+          "kind": "attack_player_squad",
+          "key": "enemy_attack:r1_main_1",
+          "target": "player_squad"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "threat_profile": 1
+          },
+          "latestObservation": {
+            "outcome": "threat_profile",
+            "firstAllyDeath": null,
+            "incomingDamage": {
+              "physical": 402.8,
+              "magic": 0,
+              "effect": 0
+            },
+            "dominantDamage": "physical",
+            "enemySurvivors": [],
+            "enemySurvivorCount": 0
+          }
+        },
+        "evidenceEventIds": [
+          "r1_main_1:attempt:1:combat:946",
+          "r1_main_1:attempt:1:combat:947",
+          "r1_main_1:attempt:1:combat:980",
+          "r1_main_1:attempt:1:combat:981"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:10",
+        "subject": {
+          "id": "concept:enemy_minion_generic",
+          "name": "普通小怪",
+          "conceptId": "enemy_minion_generic"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "fight_player_squad",
+          "key": "enemy_concept_threat:enemy_minion_generic",
+          "target": "player_squad"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "enemy_concept_threat": 1
+          },
+          "latestObservation": {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 10,
+            "damage": 402.7712,
+            "damageShare": 1,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 0,
+            "observedTargets": [
+              "拒马民兵",
+              "灰鸦战士",
+              "短矛民兵"
+            ],
+            "supportTargets": []
+          }
+        },
+        "evidenceEventIds": [
+          "r1_main_1:attempt:1:combat:946",
+          "r1_main_1:attempt:1:combat:947",
+          "r1_main_1:attempt:1:combat:980",
+          "r1_main_1:attempt:1:combat:981"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:11",
+        "subject": {
+          "id": "player",
+          "role": "player"
+        },
+        "environment": {
+          "region": "region_1",
+          "phase": "equipment",
+          "hero": {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          }
+        },
+        "behavior": {
+          "kind": "equip_item",
+          "key": "equip:hero_warrior:r1_main_1_1_0",
+          "itemId": "r1_main_1_1_0",
+          "target": "hero_warrior"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "item_equipped": 1
+          },
+          "latestObservation": {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r1_main_1_1_0",
+              "name": "普通护手 Lv.3",
+              "slot": "gloves",
+              "slotLabel": "护手",
+              "rarity": "common",
+              "rarityLabel": "普通",
+              "level": 3,
+              "baseStats": {
+                "physicalPower": 1,
+                "armor": 1
+              },
+              "affixes": [
+                {
+                  "id": "armorBreak",
+                  "stat": "armorBreak",
+                  "label": "破甲",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 3
+                }
+              ]
+            },
+            "replacedItem": null,
+            "equippedPowerBefore": 0,
+            "equippedPowerAfter": 32,
+            "powerDelta": 32
+          }
+        },
+        "evidenceEventIds": [
+          "equip_action:2:r1_main_1_1_0:start",
+          "equip_action:2:r1_main_1_1_0:result",
+          "equip_action:2:r1_main_1_1_0:summary"
+        ],
+        "latestAttribution": {
+          "id": "ai-attribution:2",
+          "knowledgeId": "knowledge:11",
+          "cause": "Equipping the common gloves on the warrior increased equipped power from 0 to 32.",
+          "confidence": 1,
+          "evidenceEventIds": [
+            "equip_action:2:r1_main_1_1_0:result",
+            "equip_action:2:r1_main_1_1_0:summary"
+          ],
+          "alternativeCauses": [],
+          "nextTest": "Challenge the next main encounter and observe whether the equipped warrior retains strong combat contribution.",
+          "learnedAfterFeedback": true
+        }
+      },
+      {
+        "id": "knowledge:12",
+        "subject": {
+          "id": "player",
+          "role": "player"
+        },
+        "environment": {
+          "region": "region_1",
+          "phase": "equipment",
+          "hero": {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        },
+        "behavior": {
+          "kind": "equip_item",
+          "key": "equip:militia_herb:r1_main_1_1_1",
+          "itemId": "r1_main_1_1_1",
+          "target": "militia_herb"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "item_equipped": 1
+          },
+          "latestObservation": {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r1_main_1_1_1",
+              "name": "普通护符 Lv.3",
+              "slot": "charm",
+              "slotLabel": "护符",
+              "rarity": "common",
+              "rarityLabel": "普通",
+              "level": 3,
+              "baseStats": {
+                "magicPower": 1
+              },
+              "affixes": [
+                {
+                  "id": "stealthDuration",
+                  "stat": "stealthDuration",
+                  "label": "隐身持续",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 3
+                }
+              ]
+            },
+            "replacedItem": null,
+            "equippedPowerBefore": 32,
+            "equippedPowerAfter": 52,
+            "powerDelta": 20
+          }
+        },
+        "evidenceEventIds": [
+          "equip_action:3:r1_main_1_1_1:start",
+          "equip_action:3:r1_main_1_1_1:result",
+          "equip_action:3:r1_main_1_1_1:summary"
+        ],
+        "latestAttribution": {
+          "id": "ai-attribution:3",
+          "knowledgeId": "knowledge:12",
+          "cause": "Equipping the common charm on the healer increased total equipped power from 32 to 52.",
+          "confidence": 1,
+          "evidenceEventIds": [
+            "equip_action:3:r1_main_1_1_1:result",
+            "equip_action:3:r1_main_1_1_1:summary"
+          ],
+          "alternativeCauses": [],
+          "nextTest": "Challenge the next main encounter and observe healer contribution and squad survival.",
+          "learnedAfterFeedback": true
+        }
+      },
+      {
+        "id": "knowledge:13",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_spear",
+              "name": "短矛民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_2",
+          "phase": "encounter",
+          "team": [
+            "hero_warrior",
+            "militia_barricade",
+            "militia_spear",
+            "militia_herb"
+          ]
+        },
+        "behavior": {
+          "kind": "challenge_level",
+          "key": "challenge:r1_main_2",
+          "target": "r1_main_2"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "win": 1
+          },
+          "latestObservation": {
+            "outcome": "win",
+            "duration": 16.24,
+            "survivors": {
+              "player": 4,
+              "enemy": 0
+            },
+            "resolution": "elimination",
+            "firstClear": true
+          }
+        },
+        "evidenceEventIds": [
+          "map_action:r1_main_2:4:result",
+          "map_action:r1_main_2:4:summary"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:14",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_spear",
+              "name": "短矛民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_2",
+          "phase": "map_progression"
+        },
+        "behavior": {
+          "kind": "clear_level",
+          "key": "challenge:r1_main_2",
+          "target": "r1_main_2"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "win": 1
+          },
+          "latestObservation": {
+            "outcome": "win",
+            "unlockedNodes": [
+              "r1_main_3"
+            ],
+            "clearedNode": "r1_main_2"
+          }
+        },
+        "evidenceEventIds": [
+          "map_unlock:r1_main_2:4"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:15",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_spear",
+              "name": "短矛民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_2",
+          "phase": "loot_drop"
+        },
+        "behavior": {
+          "kind": "clear_level",
+          "key": "challenge:r1_main_2",
+          "target": "r1_main_2"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "loot_obtained": 1
+          },
+          "latestObservation": {
+            "outcome": "loot_obtained",
+            "drops": [
+              {
+                "id": "r1_main_2_1_0",
+                "name": "普通戒指 Lv.2",
+                "slot": "ring",
+                "rarity": "common",
+                "level": 2
+              },
+              {
+                "id": "r1_main_2_1_1",
+                "name": "普通武器 Lv.4",
+                "slot": "weapon",
+                "rarity": "common",
+                "level": 4
+              }
+            ],
+            "inventoryCountBefore": 0,
+            "inventoryCountAfter": 2,
+            "equippedPowerBefore": 52,
+            "equippedPowerAfter": 52,
+            "powerChanged": false
+          }
+        },
+        "evidenceEventIds": [
+          "map_action:r1_main_2:4:result",
+          "map_action:r1_main_2:4:loot:1",
+          "map_action:r1_main_2:4:loot:2"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:16",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_spear",
+              "name": "短矛民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_2",
+          "phase": "character_reward"
+        },
+        "behavior": {
+          "kind": "clear_level",
+          "key": "challenge:r1_main_2",
+          "target": "r1_main_2"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "character_unlocked": 1
+          },
+          "latestObservation": {
+            "outcome": "character_unlocked",
+            "character": {
+              "id": "mage",
+              "heroId": "hero_mage",
+              "name": "烬火法师"
+            },
+            "activeTeamChanged": false
+          }
+        },
+        "evidenceEventIds": [
+          "map_action:r1_main_2:4:character"
+        ],
+        "latestAttribution": {
+          "id": "ai-attribution:4",
+          "knowledgeId": "knowledge:16",
+          "cause": "The cleared encounter produced a character unlock for the mage.",
+          "confidence": 1,
+          "evidenceEventIds": [
+            "map_action:r1_main_2:4:character"
+          ],
+          "alternativeCauses": [],
+          "nextTest": "",
+          "learnedAfterFeedback": true
+        }
+      },
+      {
+        "id": "knowledge:17",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_spear",
+              "name": "短矛民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_2",
+          "phase": "combat",
+          "team": [
+            "hero_warrior",
+            "militia_barricade",
+            "militia_spear",
+            "militia_herb"
+          ]
+        },
+        "behavior": {
+          "kind": "attack_enemy_squad",
+          "key": "team_damage:r1_main_2"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "damage_profile": 1
+          },
+          "latestObservation": {
+            "outcome": "damage_profile",
+            "d50": 9,
+            "d90": 37.2,
+            "frequency": 1.97,
+            "impact": 0.36,
+            "hitCount": 32,
+            "killCount": 3,
+            "totalDamage": 484.088
+          }
+        },
+        "evidenceEventIds": [
+          "r1_main_2:attempt:1:combat:261",
+          "r1_main_2:attempt:1:combat:301",
+          "r1_main_2:attempt:1:combat:317",
+          "r1_main_2:attempt:1:combat:320"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:18",
+        "subject": {
+          "id": "enemy_squad:r1_main_2",
+          "name": "enemy squad"
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_2",
+          "phase": "combat"
+        },
+        "behavior": {
+          "kind": "attack_player_squad",
+          "key": "enemy_attack:r1_main_2",
+          "target": "player_squad"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "threat_profile": 1
+          },
+          "latestObservation": {
+            "outcome": "threat_profile",
+            "firstAllyDeath": null,
+            "incomingDamage": {
+              "physical": 544.4,
+              "magic": 0,
+              "effect": 0
+            },
+            "dominantDamage": "physical",
+            "enemySurvivors": [],
+            "enemySurvivorCount": 0
+          }
+        },
+        "evidenceEventIds": [
+          "r1_main_2:attempt:1:combat:245",
+          "r1_main_2:attempt:1:combat:270",
+          "r1_main_2:attempt:1:combat:278",
+          "r1_main_2:attempt:1:combat:300"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:19",
+        "subject": {
+          "id": "concept:enemy_minion_melee",
+          "name": "近战小怪",
+          "conceptId": "enemy_minion_melee"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "fight_player_squad",
+          "key": "enemy_concept_threat:enemy_minion_melee",
+          "target": "player_squad"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "enemy_concept_threat": 1
+          },
+          "latestObservation": {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 2,
+            "damage": 343.894,
+            "damageShare": 0.6317,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 7,
+            "observedTargets": [
+              "拒马民兵",
+              "草药民兵",
+              "灰鸦战士",
+              "短矛民兵"
+            ],
+            "supportTargets": []
+          }
+        },
+        "evidenceEventIds": [
+          "r1_main_2:attempt:1:combat:224",
+          "r1_main_2:attempt:1:combat:225",
+          "r1_main_2:attempt:1:combat:226",
+          "r1_main_2:attempt:1:combat:237"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:20",
+        "subject": {
+          "id": "concept:enemy_minion_ranged",
+          "name": "远程小怪",
+          "conceptId": "enemy_minion_ranged"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "fight_player_squad",
+          "key": "enemy_concept_threat:enemy_minion_ranged",
+          "target": "player_squad"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "enemy_concept_threat": 1
+          },
+          "latestObservation": {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 200.504,
+            "damageShare": 0.3683,
+            "threatRank": 2,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 5,
+            "observedTargets": [
+              "灰鸦战士",
+              "短矛民兵"
+            ],
+            "supportTargets": []
+          }
+        },
+        "evidenceEventIds": [
+          "r1_main_2:attempt:1:combat:269",
+          "r1_main_2:attempt:1:combat:270",
+          "r1_main_2:attempt:1:combat:278",
+          "r1_main_2:attempt:1:combat:300"
+        ],
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:21",
+        "subject": {
+          "id": "player",
+          "role": "player"
+        },
+        "environment": {
+          "region": "region_1",
+          "phase": "equipment",
+          "hero": {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        },
+        "behavior": {
+          "kind": "equip_item",
+          "key": "equip:militia_herb:r1_main_2_1_0",
+          "itemId": "r1_main_2_1_0",
+          "target": "militia_herb"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "item_equipped": 1
+          },
+          "latestObservation": {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r1_main_2_1_0",
+              "name": "普通戒指 Lv.2",
+              "slot": "ring",
+              "slotLabel": "戒指",
+              "rarity": "common",
+              "rarityLabel": "普通",
+              "level": 2,
+              "baseStats": {
+                "magicPower": 1
+              },
+              "affixes": [
+                {
+                  "id": "shieldPower",
+                  "stat": "shieldPower",
+                  "label": "护盾强度",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 3
+                }
+              ]
+            },
+            "replacedItem": null,
+            "equippedPowerBefore": 52,
+            "equippedPowerAfter": 87,
+            "powerDelta": 35
+          }
+        },
+        "evidenceEventIds": [
+          "equip_action:5:r1_main_2_1_0:start",
+          "equip_action:5:r1_main_2_1_0:result",
+          "equip_action:5:r1_main_2_1_0:summary"
+        ],
+        "latestAttribution": {
+          "id": "ai-attribution:5",
+          "knowledgeId": "knowledge:21",
+          "cause": "Equipping the item increased the hero's power from 52 to 87, a gain of 35.",
+          "confidence": 1,
+          "evidenceEventIds": [
+            "equip_action:5:r1_main_2_1_0:result",
+            "equip_action:5:r1_main_2_1_0:summary"
+          ],
+          "alternativeCauses": [],
+          "nextTest": "Equip a different item and check whether the observed power changes by its reported power delta.",
+          "learnedAfterFeedback": true
+        }
+      }
+    ]
+  },
+  "observation": {
+    "step": 5,
+    "currentGoal": "继续推进灰带郊野",
+    "team": "灰鸦战士、拒马民兵（民兵）、短矛民兵（民兵）、草药民兵（民兵）",
+    "teamSlots": [
+      {
+        "slotIndex": 0,
+        "slotLabel": "前排1",
+        "heroId": "hero_warrior",
+        "heroName": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero",
+        "note": "完整近战英雄，能打能扛，但没有骑士的守护能力。"
+      },
+      {
+        "slotIndex": 1,
+        "slotLabel": "前排2",
+        "heroId": "militia_barricade",
+        "heroName": "拒马民兵",
+        "role": "warrior",
+        "kind": "militia",
+        "note": "只有血量和自救，几乎没有伤害，也不能保护队友。"
+      },
+      {
+        "slotIndex": 2,
+        "slotLabel": "后排1",
+        "heroId": "militia_spear",
+        "heroName": "短矛民兵",
+        "role": "warrior",
+        "kind": "militia",
+        "note": "慢速单体近战，能补伤害但没有完整战士的作战能力。"
+      },
+      {
+        "slotIndex": 3,
+        "slotLabel": "后排2",
+        "heroId": "militia_herb",
+        "heroName": "草药民兵",
+        "role": "priest",
+        "kind": "militia",
+        "note": "低配治疗，只能延缓崩线。"
+      }
+    ],
+    "roster": [
+      {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero",
+        "note": "完整近战英雄，能打能扛，但没有骑士的守护能力。",
+        "isActive": true,
+        "teamSlot": 0,
+        "slotLabel": "前排1",
+        "equippedSlots": [
+          "gloves"
+        ]
+      },
+      {
+        "id": "militia_barricade",
+        "name": "拒马民兵",
+        "role": "warrior",
+        "kind": "militia",
+        "note": "只有血量和自救，几乎没有伤害，也不能保护队友。",
+        "isActive": true,
+        "teamSlot": 1,
+        "slotLabel": "前排2",
+        "equippedSlots": []
+      },
+      {
+        "id": "militia_spear",
+        "name": "短矛民兵",
+        "role": "warrior",
+        "kind": "militia",
+        "note": "慢速单体近战，能补伤害但没有完整战士的作战能力。",
+        "isActive": true,
+        "teamSlot": 2,
+        "slotLabel": "后排1",
+        "equippedSlots": []
+      },
+      {
+        "id": "militia_herb",
+        "name": "草药民兵",
+        "role": "priest",
+        "kind": "militia",
+        "note": "低配治疗，只能延缓崩线。",
+        "isActive": true,
+        "teamSlot": 3,
+        "slotLabel": "后排2",
+        "equippedSlots": [
+          "charm",
+          "ring"
+        ]
+      },
+      {
+        "id": "militia_drum",
+        "name": "皮鼓民兵",
+        "role": "bard",
+        "kind": "militia",
+        "note": "偶尔敲响战鼓，自己几乎没有输出。",
+        "isActive": false,
+        "teamSlot": null,
+        "slotLabel": null,
+        "equippedSlots": []
+      },
+      {
+        "id": "hero_mage",
+        "name": "烬火法师",
+        "role": "mage",
+        "kind": "hero",
+        "note": "完整输出英雄，负责清怪与爆发。",
+        "isActive": false,
+        "teamSlot": null,
+        "slotLabel": null,
+        "equippedSlots": []
+      }
+    ],
+    "gear": {
+      "score": 87,
+      "summary": "3/32件 · 最高普通",
+      "active": [
+        {
+          "name": "灰鸦战士",
+          "slots": 1
+        },
+        {
+          "name": "拒马民兵",
+          "slots": 0
+        },
+        {
+          "name": "短矛民兵",
+          "slots": 0
+        },
+        {
+          "name": "草药民兵",
+          "slots": 2
+        }
+      ]
+    },
+    "inventory": [
+      {
+        "id": "r1_main_2_1_1",
+        "name": "普通武器 Lv.4",
+        "slot": "weapon",
+        "slotLabel": "武器",
+        "rarity": "common",
+        "rarityLabel": "普通",
+        "level": 4,
+        "baseStats": {
+          "physicalPower": 2
+        },
+        "affixes": [
+          {
+            "id": "arcaneAmp",
+            "stat": "arcaneAmp",
+            "label": "奥术增幅",
+            "category": "archetype",
+            "level": 1,
+            "value": 3
+          }
+        ],
+        "bestFits": [
+          {
+            "heroId": "hero_warrior",
+            "heroName": "灰鸦战士",
+            "role": "warrior",
+            "fitScore": 28
+          },
+          {
+            "heroId": "militia_barricade",
+            "heroName": "拒马民兵",
+            "role": "warrior",
+            "fitScore": 28
+          },
+          {
+            "heroId": "militia_spear",
+            "heroName": "短矛民兵",
+            "role": "warrior",
+            "fitScore": 28
+          }
+        ]
+      }
+    ],
+    "visibleNodes": [
+      {
+        "id": "r1_main_1",
+        "name": "灰带郊野 1",
+        "type": "main",
+        "status": "farmable",
+        "rewardHint": "白装",
+        "enemyHint": "两大波、三次进场的弱小散兵"
+      },
+      {
+        "id": "r1_main_2",
+        "name": "灰带郊野 2",
+        "type": "main",
+        "status": "farmable",
+        "rewardHint": "白装",
+        "enemyHint": "两名近战和一名远程"
+      },
+      {
+        "id": "r1_main_3",
+        "name": "灰带郊野 3",
+        "type": "main",
+        "status": "available",
+        "rewardHint": "可能出现蓝装",
+        "enemyHint": "两名近战和一名远程"
+      }
+    ],
+    "optionalOpportunities": [],
+    "allowedActions": [
+      "equip:hero_warrior:r1_main_2_1_1",
+      "equip:militia_barricade:r1_main_2_1_1",
+      "equip:militia_spear:r1_main_2_1_1",
+      "equip:militia_herb:r1_main_2_1_1",
+      "equip:militia_drum:r1_main_2_1_1",
+      "equip:hero_mage:r1_main_2_1_1",
+      "swap:0:militia_drum",
+      "swap:1:militia_drum",
+      "swap:2:militia_drum",
+      "swap:3:militia_drum",
+      "swap:0:hero_mage",
+      "swap:1:hero_mage",
+      "swap:2:hero_mage",
+      "swap:3:hero_mage",
+      "challenge:r1_main_1",
+      "challenge:r1_main_2",
+      "challenge:r1_main_3"
+    ]
+  },
+  "responseContract": {
+    "action": "one exact value from observation.allowedActions",
+    "goalId": "one visible goal id",
+    "reasoningChain": [
+      {
+        "kind": "goal|knowledge|evidence|affordance|comparison|hypothesis",
+        "evidence": "short factual evidence"
+      }
+    ],
+    "alternatives": [
+      {
+        "action": "allowed action",
+        "reason": "short reason"
+      }
+    ],
+    "hypothesis": "null or {id, problem, cause, resultKind, target}"
+  },
+  "auditNote": "Lossless for legal actions and current observations; historical evidence arrays and older repeated observations are folded only for agent reading."
+}

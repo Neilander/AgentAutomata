@@ -34,6 +34,7 @@ const DEFAULT_CONFIG = Object.freeze({
     loot_outcome: 0.72,
     loot: 0.92,
     character_unlock: 1,
+    team_experiment_result: 0.9,
     action_summary: 0.75,
   },
 });
@@ -201,6 +202,7 @@ function updateAffordanceExperiments(state, event) {
     if (!state.hypotheses.some((row) => row.id === hypothesisId)) {
       state.hypotheses.push({
         id: hypothesisId,
+        origin: "evaluator",
         status: "pending",
         action: null,
         problem: `${heroId} has joined the active team but its combat effect is unknown`,
@@ -274,7 +276,7 @@ function applyDecision(stateInput, decision) {
 
 function validateDecisionChain(chain, decision) {
   const byKind = new Map(chain.map((step) => [step.kind, step]));
-  const comparisonValid = Boolean(byKind.get("comparison") && (decision?.alternatives || []).length >= 2);
+  const comparisonValid = Boolean(byKind.get("comparison") && (decision?.alternatives || []).length >= 1);
   const hypothesisValid = Boolean(
     decision?.hypothesis
     && byKind.get("goal")
@@ -300,14 +302,24 @@ function validateDecisionChain(chain, decision) {
 }
 
 function createDecisionHypothesis(state, decision) {
+  const verificationScope = decision.hypothesis.verificationScope === "next_combat"
+    ? "next_combat"
+    : "current_action";
+  if (state.hypotheses.some((row) => row.id === decision.hypothesis.id)) {
+    throw new Error(`duplicate hypothesis id: ${decision.hypothesis.id}`);
+  }
   const hypothesis = {
     id: decision.hypothesis.id || `hypothesis:${state.hypotheses.length + 1}`,
+    origin: "player",
     status: "pending",
-    action: decision.action,
+    action: verificationScope === "current_action" ? decision.action : null,
     problem: decision.hypothesis.problem || "",
     cause: decision.hypothesis.cause || "",
     resultKind: decision.hypothesis.resultKind || "combat_win",
     target: decision.hypothesis.target || "",
+    targetCondition: normalizeTargetCondition(decision.hypothesis.targetCondition),
+    verificationScope,
+    settleOnEventKind: verificationScope === "next_combat" ? "team_experiment_result" : null,
     evidence: [],
   };
   state.hypotheses.push(hypothesis);
@@ -641,14 +653,65 @@ function collectHypothesisEvidence(state, event) {
   for (const row of rows) {
     const explicitSettlement = Boolean(row.settleOnEventKind && event.result.kind === row.settleOnEventKind);
     if (row.settleOnEventKind && !explicitSettlement) continue;
+    if (explicitSettlement && row.target && event.result.heroId && row.target !== event.result.heroId) continue;
     if (!explicitSettlement && event.result.kind !== "action_summary" && !outcomeKinds.has(row.resultKind)) continue;
-    const confirmed = outcomeKinds.has(row.resultKind);
-    row.evidence.push({ eventId: event.id, expected: row.resultKind, observed: [...outcomeKinds], confirmed });
-    row.status = confirmed ? "confirmed" : "refuted";
+    const kindMatched = outcomeKinds.has(row.resultKind);
+    const condition = evaluateTargetCondition(row.targetCondition, event.result);
+    const explicitNoContribution = explicitSettlement
+      && !kindMatched
+      && event.result.contribution?.observed === false;
+    const comparisonMade = explicitNoContribution || (kindMatched && condition.readable);
+    const confirmed = kindMatched && condition.readable && condition.met;
+    row.evidence.push({
+      eventId: event.id,
+      expected: row.resultKind,
+      observed: [...outcomeKinds],
+      target: row.target || null,
+      targetCondition: row.targetCondition || null,
+      observedValue: condition.value,
+      comparisonMade,
+      confirmed,
+    });
+    row.status = comparisonMade ? (confirmed ? "confirmed" : "refuted") : "inconclusive";
     row.resolvedAt = event.time;
-    resolved.push({ id: row.id, status: row.status, expected: row.resultKind, observed: [...outcomeKinds] });
+    resolved.push({
+      id: row.id,
+      status: row.status,
+      expected: row.resultKind,
+      observed: [...outcomeKinds],
+      targetCondition: row.targetCondition || null,
+      observedValue: condition.value,
+      comparisonMade,
+    });
   }
-  return { ids: resolved.map((row) => row.id), rows: resolved, verifyCount: resolved.length };
+  return {
+    ids: resolved.map((row) => row.id),
+    rows: resolved,
+    verifyCount: resolved.filter((row) => row.comparisonMade).length,
+  };
+}
+
+function normalizeTargetCondition(input) {
+  if (!input || typeof input !== "object") return null;
+  const allowedMetrics = new Set(["damage", "heal", "shield", "skillCount", "damageShare", "damageRank"]);
+  const allowedOperators = new Set([">", ">=", "<", "<=", "=="]);
+  const metric = allowedMetrics.has(input.metric) ? input.metric : null;
+  const operator = allowedOperators.has(input.operator) ? input.operator : null;
+  const value = Number(input.value);
+  return metric && operator && Number.isFinite(value) ? { metric, operator, value } : null;
+}
+
+function evaluateTargetCondition(condition, result) {
+  if (!condition) return { readable: true, met: true, value: null };
+  const value = Number(result?.contribution?.[condition.metric]);
+  if (!Number.isFinite(value)) return { readable: false, met: false, value: null };
+  const expected = condition.value;
+  const met = condition.operator === ">" ? value > expected
+    : condition.operator === ">=" ? value >= expected
+      : condition.operator === "<" ? value < expected
+        : condition.operator === "<=" ? value <= expected
+          : value === expected;
+  return { readable: true, met, value: round(value) };
 }
 
 function applyFailureLearning(state, event, pattern) {

@@ -2,6 +2,14 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-14
+
+- `2026-07-14_1817_player-hypothesis-loop-repaired.md`: repaired the explicit player hypothesis lifecycle, aligned contribution verification with authoritative combat settlement, and passed a fresh Ranger run with two precommitted hypotheses, two real confirmations, two EVerify events, and two independent reviews.
+
+- `2026-07-14_1641_ranger-hypothesis-loop-audit.md`: corrected the Ranger run interpretation: three AI-submitted hypotheses were rejected, no player hypothesis or EVerify settlement occurred, and the apparent verification belonged only to hidden evaluator state.
+
+- `2026-07-14_1542_first-region-ranger-lock-key-restored.md`: colocated the Region 1 design-purpose tree and machine contract, restored the optional Camp -> Prison -> manual Ranger -> Main 7 role-proof chain, passed a 100-seed verifier and all scoped regressions, and retained a 24-cycle knowledge-bounded player run where Ranger led Main 7 with 57.24% damage.
+
 ## 2026-07-13
 
 - `2026-07-13_2115_prison-role-visibility-paused.md`: made the optional Prison's Ranger function player-visible without changing combat or access, passed regressions, then stopped and closed the sole Agent after two cycles; the candidate remains HOLD because the relevant choice was never reached.

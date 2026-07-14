@@ -1,0 +1,161 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 19,
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "equip:hero_warrior:r1_bandit_key_1_gloves",
+  "outcome": "equipped",
+  "emotionBeforeAction": 44.7101,
+  "emotionAfterEvents": 44.7087,
+  "candidateKnowledge": [
+    {
+      "id": "knowledge:65",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_1",
+        "phase": "equipment",
+        "hero": {
+          "id": "hero_warrior",
+          "name": "灰鸦战士",
+          "role": "warrior",
+          "kind": "hero"
+        }
+      },
+      "behavior": {
+        "kind": "equip_item",
+        "key": "equip:hero_warrior:r1_bandit_key_1_gloves",
+        "itemId": "r1_bandit_key_1_gloves",
+        "target": "hero_warrior"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "item_equipped": 1
+        },
+        "latestObservation": {
+          "outcome": "item_equipped",
+          "item": {
+            "id": "r1_bandit_key_1_gloves",
+            "name": "裂甲铁护手 Lv.13",
+            "slot": "gloves",
+            "slotLabel": "护手",
+            "rarity": "rare",
+            "rarityLabel": "稀有",
+            "level": 13,
+            "baseStats": {
+              "physicalPower": 5,
+              "armor": 1
+            },
+            "affixes": [
+              {
+                "id": "armorBreak",
+                "stat": "armorBreak",
+                "label": "破甲",
+                "category": "specialist",
+                "level": 1,
+                "value": 20
+              },
+              {
+                "id": "fortitude",
+                "stat": "fortitude",
+                "label": "坚韧",
+                "category": "major",
+                "level": 1,
+                "value": 1
+              }
+            ]
+          },
+          "replacedItem": {
+            "id": "r1_main_1_1_0",
+            "name": "普通护手 Lv.3",
+            "slot": "gloves",
+            "slotLabel": "护手",
+            "rarity": "common",
+            "rarityLabel": "普通",
+            "level": 3,
+            "baseStats": {
+              "physicalPower": 1,
+              "armor": 1
+            },
+            "affixes": [
+              {
+                "id": "armorBreak",
+                "stat": "armorBreak",
+                "label": "破甲",
+                "category": "specialist",
+                "level": 1,
+                "value": 3
+              }
+            ]
+          },
+          "equippedPowerBefore": 345,
+          "equippedPowerAfter": 419,
+          "powerDelta": 74
+        }
+      },
+      "evidenceEventIds": [
+        "equip_action:19:r1_bandit_key_1_gloves:start",
+        "equip_action:19:r1_bandit_key_1_gloves:result",
+        "equip_action:19:r1_bandit_key_1_gloves:summary"
+      ],
+      "latestAttribution": null
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "equip_action:19:r1_bandit_key_1_gloves:result",
+      "time": 0.05,
+      "type": "equipment_change",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "item_equipped",
+        "occurred": true,
+        "amount": 74,
+        "before": 345,
+        "after": 419,
+        "itemName": "裂甲铁护手 Lv.13",
+        "heroId": "hero_warrior"
+      },
+      "H": 0.1869,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:19:r1_bandit_key_1_gloves:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 419,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "item_equipped",
+            "amount": 74
+          }
+        ]
+      },
+      "H": 0.5663,
+      "emotionDelta": -0.0014
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "auditNote": "candidateKnowledge contains only rows citing at least one currently visible event; exact ids remain unchanged."
+}

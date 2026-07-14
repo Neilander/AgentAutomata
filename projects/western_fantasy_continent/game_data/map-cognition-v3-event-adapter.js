@@ -73,16 +73,25 @@ function summarizeExperimentContribution(result, experiment) {
   const hero = result.state.roster.find((row) => row.id === experiment.heroId);
   const name = hero?.name || "";
   const signals = (result.analysis?.combatSignals || []).filter((row) => row.subject?.id === experiment.heroId || (name && row.subject?.name === name));
-  const totals = { damage: 0, heal: 0, shield: 0, skillCount: 0 };
+  const settledContributions = result.event?.contributions || [];
+  const settledHero = settledContributions.find((row) => name && row.name === name);
+  const totals = { damage: Number(settledHero?.damage || 0), heal: 0, shield: 0, skillCount: 0 };
   for (const signal of signals) {
-    if (signal.type === "damage") totals.damage += Number(signal.result?.amount || 0);
     if (signal.type === "heal") totals.heal += Number(signal.result?.amount || 0);
     if (signal.type === "shield") totals.shield += Number(signal.result?.amount || 0);
     if (signal.type === "skill") totals.skillCount += 1;
   }
+  const teamDamage = settledContributions.reduce((sum, row) => sum + Number(row.damage || 0), 0);
+  const damageShare = teamDamage > 0 ? totals.damage / teamDamage : 0;
+  const damageRank = totals.damage > 0
+    ? 1 + settledContributions.filter((row) => Number(row.damage || 0) > totals.damage).length
+    : null;
   return {
     observed: totals.damage > 0 || totals.heal > 0 || totals.shield > 0 || totals.skillCount > 0,
     ...totals,
+    teamDamage,
+    damageShare,
+    damageRank,
   };
 }
 

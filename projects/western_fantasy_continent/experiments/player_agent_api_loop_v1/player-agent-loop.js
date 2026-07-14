@@ -63,6 +63,12 @@ function applyDecisionResponse(sessionInput, responseInput) {
   };
 
   const afterDecision = RUNTIME.applyDecision(session.cognitionState, decision);
+  if (response.hypothesis) {
+    const decisionTrace = afterDecision.trace.at(-1);
+    if (!decisionTrace?.hypothesisId) {
+      throw new Error(`decision hypothesis rejected: ${JSON.stringify(decisionTrace?.decisionValidation || {})}`);
+    }
+  }
   const emotionAfterDecision = Number(afterDecision.emotion.value);
   const result = runPlayerAction(session.gameState, response.action, afterDecision, session.conceptState, session.evaluatorState);
   if (!result.ok) throw new Error(`game rejected action ${response.action}: ${result.error || "unknown"}`);
@@ -190,9 +196,23 @@ function buildDecisionRequest(session) {
     responseContract: {
       action: "one exact value from observation.allowedActions",
       goalId: "one visible goal id",
-      reasoningChain: [{ kind: "goal|knowledge|evidence|affordance|comparison|hypothesis", evidence: "short factual evidence" }],
-      alternatives: [{ action: "allowed action", reason: "short reason" }],
-      hypothesis: "null or {id, problem, cause, resultKind, target}",
+      reasoningChain: {
+        noHypothesis: "one or more factual steps",
+        withHypothesis: "must include goal, knowledge or evidence, affordance, comparison, and hypothesis steps",
+        item: { kind: "goal|knowledge|evidence|affordance|comparison|hypothesis", evidence: "short factual evidence" },
+      },
+      alternatives: "at least one legal alternative when hypothesis is non-null",
+      hypothesis: {
+        nullable: true,
+        requiredFields: ["id", "problem", "cause", "resultKind", "target", "verificationScope"],
+        verificationScope: "current_action|next_combat",
+        nextCombatResultKind: "team_experiment_contribution",
+        optionalTargetCondition: {
+          metric: "damage|heal|shield|skillCount|damageShare|damageRank",
+          operator: ">|>=|<|<=|==",
+          value: "number",
+        },
+      },
     },
   };
 }
@@ -284,7 +304,13 @@ function runPlayerAction(rawState, action, cognitionState, conceptState, evaluat
 function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, conceptState, evaluatorStateInput) {
   const before = clone(rawState);
   const evaluatorState = clone(evaluatorStateInput || createEvaluatorState());
-  const activeExperiment = evaluatorState.affordanceExperiments.find((row) => row.status === "awaiting_combat") || null;
+  const evaluatorExperiment = evaluatorState.affordanceExperiments.find((row) => row.status === "awaiting_combat") || null;
+  const playerHypothesis = pendingPlayerCombatHypothesis(cognitionState, action);
+  const activeExperiment = playerHypothesis
+    ? (evaluatorExperiment?.heroId === playerHypothesis.target
+      ? evaluatorExperiment
+      : { id: `player-hypothesis:${playerHypothesis.id}`, heroId: playerHypothesis.target, source: "player" })
+    : evaluatorExperiment;
   const beforeItemIds = new Set(allEquipmentItems(before).map((item) => item.id));
   const result = CORE.applyAction(before, action, { captureVisibleSignals: true });
   if (!result.ok) return { ...result, cognitionState };
@@ -453,7 +479,16 @@ function removeEvaluatorScaffolding(state) {
 }
 
 function visiblePlayerHypotheses(rows) {
-  return (rows || []).filter((row) => row.action);
+  return (rows || []).filter((row) => row.origin === "player" || row.action);
+}
+
+function pendingPlayerCombatHypothesis(state, action) {
+  return (state?.hypotheses || []).find((row) => row.origin === "player"
+    && row.status === "pending"
+    && row.resultKind === "team_experiment_contribution"
+    && ((row.verificationScope === "next_combat" && row.settleOnEventKind === "team_experiment_result")
+      || (row.verificationScope === "current_action" && row.action === action))
+    && row.target) || null;
 }
 
 function buildEquipEventLog(event) {
@@ -542,8 +577,50 @@ function normalizeDecisionResponse(input) {
     goalId: typeof response.goalId === "string" ? response.goalId : "grow_and_progress",
     reasoningChain,
     alternatives: Array.isArray(response.alternatives) ? response.alternatives : [],
-    hypothesis: response.hypothesis && typeof response.hypothesis === "object" ? response.hypothesis : null,
+    hypothesis: normalizeDecisionHypothesis(response.hypothesis),
   };
+}
+
+function normalizeDecisionHypothesis(input) {
+  if (input === null || input === undefined) return null;
+  if (typeof input !== "object" || Array.isArray(input)) throw new Error("decision hypothesis must be an object or null");
+  const requiredText = ["id", "problem", "cause", "resultKind", "target", "verificationScope"];
+  for (const field of requiredText) {
+    if (typeof input[field] !== "string" || !input[field].trim()) {
+      throw new Error(`decision hypothesis requires ${field}`);
+    }
+  }
+  if (!["current_action", "next_combat"].includes(input.verificationScope)) {
+    throw new Error(`unsupported hypothesis verificationScope: ${input.verificationScope}`);
+  }
+  if (input.verificationScope === "next_combat" && input.resultKind !== "team_experiment_contribution") {
+    throw new Error("next_combat hypothesis resultKind must be team_experiment_contribution");
+  }
+  const targetCondition = normalizeHypothesisTargetCondition(input.targetCondition);
+  if (input.verificationScope === "next_combat" && !targetCondition) {
+    throw new Error("next_combat hypothesis requires a measurable targetCondition");
+  }
+  return {
+    id: input.id.trim(),
+    problem: input.problem.trim(),
+    cause: input.cause.trim(),
+    resultKind: input.resultKind.trim(),
+    target: input.target.trim(),
+    verificationScope: input.verificationScope,
+    targetCondition,
+  };
+}
+
+function normalizeHypothesisTargetCondition(input) {
+  if (input === null || input === undefined) return null;
+  if (typeof input !== "object" || Array.isArray(input)) throw new Error("hypothesis targetCondition must be an object");
+  const allowedMetrics = new Set(["damage", "heal", "shield", "skillCount", "damageShare", "damageRank"]);
+  const allowedOperators = new Set([">", ">=", "<", "<=", "=="]);
+  if (!allowedMetrics.has(input.metric)) throw new Error(`unsupported hypothesis metric: ${input.metric}`);
+  if (!allowedOperators.has(input.operator)) throw new Error(`unsupported hypothesis operator: ${input.operator}`);
+  const value = Number(input.value);
+  if (!Number.isFinite(value)) throw new Error("hypothesis targetCondition value must be finite");
+  return { metric: input.metric, operator: input.operator, value };
 }
 
 function normalizeAttributionResponse(input) {
@@ -574,6 +651,10 @@ function summarizeNewTrace(beforeState, afterState) {
     processEmotion: round(row.processEmotion),
     acquiredEmotion: round(row.acquiredEmotion),
     expectationEmotion: round(row.expectationEmotion),
+    EVerify: Number(row.EVerify || 0),
+    hypothesisId: row.hypothesisId || null,
+    hypothesisEvidence: row.hypothesisEvidence || [],
+    hypothesisVerification: row.hypothesisVerification || [],
     emotionDelta: round(row.emotionDelta),
     emotionBefore: round(row.emotionBefore),
     emotionAfter: round(row.emotionAfter),
@@ -680,7 +761,7 @@ function learnFromChallenge(knowledgeBase, record, context) {
 
   const totalDamage = (record.gameEvent.contributions || []).reduce((sum, row) => sum + Number(row.damage || 0), 0);
   const playerActorEffects = aggregateActorEffects(record.eventLog, "left");
-  (record.gameEvent.contributions || []).forEach((contribution, rankIndex) => {
+  (record.gameEvent.contributions || []).forEach((contribution) => {
     const unit = findUnitByContribution(before.roster, contribution);
     const effects = playerActorEffects.find((row) => row.name === contribution.name) || emptyActorEffects();
     const evidence = combatEvidenceForSubject(record.eventLog, unit?.id, contribution.name);
@@ -692,7 +773,8 @@ function learnFromChallenge(knowledgeBase, record, context) {
       outcome: "combat_contribution",
       damage: round(contribution.damage),
       damageShare: totalDamage ? round(contribution.damage / totalDamage) : 0,
-      damageRank: rankIndex + 1,
+      damageRank: 1 + (record.gameEvent.contributions || [])
+        .filter((other) => Number(other.damage || 0) > Number(contribution.damage || 0)).length,
       teamDamage: round(totalDamage),
       healing: round(effects.healing),
       shielding: round(effects.shielding),

@@ -113,14 +113,23 @@ function testHiddenAndOldReserveDoNotCreateExperiment() {
   assert.equal(ordinary.action, "challenge:r1_main_7", "an old visible reserve without unlock evidence gets no novelty boost");
 }
 
-function testHiddenAggregateCannotVerifyContribution() {
+function testSettledContributionAndExplicitAbsence() {
   const contribution = ADAPTER.summarizeExperimentContribution({
     state: { roster: [{ id: "hero_ranger", name: "Ranger" }] },
     analysis: { combatSignals: [] },
     event: { contributions: [{ name: "Ranger", damage: 999 }] },
   }, { heroId: "hero_ranger" });
-  assert.equal(contribution.observed, false, "hidden combat aggregate cannot verify a visible character hypothesis");
-  assert.equal(contribution.damage, 0);
+  assert.equal(contribution.observed, true, "the exposed combat settlement is authoritative contribution evidence");
+  assert.equal(contribution.damage, 999);
+  assert.equal(contribution.damageShare, 1);
+  assert.equal(contribution.damageRank, 1);
+
+  const noContribution = ADAPTER.summarizeExperimentContribution({
+    state: { roster: [{ id: "hero_ranger", name: "Ranger" }] },
+    analysis: { combatSignals: [] },
+    event: { contributions: [] },
+  }, { heroId: "hero_ranger" });
+  assert.equal(noContribution.observed, false);
 
   const unlocked = RUNTIME.ingestEvents(RUNTIME.createState("hidden-contribution"), [characterEvent(true)]);
   const selected = POLICY.selectNextAction(unlocked, observation());
@@ -130,7 +139,7 @@ function testHiddenAggregateCannotVerifyContribution() {
     id: "ranger-no-visible-contribution",
     result: {
       ...experimentResultEvent().result,
-      contribution,
+      contribution: noContribution,
       components: [],
     },
   };
@@ -200,7 +209,7 @@ function testRealRoutes() {
 
 testVisibleUnlockCreatesBoundedExperiment();
 testHiddenAndOldReserveDoNotCreateExperiment();
-testHiddenAggregateCannotVerifyContribution();
+testSettledContributionAndExplicitAbsence();
 testOnlyOneCharacterExperimentRunsAtATime();
 testTerminalWaitsThenReleases();
 testRealRoutes();

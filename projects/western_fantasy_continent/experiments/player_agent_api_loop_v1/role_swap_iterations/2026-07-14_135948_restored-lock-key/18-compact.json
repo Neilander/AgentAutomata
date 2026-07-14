@@ -1,0 +1,131 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 9,
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "equip:militia_barricade:r1_main_3_1_0",
+  "outcome": "equipped",
+  "emotionBeforeAction": 43.0709,
+  "emotionAfterEvents": 43.0695,
+  "candidateKnowledge": [
+    {
+      "id": "knowledge:30",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_1",
+        "phase": "equipment",
+        "hero": {
+          "id": "militia_barricade",
+          "name": "拒马民兵",
+          "role": "warrior",
+          "kind": "militia"
+        }
+      },
+      "behavior": {
+        "kind": "equip_item",
+        "key": "equip:militia_barricade:r1_main_3_1_0",
+        "itemId": "r1_main_3_1_0",
+        "target": "militia_barricade"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "item_equipped": 1
+        },
+        "latestObservation": {
+          "outcome": "item_equipped",
+          "item": {
+            "id": "r1_main_3_1_0",
+            "name": "普通胸甲 Lv.7",
+            "slot": "chest",
+            "slotLabel": "胸甲",
+            "rarity": "common",
+            "rarityLabel": "普通",
+            "level": 7,
+            "baseStats": {
+              "maxHp": 18,
+              "armor": 1
+            },
+            "affixes": [
+              {
+                "id": "receivedHealing",
+                "stat": "receivedHealing",
+                "label": "受治愈增幅",
+                "category": "specialist",
+                "level": 1,
+                "value": 3
+              }
+            ]
+          },
+          "replacedItem": null,
+          "equippedPowerBefore": 115,
+          "equippedPowerAfter": 149,
+          "powerDelta": 34
+        }
+      },
+      "evidenceEventIds": [
+        "equip_action:9:r1_main_3_1_0:start",
+        "equip_action:9:r1_main_3_1_0:result",
+        "equip_action:9:r1_main_3_1_0:summary"
+      ],
+      "latestAttribution": null
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "equip_action:9:r1_main_3_1_0:result",
+      "time": 0.05,
+      "type": "equipment_change",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "item_equipped",
+        "occurred": true,
+        "amount": 34,
+        "before": 115,
+        "after": 149,
+        "itemName": "普通胸甲 Lv.7",
+        "heroId": "militia_barricade"
+      },
+      "H": 0.1671,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:9:r1_main_3_1_0:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 149,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "item_equipped",
+            "amount": 34
+          }
+        ]
+      },
+      "H": 0.5063,
+      "emotionDelta": -0.0014
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "auditNote": "candidateKnowledge contains only rows citing at least one currently visible event; exact ids remain unchanged."
+}

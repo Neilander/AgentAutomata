@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-14_2315_chapter2-frozen-player-cross-key-validation.md`](reports/2026-07-14_2315_chapter2-frozen-player-cross-key-validation.md)
+[`reports/2026-07-15_2304_improvement-perception-granularity-reference.md`](reports/2026-07-15_2304_improvement-perception-granularity-reference.md)
 
-Last updated: 2026-07-14
+Last updated: 2026-07-15
 
-Current focus: Chapter 2's independent AI-play version is designed and validated under Frozen V3. Its double-rescue cross-key structure teaches Knight, Priest, shield detonation, king flag, equipment levels, and Epic fit without changing formal skill values or the player model. Next review the design evidence before integrating it into the human-play map layer.
+Current focus: execute the active `优化玩家情绪模拟` task line in three parts: decision expectation/EVerify, failure experience, and hierarchical Progress experience.

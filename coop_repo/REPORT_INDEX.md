@@ -2,6 +2,34 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-15
+
+- `2026-07-15_2304_improvement-perception-granularity-reference.md`: records the 150%-capped improvement perception bands, with familiar-player resolution above 80%, expert resolution above 60%, and profile-safe A settlement.
+
+- `2026-07-15_1812_continuous-combat-performance-for-expectation.md`: replaces binary action-settlement results with real normalized remaining-HP margin, preserving direct rewards and proving close-loss improvement is visible to A.
+
+- `2026-07-15_1552_progress-experience-task.md`: adds hierarchical Progress experience as the third task in the player-emotion-simulation line, with progression R and anti-double-counting requirements.
+
+- `2026-07-15_1535_player-emotion-simulation-task-line.md`: creates the active player-emotion-simulation task line, puts decision expectation/EVerify settlement first, and queues failure experience as its child task.
+
+- `2026-07-15_1445_player-model-implementation-gap-audit.md`: audits the controlled Main 6 failure run against the documented player model and finds P, Q, progression/growth R, kP, Agency, and behavior coupling missing from the executable emotion loop.
+
+- `2026-07-15_1340_controlled-two-chapter-emotion-audit-runtime.md`: adds user-constrained Agent decisions, fixes complete cognition continuity across Chapters 1/2, and passes a real-event emotion smoke test; the full run awaits the user's control route.
+
+- `2026-07-15_1315_selectable-player-profile-ensemble-runtime.md`: implements ten durable player profiles, exact or deterministic X-of-10 selection, isolated paired cognition/Agent sessions, a file-based runner, and a passing two-profile two-cycle regression.
+
+- `2026-07-15_1219_multi-profile-player-simulation-protocol.md`: adds a persistent multi-profile Agent protocol with fallible causal priors, six minimum player types, per-profile evidence, paired seeds, and exhaustive team enumeration as a mechanical backstop.
+
+- `2026-07-15_1211_chapter-one-composition-validation-gap.md`: proves the retained Agent never fielded Mage and Ranger together and records a 100-seed audit where Main 8-10 are 100% clear for protected and pure-output teams alike.
+
+- `2026-07-15_1204_first-chapter-mainline-fork-removed.md`: closes a stale accepted-core topology bug so Chapter 1 Main 1-10 is strictly linear, while preserving Prison and Camp as intentional optional lock-key branches.
+
+- `2026-07-15_1140_accepted-chapter-one-reconnected.md`: corrects the double-chapter big map so its 13-node first chapter, enemy teams, field effects, Camp keys, Ranger proof, and recovery logic come directly from the accepted July 14 Region 1 core.
+
+- `2026-07-15_1054_integrated-two-chapter-map-and-manual-loot.md`: moves the accepted two-chapter campaign into the original big-map simulator, adds exact post-battle reward feedback, and enforces manual equipment and roster decisions.
+
+- `2026-07-15_1013_token-efficient-agent-and-two-chapter-playable.md`: adds explicit knowledge retrieval, persistent Agent routing, ten-slice token validation, and a separate human-playable Chapter 1/2 V4 with manual equipment and real battle settlement.
+
 ## 2026-07-14
 
 - `2026-07-14_2315_chapter2-frozen-player-cross-key-validation.md`: completes the Frozen-player Chapter 2 cross-key design, two-round Agent playtest iteration, role/field/equipment teaching validation, and remaining risks.

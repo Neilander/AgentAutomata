@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>佣兵小镇 · 双章试玩</title>
+    <link rel="stylesheet" href="/battle_view/battle-view.css">
+    <link rel="stylesheet" href="/map_progression_lab/campaign-v4.css">
+  </head>
+  <body>
+    <main class="campaign-shell">
+      <aside class="campaign-nav">
+        <a class="workbench-link" href="/workbench/">返回工作台</a>
+        <div class="campaign-brand"><span>佣兵小镇</span><strong>边境远征</strong></div>
+        <nav aria-label="主要页面">
+          <button class="active" type="button" data-page="map"><span class="nav-icon">图</span>大地图</button>
+          <button type="button" data-page="roster"><span class="nav-icon">队</span>队伍</button>
+          <button type="button" data-page="equipment"><span class="nav-icon">装</span>装备</button>
+        </nav>
+        <div class="chapter-progress">
+          <span>当前章节</span>
+          <strong id="chapterLabel">第一章</strong>
+          <small id="chapterProgress">0 / 0</small>
+        </div>
+        <button id="resetBtn" class="reset-button" type="button">重置本试玩</button>
+      </aside>
+
+      <section class="campaign-main">
+        <header class="campaign-topbar">
+          <div><span id="regionLabel">灰带郊野</span><h1 id="goalLabel">建立第一支队伍</h1></div>
+          <div class="topbar-stats"><span>队伍装备</span><strong id="gearScore">0</strong><span>仓库</span><strong id="inventoryCount">0</strong></div>
+        </header>
+
+        <section class="page active" data-view="map">
+          <div class="map-workspace">
+            <div id="campaignMap" class="campaign-map">
+              <div class="map-region-name" id="mapRegionName">灰带郊野</div>
+              <svg id="mapLinks" class="map-links" viewBox="0 0 1000 680" aria-hidden="true"></svg>
+              <div id="mapNodes" class="map-nodes"></div>
+            </div>
+            <aside class="node-inspector">
+              <div class="inspector-kicker" id="nodeType">选择关卡</div>
+              <h2 id="nodeName">查看边境路线</h2>
+              <p id="nodeEnemy">点击地图上已经开放的节点，查看敌情与奖励。</p>
+              <dl class="node-facts">
+                <div><dt>状态</dt><dd id="nodeStatus">-</dd></div>
+                <div><dt>奖励</dt><dd id="nodeReward">-</dd></div>
+                <div id="fieldFact" hidden><dt>场地</dt><dd id="nodeField">-</dd></div>
+              </dl>
+              <button id="fightBtn" class="primary-action" type="button" disabled>进入战斗</button>
+              <button id="nextChapterBtn" class="chapter-action" type="button" hidden>进入第二章</button>
+              <div id="lastResult" class="last-result">尚无战斗记录</div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="page" data-view="roster">
+          <header class="page-heading"><div><span>阵容整备</span><h2>出战队伍</h2></div><p>完整英雄与民兵有明确差距。替换后要通过下一场战斗验证。</p></header>
+          <div class="roster-layout">
+            <section><h3>当前四人</h3><div id="activeRoster" class="active-roster"></div></section>
+            <section><h3>候补角色</h3><div id="reserveRoster" class="reserve-roster"></div></section>
+          </div>
+        </section>
+
+        <section class="page" data-view="equipment">
+          <header class="page-heading"><div><span>手动配装</span><h2>装备仓库</h2></div><p>获得装备不会自动变强。选择角色，再决定是否替换同部位装备。</p></header>
+          <div id="heroTabs" class="hero-tabs"></div>
+          <div class="equipment-layout">
+            <section class="equipped-section"><div class="section-heading"><span>当前穿戴</span><strong id="equipmentHeroName">-</strong></div><div id="equippedGrid" class="equipped-grid"></div></section>
+            <section class="inventory-section"><div class="section-heading"><span>可用装备</span><strong id="inventoryLabel">0 件</strong></div><div id="inventoryGrid" class="inventory-grid"></div></section>
+          </div>
+        </section>
+
+        <section class="page battle-page" data-view="battle">
+          <header class="battle-header"><div><span id="battleStatus">准备战斗</span><h2 id="battleTitle">边境遭遇</h2></div><button id="leaveBattleBtn" type="button">返回地图</button></header>
+          <div id="battleMount" class="battle-mount"></div>
+          <div id="battleReadout" class="battle-readout">战斗开始后，相机会平滑跟随整个交战范围。</div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="lootDialog" class="loot-dialog">
+      <header><div><span id="lootOutcome">战斗结束</span><h2 id="lootTitle">本次收获</h2></div><button id="closeLootBtn" type="button" aria-label="关闭">×</button></header>
+      <div id="lootItems" class="loot-items"></div>
+      <p id="lootMessage"></p>
+      <button id="lootEquipmentBtn" class="primary-action" type="button">前往装备页</button>
+    </dialog>
+
+    <script src="/game_data/skill-assets.js"></script>
+    <script src="/game_data/skill-data.js"></script>
+    <script src="/game_data/combat-signals.js"></script>
+    <script src="/game_data/runtime-field-effects.js"></script>
+    <script src="/game_data/combat-sim.js"></script>
+    <script src="/game_data/mechanic-curves.js"></script>
+    <script src="/game_data/build-layers.js"></script>
+    <script src="/game_data/equipment-runtime.js"></script>
+    <script src="/map_progression_lab/map-progression-encounters.js"></script>
+    <script src="/map_progression_lab/map-progression-roster.js"></script>
+    <script src="/shared/game_camera_2d/camera-core.js"></script>
+    <script src="/battle_view/battle-view.js"></script>
+    <script src="/map_progression_lab/map-progression-cognition-core-phase2-midlock.js"></script>
+    <script src="/map_progression_lab/map-progression-chapter2-core.js"></script>
+    <script src="/map_progression_lab/campaign-v4.js"></script>
+  </body>
+</html>

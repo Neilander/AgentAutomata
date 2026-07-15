@@ -1,5 +1,5 @@
 (function initMapProgressionLab() {
-  const SAVE_KEY = "agent_automata_map_progression_lab_v6";
+  const SAVE_KEY = "agent_automata_map_progression_lab_v8_accepted_chapter_one";
   const MAP_WIDTH = 1400;
   const MAP_HEIGHT = 900;
   const AUTO_STEP_MS = 200;
@@ -7,6 +7,8 @@
   const EQUIPMENT = window.GAME_EQUIPMENT_RUNTIME;
   const ENCOUNTERS = window.GAME_MAP_PROGRESSION_ENCOUNTERS;
   const PLAYER_STATE = window.GAME_MAP_PROGRESSION_PLAYER_STATE;
+  const CHAPTER_ONE = window.GAME_MAP_PROGRESSION_COGNITION;
+  const CHAPTER_TWO = window.GAME_MAP_PROGRESSION_CHAPTER2;
   const LABEL_PLACEMENTS = {
     r1_gate_west: { left: "calc(100% + 8px)", top: "50%", transform: "translateY(-50%)", align: "left" },
     r1_gate_south: { left: "50%", top: "calc(100% + 8px)", transform: "translateX(-50%)", align: "center" },
@@ -18,6 +20,12 @@
     r2_bandit: { left: "calc(100% + 8px)", top: "50%", transform: "translateY(-50%)", align: "left" },
     r2_prison: { left: "50%", top: "calc(100% + 8px)", transform: "translateX(-50%)", align: "center" },
     r2_boss: { left: "calc(100% + 10px)", top: "50%", transform: "translateY(-50%)", align: "left" },
+    r2_entry: { left: "-8px", top: "50%", transform: "translate(-100%, -50%)", align: "right" },
+    r2_knight_rescue: { left: "50%", top: "-10px", transform: "translate(-50%, -100%)", align: "center" },
+    r2_priest_rescue: { left: "50%", top: "calc(100% + 9px)", transform: "translateX(-50%)", align: "center" },
+    r2_shield_trial: { left: "50%", top: "-10px", transform: "translate(-50%, -100%)", align: "center" },
+    r2_flag_trial: { left: "50%", top: "calc(100% + 9px)", transform: "translateX(-50%)", align: "center" },
+    r2_confluence: { left: "50%", top: "-10px", transform: "translate(-50%, -100%)", align: "center" },
     r3_gate_pass: { left: "-8px", top: "50%", transform: "translate(-100%, -50%)", align: "right" },
     r3_bandit: { left: "calc(100% + 8px)", top: "50%", transform: "translateY(-50%)", align: "left" },
     r3_prison: { left: "-8px", top: "50%", transform: "translate(-100%, -50%)", align: "right" },
@@ -27,24 +35,18 @@
   const regions = [
     {
       id: "r1",
-      name: "灰鸦郊野",
-      desc: "盗匪巡逻、哨塔和旧路口组成的新手外圈。",
+      name: "灰带郊野",
+      desc: "从民兵开局，经监狱、军械营地与角色验证建立第一章锁钥认知。",
       gates: [],
-      nodes: makeRegionNodes("r1", 0, [
-        [160, 580], [220, 525], [285, 470], [350, 420], [415, 370],
-        [480, 320], [548, 255], [548, 385], [620, 320], [680, 258],
-      ], { bandit: [430, 510], prison: [390, 255], boss: [765, 215] }),
+      nodes: makeChapterOneNodes(),
     },
     {
       id: "r2",
-      name: "旧矿丘",
-      desc: "废矿、补给线和矮墙营地交错，适合验证第二地区解锁。",
-      gates: ["r2_gate_north", "r2_gate_south"],
+      name: "双垒边境",
+      desc: "两条救援路线分别通向一项场地试炼，掌握两把角色钥匙后在双垒汇流。",
+      gates: [],
       requires: ["r1_boss"],
-      nodes: makeRegionNodes("r2", 1, [
-        [782, 274], [820, 316], [856, 360], [892, 408], [926, 460],
-        [958, 502], [982, 562], [1002, 624], [1014, 674], [1018, 714],
-      ], { bandit: [910, 558], prison: [918, 312], boss: [1060, 746] }),
+      nodes: makeChapterTwoNodes(),
     },
     {
       id: "r3",
@@ -146,6 +148,14 @@
     lootPage: document.getElementById("lootPage"),
     lootTotalCount: document.getElementById("lootTotalCount"),
     lootBatchList: document.getElementById("lootBatchList"),
+    battleRewardDialog: document.getElementById("battleRewardDialog"),
+    battleRewardOutcome: document.getElementById("battleRewardOutcome"),
+    battleRewardTitle: document.getElementById("battleRewardTitle"),
+    battleRewardItems: document.getElementById("battleRewardItems"),
+    battleRewardMessage: document.getElementById("battleRewardMessage"),
+    closeBattleRewardBtn: document.getElementById("closeBattleRewardBtn"),
+    battleRewardMapBtn: document.getElementById("battleRewardMapBtn"),
+    battleRewardEquipmentBtn: document.getElementById("battleRewardEquipmentBtn"),
   };
 
   bind();
@@ -197,16 +207,66 @@
     return [`${regionId}_main_${index}`];
   }
 
+  function makeChapterOneNodes() {
+    const positions = {
+      r1_main_1: [160, 580],
+      r1_main_2: [220, 525],
+      r1_main_3: [285, 470],
+      r1_main_4: [350, 420],
+      r1_main_5: [415, 370],
+      r1_main_6: [480, 320],
+      r1_main_7: [535, 290],
+      r1_main_8: [590, 260],
+      r1_main_9: [645, 230],
+      r1_main_10: [700, 200],
+      r1_bandit: [430, 510],
+      r1_prison: [390, 255],
+      r1_boss: [780, 180],
+    };
+    return CHAPTER_ONE.nodes.map((accepted) => {
+      const label = accepted.type === "branch" ? "可选支线" : accepted.type === "boss" ? "Boss 关" : "线性关卡";
+      return {
+        ...node(
+          accepted.id,
+          "r1",
+          accepted.type,
+          accepted.name,
+          positions[accepted.id],
+          label,
+          `敌情：${accepted.enemyHint}`,
+          [accepted.rewardHint],
+          [...(accepted.requires || [])],
+        ),
+        requiresAny: [...(accepted.requiresAny || [])],
+        acceptedChapterOne: true,
+      };
+    });
+  }
+
+  function makeChapterTwoNodes() {
+    return [
+      node("r2_entry", "r2", "main", "双路驿口", [790, 430], "地区入口", "边境混编巡逻队守住两条救援路线的入口。", ["固定 Lv.22 普通武器", "普通掉落"]),
+      node("r2_knight_rescue", "r2", "rescue", "断旗堡救援", [875, 285], "角色救援", "救出能制造护盾、稳定前排的白垒骑士。", ["首通：白垒骑士", "Lv.20-25 装备"], ["r2_entry"]),
+      node("r2_priest_rescue", "r2", "rescue", "荒井救援", [870, 585], "角色救援", "救出能持续治疗并制造护盾的晨祷牧师。", ["首通：晨祷牧师", "Lv.20-25 装备"], ["r2_entry"]),
+      { ...node("r2_shield_trial", "r2", "trial", "鸣盾庭", [975, 270], "场地试炼", "双方护盾越过阈值时会爆裂。牧师是跨路线钥匙，但不是唯一解。", ["Lv.22-27 装备"], ["r2_knight_rescue"]), fieldEffectId: "shield_detonation" },
+      { ...node("r2_flag_trial", "r2", "trial", "折旗台", [980, 610], "场地试炼", "双方前排守旗；守旗者阵亡后，队友获得反扑窗口。骑士是跨路线钥匙。", ["Lv.22-27 装备"], ["r2_priest_rescue"]), fieldEffectId: "king_flag" },
+      node("r2_confluence", "r2", "main", "双钥汇流", [1060, 435], "汇流关卡", "两条路线在这里合流，检验角色调换和场地知识。", ["首通：Lv.24 史诗火印护符"], ["r2_shield_trial", "r2_flag_trial"]),
+      { ...node("r2_boss", "r2", "boss", "双垒督军", [1160, 445], "地区 Boss", "完整前排、远程火力和王旗机制组成的第二章收束战。", ["第二地区首领装备", "地区通关"], ["r2_confluence"]), fieldEffectId: "king_flag" },
+    ];
+  }
+
   function node(id, regionId, type, name, pos, label, desc, rewards, requires = []) {
     return { id, regionId, type, name, x: pos[0], y: pos[1], label, desc, rewards, requires, requiresAny: [] };
   }
 
   function initialState() {
+    const roster = ROSTER.createInitialRoster().filter((unit) => unit.id !== "hero_mage");
+    const teamSlots = ["hero_warrior", "militia_barricade", "militia_spear", "militia_herb"];
     return {
       seed: "player",
       cleared: {},
       rewards: [],
-      flags: { r1PrisonFailed: false },
+      flags: { playerAgentRoleWave: true, r1PrisonFailed: false, prisonFailed: false, mageRecruited: false, rangerRescued: false, knightRescued: false, priestRescued: false, epicGranted: false },
       attempts: {},
       failures: {},
       pendingEncounter: null,
@@ -214,14 +274,20 @@
       equipped: {},
       lootHistory: [],
       lootUnread: 0,
-      roster: ROSTER.createInitialRoster(),
-      teamSlots: [...ROSTER.INITIAL_TEAM_SLOTS],
+      roster,
+      teamSlots,
       selectedTeamSlot: 3,
-      selectedEquipmentHeroId: ROSTER.INITIAL_TEAM_SLOTS[0],
+      selectedEquipmentHeroId: teamSlots[0],
       selectedEquipmentItemId: null,
       knowledge: {
         equipmentTriedAfterFail: false,
         roleTriedAfterGearFail: false,
+      },
+      cognition: {
+        concepts: ["关卡", "战斗", "装备", "战力", "监狱", "营地"],
+        knowledge: ["胜利可以推进地图", "装备能够提高队伍强度", "监狱里可能关着新角色"],
+        behaviors: ["挑战可用关卡", "查看奖励提示"],
+        failureMemories: [],
       },
       playerExpectation: PLAYER_STATE.createState("map-player"),
       selectedId: "r1_main_1",
@@ -245,9 +311,17 @@
       roster: ROSTER.normalizeRoster(value.roster),
       teamSlots: ROSTER.normalizeTeamSlots(value.teamSlots, value.roster),
       selectedTeamSlot: Math.max(0, Math.min(3, Number(value.selectedTeamSlot) || 0)),
-      selectedEquipmentHeroId: value.selectedEquipmentHeroId || ROSTER.INITIAL_TEAM_SLOTS[0],
+      selectedEquipmentHeroId: value.selectedEquipmentHeroId || initialState().teamSlots[0],
       selectedEquipmentItemId: value.selectedEquipmentItemId || null,
       knowledge: { ...initialState().knowledge, ...(value.knowledge || {}) },
+      cognition: {
+        ...initialState().cognition,
+        ...(value.cognition || {}),
+        concepts: value.cognition?.concepts || initialState().cognition.concepts,
+        knowledge: value.cognition?.knowledge || initialState().cognition.knowledge,
+        behaviors: value.cognition?.behaviors || initialState().cognition.behaviors,
+        failureMemories: value.cognition?.failureMemories || [],
+      },
       playerExpectation: PLAYER_STATE.normalizeState(value.playerExpectation, value.seed || "map-player"),
       pan: value.pan || { x: -34, y: -92 },
     };
@@ -325,6 +399,12 @@
     els.playBattleBtn.addEventListener("click", playBattleWaves);
     els.teamManageBtn.addEventListener("click", openTeamDialog);
     els.closeTeamDialogBtn.addEventListener("click", () => els.teamDialog.close());
+    els.closeBattleRewardBtn.addEventListener("click", closeBattleRewardDialog);
+    els.battleRewardMapBtn.addEventListener("click", closeBattleRewardDialog);
+    els.battleRewardEquipmentBtn.addEventListener("click", () => {
+      closeBattleRewardDialog();
+      switchPage("equipment");
+    });
     els.teamSlotList.addEventListener("click", (event) => {
       const button = event.target.closest("[data-team-slot]");
       if (!button) return;
@@ -563,7 +643,7 @@
     els.regionDesc.textContent = region.desc;
     els.regionState.innerHTML = `
       <div class="state-chip">地区状态<strong>${isRegionUnlocked(region) ? "已解锁" : "未解锁"}</strong></div>
-      <div class="state-chip">入口关口<strong>${region.gates.length ? `${gatesCleared}/${region.gates.length}` : "起始地区"}</strong></div>
+      <div class="state-chip">入口结构<strong>${region.gates.length ? `${gatesCleared}/${region.gates.length}` : region.id === "r1" ? "起始地区" : "直接开放"}</strong></div>
       <div class="state-chip">关卡进度<strong>${cleared}/${nodes.length}</strong></div>
       <div class="state-chip">Boss<strong>${state.cleared[`${region.id}_boss`] ? "已击破" : "未击破"}</strong></div>
       <div class="state-chip">装备强度<strong>${gearScore()}</strong></div>
@@ -582,6 +662,7 @@
       <div class="meta-chip">状态<strong>${statusName(status)}</strong></div>
       <div class="meta-chip">奖励<strong>${display.rewards.join("、")}</strong></div>
       <div class="meta-chip">敌人结构<strong>${enemyPreview(item)}</strong></div>
+      ${display.fieldRule ? `<div class="meta-chip">场地效果<strong>${display.fieldRule}</strong></div>` : ""}
     `;
     els.fightBtn.disabled = !available;
     els.fightBtn.textContent = fightButtonText(item, status);
@@ -620,14 +701,19 @@
   function linkPairs() {
     const pairs = [];
     for (const region of regions) {
+      if (region.id === "r2") {
+        pairs.push({ from: "r2_entry", to: "r2_knight_rescue", kind: "branch", bend: -18 });
+        pairs.push({ from: "r2_entry", to: "r2_priest_rescue", kind: "branch", bend: 18 });
+        pairs.push({ from: "r2_knight_rescue", to: "r2_shield_trial", kind: "main", bend: 0 });
+        pairs.push({ from: "r2_priest_rescue", to: "r2_flag_trial", kind: "main", bend: 0 });
+        pairs.push({ from: "r2_shield_trial", to: "r2_confluence", kind: "main", bend: 28 });
+        pairs.push({ from: "r2_flag_trial", to: "r2_confluence", kind: "main", bend: -28 });
+        pairs.push({ from: "r2_confluence", to: "r2_boss", kind: "boss", bend: 0 });
+        continue;
+      }
       for (const gate of region.gates) pairs.push({ from: gate, to: `${region.id}_main_1`, kind: "gate", bend: gate.endsWith("south") ? 34 : -22 });
       if (region.id === "r1") {
-        for (let index = 1; index < 6; index += 1) pairs.push({ from: `r1_main_${index}`, to: `r1_main_${index + 1}`, kind: "main", bend: index % 2 ? 10 : -10 });
-        pairs.push({ from: "r1_main_6", to: "r1_main_7", kind: "main", bend: -16 });
-        pairs.push({ from: "r1_main_6", to: "r1_main_8", kind: "main", bend: 18 });
-        pairs.push({ from: "r1_main_7", to: "r1_main_9", kind: "main", bend: 18 });
-        pairs.push({ from: "r1_main_8", to: "r1_main_9", kind: "main", bend: -18 });
-        pairs.push({ from: "r1_main_9", to: "r1_main_10", kind: "main", bend: -10 });
+        for (let index = 1; index < 10; index += 1) pairs.push({ from: `r1_main_${index}`, to: `r1_main_${index + 1}`, kind: "main", bend: index % 2 ? 8 : -8 });
       } else {
         for (let index = 1; index < 10; index += 1) pairs.push({ from: `${region.id}_main_${index}`, to: `${region.id}_main_${index + 1}`, kind: "main", bend: index % 2 ? 10 : -10 });
       }
@@ -635,7 +721,7 @@
       pairs.push({ from: region.id === "r1" ? "r1_main_3" : `${region.id}_main_5`, to: `${region.id}_prison`, kind: "branch", bend: 34 });
       pairs.push({ from: `${region.id}_main_10`, to: `${region.id}_boss`, kind: "boss", bend: 10 });
     }
-    pairs.push({ from: "r1_boss", to: "r2_gate_north", kind: "region", bend: -12 });
+    pairs.push({ from: "r1_boss", to: "r2_entry", kind: "region", bend: -12 });
     pairs.push({ from: "r2_boss", to: "r3_gate_pass", kind: "region", bend: 12 });
     return pairs;
   }
@@ -688,7 +774,11 @@
   function isAvailable(item) {
     const region = regions.find((entry) => entry.id === item.regionId);
     if (!region || !isRegionUnlocked(region)) return false;
-    if (state.cleared[item.id]) return item.type === "main" || ENCOUNTERS.isOneTimeBranch(item);
+    if (item.regionId === "r1") {
+      const accepted = chapterOneNode(item.id);
+      return Boolean(accepted && ["available", "farmable", "repeatable"].includes(CHAPTER_ONE.nodeStatus(chapterOneState(), accepted)));
+    }
+    if (state.cleared[item.id]) return item.type === "main" || item.type === "trial" || item.type === "rescue" || ENCOUNTERS.isOneTimeBranch(item);
     if (item.type === "gate") return true;
     if (!regionInteriorUnlocked(region)) return false;
     const requiredAll = (item.requires || []).every((id) => state.cleared[id]);
@@ -700,20 +790,25 @@
     return item.id === "r1_prison" && !state.flags.r1PrisonFailed && !state.cleared.r1_bandit;
   }
 
-  function attemptNode(item) {
+  function attemptNode(item, options = {}) {
     state.attempts[item.id] = (state.attempts[item.id] || 0) + 1;
     const combatResult = resolveNodeCombat(item);
-    return settleNodeAttempt(item, combatResult);
+    return settleNodeAttempt(item, combatResult, options);
   }
 
-  function settleNodeAttempt(item, combatResult) {
+  function settleNodeAttempt(item, combatResult, options = {}) {
     state.playerExpectation = PLAYER_STATE.recordBattle(state.playerExpectation, item, combatResult);
     recordTeamExperiment(item, combatResult);
-    if (!combatResult.win) return failNode(item, combatResult);
+    if (!combatResult.win) {
+      const result = failNode(item, combatResult);
+      if (options.showResult) showBattleReward(item, combatResult, { loot: [], characterUnlock: null });
+      return result;
+    }
     const firstClear = !state.cleared[item.id];
     clearNode(item);
-    grantNodeRewards(item, combatResult, firstClear);
-    return { type: "clear", id: item.id, combat: combatResult };
+    const reward = grantNodeRewards(item, combatResult, firstClear);
+    if (options.showResult) showBattleReward(item, combatResult, reward);
+    return { type: "clear", id: item.id, combat: combatResult, reward };
   }
 
   function recordTeamExperiment(item, combatResult) {
@@ -726,6 +821,11 @@
 
   function clearNode(item) {
     state.cleared[item.id] = true;
+    if (item.regionId === "r1") {
+      state.cognition.failureMemories.forEach((memory) => {
+        if (memory.node === item.id) memory.resolved = true;
+      });
+    }
     selectedId = nextFocusAfterClear(item) || item.id;
     state.selectedId = selectedId;
     saveState();
@@ -735,7 +835,18 @@
 
   function failNode(item, combatResult) {
     state.failures[item.id] = (state.failures[item.id] || 0) + 1;
-    if (item.id === "r1_prison") state.flags.r1PrisonFailed = true;
+    if (item.id === "r1_prison") {
+      state.flags.r1PrisonFailed = true;
+      state.flags.prisonFailed = true;
+    }
+    if (item.regionId === "r1") {
+      state.cognition.failureMemories.unshift({
+        node: item.id,
+        attempt: state.failures[item.id],
+        gearScore: gearScore(),
+        resolved: false,
+      });
+    }
     const next = nextBehaviorAfterFailure(item, combatResult);
     selectedId = next.focusId || item.id;
     state.selectedId = selectedId;
@@ -764,7 +875,7 @@
         render();
         return;
       }
-      const result = attemptNode(next);
+      const result = attemptNode(next, { showResult: false });
       remaining -= 1;
       if (result.type === "failure" || remaining <= 0) {
         stopAutoChallenge();
@@ -785,22 +896,24 @@
 
   function nextAvailableNodes() {
     const rows = allNodes().filter((item) => isAvailable(item));
-    const mergeAvailable = rows.some((item) => item.id === "r1_main_9");
     return rows
-      .filter((item) => !mergeAvailable || (item.id !== "r1_main_7" && item.id !== "r1_main_8"))
       .sort((a, b) => nodeRank(a) - nodeRank(b));
   }
 
   function nodeRank(item) {
     const regionIndex = regions.findIndex((region) => region.id === item.regionId);
-    const typeOrder = { gate: 0, main: 1, branch: 2, boss: 3 };
-    const mainNo = item.type === "main" ? Number(item.name.split("-")[1] || 0) : 0;
+    const typeOrder = { gate: 0, main: 1, rescue: 2, trial: 3, branch: 4, boss: 5 };
+    const mainNo = item.type === "main" ? Number(item.id.split("_").pop() || 0) : 0;
     const repeatPenalty = state.cleared[item.id] ? 500 : 0;
     return regionIndex * 1000 + repeatPenalty + (typeOrder[item.type] ?? 9) * 100 + mainNo;
   }
 
   function nodeStatus(item) {
-    if (state.cleared[item.id]) return item.type === "main" ? "farmable" : ENCOUNTERS.isOneTimeBranch(item) ? "repeatable" : "cleared";
+    if (item.regionId === "r1") {
+      const accepted = chapterOneNode(item.id);
+      if (accepted) return CHAPTER_ONE.nodeStatus(chapterOneState(), accepted);
+    }
+    if (state.cleared[item.id]) return item.type === "main" || item.type === "trial" ? "farmable" : item.type === "rescue" || ENCOUNTERS.isOneTimeBranch(item) ? "repeatable" : "cleared";
     if (isAvailable(item)) return "available";
     return "locked";
   }
@@ -810,25 +923,25 @@
   }
 
   function nodeDisplay(item) {
-    if (item.id === "r1_bandit") {
-      return {
-        desc: "可选攻坚支线。首通固定获得破盾与破甲军械；可以复战，但首通奖励只领取一次。",
-        rewards: ["首通：破盾斧与裂甲护手"],
-      };
+    if (item.regionId === "r2") {
+      const field = nodeFieldEffect(item) ? CHAPTER_TWO?.fieldPublic(nodeFieldEffect(item)) : null;
+      return { desc: item.desc, rewards: item.rewards, fieldRule: field ? `${field.name}：${field.rule}` : "" };
     }
-    if (item.id === "r1_prison" && state.flags.r1PrisonFailed && !state.cleared.r1_bandit) {
-      return {
-        desc: "刚才攻坚失败了。你可以直接重试；更稳妥的路线是继续推进并取得旧塔军械营地的装备。",
-        rewards: item.rewards,
-      };
-    }
-    if (item.id === "r1_main_7") {
-      return {
-        desc: state.flags.rangerRescued
-          ? "狂鬃蛮熊生命高、攻击快。你已经见过游侠的减速与猎标，可以观察它是否更快压住蛮熊，但这不是唯一解。"
-          : "狂鬃蛮熊生命高、攻击快，周围只有较弱的支援。观察哪种队伍能更快压住它。",
-        rewards: item.rewards,
-      };
+    if (item.regionId === "r1") {
+      const accepted = chapterOneNode(item.id);
+      const acceptedState = chapterOneState();
+      const enemyHint = CHAPTER_ONE.enemyHintForNode(acceptedState, accepted);
+      const rewardHint = CHAPTER_ONE.rewardHintForNode(acceptedState, accepted);
+      let desc = `敌情：${enemyHint}`;
+      if (item.id === "r1_prison" && state.flags.r1PrisonFailed && !state.cleared.r1_bandit) {
+        desc += "。你可以直接重试，也可以继续主线，在旧塔军械营地取得攻坚装备后再来。";
+      }
+      if (item.id === "r1_main_7" && state.flags.rangerRescued) {
+        desc += "。观察林地游侠能否持续锁定高生命目标；这不是唯一解。";
+      }
+      const fieldId = nodeFieldEffect(item);
+      const field = fieldId ? CHAPTER_TWO?.fieldPublic(fieldId) : null;
+      return { desc, rewards: [rewardHint], fieldRule: field ? `${field.name}：${field.rule}` : "" };
     }
     return { desc: item.desc, rewards: item.rewards };
   }
@@ -845,11 +958,14 @@
   function nodeIcon(item) {
     if (item.type === "gate") return "门";
     if (item.type === "branch") return item.id.includes("prison") ? "牢" : "营";
+    if (item.type === "rescue") return "救";
+    if (item.type === "trial") return "试";
     if (item.type === "boss") return "王";
     return item.name.split("-")[1] || "·";
   }
 
   function enemyPreview(item) {
+    if (item.regionId === "r2") return CHAPTER_TWO?.nodes.find((row) => row.id === item.id)?.enemyHint || "双垒边境敌军";
     if (item.type === "boss") return "骑士、战士、法师和牧师";
     if (item.type === "gate") return "4 个守门敌人";
     if (item.id.includes("bandit")) return "持盾军械队，首通掉落攻坚装备";
@@ -1366,6 +1482,17 @@
   }
 
   function resolveNodeCombat(item) {
+    if (item.regionId === "r1") {
+      const accepted = chapterOneNode(item.id);
+      const result = CHAPTER_ONE.resolveCombat(chapterOneState(), accepted);
+      const leftTeam = progressionPlayerTeam();
+      const rightTeam = CHAPTER_ONE.enemyTeam(accepted, chapterOneState());
+      return {
+        ...result,
+        enemyPower: Math.round(rightTeam.reduce((sum, unit) => sum + compactSpecPower(unit), 0)),
+        playerPower: Math.round(leftTeam.reduce((sum, unit) => sum + compactSpecPower(unit), 0)),
+      };
+    }
     const simulator = window.GAME_COMBAT_SIM;
     const leftTeam = progressionPlayerTeam();
     const rightTeam = nodeEnemyTeam(item);
@@ -1392,7 +1519,7 @@
     stopBattleWaves();
     const view = mountBattle();
     if (!view) {
-      attemptNode(item);
+      attemptNode(item, { showResult: true });
       return;
     }
     view.onFinish = () => {};
@@ -1538,13 +1665,11 @@
     pendingHumanWaveRun = null;
     pendingHumanNode = null;
     state.pendingEncounter = null;
-    const outcome = settleNodeAttempt(item, combatResult);
+    settleNodeAttempt(item, combatResult, { showResult: true });
     const label = combatResult.win ? (combatResult.resolution === "time_limit" ? "时限判定胜利" : "胜利") : "失败";
     els.waveStatus.textContent = `${item.name} · ${label}`;
-    window.setTimeout(() => {
-      switchPage("map");
-      render();
-    }, outcome?.type === "failure" ? 1400 : 1100);
+    switchPage("map");
+    render();
   }
 
   function combatResolution(result) {
@@ -1558,8 +1683,14 @@
   }
 
   function nodeEnemyTeam(item) {
-    if (item.id === "r1_prison") return ENCOUNTERS.prisonTeam();
-    if (item.id === "r1_main_7") return ENCOUNTERS.bearLockTeam();
+    if (item.regionId === "r1") {
+      const accepted = chapterOneNode(item.id);
+      if (accepted) return CHAPTER_ONE.enemyTeam(accepted, chapterOneState());
+    }
+    if (item.regionId === "r2") {
+      const chapterNode = CHAPTER_TWO?.nodes.find((row) => row.id === item.id);
+      if (chapterNode) return CHAPTER_TWO.enemyTeam(chapterNode);
+    }
     const roles = nodeEnemyRoles(item);
     const scale = nodeEnemyScale(item);
     return roles.map((role, index) => scaleCombatSpec(enemySpec(role, index, item), scale));
@@ -1643,40 +1774,107 @@
   }
 
   function nodeFieldEffect(item) {
-    return ENCOUNTERS.fieldEffectId(item);
+    if (item.regionId === "r1") {
+      const accepted = chapterOneNode(item.id);
+      if (accepted) return CHAPTER_ONE.fieldEffectId(accepted);
+    }
+    return item.fieldEffectId || ENCOUNTERS.fieldEffectId(item);
   }
 
   function grantNodeRewards(item, combatResult, firstClear) {
-    if (!firstClear && ENCOUNTERS.isOneTimeBranch(item)) {
+    const oneTimeReward = item.type === "rescue" || ENCOUNTERS.isOneTimeBranch(item);
+    if (!firstClear && oneTimeReward) {
       state.playerExpectation = PLAYER_STATE.recordLoot(state.playerExpectation, item, [], { firstClear: false });
       state.rewards.unshift(`${item.name}复战胜利；首通奖励已经领取，本次没有新的支线奖励。`);
       saveState();
       render();
-      return;
+      return { loot: [], characterUnlock: null };
     }
-    const loot = item.id === "r1_bandit"
-      ? ENCOUNTERS.campFirstClearLoot(`r1_bandit_key_${state.attempts[item.id] || 1}`)
+    const chapterNode = item.regionId === "r2" ? CHAPTER_TWO?.nodes.find((row) => row.id === item.id) : null;
+    const acceptedChapterOneNode = item.regionId === "r1" ? chapterOneNode(item.id) : null;
+    const loot = acceptedChapterOneNode
+      ? CHAPTER_ONE.lootFor(chapterOneState(), acceptedChapterOneNode, firstClear)
+      : chapterNode
+      ? CHAPTER_TWO.lootFor({ seed: state.seed, attempts: state.attempts, inventory: state.inventory }, chapterNode, firstClear)
       : rollNodeLoot(item);
     state.inventory.push(...loot);
-    autoEquipBestItems();
     recordLootBatch(item, loot);
+    let characterUnlock = null;
+    if (item.id === "r1_main_2" && firstClear) {
+      state.flags.mageRecruited = true;
+      state.roster = ROSTER.rescueHero(state.roster, "mage");
+      characterUnlock = { heroId: "hero_mage", name: "烬火法师" };
+      state.rewards.unshift("烬火法师已加入角色名单。当前队伍没有自动改变，请由你决定是否换人。");
+    }
     if (item.id === "r1_prison" && firstClear) {
       state.flags.rangerRescued = true;
       state.roster = ROSTER.rescueHero(state.roster, "ranger");
+      characterUnlock = { heroId: "hero_ranger", name: "林地游侠" };
       state.rewards.unshift("林地游侠已加入角色名单。当前队伍没有自动改变，请由你决定是否替换出战角色。");
     }
+    if (item.id === "r2_knight_rescue" && firstClear) {
+      state.flags.knightRescued = true;
+      state.roster = ROSTER.rescueHero(state.roster, "knight");
+      characterUnlock = { heroId: "hero_knight", name: "白垒骑士" };
+      state.rewards.unshift("白垒骑士已加入角色名单。当前队伍没有自动改变。");
+    }
+    if (item.id === "r2_priest_rescue" && firstClear) {
+      state.flags.priestRescued = true;
+      state.roster = ROSTER.rescueHero(state.roster, "priest");
+      characterUnlock = { heroId: "hero_priest", name: "晨祷牧师" };
+      state.rewards.unshift("晨祷牧师已加入角色名单。当前队伍没有自动改变。");
+    }
+    if (item.id === "r2_confluence" && firstClear) state.flags.epicGranted = true;
     state.playerExpectation = PLAYER_STATE.recordLoot(state.playerExpectation, item, loot, {
       firstClear,
-      characterUnlocked: item.id === "r1_prison" && firstClear,
+      characterUnlocked: Boolean(characterUnlock),
     });
     const lootText = loot.map((entry) => entry.name).join(" / ") || "无装备";
     const topDamage = (combatResult.units || []).filter((unit) => unit.side === "left" || unit.side === "ally").sort((a, b) => b.damageDone - a.damageDone)[0];
     const damageText = topDamage ? `；最高伤害 ${topDamage.name} ${Math.round(topDamage.damageDone)}` : "";
     const verdict = combatResult.resolution === "time_limit" ? "时限结束后按剩余生命判定胜利" : "击败全部敌人";
-    state.rewards.unshift(`${item.name}：真实战斗 ${combatResult.duration} 秒胜利（${verdict}）；掉落 ${lootText}，已记录到战利品页；我方强度 ${combatResult.playerPower} / 敌方 ${combatResult.enemyPower}${damageText}`);
+    state.rewards.unshift(`${item.name}：真实战斗 ${combatResult.duration} 秒胜利（${verdict}）；掉落 ${lootText}，已进入仓库但尚未穿戴；我方强度 ${combatResult.playerPower} / 敌方 ${combatResult.enemyPower}${damageText}`);
     saveState();
     render();
-    if (item.id === "r1_prison" && firstClear) window.setTimeout(openTeamDialog, 80);
+    return { loot, characterUnlock };
+  }
+
+  function showBattleReward(item, combatResult, reward) {
+    if (!els.battleRewardDialog) return;
+    const loot = reward?.loot || [];
+    const characterUnlock = reward?.characterUnlock;
+    els.battleRewardOutcome.textContent = combatResult.win ? `${item.name} · 战斗胜利` : `${item.name} · 挑战失败`;
+    els.battleRewardTitle.textContent = characterUnlock
+      ? `${characterUnlock.name}加入角色名单`
+      : loot.length
+        ? `获得 ${loot.length} 件装备`
+        : "本场没有装备掉落";
+    els.battleRewardItems.innerHTML = loot.length
+      ? loot.map((entry) => `
+          <article class="battle-reward-item rarity-${entry.rarity || "common"}">
+            <span>${equipmentIcon(entry.slot)}</span>
+            <div>
+              <small>${entry.rarityLabel || EQUIPMENT.RARITY_BY_ID?.[entry.rarity]?.label || "普通"} · Lv.${entry.equipmentLevel || 1}</small>
+              <strong>${entry.name}</strong>
+              <em>${compactItemStats(entry) || "基础装备"}</em>
+            </div>
+          </article>
+        `).join("")
+      : "";
+    els.battleRewardMessage.textContent = combatResult.win
+      ? characterUnlock
+        ? `${characterUnlock.name}和本场装备均未自动加入出战配置。装备已进入仓库，请由你决定是否换人、给谁穿戴。`
+        : loot.length
+          ? "装备已进入仓库，当前角色数值没有自动变化。你可以直接继续，也可以去仓库手动比较和穿戴。"
+          : "首通奖励已经领取，本次复战没有新的装备或角色奖励。"
+      : "失败没有掉落，也没有惩罚。你可以调整队伍或手动更换装备后再次挑战。";
+    els.battleRewardEquipmentBtn.hidden = loot.length === 0;
+    if (!els.battleRewardDialog.open) els.battleRewardDialog.showModal();
+  }
+
+  function closeBattleRewardDialog() {
+    if (els.battleRewardDialog?.open) els.battleRewardDialog.close();
+    switchPage("map");
   }
 
   function openTeamDialog() {
@@ -1710,9 +1908,6 @@
     const before = [...state.teamSlots];
     state.teamSlots = ROSTER.assignTeamSlot(state.roster, state.teamSlots, state.selectedTeamSlot, heroId);
     if (before.join("|") === state.teamSlots.join("|")) return;
-    const result = EQUIPMENT.autoEquip(state.roster, state.teamSlots, state.inventory);
-    state.roster = result.roster;
-    state.inventory = result.inventory;
     state.flags.teamChangedSinceBattle = true;
     const unit = state.roster.find((candidate) => candidate.id === heroId);
     state.rewards.unshift(`你将${unit?.name || "角色"}换入小队。下一场真实战斗会验证这次调整。`);
@@ -1750,7 +1945,7 @@
     els.inventoryCount.textContent = `${inventory.length} 件`;
     els.equipmentInventoryGrid.innerHTML = inventory.length
       ? inventory.map((item) => equipmentGridCell(item, "equipment-item")).join("")
-      : `<div class="inventory-empty">仓库目前为空。已自动装备的物品显示在角色部位中。</div>`;
+      : `<div class="inventory-empty">仓库目前为空。战斗掉落只会进入仓库，必须由你决定给谁穿戴。</div>`;
     renderEquipmentInspector(hero);
   }
 
@@ -1939,7 +2134,18 @@
       return;
     }
     state.failures[item.id] = (state.failures[item.id] || 0) + 1;
-    if (item.id === "r1_prison") state.flags.r1PrisonFailed = true;
+    if (item.id === "r1_prison") {
+      state.flags.r1PrisonFailed = true;
+      state.flags.prisonFailed = true;
+    }
+    if (item.regionId === "r1") {
+      state.cognition.failureMemories.unshift({
+        node: item.id,
+        attempt: state.failures[item.id],
+        gearScore: gearScore(),
+        resolved: false,
+      });
+    }
     selectedId = latestClearedMain(item)?.id || previousFarmNode(item)?.id || item.id;
     state.selectedId = selectedId;
     state.knowledge.equipmentTriedAfterFail = true;
@@ -2094,6 +2300,25 @@
 
   function allNodes() {
     return regions.flatMap((region) => region.nodes);
+  }
+
+  function chapterOneNode(id) {
+    return CHAPTER_ONE.nodes.find((item) => item.id === id) || null;
+  }
+
+  function chapterOneState() {
+    return {
+      ...state,
+      flags: {
+        ...state.flags,
+        playerAgentRoleWave: true,
+        prisonFailed: Boolean(state.flags.prisonFailed || state.flags.r1PrisonFailed),
+      },
+      cognition: {
+        ...state.cognition,
+        failureMemories: state.cognition?.failureMemories || [],
+      },
+    };
   }
 
   function findNode(id) {

@@ -1,0 +1,204 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 31,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-55c0b76bce3730d8",
+    "mode": "continue",
+    "turn": 62,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "equip:hero_mage:r1_main_3_1_0",
+  "outcome": "equipped",
+  "emotionBeforeAction": 28.0765,
+  "emotionAfterEvents": 28.0751,
+  "candidateKnowledge": [
+    {
+      "id": "knowledge:51",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_1",
+        "phase": "equipment",
+        "hero": {
+          "id": "hero_mage",
+          "name": "烬火法师",
+          "role": "mage",
+          "kind": "hero"
+        }
+      },
+      "behavior": {
+        "kind": "equip_item",
+        "key": "equip:hero_mage:r1_main_3_1_0",
+        "itemId": "r1_main_3_1_0",
+        "target": "hero_mage"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "item_equipped": 1
+        },
+        "latestObservation": {
+          "outcome": "item_equipped",
+          "item": {
+            "id": "r1_main_3_1_0",
+            "name": "普通护符 Lv.4",
+            "slot": "charm",
+            "slotLabel": "护符",
+            "rarity": "common",
+            "rarityLabel": "普通",
+            "level": 4,
+            "baseStats": {
+              "magicPower": 2
+            },
+            "affixes": [
+              {
+                "id": "counterDamage",
+                "stat": "counterDamage",
+                "label": "反击伤害",
+                "category": "archetype",
+                "level": 1,
+                "value": 3
+              }
+            ]
+          },
+          "replacedItem": null,
+          "equippedPowerBefore": 0,
+          "equippedPowerAfter": 28,
+          "powerDelta": 28
+        }
+      },
+      "evidence": {
+        "count": 3,
+        "recentEventIds": [
+          "equip_action:31:r1_main_3_1_0:start",
+          "equip_action:31:r1_main_3_1_0:result",
+          "equip_action:31:r1_main_3_1_0:summary"
+        ]
+      },
+      "latestAttribution": null
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "equip_action:31:r1_main_3_1_0:start",
+      "time": 0,
+      "type": "action_start",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_started",
+        "occurred": true
+      },
+      "H": 0.2475,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:31:r1_main_3_1_0:result",
+      "time": 0.05,
+      "type": "equipment_change",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "item_equipped",
+        "occurred": true,
+        "amount": 28,
+        "before": 0,
+        "after": 28,
+        "itemName": "普通护符 Lv.4",
+        "heroId": "hero_mage"
+      },
+      "H": 0.2475,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:31:r1_main_3_1_0:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 28,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "item_equipped",
+            "amount": 28
+          }
+        ]
+      },
+      "H": 0.75,
+      "emotionDelta": -0.0014
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "auditNote": "candidateKnowledge contains only rows citing at least one currently visible event; exact ids remain unchanged."
+}

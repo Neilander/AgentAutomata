@@ -4,10 +4,14 @@ const RUNTIME = require("../../game_data/player-cognition-v3-event-runtime");
 const ADAPTER = require("../../game_data/map-cognition-v3-event-adapter");
 const EQUIPMENT = require("../../game_data/equipment-runtime");
 const SIGNAL_INTERPRETER = require("./signal-concept-interpreter");
+const KNOWLEDGE_RETRIEVAL = require("./knowledge-retrieval");
+const PERSISTENT_AGENT = require("./persistent-agent-context");
+const PLAYER_PROFILES = require("./player-profiles");
 
 const SCHEMA = "player_agent_api_loop_v1";
 
-function createSession(seed = "player-agent-api-loop", maxCycles = 2) {
+function createSession(seed = "player-agent-api-loop", maxCycles = 2, options = {}) {
+  const profileState = PLAYER_PROFILES.createProfileState(options.profileId || "open_novice");
   return {
     schema: SCHEMA,
     seed,
@@ -18,6 +22,8 @@ function createSession(seed = "player-agent-api-loop", maxCycles = 2) {
     cognitionState: RUNTIME.createState(seed),
     evaluatorState: createEvaluatorState(),
     conceptState: SIGNAL_INTERPRETER.createConceptState(),
+    agentContext: PERSISTENT_AGENT.create(`${seed}:profile:${profileState.profileId}`),
+    playerProfile: profileState,
     knowledgeBase: [],
     history: [],
     pendingAttribution: null,
@@ -119,6 +125,7 @@ function applyDecisionResponse(sessionInput, responseInput) {
   };
   session.phase = "attribution";
   session.apiCalls.push({ type: "decision", cycle: session.cycle + 1, response });
+  session.agentContext = PERSISTENT_AGENT.completeTurn(session.agentContext);
   return session;
 }
 
@@ -156,6 +163,7 @@ function applyAttributionResponse(sessionInput, responseInput) {
   targetKnowledge.attributions.push(attribution);
   session.history[pending.historyIndex].attribution = attribution;
   session.apiCalls.push({ type: "attribution", cycle: pending.cycle, response });
+  session.agentContext = PERSISTENT_AGENT.completeTurn(session.agentContext);
   session.cycle += 1;
   session.pendingAttribution = null;
   session.phase = session.cycle >= session.maxCycles ? "complete" : "decision";
@@ -168,20 +176,33 @@ function buildDecisionRequest(session) {
   const activeGoalId = goals.some((goal) => goal.id === session.cognitionState.activeGoalId)
     ? session.cognitionState.activeGoalId
     : goals[0]?.id || "grow_and_progress";
+  const visibleHypotheses = visiblePlayerHypotheses(session.cognitionState.hypotheses);
+  const retrieval = KNOWLEDGE_RETRIEVAL.retrieveKnowledge({
+    knowledgeBase: session.knowledgeBase,
+    observation,
+    goals,
+    failureMemories: session.cognitionState.failureMemories,
+    hypotheses: visibleHypotheses,
+    history: session.history,
+  });
   return {
     type: "decision",
-    schema: "player_decision_request_v1",
+    schema: "player_decision_request_v2",
     cycle: session.cycle + 1,
-    instruction: "Choose exactly one allowed action. Use only supplied observations and knowledge. Do not calculate or set emotion.",
+    agentSession: PERSISTENT_AGENT.requestMetadata(session.agentContext, "decision"),
+    playerProfile: clone(session.playerProfile),
+    instruction: "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
     playerState: {
       emotion: round(session.cognitionState.emotion.value),
       activeGoalId,
       goals,
-      knowledge: session.knowledgeBase,
+      knowledge: retrieval.knowledge,
+      knowledgeStoreCount: session.knowledgeBase.length,
       eventStatisticsCount: session.cognitionState.knowledge.length,
       failureMemories: session.cognitionState.failureMemories,
-      hypotheses: visiblePlayerHypotheses(session.cognitionState.hypotheses),
+      hypotheses: visibleHypotheses,
     },
+    knowledgeRetrieval: retrieval.audit,
     observation: {
       step: observation.step,
       currentGoal: observation.currentGoal,
@@ -226,6 +247,8 @@ function buildAttributionRequest(session) {
     type: "attribution",
     schema: "player_attribution_request_v1",
     cycle: pending.cycle,
+    agentSession: PERSISTENT_AGENT.requestMetadata(session.agentContext, "attribution"),
+    playerProfile: clone(session.playerProfile),
     instruction: "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
     action: record.action,
     outcome: record.outcome,
@@ -593,10 +616,37 @@ function normalizeDecisionResponse(input) {
   };
 }
 
-function createChapter2Session(seed = "player-agent-api-loop-chapter2", maxCycles = 24, priorPlayerState = null) {
-  const session = createSession(seed, maxCycles);
+function createChapter2Session(seed = "player-agent-api-loop-chapter2", maxCycles = 24, priorPlayerState = null, options = {}) {
+  const session = createSession(seed, maxCycles, options);
   session.gameState = REGION_2_CORE.initialState(seed);
   if (priorPlayerState) inheritPriorPlayerState(session, priorPlayerState);
+  return session;
+}
+
+function createChapter2SessionFromChapter1(chapter1Input, maxCycles = 24, seed = null) {
+  const source = cloneAndValidate(chapter1Input);
+  if (source.phase === "attribution" || source.pendingAttribution) {
+    throw new Error("cannot transition chapters while attribution is pending");
+  }
+  const chapter2Seed = String(seed || `${source.seed}:chapter2`);
+  const session = createChapter2Session(chapter2Seed, maxCycles, null, {
+    profileId: source.playerProfile.profileId,
+  });
+  session.cognitionState = clone(source.cognitionState);
+  session.evaluatorState = createEvaluatorState();
+  session.conceptState = clone(source.conceptState);
+  session.agentContext = clone(source.agentContext);
+  session.playerProfile = clone(source.playerProfile);
+  session.knowledgeBase = clone(source.knowledgeBase);
+  session.chapterTransition = {
+    schema: "player_chapter_transition_v1",
+    fromSessionSeed: source.seed,
+    toSessionSeed: chapter2Seed,
+    inheritedEmotion: round(source.cognitionState.emotion.value),
+    inheritedKnowledgeCount: source.knowledgeBase.length,
+    inheritedConceptCount: source.conceptState.concepts.length,
+    inheritedAgentSessionId: source.agentContext.id,
+  };
   return session;
 }
 
@@ -1227,6 +1277,11 @@ function cloneAndValidate(input) {
   const session = clone(input);
   if (!session || session.schema !== SCHEMA) throw new Error("invalid player agent loop session");
   if (!session.conceptState) session.conceptState = SIGNAL_INTERPRETER.createConceptState();
+  session.playerProfile = PLAYER_PROFILES.ensureProfileState(session.playerProfile, "open_novice");
+  session.agentContext = PERSISTENT_AGENT.ensure(
+    session.agentContext,
+    `${session.seed}:profile:${session.playerProfile.profileId}`,
+  );
   if (!session.evaluatorState) {
     session.evaluatorState = {
       affordanceExperiments: clone(session.cognitionState?.affordanceExperiments || []),
@@ -1245,6 +1300,7 @@ module.exports = {
   applyAttributionResponse,
   applyDecisionResponse,
   createChapter2Session,
+  createChapter2SessionFromChapter1,
   createSession,
   getPendingRequest,
 };

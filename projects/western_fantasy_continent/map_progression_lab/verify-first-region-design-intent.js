@@ -24,6 +24,8 @@ assert.deepEqual(CORE.nodes.find((node) => node.id === "r1_main_5").requires, ["
 assert.deepEqual(CORE.nodes.find((node) => node.id === "r1_prison").requires, ["r1_main_3"]);
 assert.deepEqual(CORE.nodes.find((node) => node.id === "r1_bandit").requires, ["r1_main_5"]);
 assert.deepEqual(CORE.nodes.find((node) => node.id === "r1_main_8").requires, ["r1_main_7"], "Main 8 must not bypass the Ranger validation encounter");
+assert.deepEqual(CORE.nodes.find((node) => node.id === "r1_main_9").requires, ["r1_main_8"], "Main 9 must follow Main 8 instead of forming a fork");
+assert.deepEqual(CORE.nodes.find((node) => node.id === "r1_main_9").requiresAny, [], "Chapter 1 mainline must not use alternate predecessors");
 
 for (let index = 0; index < sampleCount; index += 1) {
   let state = CORE.initialState(`first-region-intent-${index}`, { starterVariant: "player_agent_role_wave" });

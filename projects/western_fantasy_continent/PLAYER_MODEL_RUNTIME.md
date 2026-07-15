@@ -20,6 +20,8 @@ Important files:
 - `verify-causal-loop.js`: required deterministic regression.
 - `summarize-main7-run.js`: long-run per-action knowledge/concept trace and integrity audit.
 - `README.md`: implementation contract.
+- `knowledge-retrieval.js`: explicit decision-time retrieval over the full persistent knowledge store.
+- `TOKEN_EFFICIENT_LOOP_V2.md`: persistent-Agent, short-context decision contract and real-slice validation.
 - `causal_verification_v9_concept_interpreter/`: current accepted two-cycle evidence.
 - `real_main7_run_2026-07-13_170746/`: fresh 20-action Main 1-7 evidence with every request, response, raw log, semantic log, learning delta, and audit.
 
@@ -39,12 +41,14 @@ code owns game and player state
 -> next decision cycle
 ```
 
-The AI is an API dependency at two boundaries only:
+The AI is an API dependency at two boundaries only. Calls from one playthrough carry a stable Agent session id and should reuse the same Agent. Code still retrieves a compact view from the persistent knowledge store before each decision, so conversation memory never becomes the source of truth.
 
 1. `decision`: choose one allowed behavior using current observations and knowledge.
 2. `attribution`: explain an observed result using semantic event IDs and learned knowledge.
 
 The AI must not directly set emotion, PQRA, Agency, power, drops, knowledge, or game results.
+
+The first Agent request is marked `bootstrap`; subsequent decision and attribution requests are marked `continue`. The id and completed turn count survive JSON save/restore. If the provider loses the persistent conversation, the code-owned session remains sufficient to continue.
 
 ## Signal Boundary
 

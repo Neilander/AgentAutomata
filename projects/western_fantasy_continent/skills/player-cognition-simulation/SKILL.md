@@ -14,15 +14,16 @@ Before modeling or explaining the system, read [references/model-concepts-explai
 ## Required Workflow
 
 1. Define the bounded episode being tested: one fight, one map decision, one reward loop, or one failure-and-retry loop.
-2. Initialize only the cognition available before the episode. Read `references/cognition-state.md`.
+2. Initialize only the cognition available before the episode. Read `references/cognition-state.md`. When validating a level or progression sequence, also read `references/player-profile-ensemble.md` and run multiple persistent player profiles instead of one default Agent.
 3. Convert raw game events into player-visible concepts, then into perceptual signals, comparable performance observations, progression, growth, and agency. Read `references/signal-concept-interpretation.md` before `references/signal-growth-agency-model.md`.
 4. Divide the episode into locally meaningful segments. Count the explicit problem -> cause -> behavior -> hypothesis decision chain and the later hypothesis comparison before estimating `E`, `W`, `P`, and `Q`. Read `references/effort-result-model.md`.
 5. Calculate progression and growth result `R`, learned exchange rate `k`, signed expectation mismatch, and total episode experience.
+   When expected and actual results are expressed as relative improvement, read [references/improvement-perception-granularity.md](references/improvement-perception-granularity.md) before settling `A`. Quantize both values through the same persistent player profile instead of comparing precise percentages directly.
 6. Update concepts, knowledge, behaviors, first impressions, expectations, event freshness, failure memories, and wake-up conditions.
 
 For loot drops, critical hits, rare encounters, procs, and other repeated probability events, read [references/probability-expectation.md](references/probability-expectation.md). The cognition layer maintains event-family probability beliefs and counters; `A` only evaluates observed result against the prior expectation.
 7. Select the next action using only the updated state. Never use hidden designer intent or future rewards.
-8. Produce the required trace and run an independent plausibility review. Read `references/simulation-protocol.md`.
+8. Produce the required trace and run an independent plausibility review. Read `references/simulation-protocol.md`. Report per-profile paths and failures before any aggregate; an average result must not hide a dominant bypass or a profile-specific dead end.
 
 ## Core Model
 
@@ -74,6 +75,9 @@ Treat these as separate quantities:
 - Keep raw audit events separate from player-semantic events. Post-hoc knowledge filtering is not concept interpretation.
 - Treat all constants as hypotheses until calibrated against traces or human feedback.
 - Do not let the player agent approve its own trace. A separate reviewer must issue `accept`, `revise`, or `reject`; otherwise mark independent review as not run.
+- Do not validate a design with only one cooperative or balanced player profile. Keep the cognition engine fixed while varying structured initial beliefs, confidence, risk tolerance, experimentation tendency, and action friction.
+- Treat profile beliefs such as "damage is everything" as fallible subject-environment-behavior-result priors with confidence and provenance, never as designer truth or hard-coded actions.
+- Keep each player profile persistent for the whole run. Do not replace its personality after a failure to force the intended solution.
 
 ## Existing Runtime Surfaces
 

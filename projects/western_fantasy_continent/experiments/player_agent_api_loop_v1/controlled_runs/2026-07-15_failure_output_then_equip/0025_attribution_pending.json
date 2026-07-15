@@ -1,0 +1,269 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 25,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-55c0b76bce3730d8",
+    "mode": "continue",
+    "turn": 50,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "swap:1:militia_barricade",
+  "outcome": "team_changed",
+  "emotionBeforeAction": 32.1139,
+  "emotionAfterEvents": 32.1139,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:50",
+      "key": "player|region_1|unknown_environment|team_management|swap_team_member|swap:1:militia_barricade",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_1",
+        "phase": "team_management"
+      },
+      "behavior": {
+        "kind": "swap_team_member",
+        "key": "swap:1:militia_barricade"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "team_changed": 3
+        },
+        "observations": [
+          {
+            "outcome": "team_changed",
+            "teamBefore": [
+              "hero_warrior",
+              "militia_drum",
+              "militia_spear",
+              "hero_mage"
+            ],
+            "teamAfter": [
+              "hero_warrior",
+              "militia_barricade",
+              "militia_spear",
+              "hero_mage"
+            ],
+            "equippedPowerBefore": 0,
+            "equippedPowerAfter": 0
+          },
+          {
+            "outcome": "team_changed",
+            "teamBefore": [
+              "hero_warrior",
+              "militia_drum",
+              "militia_spear",
+              "hero_mage"
+            ],
+            "teamAfter": [
+              "hero_warrior",
+              "militia_barricade",
+              "militia_spear",
+              "hero_mage"
+            ],
+            "equippedPowerBefore": 0,
+            "equippedPowerAfter": 0
+          },
+          {
+            "outcome": "team_changed",
+            "teamBefore": [
+              "hero_warrior",
+              "militia_herb",
+              "militia_spear",
+              "hero_mage"
+            ],
+            "teamAfter": [
+              "hero_warrior",
+              "militia_barricade",
+              "militia_spear",
+              "hero_mage"
+            ],
+            "equippedPowerBefore": 0,
+            "equippedPowerAfter": 0
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:1:15:result",
+        "map_action:1:15:start",
+        "team-change:15:militia_barricade",
+        "map_action:1:15:summary",
+        "map_action:1:21:result",
+        "map_action:1:21:start",
+        "team-change:21:militia_barricade",
+        "map_action:1:21:summary",
+        "map_action:1:25:result",
+        "map_action:1:25:start",
+        "team-change:25:militia_barricade",
+        "map_action:1:25:summary"
+      ],
+      "attributions": [
+        {
+          "id": "ai-attribution:15",
+          "knowledgeId": "knowledge:50",
+          "cause": "The explicit roster swap replaced militia_drum with militia_barricade in the active squad.",
+          "confidence": 0.9,
+          "evidenceEventIds": [
+            "map_action:1:15:result",
+            "map_action:1:15:start",
+            "team-change:15:militia_barricade",
+            "map_action:1:15:summary"
+          ],
+          "alternativeCauses": [],
+          "nextTest": "Immediately retry r1_main_6 and compare the incoming character's observed combat contribution.",
+          "learnedAfterFeedback": true
+        },
+        {
+          "id": "ai-attribution:21",
+          "knowledgeId": "knowledge:50",
+          "cause": "The explicit roster swap replaced militia_drum with militia_barricade in the active squad.",
+          "confidence": 0.9,
+          "evidenceEventIds": [
+            "map_action:1:21:result",
+            "map_action:1:21:start",
+            "team-change:21:militia_barricade",
+            "map_action:1:21:summary"
+          ],
+          "alternativeCauses": [],
+          "nextTest": "Immediately retry r1_main_6 and compare the incoming character's observed combat contribution.",
+          "learnedAfterFeedback": true
+        }
+      ]
+    }
+  ],
+  "eventStatisticsCount": 166,
+  "visibleEvents": [
+    {
+      "id": "map_action:1:25:result",
+      "time": 0,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "swap:1:militia_barricade",
+      "result": {
+        "kind": "action_changed",
+        "occurred": true,
+        "observedPower": 0,
+        "boundary": "normal_end",
+        "firstClear": false
+      },
+      "H": 0.95,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:1:25:start",
+      "time": 0,
+      "type": "action_start",
+      "subject": "player squad",
+      "behavior": "swap:1:militia_barricade",
+      "result": {
+        "kind": "action_started",
+        "occurred": true
+      },
+      "H": 0.2475,
+      "emotionDelta": 0
+    },
+    {
+      "id": "team-change:25:militia_barricade",
+      "time": 0.04,
+      "type": "team_change",
+      "subject": "player_squad",
+      "behavior": "team_management",
+      "result": {
+        "kind": "team_changed",
+        "occurred": true,
+        "heroId": "militia_barricade"
+      },
+      "H": 0.2475,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:1:25:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "swap:1:militia_barricade",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 0,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "action_changed"
+          }
+        ]
+      },
+      "H": 0.75,
+      "emotionDelta": 0
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

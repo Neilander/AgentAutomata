@@ -1,8 +1,14 @@
-const COMBAT_SIM = require("../game_data/combat-sim");
-const SKILL_DATA = require("../game_data/skill-data");
-const ROSTER = require("./map-progression-roster");
-const EQUIPMENT = require("../game_data/equipment-runtime");
-const SIGNAL_PRESENTATION = require("../game_data/combat-signals");
+(function initChapter2Core(root, factory) {
+  const value = factory(
+    typeof require === "function" ? require("../game_data/combat-sim") : root.GAME_COMBAT_SIM,
+    typeof require === "function" ? require("../game_data/skill-data") : root.GAME_SKILL_DATA,
+    typeof require === "function" ? require("./map-progression-roster") : root.GAME_MAP_PROGRESSION_ROSTER,
+    typeof require === "function" ? require("../game_data/equipment-runtime") : root.GAME_EQUIPMENT_RUNTIME,
+    typeof require === "function" ? require("../game_data/combat-signals") : root.GAME_COMBAT_SIGNALS,
+  );
+  if (typeof module !== "undefined") module.exports = value;
+  else root.GAME_MAP_PROGRESSION_CHAPTER2 = value;
+})(typeof globalThis !== "undefined" ? globalThis : this, function createChapter2Core(COMBAT_SIM, SKILL_DATA, ROSTER, EQUIPMENT, SIGNAL_PRESENTATION) {
 
 // The immutable teaching structure lives in SECOND_REGION_DESIGN_INTENT.md.
 const nodes = [
@@ -133,7 +139,7 @@ function applyAction(rawState, actionText, options = {}) {
 
   state.step += 1;
   state.attempts[id] = (state.attempts[id] || 0) + 1;
-  const combat = resolveCombat(state, item);
+  const combat = options.resolvedCombat ? normalizeResolvedCombat(options.resolvedCombat, item, 75) : resolveCombat(state, item);
   const event = {
     step: state.step,
     action: actionText,
@@ -141,6 +147,10 @@ function applyAction(rawState, actionText, options = {}) {
     outcome: combat.win ? "win" : "loss",
     duration: combat.duration,
     survivors: { player: combat.metrics?.leftAlive || 0, enemy: combat.metrics?.rightAlive || 0 },
+    teamSizes: {
+      player: (combat.units || []).filter((unit) => unit.side === "left").length,
+      enemy: (combat.units || []).filter((unit) => unit.side === "right").length,
+    },
     hpScore: { player: combat.leftHp, enemy: combat.rightHp },
     gearBefore: gearScore(state),
     resolution: combat.resolution,
@@ -239,6 +249,25 @@ function resolveCombat(state, item) {
   const rightAlive = result.metrics?.rightAlive || 0;
   const resolution = result.duration >= 74.8 && leftAlive > 0 && rightAlive > 0 ? "time_limit" : "elimination";
   return { ...result, win: result.winner === "left" && !(item.type === "boss" && resolution === "time_limit"), resolution };
+}
+
+function normalizeResolvedCombat(raw, item, maxTime) {
+  const units = Array.isArray(raw?.units) ? raw.units : [];
+  const leftAlive = Number(raw?.metrics?.leftAlive ?? units.filter((unit) => unit.side === "left" && unit.alive !== false && Number(unit.hp || 0) > 0).length);
+  const rightAlive = Number(raw?.metrics?.rightAlive ?? units.filter((unit) => unit.side === "right" && unit.alive !== false && Number(unit.hp || 0) > 0).length);
+  const duration = Number(raw?.duration || 0);
+  const resolution = duration >= maxTime - 0.2 && leftAlive > 0 && rightAlive > 0 ? "time_limit" : "elimination";
+  return {
+    ...(raw || {}),
+    metrics: { ...(raw?.metrics || {}), leftAlive, rightAlive },
+    leftHp: Number(raw?.leftHp || 0),
+    rightHp: Number(raw?.rightHp || 0),
+    units,
+    signals: raw?.signals || [],
+    duration,
+    resolution,
+    win: raw?.winner === "left" && !(item.type === "boss" && resolution === "time_limit"),
+  };
 }
 
 function playerTeam(state) {
@@ -463,4 +492,5 @@ function round(value, digits = 4) {
   return Number(Number(value || 0).toFixed(digits));
 }
 
-module.exports = { nodes, initialState, normalizeState, observe, applyAction, resolveCombat, playerTeam, enemyTeam, gearScore };
+return { nodes, initialState, normalizeState, observe, applyAction, resolveCombat, playerTeam, enemyTeam, gearScore, lootFor, fieldPublic };
+});

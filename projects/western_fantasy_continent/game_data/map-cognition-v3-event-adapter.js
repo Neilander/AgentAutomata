@@ -5,6 +5,16 @@ function buildMapEventLog(action, resultEvent, options = {}) {
   const rows = V2_ADAPTER.buildMapEventLog(action, resultEvent, options);
   const event = resultEvent || {};
   const activeExperiment = options.activeExperiment || null;
+  const combatPerformance = continuousCombatPerformance(event);
+  if (combatPerformance) {
+    const combatResult = rows.find((row) => row.type === "combat_result");
+    if (combatResult) combatResult.result.combatPerformance = combatPerformance;
+    const actionSummary = rows.find((row) => row.type === "action_summary" && row.expectation?.phase === "close");
+    if (actionSummary) {
+      actionSummary.result.utility = combatPerformance.score;
+      actionSummary.result.combatPerformance = combatPerformance;
+    }
+  }
   if (String(action).startsWith("swap:")) {
     const [, slotText, heroId] = String(action).split(":");
     rows.push({
@@ -51,6 +61,33 @@ function buildMapEventLog(action, resultEvent, options = {}) {
   return rows.sort((a, b) => a.time - b.time || String(a.id).localeCompare(String(b.id)));
 }
 
+function continuousCombatPerformance(event) {
+  const playerSize = Number(event.teamSizes?.player);
+  const enemySize = Number(event.teamSizes?.enemy);
+  const playerHp = Number(event.hpScore?.player);
+  const enemyHp = Number(event.hpScore?.enemy);
+  if (!(playerSize > 0) || !(enemySize > 0) || !Number.isFinite(playerHp) || !Number.isFinite(enemyHp)) return null;
+
+  const playerRemaining = clamp(playerHp / playerSize, 0, 1);
+  const enemyRemaining = clamp(enemyHp / enemySize, 0, 1);
+  return {
+    score: round(playerRemaining - enemyRemaining),
+    playerRemaining: round(playerRemaining),
+    enemyRemaining: round(enemyRemaining),
+    playerLoss: round(1 - playerRemaining),
+    enemyLoss: round(1 - enemyRemaining),
+    method: "normalized_remaining_hp_margin_v1",
+  };
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function round(value) {
+  return Math.round(Number(value || 0) * 1000) / 1000;
+}
+
 function runMapAction(core, state, action, cognitionState, options = {}) {
   const nodeId = String(action || "").split(":")[1];
   const node = core.nodes.find((item) => item.id === nodeId);
@@ -95,4 +132,4 @@ function summarizeExperimentContribution(result, experiment) {
   };
 }
 
-module.exports = { buildMapEventLog, runMapAction, summarizeExperimentContribution };
+module.exports = { buildMapEventLog, runMapAction, summarizeExperimentContribution, continuousCombatPerformance };

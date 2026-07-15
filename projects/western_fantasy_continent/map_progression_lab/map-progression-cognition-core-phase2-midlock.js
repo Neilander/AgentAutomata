@@ -19,19 +19,13 @@
   function makeNodes() {
     const result = [];
     for (let index = 1; index <= 10; index += 1) {
-      const requires = index === 1
-        ? []
-        : index === 8
-          ? ["r1_main_7"]
-          : index === 9
-            ? []
-            : [`r1_main_${index - 1}`];
+      const requires = index === 1 ? [] : [`r1_main_${index - 1}`];
       result.push({
         id: `r1_main_${index}`,
         name: `灰带郊野 ${index}`,
         type: "main",
         requires,
-        requiresAny: index === 9 ? ["r1_main_7", "r1_main_8"] : [],
+        requiresAny: [],
         rewardHint: index % 3 === 0 ? "可能出现蓝装" : "白装",
         enemyHint: index === 1 ? "两大波、三次进场的弱小散兵" : index === 7 ? "高生命高攻速蛮熊与三名弱支援" : index === 8 ? "两名脆弱施法者与远程支援" : index <= 3 ? "两名近战和一名远程" : index <= 6 ? "近战、远程与治疗" : "完整四人敌队",
       });
@@ -203,7 +197,7 @@
 
     state.step += 1;
     state.attempts[id] = (state.attempts[id] || 0) + 1;
-    const combat = resolveCombat(state, item);
+    const combat = options.resolvedCombat ? normalizeResolvedCombat(options.resolvedCombat, item, 70) : resolveCombat(state, item);
     const event = {
       step: state.step,
       action: actionText,
@@ -211,6 +205,10 @@
       outcome: combat.win ? "win" : "loss",
       duration: combat.duration,
       survivors: { player: combat.metrics?.leftAlive || 0, enemy: combat.metrics?.rightAlive || 0 },
+      teamSizes: {
+        player: (combat.units || []).filter((unit) => unit.side === "left").length,
+        enemy: (combat.units || []).filter((unit) => unit.side === "right").length,
+      },
       hpScore: { player: combat.leftHp, enemy: combat.rightHp },
       gearBefore: gearScore(state),
       resolution: combat.resolution,
@@ -227,11 +225,7 @@
         if (memory.node === id) memory.resolved = true;
       });
       const repeatOneTimeBranch = !firstClear && ENCOUNTERS.isOneTimeBranch(item);
-      const loot = repeatOneTimeBranch
-        ? []
-        : id === "r1_bandit"
-          ? midlockCampLoot(`r1_bandit_key_${state.attempts[id]}`)
-          : rollLoot(state, item);
+      const loot = lootFor(state, item, firstClear);
       state.inventory.push(...loot);
       event.lootOpportunity = !repeatOneTimeBranch && id !== "r1_bandit";
       if (loot.length) autoEquip(state);
@@ -361,6 +355,25 @@
       ...result,
       win: result.winner === "left" && !(item.type === "boss" && resolution === "time_limit"),
       resolution,
+    };
+  }
+
+  function normalizeResolvedCombat(raw, item, maxTime) {
+    const units = Array.isArray(raw?.units) ? raw.units : [];
+    const leftAlive = Number(raw?.metrics?.leftAlive ?? units.filter((unit) => unit.side === "left" && unit.alive !== false && Number(unit.hp || 0) > 0).length);
+    const rightAlive = Number(raw?.metrics?.rightAlive ?? units.filter((unit) => unit.side === "right" && unit.alive !== false && Number(unit.hp || 0) > 0).length);
+    const duration = Number(raw?.duration || 0);
+    const resolution = raw?.waveComplete === false || (duration >= maxTime - 0.2 && leftAlive > 0 && rightAlive > 0) ? "time_limit" : "elimination";
+    return {
+      ...(raw || {}),
+      metrics: { ...(raw?.metrics || {}), leftAlive, rightAlive },
+      leftHp: Number(raw?.leftHp || 0),
+      rightHp: Number(raw?.rightHp || 0),
+      units,
+      signals: raw?.signals || [],
+      duration,
+      resolution,
+      win: raw?.winner === "left" && !(item.type === "boss" && resolution === "time_limit"),
     };
   }
 
@@ -604,6 +617,12 @@
     return EQUIPMENT.generateItems(rule, `${state.seed}|${item.id}|${state.attempts[item.id]}|${state.inventory.length}`, `${item.id}_${state.attempts[item.id]}`);
   }
 
+  function lootFor(state, item, firstClear) {
+    if (!firstClear && ENCOUNTERS.isOneTimeBranch(item)) return [];
+    if (item.id === "r1_bandit") return midlockCampLoot(`r1_bandit_key_${state.attempts[item.id] || 1}`);
+    return rollLoot(state, item);
+  }
+
   function autoEquip(state) {
     const result = EQUIPMENT.autoEquip(state.roster, state.teamSlots, state.inventory);
     state.roster = result.roster;
@@ -683,6 +702,12 @@
     resolveCombat,
     playerTeam,
     enemyTeam,
+    fieldEffectId: fieldEffect,
     gearScore,
+    lootFor,
+    nodeStatus,
+    rewardHintForNode,
+    enemyHintForNode,
+    isBossRecoveryActive,
   };
 });

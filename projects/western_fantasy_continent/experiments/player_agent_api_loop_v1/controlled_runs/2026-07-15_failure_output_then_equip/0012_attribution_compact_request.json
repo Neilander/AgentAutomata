@@ -1,0 +1,845 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 12,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-55c0b76bce3730d8",
+    "mode": "continue",
+    "turn": 24,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "challenge:r1_main_6",
+  "outcome": "loss",
+  "emotionBeforeAction": 40.3995,
+  "emotionAfterEvents": 39.2259,
+  "candidateKnowledge": [
+    {
+      "id": "knowledge:32",
+      "subject": {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_mid_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_warrior",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 5,
+        "outcomeDistribution": {
+          "combat_contribution": 5
+        },
+        "latestObservation": {
+          "outcome": "combat_contribution",
+          "damage": 698.22,
+          "damageShare": 0.4282,
+          "damageRank": 2,
+          "teamDamage": 1630.641,
+          "healing": 0,
+          "shielding": 117.3,
+          "kills": 0,
+          "skillCasts": 5
+        }
+      },
+      "evidence": {
+        "count": 151,
+        "recentEventIds": [
+          "r1_main_6:attempt:4:combat:261",
+          "r1_main_6:attempt:4:combat:323",
+          "r1_main_6:attempt:4:combat:324",
+          "r1_main_6:attempt:4:combat:325"
+        ]
+      },
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:33",
+      "subject": {
+        "id": "militia_spear",
+        "name": "短矛民兵",
+        "role": "warrior",
+        "kind": "militia"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_mid_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:militia_spear",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 5,
+        "outcomeDistribution": {
+          "combat_contribution": 5
+        },
+        "latestObservation": {
+          "outcome": "combat_contribution",
+          "damage": 190.331,
+          "damageShare": 0.1167,
+          "damageRank": 3,
+          "teamDamage": 1630.641,
+          "healing": 0,
+          "shielding": 0,
+          "kills": 0,
+          "skillCasts": 3
+        }
+      },
+      "evidence": {
+        "count": 97,
+        "recentEventIds": [
+          "r1_main_6:attempt:4:combat:228",
+          "r1_main_6:attempt:4:combat:293",
+          "r1_main_6:attempt:4:combat:363",
+          "r1_main_6:attempt:4:combat:364"
+        ]
+      },
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:39",
+      "subject": {
+        "id": "concept:enemy_minion_ranged",
+        "name": "远程小怪",
+        "conceptId": "enemy_minion_ranged"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_mid_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_ranged",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 5,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 5
+        },
+        "latestObservation": {
+          "outcome": "enemy_concept_threat",
+          "observedUnitCount": 1,
+          "damage": 640.4288,
+          "damageShare": 0.6437,
+          "threatRank": 1,
+          "healing": 0,
+          "shielding": 0,
+          "kills": 2,
+          "skillCasts": 8,
+          "observedTargets": [
+            "草药民兵",
+            "灰鸦战士",
+            "短矛民兵",
+            "烬火法师"
+          ],
+          "supportTargets": []
+        }
+      },
+      "evidence": {
+        "count": 247,
+        "recentEventIds": [
+          "r1_main_6:attempt:4:combat:539",
+          "r1_main_6:attempt:4:combat:540",
+          "r1_main_6:attempt:4:combat:541",
+          "r1_main_6:attempt:4:combat:569"
+        ]
+      },
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:40",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_6",
+        "phase": "encounter",
+        "team": [
+          "hero_warrior",
+          "militia_barricade",
+          "militia_spear",
+          "militia_herb"
+        ]
+      },
+      "behavior": {
+        "kind": "challenge_level",
+        "key": "challenge:r1_main_6",
+        "target": "r1_main_6"
+      },
+      "result": {
+        "sampleCount": 4,
+        "outcomeDistribution": {
+          "loss": 4
+        },
+        "latestObservation": {
+          "outcome": "loss",
+          "duration": 24.96,
+          "survivors": {
+            "player": 0,
+            "enemy": 4
+          },
+          "resolution": "elimination",
+          "firstClear": false
+        }
+      },
+      "evidence": {
+        "count": 8,
+        "recentEventIds": [
+          "map_action:r1_main_6:10:result",
+          "map_action:r1_main_6:10:summary",
+          "map_action:r1_main_6:12:result",
+          "map_action:r1_main_6:12:summary"
+        ]
+      },
+      "latestAttribution": {
+        "id": "ai-attribution:10",
+        "knowledgeId": "knowledge:40",
+        "cause": "The active squad's challenge attempt ended in the observed defeat in r1_main_6.",
+        "confidence": 0.9,
+        "evidenceEventIds": [
+          "map_action:r1_main_6:10:result",
+          "map_action:r1_main_6:10:summary"
+        ],
+        "alternativeCauses": [
+          "Encounter randomness or enemy composition may also affect a single combat result."
+        ],
+        "nextTest": "Apply exactly one policy-authorized output recovery action and immediately retry this encounter.",
+        "learnedAfterFeedback": true
+      }
+    },
+    {
+      "id": "knowledge:42",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_6",
+        "phase": "combat",
+        "team": [
+          "hero_warrior",
+          "militia_barricade",
+          "militia_spear",
+          "militia_herb"
+        ]
+      },
+      "behavior": {
+        "kind": "attack_enemy_squad",
+        "key": "team_damage:r1_main_6"
+      },
+      "result": {
+        "sampleCount": 4,
+        "outcomeDistribution": {
+          "damage_profile": 4
+        },
+        "latestObservation": {
+          "outcome": "damage_profile",
+          "d50": 9.6,
+          "d90": 26.689,
+          "frequency": 1.763,
+          "impact": 0.038,
+          "hitCount": 44,
+          "killCount": 0,
+          "totalDamage": 1630.641
+        }
+      },
+      "evidence": {
+        "count": 199,
+        "recentEventIds": [
+          "r1_main_6:attempt:4:combat:490",
+          "r1_main_6:attempt:4:combat:491",
+          "r1_main_6:attempt:4:combat:494",
+          "r1_main_6:attempt:4:combat:496"
+        ]
+      },
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:43",
+      "subject": {
+        "id": "enemy_squad:r1_main_6",
+        "name": "enemy squad"
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_6",
+        "phase": "combat"
+      },
+      "behavior": {
+        "kind": "attack_player_squad",
+        "key": "enemy_attack:r1_main_6",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 4,
+        "outcomeDistribution": {
+          "threat_profile": 4
+        },
+        "latestObservation": {
+          "outcome": "threat_profile",
+          "firstAllyDeath": {
+            "time": 6.16,
+            "name": "草药民兵",
+            "killer": "路匪弓手4"
+          },
+          "incomingDamage": {
+            "physical": 994.9,
+            "magic": 0,
+            "effect": 0
+          },
+          "dominantDamage": "physical",
+          "enemySurvivors": [
+            {
+              "name": "重甲盗匪1",
+              "role": "knight",
+              "hpRatio": 0.807
+            },
+            {
+              "name": "重甲盗匪2",
+              "role": "knight",
+              "hpRatio": 0.544
+            },
+            {
+              "name": "草药匪徒3",
+              "role": "priest",
+              "hpRatio": 0.738
+            },
+            {
+              "name": "路匪弓手4",
+              "role": "ranger",
+              "hpRatio": 1
+            }
+          ],
+          "enemySurvivorCount": 4
+        }
+      },
+      "evidence": {
+        "count": 267,
+        "recentEventIds": [
+          "r1_main_6:attempt:4:combat:553",
+          "r1_main_6:attempt:4:combat:568",
+          "r1_main_6:attempt:4:combat:569",
+          "r1_main_6:attempt:4:combat:578"
+        ]
+      },
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:44",
+      "subject": {
+        "id": "concept:enemy_minion_generic",
+        "name": "普通小怪",
+        "conceptId": "enemy_minion_generic"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_mid_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_generic",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 4,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 4
+        },
+        "latestObservation": {
+          "outcome": "enemy_concept_threat",
+          "observedUnitCount": 3,
+          "damage": 354.5072,
+          "damageShare": 0.3563,
+          "threatRank": 2,
+          "healing": 167.08,
+          "shielding": 1210.46,
+          "kills": 2,
+          "skillCasts": 18,
+          "observedTargets": [
+            "草药民兵",
+            "灰鸦战士",
+            "短矛民兵",
+            "烬火法师"
+          ],
+          "supportTargets": [
+            "普通小怪",
+            "远程小怪"
+          ]
+        }
+      },
+      "evidence": {
+        "count": 390,
+        "recentEventIds": [
+          "r1_main_6:attempt:4:combat:559",
+          "r1_main_6:attempt:4:combat:568",
+          "r1_main_6:attempt:4:combat:578",
+          "r1_main_6:attempt:4:combat:579"
+        ]
+      },
+      "latestAttribution": null
+    },
+    {
+      "id": "knowledge:46",
+      "subject": {
+        "id": "hero_mage",
+        "name": "烬火法师",
+        "role": "mage",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_mid_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_mage",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "combat_contribution": 3
+        },
+        "latestObservation": {
+          "outcome": "combat_contribution",
+          "damage": 739.09,
+          "damageShare": 0.4533,
+          "damageRank": 1,
+          "teamDamage": 1630.641,
+          "healing": 0,
+          "shielding": 0,
+          "kills": 0,
+          "skillCasts": 8
+        }
+      },
+      "evidence": {
+        "count": 177,
+        "recentEventIds": [
+          "r1_main_6:attempt:4:combat:493",
+          "r1_main_6:attempt:4:combat:494",
+          "r1_main_6:attempt:4:combat:495",
+          "r1_main_6:attempt:4:combat:496"
+        ]
+      },
+      "latestAttribution": null
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "r1_main_6:attempt:4:combat:107",
+      "time": 4.64,
+      "type": "damage",
+      "subject": "远程小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 21.58,
+        "target": "草药民兵"
+      },
+      "H": 0.2057,
+      "emotionDelta": -0.0068
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:109",
+      "time": 5.04,
+      "type": "status",
+      "subject": "短矛民兵",
+      "behavior": "重击",
+      "result": {
+        "kind": "status",
+        "occurred": true,
+        "amount": 1.5,
+        "target": "短矛民兵"
+      },
+      "H": 0.2597,
+      "emotionDelta": -0.0002
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:135",
+      "time": 6.16,
+      "type": "death",
+      "subject": "远程小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "草药民兵"
+      },
+      "H": 0.2236,
+      "emotionDelta": -0.0509
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:154",
+      "time": 6.96,
+      "type": "damage",
+      "subject": "灰鸦战士",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 4.5121,
+        "target": "普通小怪"
+      },
+      "H": 0.2057,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:155",
+      "time": 6.96,
+      "type": "damage",
+      "subject": "短矛民兵",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 1,
+        "target": "普通小怪"
+      },
+      "H": 0.2057,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:211",
+      "time": 9.84,
+      "type": "heal",
+      "subject": "普通小怪",
+      "behavior": "急救",
+      "result": {
+        "kind": "heal",
+        "occurred": true,
+        "amount": 25.48,
+        "target": "远程小怪"
+      },
+      "H": 0.3561,
+      "emotionDelta": 0.0001
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:214",
+      "time": 10.08,
+      "type": "status",
+      "subject": "短矛民兵",
+      "behavior": "重击",
+      "result": {
+        "kind": "status",
+        "occurred": true,
+        "amount": 1.5,
+        "target": "短矛民兵"
+      },
+      "H": 0.2597,
+      "emotionDelta": -0.0002
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:258",
+      "time": 11.52,
+      "type": "status",
+      "subject": "烬火法师",
+      "behavior": "流星火雨",
+      "result": {
+        "kind": "status",
+        "occurred": true,
+        "amount": 2,
+        "target": "远程小怪"
+      },
+      "H": 0.2716,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:352",
+      "time": 14.64,
+      "type": "death",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "灰鸦战士"
+      },
+      "H": 0.2023,
+      "emotionDelta": -0.0428
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:434",
+      "time": 18.16,
+      "type": "damage",
+      "subject": "烬火法师",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 1.4916,
+        "target": "普通小怪"
+      },
+      "H": 0.3011,
+      "emotionDelta": -0.0003
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:448",
+      "time": 19.04,
+      "type": "death",
+      "subject": "远程小怪",
+      "behavior": "钉足箭",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "短矛民兵"
+      },
+      "H": 0.2023,
+      "emotionDelta": -0.054
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:460",
+      "time": 19.12,
+      "type": "damage",
+      "subject": "烬火法师",
+      "behavior": "燃烧",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 15.05,
+        "target": "普通小怪"
+      },
+      "H": 0.213,
+      "emotionDelta": 0.0006
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:471",
+      "time": 19.84,
+      "type": "damage",
+      "subject": "远程小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 20.86,
+        "target": "烬火法师"
+      },
+      "H": 0.3011,
+      "emotionDelta": 0.0006
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:529",
+      "time": 22.88,
+      "type": "shield",
+      "subject": "普通小怪",
+      "behavior": "净血",
+      "result": {
+        "kind": "shield",
+        "occurred": true,
+        "amount": 71.2,
+        "target": "普通小怪"
+      },
+      "H": 0.244,
+      "emotionDelta": -0.0006
+    },
+    {
+      "id": "map_action:r1_main_6:12:result",
+      "time": 24.96,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "challenge:r1_main_6",
+      "result": {
+        "kind": "combat_loss",
+        "occurred": true,
+        "observedPower": 0,
+        "boundary": "interrupted_by_defeat",
+        "firstClear": false,
+        "survivors": {
+          "player": 0,
+          "enemy": 4
+        }
+      },
+      "H": 0.7552,
+      "emotionDelta": -0.5094
+    },
+    {
+      "id": "r1_main_6:attempt:4:combat:579",
+      "time": 24.96,
+      "type": "death",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "烬火法师"
+      },
+      "H": 0.2656,
+      "emotionDelta": -0.0568
+    },
+    {
+      "id": "team-experiment:12:player-hypothesis:hypothesis:11:higher-output-reserve",
+      "time": 25.02,
+      "type": "team_experiment_result",
+      "subject": "player_squad",
+      "behavior": "team_experiment",
+      "result": {
+        "kind": "team_experiment_result",
+        "occurred": true,
+        "heroId": "militia_herb",
+        "components": [
+          {
+            "kind": "team_experiment_contribution"
+          }
+        ]
+      },
+      "H": 0.3307,
+      "emotionDelta": 0.06
+    },
+    {
+      "id": "map_action:r1_main_6:12:summary",
+      "time": 25.04,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "challenge:r1_main_6",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 0,
+        "boundary": "interrupted_by_defeat",
+        "components": [
+          {
+            "kind": "combat_loss"
+          }
+        ]
+      },
+      "H": 0.6262,
+      "emotionDelta": -0.4493
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "auditNote": "candidateKnowledge contains only rows citing at least one currently visible event; exact ids remain unchanged."
+}

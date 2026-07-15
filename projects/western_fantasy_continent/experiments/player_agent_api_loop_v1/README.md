@@ -59,6 +59,63 @@ node cli.js summary session.json summary.json
 
 Each response file represents one external AI API call. The session file is the persistent code-owned state between calls.
 
+V2 also records a stable `agentSession` id in every request. The caller should reuse one decision Agent for all requests with that id: the first turn is `bootstrap`, subsequent turns are `continue`. Conversation memory improves continuity but never replaces the repository session, retrieved knowledge, current observation, or legal-action list. Run `node validate-persistent-agent-context.js` to verify save/restore continuity.
+
+Decision requests no longer send the full canonical knowledge store. `knowledge-retrieval.js` is an explicit pre-decision node that selects at most 18 relevant summaries while retaining the complete store in the session. Run `node validate-knowledge-retrieval-slices.js` for the ten-slice Chapter 1/2 regression.
+
+## Selectable Player Profiles
+
+`player-profiles.js` defines ten durable player profiles. Each profile contains fallible causal priors in subject-environment-behavior-result form plus decision preferences. The profile is stored in the code-owned session and included in every decision and attribution request; it never writes emotion or PQRA values and it is not treated as verified game knowledge.
+
+`player-profile-ensemble.js` runs any selected subset against the same game seed while keeping cognition state, learned knowledge, history, and persistent Agent context independent. Select an exact set with `profileIds`, or select X profiles deterministically with `profileCount` and `selectionSeed`:
+
+```js
+const ENSEMBLE = require("./player-profile-ensemble");
+
+const exactPair = ENSEMBLE.createEnsemble({
+  seed: "chapter-one-paired-test",
+  profileIds: ["damage_absolutist", "safety_conservative"],
+  maxCycles: 12,
+});
+
+const sampledPair = ENSEMBLE.createEnsemble({
+  seed: "chapter-one-paired-test",
+  profileCount: 2,
+  selectionSeed: "profile-sample-a",
+  maxCycles: 12,
+});
+```
+
+The command-line wrapper accepts either a count or comma-separated exact IDs:
+
+```powershell
+node ensemble-cli.js init ensemble.json chapter-one-paired-test 2 12
+node ensemble-cli.js init ensemble.json chapter-one-paired-test damage_absolutist,safety_conservative 12
+node ensemble-cli.js request ensemble.json requests.json
+```
+
+Each entry in `requests.json` has a `profileId` and one Agent request. Route every profile to its own persistent Agent using the supplied `agentSession.id`, then apply its response with `ensemble-cli.js decision` or `ensemble-cli.js attribution`. Run `node validate-player-profile-ensemble.js` for the two-profile, two-cycle regression.
+
+## User-Controlled Two-Chapter Emotion Audit
+
+`controlled-two-chapter-run.js` separates emotion-model validation from autonomous guidance validation. At every decision node, the caller supplies a controller directive with either one exact legal action or a constrained set of legal action prefixes. The persistent Agent must obey that directive and may only choose among `controller.eligibleActions`; game execution, signals, knowledge, PQRA, and emotion remain code-owned.
+
+```js
+const CONTROLLED = require("./controlled-two-chapter-run");
+
+let run = CONTROLLED.createRun({
+  seed: "user-route-a",
+  profileId: "open_novice",
+});
+
+const request = CONTROLLED.getPendingRequest(run, {
+  exactAction: "challenge:r1_main_1",
+  intent: "Follow the main route before changing equipment or roster.",
+});
+```
+
+Use `advanceToChapter2` only after the current attribution is complete. Unlike the older compressed handoff, this transition preserves the complete cognition state, canonical knowledge, concept state, player profile, and persistent Agent context. `summarizeEmotion` reports decision emotion and every real event's process/acquired/expectation contribution. Run `node validate-controlled-two-chapter-run.js` for the cross-chapter smoke regression.
+
 Run `node verify-causal-loop.js` for the regression check. The current accepted evidence is under `causal_verification_v9_concept_interpreter/`; the older `run/` and `verification/` folders document rejected implementations and must not be used as current evidence.
 
 ## Long-Run Evidence

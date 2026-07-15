@@ -1,0 +1,1311 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 1,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-55c0b76bce3730d8",
+    "mode": "continue",
+    "turn": 2,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "challenge:r1_main_1",
+  "outcome": "win",
+  "emotionBeforeAction": 38.04,
+  "emotionAfterEvents": 38.6168,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:1",
+      "key": "player_squad|region_1|r1_main_1|encounter|challenge_level|challenge:r1_main_1",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_1",
+        "phase": "encounter",
+        "team": [
+          "hero_warrior",
+          "militia_barricade",
+          "militia_spear",
+          "militia_herb"
+        ]
+      },
+      "behavior": {
+        "kind": "challenge_level",
+        "key": "challenge:r1_main_1",
+        "target": "r1_main_1"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "win": 1
+        },
+        "observations": [
+          {
+            "outcome": "win",
+            "duration": 37.36,
+            "survivors": {
+              "player": 4,
+              "enemy": 0
+            },
+            "resolution": "elimination",
+            "firstClear": true
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r1_main_1:1:result",
+        "map_action:r1_main_1:1:summary"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:2",
+      "key": "player_squad|region_1|r1_main_1|map_progression|clear_level|challenge:r1_main_1",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_1",
+        "phase": "map_progression"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r1_main_1",
+        "target": "r1_main_1"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "win": 1
+        },
+        "observations": [
+          {
+            "outcome": "win",
+            "unlockedNodes": [
+              "r1_main_2"
+            ],
+            "clearedNode": "r1_main_1"
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_unlock:r1_main_1:1"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:3",
+      "key": "player_squad|region_1|r1_main_1|loot_drop|clear_level|challenge:r1_main_1",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_1",
+        "phase": "loot_drop"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r1_main_1",
+        "target": "r1_main_1"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "loot_obtained": 1
+        },
+        "observations": [
+          {
+            "outcome": "loot_obtained",
+            "drops": [
+              {
+                "id": "r1_main_1_1_0",
+                "name": "普通护手 Lv.3",
+                "slot": "gloves",
+                "rarity": "common",
+                "level": 3
+              },
+              {
+                "id": "r1_main_1_1_1",
+                "name": "普通武器 Lv.3",
+                "slot": "weapon",
+                "rarity": "common",
+                "level": 3
+              }
+            ],
+            "inventoryCountBefore": 0,
+            "inventoryCountAfter": 2,
+            "equippedPowerBefore": 0,
+            "equippedPowerAfter": 0,
+            "powerChanged": false
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r1_main_1:1:result",
+        "map_action:r1_main_1:1:loot:1",
+        "map_action:r1_main_1:1:loot:2"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:4",
+      "key": "hero_warrior|region_1|region_1_early_main|combat_pattern|combat_participation|fight:hero_warrior",
+      "subject": {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_early_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_warrior",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 1385.361,
+            "damageShare": 0.5916,
+            "damageRank": 1,
+            "teamDamage": 2341.681,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 7,
+            "skillCasts": 13
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_1:attempt:1:combat:53",
+        "r1_main_1:attempt:1:combat:54",
+        "r1_main_1:attempt:1:combat:55",
+        "r1_main_1:attempt:1:combat:57",
+        "r1_main_1:attempt:1:combat:58",
+        "r1_main_1:attempt:1:combat:59",
+        "r1_main_1:attempt:1:combat:63",
+        "r1_main_1:attempt:1:combat:93",
+        "r1_main_1:attempt:1:combat:120",
+        "r1_main_1:attempt:1:combat:121",
+        "r1_main_1:attempt:1:combat:189",
+        "r1_main_1:attempt:1:combat:190",
+        "r1_main_1:attempt:1:combat:191",
+        "r1_main_1:attempt:1:combat:192",
+        "r1_main_1:attempt:1:combat:228",
+        "r1_main_1:attempt:1:combat:229",
+        "r1_main_1:attempt:1:combat:230",
+        "r1_main_1:attempt:1:combat:233",
+        "r1_main_1:attempt:1:combat:275",
+        "r1_main_1:attempt:1:combat:313",
+        "r1_main_1:attempt:1:combat:324",
+        "r1_main_1:attempt:1:combat:325",
+        "r1_main_1:attempt:1:combat:326",
+        "r1_main_1:attempt:1:combat:327",
+        "r1_main_1:attempt:1:combat:371",
+        "r1_main_1:attempt:1:combat:400",
+        "r1_main_1:attempt:1:combat:401",
+        "r1_main_1:attempt:1:combat:402",
+        "r1_main_1:attempt:1:combat:416",
+        "r1_main_1:attempt:1:combat:455",
+        "r1_main_1:attempt:1:combat:456",
+        "r1_main_1:attempt:1:combat:457",
+        "r1_main_1:attempt:1:combat:458",
+        "r1_main_1:attempt:1:combat:461",
+        "r1_main_1:attempt:1:combat:466",
+        "r1_main_1:attempt:1:combat:467",
+        "r1_main_1:attempt:1:combat:468",
+        "r1_main_1:attempt:1:combat:469",
+        "r1_main_1:attempt:1:combat:470",
+        "r1_main_1:attempt:1:combat:471",
+        "r1_main_1:attempt:1:combat:472",
+        "r1_main_1:attempt:1:combat:473",
+        "r1_main_1:attempt:1:combat:529",
+        "r1_main_1:attempt:1:combat:563",
+        "r1_main_1:attempt:1:combat:609",
+        "r1_main_1:attempt:1:combat:610",
+        "r1_main_1:attempt:1:combat:611",
+        "r1_main_1:attempt:1:combat:615",
+        "r1_main_1:attempt:1:combat:616",
+        "r1_main_1:attempt:1:combat:617",
+        "r1_main_1:attempt:1:combat:618",
+        "r1_main_1:attempt:1:combat:670",
+        "r1_main_1:attempt:1:combat:723",
+        "r1_main_1:attempt:1:combat:724",
+        "r1_main_1:attempt:1:combat:763",
+        "r1_main_1:attempt:1:combat:778",
+        "r1_main_1:attempt:1:combat:779",
+        "r1_main_1:attempt:1:combat:780",
+        "r1_main_1:attempt:1:combat:781",
+        "r1_main_1:attempt:1:combat:860",
+        "r1_main_1:attempt:1:combat:861",
+        "r1_main_1:attempt:1:combat:862",
+        "r1_main_1:attempt:1:combat:868",
+        "r1_main_1:attempt:1:combat:916",
+        "r1_main_1:attempt:1:combat:948",
+        "r1_main_1:attempt:1:combat:949",
+        "r1_main_1:attempt:1:combat:950",
+        "r1_main_1:attempt:1:combat:954",
+        "r1_main_1:attempt:1:combat:1001",
+        "r1_main_1:attempt:1:combat:1002"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:5",
+      "key": "militia_spear|region_1|region_1_early_main|combat_pattern|combat_participation|fight:militia_spear",
+      "subject": {
+        "id": "militia_spear",
+        "name": "短矛民兵",
+        "role": "warrior",
+        "kind": "militia"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_early_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:militia_spear",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 518.28,
+            "damageShare": 0.2213,
+            "damageRank": 2,
+            "teamDamage": 2341.681,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 2,
+            "skillCasts": 7
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_1:attempt:1:combat:79",
+        "r1_main_1:attempt:1:combat:80",
+        "r1_main_1:attempt:1:combat:81",
+        "r1_main_1:attempt:1:combat:89",
+        "r1_main_1:attempt:1:combat:178",
+        "r1_main_1:attempt:1:combat:197",
+        "r1_main_1:attempt:1:combat:198",
+        "r1_main_1:attempt:1:combat:199",
+        "r1_main_1:attempt:1:combat:200",
+        "r1_main_1:attempt:1:combat:244",
+        "r1_main_1:attempt:1:combat:287",
+        "r1_main_1:attempt:1:combat:372",
+        "r1_main_1:attempt:1:combat:373",
+        "r1_main_1:attempt:1:combat:374",
+        "r1_main_1:attempt:1:combat:375",
+        "r1_main_1:attempt:1:combat:429",
+        "r1_main_1:attempt:1:combat:515",
+        "r1_main_1:attempt:1:combat:516",
+        "r1_main_1:attempt:1:combat:517",
+        "r1_main_1:attempt:1:combat:528",
+        "r1_main_1:attempt:1:combat:565",
+        "r1_main_1:attempt:1:combat:566",
+        "r1_main_1:attempt:1:combat:635",
+        "r1_main_1:attempt:1:combat:673",
+        "r1_main_1:attempt:1:combat:674",
+        "r1_main_1:attempt:1:combat:675",
+        "r1_main_1:attempt:1:combat:690",
+        "r1_main_1:attempt:1:combat:761",
+        "r1_main_1:attempt:1:combat:863",
+        "r1_main_1:attempt:1:combat:864",
+        "r1_main_1:attempt:1:combat:865",
+        "r1_main_1:attempt:1:combat:866",
+        "r1_main_1:attempt:1:combat:918",
+        "r1_main_1:attempt:1:combat:984",
+        "r1_main_1:attempt:1:combat:1019",
+        "r1_main_1:attempt:1:combat:1020",
+        "r1_main_1:attempt:1:combat:1021"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:6",
+      "key": "militia_herb|region_1|region_1_early_main|combat_pattern|combat_participation|fight:militia_herb",
+      "subject": {
+        "id": "militia_herb",
+        "name": "草药民兵",
+        "role": "priest",
+        "kind": "militia"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_early_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:militia_herb",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 248.28,
+            "damageShare": 0.106,
+            "damageRank": 3,
+            "teamDamage": 2341.681,
+            "healing": 167.0168,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 5
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_1:attempt:1:combat:44",
+        "r1_main_1:attempt:1:combat:45",
+        "r1_main_1:attempt:1:combat:71",
+        "r1_main_1:attempt:1:combat:102",
+        "r1_main_1:attempt:1:combat:139",
+        "r1_main_1:attempt:1:combat:175",
+        "r1_main_1:attempt:1:combat:195",
+        "r1_main_1:attempt:1:combat:196",
+        "r1_main_1:attempt:1:combat:217",
+        "r1_main_1:attempt:1:combat:259",
+        "r1_main_1:attempt:1:combat:299",
+        "r1_main_1:attempt:1:combat:332",
+        "r1_main_1:attempt:1:combat:369",
+        "r1_main_1:attempt:1:combat:386",
+        "r1_main_1:attempt:1:combat:387",
+        "r1_main_1:attempt:1:combat:415",
+        "r1_main_1:attempt:1:combat:453",
+        "r1_main_1:attempt:1:combat:552",
+        "r1_main_1:attempt:1:combat:576",
+        "r1_main_1:attempt:1:combat:577",
+        "r1_main_1:attempt:1:combat:613",
+        "r1_main_1:attempt:1:combat:669",
+        "r1_main_1:attempt:1:combat:708",
+        "r1_main_1:attempt:1:combat:762",
+        "r1_main_1:attempt:1:combat:821",
+        "r1_main_1:attempt:1:combat:822",
+        "r1_main_1:attempt:1:combat:823",
+        "r1_main_1:attempt:1:combat:883",
+        "r1_main_1:attempt:1:combat:933",
+        "r1_main_1:attempt:1:combat:969",
+        "r1_main_1:attempt:1:combat:1022",
+        "r1_main_1:attempt:1:combat:1023"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:7",
+      "key": "militia_barricade|region_1|region_1_early_main|combat_pattern|combat_participation|fight:militia_barricade",
+      "subject": {
+        "id": "militia_barricade",
+        "name": "拒马民兵",
+        "role": "warrior",
+        "kind": "militia"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_early_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:militia_barricade",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 189.76,
+            "damageShare": 0.081,
+            "damageRank": 4,
+            "teamDamage": 2341.681,
+            "healing": 171.8576,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 5
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_1:attempt:1:combat:56",
+        "r1_main_1:attempt:1:combat:62",
+        "r1_main_1:attempt:1:combat:92",
+        "r1_main_1:attempt:1:combat:118",
+        "r1_main_1:attempt:1:combat:152",
+        "r1_main_1:attempt:1:combat:194",
+        "r1_main_1:attempt:1:combat:260",
+        "r1_main_1:attempt:1:combat:261",
+        "r1_main_1:attempt:1:combat:262",
+        "r1_main_1:attempt:1:combat:300",
+        "r1_main_1:attempt:1:combat:368",
+        "r1_main_1:attempt:1:combat:413",
+        "r1_main_1:attempt:1:combat:440",
+        "r1_main_1:attempt:1:combat:441",
+        "r1_main_1:attempt:1:combat:442",
+        "r1_main_1:attempt:1:combat:530",
+        "r1_main_1:attempt:1:combat:564",
+        "r1_main_1:attempt:1:combat:634",
+        "r1_main_1:attempt:1:combat:653",
+        "r1_main_1:attempt:1:combat:654",
+        "r1_main_1:attempt:1:combat:672",
+        "r1_main_1:attempt:1:combat:729",
+        "r1_main_1:attempt:1:combat:867",
+        "r1_main_1:attempt:1:combat:898",
+        "r1_main_1:attempt:1:combat:899",
+        "r1_main_1:attempt:1:combat:917",
+        "r1_main_1:attempt:1:combat:953"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:8",
+      "key": "player_squad|region_1|r1_main_1|combat|attack_enemy_squad|team_damage:r1_main_1",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_1",
+        "phase": "combat",
+        "team": [
+          "hero_warrior",
+          "militia_barricade",
+          "militia_spear",
+          "militia_herb"
+        ]
+      },
+      "behavior": {
+        "kind": "attack_enemy_squad",
+        "key": "team_damage:r1_main_1"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "damage_profile": 1
+        },
+        "observations": [
+          {
+            "outcome": "damage_profile",
+            "d50": 14.76,
+            "d90": 42.96,
+            "frequency": 2.677,
+            "impact": 0.485,
+            "hitCount": 100,
+            "killCount": 10,
+            "totalDamage": 2341.681
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_1:attempt:1:combat:45",
+        "r1_main_1:attempt:1:combat:55",
+        "r1_main_1:attempt:1:combat:58",
+        "r1_main_1:attempt:1:combat:59",
+        "r1_main_1:attempt:1:combat:62",
+        "r1_main_1:attempt:1:combat:63",
+        "r1_main_1:attempt:1:combat:71",
+        "r1_main_1:attempt:1:combat:81",
+        "r1_main_1:attempt:1:combat:89",
+        "r1_main_1:attempt:1:combat:92",
+        "r1_main_1:attempt:1:combat:93",
+        "r1_main_1:attempt:1:combat:102",
+        "r1_main_1:attempt:1:combat:118",
+        "r1_main_1:attempt:1:combat:120",
+        "r1_main_1:attempt:1:combat:139",
+        "r1_main_1:attempt:1:combat:152",
+        "r1_main_1:attempt:1:combat:175",
+        "r1_main_1:attempt:1:combat:178",
+        "r1_main_1:attempt:1:combat:191",
+        "r1_main_1:attempt:1:combat:192",
+        "r1_main_1:attempt:1:combat:194",
+        "r1_main_1:attempt:1:combat:199",
+        "r1_main_1:attempt:1:combat:217",
+        "r1_main_1:attempt:1:combat:229",
+        "r1_main_1:attempt:1:combat:230",
+        "r1_main_1:attempt:1:combat:233",
+        "r1_main_1:attempt:1:combat:244",
+        "r1_main_1:attempt:1:combat:259",
+        "r1_main_1:attempt:1:combat:262",
+        "r1_main_1:attempt:1:combat:275",
+        "r1_main_1:attempt:1:combat:287",
+        "r1_main_1:attempt:1:combat:299",
+        "r1_main_1:attempt:1:combat:300",
+        "r1_main_1:attempt:1:combat:313",
+        "r1_main_1:attempt:1:combat:326",
+        "r1_main_1:attempt:1:combat:332",
+        "r1_main_1:attempt:1:combat:368",
+        "r1_main_1:attempt:1:combat:369",
+        "r1_main_1:attempt:1:combat:371",
+        "r1_main_1:attempt:1:combat:374",
+        "r1_main_1:attempt:1:combat:375",
+        "r1_main_1:attempt:1:combat:401",
+        "r1_main_1:attempt:1:combat:402",
+        "r1_main_1:attempt:1:combat:413",
+        "r1_main_1:attempt:1:combat:415",
+        "r1_main_1:attempt:1:combat:416",
+        "r1_main_1:attempt:1:combat:429",
+        "r1_main_1:attempt:1:combat:442",
+        "r1_main_1:attempt:1:combat:453",
+        "r1_main_1:attempt:1:combat:457",
+        "r1_main_1:attempt:1:combat:461",
+        "r1_main_1:attempt:1:combat:471",
+        "r1_main_1:attempt:1:combat:473",
+        "r1_main_1:attempt:1:combat:517",
+        "r1_main_1:attempt:1:combat:528",
+        "r1_main_1:attempt:1:combat:529",
+        "r1_main_1:attempt:1:combat:530",
+        "r1_main_1:attempt:1:combat:552",
+        "r1_main_1:attempt:1:combat:563",
+        "r1_main_1:attempt:1:combat:564",
+        "r1_main_1:attempt:1:combat:565",
+        "r1_main_1:attempt:1:combat:611",
+        "r1_main_1:attempt:1:combat:613",
+        "r1_main_1:attempt:1:combat:616",
+        "r1_main_1:attempt:1:combat:617",
+        "r1_main_1:attempt:1:combat:618",
+        "r1_main_1:attempt:1:combat:634",
+        "r1_main_1:attempt:1:combat:635",
+        "r1_main_1:attempt:1:combat:669",
+        "r1_main_1:attempt:1:combat:670",
+        "r1_main_1:attempt:1:combat:672",
+        "r1_main_1:attempt:1:combat:675",
+        "r1_main_1:attempt:1:combat:690",
+        "r1_main_1:attempt:1:combat:708",
+        "r1_main_1:attempt:1:combat:723",
+        "r1_main_1:attempt:1:combat:729",
+        "r1_main_1:attempt:1:combat:761",
+        "r1_main_1:attempt:1:combat:762",
+        "r1_main_1:attempt:1:combat:763",
+        "r1_main_1:attempt:1:combat:780",
+        "r1_main_1:attempt:1:combat:823",
+        "r1_main_1:attempt:1:combat:861",
+        "r1_main_1:attempt:1:combat:862",
+        "r1_main_1:attempt:1:combat:865",
+        "r1_main_1:attempt:1:combat:866",
+        "r1_main_1:attempt:1:combat:867",
+        "r1_main_1:attempt:1:combat:868",
+        "r1_main_1:attempt:1:combat:883",
+        "r1_main_1:attempt:1:combat:916",
+        "r1_main_1:attempt:1:combat:917",
+        "r1_main_1:attempt:1:combat:918",
+        "r1_main_1:attempt:1:combat:933",
+        "r1_main_1:attempt:1:combat:950",
+        "r1_main_1:attempt:1:combat:953",
+        "r1_main_1:attempt:1:combat:954",
+        "r1_main_1:attempt:1:combat:969",
+        "r1_main_1:attempt:1:combat:984",
+        "r1_main_1:attempt:1:combat:1001",
+        "r1_main_1:attempt:1:combat:1021",
+        "r1_main_1:attempt:1:combat:1022"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:9",
+      "key": "enemy_squad:r1_main_1|region_1|r1_main_1|combat|attack_player_squad|enemy_attack:r1_main_1",
+      "subject": {
+        "id": "enemy_squad:r1_main_1",
+        "name": "enemy squad"
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_1",
+        "phase": "combat"
+      },
+      "behavior": {
+        "kind": "attack_player_squad",
+        "key": "enemy_attack:r1_main_1",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "threat_profile": 1
+        },
+        "observations": [
+          {
+            "outcome": "threat_profile",
+            "firstAllyDeath": null,
+            "incomingDamage": {
+              "physical": 406.6,
+              "magic": 0,
+              "effect": 0
+            },
+            "dominantDamage": "physical",
+            "enemySurvivors": [],
+            "enemySurvivorCount": 0
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_1:attempt:1:combat:60",
+        "r1_main_1:attempt:1:combat:61",
+        "r1_main_1:attempt:1:combat:90",
+        "r1_main_1:attempt:1:combat:91",
+        "r1_main_1:attempt:1:combat:94",
+        "r1_main_1:attempt:1:combat:117",
+        "r1_main_1:attempt:1:combat:119",
+        "r1_main_1:attempt:1:combat:124",
+        "r1_main_1:attempt:1:combat:150",
+        "r1_main_1:attempt:1:combat:151",
+        "r1_main_1:attempt:1:combat:163",
+        "r1_main_1:attempt:1:combat:176",
+        "r1_main_1:attempt:1:combat:177",
+        "r1_main_1:attempt:1:combat:193",
+        "r1_main_1:attempt:1:combat:215",
+        "r1_main_1:attempt:1:combat:216",
+        "r1_main_1:attempt:1:combat:231",
+        "r1_main_1:attempt:1:combat:232",
+        "r1_main_1:attempt:1:combat:246",
+        "r1_main_1:attempt:1:combat:257",
+        "r1_main_1:attempt:1:combat:273",
+        "r1_main_1:attempt:1:combat:274",
+        "r1_main_1:attempt:1:combat:286",
+        "r1_main_1:attempt:1:combat:288",
+        "r1_main_1:attempt:1:combat:301",
+        "r1_main_1:attempt:1:combat:312",
+        "r1_main_1:attempt:1:combat:330",
+        "r1_main_1:attempt:1:combat:343",
+        "r1_main_1:attempt:1:combat:344",
+        "r1_main_1:attempt:1:combat:370",
+        "r1_main_1:attempt:1:combat:388",
+        "r1_main_1:attempt:1:combat:389",
+        "r1_main_1:attempt:1:combat:414",
+        "r1_main_1:attempt:1:combat:417",
+        "r1_main_1:attempt:1:combat:428",
+        "r1_main_1:attempt:1:combat:454",
+        "r1_main_1:attempt:1:combat:465",
+        "r1_main_1:attempt:1:combat:512",
+        "r1_main_1:attempt:1:combat:551",
+        "r1_main_1:attempt:1:combat:592",
+        "r1_main_1:attempt:1:combat:593",
+        "r1_main_1:attempt:1:combat:594",
+        "r1_main_1:attempt:1:combat:619",
+        "r1_main_1:attempt:1:combat:650",
+        "r1_main_1:attempt:1:combat:651",
+        "r1_main_1:attempt:1:combat:652",
+        "r1_main_1:attempt:1:combat:671",
+        "r1_main_1:attempt:1:combat:691",
+        "r1_main_1:attempt:1:combat:692",
+        "r1_main_1:attempt:1:combat:693",
+        "r1_main_1:attempt:1:combat:726",
+        "r1_main_1:attempt:1:combat:744",
+        "r1_main_1:attempt:1:combat:745",
+        "r1_main_1:attempt:1:combat:746",
+        "r1_main_1:attempt:1:combat:803",
+        "r1_main_1:attempt:1:combat:804",
+        "r1_main_1:attempt:1:combat:857",
+        "r1_main_1:attempt:1:combat:859",
+        "r1_main_1:attempt:1:combat:900",
+        "r1_main_1:attempt:1:combat:901",
+        "r1_main_1:attempt:1:combat:951",
+        "r1_main_1:attempt:1:combat:952",
+        "r1_main_1:attempt:1:combat:1000",
+        "r1_main_1:attempt:1:combat:999"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:10",
+      "key": "concept:enemy_minion_generic|region_1|region_1_early_main|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_generic",
+      "subject": {
+        "id": "concept:enemy_minion_generic",
+        "name": "普通小怪",
+        "conceptId": "enemy_minion_generic"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_early_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_generic",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 1
+        },
+        "observations": [
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 10,
+            "damage": 406.5792,
+            "damageShare": 1,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 0,
+            "observedTargets": [
+              "拒马民兵",
+              "灰鸦战士",
+              "短矛民兵"
+            ],
+            "supportTargets": []
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_1:attempt:1:combat:60",
+        "r1_main_1:attempt:1:combat:61",
+        "r1_main_1:attempt:1:combat:90",
+        "r1_main_1:attempt:1:combat:91",
+        "r1_main_1:attempt:1:combat:94",
+        "r1_main_1:attempt:1:combat:117",
+        "r1_main_1:attempt:1:combat:119",
+        "r1_main_1:attempt:1:combat:124",
+        "r1_main_1:attempt:1:combat:150",
+        "r1_main_1:attempt:1:combat:151",
+        "r1_main_1:attempt:1:combat:163",
+        "r1_main_1:attempt:1:combat:176",
+        "r1_main_1:attempt:1:combat:177",
+        "r1_main_1:attempt:1:combat:193",
+        "r1_main_1:attempt:1:combat:215",
+        "r1_main_1:attempt:1:combat:216",
+        "r1_main_1:attempt:1:combat:231",
+        "r1_main_1:attempt:1:combat:232",
+        "r1_main_1:attempt:1:combat:246",
+        "r1_main_1:attempt:1:combat:257",
+        "r1_main_1:attempt:1:combat:273",
+        "r1_main_1:attempt:1:combat:274",
+        "r1_main_1:attempt:1:combat:286",
+        "r1_main_1:attempt:1:combat:288",
+        "r1_main_1:attempt:1:combat:301",
+        "r1_main_1:attempt:1:combat:312",
+        "r1_main_1:attempt:1:combat:330",
+        "r1_main_1:attempt:1:combat:343",
+        "r1_main_1:attempt:1:combat:344",
+        "r1_main_1:attempt:1:combat:370",
+        "r1_main_1:attempt:1:combat:388",
+        "r1_main_1:attempt:1:combat:389",
+        "r1_main_1:attempt:1:combat:414",
+        "r1_main_1:attempt:1:combat:417",
+        "r1_main_1:attempt:1:combat:428",
+        "r1_main_1:attempt:1:combat:454",
+        "r1_main_1:attempt:1:combat:465",
+        "r1_main_1:attempt:1:combat:512",
+        "r1_main_1:attempt:1:combat:551",
+        "r1_main_1:attempt:1:combat:592",
+        "r1_main_1:attempt:1:combat:593",
+        "r1_main_1:attempt:1:combat:594",
+        "r1_main_1:attempt:1:combat:619",
+        "r1_main_1:attempt:1:combat:650",
+        "r1_main_1:attempt:1:combat:651",
+        "r1_main_1:attempt:1:combat:652",
+        "r1_main_1:attempt:1:combat:671",
+        "r1_main_1:attempt:1:combat:691",
+        "r1_main_1:attempt:1:combat:692",
+        "r1_main_1:attempt:1:combat:693",
+        "r1_main_1:attempt:1:combat:726",
+        "r1_main_1:attempt:1:combat:744",
+        "r1_main_1:attempt:1:combat:745",
+        "r1_main_1:attempt:1:combat:746",
+        "r1_main_1:attempt:1:combat:803",
+        "r1_main_1:attempt:1:combat:804",
+        "r1_main_1:attempt:1:combat:857",
+        "r1_main_1:attempt:1:combat:859",
+        "r1_main_1:attempt:1:combat:900",
+        "r1_main_1:attempt:1:combat:901",
+        "r1_main_1:attempt:1:combat:951",
+        "r1_main_1:attempt:1:combat:952",
+        "r1_main_1:attempt:1:combat:1000",
+        "r1_main_1:attempt:1:combat:999"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 18,
+  "visibleEvents": [
+    {
+      "id": "r1_main_1:attempt:1:combat:803",
+      "time": 30.48,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 9.74,
+        "target": "短矛民兵"
+      },
+      "H": 0.2557,
+      "emotionDelta": -0.0007
+    },
+    {
+      "id": "r1_main_1:attempt:1:combat:804",
+      "time": 30.48,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.58,
+        "target": "拒马民兵"
+      },
+      "H": 0.2557,
+      "emotionDelta": -0.0002
+    },
+    {
+      "id": "r1_main_1:attempt:1:combat:822",
+      "time": 31.2,
+      "type": "heal",
+      "subject": "草药民兵",
+      "behavior": "急救",
+      "result": {
+        "kind": "heal",
+        "occurred": true,
+        "amount": 36.8568,
+        "target": "灰鸦战士"
+      },
+      "H": 0.3024,
+      "emotionDelta": 0.0004
+    },
+    {
+      "id": "r1_main_1:attempt:1:combat:859",
+      "time": 32,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.58,
+        "target": "拒马民兵"
+      },
+      "H": 0.2557,
+      "emotionDelta": -0.0001
+    },
+    {
+      "id": "r1_main_1:attempt:1:combat:899",
+      "time": 33.28,
+      "type": "heal",
+      "subject": "拒马民兵",
+      "behavior": "急救",
+      "result": {
+        "kind": "heal",
+        "occurred": true,
+        "amount": 46,
+        "target": "拒马民兵"
+      },
+      "H": 0.2065,
+      "emotionDelta": 0.0003
+    },
+    {
+      "id": "r1_main_1:attempt:1:combat:900",
+      "time": 33.52,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 6.0048,
+        "target": "短矛民兵"
+      },
+      "H": 0.2557,
+      "emotionDelta": -0.0003
+    },
+    {
+      "id": "r1_main_1:attempt:1:combat:949",
+      "time": 34.8,
+      "type": "status",
+      "subject": "灰鸦战士",
+      "behavior": "重击",
+      "result": {
+        "kind": "status",
+        "occurred": true,
+        "amount": 1.5,
+        "target": "灰鸦战士"
+      },
+      "H": 0.2205,
+      "emotionDelta": -0.0139
+    },
+    {
+      "id": "r1_main_1:attempt:1:combat:951",
+      "time": 35.04,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.58,
+        "target": "拒马民兵"
+      },
+      "H": 0.2557,
+      "emotionDelta": -0.0001
+    },
+    {
+      "id": "r1_main_1:attempt:1:combat:952",
+      "time": 35.04,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 9.74,
+        "target": "短矛民兵"
+      },
+      "H": 0.2557,
+      "emotionDelta": -0.0007
+    },
+    {
+      "id": "r1_main_1:attempt:1:combat:1000",
+      "time": 36.56,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.58,
+        "target": "拒马民兵"
+      },
+      "H": 0.2557,
+      "emotionDelta": -0.0001
+    },
+    {
+      "id": "r1_main_1:attempt:1:combat:1002",
+      "time": 36.8,
+      "type": "death",
+      "subject": "灰鸦战士",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.1578,
+      "emotionDelta": 0.0226
+    },
+    {
+      "id": "map_action:r1_main_1:1:result",
+      "time": 37.36,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "challenge:r1_main_1",
+      "result": {
+        "kind": "combat_win",
+        "occurred": true,
+        "observedPower": 0,
+        "boundary": "normal_end",
+        "firstClear": true,
+        "survivors": {
+          "player": 4,
+          "enemy": 0
+        }
+      },
+      "H": 0.6412,
+      "emotionDelta": 0.6194
+    },
+    {
+      "id": "r1_main_1:attempt:1:combat:1023",
+      "time": 37.36,
+      "type": "death",
+      "subject": "草药民兵",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.1718,
+      "emotionDelta": 0.0265
+    },
+    {
+      "id": "map_action:r1_main_1:1:loot-outcome",
+      "time": 37.365,
+      "type": "loot_outcome",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "probability_outcome",
+        "occurred": true,
+        "components": []
+      },
+      "H": 0.3888,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:r1_main_1:1:loot:1",
+      "time": 37.37,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "common",
+        "itemName": "普通护手 Lv.3",
+        "equipmentLevel": 3,
+        "baseStats": {
+          "physicalPower": 1,
+          "armor": 1
+        },
+        "affixCount": 1
+      },
+      "H": 0.621,
+      "emotionDelta": 0.175
+    },
+    {
+      "id": "map_action:r1_main_1:1:loot:2",
+      "time": 37.38,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "common",
+        "itemName": "普通武器 Lv.3",
+        "equipmentLevel": 3,
+        "baseStats": {
+          "magicPower": 1
+        },
+        "affixCount": 1
+      },
+      "H": 0.621,
+      "emotionDelta": 0.1522
+    },
+    {
+      "id": "map_unlock:r1_main_1:1",
+      "time": 37.435,
+      "type": "map_unlock",
+      "subject": "player squad",
+      "behavior": "clear_level",
+      "result": {
+        "kind": "map_unlock",
+        "occurred": true,
+        "clearedNode": "r1_main_1",
+        "unlockedNodes": [
+          "r1_main_2"
+        ]
+      },
+      "H": 0.1671,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:r1_main_1:1:summary",
+      "time": 37.44,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "challenge:r1_main_1",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 0,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "combat_win"
+          }
+        ]
+      },
+      "H": 0.5063,
+      "emotionDelta": -0.6725
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

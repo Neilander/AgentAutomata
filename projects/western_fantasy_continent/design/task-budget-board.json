@@ -1,6 +1,6 @@
 {
   "schema": "agent_automata_task_budget_board_v2",
-  "updatedAt": "2026-07-04",
+  "updatedAt": "2026-07-15",
   "workflow": [
     "先围绕可玩的角色搭配定义本阶段体验目标。",
     "用统一 4v4 战斗验证队伍 combo、克制和强度感。",
@@ -61,6 +61,13 @@
       "name": "提升agent的数学建模以及分析能力",
       "detail": "沉淀数学建模、对比分析、常见函数关系和验证模板，提升 agent 对复杂现象的归因与设计能力。",
       "color": "blue",
+      "status": "active"
+    },
+    {
+      "id": "player-emotion-simulation-optimization",
+      "name": "优化玩家情绪模拟",
+      "detail": "以玩家认知模型文档为准，逐步补齐决策掌控感、假设预期与验证、失败体验和 progression R。外围验证完成后必须回归本任务线，禁止通过直接调整情绪结果常量冒充模型有效。",
+      "color": "cyan",
       "status": "active"
     }
   ],
@@ -1318,6 +1325,136 @@
         "用统一combat-sim/battle-view验证至少1个原型组合"
       ],
       "lastEvidence": "2026-07-04 discussion: current relic concepts trend too generic/mid-width because base roles are broad; create sharper role skills and relics so players can perceive explicit build engines, e.g. soul-priest death aura plus skeleton doll, ranger ricochet ultimate plus on-hit relics."
+    },
+    {
+      "id": "emotion-decision-expectation-settlement",
+      "name": "优化错误决策不扣情绪的问题",
+      "detail": "保留有效 EDecision 带来的小额决策体验与掌控感，同时让每个可验证决策创建待结算预期。后续 EVerify 必须区分确认、证伪和无法判断，并通过 R 与 A 结算；已经被证伪、缺乏因果依据或没有可行路径的重复决策不能继续获得完整掌控反馈。",
+      "type": "design",
+      "category": "design",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "",
+      "sourceTaskId": "",
+      "outcome": "错误决策在作出时仍可产生合理掌控感，但验证失败后会产生可追溯的预期差反馈、更新知识并改变下一次选择。",
+      "nextAction": "先制作最小成功/失败决策配对：同样的 EDecision 分别得到确认和证伪结果，检查 EVerify、R、A、知识与下一行为是否分化。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "medium",
+      "blastRadius": "high",
+      "attemptBudget": 0,
+      "attemptsUsed": 0,
+      "status": "active",
+      "links": [
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/SKILL.md",
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/references/signal-growth-agency-model.md"
+      ],
+      "tags": [
+        "emotion",
+        "EDecision",
+        "EVerify",
+        "expectation",
+        "agency"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation",
+        "phenomenon-math-modeling",
+        "comparative-analysis"
+      ],
+      "successCriteria": [
+        "每个可验证 EDecision 创建一个明确期限的预期账本",
+        "EVerify 对确认、证伪和无法判断产生不同结算",
+        "确认反馈进入 R，证伪反馈通过 A 结算",
+        "已被证伪的重复行为不再获得完整决策掌控反馈",
+        "不使用恐惧或固定负面常量修补结果"
+      ],
+      "lastEvidence": "2026-07-15 open: controlled Main 6 run showed twelve full-hypothesis swaps each gained +0.16 before verification; repeated refuted swaps and exhausted options did not reduce Agency or settle a meaningful negative expectation."
+    },
+    {
+      "id": "emotion-failure-experience-settlement",
+      "name": "优化失败体验",
+      "detail": "把固定 combat_loss=-1 从完整失败情绪中降级为原始结果标签，按 P×Q、progression R、成长或停滞、kP 和 A 重新结算失败。连续失败应通过真实过程、目标受阻和预期落空产生差异，不使用恐惧或放大固定扣分。",
+      "type": "design",
+      "category": "design",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "emotion-decision-expectation-settlement",
+      "sourceTaskId": "emotion-decision-expectation-settlement",
+      "outcome": "首次失败、调整后失败和连续无进展失败能产生不同且可解释的情绪，并影响下一行为。",
+      "nextAction": "第一步验收后，构造首次失败、有效调整后成功、无效调整后再失败、连续无路径失败四个真实事件切片。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "high",
+      "blastRadius": "high",
+      "attemptBudget": 0,
+      "attemptsUsed": 0,
+      "status": "queued",
+      "links": [
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/references/effort-result-model.md",
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/references/signal-growth-agency-model.md"
+      ],
+      "tags": [
+        "emotion",
+        "failure",
+        "progression-R",
+        "PQRA"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation",
+        "phenomenon-math-modeling",
+        "comparative-analysis"
+      ],
+      "successCriteria": [
+        "失败情绪不再由固定 -1 代表完整结算",
+        "关卡和目标进度真实进入 R",
+        "重复无进展通过 Q、kP 和 A 产生可解释变化",
+        "失败后的情绪变化能够影响重试、调整或转向行为",
+        "同一冻结模型下的配对真实事件能够复现差异"
+      ],
+      "lastEvidence": "2026-07-15 queued: eighteen Main 6 losses left emotion at 20.05 because the runtime lacked progression R, P×Q, kP and Agency-mediated behavior."
+    },
+    {
+      "id": "emotion-progress-experience-settlement",
+      "name": "优化 Progress 体验",
+      "detail": "把玩家能够理解的目标血量、击杀数量、波次完成、关卡完成和地图推进建模为分层 Progress，并在反馈后更新状态之前进入 progression R。不同层级只计算各自新增的进度价值，避免把一次击杀、波次和通关重复按满额奖励；没有进展本身不固定扣分，而是在玩家原本期待进展时通过 A 结算。",
+      "type": "design",
+      "category": "design",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "emotion-failure-experience-settlement",
+      "sourceTaskId": "emotion-failure-experience-settlement",
+      "outcome": "玩家能持续感知局部到长期的真实推进，模型可以解释为什么同样的战斗在推进目标和原地重复时体验不同。",
+      "nextAction": "前两步验收后，制作目标血量、击杀、波次、关卡和地图五层进度切片，先验证单层增量，再验证组合事件不重复计分。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "medium",
+      "blastRadius": "high",
+      "attemptBudget": 0,
+      "attemptsUsed": 0,
+      "status": "queued",
+      "links": [
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/references/signal-growth-agency-model.md",
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/references/effort-result-model.md"
+      ],
+      "tags": [
+        "emotion",
+        "progress",
+        "progression-R",
+        "expectation"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation",
+        "phenomenon-math-modeling",
+        "comparative-analysis"
+      ],
+      "successCriteria": [
+        "目标血量、击杀、波次、关卡和地图推进都有可追溯的 Progress 增量",
+        "Progress 在知识和基线更新前进入 R 与情绪结算",
+        "多层进度同时发生时不会重复按满额奖励",
+        "无进展只在存在旧预期时通过 A 产生失望",
+        "可见推进与不可见推进的配对事件产生合理不同体验"
+      ],
+      "lastEvidence": "2026-07-15 queued: current updateGoalProgress only mutates a scalar after emotion settlement, so its +0.12/-0.02 values never become progression R."
     }
   ]
 }

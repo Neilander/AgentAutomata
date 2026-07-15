@@ -1,0 +1,135 @@
+:root {
+  color-scheme: dark;
+  font-family: "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  color: #e8eadf;
+  background: #0b100d;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 980px; background: #0b100d; }
+button, a { font: inherit; }
+button { cursor: pointer; }
+
+.campaign-shell { min-height: 100vh; display: grid; grid-template-columns: 182px minmax(0, 1fr); }
+.campaign-nav { display: flex; flex-direction: column; min-height: 100vh; padding: 18px 14px; border-right: 1px solid #2d352f; background: #101612; }
+.workbench-link { color: #899589; text-decoration: none; font-size: 12px; }
+.campaign-brand { display: grid; gap: 3px; margin: 24px 8px 28px; }
+.campaign-brand span { color: #8e9b8d; font-size: 11px; }
+.campaign-brand strong { font-size: 19px; }
+.campaign-nav nav { display: grid; gap: 5px; }
+.campaign-nav nav button { display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 10px; border: 1px solid transparent; color: #aeb7ac; background: transparent; text-align: left; }
+.campaign-nav nav button:hover { background: #171f19; }
+.campaign-nav nav button.active { border-color: #536346; color: #eef1e7; background: #20291e; }
+.nav-icon { display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid #465043; color: #cad2c5; font-size: 11px; }
+.chapter-progress { display: grid; gap: 5px; margin-top: auto; padding: 14px 10px; border-top: 1px solid #293129; }
+.chapter-progress span, .chapter-progress small { color: #7f8c7e; font-size: 11px; }
+.chapter-progress strong { color: #d5be67; }
+.reset-button { margin: 8px 6px 0; padding: 8px; border: 1px solid #3b453c; color: #8e998e; background: transparent; font-size: 11px; }
+
+.campaign-main { min-width: 0; min-height: 100vh; display: grid; grid-template-rows: 72px minmax(0, 1fr); }
+.campaign-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; border-bottom: 1px solid #2d352f; background: #111713; }
+.campaign-topbar span { color: #849083; font-size: 11px; }
+.campaign-topbar h1 { margin: 5px 0 0; font-size: 18px; letter-spacing: 0; }
+.topbar-stats { display: grid; grid-template-columns: auto auto; gap: 3px 14px; align-items: center; }
+.topbar-stats strong { color: #d5be67; text-align: right; }
+
+.page { display: none; min-height: 0; }
+.page.active { display: block; }
+.map-workspace { height: calc(100vh - 72px); display: grid; grid-template-columns: minmax(620px, 1fr) 310px; }
+.campaign-map { position: relative; min-height: 620px; overflow: hidden; background: #182018; }
+.campaign-map::before { content: ""; position: absolute; inset: 7% 5%; border: 1px solid #384537; background: linear-gradient(145deg, #273221 0 45%, #343522 46% 70%, #202c27 71%); opacity: .78; }
+.campaign-map::after { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px); background-size: 42px 42px; }
+.map-region-name { position: absolute; left: 40px; top: 30px; z-index: 2; color: rgba(230,234,217,.28); font-size: 30px; font-weight: 700; }
+.map-links, .map-nodes { position: absolute; inset: 0; width: 100%; height: 100%; }
+.map-links { z-index: 1; }
+.map-links path { fill: none; stroke: #586754; stroke-width: 3; stroke-dasharray: 6 6; }
+.map-links path.cleared { stroke: #879d63; stroke-dasharray: none; }
+.map-node { position: absolute; z-index: 3; width: 50px; height: 50px; transform: translate(-50%, -50%); border: 2px solid #465046; background: #131914; color: #c8d0c4; }
+.map-node:hover { border-color: #8fa36d; }
+.map-node.available { border-color: #d2b95f; box-shadow: 0 0 0 5px rgba(210,185,95,.12); }
+.map-node.cleared, .map-node.farmable, .map-node.repeatable { border-color: #718a59; background: #1d281b; }
+.map-node.selected { outline: 3px solid #f1df98; outline-offset: 3px; }
+.map-node span { display: block; font-size: 12px; }
+.map-node small { position: absolute; left: 50%; top: 56px; width: 116px; transform: translateX(-50%); color: #c9d0c5; font-size: 11px; text-shadow: 0 2px 5px #0b100d; }
+.map-node.branch { border-radius: 50%; }
+.map-node.boss { width: 58px; height: 58px; border-color: #9e6656; color: #efb69d; }
+.map-node.trial { transform: translate(-50%, -50%) rotate(45deg); }
+.map-node.trial > * { transform: rotate(-45deg); }
+.map-node.trial small { transform: translateX(-50%) rotate(-45deg); top: 62px; left: 78%; }
+
+.node-inspector { min-height: 0; overflow-y: auto; padding: 28px 24px; border-left: 1px solid #303930; background: #111713; }
+.inspector-kicker, .page-heading span { color: #8a9687; font-size: 11px; }
+.node-inspector h2 { margin: 8px 0 12px; font-size: 22px; }
+.node-inspector > p { min-height: 70px; color: #aab3a7; font-size: 13px; line-height: 1.7; }
+.node-facts { margin: 22px 0; }
+.node-facts div { display: grid; grid-template-columns: 54px 1fr; gap: 12px; padding: 11px 0; border-bottom: 1px solid #293129; }
+.node-facts dt { color: #788575; font-size: 11px; }
+.node-facts dd { margin: 0; color: #c7cec3; font-size: 12px; line-height: 1.55; }
+.primary-action, .chapter-action { width: 100%; min-height: 42px; border: 1px solid #7f914d; color: white; background: #708343; }
+.primary-action:disabled { cursor: default; border-color: #343c35; color: #717a72; background: #242a25; }
+.chapter-action { margin-top: 10px; border-color: #9a7848; background: #835e36; }
+.last-result { margin-top: 18px; padding: 12px; border-left: 2px solid #4d5b4e; color: #939f92; font-size: 12px; line-height: 1.6; }
+.last-result.win { border-color: #789e62; color: #a9cf91; }
+.last-result.loss { border-color: #a86859; color: #d79786; }
+
+.page-heading { display: flex; align-items: flex-end; justify-content: space-between; min-height: 108px; padding: 20px 28px; border-bottom: 1px solid #2d352f; }
+.page-heading h2 { margin: 6px 0 0; font-size: 22px; }
+.page-heading p { width: min(480px, 45%); margin: 0; color: #8f9a8f; font-size: 12px; line-height: 1.6; }
+.roster-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; padding: 24px 28px; }
+.roster-layout h3 { margin: 0 0 12px; color: #919d90; font-size: 12px; font-weight: 400; }
+.active-roster, .reserve-roster { display: grid; gap: 8px; }
+.unit-row { min-height: 86px; display: grid; grid-template-columns: 42px 1fr auto; align-items: center; gap: 12px; padding: 12px; border: 1px solid #303a31; background: #131a15; }
+.unit-slot { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #536051; color: #d3bf71; }
+.unit-row strong, .unit-row span { display: block; }
+.unit-row span { margin-top: 5px; color: #899588; font-size: 11px; line-height: 1.4; }
+.unit-kind { color: #6f7c6f; font-size: 10px; }
+.swap-buttons { display: grid; grid-template-columns: repeat(2, 34px); gap: 4px; }
+.swap-buttons button { height: 28px; border: 1px solid #455143; color: #b9c3b5; background: #1c251d; font-size: 10px; }
+
+.hero-tabs { display: flex; gap: 6px; min-height: 62px; overflow-x: auto; padding: 12px 28px; border-bottom: 1px solid #2d352f; }
+.hero-tabs button { min-width: 120px; padding: 8px 10px; border: 1px solid #364037; color: #aab4a8; background: #141b16; text-align: left; }
+.hero-tabs button.active { border-color: #d0b85f; color: #fff; }
+.hero-tabs small { display: block; margin-top: 4px; color: #778376; }
+.equipment-layout { display: grid; grid-template-columns: 380px minmax(0, 1fr); height: calc(100vh - 242px); }
+.equipped-section, .inventory-section { min-height: 0; overflow-y: auto; padding: 20px 24px; }
+.equipped-section { border-right: 1px solid #2d352f; background: #101612; }
+.section-heading { display: flex; justify-content: space-between; margin-bottom: 14px; color: #899589; font-size: 11px; }
+.section-heading strong { color: #d4bd68; }
+.equipped-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.slot-card, .item-card { min-height: 108px; padding: 11px; border: 1px solid #333d34; background: #151c17; }
+.slot-card.empty { color: #687368; background: #111612; }
+.slot-card span, .item-card span { color: #849082; font-size: 10px; }
+.slot-card strong, .item-card strong { display: block; margin: 7px 0; font-size: 12px; }
+.item-stats { color: #aab4a7; font-size: 10px; line-height: 1.55; }
+.inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.item-card.common { border-color: #465147; }
+.item-card.rare { border-color: #587ca0; }
+.item-card.epic { border-color: #9a70ae; }
+.item-card button { width: 100%; margin-top: 9px; padding: 6px; border: 1px solid #52634c; color: #d9e0d5; background: #263323; font-size: 11px; }
+.fit-positive { color: #9bc47f; }
+.fit-negative { color: #d38c78; }
+.empty-state { padding: 30px 10px; color: #758075; font-size: 12px; }
+
+.battle-page.active { display: grid; grid-template-rows: 72px minmax(430px, 1fr) 54px; padding: 0 24px 18px; }
+.battle-header { display: flex; align-items: center; justify-content: space-between; }
+.battle-header span { color: #849083; font-size: 11px; }
+.battle-header h2 { margin: 5px 0 0; font-size: 18px; }
+.battle-header button { padding: 7px 12px; border: 1px solid #3d483e; color: #aeb8ad; background: transparent; }
+.battle-header button:disabled { opacity: .45; cursor: default; }
+.battle-mount { min-height: 430px; border: 1px solid #344035; background: #101612; }
+.battle-readout { padding-top: 13px; color: #8e9a8d; font-size: 12px; }
+
+.loot-dialog { width: min(680px, calc(100vw - 40px)); border: 1px solid #4d5a4d; border-radius: 0; color: #e7eadf; background: #121813; }
+.loot-dialog::backdrop { background: rgba(4,7,5,.72); }
+.loot-dialog header { display: flex; justify-content: space-between; align-items: start; border-bottom: 1px solid #303930; }
+.loot-dialog header span { color: #8c988b; font-size: 11px; }
+.loot-dialog h2 { margin: 5px 0 14px; }
+.loot-dialog header button { border: 0; color: #9aa49a; background: transparent; font-size: 24px; }
+.loot-items { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 18px 0; }
+.loot-dialog p { color: #a4aea2; font-size: 12px; line-height: 1.6; }
+.loot-dialog .primary-action { max-width: 220px; }
+
+@media (max-width: 1180px) {
+  .map-workspace { grid-template-columns: minmax(600px, 1fr) 270px; }
+  .equipment-layout { grid-template-columns: 330px minmax(0, 1fr); }
+}

@@ -15,6 +15,9 @@ function compactDecision(request) {
     type: request.type,
     schema: request.schema,
     cycle: request.cycle,
+    agentSession: request.agentSession,
+    playerProfile: request.playerProfile,
+    controller: request.controller,
     instruction: request.instruction,
     playerState: {
       emotion: request.playerState.emotion,
@@ -24,6 +27,7 @@ function compactDecision(request) {
       hypotheses: request.playerState.hypotheses,
       knowledge: (request.playerState.knowledge || []).map(compactKnowledge),
     },
+    knowledgeRetrieval: request.knowledgeRetrieval,
     observation: request.observation,
     responseContract: request.responseContract,
     auditNote: "Lossless for legal actions and current observations; historical evidence arrays and older repeated observations are folded only for agent reading.",
@@ -39,6 +43,9 @@ function compactAttribution(request) {
     type: request.type,
     schema: request.schema,
     cycle: request.cycle,
+    agentSession: request.agentSession,
+    playerProfile: request.playerProfile,
+    controller: request.controller,
     instruction: request.instruction,
     action: request.action,
     outcome: request.outcome,
@@ -61,9 +68,9 @@ function compactKnowledge(row) {
     result: {
       sampleCount: row.result?.sampleCount,
       outcomeDistribution: row.result?.outcomeDistribution,
-      latestObservation: observations.at(-1) || null,
+      latestObservation: row.result?.latestObservation || observations.at(-1) || null,
     },
-    evidenceEventIds: (row.evidenceEventIds || []).slice(-4),
-    latestAttribution: (row.attributions || []).at(-1) || null,
+    evidence: row.evidence || { count: (row.evidenceEventIds || []).length, recentEventIds: (row.evidenceEventIds || []).slice(-4) },
+    latestAttribution: row.latestAttribution || (row.attributions || []).at(-1) || null,
   };
 }

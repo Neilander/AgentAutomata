@@ -431,6 +431,8 @@ p { margin-top: 6px; color: var(--muted); line-height: 1.55; }
 }
 .map-node.gate { border-radius: 8px; }
 .map-node.branch { border-radius: 11px; }
+.map-node.rescue { border-color: #6fb4a4; background: #17352f; }
+.map-node.trial { border-color: #d0a95f; background: #3a2b18; }
 .map-node.boss {
   width: 44px;
   height: 44px;
@@ -602,9 +604,52 @@ p { margin-top: 6px; color: var(--muted); line-height: 1.55; }
 .team-unit span { margin-top: 4px; color: var(--gold-2); font-size: 12px; }
 .team-unit small { margin-top: 6px; color: var(--muted); line-height: 1.4; }
 
+.battle-reward-dialog {
+  width: min(720px, calc(100vw - 36px));
+  padding: 0;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  background: #12140e;
+  color: var(--text);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.72);
+}
+.battle-reward-dialog::backdrop { background: rgba(4, 5, 3, 0.8); }
+.battle-reward-dialog > header,
+.battle-reward-dialog > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 15px 17px;
+  border-bottom: 1px solid rgba(214, 173, 71, 0.22);
+}
+.battle-reward-dialog > footer { justify-content: flex-end; border-top: 1px solid rgba(214, 173, 71, 0.22); border-bottom: 0; }
+.battle-reward-dialog header span,
+.battle-reward-dialog header strong { display: block; }
+.battle-reward-dialog header span { color: var(--muted); font-size: 11px; }
+.battle-reward-dialog header strong { margin-top: 4px; font-size: 19px; }
+.battle-reward-dialog header button { width: 36px; height: 36px; padding: 0; font-size: 22px; }
+.battle-reward-dialog > p { padding: 0 17px 15px; font-size: 12px; }
+.battle-reward-items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; padding: 16px 17px; }
+.battle-reward-item { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; min-width: 0; padding: 11px; border: 1px solid rgba(190, 185, 165, 0.42); background: #171910; }
+.battle-reward-item span,
+.battle-reward-item strong,
+.battle-reward-item small { display: block; }
+.battle-reward-item span { color: var(--text); font-size: 24px; }
+.battle-reward-item strong { margin-top: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.battle-reward-item small { margin-top: 6px; color: var(--muted); line-height: 1.45; }
+.battle-reward-item em { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; font-style: normal; line-height: 1.45; }
+.battle-reward-item.rarity-rare { border-color: rgba(75, 151, 255, 0.72); }
+.battle-reward-item.rarity-epic { border-color: rgba(183, 93, 255, 0.76); }
+.battle-reward-item.rarity-legendary { border-color: rgba(255, 158, 62, 0.8); }
+.battle-reward-item.rarity-mythic { border-color: rgba(255, 80, 92, 0.86); }
+.battle-reward-empty { grid-column: 1 / -1; padding: 24px; color: var(--muted); text-align: center; }
+.battle-reward-dialog .reward-primary { color: #171006; border-color: var(--gold-2); background: var(--gold); font-weight: 800; }
+
 @media (max-width: 760px) {
   .team-slot-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .team-roster-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .battle-reward-items { grid-template-columns: 1fr; }
 }
 
 .detail-panel {

@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-15_2304_improvement-perception-granularity-reference.md`](reports/2026-07-15_2304_improvement-perception-granularity-reference.md)
+[`reports/2026-07-16_0213_entity-impression-knowledge-experiment.md`](reports/2026-07-16_0213_entity-impression-knowledge-experiment.md)
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 
-Current focus: execute the active `优化玩家情绪模拟` task line in three parts: decision expectation/EVerify, failure experience, and hierarchical Progress experience.
+Current focus: review the completed entity-impression V1 experiment, then decide whether to integrate subject-strength-trait knowledge into the formal cognition runtime behind an experimental flag.

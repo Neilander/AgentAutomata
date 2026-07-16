@@ -1,0 +1,5089 @@
+{
+  "schema": "entity_impression_agent_packets_v1",
+  "rules": {
+    "usefulContribution": "damage + effective healing + shield absorbed + prevented damage + control value",
+    "expectedUnitContribution": "team useful contribution / active unit count",
+    "relativeStrength": "unit useful contribution / expected unit contribution - 1",
+    "strengthPerception": "Use the supplied profile bands; positive input is capped at 150%.",
+    "domainMagnitude": "domain contribution / expected unit contribution * 100%; do not subtract 100% for traits",
+    "traitRule": "A trait is learned only when that domain magnitude reaches semantic level 3 or above.",
+    "knowledgeRule": "Keep immutable first impressions and append contradictory contextual observations. Separately synthesize a revisable current belief.",
+    "priorityRule": "Exact context evidence outranks general belief. General current belief weights every observation by reliability * (1 + 1 / observation order), so earlier evidence matters more but cannot permanently lock belief.",
+    "agentInterpretationPolicy": {
+      "output": "hypothesis_only",
+      "directKnowledgePromotion": false,
+      "promotionRule": "later structured evidence must validate the hypothesis before code may create knowledge"
+    }
+  },
+  "packets": [
+    {
+      "id": "forward_ordinary",
+      "profile": "ordinary",
+      "perceptionBands": [
+        [
+          25,
+          0,
+          "没有明显差别"
+        ],
+        [
+          45,
+          1,
+          "有点强"
+        ],
+        [
+          70,
+          2,
+          "强一些"
+        ],
+        [
+          110,
+          4,
+          "强很多"
+        ],
+        [
+          151,
+          7,
+          "提升爆炸"
+        ]
+      ],
+      "provisionalNegativeBands": [
+        [
+          25,
+          0,
+          "没有明显差别"
+        ],
+        [
+          45,
+          -1,
+          "有点弱"
+        ],
+        [
+          70,
+          -2,
+          "明显偏弱"
+        ],
+        [
+          101,
+          -3,
+          "非常弱"
+        ]
+      ],
+      "reports": [
+        {
+          "id": "battle_1_weak_swarm",
+          "environment": {
+            "id": "battle_1_weak_swarm",
+            "label": "弱小怪潮",
+            "tags": [
+              "swarm",
+              "low_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 360,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 300,
+                "single_target_damage": 60,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 300,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 60,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:1",
+                "battle_1_weak_swarm:event:2",
+                "battle_1_weak_swarm:event:3",
+                "battle_1_weak_swarm:event:4",
+                "battle_1_weak_swarm:event:5"
+              ]
+            },
+            {
+              "id": "militia_spear",
+              "name": "长枪民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 45,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 45,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 45,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:6",
+                "battle_1_weak_swarm:event:7"
+              ]
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 20,
+                "healing": 40,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 20,
+                "sustained_damage": 0,
+                "healing": 40,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 40,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:8",
+                "battle_1_weak_swarm:event:9",
+                "battle_1_weak_swarm:event:10",
+                "battle_1_weak_swarm:event:11"
+              ]
+            },
+            {
+              "id": "militia_drum",
+              "name": "战鼓民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 20,
+                "healing": 0,
+                "shieldAbsorbed": 20,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 20,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 20,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:12",
+                "battle_1_weak_swarm:event:13",
+                "battle_1_weak_swarm:event:14",
+                "battle_1_weak_swarm:event:15"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_2_mixed_patrol",
+          "environment": {
+            "id": "battle_2_mixed_patrol",
+            "label": "混合巡逻队",
+            "tags": [
+              "mixed",
+              "low_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 180,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 80,
+                "single_target_damage": 100,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 80,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 100,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:1",
+                "battle_2_mixed_patrol:event:2",
+                "battle_2_mixed_patrol:event:3",
+                "battle_2_mixed_patrol:event:4",
+                "battle_2_mixed_patrol:event:5"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 220,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 180,
+                "single_target_damage": 40,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 180,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 40,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:6",
+                "battle_2_mixed_patrol:event:7",
+                "battle_2_mixed_patrol:event:8",
+                "battle_2_mixed_patrol:event:9",
+                "battle_2_mixed_patrol:event:10"
+              ]
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 20,
+                "healing": 90,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 20,
+                "sustained_damage": 0,
+                "healing": 90,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 90,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:11",
+                "battle_2_mixed_patrol:event:12",
+                "battle_2_mixed_patrol:event:13",
+                "battle_2_mixed_patrol:event:14"
+              ]
+            },
+            {
+              "id": "militia_spear",
+              "name": "长枪民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 70,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 70,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 70,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:15",
+                "battle_2_mixed_patrol:event:16"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_3_armored_elite",
+          "environment": {
+            "id": "battle_3_armored_elite",
+            "label": "重甲精英",
+            "tags": [
+              "elite",
+              "high_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 70,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 70,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 70,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:1",
+                "battle_3_armored_elite:event:2"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 300,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 300,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 300,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:3",
+                "battle_3_armored_elite:event:4"
+              ]
+            },
+            {
+              "id": "hero_ranger",
+              "name": "苔痕游侠",
+              "role": "ranger",
+              "channels": {
+                "damage": 200,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 200,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 200,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:5",
+                "battle_3_armored_elite:event:6"
+              ]
+            },
+            {
+              "id": "hero_priest",
+              "name": "晨辉牧师",
+              "role": "priest",
+              "channels": {
+                "damage": 10,
+                "healing": 100,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 10,
+                "sustained_damage": 0,
+                "healing": 100,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 10,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 100,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:7",
+                "battle_3_armored_elite:event:8",
+                "battle_3_armored_elite:event:9",
+                "battle_3_armored_elite:event:10"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_4_armored_elite_repeat",
+          "environment": {
+            "id": "battle_4_armored_elite_repeat",
+            "label": "重甲精英复战",
+            "tags": [
+              "elite",
+              "high_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 60,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 60,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 60,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:1",
+                "battle_4_armored_elite_repeat:event:2"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 320,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 320,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 320,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:3",
+                "battle_4_armored_elite_repeat:event:4"
+              ]
+            },
+            {
+              "id": "hero_ranger",
+              "name": "苔痕游侠",
+              "role": "ranger",
+              "channels": {
+                "damage": 230,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 230,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 230,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:5",
+                "battle_4_armored_elite_repeat:event:6"
+              ]
+            },
+            {
+              "id": "hero_priest",
+              "name": "晨辉牧师",
+              "role": "priest",
+              "channels": {
+                "damage": 0,
+                "healing": 120,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 0,
+                "sustained_damage": 0,
+                "healing": 120,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 120,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:7",
+                "battle_4_armored_elite_repeat:event:8"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_5_low_armor_champion",
+          "environment": {
+            "id": "battle_5_low_armor_champion",
+            "label": "轻甲冠军",
+            "tags": [
+              "elite",
+              "low_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 240,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 80,
+                "single_target_damage": 160,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 80,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 160,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:1",
+                "battle_5_low_armor_champion:event:2",
+                "battle_5_low_armor_champion:event:3",
+                "battle_5_low_armor_champion:event:4",
+                "battle_5_low_armor_champion:event:5"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 180,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 120,
+                "single_target_damage": 60,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 120,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 60,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:6",
+                "battle_5_low_armor_champion:event:7",
+                "battle_5_low_armor_champion:event:8",
+                "battle_5_low_armor_champion:event:9",
+                "battle_5_low_armor_champion:event:10"
+              ]
+            },
+            {
+              "id": "hero_ranger",
+              "name": "苔痕游侠",
+              "role": "ranger",
+              "channels": {
+                "damage": 170,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 170,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 170,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:11",
+                "battle_5_low_armor_champion:event:12"
+              ]
+            },
+            {
+              "id": "hero_priest",
+              "name": "晨辉牧师",
+              "role": "priest",
+              "channels": {
+                "damage": 0,
+                "healing": 100,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 0,
+                "sustained_damage": 0,
+                "healing": 100,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 100,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:13",
+                "battle_5_low_armor_champion:event:14"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "forward_expert",
+      "profile": "expert",
+      "perceptionBands": [
+        [
+          25,
+          0,
+          "没有明显差别"
+        ],
+        [
+          45,
+          1,
+          "有点强"
+        ],
+        [
+          60,
+          2,
+          "强一些"
+        ],
+        [
+          75,
+          3,
+          "明显强"
+        ],
+        [
+          90,
+          4,
+          "强很多"
+        ],
+        [
+          105,
+          5,
+          "强一大截"
+        ],
+        [
+          120,
+          6,
+          "强非常多"
+        ],
+        [
+          135,
+          7,
+          "提升爆炸"
+        ],
+        [
+          145,
+          8,
+          "强得离谱"
+        ],
+        [
+          151,
+          9,
+          "质变"
+        ]
+      ],
+      "provisionalNegativeBands": [
+        [
+          25,
+          0,
+          "没有明显差别"
+        ],
+        [
+          45,
+          -1,
+          "有点弱"
+        ],
+        [
+          70,
+          -2,
+          "明显偏弱"
+        ],
+        [
+          101,
+          -3,
+          "非常弱"
+        ]
+      ],
+      "reports": [
+        {
+          "id": "battle_1_weak_swarm",
+          "environment": {
+            "id": "battle_1_weak_swarm",
+            "label": "弱小怪潮",
+            "tags": [
+              "swarm",
+              "low_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 360,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 300,
+                "single_target_damage": 60,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 300,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 60,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:1",
+                "battle_1_weak_swarm:event:2",
+                "battle_1_weak_swarm:event:3",
+                "battle_1_weak_swarm:event:4",
+                "battle_1_weak_swarm:event:5"
+              ]
+            },
+            {
+              "id": "militia_spear",
+              "name": "长枪民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 45,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 45,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 45,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:6",
+                "battle_1_weak_swarm:event:7"
+              ]
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 20,
+                "healing": 40,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 20,
+                "sustained_damage": 0,
+                "healing": 40,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 40,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:8",
+                "battle_1_weak_swarm:event:9",
+                "battle_1_weak_swarm:event:10",
+                "battle_1_weak_swarm:event:11"
+              ]
+            },
+            {
+              "id": "militia_drum",
+              "name": "战鼓民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 20,
+                "healing": 0,
+                "shieldAbsorbed": 20,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 20,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 20,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:12",
+                "battle_1_weak_swarm:event:13",
+                "battle_1_weak_swarm:event:14",
+                "battle_1_weak_swarm:event:15"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_2_mixed_patrol",
+          "environment": {
+            "id": "battle_2_mixed_patrol",
+            "label": "混合巡逻队",
+            "tags": [
+              "mixed",
+              "low_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 180,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 80,
+                "single_target_damage": 100,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 80,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 100,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:1",
+                "battle_2_mixed_patrol:event:2",
+                "battle_2_mixed_patrol:event:3",
+                "battle_2_mixed_patrol:event:4",
+                "battle_2_mixed_patrol:event:5"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 220,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 180,
+                "single_target_damage": 40,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 180,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 40,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:6",
+                "battle_2_mixed_patrol:event:7",
+                "battle_2_mixed_patrol:event:8",
+                "battle_2_mixed_patrol:event:9",
+                "battle_2_mixed_patrol:event:10"
+              ]
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 20,
+                "healing": 90,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 20,
+                "sustained_damage": 0,
+                "healing": 90,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 90,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:11",
+                "battle_2_mixed_patrol:event:12",
+                "battle_2_mixed_patrol:event:13",
+                "battle_2_mixed_patrol:event:14"
+              ]
+            },
+            {
+              "id": "militia_spear",
+              "name": "长枪民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 70,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 70,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 70,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:15",
+                "battle_2_mixed_patrol:event:16"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_3_armored_elite",
+          "environment": {
+            "id": "battle_3_armored_elite",
+            "label": "重甲精英",
+            "tags": [
+              "elite",
+              "high_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 70,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 70,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 70,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:1",
+                "battle_3_armored_elite:event:2"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 300,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 300,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 300,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:3",
+                "battle_3_armored_elite:event:4"
+              ]
+            },
+            {
+              "id": "hero_ranger",
+              "name": "苔痕游侠",
+              "role": "ranger",
+              "channels": {
+                "damage": 200,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 200,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 200,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:5",
+                "battle_3_armored_elite:event:6"
+              ]
+            },
+            {
+              "id": "hero_priest",
+              "name": "晨辉牧师",
+              "role": "priest",
+              "channels": {
+                "damage": 10,
+                "healing": 100,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 10,
+                "sustained_damage": 0,
+                "healing": 100,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 10,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 100,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:7",
+                "battle_3_armored_elite:event:8",
+                "battle_3_armored_elite:event:9",
+                "battle_3_armored_elite:event:10"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_4_armored_elite_repeat",
+          "environment": {
+            "id": "battle_4_armored_elite_repeat",
+            "label": "重甲精英复战",
+            "tags": [
+              "elite",
+              "high_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 60,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 60,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 60,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:1",
+                "battle_4_armored_elite_repeat:event:2"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 320,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 320,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 320,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:3",
+                "battle_4_armored_elite_repeat:event:4"
+              ]
+            },
+            {
+              "id": "hero_ranger",
+              "name": "苔痕游侠",
+              "role": "ranger",
+              "channels": {
+                "damage": 230,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 230,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 230,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:5",
+                "battle_4_armored_elite_repeat:event:6"
+              ]
+            },
+            {
+              "id": "hero_priest",
+              "name": "晨辉牧师",
+              "role": "priest",
+              "channels": {
+                "damage": 0,
+                "healing": 120,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 0,
+                "sustained_damage": 0,
+                "healing": 120,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 120,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:7",
+                "battle_4_armored_elite_repeat:event:8"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_5_low_armor_champion",
+          "environment": {
+            "id": "battle_5_low_armor_champion",
+            "label": "轻甲冠军",
+            "tags": [
+              "elite",
+              "low_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 240,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 80,
+                "single_target_damage": 160,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 80,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 160,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:1",
+                "battle_5_low_armor_champion:event:2",
+                "battle_5_low_armor_champion:event:3",
+                "battle_5_low_armor_champion:event:4",
+                "battle_5_low_armor_champion:event:5"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 180,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 120,
+                "single_target_damage": 60,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 120,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 60,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:6",
+                "battle_5_low_armor_champion:event:7",
+                "battle_5_low_armor_champion:event:8",
+                "battle_5_low_armor_champion:event:9",
+                "battle_5_low_armor_champion:event:10"
+              ]
+            },
+            {
+              "id": "hero_ranger",
+              "name": "苔痕游侠",
+              "role": "ranger",
+              "channels": {
+                "damage": 170,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 170,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 170,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:11",
+                "battle_5_low_armor_champion:event:12"
+              ]
+            },
+            {
+              "id": "hero_priest",
+              "name": "晨辉牧师",
+              "role": "priest",
+              "channels": {
+                "damage": 0,
+                "healing": 100,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 0,
+                "sustained_damage": 0,
+                "healing": 100,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 100,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:13",
+                "battle_5_low_armor_champion:event:14"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "armor_first_expert",
+      "profile": "expert",
+      "perceptionBands": [
+        [
+          25,
+          0,
+          "没有明显差别"
+        ],
+        [
+          45,
+          1,
+          "有点强"
+        ],
+        [
+          60,
+          2,
+          "强一些"
+        ],
+        [
+          75,
+          3,
+          "明显强"
+        ],
+        [
+          90,
+          4,
+          "强很多"
+        ],
+        [
+          105,
+          5,
+          "强一大截"
+        ],
+        [
+          120,
+          6,
+          "强非常多"
+        ],
+        [
+          135,
+          7,
+          "提升爆炸"
+        ],
+        [
+          145,
+          8,
+          "强得离谱"
+        ],
+        [
+          151,
+          9,
+          "质变"
+        ]
+      ],
+      "provisionalNegativeBands": [
+        [
+          25,
+          0,
+          "没有明显差别"
+        ],
+        [
+          45,
+          -1,
+          "有点弱"
+        ],
+        [
+          70,
+          -2,
+          "明显偏弱"
+        ],
+        [
+          101,
+          -3,
+          "非常弱"
+        ]
+      ],
+      "reports": [
+        {
+          "id": "battle_3_armored_elite",
+          "environment": {
+            "id": "battle_3_armored_elite",
+            "label": "重甲精英",
+            "tags": [
+              "elite",
+              "high_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 70,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 70,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 70,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:1",
+                "battle_3_armored_elite:event:2"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 300,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 300,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 300,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:3",
+                "battle_3_armored_elite:event:4"
+              ]
+            },
+            {
+              "id": "hero_ranger",
+              "name": "苔痕游侠",
+              "role": "ranger",
+              "channels": {
+                "damage": 200,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 200,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 200,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:5",
+                "battle_3_armored_elite:event:6"
+              ]
+            },
+            {
+              "id": "hero_priest",
+              "name": "晨辉牧师",
+              "role": "priest",
+              "channels": {
+                "damage": 10,
+                "healing": 100,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 10,
+                "sustained_damage": 0,
+                "healing": 100,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 10,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 100,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_3_armored_elite:event:7",
+                "battle_3_armored_elite:event:8",
+                "battle_3_armored_elite:event:9",
+                "battle_3_armored_elite:event:10"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_4_armored_elite_repeat",
+          "environment": {
+            "id": "battle_4_armored_elite_repeat",
+            "label": "重甲精英复战",
+            "tags": [
+              "elite",
+              "high_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 60,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 60,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 60,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:1",
+                "battle_4_armored_elite_repeat:event:2"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 320,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 320,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 320,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:3",
+                "battle_4_armored_elite_repeat:event:4"
+              ]
+            },
+            {
+              "id": "hero_ranger",
+              "name": "苔痕游侠",
+              "role": "ranger",
+              "channels": {
+                "damage": 230,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 230,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 230,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:5",
+                "battle_4_armored_elite_repeat:event:6"
+              ]
+            },
+            {
+              "id": "hero_priest",
+              "name": "晨辉牧师",
+              "role": "priest",
+              "channels": {
+                "damage": 0,
+                "healing": 120,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 0,
+                "sustained_damage": 0,
+                "healing": 120,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 120,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_4_armored_elite_repeat:event:7",
+                "battle_4_armored_elite_repeat:event:8"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_1_weak_swarm",
+          "environment": {
+            "id": "battle_1_weak_swarm",
+            "label": "弱小怪潮",
+            "tags": [
+              "swarm",
+              "low_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 360,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 300,
+                "single_target_damage": 60,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 300,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 60,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:1",
+                "battle_1_weak_swarm:event:2",
+                "battle_1_weak_swarm:event:3",
+                "battle_1_weak_swarm:event:4",
+                "battle_1_weak_swarm:event:5"
+              ]
+            },
+            {
+              "id": "militia_spear",
+              "name": "长枪民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 45,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 45,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 45,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:6",
+                "battle_1_weak_swarm:event:7"
+              ]
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 20,
+                "healing": 40,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 20,
+                "sustained_damage": 0,
+                "healing": 40,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 40,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:8",
+                "battle_1_weak_swarm:event:9",
+                "battle_1_weak_swarm:event:10",
+                "battle_1_weak_swarm:event:11"
+              ]
+            },
+            {
+              "id": "militia_drum",
+              "name": "战鼓民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 20,
+                "healing": 0,
+                "shieldAbsorbed": 20,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 20,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 20,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_1_weak_swarm:event:12",
+                "battle_1_weak_swarm:event:13",
+                "battle_1_weak_swarm:event:14",
+                "battle_1_weak_swarm:event:15"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_2_mixed_patrol",
+          "environment": {
+            "id": "battle_2_mixed_patrol",
+            "label": "混合巡逻队",
+            "tags": [
+              "mixed",
+              "low_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 180,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 80,
+                "single_target_damage": 100,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 80,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 100,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:1",
+                "battle_2_mixed_patrol:event:2",
+                "battle_2_mixed_patrol:event:3",
+                "battle_2_mixed_patrol:event:4",
+                "battle_2_mixed_patrol:event:5"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 220,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 180,
+                "single_target_damage": 40,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 180,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 40,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:6",
+                "battle_2_mixed_patrol:event:7",
+                "battle_2_mixed_patrol:event:8",
+                "battle_2_mixed_patrol:event:9",
+                "battle_2_mixed_patrol:event:10"
+              ]
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 20,
+                "healing": 90,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 20,
+                "sustained_damage": 0,
+                "healing": 90,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 20,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 90,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:11",
+                "battle_2_mixed_patrol:event:12",
+                "battle_2_mixed_patrol:event:13",
+                "battle_2_mixed_patrol:event:14"
+              ]
+            },
+            {
+              "id": "militia_spear",
+              "name": "长枪民兵",
+              "role": "militia",
+              "channels": {
+                "damage": 70,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 70,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 70,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_2_mixed_patrol:event:15",
+                "battle_2_mixed_patrol:event:16"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "battle_5_low_armor_champion",
+          "environment": {
+            "id": "battle_5_low_armor_champion",
+            "label": "轻甲冠军",
+            "tags": [
+              "elite",
+              "low_armor"
+            ]
+          },
+          "outcome": "win",
+          "activeUnitCount": 4,
+          "unitEvidence": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "channels": {
+                "damage": 240,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 80,
+                "single_target_damage": 160,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 80,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 160,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:1",
+                "battle_5_low_armor_champion:event:2",
+                "battle_5_low_armor_champion:event:3",
+                "battle_5_low_armor_champion:event:4",
+                "battle_5_low_armor_champion:event:5"
+              ]
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "channels": {
+                "damage": 180,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 120,
+                "single_target_damage": 60,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 120,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "single_target_damage": {
+                  "high": 60,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:6",
+                "battle_5_low_armor_champion:event:7",
+                "battle_5_low_armor_champion:event:8",
+                "battle_5_low_armor_champion:event:9",
+                "battle_5_low_armor_champion:event:10"
+              ]
+            },
+            {
+              "id": "hero_ranger",
+              "name": "苔痕游侠",
+              "role": "ranger",
+              "channels": {
+                "damage": 170,
+                "healing": 0,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 170,
+                "sustained_damage": 0,
+                "healing": 0,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 170,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:11",
+                "battle_5_low_armor_champion:event:12"
+              ]
+            },
+            {
+              "id": "hero_priest",
+              "name": "晨辉牧师",
+              "role": "priest",
+              "channels": {
+                "damage": 0,
+                "healing": 100,
+                "shieldAbsorbed": 0,
+                "damagePrevented": 0,
+                "controlValue": 0
+              },
+              "domains": {
+                "area_damage": 0,
+                "single_target_damage": 0,
+                "sustained_damage": 0,
+                "healing": 100,
+                "shielding": 0,
+                "control": 0,
+                "durability": 0
+              },
+              "domainEvidence": {
+                "area_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "single_target_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "sustained_damage": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "healing": {
+                  "high": 100,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 1,
+                  "quality": "high"
+                },
+                "shielding": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "control": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                },
+                "durability": {
+                  "high": 0,
+                  "medium": 0,
+                  "low": 0,
+                  "reliability": 0,
+                  "quality": "low"
+                }
+              },
+              "evidenceEventIds": [
+                "battle_5_low_armor_champion:event:13",
+                "battle_5_low_armor_champion:event:14"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

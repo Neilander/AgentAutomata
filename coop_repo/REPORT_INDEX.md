@@ -2,6 +2,10 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-16
+
+- `2026-07-16_0213_entity-impression-knowledge-experiment.md`: builds and validates biased-but-correctable subject strength/trait knowledge, including five blind Agent-analyzed battles, 118 passing comparisons, and two final independent reviewer passes.
+
 ## 2026-07-15
 
 - `2026-07-15_2304_improvement-perception-granularity-reference.md`: records the 150%-capped improvement perception bands, with familiar-player resolution above 80%, expert resolution above 60%, and profile-safe A settlement.

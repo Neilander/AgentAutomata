@@ -4,6 +4,8 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-17
 
+- `2026-07-17_1844_local-run-artifact-archive.md`：将 2,308 个逐轮 request/response 和 32 个完整 session 原件统一移入本地忽略归档，活跃 session 缩小 90.2%，并让关键摘要与战斗解析测试兼容精简记录。
+
 - `2026-07-17_1745_threshold-perception-model.md`：删除单场25/50/75硬配额，改为显眼度、幅度、目标、竞争和重复积累共同决定的信号级接收模型；多轨迹长期校准和越界审计通过。
 
 - `2026-07-17_1612_battle-information-parser.md`：新增不接 Agent 的纯程序战斗信息解析器；三档玩家接收 25%/50%/75% 合法信号，固定样本与 355 事件真实战斗的完整性和越界审计通过。

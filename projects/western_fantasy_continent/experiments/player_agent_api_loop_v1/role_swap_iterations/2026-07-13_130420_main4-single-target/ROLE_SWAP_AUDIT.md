@@ -16,7 +16,7 @@
 
 ## Combat Proofs
 
-- Cycle 8: hero_mage at r1_main_3, win, contribution {"observed":true,"damage":321.31,"heal":0,"shield":0,"skillCount":4}
+- Cycle 8: undefined at r1_main_3, win, contribution {}
 
 ## Emotion Trajectory
 

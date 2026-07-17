@@ -50,7 +50,18 @@ function artifactPath(sessionPath, request, kind) {
   const chapter = run.activeChapter;
   const type = request.type || "unknown";
   const cycle = String(request.cycle || (chapter === 2 ? run.chapter2?.cycle + 1 : run.chapter1?.cycle + 1) || 0).padStart(3, "0");
-  return path.join(path.dirname(sessionPath), "artifacts", `chapter-${chapter}-${type}-${cycle}-${kind}.json`);
+  const localArchiveRoot = path.resolve(__dirname, "..", "..", ".local_run_archive", "player_agent_api_loop_v1");
+  const runDirectory = path.dirname(sessionPath);
+  const relativeRunDirectory = path.relative(__dirname, runDirectory);
+  const safeRunDirectory = relativeRunDirectory.startsWith("..") || path.isAbsolute(relativeRunDirectory)
+    ? path.join("external", path.basename(runDirectory))
+    : relativeRunDirectory;
+  return path.join(
+    localArchiveRoot,
+    safeRunDirectory,
+    "artifacts",
+    `chapter-${chapter}-${type}-${cycle}-${kind}.json`,
+  );
 }
 
 function readJson(filePath) {

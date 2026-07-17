@@ -1,19 +1,20 @@
-# 主线1至7真实认知循环追踪
+# 主线1至Boss真实认知循环追踪
 
 - seed: `real-main7-2026-07-13-170746`
-- 完成行为: 20 次
-- 停止位置: `decision`（第7关归因结束后的下一次决策边界）
+- 完成行为: 30 次
+- 停止位置: `complete`（30 次行为与归因均已结束）
 - 第7关通过: 是
-- 最终情绪: 43.9475，最低情绪: 37.9937
-- 最终知识: 68 条
+- Boss到达: 是，挑战 2 次，通过: 否
+- 最终情绪: 44.6604，最低情绪: 37.9937
+- 最终知识: 103 条
 
 ## 真实性边界
 
 - 每次 decision/attribution 请求都由运行时代码根据当时状态生成。
-- 当前助手逐次读取请求并新写响应；没有调用旧响应或复制旧会话。
+- 外部玩家agent逐次读取请求并新写响应；没有调用旧响应或复制旧会话。
 - 战斗胜负、战报、掉落、情绪、知识更新和概念解释均由仓库运行时代码计算。
 - AI/助手只选择允许的行为并提供证据约束的归因，不能填写胜负、掉落或情绪。
-- 第17步曾有一份把通关知识和掉落证据混写的归因，被校验器拒绝；修正到掉落知识后才写入会话。
+- 归因证据必须属于所选知识；跨知识混写的归因会被校验器拒绝，修正后才能写入会话。
 
 ## 逐行为记录
 
@@ -237,17 +238,134 @@
 - 概念库改变: 否
 - AI归因: 当前404已装备战力的队伍首次挑战主线7并消灭全部敌人，以3人存活完成通关。
 
+### 21. equip:hero_mage:r1_main_7_1_0 -> equipped
+
+- 情绪: 43.9475 -> 43.9861（自动变化 -0.0014）
+- 新增知识: knowledge:69 新增：[player / equipment / equip_item / 装备普通武器 Lv.11，战力404->442，样本0->1]
+- 更新知识: 无
+- 匹配概念: 无
+- 新建概念: 无
+- 候选概念变化: 无
+- 概念库改变: 否
+- AI归因: 我主动用普通武器 Lv.11 替换烬火法师的 Lv.6 武器，使已装备战力从404提升到442。
+
+### 22. challenge:r1_main_8 -> win
+
+- 情绪: 43.9861 -> 45.1014（自动变化 +1.1154）
+- 新增知识: knowledge:70 新增：[player_squad / r1_main_8 / challenge_level / win，11.92秒，我方4存活/敌方0存活，样本0->1]；knowledge:71 新增：[player_squad / r1_main_8 / clear_level / 掉落普通护符 Lv.8、普通护符 Lv.7，装备战力未自动改变=true，样本0->1]；knowledge:72 新增：[player_squad / r1_main_8 / attack_enemy_squad / 总伤害787.864，命中36，击杀4，样本0->1]；knowledge:73 新增：[enemy squad / r1_main_8 / attack_player_squad / 主要physical伤害，敌方存活0，样本0->1]
+- 更新知识: knowledge:37 更新：[烬火法师 / region_1_mid_main / combat_participation / 伤害364.99，占比46.33%，治疗0，护盾0，样本5->6]；knowledge:38 更新：[灰鸦战士 / region_1_mid_main / combat_participation / 伤害337.374，占比42.82%，治疗0，护盾0，样本5->6]；knowledge:39 更新：[草药民兵 / region_1_mid_main / combat_participation / 伤害58.8，占比7.46%，治疗123.96，护盾0，样本5->6]；knowledge:40 更新：[拒马民兵 / region_1_mid_main / combat_participation / 伤害26.7，占比3.39%，治疗55.26，护盾0，样本5->6]；knowledge:44 更新：[远程小怪 / region_1_mid_main / fight_player_squad / 伤害636.8568，治疗0，护盾0，击杀0，样本5->6]
+- 匹配概念: 远程小怪 x3；近战小怪 x1
+- 新建概念: 无
+- 候选概念变化: 无
+- 概念库改变: 否
+- AI归因: 更新法师武器后的442战力队伍首次挑战主线8，在11.92秒内消灭全部敌人并保持四人存活。
+
+### 23. equip:militia_herb:r1_main_8_1_0 -> equipped
+
+- 情绪: 45.1014 -> 45.14（自动变化 -0.0014）
+- 新增知识: knowledge:74 新增：[player / equipment / equip_item / 装备普通护符 Lv.8，战力442->504，样本0->1]
+- 更新知识: 无
+- 匹配概念: 无
+- 新建概念: 无
+- 候选概念变化: 无
+- 概念库改变: 否
+- AI归因: 我主动给草药民兵装备普通护符 Lv.8，因此已装备战力从 442 提升到 504。
+
+### 24. challenge:r1_main_9 -> win
+
+- 情绪: 45.14 -> 46.2285（自动变化 +1.0484）
+- 新增知识: knowledge:75 新增：[player_squad / r1_main_9 / challenge_level / win，15.68秒，我方3存活/敌方0存活，样本0->1]；knowledge:76 新增：[player_squad / r1_main_9 / clear_level / 解锁r1_main_10，样本0->1]；knowledge:77 新增：[player_squad / r1_main_9 / clear_level / 掉落稀有胸甲 Lv.9、普通腿甲 Lv.13，装备战力未自动改变=true，样本0->1]；knowledge:78 新增：[烬火法师 / region_1_late_main / combat_participation / 伤害665.588，占比62.87%，治疗0，护盾0，样本0->1]；knowledge:79 新增：[灰鸦战士 / region_1_late_main / combat_participation / 伤害346.994，占比32.77%，治疗0，护盾0，样本0->1]；knowledge:80 新增：[草药民兵 / region_1_late_main / combat_participation / 伤害40.886，占比3.86%，治疗133.4786，护盾0，样本0->1]；knowledge:81 新增：[拒马民兵 / region_1_late_main / combat_participation / 伤害5.282，占比0.5%，治疗110.52，护盾0，样本0->1]；knowledge:82 新增：[player_squad / r1_main_9 / attack_enemy_squad / 总伤害1058.75，命中56，击杀4，样本0->1]；knowledge:83 新增：[enemy squad / r1_main_9 / attack_player_squad / 主要physical伤害，敌方存活0，样本0->1]；knowledge:84 新增：[远程小怪 / region_1_late_main / fight_player_squad / 伤害512.576，治疗0，护盾0，击杀0，样本0->1]；knowledge:85 新增：[近战小怪 / region_1_late_main / fight_player_squad / 伤害265.26，治疗0，护盾0，击杀1，样本0->1]
+- 更新知识: 无
+- 匹配概念: 远程小怪 x2；普通小怪 x1；近战小怪 x1
+- 新建概念: 无
+- 候选概念变化: candidate:shielding：证据9，eligible_for_review
+- 概念库改变: 否
+- AI归因: 504 已装备战力的当前队伍首次挑战主线 9，在 15.68 秒内消灭完整敌队并以三人存活通关。
+
+### 25. equip:militia_barricade:r1_main_9_1_0 -> equipped
+
+- 情绪: 46.2285 -> 46.2671（自动变化 -0.0014）
+- 新增知识: knowledge:86 新增：[player / equipment / equip_item / 装备稀有胸甲 Lv.9，战力504->553，样本0->1]
+- 更新知识: 无
+- 匹配概念: 无
+- 新建概念: 无
+- 候选概念变化: 无
+- 概念库改变: 否
+- AI归因: 我主动给拒马民兵装备稀有胸甲 Lv.9，使已装备战力从 504 提升到 553，并补上其空缺的胸甲位。
+
+### 26. challenge:r1_main_10 -> win
+
+- 情绪: 46.2671 -> 47.2332（自动变化 +0.9661）
+- 新增知识: knowledge:87 新增：[player_squad / r1_main_10 / challenge_level / win，18秒，我方3存活/敌方0存活，样本0->1]；knowledge:88 新增：[player_squad / r1_main_10 / clear_level / 解锁r1_boss，样本0->1]；knowledge:89 新增：[player_squad / r1_main_10 / clear_level / 掉落普通戒指 Lv.14、普通胸甲 Lv.13，装备战力未自动改变=true，样本0->1]；knowledge:90 新增：[player_squad / r1_main_10 / attack_enemy_squad / 总伤害1200.346，命中63，击杀4，样本0->1]；knowledge:91 新增：[enemy squad / r1_main_10 / attack_player_squad / 主要physical伤害，敌方存活0，样本0->1]
+- 更新知识: knowledge:78 更新：[烬火法师 / region_1_late_main / combat_participation / 伤害742.764，占比61.88%，治疗0，护盾0，样本1->2]；knowledge:79 更新：[灰鸦战士 / region_1_late_main / combat_participation / 伤害395.654，占比32.96%，治疗0，护盾0，样本1->2]；knowledge:80 更新：[草药民兵 / region_1_late_main / combat_participation / 伤害56.646，占比4.72%，治疗208.324，护盾0，样本1->2]；knowledge:81 更新：[拒马民兵 / region_1_late_main / combat_participation / 伤害5.282，占比0.44%，治疗119.9142，护盾0，样本1->2]；knowledge:84 更新：[远程小怪 / region_1_late_main / fight_player_squad / 伤害560.1928，治疗0，护盾0，击杀0，样本1->2]；knowledge:85 更新：[近战小怪 / region_1_late_main / fight_player_squad / 伤害290.448，治疗0，护盾0，击杀1，样本1->2]
+- 匹配概念: 远程小怪 x2；普通小怪 x1；近战小怪 x1
+- 新建概念: 无
+- 候选概念变化: candidate:shielding：证据10，eligible_for_review
+- 概念库改变: 否
+- AI归因: 553 已装备战力的队伍首次挑战主线 10，在 18 秒内消灭敌队并以三人存活通关。
+
+### 27. equip:militia_barricade:r1_main_7_1_1 -> equipped
+
+- 情绪: 47.2332 -> 47.2318（自动变化 -0.0014）
+- 新增知识: knowledge:92 新增：[player / equipment / equip_item / 装备稀有腿甲 Lv.10，战力553->601，样本0->1]
+- 更新知识: 无
+- 匹配概念: 无
+- 新建概念: 无
+- 候选概念变化: 无
+- 概念库改变: 否
+- AI归因: 我主动给拒马民兵装备稀有腿甲 Lv.10，使已装备战力从 553 提升到 601，并补齐第二个生存部位。
+
+### 28. challenge:r1_boss -> loss
+
+- 情绪: 47.2318 -> 45.9077（自动变化 -1.3241）
+- 新增知识: knowledge:93 新增：[player_squad / r1_boss / challenge_level / loss，21.12秒，我方0存活/敌方4存活，样本0->1]；knowledge:94 新增：[烬火法师 / region_1_boss / combat_participation / 伤害713.336，占比55.77%，治疗0，护盾0，样本0->1]；knowledge:95 新增：[灰鸦战士 / region_1_boss / combat_participation / 伤害517.078，占比40.43%，治疗0，护盾0，样本0->1]；knowledge:96 新增：[草药民兵 / region_1_boss / combat_participation / 伤害41.613，占比3.25%，治疗220.6191，护盾0，样本0->1]；knowledge:97 新增：[拒马民兵 / region_1_boss / combat_participation / 伤害7，占比0.55%，治疗148.0415，护盾0，样本0->1]；knowledge:98 新增：[player_squad / r1_boss / attack_enemy_squad / 总伤害1279.027，命中60，击杀0，样本0->1]；knowledge:99 新增：[enemy squad / r1_boss / attack_player_squad / 主要physical伤害，敌方存活4，样本0->1]；knowledge:100 新增：[远程小怪 / region_1_boss / fight_player_squad / 伤害722.8352，治疗0，护盾0，击杀2，样本0->1]；knowledge:101 新增：[近战小怪 / region_1_boss / fight_player_squad / 伤害508.0071，治疗0，护盾0，击杀2，样本0->1]
+- 更新知识: 无
+- 匹配概念: 普通小怪 x2；近战小怪 x1；远程小怪 x1
+- 新建概念: 无
+- 候选概念变化: candidate:healing+shielding：证据5，eligible_for_review；candidate:shielding：证据11，eligible_for_review
+- 概念库改变: 否
+- AI归因: 601 已装备战力的队伍首次挑战灰带首领，在 21.12 秒时全员阵亡且敌方四人仍存活，因此挑战失败。
+
+### 29. equip:hero_warrior:r1_main_10_1_0 -> equipped
+
+- 情绪: 45.9077 -> 45.9063（自动变化 -0.0014）
+- 新增知识: knowledge:102 新增：[player / equipment / equip_item / 装备普通戒指 Lv.14，战力601->673，样本0->1]
+- 更新知识: 无
+- 匹配概念: 无
+- 新建概念: 无
+- 候选概念变化: 无
+- 概念库改变: 否
+- AI归因: 我主动给灰鸦战士装备普通戒指 Lv.14，使已装备战力从 601 提升到 673，并强化主力物理输出。
+
+### 30. challenge:r1_boss -> loss
+
+- 情绪: 45.9063 -> 44.6604（自动变化 -1.2459）
+- 新增知识: knowledge:103 新增：[普通小怪 / region_1_boss / fight_player_squad / 伤害165.456，治疗375.79，护盾697.8846，击杀1，样本0->1]
+- 更新知识: knowledge:93 更新：[player_squad / r1_boss / challenge_level / loss，21.12秒，我方0存活/敌方4存活，样本1->2]；knowledge:94 更新：[烬火法师 / region_1_boss / combat_participation / 伤害819.989，占比57.8%，治疗0，护盾0，样本1->2]；knowledge:95 更新：[灰鸦战士 / region_1_boss / combat_participation / 伤害550.058，占比38.77%，治疗0，护盾0，样本1->2]；knowledge:96 更新：[草药民兵 / region_1_boss / combat_participation / 伤害41.613，占比2.93%，治疗220.6191，护盾0，样本1->2]；knowledge:97 更新：[拒马民兵 / region_1_boss / combat_participation / 伤害7，占比0.49%，治疗148.0415，护盾0，样本1->2]；knowledge:98 更新：[player_squad / r1_boss / attack_enemy_squad / 总伤害1418.66，命中60，击杀0，样本1->2]；knowledge:99 更新：[enemy squad / r1_boss / attack_player_squad / 主要physical伤害，敌方存活4，样本1->2]；knowledge:100 更新：[远程小怪 / region_1_boss / fight_player_squad / 伤害707.7852，治疗0，护盾0，击杀1，样本1->2]；knowledge:101 更新：[近战小怪 / region_1_boss / fight_player_squad / 伤害508.0071，治疗0，护盾0，击杀2，样本1->2]
+- 匹配概念: 普通小怪 x2；近战小怪 x1；远程小怪 x1
+- 新建概念: 无
+- 候选概念变化: candidate:healing+shielding：证据6，eligible_for_review；candidate:shielding：证据12，eligible_for_review
+- 概念库改变: 否
+- AI归因: 673 已装备战力的队伍第二次挑战灰带首领，在 21.12 秒时再次全员阵亡且敌方四人仍存活，因此输出戒指没有改变最终胜负。
+
 ## 最终概念状态
 
 - 正式概念: 远程小怪（enemy_minion_ranged）；近战小怪（enemy_minion_melee）；普通小怪（enemy_minion_generic）
-- 候选概念: candidate:healing / 证据1 / observe_more；candidate:healing+shielding / 证据4 / eligible_for_review；candidate:shielding / 证据8 / eligible_for_review
+- 候选概念: candidate:healing / 证据1 / observe_more；candidate:healing+shielding / 证据6 / eligible_for_review；candidate:shielding / 证据12 / eligible_for_review
 - 本轮没有自动批准任何新概念；治疗、治疗+护盾、护盾仍保留为候选。
 
 ## 审计
 
-- 80个请求/响应文件缺失: 无
-- 20个行为都有知识/概念增量: 20/20
-- 20个行为都有原始日志和概念解释后日志: 20/20
+- 行为分布: {"challenge":15,"equip":15}
+- 换人行为: 无
+- 角色解锁: 无
+- 法师换入轮次: 无
+- 游侠换入轮次: 无
+- 新角色战斗验证: 无
+- 主线1进场: 非波次或无记录
+- 120个请求/响应文件缺失: 无
+- 行为都有知识/概念增量: 30/30
+- 行为都有原始日志和概念解释后日志: 30/30
 - 结构不完整的主体-环境-行为-结果知识: 无
 - 掉落后自动增加已装备战力的错误知识: 无
 - 越过当步允许行为列表的决策: 无

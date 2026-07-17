@@ -8,6 +8,11 @@ if (!sessionPath || !fs.existsSync(sessionPath) || !fs.statSync(sessionPath).isF
 }
 
 const runDir = path.dirname(sessionPath);
+const localArchiveRoot = path.resolve(__dirname, "..", "..", ".local_run_archive", "player_agent_api_loop_v1");
+const archivedRunDir = path.join(localArchiveRoot, path.relative(__dirname, runDir));
+const transcriptDir = fs.readdirSync(runDir).some((name) => /^decision-\d+-request\.json$/.test(name))
+  ? runDir
+  : archivedRunDir;
 const session = JSON.parse(fs.readFileSync(sessionPath, "utf8"));
 const history = session.history || [];
 const emotions = history.flatMap((row) => [
@@ -24,9 +29,7 @@ const trajectory = history.map((row) => ({
   afterEvents: row.emotionAfterEvents,
   automaticDelta: row.automaticEmotionDelta,
 }));
-const unlocks = history.flatMap((row) => (row.eventLog || [])
-  .filter((event) => event.type === "character_unlock")
-  .map((event) => ({ cycle: row.cycle, heroId: event.result?.heroId, character: event.result?.character })));
+const unlocks = history.flatMap(characterUnlocksForRow);
 const swaps = history.filter((row) => row.action?.startsWith("swap:")).map((row) => ({
   cycle: row.cycle,
   action: row.action,
@@ -34,11 +37,11 @@ const swaps = history.filter((row) => row.action?.startsWith("swap:")).map((row)
   alternatives: row.decisionResponse?.alternatives || [],
   hypothesis: row.decisionResponse?.hypothesis || null,
 }));
-const combatProofs = history.flatMap((row) => (row.eventLog || [])
-  .filter((event) => event.type === "team_experiment_result")
-  .map((event) => ({ cycle: row.cycle, ...event.result })));
-const decisionRequests = fs.readdirSync(runDir).filter((name) => /^decision-\d+-request\.json$/.test(name)).sort();
-const boundaryLeaks = decisionRequests.flatMap((name) => auditRequest(name, JSON.parse(fs.readFileSync(path.join(runDir, name), "utf8"))));
+const combatProofs = history.flatMap(teamExperimentsForRow);
+const decisionRequests = fs.existsSync(transcriptDir)
+  ? fs.readdirSync(transcriptDir).filter((name) => /^decision-\d+-request\.json$/.test(name)).sort()
+  : [];
+const boundaryLeaks = decisionRequests.flatMap((name) => auditRequest(name, JSON.parse(fs.readFileSync(path.join(transcriptDir, name), "utf8"))));
 const automaticDeltas = trajectory.map((row) => Number(row.automaticDelta)).filter(Number.isFinite);
 const audit = {
   schema: "role_swap_iteration_audit_v1",
@@ -88,6 +91,26 @@ process.stdout.write(`${JSON.stringify({
   largestAutomaticDrop: audit.emotion.largestAutomaticDrop,
   boundaryPass: audit.informationBoundary.pass,
 }, null, 2)}\n`);
+
+function characterUnlocksForRow(row) {
+  const semantic = (row.eventLog || [])
+    .filter((event) => event.type === "character_unlock")
+    .map((event) => ({ cycle: row.cycle, heroId: event.result?.heroId, character: event.result?.character }));
+  if (semantic.length || !row.gameEvent?.characterUnlock) return semantic;
+  return [{
+    cycle: row.cycle,
+    heroId: row.gameEvent.characterUnlock.heroId,
+    character: row.gameEvent.characterUnlock.id,
+  }];
+}
+
+function teamExperimentsForRow(row) {
+  const semantic = (row.eventLog || [])
+    .filter((event) => event.type === "team_experiment_result")
+    .map((event) => ({ cycle: row.cycle, ...event.result }));
+  if (semantic.length || !row.gameEvent?.teamExperiment) return semantic;
+  return [{ cycle: row.cycle, ...row.gameEvent.teamExperiment }];
+}
 
 function auditRequest(name, request) {
   const leaks = [];

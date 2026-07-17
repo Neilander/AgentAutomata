@@ -26,8 +26,8 @@ Important files:
 - `roster-change-expectation.js`: exact-roster failure scope and per-legal-swap counterfactual expectation.
 - `roster-expectation-a.js`: freezes the Agent-selected roster prediction and settles its code-owned A once on the next comparable combat.
 - `TOKEN_EFFICIENT_LOOP_V2.md`: persistent-Agent, short-context decision contract and real-slice validation.
-- `causal_verification_v9_concept_interpreter/`: current accepted two-cycle evidence.
-- `real_main7_run_2026-07-13_170746/`: fresh 20-action Main 1-7 evidence with every request, response, raw log, semantic log, learning delta, and audit.
+- `causal_verification_v9_concept_interpreter/`: current accepted two-cycle evidence session and summaries.
+- `real_main7_run_2026-07-13_170746/`: fresh Main 1-7 evidence session, learning delta, and audit. Large per-turn request/response transcripts are retained locally under `.local_run_archive/player_agent_api_loop_v1/` rather than in Git.
 
 `.js` means JavaScript source code. These files are executed by Node.js. They are not design prose and do not require a browser.
 

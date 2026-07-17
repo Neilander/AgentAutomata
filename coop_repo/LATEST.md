@@ -8,7 +8,7 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-17_1745_threshold-perception-model.md`](reports/2026-07-17_1745_threshold-perception-model.md)
+[`reports/2026-07-17_1844_local-run-artifact-archive.md`](reports/2026-07-17_1844_local-run-artifact-archive.md)
 
 Last updated: 2026-07-17
 

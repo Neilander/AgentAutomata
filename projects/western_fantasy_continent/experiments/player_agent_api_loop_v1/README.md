@@ -142,6 +142,8 @@ The current onboarding run is `role_wave_run_2026-07-13_105247/` with seed `role
 
 The earlier Boss-pressure comparison remains under `real_main7_run_2026-07-13_170746/`. It reached the regional Boss twice in 30 cycles but did not clear it; use it as historical evidence for late-region pressure, not as evidence for the current starter-roster and Mage-onboarding flow.
 
+Large per-turn request/response transcripts and original pre-slimming sessions are stored locally under `projects/western_fantasy_continent/.local_run_archive/player_agent_api_loop_v1/`. See `LOCAL_RUN_ARCHIVE.md`. The source tree keeps compact sessions, summaries, reports, and selected formal fixtures.
+
 ## Enriched Two-Chapter Program Variant
 
 `enriched-two-chapter-run.js` is an isolated program-only variant selected with `environmentVariant: "enriched_v1"`. It keeps the default two chapters unchanged while adding five milestone-unlocked heroes, later pressure points, richer Epic/Legendary equipment, and an exact 1% Mythic rate per normally generated item. The enriched transition preserves the same player Agent context plus the Chapter 1 roster, equipped items, and inventory.

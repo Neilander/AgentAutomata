@@ -58,7 +58,7 @@ function analyzeRun(run, profileId, seed, sessionPath) {
   const unlocks = history.map((row, index) => ({ index, chapter: row.chapter, cycle: row.cycle, ...(row.gameEvent?.characterUnlock || {}) })).filter((row) => row.heroId);
   const unlockTests = unlocks.map((unlock) => {
     const later = history.findIndex((row, index) => index > unlock.index && row.action.startsWith("challenge:")
-      && (row.decisionRequest?.observation?.teamSlots || []).some((slot) => slot.heroId === unlock.heroId));
+      && decisionTeamSlots(row).some((slot) => slot.heroId === unlock.heroId));
     return { ...unlock, tested: later >= 0, actionsUntilTest: later >= 0 ? later - unlock.index : null };
   });
   const rosterATrace = history.flatMap((row) => (row.eventTrace || []).map((trace) => ({ action: row.action, chapter: row.chapter, cycle: row.cycle, ...trace })))
@@ -93,7 +93,7 @@ function analyzeRun(run, profileId, seed, sessionPath) {
   const rarityCounts = countBy(drops, (item) => item.rarity || "unknown");
   const mythicItemIds = new Set(drops.filter((item) => item.rarity === "mythic").map((item) => item.id));
   const equippedMythicIds = [...new Set(equips.map((row) => row.action.split(":")[2]).filter((id) => mythicItemIds.has(id)))];
-  const usedHeroIds = new Set(challenges.flatMap((row) => (row.decisionRequest?.observation?.teamSlots || []).map((slot) => slot.heroId)));
+  const usedHeroIds = new Set(challenges.flatMap((row) => decisionTeamSlots(row).map((slot) => slot.heroId)));
   const lastSession = chapterSessions.at(-1);
   const unresolvedFailures = lastSession.cognitionState.failureMemories.filter((row) => !row.resolved);
   return {
@@ -142,6 +142,12 @@ function analyzeRun(run, profileId, seed, sessionPath) {
     unresolvedFailures: unresolvedFailures.map((row) => ({ node: row.node, attempt: row.attempt, wakeCondition: row.wakeCondition })),
     route: summary.route,
   };
+}
+
+function decisionTeamSlots(row) {
+  return row.decisionRequest?.observation?.teamSlots
+    || row.decisionSnapshot?.teamSlots
+    || [];
 }
 
 function analyzeProfile(profileId, rows) {

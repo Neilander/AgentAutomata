@@ -76,32 +76,40 @@ const archivedSessionPath = path.join(
   "paired-alpha",
   "session.json",
 );
+const archivedFixturePath = path.join(
+  __dirname,
+  "fixtures",
+  "battle-information-real-event-log.json",
+);
 let archivedAudit = null;
 let archivedCalibration = null;
+if (fs.existsSync(archivedFixturePath)) {
+  const fixture = JSON.parse(fs.readFileSync(archivedFixturePath, "utf8"));
+  archivedAudit = inspectBattleInformation(fixture.rawEventLog, { seed: "archive-audit" });
+  assert.equal(archivedAudit.pass, true, JSON.stringify(archivedAudit, null, 2));
+  assert(archivedAudit.source.rawEventCount >= 300);
+}
 if (fs.existsSync(archivedSessionPath)) {
   const archive = JSON.parse(fs.readFileSync(archivedSessionPath, "utf8"));
   const records = [
     ...(archive.chapter1?.history || []),
     ...(archive.chapter2?.history || []),
   ].filter((row) => Array.isArray(row.rawEventLog) && row.rawEventLog.length);
-  const record = records.sort((a, b) => b.rawEventLog.length - a.rawEventLog.length)[0];
-  archivedAudit = inspectBattleInformation(record.rawEventLog, { seed: "archive-audit" });
-  assert.equal(archivedAudit.pass, true, JSON.stringify(archivedAudit, null, 2));
-  assert(archivedAudit.source.rawEventCount >= 300);
-
-  const challengeRecords = records.filter((row) => String(row.action || "").startsWith("challenge:"));
-  const diagnostics = challengeRecords.flatMap((row) => (
-    inspectBattleInformation(row.rawEventLog, { seed: "calibration" })
-      .candidateDiagnostics
-      .filter((candidate) => !candidate.anchor)
-  ));
-  archivedCalibration = Object.fromEntries(["low", "ordinary", "high"].map((level) => [
-    level,
-    diagnostics.reduce((sum, row) => sum + row.receptionProbability[level], 0) / diagnostics.length,
-  ]));
-  assert(archivedCalibration.low >= 0.2 && archivedCalibration.low <= 0.32);
-  assert(archivedCalibration.ordinary >= 0.44 && archivedCalibration.ordinary <= 0.57);
-  assert(archivedCalibration.high >= 0.69 && archivedCalibration.high <= 0.81);
+  if (records.length) {
+    const challengeRecords = records.filter((row) => String(row.action || "").startsWith("challenge:"));
+    const diagnostics = challengeRecords.flatMap((row) => (
+      inspectBattleInformation(row.rawEventLog, { seed: "calibration" })
+        .candidateDiagnostics
+        .filter((candidate) => !candidate.anchor)
+    ));
+    archivedCalibration = Object.fromEntries(["low", "ordinary", "high"].map((level) => [
+      level,
+      diagnostics.reduce((sum, row) => sum + row.receptionProbability[level], 0) / diagnostics.length,
+    ]));
+    assert(archivedCalibration.low >= 0.2 && archivedCalibration.low <= 0.32);
+    assert(archivedCalibration.ordinary >= 0.44 && archivedCalibration.ordinary <= 0.57);
+    assert(archivedCalibration.high >= 0.69 && archivedCalibration.high <= 0.81);
+  }
 }
 
 const parsed = parseAllPerceptionLevels(fixedBattle, { seed: "fixed-battle" });

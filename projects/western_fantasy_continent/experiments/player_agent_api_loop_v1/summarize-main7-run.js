@@ -6,6 +6,7 @@ const sessionPath = path.resolve(process.argv[2] || "session.json");
 const outputTag = String(process.argv[3] || "").trim();
 const outputSuffix = outputTag ? `-${outputTag}` : "";
 const runDir = path.dirname(sessionPath);
+const localArchiveRoot = path.resolve(__dirname, "..", "..", ".local_run_archive", "player_agent_api_loop_v1");
 const session = JSON.parse(fs.readFileSync(sessionPath, "utf8"));
 
 const trace = session.history.map((row) => ({
@@ -48,8 +49,8 @@ const decisionResponsesOutsideAllowedActions = [];
 const responseSessionMismatches = [];
 for (let cycle = 1; cycle <= session.cycle; cycle += 1) {
   const label = String(cycle).padStart(2, "0");
-  const request = readJson(path.join(runDir, `decision-${label}-request.json`));
-  const response = readJson(path.join(runDir, `decision-${label}-response.json`));
+  const request = readJson(resolveTranscript(runDir, `decision-${label}-request.json`));
+  const response = readJson(resolveTranscript(runDir, `decision-${label}-response.json`));
   const historyRow = session.history.find((row) => row.cycle === cycle);
   if (!request.observation?.allowedActions?.includes(response.action)) {
     decisionResponsesOutsideAllowedActions.push({ cycle, action: response.action });
@@ -57,7 +58,7 @@ for (let cycle = 1; cycle <= session.cycle; cycle += 1) {
   if (JSON.stringify(response) !== JSON.stringify(historyRow?.decisionResponse)) {
     responseSessionMismatches.push({ cycle, kind: "decision" });
   }
-  const attributionResponse = readJson(path.join(runDir, `attribution-${label}-response.json`));
+  const attributionResponse = readJson(resolveTranscript(runDir, `attribution-${label}-response.json`));
   const recordedAttribution = historyRow?.attribution;
   const normalizedAttribution = recordedAttribution ? {
     knowledgeId: recordedAttribution.knowledgeId,
@@ -83,17 +84,13 @@ const audit = {
   bossAttempts: session.history.filter((row) => row.action === "challenge:r1_boss").length,
   actionCounts: countActions(session.history),
   teamSwapActions: session.history.filter((row) => row.action.startsWith("swap:")).map((row) => ({ cycle: row.cycle, action: row.action })),
-  characterUnlocks: session.history.flatMap((row) => (row.eventLog || [])
-    .filter((event) => event.type === "character_unlock")
-    .map((event) => ({ cycle: row.cycle, character: event.result?.character, heroId: event.result?.heroId }))),
+  characterUnlocks: session.history.flatMap(characterUnlocksForRow),
   mageSwapActions: session.history.filter((row) => row.action.startsWith("swap:") && row.action.endsWith(":hero_mage")).map((row) => row.cycle),
   rangerSwapActions: session.history.filter((row) => row.action.startsWith("swap:") && row.action.endsWith(":hero_ranger")).map((row) => row.cycle),
-  characterExperimentResults: session.history.flatMap((row) => (row.eventLog || [])
-    .filter((event) => event.type === "team_experiment_result")
-    .map((event) => ({ cycle: row.cycle, ...event.result }))),
+  characterExperimentResults: session.history.flatMap(teamExperimentsForRow),
   main1WaveSummary: session.history.find((row) => row.action === "challenge:r1_main_1")?.gameEvent?.waveSummary || [],
   requiredFileCount: requiredFiles.length,
-  missingFiles: requiredFiles.filter((name) => !fs.existsSync(path.join(runDir, name))),
+  missingFiles: requiredFiles.filter((name) => !fs.existsSync(resolveTranscript(runDir, name))),
   historyRowsWithLearningDelta: session.history.filter((row) => row.learningDelta).length,
   historyRowsWithRawAndSemanticLogs: session.history.filter((row) => Array.isArray(row.rawEventLog) && Array.isArray(row.eventLog)).length,
   canonicalKnowledgeCount: session.knowledgeBase.length,
@@ -104,13 +101,33 @@ const audit = {
     .filter((row) => row.behavior?.kind === "clear_level")
     .filter((row) => row.result?.observations?.some((item) => item.outcome === "loot_obtained" && item.powerChanged))
     .map((row) => row.id),
-  apiCallRecords: session.apiCalls.length,
+  apiCallRecords: session.apiCalls?.length || 0,
   decisionResponsesOutsideAllowedActions,
   responseSessionMismatches,
   responseHashMatchesOutsideRun,
   responseHashes,
   note: "Response files were created in this unique run directory. Decisions and attributions were supplied turn-by-turn by an external player agent; combat, loot, emotion, canonical knowledge, and concept interpretation were computed by repository code.",
 };
+
+function characterUnlocksForRow(row) {
+  const semantic = (row.eventLog || [])
+    .filter((event) => event.type === "character_unlock")
+    .map((event) => ({ cycle: row.cycle, character: event.result?.character, heroId: event.result?.heroId }));
+  if (semantic.length || !row.gameEvent?.characterUnlock) return semantic;
+  return [{
+    cycle: row.cycle,
+    character: row.gameEvent.characterUnlock.id,
+    heroId: row.gameEvent.characterUnlock.heroId,
+  }];
+}
+
+function teamExperimentsForRow(row) {
+  const semantic = (row.eventLog || [])
+    .filter((event) => event.type === "team_experiment_result")
+    .map((event) => ({ cycle: row.cycle, ...event.result }));
+  if (semantic.length || !row.gameEvent?.teamExperiment) return semantic;
+  return [{ cycle: row.cycle, ...row.gameEvent.teamExperiment }];
+}
 
 const traceJsonName = `action-knowledge-concept-trace${outputSuffix}.json`;
 const auditJsonName = `run-audit${outputSuffix}.json`;
@@ -252,6 +269,13 @@ function sha256(buffer) {
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function resolveTranscript(directory, name) {
+  const original = path.join(directory, name);
+  if (fs.existsSync(original)) return original;
+  const relativeDirectory = path.relative(__dirname, directory);
+  return path.join(localArchiveRoot, relativeDirectory, name);
 }
 
 function collectOutsideResponseHashes(root, excludedDir) {

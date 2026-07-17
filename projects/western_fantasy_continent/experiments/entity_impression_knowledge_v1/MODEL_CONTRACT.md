@@ -6,9 +6,13 @@ This isolated experiment tests a second player-knowledge family alongside causal
 battle report
 -> visible HP-equivalent contribution channels
 -> team-relative strength
+-> ally-performance environment and decomposable comparison basis
 -> profile-specific perceived strength
+-> accumulate pairwise character-strength evidence in a global matrix
+-> solve all known character positions together
+-> rebuild the current top-30-percent strength ruler
 -> domain magnitude
--> traits whose semantic level is at least 3
+-> retrieve and revalidate existing domain traits every battle
 -> append-only impression knowledge
 -> context-aware retrieval
 ```
@@ -33,6 +37,37 @@ Overkill, overheal, unused shields, raw damage taken, and kills already represen
 
 Positive strength uses the accepted ordinary/familiar/expert improvement bands and caps perceptual input at 150%. Negative bands are explicitly provisional in this experiment because the accepted reference does not yet freeze deterioration thresholds.
 
+Strength cognition retains both the encounter and the ally environment. Teammates are compared with the focal subject using the same player profile, then summarized as `mostly_weak_teammates`, `weak_leaning_teammates`, `mixed_or_balanced`, `strong_leaning_teammates`, or `mostly_strong_teammates`. The observation also keeps the full visible roster fingerprint and each unit's useful contribution, so a claim such as “the Mage looked strong among mostly weak teammates” remains decomposable instead of becoming an unconditional claim that the Mage is strong everywhere.
+
+### Current Character Strength Matrix And Relative Ruler
+
+Immutable encounter observations and current strength cognition are separate layers. Every battle produces perceived semantic levels for its visible characters. The runtime converts them into pairwise differences, such as `Mage - Warrior`, accumulates those constraints in one global information matrix, and solves every known character position together.
+
+```text
+Matrix 1: one current scalar position for every known character
+Matrix 2: the pairwise perceived differences produced by this battle
+
+accumulated information H += C' W C
+accumulated evidence    b += C' W d
+current positions       x  = solve(H, b)
+```
+
+This retains the full relation graph rather than updating four characters sequentially. Matrix addition is commutative, so replaying the same evidence in a different battle order yields the same current positions. A small fixed prior anchors translation only; it does not prevent the four participants from moving together.
+
+After every solve, all valid observed characters rebuild one shared ruler:
+
+```text
+top count      = ceil(valid known character count * 0.30)
+zero boundary  = weakest Matrix-1 position inside that top 30%
+relative level = round(character position - zero boundary)
+```
+
+The relative level is clamped to the shared semantic perception range and mapped back to the existing strength labels. If the boundary is 6 and a character is at 7, the displayed cognition is level 1: only a little stronger than the ruler. The Matrix-1 position itself is not overwritten when the ruler moves.
+
+New strong characters can raise the boundary and make unchanged older characters display a lower level. Many valid weak characters expand the top-30-percent membership, can lower the boundary, and make older characters display a higher level. Invalid or stale observations should be excluded by an eligibility policy, while genuinely weak but valid characters remain in the population.
+
+V1 currently treats every character with at least one accepted battle observation as valid. Aging and stale-evidence invalidation are not implemented yet and must not be confused with excluding weak characters.
+
 ## Traits
 
 A domain is compared with one expected unit's total useful contribution:
@@ -54,20 +89,35 @@ trait eligibility      = weighted reliability >= 0.50
 
 Boundary tests freeze these provisional values for reproducibility. They may be recalibrated later, but not silently changed inside an A/B comparison.
 
-Not reaching the trait threshold in one battle is not evidence that the character lacks the trait. Absence can become correction evidence only when the report proves that a valid opportunity existed, the relevant behavior was attempted, and the result remained weak. The V1 runtime deliberately learns positive trait evidence only.
+Before every battle updates a character, the runtime retrieves that character's current strength and trait beliefs. Every eligible domain that was actually attempted is then compared with the prior belief:
+
+```text
+strong attempted result  -> create or strengthen the trait belief
+weak attempted result    -> add correction evidence; the current belief may fall below salience
+no attempt               -> inconclusive; preserve the existing belief and observation count
+low-reliability evidence -> inconclusive; preserve the existing belief and observation count
+```
+
+Therefore not reaching the trait threshold is correction evidence only when the report proves a valid attempt and a weak result. Merely omitting area damage in one battle does not prove that the character lacks area damage.
 
 ## Bias And Correction
 
 The first salient observation creates a general impression and has the largest `primacyWeight`. A neutral first observation creates no salient knowledge claim, but remains in the immutable strength-observation ledger and affects later current belief. Later supporting reports increase confidence. Contradictory evidence never deletes an earlier row. It creates a new contextual knowledge row that qualifies the first impression.
 
-The append-only observation history is not the same thing as the player's current belief. A no-context query synthesizes all strength observations with finite primacy:
+The append-only observation history is not the same thing as the player's current relative belief. A no-context query first synthesizes all strength observations with finite primacy:
 
 ```text
-observation weight = evidence reliability * (1 + 1 / observation order)
-current semantic level = weighted mean of observed semantic levels
+observation weight = evidence reliability * (1 + 1 / subject observation order)
+observation synthesis = weighted mean of observed semantic levels
 ```
 
-The first observation therefore has the highest individual weight, as required, while repeated reliable counterevidence can still revise the current general belief. The original biased row remains available for audit and memory.
+That synthesis preserves primacy and contextual memory. The public no-context current belief then uses the solved Matrix-1 position relative to the live top-30-percent ruler. Both values remain available, so historical interpretation is not erased when the population-wide ruler shifts.
+
+The first observation of that subject therefore has the highest individual observation weight, as required, while repeated reliable counterevidence can still revise the observation synthesis. Campaign battle order is retained separately for audit, but a character who joins late does not receive an artificially weaker first impression merely because other characters were observed earlier. The original biased row remains available for audit and memory.
+
+Trait beliefs use the same principle independently for each subject and domain. Historical trait rows are immutable, while the current trait belief is synthesized from all reliable attempted observations. A sufficiently weak later attempt can make a once-salient trait currently non-salient without deleting the memory that created the original impression. A context query can still retrieve a context-specific correction before the general trait belief.
+
+Contextual trait retrieval is domain-specific. Domains observed in the exact context use exact-context synthesis; every other known domain falls back to its current synthesized general belief, never directly to a stale immutable historical row.
 
 A level-0 observation does not create a first impression by itself. It can still create a contextual correction when it contradicts an earlier strong or weak impression. Seeing a supposedly extreme unit perform ordinarily is meaningful evidence even though `ordinary` alone is not a salient identity.
 
@@ -81,7 +131,7 @@ Storage and queries both normalize raw context through the same salient-tag func
 
 A contradiction with no salient context is stored as general evidence, not as an empty context. Empty context rows must never match every query. Re-ingesting the same report ID is ignored and cannot raise confidence or evidence count.
 
-This deliberately permits a biased belief such as `灰鸦战士很强` after seeing him beside three weak militia. A later armored fight adds `面对重甲精英时明显偏弱`. Against high armor the correction is retrieved first. Without context, one counterexample weakens the general belief and repeated counterexamples can replace it, while the original first-impression row remains intact.
+This deliberately permits a biased belief such as `法师在三个弱小民兵旁边显得很强`. A later armored fight can add `面对重甲精英时明显偏弱`. Against high armor the correction is retrieved first. Without context, one counterexample weakens the general belief and repeated counterexamples can replace it, while the original first-impression row remains intact.
 
 ## Report Boundary Found During Validation
 

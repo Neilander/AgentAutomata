@@ -1,0 +1,47 @@
+{
+  "action": "swap:3:hero_assassin",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "为完整四人敌队测试能切后排的新角色。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "游侠已完成其高生命单体用途，主线9环境变为完整敌队。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "刺客说明擅长切入脆弱后排和收割低血目标。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "可用刺客替换游侠。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "保留战士、法师、狂战士三名已验证核心，只替换环境相关性下降的游侠。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "刺客下一场伤害应进入前三。"
+    }
+  ],
+  "alternatives": [
+    "equip:hero_warrior:r1_main_8_1_1",
+    "challenge:r1_main_9"
+  ],
+  "hypothesis": {
+    "id": "assassin_full_team_test",
+    "problem": "主线9为完整四人敌队。",
+    "cause": "刺客切入后排可能比单体游侠更适合。",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_assassin",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageRank",
+      "operator": "<=",
+      "value": 3
+    }
+  }
+}

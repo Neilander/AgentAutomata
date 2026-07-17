@@ -1,0 +1,48 @@
+{
+  "action": "swap:2:hero_mage",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "I want to keep progressing while learning whether the newly rescued hero is useful."
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "The current team is already winning, and the spear militia has contributed ordinary damage without healing."
+    },
+    {
+      "kind": "evidence",
+      "evidence": "The newly rescued mage is described as a complete damage hero for clearing enemies and burst."
+    },
+    {
+      "kind": "affordance",
+      "evidence": "I can replace the spear militia in the back line with the mage."
+    },
+    {
+      "kind": "comparison",
+      "evidence": "Replacing the spear keeps the warrior, the sturdier militia, and the healer while adding a novel full hero."
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "In the next combat, the mage will contribute a noticeable share of team damage."
+    }
+  ],
+  "alternatives": [
+    "swap:1:hero_mage",
+    "equip:hero_mage:r1_main_2_1_0",
+    "challenge:r1_main_3"
+  ],
+  "hypothesis": {
+    "id": "h:c1:mage_noticeable_damage",
+    "problem": "The new mage's practical value is unknown.",
+    "cause": "The mage is described as a complete output hero with clearing and burst capabilities.",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_mage",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageShare",
+      "operator": ">=",
+      "value": 0.2
+    }
+  }
+}

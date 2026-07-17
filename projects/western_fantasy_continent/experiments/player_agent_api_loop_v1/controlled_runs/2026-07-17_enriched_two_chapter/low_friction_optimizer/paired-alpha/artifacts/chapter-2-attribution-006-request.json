@@ -1,0 +1,1220 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 6,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-98ab7f3f71446006",
+    "mode": "continue",
+    "turn": 80,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "low_friction_optimizer",
+    "label": "Low-friction optimizer",
+    "summary": "Changes team and equipment readily when recent evidence predicts a measurable gain.",
+    "decisionBias": {
+      "riskTolerance": 0.55,
+      "exploration": 0.65,
+      "changeAversion": 0.05,
+      "evidenceThreshold": 0.3,
+      "preferences": {
+        "damage": 0.65,
+        "survival": 0.6,
+        "novelty": 0.45,
+        "rarity": 0.25,
+        "simplicity": 0.25
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_build",
+          "label": "player build"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "testing_a_visible_upgrade_after_comparison",
+          "label": "testing a visible upgrade after comparison"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "often_improves_the_next_result",
+          "label": "often improves the next result"
+        },
+        "confidence": 0.7,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:low_friction_optimizer:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "challenge:r2_knight_rescue",
+  "outcome": "win",
+  "emotionBeforeAction": 73.3334,
+  "emotionAfterEvents": 76.9485,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:133",
+      "key": "player_squad|region_2|r2_knight_rescue|encounter|challenge_level|challenge:r2_knight_rescue",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_warlock",
+            "name": "灰契术士",
+            "role": "warlock",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_knight_rescue",
+        "phase": "encounter",
+        "team": [
+          "hero_warrior",
+          "hero_warlock",
+          "hero_berserker",
+          "hero_ranger"
+        ]
+      },
+      "behavior": {
+        "kind": "challenge_level",
+        "key": "challenge:r2_knight_rescue",
+        "target": "r2_knight_rescue"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "win": 1
+        },
+        "observations": [
+          {
+            "outcome": "win",
+            "duration": 12.64,
+            "survivors": {
+              "player": 4,
+              "enemy": 0
+            },
+            "resolution": "elimination",
+            "firstClear": true
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r2_knight_rescue:6:result",
+        "map_action:r2_knight_rescue:6:summary"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:134",
+      "key": "player_squad|region_2|r2_knight_rescue|map_progression|clear_level|challenge:r2_knight_rescue",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_warlock",
+            "name": "灰契术士",
+            "role": "warlock",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_knight_rescue",
+        "phase": "map_progression"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r2_knight_rescue",
+        "target": "r2_knight_rescue"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "win": 1
+        },
+        "observations": [
+          {
+            "outcome": "win",
+            "unlockedNodes": [
+              "r2_shield_trial"
+            ],
+            "clearedNode": "r2_knight_rescue"
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_unlock:r2_knight_rescue:6"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:135",
+      "key": "player_squad|region_2|r2_knight_rescue|loot_drop|clear_level|challenge:r2_knight_rescue",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_warlock",
+            "name": "灰契术士",
+            "role": "warlock",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_knight_rescue",
+        "phase": "loot_drop"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r2_knight_rescue",
+        "target": "r2_knight_rescue"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "loot_obtained": 1
+        },
+        "observations": [
+          {
+            "outcome": "loot_obtained",
+            "drops": [
+              {
+                "id": "r2_knight_rescue_1_0",
+                "name": "传说戒指 Lv.22",
+                "slot": "ring",
+                "rarity": "legendary",
+                "level": 22
+              },
+              {
+                "id": "r2_knight_rescue_1_1",
+                "name": "普通靴子 Lv.20",
+                "slot": "boots",
+                "rarity": "common",
+                "level": 20
+              }
+            ],
+            "inventoryCountBefore": 9,
+            "inventoryCountAfter": 11,
+            "equippedPowerBefore": 1164,
+            "equippedPowerAfter": 1164,
+            "powerChanged": false
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r2_knight_rescue:6:result",
+        "map_action:r2_knight_rescue:6:loot:1",
+        "map_action:r2_knight_rescue:6:loot:2"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:136",
+      "key": "player_squad|region_2|r2_knight_rescue|character_reward|clear_level|challenge:r2_knight_rescue",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_warlock",
+            "name": "灰契术士",
+            "role": "warlock",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_knight_rescue",
+        "phase": "character_reward"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r2_knight_rescue",
+        "target": "r2_knight_rescue"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "character_unlocked": 1
+        },
+        "observations": [
+          {
+            "outcome": "character_unlocked",
+            "character": {
+              "id": "knight",
+              "heroId": "hero_knight",
+              "name": "白垒骑士"
+            },
+            "activeTeamChanged": false
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r2_knight_rescue:6:character"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:137",
+      "key": "hero_berserker|region_2|region_2_rescue|combat_pattern|combat_participation|fight:hero_berserker",
+      "subject": {
+        "id": "hero_berserker",
+        "name": "赤潮狂战士",
+        "role": "berserker",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_rescue",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_berserker",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 393.42,
+            "damageShare": 0.311,
+            "damageRank": 1,
+            "teamDamage": 1264.922,
+            "healing": 41.7455,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_knight_rescue:attempt:1:combat:123",
+        "r2_knight_rescue:attempt:1:combat:124",
+        "r2_knight_rescue:attempt:1:combat:125",
+        "r2_knight_rescue:attempt:1:combat:134",
+        "r2_knight_rescue:attempt:1:combat:152",
+        "r2_knight_rescue:attempt:1:combat:153",
+        "r2_knight_rescue:attempt:1:combat:165",
+        "r2_knight_rescue:attempt:1:combat:166",
+        "r2_knight_rescue:attempt:1:combat:168",
+        "r2_knight_rescue:attempt:1:combat:197",
+        "r2_knight_rescue:attempt:1:combat:198",
+        "r2_knight_rescue:attempt:1:combat:199",
+        "r2_knight_rescue:attempt:1:combat:201",
+        "r2_knight_rescue:attempt:1:combat:220",
+        "r2_knight_rescue:attempt:1:combat:241",
+        "r2_knight_rescue:attempt:1:combat:242",
+        "r2_knight_rescue:attempt:1:combat:243",
+        "r2_knight_rescue:attempt:1:combat:246",
+        "r2_knight_rescue:attempt:1:combat:247",
+        "r2_knight_rescue:attempt:1:combat:334",
+        "r2_knight_rescue:attempt:1:combat:335",
+        "r2_knight_rescue:attempt:1:combat:336",
+        "r2_knight_rescue:attempt:1:combat:337",
+        "r2_knight_rescue:attempt:1:combat:338"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:138",
+      "key": "hero_ranger|region_2|region_2_rescue|combat_pattern|combat_participation|fight:hero_ranger",
+      "subject": {
+        "id": "hero_ranger",
+        "name": "林地游侠",
+        "role": "ranger",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_rescue",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_ranger",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 368.888,
+            "damageShare": 0.2916,
+            "damageRank": 2,
+            "teamDamage": 1264.922,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_knight_rescue:attempt:1:combat:54",
+        "r2_knight_rescue:attempt:1:combat:55",
+        "r2_knight_rescue:attempt:1:combat:56",
+        "r2_knight_rescue:attempt:1:combat:66",
+        "r2_knight_rescue:attempt:1:combat:67",
+        "r2_knight_rescue:attempt:1:combat:68",
+        "r2_knight_rescue:attempt:1:combat:69",
+        "r2_knight_rescue:attempt:1:combat:107",
+        "r2_knight_rescue:attempt:1:combat:183",
+        "r2_knight_rescue:attempt:1:combat:208",
+        "r2_knight_rescue:attempt:1:combat:209",
+        "r2_knight_rescue:attempt:1:combat:210",
+        "r2_knight_rescue:attempt:1:combat:236",
+        "r2_knight_rescue:attempt:1:combat:276",
+        "r2_knight_rescue:attempt:1:combat:304",
+        "r2_knight_rescue:attempt:1:combat:305",
+        "r2_knight_rescue:attempt:1:combat:306",
+        "r2_knight_rescue:attempt:1:combat:309"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:139",
+      "key": "hero_warrior|region_2|region_2_rescue|combat_pattern|combat_participation|fight:hero_warrior",
+      "subject": {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_rescue",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_warrior",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 265.275,
+            "damageShare": 0.2097,
+            "damageRank": 3,
+            "teamDamage": 1264.922,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_knight_rescue:attempt:1:combat:96",
+        "r2_knight_rescue:attempt:1:combat:97",
+        "r2_knight_rescue:attempt:1:combat:98",
+        "r2_knight_rescue:attempt:1:combat:100",
+        "r2_knight_rescue:attempt:1:combat:101",
+        "r2_knight_rescue:attempt:1:combat:99",
+        "r2_knight_rescue:attempt:1:combat:103",
+        "r2_knight_rescue:attempt:1:combat:173",
+        "r2_knight_rescue:attempt:1:combat:207",
+        "r2_knight_rescue:attempt:1:combat:238",
+        "r2_knight_rescue:attempt:1:combat:239",
+        "r2_knight_rescue:attempt:1:combat:240",
+        "r2_knight_rescue:attempt:1:combat:340",
+        "r2_knight_rescue:attempt:1:combat:341",
+        "r2_knight_rescue:attempt:1:combat:350"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:140",
+      "key": "hero_warlock|region_2|region_2_rescue|combat_pattern|combat_participation|fight:hero_warlock",
+      "subject": {
+        "id": "hero_warlock",
+        "name": "灰契术士",
+        "role": "warlock",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_rescue",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_warlock",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 237.339,
+            "damageShare": 0.1876,
+            "damageRank": 4,
+            "teamDamage": 1264.922,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 3,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_knight_rescue:attempt:1:combat:33",
+        "r2_knight_rescue:attempt:1:combat:34",
+        "r2_knight_rescue:attempt:1:combat:35",
+        "r2_knight_rescue:attempt:1:combat:44",
+        "r2_knight_rescue:attempt:1:combat:45",
+        "r2_knight_rescue:attempt:1:combat:46",
+        "r2_knight_rescue:attempt:1:combat:47",
+        "r2_knight_rescue:attempt:1:combat:74",
+        "r2_knight_rescue:attempt:1:combat:87",
+        "r2_knight_rescue:attempt:1:combat:106",
+        "r2_knight_rescue:attempt:1:combat:136",
+        "r2_knight_rescue:attempt:1:combat:138",
+        "r2_knight_rescue:attempt:1:combat:139",
+        "r2_knight_rescue:attempt:1:combat:140",
+        "r2_knight_rescue:attempt:1:combat:141",
+        "r2_knight_rescue:attempt:1:combat:170",
+        "r2_knight_rescue:attempt:1:combat:172",
+        "r2_knight_rescue:attempt:1:combat:182",
+        "r2_knight_rescue:attempt:1:combat:195",
+        "r2_knight_rescue:attempt:1:combat:196",
+        "r2_knight_rescue:attempt:1:combat:203",
+        "r2_knight_rescue:attempt:1:combat:221",
+        "r2_knight_rescue:attempt:1:combat:222",
+        "r2_knight_rescue:attempt:1:combat:223",
+        "r2_knight_rescue:attempt:1:combat:233",
+        "r2_knight_rescue:attempt:1:combat:234",
+        "r2_knight_rescue:attempt:1:combat:235",
+        "r2_knight_rescue:attempt:1:combat:237",
+        "r2_knight_rescue:attempt:1:combat:244",
+        "r2_knight_rescue:attempt:1:combat:245",
+        "r2_knight_rescue:attempt:1:combat:266",
+        "r2_knight_rescue:attempt:1:combat:275",
+        "r2_knight_rescue:attempt:1:combat:277",
+        "r2_knight_rescue:attempt:1:combat:287",
+        "r2_knight_rescue:attempt:1:combat:288",
+        "r2_knight_rescue:attempt:1:combat:289",
+        "r2_knight_rescue:attempt:1:combat:291",
+        "r2_knight_rescue:attempt:1:combat:292",
+        "r2_knight_rescue:attempt:1:combat:319",
+        "r2_knight_rescue:attempt:1:combat:320",
+        "r2_knight_rescue:attempt:1:combat:321",
+        "r2_knight_rescue:attempt:1:combat:324",
+        "r2_knight_rescue:attempt:1:combat:351",
+        "r2_knight_rescue:attempt:1:combat:352"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:141",
+      "key": "player_squad|region_2|r2_knight_rescue|combat|attack_enemy_squad|team_damage:r2_knight_rescue",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_warlock",
+            "name": "灰契术士",
+            "role": "warlock",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_knight_rescue",
+        "phase": "combat",
+        "team": [
+          "hero_warrior",
+          "hero_warlock",
+          "hero_berserker",
+          "hero_ranger"
+        ]
+      },
+      "behavior": {
+        "kind": "attack_enemy_squad",
+        "key": "team_damage:r2_knight_rescue"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "damage_profile": 1
+        },
+        "observations": [
+          {
+            "outcome": "damage_profile",
+            "totalDamage": 1264.922
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_knight_rescue:attempt:1:combat:35",
+        "r2_knight_rescue:attempt:1:combat:45",
+        "r2_knight_rescue:attempt:1:combat:47",
+        "r2_knight_rescue:attempt:1:combat:56",
+        "r2_knight_rescue:attempt:1:combat:68",
+        "r2_knight_rescue:attempt:1:combat:69",
+        "r2_knight_rescue:attempt:1:combat:74",
+        "r2_knight_rescue:attempt:1:combat:87",
+        "r2_knight_rescue:attempt:1:combat:98",
+        "r2_knight_rescue:attempt:1:combat:100",
+        "r2_knight_rescue:attempt:1:combat:101",
+        "r2_knight_rescue:attempt:1:combat:103",
+        "r2_knight_rescue:attempt:1:combat:106",
+        "r2_knight_rescue:attempt:1:combat:107",
+        "r2_knight_rescue:attempt:1:combat:124",
+        "r2_knight_rescue:attempt:1:combat:136",
+        "r2_knight_rescue:attempt:1:combat:166",
+        "r2_knight_rescue:attempt:1:combat:168",
+        "r2_knight_rescue:attempt:1:combat:170",
+        "r2_knight_rescue:attempt:1:combat:172",
+        "r2_knight_rescue:attempt:1:combat:173",
+        "r2_knight_rescue:attempt:1:combat:182",
+        "r2_knight_rescue:attempt:1:combat:183",
+        "r2_knight_rescue:attempt:1:combat:195",
+        "r2_knight_rescue:attempt:1:combat:196",
+        "r2_knight_rescue:attempt:1:combat:197",
+        "r2_knight_rescue:attempt:1:combat:199",
+        "r2_knight_rescue:attempt:1:combat:201",
+        "r2_knight_rescue:attempt:1:combat:203",
+        "r2_knight_rescue:attempt:1:combat:207",
+        "r2_knight_rescue:attempt:1:combat:210",
+        "r2_knight_rescue:attempt:1:combat:223",
+        "r2_knight_rescue:attempt:1:combat:233",
+        "r2_knight_rescue:attempt:1:combat:234",
+        "r2_knight_rescue:attempt:1:combat:235",
+        "r2_knight_rescue:attempt:1:combat:236",
+        "r2_knight_rescue:attempt:1:combat:237",
+        "r2_knight_rescue:attempt:1:combat:240",
+        "r2_knight_rescue:attempt:1:combat:241",
+        "r2_knight_rescue:attempt:1:combat:246",
+        "r2_knight_rescue:attempt:1:combat:247",
+        "r2_knight_rescue:attempt:1:combat:266",
+        "r2_knight_rescue:attempt:1:combat:275",
+        "r2_knight_rescue:attempt:1:combat:276",
+        "r2_knight_rescue:attempt:1:combat:277",
+        "r2_knight_rescue:attempt:1:combat:288",
+        "r2_knight_rescue:attempt:1:combat:291",
+        "r2_knight_rescue:attempt:1:combat:292",
+        "r2_knight_rescue:attempt:1:combat:306",
+        "r2_knight_rescue:attempt:1:combat:309",
+        "r2_knight_rescue:attempt:1:combat:319",
+        "r2_knight_rescue:attempt:1:combat:324",
+        "r2_knight_rescue:attempt:1:combat:335",
+        "r2_knight_rescue:attempt:1:combat:337",
+        "r2_knight_rescue:attempt:1:combat:341",
+        "r2_knight_rescue:attempt:1:combat:350",
+        "r2_knight_rescue:attempt:1:combat:351"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:142",
+      "key": "enemy_squad:r2_knight_rescue|region_2|r2_knight_rescue|combat|attack_player_squad|enemy_attack:r2_knight_rescue",
+      "subject": {
+        "id": "enemy_squad:r2_knight_rescue",
+        "name": "enemy squad"
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_knight_rescue",
+        "phase": "combat"
+      },
+      "behavior": {
+        "kind": "attack_player_squad",
+        "key": "enemy_attack:r2_knight_rescue",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "threat_profile": 1
+        },
+        "observations": [
+          {
+            "outcome": "threat_profile",
+            "enemySurvivorCount": 0
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_knight_rescue:attempt:1:combat:50",
+        "r2_knight_rescue:attempt:1:combat:53",
+        "r2_knight_rescue:attempt:1:combat:57",
+        "r2_knight_rescue:attempt:1:combat:71",
+        "r2_knight_rescue:attempt:1:combat:72",
+        "r2_knight_rescue:attempt:1:combat:76",
+        "r2_knight_rescue:attempt:1:combat:78",
+        "r2_knight_rescue:attempt:1:combat:102",
+        "r2_knight_rescue:attempt:1:combat:108",
+        "r2_knight_rescue:attempt:1:combat:113",
+        "r2_knight_rescue:attempt:1:combat:122",
+        "r2_knight_rescue:attempt:1:combat:135",
+        "r2_knight_rescue:attempt:1:combat:154",
+        "r2_knight_rescue:attempt:1:combat:155",
+        "r2_knight_rescue:attempt:1:combat:164",
+        "r2_knight_rescue:attempt:1:combat:184",
+        "r2_knight_rescue:attempt:1:combat:193",
+        "r2_knight_rescue:attempt:1:combat:194",
+        "r2_knight_rescue:attempt:1:combat:206",
+        "r2_knight_rescue:attempt:1:combat:219",
+        "r2_knight_rescue:attempt:1:combat:224",
+        "r2_knight_rescue:attempt:1:combat:252",
+        "r2_knight_rescue:attempt:1:combat:262",
+        "r2_knight_rescue:attempt:1:combat:263",
+        "r2_knight_rescue:attempt:1:combat:265",
+        "r2_knight_rescue:attempt:1:combat:286",
+        "r2_knight_rescue:attempt:1:combat:290",
+        "r2_knight_rescue:attempt:1:combat:303",
+        "r2_knight_rescue:attempt:1:combat:307",
+        "r2_knight_rescue:attempt:1:combat:318",
+        "r2_knight_rescue:attempt:1:combat:333",
+        "r2_knight_rescue:attempt:1:combat:339"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:143",
+      "key": "concept:enemy_minion_ranged|region_2|region_2_rescue|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_ranged",
+      "subject": {
+        "id": "concept:enemy_minion_ranged",
+        "name": "远程小怪",
+        "conceptId": "enemy_minion_ranged"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_rescue",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_ranged",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 1
+        },
+        "observations": [
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 2,
+            "damage": 379.5507,
+            "damageShare": 0.9616,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 7,
+            "observedTargets": [
+              "灰鸦战士",
+              "灰契术士",
+              "赤潮狂战士"
+            ],
+            "supportTargets": []
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_knight_rescue:attempt:1:combat:48",
+        "r2_knight_rescue:attempt:1:combat:49",
+        "r2_knight_rescue:attempt:1:combat:50",
+        "r2_knight_rescue:attempt:1:combat:51",
+        "r2_knight_rescue:attempt:1:combat:52",
+        "r2_knight_rescue:attempt:1:combat:53",
+        "r2_knight_rescue:attempt:1:combat:57",
+        "r2_knight_rescue:attempt:1:combat:70",
+        "r2_knight_rescue:attempt:1:combat:71",
+        "r2_knight_rescue:attempt:1:combat:72",
+        "r2_knight_rescue:attempt:1:combat:73",
+        "r2_knight_rescue:attempt:1:combat:75",
+        "r2_knight_rescue:attempt:1:combat:76",
+        "r2_knight_rescue:attempt:1:combat:77",
+        "r2_knight_rescue:attempt:1:combat:78",
+        "r2_knight_rescue:attempt:1:combat:102",
+        "r2_knight_rescue:attempt:1:combat:108",
+        "r2_knight_rescue:attempt:1:combat:122",
+        "r2_knight_rescue:attempt:1:combat:135",
+        "r2_knight_rescue:attempt:1:combat:154",
+        "r2_knight_rescue:attempt:1:combat:164",
+        "r2_knight_rescue:attempt:1:combat:184",
+        "r2_knight_rescue:attempt:1:combat:193",
+        "r2_knight_rescue:attempt:1:combat:204",
+        "r2_knight_rescue:attempt:1:combat:205",
+        "r2_knight_rescue:attempt:1:combat:206",
+        "r2_knight_rescue:attempt:1:combat:219",
+        "r2_knight_rescue:attempt:1:combat:224",
+        "r2_knight_rescue:attempt:1:combat:252",
+        "r2_knight_rescue:attempt:1:combat:261",
+        "r2_knight_rescue:attempt:1:combat:262",
+        "r2_knight_rescue:attempt:1:combat:263",
+        "r2_knight_rescue:attempt:1:combat:264",
+        "r2_knight_rescue:attempt:1:combat:265",
+        "r2_knight_rescue:attempt:1:combat:286",
+        "r2_knight_rescue:attempt:1:combat:290",
+        "r2_knight_rescue:attempt:1:combat:301",
+        "r2_knight_rescue:attempt:1:combat:302",
+        "r2_knight_rescue:attempt:1:combat:303",
+        "r2_knight_rescue:attempt:1:combat:307",
+        "r2_knight_rescue:attempt:1:combat:318",
+        "r2_knight_rescue:attempt:1:combat:333",
+        "r2_knight_rescue:attempt:1:combat:339"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 455,
+  "visibleEvents": [
+    {
+      "id": "r2_knight_rescue:attempt:1:combat:138",
+      "time": 5.44,
+      "type": "death",
+      "subject": "灰契术士",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.2011,
+      "emotionDelta": 0.0367
+    },
+    {
+      "id": "r2_knight_rescue:attempt:1:combat:164",
+      "time": 6.24,
+      "type": "damage",
+      "subject": "远程小怪",
+      "behavior": "燃烧",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 13.51,
+        "target": "灰契术士"
+      },
+      "H": 0.2805,
+      "emotionDelta": -0.0013
+    },
+    {
+      "id": "r2_knight_rescue:attempt:1:combat:165",
+      "time": 6.32,
+      "type": "heal",
+      "subject": "赤潮狂战士",
+      "behavior": "吸血",
+      "result": {
+        "kind": "heal",
+        "occurred": true,
+        "amount": 4.6356,
+        "target": "赤潮狂战士"
+      },
+      "H": 0.2188,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r2_knight_rescue:attempt:1:combat:198",
+      "time": 7.52,
+      "type": "heal",
+      "subject": "赤潮狂战士",
+      "behavior": "吸血",
+      "result": {
+        "kind": "heal",
+        "occurred": true,
+        "amount": 4.4849,
+        "target": "赤潮狂战士"
+      },
+      "H": 0.3203,
+      "emotionDelta": 0.0001
+    },
+    {
+      "id": "r2_knight_rescue:attempt:1:combat:242",
+      "time": 8.64,
+      "type": "heal",
+      "subject": "赤潮狂战士",
+      "behavior": "吸血",
+      "result": {
+        "kind": "heal",
+        "occurred": true,
+        "amount": 10.2898,
+        "target": "赤潮狂战士"
+      },
+      "H": 0.3203,
+      "emotionDelta": 0.0002
+    },
+    {
+      "id": "r2_knight_rescue:attempt:1:combat:243",
+      "time": 8.64,
+      "type": "death",
+      "subject": "赤潮狂战士",
+      "behavior": "战吼普攻",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.1142,
+      "emotionDelta": 0.0208
+    },
+    {
+      "id": "r2_knight_rescue:attempt:1:combat:289",
+      "time": 10.32,
+      "type": "status",
+      "subject": "灰契术士",
+      "behavior": "血契供奉",
+      "result": {
+        "kind": "status",
+        "occurred": true,
+        "amount": 16,
+        "target": "林地游侠"
+      },
+      "H": 0.2336,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r2_knight_rescue:attempt:1:combat:320",
+      "time": 11.52,
+      "type": "death",
+      "subject": "灰契术士",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "远程小怪"
+      },
+      "H": 0.1142,
+      "emotionDelta": 0.0181
+    },
+    {
+      "id": "r2_knight_rescue:attempt:1:combat:339",
+      "time": 12.32,
+      "type": "damage",
+      "subject": "远程小怪",
+      "behavior": "燃烧",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 4.3,
+        "target": "灰契术士"
+      },
+      "H": 0.2805,
+      "emotionDelta": -0.0004
+    },
+    {
+      "id": "map_action:r2_knight_rescue:6:result",
+      "time": 12.64,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "challenge:r2_knight_rescue",
+      "result": {
+        "kind": "combat_win",
+        "occurred": true,
+        "observedPower": 1164,
+        "boundary": "normal_end",
+        "firstClear": true,
+        "survivors": {
+          "player": 4,
+          "enemy": 0
+        }
+      },
+      "H": 0.6792,
+      "emotionDelta": 0.6757
+    },
+    {
+      "id": "r2_knight_rescue:attempt:1:combat:352",
+      "time": 12.64,
+      "type": "death",
+      "subject": "灰契术士",
+      "behavior": "剧毒",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "远程小怪"
+      },
+      "H": 0.1672,
+      "emotionDelta": 0.0246
+    },
+    {
+      "id": "map_action:r2_knight_rescue:6:loot-outcome",
+      "time": 12.645000000000001,
+      "type": "loot_outcome",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "probability_outcome",
+        "occurred": true,
+        "components": [
+          {
+            "kind": "loot"
+          }
+        ]
+      },
+      "H": 0.5148,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:r2_knight_rescue:6:loot:1",
+      "time": 12.65,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "legendary",
+        "itemName": "传说戒指 Lv.22",
+        "equipmentLevel": 22,
+        "baseStats": {
+          "magicPower": 10
+        },
+        "affixCount": 7
+      },
+      "H": 0.6578,
+      "emotionDelta": 1.8541
+    },
+    {
+      "id": "map_action:r2_knight_rescue:6:loot:2",
+      "time": 12.66,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "common",
+        "itemName": "普通靴子 Lv.20",
+        "equipmentLevel": 20,
+        "baseStats": {
+          "maxHp": 52,
+          "armor": 1
+        },
+        "affixCount": 1
+      },
+      "H": 0.6578,
+      "emotionDelta": -1.1646
+    },
+    {
+      "id": "map_action:r2_knight_rescue:6:character",
+      "time": 12.68,
+      "type": "character_unlock",
+      "subject": "player squad",
+      "behavior": "character rescue",
+      "result": {
+        "kind": "character_unlock",
+        "occurred": true,
+        "character": "knight",
+        "heroId": "hero_knight",
+        "characterName": "白垒骑士"
+      },
+      "H": 0.715,
+      "emotionDelta": 2.3103
+    },
+    {
+      "id": "team-experiment:6:team-experiment:hero_warlock",
+      "time": 12.700000000000001,
+      "type": "team_experiment_result",
+      "subject": "player_squad",
+      "behavior": "team_experiment",
+      "result": {
+        "kind": "team_experiment_result",
+        "occurred": true,
+        "heroId": "hero_warlock",
+        "components": [
+          {
+            "kind": "team_experiment_contribution"
+          }
+        ]
+      },
+      "H": 0.2831,
+      "emotionDelta": 0.06
+    },
+    {
+      "id": "map_unlock:r2_knight_rescue:6",
+      "time": 12.715,
+      "type": "map_unlock",
+      "subject": "player squad",
+      "behavior": "clear_level",
+      "result": {
+        "kind": "map_unlock",
+        "occurred": true,
+        "clearedNode": "r2_knight_rescue",
+        "unlockedNodes": [
+          "r2_shield_trial"
+        ]
+      },
+      "H": 0.177,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:r2_knight_rescue:6:summary",
+      "time": 12.72,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "challenge:r2_knight_rescue",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 1164,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "combat_win"
+          },
+          {
+            "kind": "character_unlock"
+          }
+        ]
+      },
+      "H": 0.5363,
+      "emotionDelta": -0.2275
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 2,
+    "seed": "paired-alpha",
+    "profileId": "low_friction_optimizer",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

@@ -1,0 +1,349 @@
+{
+  "schema": "controlled_real_agent_roster_decision_v1",
+  "episode": "one visible failure-and-retry loop",
+  "round": 2,
+  "persistentAgentSession": "roster-real-agent:novelty_collector",
+  "instruction": "Act as this persistent player profile. Choose exactly one allowed action using only this request. Profile priors are fallible habits, not game truth. Do not optimize for an evaluator and do not assume future outcomes. Explain the visible problem, evidence, action comparison, and one observable next-fight hypothesis.",
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "novelty_collector",
+    "label": "Novelty collector",
+    "summary": "Prioritizes newly unlocked heroes and untested options even before their value is proven.",
+    "decisionBias": {
+      "riskTolerance": 0.6,
+      "exploration": 1,
+      "changeAversion": 0.08,
+      "evidenceThreshold": 0.22,
+      "preferences": {
+        "damage": 0.4,
+        "survival": 0.35,
+        "novelty": 1,
+        "rarity": 0.75,
+        "simplicity": 0.2
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "newly_unlocked_option",
+          "label": "newly unlocked option"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "testing_it_in_the_next_suitable_encounter",
+          "label": "testing it in the next suitable encounter"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "is_valuable_even_when_power_is_uncertain",
+          "label": "is valuable even when power is uncertain"
+        },
+        "confidence": 0.88,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:novelty_collector:1"
+      }
+    ]
+  },
+  "visibleState": {
+    "goal": "clear the visible swarm gate",
+    "currentTeam": [
+      {
+        "id": "vanguard",
+        "name": "Grey Vanguard"
+      },
+      {
+        "id": "priest",
+        "name": "Dawn Priest"
+      },
+      {
+        "id": "area_mage",
+        "name": "Storm Mage"
+      },
+      {
+        "id": "recruit",
+        "name": "Field Recruit"
+      }
+    ],
+    "lastBattle": {
+      "round": 1,
+      "action": "swap:2:area_mage",
+      "teamBefore": [
+        "vanguard",
+        "priest",
+        "ranger",
+        "recruit"
+      ],
+      "teamIds": [
+        "vanguard",
+        "priest",
+        "area_mage",
+        "recruit"
+      ],
+      "outcome": "loss",
+      "performanceScore": -0.15,
+      "visibleResult": "swarm handling improves and the gap narrows, but the team still loses"
+    },
+    "failureMemory": {
+      "encounter": "visible_swarm_gate",
+      "exactCurrentTeamFailed": true,
+      "attemptsInVisibleHistory": 2
+    },
+    "characterImpressions": [
+      {
+        "character": {
+          "id": "strong_blade",
+          "name": "Ember Champion"
+        },
+        "currentLevel": 1,
+        "position": 7,
+        "evidenceCount": 3
+      },
+      {
+        "character": {
+          "id": "area_mage",
+          "name": "Storm Mage"
+        },
+        "currentLevel": 0,
+        "position": 6,
+        "evidenceCount": 3
+      },
+      {
+        "character": {
+          "id": "vanguard",
+          "name": "Grey Vanguard"
+        },
+        "currentLevel": 0,
+        "position": 6,
+        "evidenceCount": 3
+      },
+      {
+        "character": {
+          "id": "priest",
+          "name": "Dawn Priest"
+        },
+        "currentLevel": -1,
+        "position": 5,
+        "evidenceCount": 3
+      },
+      {
+        "character": {
+          "id": "ranger",
+          "name": "Moss Ranger"
+        },
+        "currentLevel": -2,
+        "position": 4,
+        "evidenceCount": 3
+      },
+      {
+        "character": {
+          "id": "weak_guard",
+          "name": "Shield Recruit"
+        },
+        "currentLevel": -3,
+        "position": 1.5,
+        "evidenceCount": 3
+      },
+      {
+        "character": {
+          "id": "recruit",
+          "name": "Field Recruit"
+        },
+        "currentLevel": -3,
+        "position": 1,
+        "evidenceCount": 3
+      }
+    ],
+    "rosterChangeExpectations": {
+      "schema": "roster_change_expectation_view_v1",
+      "targetNode": "visible_swarm_gate",
+      "baseline": {
+        "evidenceScope": "exact_current_team_and_encounter",
+        "teamIds": [
+          "vanguard",
+          "priest",
+          "area_mage",
+          "recruit"
+        ],
+        "outcome": "loss",
+        "performanceScore": -0.15,
+        "equippedPower": null,
+        "contextTags": [
+          "many_targets",
+          "survival_pressure"
+        ]
+      },
+      "actions": [
+        {
+          "action": "swap:3:weak_guard",
+          "outgoingId": "recruit",
+          "incomingId": "weak_guard",
+          "candidateTeamIds": [
+            "vanguard",
+            "priest",
+            "area_mage",
+            "weak_guard"
+          ],
+          "evidenceScope": "one_member_counterfactual_from_exact_current_team",
+          "evidenceCount": 0,
+          "baseline": {
+            "teamIds": [
+              "vanguard",
+              "priest",
+              "area_mage",
+              "recruit"
+            ],
+            "outcome": "loss",
+            "performanceScore": -0.15
+          },
+          "strengthDelta": 0.5,
+          "contextRelevantTraitDomains": [
+            "area_damage",
+            "control",
+            "healing",
+            "shielding",
+            "durability"
+          ],
+          "comparedTraitDomains": [],
+          "unknownTraitDomains": [
+            "area_damage",
+            "control",
+            "healing",
+            "shielding",
+            "durability"
+          ],
+          "traitEvidenceStatus": "unknown",
+          "traitLevelDelta": 0,
+          "effectiveLevelDelta": 0.5,
+          "expectedChange": "similar",
+          "expectedOutcome": "likely_failure",
+          "predictedPerformanceScore": -0.09,
+          "priorFailureTransfer": "failure_still_likely_but_less_certain",
+          "confidence": 0.163,
+          "reason": "the prior result remains scoped to its exact team; this action is re-estimated from the incoming-versus-outgoing cognition difference"
+        },
+        {
+          "action": "swap:3:strong_blade",
+          "outgoingId": "recruit",
+          "incomingId": "strong_blade",
+          "candidateTeamIds": [
+            "vanguard",
+            "priest",
+            "area_mage",
+            "strong_blade"
+          ],
+          "evidenceScope": "one_member_counterfactual_from_exact_current_team",
+          "evidenceCount": 0,
+          "baseline": {
+            "teamIds": [
+              "vanguard",
+              "priest",
+              "area_mage",
+              "recruit"
+            ],
+            "outcome": "loss",
+            "performanceScore": -0.15
+          },
+          "strengthDelta": 6,
+          "contextRelevantTraitDomains": [
+            "area_damage",
+            "control",
+            "healing",
+            "shielding",
+            "durability"
+          ],
+          "comparedTraitDomains": [],
+          "unknownTraitDomains": [
+            "area_damage",
+            "control",
+            "healing",
+            "shielding",
+            "durability"
+          ],
+          "traitEvidenceStatus": "unknown",
+          "traitLevelDelta": 0,
+          "effectiveLevelDelta": 6,
+          "expectedChange": "materially_better",
+          "expectedOutcome": "plausible_success",
+          "predictedPerformanceScore": 0.57,
+          "priorFailureTransfer": "failure_expectation_reopened_by_material_cognition_change",
+          "confidence": 0.163,
+          "reason": "the prior result remains scoped to its exact team; this action is re-estimated from the incoming-versus-outgoing cognition difference"
+        },
+        {
+          "action": "swap:2:ranger",
+          "outgoingId": "area_mage",
+          "incomingId": "ranger",
+          "candidateTeamIds": [
+            "vanguard",
+            "priest",
+            "ranger",
+            "recruit"
+          ],
+          "evidenceScope": "exact_team_and_encounter",
+          "evidenceCount": 1,
+          "expectedChange": "slightly_worse",
+          "expectedOutcome": "likely_failure",
+          "predictedPerformanceScore": -0.25,
+          "exactObservedWinRate": 0,
+          "performanceInterpretation": "outcome_and_hp_margin_are_consistent",
+          "priorFailureTransfer": "exact_failure_applies",
+          "reason": "this exact team already has visible evidence in this encounter"
+        }
+      ],
+      "rule": "failure belongs to the observed team and encounter; each different swap is re-estimated from current character strength and context-relevant traits",
+      "calibration": {
+        "positionLevelToPerformance": 0.12,
+        "traitLevelWeight": 0.35,
+        "status": "provisional_ordinal_prediction_mapping"
+      }
+    },
+    "actionCosts": {
+      "challenge:visible_swarm_gate": {
+        "resourceCost": 0,
+        "interactionCost": "immediate retry",
+        "reversible": true
+      },
+      "swap:3:weak_guard": {
+        "resourceCost": 0,
+        "interactionCost": "one roster change",
+        "reversible": true
+      },
+      "swap:3:strong_blade": {
+        "resourceCost": 0,
+        "interactionCost": "one roster change",
+        "reversible": true
+      },
+      "swap:2:ranger": {
+        "resourceCost": 0,
+        "interactionCost": "one roster change",
+        "reversible": true
+      }
+    },
+    "allowedActions": [
+      "challenge:visible_swarm_gate",
+      "swap:3:weak_guard",
+      "swap:3:strong_blade",
+      "swap:2:ranger"
+    ]
+  },
+  "responseContract": {
+    "action": "one exact value from visibleState.allowedActions",
+    "reasoningChain": [
+      "visible_problem",
+      "known_evidence",
+      "affordance_comparison",
+      "chosen_behavior",
+      "observable_hypothesis"
+    ],
+    "acknowledgedAlternatives": "at least one unchosen legal action and why it lost",
+    "confidence": "0..1 player confidence, not a win probability"
+  }
+}

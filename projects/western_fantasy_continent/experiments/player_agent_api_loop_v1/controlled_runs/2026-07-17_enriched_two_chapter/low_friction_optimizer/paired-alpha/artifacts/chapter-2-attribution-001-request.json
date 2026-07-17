@@ -1,0 +1,247 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 1,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-98ab7f3f71446006",
+    "mode": "continue",
+    "turn": 70,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "low_friction_optimizer",
+    "label": "Low-friction optimizer",
+    "summary": "Changes team and equipment readily when recent evidence predicts a measurable gain.",
+    "decisionBias": {
+      "riskTolerance": 0.55,
+      "exploration": 0.65,
+      "changeAversion": 0.05,
+      "evidenceThreshold": 0.3,
+      "preferences": {
+        "damage": 0.65,
+        "survival": 0.6,
+        "novelty": 0.45,
+        "rarity": 0.25,
+        "simplicity": 0.25
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_build",
+          "label": "player build"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "testing_a_visible_upgrade_after_comparison",
+          "label": "testing a visible upgrade after comparison"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "often_improves_the_next_result",
+          "label": "often improves the next result"
+        },
+        "confidence": 0.7,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:low_friction_optimizer:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "equip:hero_ranger:r1_boss_1_1",
+  "outcome": "equipped",
+  "emotionBeforeAction": 69.1726,
+  "emotionAfterEvents": 69.1712,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:118",
+      "key": "player|region_2|unknown_environment|equipment|equip_item|equip:hero_ranger:r1_boss_1_1",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_2",
+        "phase": "equipment",
+        "hero": {
+          "id": "hero_ranger",
+          "name": "林地游侠",
+          "role": "ranger",
+          "kind": "hero"
+        }
+      },
+      "behavior": {
+        "kind": "equip_item",
+        "key": "equip:hero_ranger:r1_boss_1_1",
+        "itemId": "r1_boss_1_1",
+        "target": "hero_ranger"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "item_equipped": 1
+        },
+        "observations": [
+          {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r1_boss_1_1",
+              "name": "传说武器 Lv.20",
+              "slot": "weapon",
+              "slotLabel": "武器",
+              "rarity": "legendary",
+              "rarityLabel": "传说",
+              "level": 20,
+              "baseStats": {
+                "physicalPower": 10
+              },
+              "affixes": [
+                {
+                  "id": "poisonAmp",
+                  "stat": "poisonAmp",
+                  "label": "剧毒增幅",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 5
+                },
+                {
+                  "id": "might",
+                  "stat": "might",
+                  "label": "武力",
+                  "category": "major",
+                  "level": 1,
+                  "value": 1
+                },
+                {
+                  "id": "poisonAmp",
+                  "stat": "poisonAmp",
+                  "label": "剧毒增幅",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 5
+                },
+                {
+                  "id": "executeDamage",
+                  "stat": "executeDamage",
+                  "label": "处决伤害",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 6
+                },
+                {
+                  "id": "critChance",
+                  "stat": "critChance",
+                  "label": "暴击率",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 5
+                },
+                {
+                  "id": "poisonAmp",
+                  "stat": "poisonAmp",
+                  "label": "剧毒增幅",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 6
+                },
+                {
+                  "id": "lowHpDamage",
+                  "stat": "lowHpDamage",
+                  "label": "低血伤害",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 5
+                }
+              ]
+            },
+            "replacedItem": null,
+            "equippedPowerBefore": 883,
+            "equippedPowerAfter": 1051,
+            "powerDelta": 168
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "equip_action:1:r1_boss_1_1:start",
+        "equip_action:1:r1_boss_1_1:result",
+        "equip_action:1:r1_boss_1_1:summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 391,
+  "visibleEvents": [
+    {
+      "id": "equip_action:1:r1_boss_1_1:result",
+      "time": 0.05,
+      "type": "equipment_change",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "item_equipped",
+        "occurred": true,
+        "amount": 168,
+        "before": 883,
+        "after": 1051,
+        "itemName": "传说武器 Lv.20",
+        "heroId": "hero_ranger"
+      },
+      "H": 0.177,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:1:r1_boss_1_1:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 1051,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "item_equipped",
+            "amount": 168
+          }
+        ]
+      },
+      "H": 0.5363,
+      "emotionDelta": -0.0014
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 2,
+    "seed": "paired-alpha",
+    "profileId": "low_friction_optimizer",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "action": "swap:3:hero_ranger",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "针对主线7的持续单体差距做最小换人测试。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "草药民兵伤害和治疗均低，且监狱战最先阵亡。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "游侠说明为持续锁定单体并累积猎标，正对应高生命单体。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "可用游侠替换草药民兵。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "保留前三名伤害角色，只替换贡献最低且已阵亡的治疗，是最小差异测试。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "游侠下一场应贡献至少12%队伍伤害。"
+    }
+  ],
+  "alternatives": [
+    "equip:hero_warrior:r1_prison_1_0",
+    "challenge:r1_main_7"
+  ],
+  "hypothesis": {
+    "id": "ranger_single_target_test",
+    "problem": "主线7失败时熊王仅余4.4%生命。",
+    "cause": "持续单体输出不足，低配治疗贡献不够。",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_ranger",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageShare",
+      "operator": ">=",
+      "value": 0.12
+    }
+  }
+}

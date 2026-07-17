@@ -1,0 +1,226 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 10,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-b1d1f0be1a6e2c84",
+    "mode": "continue",
+    "turn": 20,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "damage_absolutist",
+    "label": "Damage absolutist",
+    "summary": "Believes direct damage solves most combat problems and initially discounts sustain.",
+    "decisionBias": {
+      "riskTolerance": 0.75,
+      "exploration": 0.35,
+      "changeAversion": 0.35,
+      "evidenceThreshold": 0.62,
+      "preferences": {
+        "damage": 1,
+        "survival": 0.15,
+        "novelty": 0.3,
+        "rarity": 0.35,
+        "simplicity": 0.7
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "maximizing_direct_damage",
+          "label": "maximizing direct damage"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "raises_win_probability",
+          "label": "raises win probability"
+        },
+        "confidence": 0.84,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:damage_absolutist:1"
+      },
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "using_healing_or_defensive_slots",
+          "label": "using healing or defensive slots"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "reduces_combat_tempo",
+          "label": "reduces combat tempo"
+        },
+        "confidence": 0.72,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:damage_absolutist:2"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "equip:hero_warrior:r1_main_4_1_0",
+  "outcome": "equipped",
+  "emotionBeforeAction": 47.836,
+  "emotionAfterEvents": 47.8346,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:37",
+      "key": "player|region_1|unknown_environment|equipment|equip_item|equip:hero_warrior:r1_main_4_1_0",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_1",
+        "phase": "equipment",
+        "hero": {
+          "id": "hero_warrior",
+          "name": "灰鸦战士",
+          "role": "warrior",
+          "kind": "hero"
+        }
+      },
+      "behavior": {
+        "kind": "equip_item",
+        "key": "equip:hero_warrior:r1_main_4_1_0",
+        "itemId": "r1_main_4_1_0",
+        "target": "hero_warrior"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "item_equipped": 1
+        },
+        "observations": [
+          {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r1_main_4_1_0",
+              "name": "普通武器 Lv.4",
+              "slot": "weapon",
+              "slotLabel": "武器",
+              "rarity": "common",
+              "rarityLabel": "普通",
+              "level": 4,
+              "baseStats": {
+                "physicalPower": 2
+              },
+              "affixes": [
+                {
+                  "id": "lifeSteal",
+                  "stat": "lifeSteal",
+                  "label": "吸血",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 3
+                }
+              ]
+            },
+            "replacedItem": null,
+            "equippedPowerBefore": 152,
+            "equippedPowerAfter": 180,
+            "powerDelta": 28
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "equip_action:10:r1_main_4_1_0:start",
+        "equip_action:10:r1_main_4_1_0:result",
+        "equip_action:10:r1_main_4_1_0:summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 100,
+  "visibleEvents": [
+    {
+      "id": "equip_action:10:r1_main_4_1_0:result",
+      "time": 0.05,
+      "type": "equipment_change",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "item_equipped",
+        "occurred": true,
+        "amount": 28,
+        "before": 152,
+        "after": 180,
+        "itemName": "普通武器 Lv.4",
+        "heroId": "hero_warrior"
+      },
+      "H": 0.1671,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:10:r1_main_4_1_0:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 180,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "item_equipped",
+            "amount": 28
+          }
+        ]
+      },
+      "H": 0.5063,
+      "emotionDelta": -0.0014
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 1,
+    "seed": "paired-alpha",
+    "profileId": "damage_absolutist",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

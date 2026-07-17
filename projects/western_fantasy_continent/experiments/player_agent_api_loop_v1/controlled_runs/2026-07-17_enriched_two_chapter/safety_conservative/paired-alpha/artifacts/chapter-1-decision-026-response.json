@@ -1,0 +1,46 @@
+{
+  "action": "swap:2:hero_mage",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "两次装备强化重试均失败，需要在安全关卡检验新的阵容结构。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "现队短矛民兵表现普通但只是慢速单体民兵；新解锁的烬火法师可见说明为完整输出英雄，负责清怪与爆发。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "保留两名前排与草药治疗，只替换后排短矛民兵，避免破坏保守生存骨架。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "可以把后排1换成烬火法师，并在已三次全员存活的主线5测试。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "相比继续堆已被反证的同类装备，受控测试完整输出英雄能提供新证据；直接在失败关测试则风险过高。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "若完整法师能补足阵容输出，他在下一场安全测试中应进入伤害前二。"
+    }
+  ],
+  "alternatives": [
+    "challenge:r1_main_5"
+  ],
+  "hypothesis": {
+    "id": "safe_test_mage_output_after_shield_failures",
+    "problem": "现阵容在护盾支援敌情中无法形成击杀",
+    "cause": "后排慢速单体民兵可能无法提供足够爆发",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_mage",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageRank",
+      "operator": "<=",
+      "value": 2
+    }
+  }
+}

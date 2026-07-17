@@ -1,0 +1,2407 @@
+{
+  "type": "decision",
+  "schema": "player_decision_request_v2",
+  "cycle": 9,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-a7246b66636ea2e4",
+    "mode": "continue",
+    "turn": 17,
+    "phase": "decision",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. rosterChangeExpectations are fallible code-owned predictions scoped to the shown encounter and team; unknown means there is not enough player evidence. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
+  "playerState": {
+    "emotion": 46.7001,
+    "activeGoalId": "grow_and_progress",
+    "goals": [
+      {
+        "id": "grow_and_progress",
+        "objectiveValue": 1,
+        "subjectiveValue": 0.35,
+        "progress": 0.52
+      }
+    ],
+    "knowledge": [
+      {
+        "id": "knowledge:25",
+        "key": "player_squad|region_1|r1_main_3|loot_drop|clear_level|challenge:r1_main_3",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_drum",
+              "name": "皮鼓民兵",
+              "role": "bard",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_3",
+          "phase": "loot_drop"
+        },
+        "behavior": {
+          "kind": "clear_level",
+          "key": "challenge:r1_main_3",
+          "target": "r1_main_3"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "loot_obtained": 1
+          },
+          "latestObservation": {
+            "outcome": "loot_obtained",
+            "drops": [
+              {
+                "id": "r1_main_3_1_0",
+                "name": "稀有腿甲 Lv.6",
+                "slot": "legs",
+                "rarity": "rare",
+                "level": 6
+              },
+              {
+                "id": "r1_main_3_1_1",
+                "name": "普通胸甲 Lv.6",
+                "slot": "chest",
+                "rarity": "common",
+                "level": 6
+              }
+            ],
+            "inventoryCountBefore": 2,
+            "inventoryCountAfter": 4,
+            "equippedPowerBefore": 139,
+            "equippedPowerAfter": 139,
+            "powerChanged": false
+          }
+        },
+        "evidence": {
+          "count": 3,
+          "recentEventIds": [
+            "map_action:r1_main_3:7:result",
+            "map_action:r1_main_3:7:loot:1",
+            "map_action:r1_main_3:7:loot:2"
+          ]
+        },
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:6",
+        "key": "militia_herb|region_1|region_1_early_main|combat_pattern|combat_participation|fight:militia_herb",
+        "subject": {
+          "id": "militia_herb",
+          "name": "草药民兵",
+          "role": "priest",
+          "kind": "militia"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "combat_participation",
+          "key": "fight:militia_herb",
+          "target": "enemy_squad"
+        },
+        "result": {
+          "sampleCount": 3,
+          "outcomeDistribution": {
+            "combat_contribution": 3
+          },
+          "latestObservation": {
+            "outcome": "combat_contribution",
+            "damage": 32.963,
+            "damageShare": 0.0608,
+            "damageRank": 3,
+            "teamDamage": 542.062,
+            "healing": 124.8,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 2
+          }
+        },
+        "evidence": {
+          "count": 63,
+          "recentEventIds": [
+            "r1_main_3:attempt:1:combat:223",
+            "r1_main_3:attempt:1:combat:224",
+            "r1_main_3:attempt:1:combat:225"
+          ]
+        },
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:5",
+        "key": "hero_warrior|region_1|region_1_early_main|combat_pattern|combat_participation|fight:hero_warrior",
+        "subject": {
+          "id": "hero_warrior",
+          "name": "灰鸦战士",
+          "role": "warrior",
+          "kind": "hero"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "combat_participation",
+          "key": "fight:hero_warrior",
+          "target": "enemy_squad"
+        },
+        "result": {
+          "sampleCount": 3,
+          "outcomeDistribution": {
+            "combat_contribution": 3
+          },
+          "latestObservation": {
+            "outcome": "combat_contribution",
+            "damage": 210.107,
+            "damageShare": 0.3876,
+            "damageRank": 2,
+            "teamDamage": 542.062,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 2,
+            "skillCasts": 3
+          }
+        },
+        "evidence": {
+          "count": 109,
+          "recentEventIds": [
+            "r1_main_3:attempt:1:combat:237",
+            "r1_main_3:attempt:1:combat:238",
+            "r1_main_3:attempt:1:combat:239"
+          ]
+        },
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:27",
+        "key": "hero_mage|region_1|region_1_early_main|combat_pattern|combat_participation|fight:hero_mage",
+        "subject": {
+          "id": "hero_mage",
+          "name": "烬火法师",
+          "role": "mage",
+          "kind": "hero"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "combat_participation",
+          "key": "fight:hero_mage",
+          "target": "enemy_squad"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "combat_contribution": 1
+          },
+          "latestObservation": {
+            "outcome": "combat_contribution",
+            "damage": 270.96,
+            "damageShare": 0.4999,
+            "damageRank": 1,
+            "teamDamage": 542.062,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 3
+          }
+        },
+        "evidence": {
+          "count": 22,
+          "recentEventIds": [
+            "r1_main_3:attempt:1:combat:212",
+            "r1_main_3:attempt:1:combat:213",
+            "r1_main_3:attempt:1:combat:214"
+          ]
+        },
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:26",
+        "key": "player_squad|region_1|r1_main_3|character_reward|clear_level|challenge:r1_main_3",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_drum",
+              "name": "皮鼓民兵",
+              "role": "bard",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_3",
+          "phase": "character_reward"
+        },
+        "behavior": {
+          "kind": "clear_level",
+          "key": "challenge:r1_main_3",
+          "target": "r1_main_3"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "character_unlocked": 1
+          },
+          "latestObservation": {
+            "outcome": "character_unlocked",
+            "character": {
+              "id": "berserker",
+              "heroId": "hero_berserker",
+              "name": "赤潮狂战士"
+            },
+            "activeTeamChanged": false
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "map_action:r1_main_3:7:character"
+          ]
+        },
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:24",
+        "key": "player_squad|region_1|r1_main_3|map_progression|clear_level|challenge:r1_main_3",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_drum",
+              "name": "皮鼓民兵",
+              "role": "bard",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_3",
+          "phase": "map_progression"
+        },
+        "behavior": {
+          "kind": "clear_level",
+          "key": "challenge:r1_main_3",
+          "target": "r1_main_3"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "win": 1
+          },
+          "latestObservation": {
+            "outcome": "win",
+            "unlockedNodes": [
+              "r1_main_4",
+              "r1_prison"
+            ],
+            "clearedNode": "r1_main_3"
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "map_unlock:r1_main_3:7"
+          ]
+        },
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:23",
+        "key": "player_squad|region_1|r1_main_3|encounter|challenge_level|challenge:r1_main_3",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "hero_mage",
+              "name": "烬火法师",
+              "role": "mage",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_drum",
+              "name": "皮鼓民兵",
+              "role": "bard",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_3",
+          "phase": "encounter",
+          "team": [
+            "hero_warrior",
+            "hero_mage",
+            "militia_drum",
+            "militia_herb"
+          ]
+        },
+        "behavior": {
+          "kind": "challenge_level",
+          "key": "challenge:r1_main_3",
+          "target": "r1_main_3"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "win": 1
+          },
+          "latestObservation": {
+            "outcome": "win",
+            "duration": 10.96,
+            "survivors": {
+              "player": 4,
+              "enemy": 0
+            },
+            "resolution": "elimination",
+            "firstClear": true
+          }
+        },
+        "evidence": {
+          "count": 2,
+          "recentEventIds": [
+            "map_action:r1_main_3:7:result",
+            "map_action:r1_main_3:7:summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "The new team with the mage eliminated every enemy in the third main encounter in 10.96 seconds while all four allies survived.",
+          "confidence": 0.98,
+          "nextTest": "Keep the mage and decide whether to test the newly rescued berserker against another currently low-contribution militia member.",
+          "evidenceCount": 2
+        }
+      },
+      {
+        "id": "knowledge:7",
+        "key": "militia_drum|region_1|region_1_early_main|combat_pattern|combat_participation|fight:militia_drum",
+        "subject": {
+          "id": "militia_drum",
+          "name": "皮鼓民兵",
+          "role": "bard",
+          "kind": "militia"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "combat_participation",
+          "key": "fight:militia_drum",
+          "target": "enemy_squad"
+        },
+        "result": {
+          "sampleCount": 3,
+          "outcomeDistribution": {
+            "combat_contribution": 3
+          },
+          "latestObservation": {
+            "outcome": "combat_contribution",
+            "damage": 28.032,
+            "damageShare": 0.0517,
+            "damageRank": 4,
+            "teamDamage": 542.062,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 1
+          }
+        },
+        "evidence": {
+          "count": 77,
+          "recentEventIds": [
+            "r1_main_3:attempt:1:combat:146",
+            "r1_main_3:attempt:1:combat:171",
+            "r1_main_3:attempt:1:combat:210"
+          ]
+        },
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:13",
+        "key": "player|region_1|unknown_environment|equipment|equip_item|equip:militia_herb:r1_main_1_1_1",
+        "subject": {
+          "id": "player",
+          "role": "player"
+        },
+        "environment": {
+          "region": "region_1",
+          "phase": "equipment",
+          "hero": {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        },
+        "behavior": {
+          "kind": "equip_item",
+          "key": "equip:militia_herb:r1_main_1_1_1",
+          "itemId": "r1_main_1_1_1",
+          "target": "militia_herb"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "item_equipped": 1
+          },
+          "latestObservation": {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r1_main_1_1_1",
+              "name": "普通戒指 Lv.3",
+              "slot": "ring",
+              "slotLabel": "戒指",
+              "rarity": "common",
+              "rarityLabel": "普通",
+              "level": 3,
+              "baseStats": {
+                "magicPower": 2
+              },
+              "affixes": [
+                {
+                  "id": "agility",
+                  "stat": "agility",
+                  "label": "敏捷",
+                  "category": "major",
+                  "level": 1,
+                  "value": 1
+                }
+              ]
+            },
+            "replacedItem": null,
+            "equippedPowerBefore": 116,
+            "equippedPowerAfter": 139,
+            "powerDelta": 23
+          }
+        },
+        "evidence": {
+          "count": 3,
+          "recentEventIds": [
+            "equip_action:4:r1_main_1_1_1:start",
+            "equip_action:4:r1_main_1_1_1:result",
+            "equip_action:4:r1_main_1_1_1:summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "Equipping the ordinary ring on the herb militia increased equipped power from 116 to 139, a smaller but still visible gain.",
+          "confidence": 0.99,
+          "nextTest": "Continue to the next main encounter and observe whether the strengthened warrior and herb militia keep all four allies alive.",
+          "evidenceCount": 2
+        }
+      },
+      {
+        "id": "knowledge:12",
+        "key": "player|region_1|unknown_environment|equipment|equip_item|equip:hero_warrior:r1_main_1_1_0",
+        "subject": {
+          "id": "player",
+          "role": "player"
+        },
+        "environment": {
+          "region": "region_1",
+          "phase": "equipment",
+          "hero": {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          }
+        },
+        "behavior": {
+          "kind": "equip_item",
+          "key": "equip:hero_warrior:r1_main_1_1_0",
+          "itemId": "r1_main_1_1_0",
+          "target": "hero_warrior"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "item_equipped": 1
+          },
+          "latestObservation": {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r1_main_1_1_0",
+              "name": "神话靴子 Lv.2",
+              "slot": "boots",
+              "slotLabel": "靴子",
+              "rarity": "mythic",
+              "rarityLabel": "神话",
+              "level": 2,
+              "baseStats": {
+                "maxHp": 6,
+                "armor": 1
+              },
+              "affixes": [
+                {
+                  "id": "auraPower",
+                  "stat": "auraPower",
+                  "label": "光环强度",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 3
+                },
+                {
+                  "id": "agility",
+                  "stat": "agility",
+                  "label": "敏捷",
+                  "category": "major",
+                  "level": 1,
+                  "value": 1
+                },
+                {
+                  "id": "auraPower",
+                  "stat": "auraPower",
+                  "label": "光环强度",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 3
+                },
+                {
+                  "id": "agility",
+                  "stat": "agility",
+                  "label": "敏捷",
+                  "category": "major",
+                  "level": 1,
+                  "value": 1
+                },
+                {
+                  "id": "auraPower",
+                  "stat": "auraPower",
+                  "label": "光环强度",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 3
+                },
+                {
+                  "id": "agility",
+                  "stat": "agility",
+                  "label": "敏捷",
+                  "category": "major",
+                  "level": 1,
+                  "value": 1
+                },
+                {
+                  "id": "initiative",
+                  "stat": "initiative",
+                  "label": "先手",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 3
+                },
+                {
+                  "id": "effectResist",
+                  "stat": "effectResist",
+                  "label": "效果抗性",
+                  "category": "basic",
+                  "level": 1,
+                  "value": 3
+                },
+                {
+                  "id": "resilience",
+                  "stat": "resilience",
+                  "label": "韧性",
+                  "category": "major",
+                  "level": 1,
+                  "value": 1
+                },
+                {
+                  "id": "initiative",
+                  "stat": "initiative",
+                  "label": "先手",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 3
+                },
+                {
+                  "id": "effectResist",
+                  "stat": "effectResist",
+                  "label": "效果抗性",
+                  "category": "basic",
+                  "level": 1,
+                  "value": 3
+                },
+                {
+                  "id": "controlPower",
+                  "stat": "controlPower",
+                  "label": "控制强度",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 3
+                }
+              ]
+            },
+            "replacedItem": null,
+            "equippedPowerBefore": 0,
+            "equippedPowerAfter": 116,
+            "powerDelta": 116
+          }
+        },
+        "evidence": {
+          "count": 3,
+          "recentEventIds": [
+            "equip_action:3:r1_main_1_1_0:start",
+            "equip_action:3:r1_main_1_1_0:result",
+            "equip_action:3:r1_main_1_1_0:summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "Equipping the mythic boots on the warrior changed equipped power from 0 to 116; merely owning the loot had not done that.",
+          "confidence": 0.99,
+          "nextTest": "Challenge the next main encounter and observe whether the equipped warrior remains the leading contributor while the team survives.",
+          "evidenceCount": 2
+        }
+      },
+      {
+        "id": "knowledge:16",
+        "key": "player_squad|region_1|r1_main_2|loot_drop|clear_level|challenge:r1_main_2",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_drum",
+              "name": "皮鼓民兵",
+              "role": "bard",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_2",
+          "phase": "loot_drop"
+        },
+        "behavior": {
+          "kind": "clear_level",
+          "key": "challenge:r1_main_2",
+          "target": "r1_main_2"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "loot_obtained": 1
+          },
+          "latestObservation": {
+            "outcome": "loot_obtained",
+            "drops": [
+              {
+                "id": "r1_main_2_1_0",
+                "name": "普通腿甲 Lv.2",
+                "slot": "legs",
+                "rarity": "common",
+                "level": 2
+              },
+              {
+                "id": "r1_main_2_1_1",
+                "name": "普通胸甲 Lv.2",
+                "slot": "chest",
+                "rarity": "common",
+                "level": 2
+              }
+            ],
+            "inventoryCountBefore": 0,
+            "inventoryCountAfter": 2,
+            "equippedPowerBefore": 139,
+            "equippedPowerAfter": 139,
+            "powerChanged": false
+          }
+        },
+        "evidence": {
+          "count": 3,
+          "recentEventIds": [
+            "map_action:r1_main_2:5:result",
+            "map_action:r1_main_2:5:loot:1",
+            "map_action:r1_main_2:5:loot:2"
+          ]
+        },
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:30",
+        "key": "player|region_1|unknown_environment|team_management|swap_team_member|swap:2:hero_berserker",
+        "subject": {
+          "id": "player",
+          "role": "player"
+        },
+        "environment": {
+          "region": "region_1",
+          "phase": "team_management"
+        },
+        "behavior": {
+          "kind": "swap_team_member",
+          "key": "swap:2:hero_berserker"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "team_changed": 1
+          },
+          "latestObservation": {
+            "outcome": "team_changed",
+            "teamBefore": [
+              "hero_warrior",
+              "hero_mage",
+              "militia_drum",
+              "militia_herb"
+            ],
+            "teamAfter": [
+              "hero_warrior",
+              "hero_mage",
+              "hero_berserker",
+              "militia_herb"
+            ],
+            "equippedPowerBefore": 139,
+            "equippedPowerAfter": 139
+          }
+        },
+        "evidence": {
+          "count": 4,
+          "recentEventIds": [
+            "map_action:2:8:start",
+            "team-change:8:hero_berserker",
+            "map_action:2:8:summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "The team changed because I replaced the low-contribution drummer with the newly rescued berserker; equipped power remained 139 because no equipment changed.",
+          "confidence": 0.99,
+          "nextTest": "Challenge the next main encounter and check whether the berserker ranks first or second in damage.",
+          "evidenceCount": 2
+        }
+      },
+      {
+        "id": "knowledge:17",
+        "key": "player_squad|region_1|r1_main_2|character_reward|clear_level|challenge:r1_main_2",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_drum",
+              "name": "皮鼓民兵",
+              "role": "bard",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_2",
+          "phase": "character_reward"
+        },
+        "behavior": {
+          "kind": "clear_level",
+          "key": "challenge:r1_main_2",
+          "target": "r1_main_2"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "character_unlocked": 1
+          },
+          "latestObservation": {
+            "outcome": "character_unlocked",
+            "character": {
+              "id": "mage",
+              "heroId": "hero_mage",
+              "name": "烬火法师"
+            },
+            "activeTeamChanged": false
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "map_action:r1_main_2:5:character"
+          ]
+        },
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:21",
+        "key": "concept:enemy_minion_ranged|region_1|region_1_early_main|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_ranged",
+        "subject": {
+          "id": "concept:enemy_minion_ranged",
+          "name": "远程小怪",
+          "conceptId": "enemy_minion_ranged"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "fight_player_squad",
+          "key": "enemy_concept_threat:enemy_minion_ranged",
+          "target": "player_squad"
+        },
+        "result": {
+          "sampleCount": 2,
+          "outcomeDistribution": {
+            "enemy_concept_threat": 2
+          },
+          "latestObservation": {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 156.9912,
+            "damageShare": 0.4437,
+            "threatRank": 2,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4,
+            "observedTargets": [
+              "灰鸦战士"
+            ],
+            "supportTargets": []
+          }
+        },
+        "evidence": {
+          "count": 43,
+          "recentEventIds": [
+            "r1_main_3:attempt:1:combat:226",
+            "r1_main_3:attempt:1:combat:227",
+            "r1_main_3:attempt:1:combat:228"
+          ]
+        },
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:20",
+        "key": "concept:enemy_minion_melee|region_1|region_1_early_main|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_melee",
+        "subject": {
+          "id": "concept:enemy_minion_melee",
+          "name": "近战小怪",
+          "conceptId": "enemy_minion_melee"
+        },
+        "environment": {
+          "region": "region_1",
+          "encounterBand": "region_1_early_main",
+          "phase": "combat_pattern"
+        },
+        "behavior": {
+          "kind": "fight_player_squad",
+          "key": "enemy_concept_threat:enemy_minion_melee",
+          "target": "player_squad"
+        },
+        "result": {
+          "sampleCount": 2,
+          "outcomeDistribution": {
+            "enemy_concept_threat": 2
+          },
+          "latestObservation": {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 2,
+            "damage": 196.824,
+            "damageShare": 0.5563,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4,
+            "observedTargets": [
+              "灰鸦战士",
+              "皮鼓民兵",
+              "烬火法师",
+              "草药民兵"
+            ],
+            "supportTargets": []
+          }
+        },
+        "evidence": {
+          "count": 48,
+          "recentEventIds": [
+            "r1_main_3:attempt:1:combat:134",
+            "r1_main_3:attempt:1:combat:135",
+            "r1_main_3:attempt:1:combat:162"
+          ]
+        },
+        "latestAttribution": null
+      },
+      {
+        "id": "knowledge:15",
+        "key": "player_squad|region_1|r1_main_2|map_progression|clear_level|challenge:r1_main_2",
+        "subject": {
+          "id": "player_squad",
+          "members": [
+            {
+              "id": "hero_warrior",
+              "name": "灰鸦战士",
+              "role": "warrior",
+              "kind": "hero"
+            },
+            {
+              "id": "militia_barricade",
+              "name": "拒马民兵",
+              "role": "warrior",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_drum",
+              "name": "皮鼓民兵",
+              "role": "bard",
+              "kind": "militia"
+            },
+            {
+              "id": "militia_herb",
+              "name": "草药民兵",
+              "role": "priest",
+              "kind": "militia"
+            }
+          ]
+        },
+        "environment": {
+          "region": "region_1",
+          "node": "r1_main_2",
+          "phase": "map_progression"
+        },
+        "behavior": {
+          "kind": "clear_level",
+          "key": "challenge:r1_main_2",
+          "target": "r1_main_2"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "win": 1
+          },
+          "latestObservation": {
+            "outcome": "win",
+            "unlockedNodes": [
+              "r1_main_3"
+            ],
+            "clearedNode": "r1_main_2"
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "map_unlock:r1_main_2:5"
+          ]
+        },
+        "latestAttribution": null
+      }
+    ],
+    "characterImpressions": [
+      {
+        "subject": {
+          "id": "hero_mage",
+          "name": "烬火法师",
+          "role": "mage"
+        },
+        "position": 4.928,
+        "currentLevel": 0,
+        "currentLabel": "表现普通",
+        "relativeToTopThirtyBoundary": 0.272,
+        "inTopThirtyPercent": true,
+        "rank": 1,
+        "populationSize": 5,
+        "evidenceCount": 1
+      },
+      {
+        "subject": {
+          "id": "hero_warrior",
+          "name": "灰鸦战士",
+          "role": "warrior"
+        },
+        "position": 4.656,
+        "currentLevel": 0,
+        "currentLabel": "表现普通",
+        "relativeToTopThirtyBoundary": 0,
+        "inTopThirtyPercent": true,
+        "rank": 2,
+        "populationSize": 5,
+        "evidenceCount": 3
+      },
+      {
+        "subject": {
+          "id": "militia_herb",
+          "name": "草药民兵",
+          "role": "priest"
+        },
+        "position": -2.647,
+        "currentLevel": -3,
+        "currentLabel": "非常弱",
+        "relativeToTopThirtyBoundary": -7.303,
+        "inTopThirtyPercent": false,
+        "rank": 3,
+        "populationSize": 5,
+        "evidenceCount": 3
+      },
+      {
+        "subject": {
+          "id": "militia_drum",
+          "name": "皮鼓民兵",
+          "role": "bard"
+        },
+        "position": -2.979,
+        "currentLevel": -3,
+        "currentLabel": "非常弱",
+        "relativeToTopThirtyBoundary": -7.635,
+        "inTopThirtyPercent": false,
+        "rank": 4,
+        "populationSize": 5,
+        "evidenceCount": 3
+      },
+      {
+        "subject": {
+          "id": "militia_barricade",
+          "name": "拒马民兵",
+          "role": "warrior"
+        },
+        "position": -3.957,
+        "currentLevel": -3,
+        "currentLabel": "非常弱",
+        "relativeToTopThirtyBoundary": -8.613,
+        "inTopThirtyPercent": false,
+        "rank": 5,
+        "populationSize": 5,
+        "evidenceCount": 2
+      }
+    ],
+    "rosterChangeExpectations": {
+      "schema": "roster_change_expectation_view_v1",
+      "targetNode": "r1_main_3",
+      "baseline": null,
+      "actions": [
+        {
+          "action": "swap:0:militia_barricade",
+          "outgoingId": "hero_warrior",
+          "incomingId": "militia_barricade",
+          "candidateTeamIds": [
+            "militia_barricade",
+            "hero_mage",
+            "hero_berserker",
+            "militia_herb"
+          ],
+          "evidenceScope": "insufficient_player_knowledge",
+          "expectedChange": "unknown",
+          "expectedOutcome": "unknown",
+          "predictedPerformanceScore": null,
+          "priorFailureTransfer": "do_not_generalize_without_character_evidence",
+          "reason": "no comparable encounter history"
+        },
+        {
+          "action": "swap:1:militia_barricade",
+          "outgoingId": "hero_mage",
+          "incomingId": "militia_barricade",
+          "candidateTeamIds": [
+            "hero_warrior",
+            "militia_barricade",
+            "hero_berserker",
+            "militia_herb"
+          ],
+          "evidenceScope": "insufficient_player_knowledge",
+          "expectedChange": "unknown",
+          "expectedOutcome": "unknown",
+          "predictedPerformanceScore": null,
+          "priorFailureTransfer": "do_not_generalize_without_character_evidence",
+          "reason": "no comparable encounter history"
+        },
+        {
+          "action": "swap:2:militia_barricade",
+          "outgoingId": "hero_berserker",
+          "incomingId": "militia_barricade",
+          "candidateTeamIds": [
+            "hero_warrior",
+            "hero_mage",
+            "militia_barricade",
+            "militia_herb"
+          ],
+          "evidenceScope": "insufficient_player_knowledge",
+          "expectedChange": "unknown",
+          "expectedOutcome": "unknown",
+          "predictedPerformanceScore": null,
+          "priorFailureTransfer": "do_not_generalize_without_character_evidence",
+          "reason": "no comparable encounter history"
+        },
+        {
+          "action": "swap:3:militia_barricade",
+          "outgoingId": "militia_herb",
+          "incomingId": "militia_barricade",
+          "candidateTeamIds": [
+            "hero_warrior",
+            "hero_mage",
+            "hero_berserker",
+            "militia_barricade"
+          ],
+          "evidenceScope": "insufficient_player_knowledge",
+          "expectedChange": "unknown",
+          "expectedOutcome": "unknown",
+          "predictedPerformanceScore": null,
+          "priorFailureTransfer": "do_not_generalize_without_character_evidence",
+          "reason": "no comparable encounter history"
+        },
+        {
+          "action": "swap:0:militia_spear",
+          "outgoingId": "hero_warrior",
+          "incomingId": "militia_spear",
+          "candidateTeamIds": [
+            "militia_spear",
+            "hero_mage",
+            "hero_berserker",
+            "militia_herb"
+          ],
+          "evidenceScope": "insufficient_player_knowledge",
+          "expectedChange": "unknown",
+          "expectedOutcome": "unknown",
+          "predictedPerformanceScore": null,
+          "priorFailureTransfer": "do_not_generalize_without_character_evidence",
+          "reason": "no comparable encounter history"
+        },
+        {
+          "action": "swap:1:militia_spear",
+          "outgoingId": "hero_mage",
+          "incomingId": "militia_spear",
+          "candidateTeamIds": [
+            "hero_warrior",
+            "militia_spear",
+            "hero_berserker",
+            "militia_herb"
+          ],
+          "evidenceScope": "insufficient_player_knowledge",
+          "expectedChange": "unknown",
+          "expectedOutcome": "unknown",
+          "predictedPerformanceScore": null,
+          "priorFailureTransfer": "do_not_generalize_without_character_evidence",
+          "reason": "no comparable encounter history"
+        },
+        {
+          "action": "swap:2:militia_spear",
+          "outgoingId": "hero_berserker",
+          "incomingId": "militia_spear",
+          "candidateTeamIds": [
+            "hero_warrior",
+            "hero_mage",
+            "militia_spear",
+            "militia_herb"
+          ],
+          "evidenceScope": "insufficient_player_knowledge",
+          "expectedChange": "unknown",
+          "expectedOutcome": "unknown",
+          "predictedPerformanceScore": null,
+          "priorFailureTransfer": "do_not_generalize_without_character_evidence",
+          "reason": "no comparable encounter history"
+        },
+        {
+          "action": "swap:3:militia_spear",
+          "outgoingId": "militia_herb",
+          "incomingId": "militia_spear",
+          "candidateTeamIds": [
+            "hero_warrior",
+            "hero_mage",
+            "hero_berserker",
+            "militia_spear"
+          ],
+          "evidenceScope": "insufficient_player_knowledge",
+          "expectedChange": "unknown",
+          "expectedOutcome": "unknown",
+          "predictedPerformanceScore": null,
+          "priorFailureTransfer": "do_not_generalize_without_character_evidence",
+          "reason": "no comparable encounter history"
+        },
+        {
+          "action": "swap:0:militia_drum",
+          "outgoingId": "hero_warrior",
+          "incomingId": "militia_drum",
+          "candidateTeamIds": [
+            "militia_drum",
+            "hero_mage",
+            "hero_berserker",
+            "militia_herb"
+          ],
+          "evidenceScope": "insufficient_player_knowledge",
+          "expectedChange": "unknown",
+          "expectedOutcome": "unknown",
+          "predictedPerformanceScore": null,
+          "priorFailureTransfer": "do_not_generalize_without_character_evidence",
+          "reason": "no comparable encounter history"
+        },
+        {
+          "action": "swap:1:militia_drum",
+          "outgoingId": "hero_mage",
+          "incomingId": "militia_drum",
+          "candidateTeamIds": [
+            "hero_warrior",
+            "militia_drum",
+            "hero_berserker",
+            "militia_herb"
+          ],
+          "evidenceScope": "insufficient_player_knowledge",
+          "expectedChange": "unknown",
+          "expectedOutcome": "unknown",
+          "predictedPerformanceScore": null,
+          "priorFailureTransfer": "do_not_generalize_without_character_evidence",
+          "reason": "no comparable encounter history"
+        },
+        {
+          "action": "swap:2:militia_drum",
+          "outgoingId": "hero_berserker",
+          "incomingId": "militia_drum",
+          "candidateTeamIds": [
+            "hero_warrior",
+            "hero_mage",
+            "militia_drum",
+            "militia_herb"
+          ],
+          "evidenceScope": "exact_team_and_encounter",
+          "evidenceCount": 1,
+          "expectedChange": "unknown",
+          "expectedOutcome": "plausible_success",
+          "predictedPerformanceScore": 0.76,
+          "exactObservedWinRate": 1,
+          "performanceInterpretation": "outcome_and_hp_margin_are_consistent",
+          "priorFailureTransfer": "exact_history_applies",
+          "reason": "this exact team already has visible evidence in this encounter"
+        },
+        {
+          "action": "swap:3:militia_drum",
+          "outgoingId": "militia_herb",
+          "incomingId": "militia_drum",
+          "candidateTeamIds": [
+            "hero_warrior",
+            "hero_mage",
+            "hero_berserker",
+            "militia_drum"
+          ],
+          "evidenceScope": "insufficient_player_knowledge",
+          "expectedChange": "unknown",
+          "expectedOutcome": "unknown",
+          "predictedPerformanceScore": null,
+          "priorFailureTransfer": "do_not_generalize_without_character_evidence",
+          "reason": "no comparable encounter history"
+        }
+      ],
+      "rule": "failure belongs to the observed team and encounter; each different swap is re-estimated from current character strength and context-relevant traits",
+      "calibration": {
+        "positionLevelToPerformance": 0.12,
+        "traitLevelWeight": 0.35,
+        "status": "provisional_ordinal_prediction_mapping"
+      }
+    },
+    "knowledgeStoreCount": 30,
+    "eventStatisticsCount": 71,
+    "failureMemories": [],
+    "hypotheses": [
+      {
+        "id": "test_drummer_group_buff_alpha_1",
+        "origin": "player",
+        "status": "confirmed",
+        "action": null,
+        "problem": "I do not yet know whether the newly visible drummer helps progression more than the incomplete spear militia.",
+        "cause": "The drummer may trade weak personal damage for a useful team-wide buff.",
+        "resultKind": "team_experiment_contribution",
+        "target": "militia_drum",
+        "targetCondition": {
+          "metric": "skillCount",
+          "operator": ">=",
+          "value": 1
+        },
+        "verificationScope": "next_combat",
+        "settleOnEventKind": "team_experiment_result",
+        "evidence": [
+          {
+            "eventId": "team-experiment:2:player-hypothesis:test_drummer_group_buff_alpha_1",
+            "expected": "team_experiment_contribution",
+            "observed": [
+              "team_experiment_result",
+              "team_experiment_contribution"
+            ],
+            "target": "militia_drum",
+            "targetCondition": {
+              "metric": "skillCount",
+              "operator": ">=",
+              "value": 1
+            },
+            "observedValue": 4,
+            "comparisonMade": true,
+            "confirmed": true
+          }
+        ],
+        "resolvedAt": 36.54
+      },
+      {
+        "id": "test_new_mage_alpha_2",
+        "origin": "player",
+        "status": "confirmed",
+        "action": null,
+        "problem": "The team depends heavily on the warrior for damage and the barricade militia has contributed very little damage.",
+        "cause": "The newly rescued complete mage may add more reliable damage than the incomplete barricade militia.",
+        "resultKind": "team_experiment_contribution",
+        "target": "hero_mage",
+        "targetCondition": {
+          "metric": "damageRank",
+          "operator": "<=",
+          "value": 2
+        },
+        "verificationScope": "next_combat",
+        "settleOnEventKind": "team_experiment_result",
+        "evidence": [
+          {
+            "eventId": "team-experiment:7:team-experiment:hero_mage",
+            "expected": "team_experiment_contribution",
+            "observed": [
+              "team_experiment_result",
+              "team_experiment_contribution"
+            ],
+            "target": "hero_mage",
+            "targetCondition": {
+              "metric": "damageRank",
+              "operator": "<=",
+              "value": 2
+            },
+            "observedValue": 1,
+            "comparisonMade": true,
+            "confirmed": true
+          }
+        ],
+        "resolvedAt": 11.020000000000001
+      },
+      {
+        "id": "test_new_berserker_alpha_3",
+        "origin": "player",
+        "status": "pending",
+        "action": null,
+        "problem": "The drummer's direct combat contribution fell to the lowest rank in the last fight.",
+        "cause": "The newly rescued berserker may add stronger damage than the drummer while the healer offsets some of its visible low-health risk.",
+        "resultKind": "team_experiment_contribution",
+        "target": "hero_berserker",
+        "targetCondition": {
+          "metric": "damageRank",
+          "operator": "<=",
+          "value": 2
+        },
+        "verificationScope": "next_combat",
+        "settleOnEventKind": "team_experiment_result",
+        "evidence": []
+      }
+    ]
+  },
+  "knowledgeRetrieval": {
+    "schema": "knowledge_retrieval_audit_v1",
+    "query": {
+      "activeGoal": "继续推进灰带郊野",
+      "region": "region_1",
+      "challengeNodes": [
+        "r1_main_1",
+        "r1_main_2",
+        "r1_main_3",
+        "r1_main_4",
+        "r1_prison"
+      ],
+      "primaryChallengeNodes": [
+        "r1_main_4",
+        "r1_prison"
+      ],
+      "activeTeam": [
+        "hero_warrior",
+        "hero_mage",
+        "hero_berserker",
+        "militia_herb"
+      ],
+      "swapCandidates": [
+        "militia_barricade",
+        "militia_spear",
+        "militia_drum"
+      ],
+      "equipCandidates": [
+        "hero_warrior",
+        "militia_barricade",
+        "militia_spear",
+        "militia_herb",
+        "militia_drum",
+        "hero_mage",
+        "hero_berserker"
+      ],
+      "fieldEffects": [],
+      "unresolvedFailureNodes": [],
+      "pendingHypothesisTargets": [
+        "hero_berserker"
+      ],
+      "inventoryCount": 4
+    },
+    "candidateCount": 30,
+    "selectedCount": 16,
+    "selectedBytes": 17562,
+    "fullKnowledgeBytes": 58181,
+    "byteReductionRatio": 0.6981,
+    "selected": [
+      {
+        "id": "knowledge:25",
+        "score": 23.34,
+        "reasons": [
+          "changed_since_last_decision",
+          "repeatable_node",
+          "active_team_composition",
+          "inventory_decision_support",
+          "equipment_causality",
+          "same_region",
+          "recency"
+        ],
+        "bytes": 1195
+      },
+      {
+        "id": "knowledge:6",
+        "score": 16.562,
+        "reasons": [
+          "changed_since_last_decision",
+          "active_team_member",
+          "same_region",
+          "repeated_evidence",
+          "recency"
+        ],
+        "bytes": 828
+      },
+      {
+        "id": "knowledge:5",
+        "score": 16.55,
+        "reasons": [
+          "changed_since_last_decision",
+          "active_team_member",
+          "same_region",
+          "repeated_evidence",
+          "recency"
+        ],
+        "bytes": 824
+      },
+      {
+        "id": "knowledge:27",
+        "score": 16.364,
+        "reasons": [
+          "changed_since_last_decision",
+          "active_team_member",
+          "same_region",
+          "recency"
+        ],
+        "bytes": 808
+      },
+      {
+        "id": "knowledge:26",
+        "score": 22.852,
+        "reasons": [
+          "changed_since_last_decision",
+          "repeatable_node",
+          "active_team_composition",
+          "inventory_decision_support",
+          "same_region",
+          "capability_or_rule_learning",
+          "recency"
+        ],
+        "bytes": 952
+      },
+      {
+        "id": "knowledge:24",
+        "score": 20.328,
+        "reasons": [
+          "changed_since_last_decision",
+          "repeatable_node",
+          "active_team_composition",
+          "inventory_decision_support",
+          "same_region",
+          "recency"
+        ],
+        "bytes": 870
+      },
+      {
+        "id": "knowledge:23",
+        "score": 18.116,
+        "reasons": [
+          "changed_since_last_decision",
+          "repeatable_node",
+          "active_team_composition",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1312
+      },
+      {
+        "id": "knowledge:7",
+        "score": 17.574,
+        "reasons": [
+          "changed_since_last_decision",
+          "available_swap_candidate",
+          "same_region",
+          "repeated_evidence",
+          "recency"
+        ],
+        "bytes": 822
+      },
+      {
+        "id": "knowledge:13",
+        "score": 13.996,
+        "reasons": [
+          "available_equip_target",
+          "inventory_decision_support",
+          "equipment_causality",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1389
+      },
+      {
+        "id": "knowledge:12",
+        "score": 13.984,
+        "reasons": [
+          "available_equip_target",
+          "inventory_decision_support",
+          "equipment_causality",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 2509
+      },
+      {
+        "id": "knowledge:16",
+        "score": 13.232,
+        "reasons": [
+          "repeatable_node",
+          "active_team_composition",
+          "inventory_decision_support",
+          "equipment_causality",
+          "same_region",
+          "recency"
+        ],
+        "bytes": 1211
+      },
+      {
+        "id": "knowledge:30",
+        "score": 13.2,
+        "reasons": [
+          "changed_since_last_decision",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1062
+      },
+      {
+        "id": "knowledge:17",
+        "score": 12.744,
+        "reasons": [
+          "repeatable_node",
+          "active_team_composition",
+          "inventory_decision_support",
+          "same_region",
+          "capability_or_rule_learning",
+          "recency"
+        ],
+        "bytes": 953
+      },
+      {
+        "id": "knowledge:21",
+        "score": 12.592,
+        "reasons": [
+          "changed_since_last_decision",
+          "same_region",
+          "repeated_evidence",
+          "recency"
+        ],
+        "bytes": 957
+      },
+      {
+        "id": "knowledge:20",
+        "score": 12.58,
+        "reasons": [
+          "changed_since_last_decision",
+          "same_region",
+          "repeated_evidence",
+          "recency"
+        ],
+        "bytes": 996
+      },
+      {
+        "id": "knowledge:15",
+        "score": 10.22,
+        "reasons": [
+          "repeatable_node",
+          "active_team_composition",
+          "inventory_decision_support",
+          "same_region",
+          "recency"
+        ],
+        "bytes": 872
+      }
+    ],
+    "rejectedCount": 14,
+    "topRejected": [
+      {
+        "id": "knowledge:28",
+        "score": 17.376,
+        "reasons": [
+          "changed_since_last_decision",
+          "repeatable_node",
+          "active_team_composition",
+          "same_region",
+          "recency"
+        ]
+      },
+      {
+        "id": "knowledge:29",
+        "score": 14.388,
+        "reasons": [
+          "changed_since_last_decision",
+          "repeatable_node",
+          "same_region",
+          "recency"
+        ]
+      },
+      {
+        "id": "knowledge:4",
+        "score": 13.088,
+        "reasons": [
+          "repeatable_node",
+          "active_team_composition",
+          "inventory_decision_support",
+          "equipment_causality",
+          "same_region",
+          "recency"
+        ]
+      },
+      {
+        "id": "knowledge:3",
+        "score": 10.076,
+        "reasons": [
+          "repeatable_node",
+          "active_team_composition",
+          "inventory_decision_support",
+          "same_region",
+          "recency"
+        ]
+      },
+      {
+        "id": "knowledge:14",
+        "score": 8.008,
+        "reasons": [
+          "repeatable_node",
+          "active_team_composition",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ]
+      },
+      {
+        "id": "knowledge:2",
+        "score": 7.864,
+        "reasons": [
+          "repeatable_node",
+          "active_team_composition",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ]
+      }
+    ],
+    "requiredChecks": [
+      {
+        "id": "equipment:causality",
+        "reason": "Inventory decisions need learned equip or loot causality when it exists.",
+        "matchedKnowledgeIds": [
+          "knowledge:25",
+          "knowledge:26",
+          "knowledge:24",
+          "knowledge:13",
+          "knowledge:12",
+          "knowledge:16",
+          "knowledge:4",
+          "knowledge:17",
+          "knowledge:15",
+          "knowledge:3"
+        ],
+        "selected": true
+      },
+      {
+        "id": "active-contribution:hero_warrior",
+        "reason": "Known contribution of each active role should remain available for roster planning.",
+        "matchedKnowledgeIds": [
+          "knowledge:5"
+        ],
+        "selected": true
+      },
+      {
+        "id": "active-contribution:hero_mage",
+        "reason": "Known contribution of each active role should remain available for roster planning.",
+        "matchedKnowledgeIds": [
+          "knowledge:27"
+        ],
+        "selected": true
+      },
+      {
+        "id": "active-contribution:militia_herb",
+        "reason": "Known contribution of each active role should remain available for roster planning.",
+        "matchedKnowledgeIds": [
+          "knowledge:6"
+        ],
+        "selected": true
+      }
+    ],
+    "missedRequired": []
+  },
+  "observation": {
+    "step": 8,
+    "currentGoal": "继续推进灰带郊野",
+    "team": "灰鸦战士、烬火法师、赤潮狂战士、草药民兵（民兵）",
+    "teamSlots": [
+      {
+        "slotIndex": 0,
+        "slotLabel": "前排1",
+        "heroId": "hero_warrior",
+        "heroName": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero",
+        "note": "完整近战英雄，能打能扛，但没有骑士的守护能力。"
+      },
+      {
+        "slotIndex": 1,
+        "slotLabel": "前排2",
+        "heroId": "hero_mage",
+        "heroName": "烬火法师",
+        "role": "mage",
+        "kind": "hero",
+        "note": "完整输出英雄，负责清怪与爆发。"
+      },
+      {
+        "slotIndex": 2,
+        "slotLabel": "后排1",
+        "heroId": "hero_berserker",
+        "heroName": "赤潮狂战士",
+        "role": "berserker",
+        "kind": "hero",
+        "note": "低血时更危险的近战输出，擅长用高风险换取爆发。"
+      },
+      {
+        "slotIndex": 3,
+        "slotLabel": "后排2",
+        "heroId": "militia_herb",
+        "heroName": "草药民兵",
+        "role": "priest",
+        "kind": "militia",
+        "note": "低配治疗，只能延缓崩线。"
+      }
+    ],
+    "roster": [
+      {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero",
+        "note": "完整近战英雄，能打能扛，但没有骑士的守护能力。",
+        "isActive": true,
+        "teamSlot": 0,
+        "slotLabel": "前排1",
+        "equippedSlots": [
+          "boots"
+        ]
+      },
+      {
+        "id": "militia_barricade",
+        "name": "拒马民兵",
+        "role": "warrior",
+        "kind": "militia",
+        "note": "只有血量和自救，几乎没有伤害，也不能保护队友。",
+        "isActive": false,
+        "teamSlot": null,
+        "slotLabel": null,
+        "equippedSlots": []
+      },
+      {
+        "id": "militia_spear",
+        "name": "短矛民兵",
+        "role": "warrior",
+        "kind": "militia",
+        "note": "慢速单体近战，能补伤害但没有完整战士的作战能力。",
+        "isActive": false,
+        "teamSlot": null,
+        "slotLabel": null,
+        "equippedSlots": []
+      },
+      {
+        "id": "militia_herb",
+        "name": "草药民兵",
+        "role": "priest",
+        "kind": "militia",
+        "note": "低配治疗，只能延缓崩线。",
+        "isActive": true,
+        "teamSlot": 3,
+        "slotLabel": "后排2",
+        "equippedSlots": [
+          "ring"
+        ]
+      },
+      {
+        "id": "militia_drum",
+        "name": "皮鼓民兵",
+        "role": "bard",
+        "kind": "militia",
+        "note": "偶尔敲响战鼓，自己几乎没有输出。",
+        "isActive": false,
+        "teamSlot": null,
+        "slotLabel": null,
+        "equippedSlots": []
+      },
+      {
+        "id": "hero_mage",
+        "name": "烬火法师",
+        "role": "mage",
+        "kind": "hero",
+        "note": "完整输出英雄，负责清怪与爆发。",
+        "isActive": true,
+        "teamSlot": 1,
+        "slotLabel": "前排2",
+        "equippedSlots": []
+      },
+      {
+        "id": "hero_berserker",
+        "name": "赤潮狂战士",
+        "role": "berserker",
+        "kind": "hero",
+        "note": "低血时更危险的近战输出，擅长用高风险换取爆发。",
+        "isActive": true,
+        "teamSlot": 2,
+        "slotLabel": "后排1",
+        "equippedSlots": []
+      }
+    ],
+    "gear": {
+      "score": 139,
+      "summary": "2/32件 · 最高神话",
+      "active": [
+        {
+          "name": "灰鸦战士",
+          "slots": 1
+        },
+        {
+          "name": "烬火法师",
+          "slots": 0
+        },
+        {
+          "name": "赤潮狂战士",
+          "slots": 0
+        },
+        {
+          "name": "草药民兵",
+          "slots": 1
+        }
+      ]
+    },
+    "inventory": [
+      {
+        "id": "r1_main_2_1_1",
+        "name": "普通胸甲 Lv.2",
+        "slot": "chest",
+        "slotLabel": "胸甲",
+        "rarity": "common",
+        "rarityLabel": "普通",
+        "level": 2,
+        "baseStats": {
+          "maxHp": 6,
+          "armor": 1
+        },
+        "affixes": [
+          {
+            "id": "resilience",
+            "stat": "resilience",
+            "label": "韧性",
+            "category": "major",
+            "level": 1,
+            "value": 1
+          }
+        ],
+        "bestFits": [
+          {
+            "heroId": "hero_warrior",
+            "heroName": "灰鸦战士",
+            "role": "warrior",
+            "fitScore": 27.3,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 27.3
+          },
+          {
+            "heroId": "militia_barricade",
+            "heroName": "拒马民兵",
+            "role": "warrior",
+            "fitScore": 27.3,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 27.3
+          },
+          {
+            "heroId": "militia_spear",
+            "heroName": "短矛民兵",
+            "role": "warrior",
+            "fitScore": 27.3,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 27.3
+          }
+        ]
+      },
+      {
+        "id": "r1_main_2_1_0",
+        "name": "普通腿甲 Lv.2",
+        "slot": "legs",
+        "slotLabel": "腿甲",
+        "rarity": "common",
+        "rarityLabel": "普通",
+        "level": 2,
+        "baseStats": {
+          "maxHp": 6,
+          "armor": 1
+        },
+        "affixes": [
+          {
+            "id": "receivedHealing",
+            "stat": "receivedHealing",
+            "label": "受治愈增幅",
+            "category": "specialist",
+            "level": 1,
+            "value": 3
+          }
+        ],
+        "bestFits": [
+          {
+            "heroId": "hero_warrior",
+            "heroName": "灰鸦战士",
+            "role": "warrior",
+            "fitScore": 27.3,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 27.3
+          },
+          {
+            "heroId": "militia_barricade",
+            "heroName": "拒马民兵",
+            "role": "warrior",
+            "fitScore": 27.3,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 27.3
+          },
+          {
+            "heroId": "militia_spear",
+            "heroName": "短矛民兵",
+            "role": "warrior",
+            "fitScore": 27.3,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 27.3
+          }
+        ]
+      },
+      {
+        "id": "r1_main_3_1_1",
+        "name": "普通胸甲 Lv.6",
+        "slot": "chest",
+        "slotLabel": "胸甲",
+        "rarity": "common",
+        "rarityLabel": "普通",
+        "level": 6,
+        "baseStats": {
+          "maxHp": 17,
+          "armor": 1
+        },
+        "affixes": [
+          {
+            "id": "fortitude",
+            "stat": "fortitude",
+            "label": "坚韧",
+            "category": "major",
+            "level": 1,
+            "value": 1
+          }
+        ],
+        "bestFits": [
+          {
+            "heroId": "hero_warrior",
+            "heroName": "灰鸦战士",
+            "role": "warrior",
+            "fitScore": 34.35,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 34.35
+          },
+          {
+            "heroId": "militia_barricade",
+            "heroName": "拒马民兵",
+            "role": "warrior",
+            "fitScore": 34.35,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 34.35
+          },
+          {
+            "heroId": "militia_spear",
+            "heroName": "短矛民兵",
+            "role": "warrior",
+            "fitScore": 34.35,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 34.35
+          }
+        ]
+      },
+      {
+        "id": "r1_main_3_1_0",
+        "name": "稀有腿甲 Lv.6",
+        "slot": "legs",
+        "slotLabel": "腿甲",
+        "rarity": "rare",
+        "rarityLabel": "稀有",
+        "level": 6,
+        "baseStats": {
+          "maxHp": 17,
+          "armor": 1
+        },
+        "affixes": [
+          {
+            "id": "agility",
+            "stat": "agility",
+            "label": "敏捷",
+            "category": "major",
+            "level": 1,
+            "value": 1
+          },
+          {
+            "id": "cleanseEfficiency",
+            "stat": "cleanseEfficiency",
+            "label": "净化效率",
+            "category": "archetype",
+            "level": 1,
+            "value": 3
+          }
+        ],
+        "bestFits": [
+          {
+            "heroId": "hero_warrior",
+            "heroName": "灰鸦战士",
+            "role": "warrior",
+            "fitScore": 42.15,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 42.15
+          },
+          {
+            "heroId": "militia_barricade",
+            "heroName": "拒马民兵",
+            "role": "warrior",
+            "fitScore": 42.15,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 42.15
+          },
+          {
+            "heroId": "militia_spear",
+            "heroName": "短矛民兵",
+            "role": "warrior",
+            "fitScore": 42.15,
+            "currentItem": "空",
+            "currentFitScore": 0,
+            "fitDelta": 42.15
+          }
+        ]
+      }
+    ],
+    "visibleNodes": [
+      {
+        "id": "r1_main_1",
+        "name": "灰带郊野 1",
+        "type": "main",
+        "status": "farmable",
+        "rewardHint": "白装；装备池含极低概率神话品质",
+        "enemyHint": "两大波、三次进场的弱小散兵"
+      },
+      {
+        "id": "r1_main_2",
+        "name": "灰带郊野 2",
+        "type": "main",
+        "status": "farmable",
+        "rewardHint": "白装；装备池含极低概率神话品质",
+        "enemyHint": "两名近战和一名远程"
+      },
+      {
+        "id": "r1_main_3",
+        "name": "灰带郊野 3",
+        "type": "main",
+        "status": "farmable",
+        "rewardHint": "可能出现蓝装；装备池含极低概率神话品质",
+        "enemyHint": "两名近战和一名远程"
+      },
+      {
+        "id": "r1_main_4",
+        "name": "灰带郊野 4",
+        "type": "main",
+        "status": "available",
+        "rewardHint": "白装；装备池含极低概率神话品质",
+        "enemyHint": "近战、远程与治疗"
+      },
+      {
+        "id": "r1_prison",
+        "name": "旧塔监狱",
+        "type": "branch",
+        "status": "available",
+        "rewardHint": "首通营救林地游侠：持续锁定单体并累积猎标；复战无首通奖励",
+        "enemyHint": "狱门护盾、后排哨手与治疗"
+      }
+    ],
+    "optionalOpportunities": [
+      {
+        "node": "r1_prison",
+        "status": "available",
+        "reason": "可选救援：首通营救擅长持续单体输出的林地游侠"
+      }
+    ],
+    "allowedActions": [
+      "equip:hero_warrior:r1_main_2_1_1",
+      "equip:militia_barricade:r1_main_2_1_1",
+      "equip:militia_spear:r1_main_2_1_1",
+      "equip:militia_herb:r1_main_2_1_1",
+      "equip:militia_drum:r1_main_2_1_1",
+      "equip:hero_mage:r1_main_2_1_1",
+      "equip:hero_berserker:r1_main_2_1_1",
+      "equip:hero_warrior:r1_main_2_1_0",
+      "equip:militia_barricade:r1_main_2_1_0",
+      "equip:militia_spear:r1_main_2_1_0",
+      "equip:militia_herb:r1_main_2_1_0",
+      "equip:militia_drum:r1_main_2_1_0",
+      "equip:hero_mage:r1_main_2_1_0",
+      "equip:hero_berserker:r1_main_2_1_0",
+      "equip:hero_warrior:r1_main_3_1_1",
+      "equip:militia_barricade:r1_main_3_1_1",
+      "equip:militia_spear:r1_main_3_1_1",
+      "equip:militia_herb:r1_main_3_1_1",
+      "equip:militia_drum:r1_main_3_1_1",
+      "equip:hero_mage:r1_main_3_1_1",
+      "equip:hero_berserker:r1_main_3_1_1",
+      "equip:hero_warrior:r1_main_3_1_0",
+      "equip:militia_barricade:r1_main_3_1_0",
+      "equip:militia_spear:r1_main_3_1_0",
+      "equip:militia_herb:r1_main_3_1_0",
+      "equip:militia_drum:r1_main_3_1_0",
+      "equip:hero_mage:r1_main_3_1_0",
+      "equip:hero_berserker:r1_main_3_1_0",
+      "swap:0:militia_barricade",
+      "swap:1:militia_barricade",
+      "swap:2:militia_barricade",
+      "swap:3:militia_barricade",
+      "swap:0:militia_spear",
+      "swap:1:militia_spear",
+      "swap:2:militia_spear",
+      "swap:3:militia_spear",
+      "swap:0:militia_drum",
+      "swap:1:militia_drum",
+      "swap:2:militia_drum",
+      "swap:3:militia_drum",
+      "challenge:r1_main_1",
+      "challenge:r1_main_2",
+      "challenge:r1_main_3",
+      "challenge:r1_main_4",
+      "challenge:r1_prison"
+    ]
+  },
+  "responseContract": {
+    "action": "one exact value from observation.allowedActions",
+    "goalId": "one visible goal id",
+    "reasoningChain": {
+      "noHypothesis": "one or more factual steps",
+      "withHypothesis": "must include goal, knowledge or evidence, affordance, comparison, and hypothesis steps",
+      "item": {
+        "kind": "goal|knowledge|evidence|affordance|comparison|hypothesis",
+        "evidence": "short factual evidence"
+      }
+    },
+    "alternatives": "at least one legal alternative when hypothesis is non-null",
+    "hypothesis": {
+      "nullable": true,
+      "requiredFields": [
+        "id",
+        "problem",
+        "cause",
+        "resultKind",
+        "target",
+        "verificationScope"
+      ],
+      "verificationScope": "current_action|next_combat",
+      "nextCombatResultKind": "team_experiment_contribution",
+      "optionalTargetCondition": {
+        "metric": "damage|heal|shield|skillCount|damageShare|damageRank",
+        "operator": ">|>=|<|<=|==",
+        "value": "number"
+      }
+    }
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 1,
+    "seed": "paired-alpha",
+    "profileId": "open_novice",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

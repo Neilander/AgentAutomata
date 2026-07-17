@@ -1,5 +1,6 @@
 const assert = require("node:assert/strict");
 const LOOP = require("./player-agent-loop");
+const COMPACT = require("./compact-request");
 const COMBAT_SIM = require("../../game_data/combat-sim");
 const ENCOUNTERS = require("../../map_progression_lab/map-progression-encounters");
 const ROSTER = require("../../map_progression_lab/map-progression-roster");
@@ -36,6 +37,15 @@ assert.equal(session.history[0].eventLog.filter((row) => row.behavior.tags?.incl
 assert.equal(equippedCount(session.gameState), 0, "loot must not auto-equip");
 assert.equal(session.gameState.history[0].gearAfter, 0, "loot alone must not change equipped power");
 assert.equal(session.knowledgeBase.some((row) => row.behavior.kind === "receive_reward"), false);
+assert.equal(session.entityImpressionState.profile, "ordinary");
+assert.equal(session.entityImpressionState.strengthCognitionMatrix.entries.length, 4,
+  "the formal player session must persist one current strength position per observed team character");
+assert.equal(session.entityImpressionState.strengthCognitionMatrix.scale.topCount, 2,
+  "four observed characters must use a ceil(30%) = two-character ruler boundary");
+assert.equal(session.history[0].entityImpressionUpdate.currentStrengthCognition.length, 4,
+  "the battle record must retain the deterministic simultaneous matrix update");
+assert.equal(session.rosterExpectationState.observations.length, 1,
+  "the formal session must scope encounter results to the exact observed roster");
 
 const lootFact = session.knowledgeBase.find((row) => row.environment.phase === "loot_drop");
 assert.equal(lootFact.behavior.kind, "clear_level");
@@ -78,6 +88,21 @@ session = LOOP.applyAttributionResponse(session, {
 });
 
 const request = LOOP.getPendingRequest(session);
+assert.equal(request.playerState.characterImpressions.length, 4,
+  "the next decision must receive code-owned current character impressions");
+assert(request.playerState.characterImpressions.every((row) => Number.isFinite(row.position)
+  && Number.isFinite(row.currentLevel)), "character impression summaries must expose fixed numeric outputs");
+assert.equal(request.playerState.rosterChangeExpectations.baseline.evidenceScope,
+  "exact_current_team_and_encounter");
+assert(request.playerState.rosterChangeExpectations.actions.length > 0,
+  "the next decision must receive one code-owned expectation per legal roster change");
+assert(request.playerState.rosterChangeExpectations.actions.every((row) => row.expectedOutcome === "unknown"),
+  "an untested reserve character must remain unknown instead of inheriting the current team's result");
+const compactRequest = COMPACT.compactDecision(request);
+assert.equal(compactRequest.playerState.characterImpressions.length, 4,
+  "the compact external-Agent request must retain character cognition");
+assert.deepEqual(compactRequest.playerState.rosterChangeExpectations, request.playerState.rosterChangeExpectations,
+  "the compact external-Agent request must retain every code-owned swap expectation");
 const item = request.observation.inventory[0];
 const bestHero = item.bestFits[0];
 const equipAction = `equip:${bestHero.heroId}:${item.id}`;

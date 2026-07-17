@@ -1,0 +1,1289 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 18,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-b1d1f0be1a6e2c84",
+    "mode": "continue",
+    "turn": 36,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "damage_absolutist",
+    "label": "Damage absolutist",
+    "summary": "Believes direct damage solves most combat problems and initially discounts sustain.",
+    "decisionBias": {
+      "riskTolerance": 0.75,
+      "exploration": 0.35,
+      "changeAversion": 0.35,
+      "evidenceThreshold": 0.62,
+      "preferences": {
+        "damage": 1,
+        "survival": 0.15,
+        "novelty": 0.3,
+        "rarity": 0.35,
+        "simplicity": 0.7
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "maximizing_direct_damage",
+          "label": "maximizing direct damage"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "raises_win_probability",
+          "label": "raises win probability"
+        },
+        "confidence": 0.84,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:damage_absolutist:1"
+      },
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "using_healing_or_defensive_slots",
+          "label": "using healing or defensive slots"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "reduces_combat_tempo",
+          "label": "reduces combat tempo"
+        },
+        "confidence": 0.72,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:damage_absolutist:2"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "challenge:r1_prison",
+  "outcome": "win",
+  "emotionBeforeAction": 49.7679,
+  "emotionAfterEvents": 53.88,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:62",
+      "key": "player_squad|region_1|r1_prison|encounter|challenge_level|challenge:r1_prison",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_prison",
+        "phase": "encounter",
+        "team": [
+          "hero_warrior",
+          "hero_mage",
+          "militia_spear",
+          "hero_berserker"
+        ]
+      },
+      "behavior": {
+        "kind": "challenge_level",
+        "key": "challenge:r1_prison",
+        "target": "r1_prison"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "win": 1
+        },
+        "observations": [
+          {
+            "outcome": "win",
+            "duration": 18.08,
+            "survivors": {
+              "player": 4,
+              "enemy": 0
+            },
+            "resolution": "elimination",
+            "firstClear": true
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r1_prison:18:result",
+        "map_action:r1_prison:18:summary"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:63",
+      "key": "player_squad|region_1|r1_prison|loot_drop|clear_level|challenge:r1_prison",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_prison",
+        "phase": "loot_drop"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r1_prison",
+        "target": "r1_prison"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "loot_obtained": 1
+        },
+        "observations": [
+          {
+            "outcome": "loot_obtained",
+            "drops": [
+              {
+                "id": "r1_prison_1_0",
+                "name": "传说头盔 Lv.14",
+                "slot": "helm",
+                "rarity": "legendary",
+                "level": 14
+              },
+              {
+                "id": "r1_prison_1_1",
+                "name": "稀有靴子 Lv.15",
+                "slot": "boots",
+                "rarity": "rare",
+                "level": 15
+              }
+            ],
+            "inventoryCountBefore": 5,
+            "inventoryCountAfter": 7,
+            "equippedPowerBefore": 399,
+            "equippedPowerAfter": 399,
+            "powerChanged": false
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r1_prison:18:result",
+        "map_action:r1_prison:18:loot:1",
+        "map_action:r1_prison:18:loot:2"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:64",
+      "key": "player_squad|region_1|r1_prison|character_reward|clear_level|challenge:r1_prison",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_prison",
+        "phase": "character_reward"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r1_prison",
+        "target": "r1_prison"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "character_unlocked": 1
+        },
+        "observations": [
+          {
+            "outcome": "character_unlocked",
+            "character": {
+              "id": "ranger",
+              "heroId": "hero_ranger",
+              "name": "林地游侠"
+            },
+            "activeTeamChanged": false
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r1_prison:18:character"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:65",
+      "key": "field:old_tower_prison|region_1|r1_prison|field_rule|affect_battle|field:old_tower_prison",
+      "subject": {
+        "id": "field:old_tower_prison",
+        "name": "狱门护盾"
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_prison",
+        "phase": "field_rule"
+      },
+      "behavior": {
+        "kind": "affect_battle",
+        "key": "field:old_tower_prison",
+        "target": "both_teams"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "field_effect_observed": 1
+        },
+        "observations": [
+          {
+            "outcome": "field_effect_observed",
+            "rule": "",
+            "signalCount": 4,
+            "visibleSignals": [
+              "狱门护盾",
+              "狱塔哨手被贴身"
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:1:combat:2",
+        "r1_prison:attempt:1:combat:4",
+        "r1_prison:attempt:1:combat:81",
+        "r1_prison:attempt:1:combat:425"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:66",
+      "key": "hero_berserker|region_1|region_1_optional_branch|combat_pattern|combat_participation|fight:hero_berserker",
+      "subject": {
+        "id": "hero_berserker",
+        "name": "赤潮狂战士",
+        "role": "berserker",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_berserker",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 1416.265,
+            "damageShare": 0.4674,
+            "damageRank": 1,
+            "teamDamage": 3029.95,
+            "healing": 245.1935,
+            "shielding": 0,
+            "kills": 2,
+            "skillCasts": 5
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:1:combat:165",
+        "r1_prison:attempt:1:combat:166",
+        "r1_prison:attempt:1:combat:167",
+        "r1_prison:attempt:1:combat:168",
+        "r1_prison:attempt:1:combat:169",
+        "r1_prison:attempt:1:combat:170",
+        "r1_prison:attempt:1:combat:171",
+        "r1_prison:attempt:1:combat:172",
+        "r1_prison:attempt:1:combat:200",
+        "r1_prison:attempt:1:combat:202",
+        "r1_prison:attempt:1:combat:203",
+        "r1_prison:attempt:1:combat:204",
+        "r1_prison:attempt:1:combat:222",
+        "r1_prison:attempt:1:combat:223",
+        "r1_prison:attempt:1:combat:224",
+        "r1_prison:attempt:1:combat:251",
+        "r1_prison:attempt:1:combat:252",
+        "r1_prison:attempt:1:combat:253",
+        "r1_prison:attempt:1:combat:272",
+        "r1_prison:attempt:1:combat:273",
+        "r1_prison:attempt:1:combat:274",
+        "r1_prison:attempt:1:combat:276",
+        "r1_prison:attempt:1:combat:305",
+        "r1_prison:attempt:1:combat:306",
+        "r1_prison:attempt:1:combat:307",
+        "r1_prison:attempt:1:combat:310",
+        "r1_prison:attempt:1:combat:312",
+        "r1_prison:attempt:1:combat:376",
+        "r1_prison:attempt:1:combat:377",
+        "r1_prison:attempt:1:combat:378",
+        "r1_prison:attempt:1:combat:379",
+        "r1_prison:attempt:1:combat:380",
+        "r1_prison:attempt:1:combat:399",
+        "r1_prison:attempt:1:combat:400",
+        "r1_prison:attempt:1:combat:486",
+        "r1_prison:attempt:1:combat:487",
+        "r1_prison:attempt:1:combat:488",
+        "r1_prison:attempt:1:combat:489",
+        "r1_prison:attempt:1:combat:490"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:67",
+      "key": "hero_mage|region_1|region_1_optional_branch|combat_pattern|combat_participation|fight:hero_mage",
+      "subject": {
+        "id": "hero_mage",
+        "name": "烬火法师",
+        "role": "mage",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_mage",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 837.679,
+            "damageShare": 0.2765,
+            "damageRank": 2,
+            "teamDamage": 3029.95,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 6
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:1:combat:41",
+        "r1_prison:attempt:1:combat:42",
+        "r1_prison:attempt:1:combat:51",
+        "r1_prison:attempt:1:combat:52",
+        "r1_prison:attempt:1:combat:85",
+        "r1_prison:attempt:1:combat:118",
+        "r1_prison:attempt:1:combat:150",
+        "r1_prison:attempt:1:combat:186",
+        "r1_prison:attempt:1:combat:187",
+        "r1_prison:attempt:1:combat:188",
+        "r1_prison:attempt:1:combat:189",
+        "r1_prison:attempt:1:combat:199",
+        "r1_prison:attempt:1:combat:220",
+        "r1_prison:attempt:1:combat:236",
+        "r1_prison:attempt:1:combat:290",
+        "r1_prison:attempt:1:combat:291",
+        "r1_prison:attempt:1:combat:292",
+        "r1_prison:attempt:1:combat:293",
+        "r1_prison:attempt:1:combat:295",
+        "r1_prison:attempt:1:combat:296",
+        "r1_prison:attempt:1:combat:297",
+        "r1_prison:attempt:1:combat:298",
+        "r1_prison:attempt:1:combat:299",
+        "r1_prison:attempt:1:combat:300",
+        "r1_prison:attempt:1:combat:301",
+        "r1_prison:attempt:1:combat:302",
+        "r1_prison:attempt:1:combat:303",
+        "r1_prison:attempt:1:combat:304",
+        "r1_prison:attempt:1:combat:308",
+        "r1_prison:attempt:1:combat:309",
+        "r1_prison:attempt:1:combat:338",
+        "r1_prison:attempt:1:combat:339",
+        "r1_prison:attempt:1:combat:343",
+        "r1_prison:attempt:1:combat:353",
+        "r1_prison:attempt:1:combat:365",
+        "r1_prison:attempt:1:combat:366",
+        "r1_prison:attempt:1:combat:381",
+        "r1_prison:attempt:1:combat:382",
+        "r1_prison:attempt:1:combat:383",
+        "r1_prison:attempt:1:combat:384",
+        "r1_prison:attempt:1:combat:386",
+        "r1_prison:attempt:1:combat:387",
+        "r1_prison:attempt:1:combat:396",
+        "r1_prison:attempt:1:combat:397",
+        "r1_prison:attempt:1:combat:416",
+        "r1_prison:attempt:1:combat:417",
+        "r1_prison:attempt:1:combat:420",
+        "r1_prison:attempt:1:combat:422",
+        "r1_prison:attempt:1:combat:451",
+        "r1_prison:attempt:1:combat:485"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:68",
+      "key": "hero_warrior|region_1|region_1_optional_branch|combat_pattern|combat_participation|fight:hero_warrior",
+      "subject": {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_warrior",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 555.11,
+            "damageShare": 0.1832,
+            "damageRank": 3,
+            "teamDamage": 3029.95,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 6
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:1:combat:78",
+        "r1_prison:attempt:1:combat:79",
+        "r1_prison:attempt:1:combat:80",
+        "r1_prison:attempt:1:combat:81",
+        "r1_prison:attempt:1:combat:82",
+        "r1_prison:attempt:1:combat:184",
+        "r1_prison:attempt:1:combat:207",
+        "r1_prison:attempt:1:combat:208",
+        "r1_prison:attempt:1:combat:209",
+        "r1_prison:attempt:1:combat:219",
+        "r1_prison:attempt:1:combat:250",
+        "r1_prison:attempt:1:combat:268",
+        "r1_prison:attempt:1:combat:269",
+        "r1_prison:attempt:1:combat:270",
+        "r1_prison:attempt:1:combat:280",
+        "r1_prison:attempt:1:combat:410",
+        "r1_prison:attempt:1:combat:411",
+        "r1_prison:attempt:1:combat:412",
+        "r1_prison:attempt:1:combat:414",
+        "r1_prison:attempt:1:combat:415",
+        "r1_prison:attempt:1:combat:472",
+        "r1_prison:attempt:1:combat:475",
+        "r1_prison:attempt:1:combat:476"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:69",
+      "key": "militia_spear|region_1|region_1_optional_branch|combat_pattern|combat_participation|fight:militia_spear",
+      "subject": {
+        "id": "militia_spear",
+        "name": "短矛民兵",
+        "role": "warrior",
+        "kind": "militia"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:militia_spear",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 220.896,
+            "damageShare": 0.0729,
+            "damageRank": 4,
+            "teamDamage": 3029.95,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 3
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:1:combat:107",
+        "r1_prison:attempt:1:combat:108",
+        "r1_prison:attempt:1:combat:210",
+        "r1_prison:attempt:1:combat:238",
+        "r1_prison:attempt:1:combat:239",
+        "r1_prison:attempt:1:combat:240",
+        "r1_prison:attempt:1:combat:257",
+        "r1_prison:attempt:1:combat:423",
+        "r1_prison:attempt:1:combat:424",
+        "r1_prison:attempt:1:combat:425",
+        "r1_prison:attempt:1:combat:426",
+        "r1_prison:attempt:1:combat:427",
+        "r1_prison:attempt:1:combat:468"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:70",
+      "key": "player_squad|region_1|r1_prison|combat|attack_enemy_squad|team_damage:r1_prison",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_prison",
+        "phase": "combat",
+        "team": [
+          "hero_warrior",
+          "hero_mage",
+          "militia_spear",
+          "hero_berserker"
+        ]
+      },
+      "behavior": {
+        "kind": "attack_enemy_squad",
+        "key": "team_damage:r1_prison"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "damage_profile": 1
+        },
+        "observations": [
+          {
+            "outcome": "damage_profile",
+            "d50": 21.12,
+            "d90": 116.411,
+            "frequency": 3.982,
+            "impact": 0.333,
+            "hitCount": 72,
+            "killCount": 4,
+            "totalDamage": 3029.95
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:1:combat:82",
+        "r1_prison:attempt:1:combat:85",
+        "r1_prison:attempt:1:combat:118",
+        "r1_prison:attempt:1:combat:150",
+        "r1_prison:attempt:1:combat:166",
+        "r1_prison:attempt:1:combat:170",
+        "r1_prison:attempt:1:combat:172",
+        "r1_prison:attempt:1:combat:184",
+        "r1_prison:attempt:1:combat:187",
+        "r1_prison:attempt:1:combat:188",
+        "r1_prison:attempt:1:combat:199",
+        "r1_prison:attempt:1:combat:202",
+        "r1_prison:attempt:1:combat:204",
+        "r1_prison:attempt:1:combat:209",
+        "r1_prison:attempt:1:combat:210",
+        "r1_prison:attempt:1:combat:219",
+        "r1_prison:attempt:1:combat:220",
+        "r1_prison:attempt:1:combat:222",
+        "r1_prison:attempt:1:combat:224",
+        "r1_prison:attempt:1:combat:236",
+        "r1_prison:attempt:1:combat:240",
+        "r1_prison:attempt:1:combat:250",
+        "r1_prison:attempt:1:combat:251",
+        "r1_prison:attempt:1:combat:253",
+        "r1_prison:attempt:1:combat:257",
+        "r1_prison:attempt:1:combat:269",
+        "r1_prison:attempt:1:combat:270",
+        "r1_prison:attempt:1:combat:272",
+        "r1_prison:attempt:1:combat:274",
+        "r1_prison:attempt:1:combat:276",
+        "r1_prison:attempt:1:combat:280",
+        "r1_prison:attempt:1:combat:291",
+        "r1_prison:attempt:1:combat:293",
+        "r1_prison:attempt:1:combat:296",
+        "r1_prison:attempt:1:combat:298",
+        "r1_prison:attempt:1:combat:300",
+        "r1_prison:attempt:1:combat:302",
+        "r1_prison:attempt:1:combat:304",
+        "r1_prison:attempt:1:combat:305",
+        "r1_prison:attempt:1:combat:308",
+        "r1_prison:attempt:1:combat:309",
+        "r1_prison:attempt:1:combat:310",
+        "r1_prison:attempt:1:combat:312",
+        "r1_prison:attempt:1:combat:338",
+        "r1_prison:attempt:1:combat:339",
+        "r1_prison:attempt:1:combat:343",
+        "r1_prison:attempt:1:combat:353",
+        "r1_prison:attempt:1:combat:365",
+        "r1_prison:attempt:1:combat:366",
+        "r1_prison:attempt:1:combat:377",
+        "r1_prison:attempt:1:combat:379",
+        "r1_prison:attempt:1:combat:382",
+        "r1_prison:attempt:1:combat:383",
+        "r1_prison:attempt:1:combat:386",
+        "r1_prison:attempt:1:combat:387",
+        "r1_prison:attempt:1:combat:396",
+        "r1_prison:attempt:1:combat:397",
+        "r1_prison:attempt:1:combat:399",
+        "r1_prison:attempt:1:combat:412",
+        "r1_prison:attempt:1:combat:414",
+        "r1_prison:attempt:1:combat:416",
+        "r1_prison:attempt:1:combat:417",
+        "r1_prison:attempt:1:combat:420",
+        "r1_prison:attempt:1:combat:422",
+        "r1_prison:attempt:1:combat:426",
+        "r1_prison:attempt:1:combat:451",
+        "r1_prison:attempt:1:combat:468",
+        "r1_prison:attempt:1:combat:472",
+        "r1_prison:attempt:1:combat:476",
+        "r1_prison:attempt:1:combat:485",
+        "r1_prison:attempt:1:combat:488"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:71",
+      "key": "enemy_squad:r1_prison|region_1|r1_prison|combat|attack_player_squad|enemy_attack:r1_prison",
+      "subject": {
+        "id": "enemy_squad:r1_prison",
+        "name": "enemy squad"
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_prison",
+        "phase": "combat"
+      },
+      "behavior": {
+        "kind": "attack_player_squad",
+        "key": "enemy_attack:r1_prison",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "threat_profile": 1
+        },
+        "observations": [
+          {
+            "outcome": "threat_profile",
+            "firstAllyDeath": null,
+            "incomingDamage": {
+              "physical": 820.2,
+              "magic": 0,
+              "effect": 0
+            },
+            "dominantDamage": "physical",
+            "enemySurvivors": [],
+            "enemySurvivorCount": 0
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:1:combat:31",
+        "r1_prison:attempt:1:combat:40",
+        "r1_prison:attempt:1:combat:55",
+        "r1_prison:attempt:1:combat:56",
+        "r1_prison:attempt:1:combat:65",
+        "r1_prison:attempt:1:combat:76",
+        "r1_prison:attempt:1:combat:86",
+        "r1_prison:attempt:1:combat:97",
+        "r1_prison:attempt:1:combat:106",
+        "r1_prison:attempt:1:combat:117",
+        "r1_prison:attempt:1:combat:119",
+        "r1_prison:attempt:1:combat:120",
+        "r1_prison:attempt:1:combat:137",
+        "r1_prison:attempt:1:combat:138",
+        "r1_prison:attempt:1:combat:141",
+        "r1_prison:attempt:1:combat:151",
+        "r1_prison:attempt:1:combat:152",
+        "r1_prison:attempt:1:combat:164",
+        "r1_prison:attempt:1:combat:175",
+        "r1_prison:attempt:1:combat:185",
+        "r1_prison:attempt:1:combat:198",
+        "r1_prison:attempt:1:combat:201",
+        "r1_prison:attempt:1:combat:221",
+        "r1_prison:attempt:1:combat:235",
+        "r1_prison:attempt:1:combat:237",
+        "r1_prison:attempt:1:combat:249",
+        "r1_prison:attempt:1:combat:271",
+        "r1_prison:attempt:1:combat:289",
+        "r1_prison:attempt:1:combat:294",
+        "r1_prison:attempt:1:combat:315",
+        "r1_prison:attempt:1:combat:320",
+        "r1_prison:attempt:1:combat:337",
+        "r1_prison:attempt:1:combat:342",
+        "r1_prison:attempt:1:combat:344",
+        "r1_prison:attempt:1:combat:355",
+        "r1_prison:attempt:1:combat:367",
+        "r1_prison:attempt:1:combat:385",
+        "r1_prison:attempt:1:combat:398",
+        "r1_prison:attempt:1:combat:413",
+        "r1_prison:attempt:1:combat:442",
+        "r1_prison:attempt:1:combat:471",
+        "r1_prison:attempt:1:combat:473"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:72",
+      "key": "concept:enemy_minion_ranged|region_1|region_1_optional_branch|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_ranged",
+      "subject": {
+        "id": "concept:enemy_minion_ranged",
+        "name": "远程小怪",
+        "conceptId": "enemy_minion_ranged"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_ranged",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 1
+        },
+        "observations": [
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 2,
+            "damage": 677.7264,
+            "damageShare": 0.8263,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 178.08,
+            "kills": 0,
+            "skillCasts": 7,
+            "observedTargets": [
+              "烬火法师",
+              "灰鸦战士",
+              "赤潮狂战士"
+            ],
+            "supportTargets": [
+              "远程小怪"
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_prison:attempt:1:combat:3",
+        "r1_prison:attempt:1:combat:29",
+        "r1_prison:attempt:1:combat:30",
+        "r1_prison:attempt:1:combat:31",
+        "r1_prison:attempt:1:combat:40",
+        "r1_prison:attempt:1:combat:53",
+        "r1_prison:attempt:1:combat:54",
+        "r1_prison:attempt:1:combat:55",
+        "r1_prison:attempt:1:combat:56",
+        "r1_prison:attempt:1:combat:65",
+        "r1_prison:attempt:1:combat:97",
+        "r1_prison:attempt:1:combat:106",
+        "r1_prison:attempt:1:combat:120",
+        "r1_prison:attempt:1:combat:137",
+        "r1_prison:attempt:1:combat:139",
+        "r1_prison:attempt:1:combat:140",
+        "r1_prison:attempt:1:combat:141",
+        "r1_prison:attempt:1:combat:152",
+        "r1_prison:attempt:1:combat:162",
+        "r1_prison:attempt:1:combat:163",
+        "r1_prison:attempt:1:combat:164",
+        "r1_prison:attempt:1:combat:175",
+        "r1_prison:attempt:1:combat:201",
+        "r1_prison:attempt:1:combat:221",
+        "r1_prison:attempt:1:combat:249",
+        "r1_prison:attempt:1:combat:271",
+        "r1_prison:attempt:1:combat:315",
+        "r1_prison:attempt:1:combat:318",
+        "r1_prison:attempt:1:combat:319",
+        "r1_prison:attempt:1:combat:320",
+        "r1_prison:attempt:1:combat:337",
+        "r1_prison:attempt:1:combat:340",
+        "r1_prison:attempt:1:combat:341",
+        "r1_prison:attempt:1:combat:342",
+        "r1_prison:attempt:1:combat:355",
+        "r1_prison:attempt:1:combat:367",
+        "r1_prison:attempt:1:combat:398",
+        "r1_prison:attempt:1:combat:413",
+        "r1_prison:attempt:1:combat:442",
+        "r1_prison:attempt:1:combat:469",
+        "r1_prison:attempt:1:combat:470",
+        "r1_prison:attempt:1:combat:471",
+        "r1_prison:attempt:1:combat:473"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 217,
+  "visibleEvents": [
+    {
+      "id": "r1_prison:attempt:1:combat:1",
+      "time": 0,
+      "type": "shield",
+      "subject": "普通小怪",
+      "behavior": "旧塔狱门",
+      "result": {
+        "kind": "shield",
+        "occurred": true,
+        "amount": 344.82,
+        "target": "普通小怪"
+      },
+      "H": 0.2195,
+      "emotionDelta": -0.0038
+    },
+    {
+      "id": "r1_prison:attempt:1:combat:3",
+      "time": 0,
+      "type": "shield",
+      "subject": "远程小怪",
+      "behavior": "旧塔狱门",
+      "result": {
+        "kind": "shield",
+        "occurred": true,
+        "amount": 178.08,
+        "target": "远程小怪"
+      },
+      "H": 0.2195,
+      "emotionDelta": -0.0019
+    },
+    {
+      "id": "r1_prison:attempt:1:combat:84",
+      "time": 3.84,
+      "type": "heal",
+      "subject": "普通小怪",
+      "behavior": "急救",
+      "result": {
+        "kind": "heal",
+        "occurred": true,
+        "amount": 33.94,
+        "target": "远程小怪"
+      },
+      "H": 0.2188,
+      "emotionDelta": -0.0004
+    },
+    {
+      "id": "r1_prison:attempt:1:combat:108",
+      "time": 5.04,
+      "type": "status",
+      "subject": "短矛民兵",
+      "behavior": "重击",
+      "result": {
+        "kind": "status",
+        "occurred": true,
+        "amount": 1.5,
+        "target": "短矛民兵"
+      },
+      "H": 0.2336,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r1_prison:attempt:1:combat:172",
+      "time": 7.76,
+      "type": "damage",
+      "subject": "赤潮狂战士",
+      "behavior": "旋风溅射",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 17.0388,
+        "target": "远程小怪"
+      },
+      "H": 0.2708,
+      "emotionDelta": 0.0007
+    },
+    {
+      "id": "r1_prison:attempt:1:combat:239",
+      "time": 10.08,
+      "type": "status",
+      "subject": "短矛民兵",
+      "behavior": "重击",
+      "result": {
+        "kind": "status",
+        "occurred": true,
+        "amount": 1.5,
+        "target": "短矛民兵"
+      },
+      "H": 0.2336,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r1_prison:attempt:1:combat:307",
+      "time": 11.6,
+      "type": "death",
+      "subject": "赤潮狂战士",
+      "behavior": "战吼普攻",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.0995,
+      "emotionDelta": 0.0181
+    },
+    {
+      "id": "r1_prison:attempt:1:combat:355",
+      "time": 13.2,
+      "type": "damage",
+      "subject": "远程小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 13.66,
+        "target": "灰鸦战士"
+      },
+      "H": 0.2708,
+      "emotionDelta": -0.0003
+    },
+    {
+      "id": "r1_prison:attempt:1:combat:415",
+      "time": 15.44,
+      "type": "death",
+      "subject": "灰鸦战士",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "远程小怪"
+      },
+      "H": 0.1456,
+      "emotionDelta": 0.0266
+    },
+    {
+      "id": "r1_prison:attempt:1:combat:427",
+      "time": 15.68,
+      "type": "death",
+      "subject": "短矛民兵",
+      "behavior": "重击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.2011,
+      "emotionDelta": 0.0439
+    },
+    {
+      "id": "map_action:r1_prison:18:result",
+      "time": 18.08,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "challenge:r1_prison",
+      "result": {
+        "kind": "combat_win",
+        "occurred": true,
+        "observedPower": 399,
+        "boundary": "normal_end",
+        "firstClear": true,
+        "survivors": {
+          "player": 4,
+          "enemy": 0
+        }
+      },
+      "H": 0.6792,
+      "emotionDelta": 0.6757
+    },
+    {
+      "id": "r1_prison:attempt:1:combat:489",
+      "time": 18.08,
+      "type": "heal",
+      "subject": "赤潮狂战士",
+      "behavior": "吸血",
+      "result": {
+        "kind": "heal",
+        "occurred": true,
+        "amount": 25.1853,
+        "target": "赤潮狂战士"
+      },
+      "H": 0.2188,
+      "emotionDelta": 0.0002
+    },
+    {
+      "id": "r1_prison:attempt:1:combat:490",
+      "time": 18.08,
+      "type": "death",
+      "subject": "赤潮狂战士",
+      "behavior": "血怒普攻",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "远程小怪"
+      },
+      "H": 0.1553,
+      "emotionDelta": 0.0246
+    },
+    {
+      "id": "map_action:r1_prison:18:loot-outcome",
+      "time": 18.084999999999997,
+      "type": "loot_outcome",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "probability_outcome",
+        "occurred": true,
+        "components": [
+          {
+            "kind": "loot"
+          },
+          {
+            "kind": "loot"
+          }
+        ]
+      },
+      "H": 0.5148,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:r1_prison:18:loot:1",
+      "time": 18.09,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "legendary",
+        "itemName": "传说头盔 Lv.14",
+        "equipmentLevel": 14,
+        "baseStats": {
+          "maxHp": 42,
+          "armor": 1
+        },
+        "affixCount": 7
+      },
+      "H": 0.6578,
+      "emotionDelta": 1.8541
+    },
+    {
+      "id": "map_action:r1_prison:18:loot:2",
+      "time": 18.099999999999998,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "rare",
+        "itemName": "稀有靴子 Lv.15",
+        "equipmentLevel": 15,
+        "baseStats": {
+          "maxHp": 43,
+          "armor": 1
+        },
+        "affixCount": 2
+      },
+      "H": 0.6578,
+      "emotionDelta": -0.4818
+    },
+    {
+      "id": "map_action:r1_prison:18:character",
+      "time": 18.119999999999997,
+      "type": "character_unlock",
+      "subject": "player squad",
+      "behavior": "character rescue",
+      "result": {
+        "kind": "character_unlock",
+        "occurred": true,
+        "character": "ranger",
+        "heroId": "hero_ranger",
+        "characterName": "林地游侠"
+      },
+      "H": 0.715,
+      "emotionDelta": 2.2569
+    },
+    {
+      "id": "map_action:r1_prison:18:summary",
+      "time": 18.159999999999997,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "challenge:r1_prison",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 399,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "combat_win"
+          },
+          {
+            "kind": "character_unlock"
+          }
+        ]
+      },
+      "H": 0.5363,
+      "emotionDelta": -0.3254
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 1,
+    "seed": "paired-alpha",
+    "profileId": "damage_absolutist",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

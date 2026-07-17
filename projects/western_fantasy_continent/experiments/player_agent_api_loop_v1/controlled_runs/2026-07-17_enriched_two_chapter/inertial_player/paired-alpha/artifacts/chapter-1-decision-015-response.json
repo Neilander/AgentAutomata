@@ -1,0 +1,47 @@
+{
+  "action": "swap:1:hero_berserker",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "需要在保留大部分熟悉配置的同时突破军械支线。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "三次军械失败中拒马民兵贡献很低且多次最先阵亡；累计装备强化只把结果改善到击杀两人。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "赤潮狂战士是完整近战输出，描述为低血时能用高风险换爆发；尚无实战认知。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "只替换前排2的拒马民兵，其他三人和装备保持不变。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "相比再堆多件装备，这次单槽替换直接针对低贡献成员，但结果仍未知。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "狂战士下一战应提供至少20%的团队伤害占比，证明这次菜单改变有实际贡献。"
+    }
+  ],
+  "alternatives": [
+    "swap:1:hero_mage",
+    "equip:militia_barricade:r1_main_5_1_0"
+  ],
+  "hypothesis": {
+    "id": "berserker_replaces_weak_frontline",
+    "problem": "强化后的原队仍无法通过军械支线",
+    "cause": "拒马民兵贡献过低且过早阵亡",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_berserker",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageShare",
+      "operator": ">=",
+      "value": 0.2
+    }
+  }
+}

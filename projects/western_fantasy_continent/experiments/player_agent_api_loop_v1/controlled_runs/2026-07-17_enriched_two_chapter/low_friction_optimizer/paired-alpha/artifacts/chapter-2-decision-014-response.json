@@ -1,0 +1,43 @@
+{
+  "action": "swap:1:hero_knight",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "按前排守旗规则调整一名角色并完成第二项试炼。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "骑士能承接集火、制造护盾并稳定前排，且已装备两件生存装。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "当前允许把骑士换入前排2的牧师槽。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "牧师的护盾场景验证已完成；王旗场景更需要专职前排。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "若骑士发挥守护作用，下一战应产生大于0的护盾。"
+    }
+  ],
+  "alternatives": [
+    "challenge:r2_flag_trial",
+    "swap:1:hero_warlock"
+  ],
+  "hypothesis": {
+    "id": "hypothesis:r2_knight_flag_trial",
+    "problem": "王旗试炼是否值得换入专职骑士",
+    "cause": "骑士的守护和护盾能稳定前排守旗",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_knight",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "shield",
+      "operator": ">",
+      "value": 0
+    }
+  }
+}

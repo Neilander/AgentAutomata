@@ -1,0 +1,47 @@
+{
+  "action": "swap:0:hero_warrior",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "需要结束炼金师阵容连续两次零击杀并突破首领。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "战士阵容前三次都能击杀2敌；炼金师阵容两次均零击杀。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "战士退出导致374装备战力离开当前阵容，而游侠现在额外拥有裂盾长弓。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "可以把前排1炼金师换回灰鸦战士。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "恢复已证明更接近胜利的战士，同时保留后来新增的游侠破盾武器。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "战士回归后下一战应恢复至少20%伤害占比。"
+    }
+  ],
+  "alternatives": [
+    "equip:hero_alchemist:r1_main_4_1_1",
+    "swap:0:hero_mage"
+  ],
+  "hypothesis": {
+    "id": "restore_equipped_warrior_after_alchemist_failure",
+    "problem": "炼金师阵容连续两次首领零击杀",
+    "cause": "替换战士同时丢失374当前装备战力",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_warrior",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageShare",
+      "operator": ">=",
+      "value": 0.2
+    }
+  }
+}

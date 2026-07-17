@@ -1,0 +1,1046 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 6,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-32029c5303dcbc98",
+    "mode": "continue",
+    "turn": 64,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "inertial_player",
+    "label": "Inertial player",
+    "summary": "Dislikes menus and composition changes; prefers another attempt with the current setup.",
+    "decisionBias": {
+      "riskTolerance": 0.58,
+      "exploration": 0.16,
+      "changeAversion": 0.92,
+      "evidenceThreshold": 0.82,
+      "preferences": {
+        "damage": 0.55,
+        "survival": 0.5,
+        "novelty": 0.1,
+        "rarity": 0.25,
+        "simplicity": 1
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "current_team",
+          "label": "current team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "retrying_a_familiar_encounter",
+          "label": "retrying a familiar encounter"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "is_cheaper_than_rebuilding",
+          "label": "is cheaper than rebuilding"
+        },
+        "confidence": 0.78,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:inertial_player:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "challenge:r2_confluence",
+  "outcome": "loss",
+  "emotionBeforeAction": 99.6386,
+  "emotionAfterEvents": 98.0867,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:158",
+      "key": "player_squad|region_2|r2_confluence|encounter|challenge_level|challenge:r2_confluence",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_confluence",
+        "phase": "encounter",
+        "team": [
+          "hero_warrior",
+          "hero_berserker",
+          "hero_ranger",
+          "militia_herb"
+        ]
+      },
+      "behavior": {
+        "kind": "challenge_level",
+        "key": "challenge:r2_confluence",
+        "target": "r2_confluence"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "loss": 1
+        },
+        "observations": [
+          {
+            "outcome": "loss",
+            "duration": 19.12,
+            "survivors": {
+              "player": 0,
+              "enemy": 4
+            },
+            "resolution": "elimination",
+            "firstClear": false
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r2_confluence:6:result",
+        "map_action:r2_confluence:6:summary"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:159",
+      "key": "hero_warrior|region_2|region_2_confluence|combat_pattern|combat_participation|fight:hero_warrior",
+      "subject": {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_confluence",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_warrior",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 351.696,
+            "damageShare": 0.4411,
+            "damageRank": 1,
+            "teamDamage": 797.399,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:96",
+        "r2_confluence:attempt:1:combat:97",
+        "r2_confluence:attempt:1:combat:98",
+        "r2_confluence:attempt:1:combat:100",
+        "r2_confluence:attempt:1:combat:101",
+        "r2_confluence:attempt:1:combat:99",
+        "r2_confluence:attempt:1:combat:104",
+        "r2_confluence:attempt:1:combat:237",
+        "r2_confluence:attempt:1:combat:238",
+        "r2_confluence:attempt:1:combat:253",
+        "r2_confluence:attempt:1:combat:294",
+        "r2_confluence:attempt:1:combat:303",
+        "r2_confluence:attempt:1:combat:304",
+        "r2_confluence:attempt:1:combat:305",
+        "r2_confluence:attempt:1:combat:334"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:160",
+      "key": "hero_ranger|region_2|region_2_confluence|combat_pattern|combat_participation|fight:hero_ranger",
+      "subject": {
+        "id": "hero_ranger",
+        "name": "林地游侠",
+        "role": "ranger",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_confluence",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_ranger",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 341.728,
+            "damageShare": 0.4286,
+            "damageRank": 2,
+            "teamDamage": 797.399,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 5
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:48",
+        "r2_confluence:attempt:1:combat:49",
+        "r2_confluence:attempt:1:combat:50",
+        "r2_confluence:attempt:1:combat:61",
+        "r2_confluence:attempt:1:combat:62",
+        "r2_confluence:attempt:1:combat:63",
+        "r2_confluence:attempt:1:combat:64",
+        "r2_confluence:attempt:1:combat:103",
+        "r2_confluence:attempt:1:combat:205",
+        "r2_confluence:attempt:1:combat:206",
+        "r2_confluence:attempt:1:combat:235",
+        "r2_confluence:attempt:1:combat:276",
+        "r2_confluence:attempt:1:combat:291",
+        "r2_confluence:attempt:1:combat:292",
+        "r2_confluence:attempt:1:combat:293",
+        "r2_confluence:attempt:1:combat:317",
+        "r2_confluence:attempt:1:combat:342",
+        "r2_confluence:attempt:1:combat:343",
+        "r2_confluence:attempt:1:combat:344",
+        "r2_confluence:attempt:1:combat:363",
+        "r2_confluence:attempt:1:combat:386"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:161",
+      "key": "militia_herb|region_2|region_2_confluence|combat_pattern|combat_participation|fight:militia_herb",
+      "subject": {
+        "id": "militia_herb",
+        "name": "草药民兵",
+        "role": "priest",
+        "kind": "militia"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_confluence",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:militia_herb",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 82.72,
+            "damageShare": 0.1037,
+            "damageRank": 3,
+            "teamDamage": 797.399,
+            "healing": 190.2204,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 3
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:59",
+        "r2_confluence:attempt:1:combat:60",
+        "r2_confluence:attempt:1:combat:65",
+        "r2_confluence:attempt:1:combat:102",
+        "r2_confluence:attempt:1:combat:149",
+        "r2_confluence:attempt:1:combat:198",
+        "r2_confluence:attempt:1:combat:232",
+        "r2_confluence:attempt:1:combat:254",
+        "r2_confluence:attempt:1:combat:255",
+        "r2_confluence:attempt:1:combat:278",
+        "r2_confluence:attempt:1:combat:323",
+        "r2_confluence:attempt:1:combat:362",
+        "r2_confluence:attempt:1:combat:387",
+        "r2_confluence:attempt:1:combat:437",
+        "r2_confluence:attempt:1:combat:450",
+        "r2_confluence:attempt:1:combat:451",
+        "r2_confluence:attempt:1:combat:470"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:162",
+      "key": "hero_berserker|region_2|region_2_confluence|combat_pattern|combat_participation|fight:hero_berserker",
+      "subject": {
+        "id": "hero_berserker",
+        "name": "赤潮狂战士",
+        "role": "berserker",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_confluence",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_berserker",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 21.255,
+            "damageShare": 0.0267,
+            "damageRank": 4,
+            "teamDamage": 797.399,
+            "healing": 1.4572,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 2
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:84",
+        "r2_confluence:attempt:1:combat:85",
+        "r2_confluence:attempt:1:combat:115",
+        "r2_confluence:attempt:1:combat:116",
+        "r2_confluence:attempt:1:combat:117",
+        "r2_confluence:attempt:1:combat:195",
+        "r2_confluence:attempt:1:combat:196"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:163",
+      "key": "player_squad|region_2|r2_confluence|combat|attack_enemy_squad|team_damage:r2_confluence",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_confluence",
+        "phase": "combat",
+        "team": [
+          "hero_warrior",
+          "hero_berserker",
+          "hero_ranger",
+          "militia_herb"
+        ]
+      },
+      "behavior": {
+        "kind": "attack_enemy_squad",
+        "key": "team_damage:r2_confluence"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "damage_profile": 1
+        },
+        "observations": [
+          {
+            "outcome": "damage_profile",
+            "totalDamage": 797.399
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:50",
+        "r2_confluence:attempt:1:combat:63",
+        "r2_confluence:attempt:1:combat:64",
+        "r2_confluence:attempt:1:combat:65",
+        "r2_confluence:attempt:1:combat:84",
+        "r2_confluence:attempt:1:combat:98",
+        "r2_confluence:attempt:1:combat:100",
+        "r2_confluence:attempt:1:combat:101",
+        "r2_confluence:attempt:1:combat:102",
+        "r2_confluence:attempt:1:combat:103",
+        "r2_confluence:attempt:1:combat:104",
+        "r2_confluence:attempt:1:combat:116",
+        "r2_confluence:attempt:1:combat:149",
+        "r2_confluence:attempt:1:combat:198",
+        "r2_confluence:attempt:1:combat:232",
+        "r2_confluence:attempt:1:combat:235",
+        "r2_confluence:attempt:1:combat:253",
+        "r2_confluence:attempt:1:combat:276",
+        "r2_confluence:attempt:1:combat:278",
+        "r2_confluence:attempt:1:combat:293",
+        "r2_confluence:attempt:1:combat:294",
+        "r2_confluence:attempt:1:combat:304",
+        "r2_confluence:attempt:1:combat:305",
+        "r2_confluence:attempt:1:combat:317",
+        "r2_confluence:attempt:1:combat:323",
+        "r2_confluence:attempt:1:combat:334",
+        "r2_confluence:attempt:1:combat:344",
+        "r2_confluence:attempt:1:combat:362",
+        "r2_confluence:attempt:1:combat:363",
+        "r2_confluence:attempt:1:combat:386",
+        "r2_confluence:attempt:1:combat:387",
+        "r2_confluence:attempt:1:combat:437",
+        "r2_confluence:attempt:1:combat:470"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:164",
+      "key": "enemy_squad:r2_confluence|region_2|r2_confluence|combat|attack_player_squad|enemy_attack:r2_confluence",
+      "subject": {
+        "id": "enemy_squad:r2_confluence",
+        "name": "enemy squad"
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_confluence",
+        "phase": "combat"
+      },
+      "behavior": {
+        "kind": "attack_player_squad",
+        "key": "enemy_attack:r2_confluence",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "threat_profile": 1
+        },
+        "observations": [
+          {
+            "outcome": "threat_profile",
+            "enemySurvivorCount": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:43",
+        "r2_confluence:attempt:1:combat:46",
+        "r2_confluence:attempt:1:combat:47",
+        "r2_confluence:attempt:1:combat:73",
+        "r2_confluence:attempt:1:combat:82",
+        "r2_confluence:attempt:1:combat:86",
+        "r2_confluence:attempt:1:combat:95",
+        "r2_confluence:attempt:1:combat:113",
+        "r2_confluence:attempt:1:combat:121",
+        "r2_confluence:attempt:1:combat:128",
+        "r2_confluence:attempt:1:combat:129",
+        "r2_confluence:attempt:1:combat:138",
+        "r2_confluence:attempt:1:combat:139",
+        "r2_confluence:attempt:1:combat:150",
+        "r2_confluence:attempt:1:combat:161",
+        "r2_confluence:attempt:1:combat:162",
+        "r2_confluence:attempt:1:combat:163",
+        "r2_confluence:attempt:1:combat:165",
+        "r2_confluence:attempt:1:combat:167",
+        "r2_confluence:attempt:1:combat:178",
+        "r2_confluence:attempt:1:combat:187",
+        "r2_confluence:attempt:1:combat:188",
+        "r2_confluence:attempt:1:combat:191",
+        "r2_confluence:attempt:1:combat:193",
+        "r2_confluence:attempt:1:combat:203",
+        "r2_confluence:attempt:1:combat:204",
+        "r2_confluence:attempt:1:combat:223",
+        "r2_confluence:attempt:1:combat:233",
+        "r2_confluence:attempt:1:combat:236",
+        "r2_confluence:attempt:1:combat:239",
+        "r2_confluence:attempt:1:combat:241",
+        "r2_confluence:attempt:1:combat:243",
+        "r2_confluence:attempt:1:combat:257",
+        "r2_confluence:attempt:1:combat:259",
+        "r2_confluence:attempt:1:combat:270",
+        "r2_confluence:attempt:1:combat:272",
+        "r2_confluence:attempt:1:combat:274",
+        "r2_confluence:attempt:1:combat:277",
+        "r2_confluence:attempt:1:combat:289",
+        "r2_confluence:attempt:1:combat:290",
+        "r2_confluence:attempt:1:combat:306",
+        "r2_confluence:attempt:1:combat:307",
+        "r2_confluence:attempt:1:combat:324",
+        "r2_confluence:attempt:1:combat:325",
+        "r2_confluence:attempt:1:combat:335",
+        "r2_confluence:attempt:1:combat:364",
+        "r2_confluence:attempt:1:combat:375",
+        "r2_confluence:attempt:1:combat:376",
+        "r2_confluence:attempt:1:combat:385",
+        "r2_confluence:attempt:1:combat:402",
+        "r2_confluence:attempt:1:combat:403",
+        "r2_confluence:attempt:1:combat:405",
+        "r2_confluence:attempt:1:combat:409",
+        "r2_confluence:attempt:1:combat:418",
+        "r2_confluence:attempt:1:combat:420",
+        "r2_confluence:attempt:1:combat:430",
+        "r2_confluence:attempt:1:combat:431",
+        "r2_confluence:attempt:1:combat:432",
+        "r2_confluence:attempt:1:combat:435",
+        "r2_confluence:attempt:1:combat:449",
+        "r2_confluence:attempt:1:combat:471",
+        "r2_confluence:attempt:1:combat:472",
+        "r2_confluence:attempt:1:combat:483",
+        "r2_confluence:attempt:1:combat:492"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:165",
+      "key": "concept:enemy_minion_melee|region_2|region_2_confluence|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_melee",
+      "subject": {
+        "id": "concept:enemy_minion_melee",
+        "name": "近战小怪",
+        "conceptId": "enemy_minion_melee"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_confluence",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_melee",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 1
+        },
+        "observations": [
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 1010.2192,
+            "damageShare": 0.6183,
+            "threatRank": 1,
+            "healing": 112.5765,
+            "shielding": 0,
+            "kills": 4,
+            "skillCasts": 5,
+            "observedTargets": [
+              "赤潮狂战士",
+              "近战小怪",
+              "灰鸦战士",
+              "草药民兵",
+              "林地游侠"
+            ],
+            "supportTargets": [
+              "近战小怪"
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:82",
+        "r2_confluence:attempt:1:combat:83",
+        "r2_confluence:attempt:1:combat:113",
+        "r2_confluence:attempt:1:combat:114",
+        "r2_confluence:attempt:1:combat:120",
+        "r2_confluence:attempt:1:combat:121",
+        "r2_confluence:attempt:1:combat:122",
+        "r2_confluence:attempt:1:combat:139",
+        "r2_confluence:attempt:1:combat:140",
+        "r2_confluence:attempt:1:combat:159",
+        "r2_confluence:attempt:1:combat:160",
+        "r2_confluence:attempt:1:combat:163",
+        "r2_confluence:attempt:1:combat:164",
+        "r2_confluence:attempt:1:combat:165",
+        "r2_confluence:attempt:1:combat:167",
+        "r2_confluence:attempt:1:combat:188",
+        "r2_confluence:attempt:1:combat:189",
+        "r2_confluence:attempt:1:combat:190",
+        "r2_confluence:attempt:1:combat:191",
+        "r2_confluence:attempt:1:combat:193",
+        "r2_confluence:attempt:1:combat:239",
+        "r2_confluence:attempt:1:combat:240",
+        "r2_confluence:attempt:1:combat:241",
+        "r2_confluence:attempt:1:combat:243",
+        "r2_confluence:attempt:1:combat:256",
+        "r2_confluence:attempt:1:combat:257",
+        "r2_confluence:attempt:1:combat:258",
+        "r2_confluence:attempt:1:combat:270",
+        "r2_confluence:attempt:1:combat:271",
+        "r2_confluence:attempt:1:combat:272",
+        "r2_confluence:attempt:1:combat:274",
+        "r2_confluence:attempt:1:combat:307",
+        "r2_confluence:attempt:1:combat:308",
+        "r2_confluence:attempt:1:combat:335",
+        "r2_confluence:attempt:1:combat:336",
+        "r2_confluence:attempt:1:combat:337",
+        "r2_confluence:attempt:1:combat:404",
+        "r2_confluence:attempt:1:combat:405",
+        "r2_confluence:attempt:1:combat:406",
+        "r2_confluence:attempt:1:combat:407",
+        "r2_confluence:attempt:1:combat:408",
+        "r2_confluence:attempt:1:combat:418",
+        "r2_confluence:attempt:1:combat:419",
+        "r2_confluence:attempt:1:combat:420",
+        "r2_confluence:attempt:1:combat:432",
+        "r2_confluence:attempt:1:combat:433",
+        "r2_confluence:attempt:1:combat:434",
+        "r2_confluence:attempt:1:combat:435",
+        "r2_confluence:attempt:1:combat:492",
+        "r2_confluence:attempt:1:combat:493",
+        "r2_confluence:attempt:1:combat:494"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:166",
+      "key": "concept:enemy_minion_ranged|region_2|region_2_confluence|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_ranged",
+      "subject": {
+        "id": "concept:enemy_minion_ranged",
+        "name": "远程小怪",
+        "conceptId": "enemy_minion_ranged"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_confluence",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_ranged",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 1
+        },
+        "observations": [
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 435.3782,
+            "damageShare": 0.2665,
+            "threatRank": 2,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 6,
+            "observedTargets": [
+              "灰鸦战士",
+              "赤潮狂战士",
+              "林地游侠",
+              "草药民兵"
+            ],
+            "supportTargets": []
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:41",
+        "r2_confluence:attempt:1:combat:42",
+        "r2_confluence:attempt:1:combat:43",
+        "r2_confluence:attempt:1:combat:44",
+        "r2_confluence:attempt:1:combat:45",
+        "r2_confluence:attempt:1:combat:46",
+        "r2_confluence:attempt:1:combat:47",
+        "r2_confluence:attempt:1:combat:86",
+        "r2_confluence:attempt:1:combat:128",
+        "r2_confluence:attempt:1:combat:150",
+        "r2_confluence:attempt:1:combat:178",
+        "r2_confluence:attempt:1:combat:201",
+        "r2_confluence:attempt:1:combat:202",
+        "r2_confluence:attempt:1:combat:203",
+        "r2_confluence:attempt:1:combat:223",
+        "r2_confluence:attempt:1:combat:259",
+        "r2_confluence:attempt:1:combat:287",
+        "r2_confluence:attempt:1:combat:288",
+        "r2_confluence:attempt:1:combat:289",
+        "r2_confluence:attempt:1:combat:306",
+        "r2_confluence:attempt:1:combat:373",
+        "r2_confluence:attempt:1:combat:374",
+        "r2_confluence:attempt:1:combat:375",
+        "r2_confluence:attempt:1:combat:376",
+        "r2_confluence:attempt:1:combat:402",
+        "r2_confluence:attempt:1:combat:430",
+        "r2_confluence:attempt:1:combat:471",
+        "r2_confluence:attempt:1:combat:481",
+        "r2_confluence:attempt:1:combat:482",
+        "r2_confluence:attempt:1:combat:483"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 670,
+  "visibleEvents": [
+    {
+      "id": "r2_confluence:attempt:1:combat:198",
+      "time": 7.52,
+      "type": "damage",
+      "subject": "草药民兵",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.52,
+        "target": "近战小怪"
+      },
+      "H": 0.2367,
+      "emotionDelta": 0.0003
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:237",
+      "time": 9.36,
+      "type": "skill",
+      "subject": "灰鸦战士",
+      "behavior": "重击",
+      "result": {
+        "kind": "skill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.2205,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:241",
+      "time": 9.36,
+      "type": "damage",
+      "subject": "近战小怪",
+      "behavior": "旋风溅射",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 8.1357,
+        "target": "林地游侠"
+      },
+      "H": 0.3466,
+      "emotionDelta": 0.0016
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:243",
+      "time": 9.36,
+      "type": "damage",
+      "subject": "近战小怪",
+      "behavior": "旋风溅射",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 11.0056,
+        "target": "草药民兵"
+      },
+      "H": 0.3466,
+      "emotionDelta": -0.0004
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:253",
+      "time": 9.76,
+      "type": "damage",
+      "subject": "灰鸦战士",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.4363,
+        "target": "普通小怪"
+      },
+      "H": 0.2367,
+      "emotionDelta": -0.0002
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:272",
+      "time": 10.48,
+      "type": "damage",
+      "subject": "近战小怪",
+      "behavior": "旋风溅射",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 12.3601,
+        "target": "林地游侠"
+      },
+      "H": 0.3466,
+      "emotionDelta": 0.0006
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:274",
+      "time": 10.48,
+      "type": "damage",
+      "subject": "近战小怪",
+      "behavior": "旋风溅射",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 15.2192,
+        "target": "草药民兵"
+      },
+      "H": 0.3466,
+      "emotionDelta": -0.0019
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:321",
+      "time": 12.08,
+      "type": "status",
+      "subject": "普通小怪",
+      "behavior": "急板战歌",
+      "result": {
+        "kind": "status",
+        "occurred": true,
+        "amount": 4,
+        "target": "远程小怪"
+      },
+      "H": 0.2989,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:337",
+      "time": 12.56,
+      "type": "death",
+      "subject": "近战小怪",
+      "behavior": "血怒普攻",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "灰鸦战士"
+      },
+      "H": 0.2574,
+      "emotionDelta": -0.0743
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:363",
+      "time": 13.6,
+      "type": "damage",
+      "subject": "林地游侠",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 16.1872,
+        "target": "普通小怪"
+      },
+      "H": 0.3466,
+      "emotionDelta": 0.0019
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:364",
+      "time": 13.6,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 11.7,
+        "target": "草药民兵"
+      },
+      "H": 0.3466,
+      "emotionDelta": -0.0027
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:385",
+      "time": 14.64,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 11.7,
+        "target": "草药民兵"
+      },
+      "H": 0.3466,
+      "emotionDelta": -0.0029
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:434",
+      "time": 16.56,
+      "type": "death",
+      "subject": "近战小怪",
+      "behavior": "血怒普攻",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "林地游侠"
+      },
+      "H": 0.2574,
+      "emotionDelta": -0.0691
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:470",
+      "time": 18.16,
+      "type": "damage",
+      "subject": "草药民兵",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.52,
+        "target": "近战小怪"
+      },
+      "H": 0.3466,
+      "emotionDelta": 0.0012
+    },
+    {
+      "id": "map_action:r2_confluence:6:result",
+      "time": 19.12,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "challenge:r2_confluence",
+      "result": {
+        "kind": "combat_loss",
+        "occurred": true,
+        "observedPower": 374,
+        "boundary": "interrupted_by_defeat",
+        "firstClear": false,
+        "survivors": {
+          "player": 0,
+          "enemy": 4
+        }
+      },
+      "H": 0.8692,
+      "emotionDelta": -0.8249
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:493",
+      "time": 19.12,
+      "type": "heal",
+      "subject": "近战小怪",
+      "behavior": "吸血",
+      "result": {
+        "kind": "heal",
+        "occurred": true,
+        "amount": 18.7333,
+        "target": "近战小怪"
+      },
+      "H": 0.4278,
+      "emotionDelta": -0.0004
+    },
+    {
+      "id": "r2_confluence:attempt:1:combat:494",
+      "time": 19.12,
+      "type": "death",
+      "subject": "近战小怪",
+      "behavior": "血怒普攻",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "草药民兵"
+      },
+      "H": 0.2233,
+      "emotionDelta": -0.0585
+    },
+    {
+      "id": "map_action:r2_confluence:6:summary",
+      "time": 19.2,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "challenge:r2_confluence",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 374,
+        "boundary": "interrupted_by_defeat",
+        "components": [
+          {
+            "kind": "combat_loss"
+          }
+        ]
+      },
+      "H": 0.7162,
+      "emotionDelta": -0.3442
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 2,
+    "seed": "paired-alpha",
+    "profileId": "inertial_player",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-16_0213_entity-impression-knowledge-experiment.md`](reports/2026-07-16_0213_entity-impression-knowledge-experiment.md)
+[`reports/2026-07-17_1745_threshold-perception-model.md`](reports/2026-07-17_1745_threshold-perception-model.md)
 
-Last updated: 2026-07-16
+Last updated: 2026-07-17
 
-Current focus: review the completed entity-impression V1 experiment, then decide whether to integrate subject-strength-trait knowledge into the formal cognition runtime behind an experimental flag.
+当前重点：无配额的三档战斗感知模型已在独立解析器中完成并通过多轨迹校准；下一步是删除原始 diagnosis 知识入口并接入玩家认知链。

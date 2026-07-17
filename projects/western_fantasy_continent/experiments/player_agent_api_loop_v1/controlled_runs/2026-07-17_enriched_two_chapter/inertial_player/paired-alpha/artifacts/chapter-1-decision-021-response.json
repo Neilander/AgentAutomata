@@ -1,0 +1,47 @@
+{
+  "action": "swap:2:hero_ranger",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "需要补足主线7的持续单体输出。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "短矛民兵当前相对印象非常弱；新游侠明确擅长持续锁定单体。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "主线7单体熊王上次剩约27%，是可见的明确缺口。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "仅把后排1短矛民兵换成林地游侠。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "比替换已验证的战士或狂战士更少破坏现有配置，且保留治疗。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "游侠下一战至少贡献20%团队伤害，持续输出足以改善熊王战。"
+    }
+  ],
+  "alternatives": [
+    "swap:3:hero_ranger",
+    "challenge:r1_main_7"
+  ],
+  "hypothesis": {
+    "id": "ranger_replaces_weak_spear_for_bear",
+    "problem": "熊王在当前队伍下剩约27%生命",
+    "cause": "短矛民兵持续单体贡献不足",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_ranger",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageShare",
+      "operator": ">=",
+      "value": 0.2
+    }
+  }
+}

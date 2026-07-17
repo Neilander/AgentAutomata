@@ -1,3 +1,5 @@
+const STRENGTH_MATRIX = require("./strength-cognition-matrix");
+
 const POSITIVE_BANDS = {
   ordinary: [
     [25, 0, "没有明显差别"],
@@ -175,10 +177,11 @@ function analyzeBattleReport(report, options = {}) {
       ? actor.usefulContribution / expectedUnitContribution - 1
       : 0;
     const strength = perceiveSigned(relativeStrength * 100, profile);
-    const traits = Object.entries(actor.domains)
+    const traitObservations = Object.entries(actor.domains)
       .map(([domain, value]) => buildTrait(domain, value, actor.usefulContribution, expectedUnitContribution, profile, actor.domainEvidence[domain]))
-      .filter((trait) => trait && trait.level >= 3 && trait.eligible)
+      .filter(Boolean)
       .sort((a, b) => b.level - a.level || b.rawMagnitudePercent - a.rawMagnitudePercent);
+    const traits = traitObservations.filter((trait) => trait.level >= 3 && trait.eligible);
     return {
       id: actor.id,
       name: actor.name,
@@ -191,10 +194,13 @@ function analyzeBattleReport(report, options = {}) {
       domains: roundObject(actor.domains),
       domainEvidence: summarizeDomainEvidence(actor.domainEvidence),
       traits,
+      traitObservations,
       evidenceEventIds: actor.evidenceEventIds,
       eventCount: actor.eventCount,
     };
   });
+
+  for (const unit of units) unit.allyContext = buildAllyContext(units, unit.id, profile);
 
   return {
     reportId: report.id,
@@ -208,14 +214,17 @@ function analyzeBattleReport(report, options = {}) {
 }
 
 function createImpressionState(options = {}) {
+  const profile = POSITIVE_BANDS[options.profile] ? options.profile : "ordinary";
   return {
     schema: "entity_impression_knowledge_v1",
-    profile: POSITIVE_BANDS[options.profile] ? options.profile : "ordinary",
+    profile,
     battleCount: 0,
     nextKnowledgeId: 1,
     knowledge: [],
     strengthObservations: [],
+    traitObservations: [],
     observationTrace: [],
+    strengthCognitionMatrix: STRENGTH_MATRIX.createStrengthCognitionMatrix({ profile }),
   };
 }
 
@@ -231,10 +240,54 @@ function ingestBattleAnalysis(state, analysis) {
   state.battleCount += 1;
   analysis.observationOrder = state.battleCount;
   const changes = [];
+  const matrixUpdate = STRENGTH_MATRIX.updateStrengthCognitionMatrix(
+    state.strengthCognitionMatrix,
+    analysis,
+  );
+  state.strengthCognitionMatrix = matrixUpdate.matrix;
+  if (matrixUpdate.trace) {
+    changes.push({
+      action: "updated_strength_cognition_matrix",
+      participantIds: matrixUpdate.trace.participantIds,
+      movements: matrixUpdate.trace.after.map((row) => ({ id: row.id, delta: row.delta, position: row.position })),
+      scale: clone(matrixUpdate.trace.scale),
+    });
+  }
   for (const unit of analysis.units) {
+    const relatedBefore = state.knowledge.filter((row) => row.subject.id === unit.id);
+    changes.push({
+      action: "reviewed_existing_impressions",
+      subject: unit.name,
+      knowledgeIds: relatedBefore.map((row) => row.id),
+      strengthCount: relatedBefore.filter((row) => row.kind === "strength").length,
+      traitDomains: [...new Set(relatedBefore.filter((row) => row.kind === "trait").map((row) => row.claim.domain))],
+    });
+    const subjectObservationOrder = state.strengthObservations
+      .filter((observation) => observation.subject?.id === unit.id).length + 1;
+    unit.subjectObservationOrder = subjectObservationOrder;
     state.strengthObservations.push(buildStrengthObservation(analysis, unit));
     changes.push(...updateStrengthKnowledge(state, analysis, unit));
-    for (const trait of unit.traits) changes.push(...updateTraitKnowledge(state, analysis, unit, trait));
+    const observedDomains = new Set();
+    for (const trait of unit.traitObservations || unit.traits || []) {
+      observedDomains.add(trait.domain);
+      const priorBelief = buildCurrentTraitBelief(state, unit.id, trait.domain);
+      const traitObservationOrder = state.traitObservations
+        .filter((observation) => observation.subject?.id === unit.id && observation.claim?.domain === trait.domain).length + 1;
+      trait.subjectObservationOrder = traitObservationOrder;
+      state.traitObservations.push(buildTraitObservation(analysis, unit, trait));
+      changes.push(...updateTraitKnowledge(state, analysis, unit, trait, priorBelief));
+    }
+    const knownTraitDomains = [...new Set(relatedBefore
+      .filter((row) => row.kind === "trait")
+      .map((row) => row.claim.domain))];
+    for (const domain of knownTraitDomains.filter((domain) => !observedDomains.has(domain))) {
+      changes.push({
+        action: "trait_review_inconclusive_no_attempt",
+        subject: unit.name,
+        domain,
+        reason: "no visible domain attempt in this battle",
+      });
+    }
   }
   const trace = {
     battleIndex: state.battleCount,
@@ -246,7 +299,7 @@ function ingestBattleAnalysis(state, analysis) {
   return trace;
 }
 
-function retrieveImpressions(state, subjectId, contextTags = []) {
+function retrieveImpressions(state, subjectId, contextTags = [], options = {}) {
   const normalizedContextTags = salientContextTags(contextTags);
   const tags = new Set(normalizedContextTags);
   const rows = state.knowledge
@@ -256,12 +309,14 @@ function retrieveImpressions(state, subjectId, contextTags = []) {
     .sort((a, b) => b.score - a.score || a.row.createdOrder - b.row.createdOrder)
     .map((entry) => ({ ...clone(entry.row), retrievalScore: round(entry.score) }));
   const currentBelief = buildCurrentStrengthBelief(state, subjectId);
+  const currentTraits = buildCurrentTraitBeliefs(state, subjectId);
   if (normalizedContextTags.length > 0) {
-    const contextBelief = buildContextStrengthBelief(state, subjectId, normalizedContextTags);
-    if (contextBelief) return [contextBelief, ...rows];
-    return currentBelief ? [currentBelief, ...rows] : rows;
+    const contextBelief = buildContextStrengthBelief(state, subjectId, normalizedContextTags, options);
+    const contextTraits = buildContextTraitBeliefs(state, subjectId, normalizedContextTags, options);
+    const strength = contextBelief || currentBelief;
+    return strength ? [strength, ...contextTraits, ...rows] : [...contextTraits, ...rows];
   }
-  return currentBelief ? [currentBelief, ...rows] : rows;
+  return currentBelief ? [currentBelief, ...currentTraits, ...rows] : [...currentTraits, ...rows];
 }
 
 function updateStrengthKnowledge(state, analysis, unit) {
@@ -287,6 +342,7 @@ function updateStrengthKnowledge(state, analysis, unit) {
   const materiallyDifferent = Math.abs(first.claim.level - unit.strength.level) >= 3;
   if (signChanged || materiallyDifferent) {
     const sameScope = rows.find((row) => row.scope.type === "context" && sameTags(row.scope.tags, relevantTags)
+      && sameAllyScope(row.scope, unit.allyContext)
       && Math.sign(row.claim.level) === Math.sign(unit.strength.level));
     if (sameScope) {
       supportKnowledge(sameScope, analysis, unit);
@@ -296,7 +352,7 @@ function updateStrengthKnowledge(state, analysis, unit) {
       kind: "strength",
       subject: unitRef(unit),
       scope: relevantTags.length > 0
-        ? { type: "context", tags: relevantTags }
+        ? contextScope(relevantTags, unit.allyContext)
         : { type: "general_evidence", tags: [] },
       claim: clone(unit.strength),
       relation: "qualifies",
@@ -311,27 +367,71 @@ function updateStrengthKnowledge(state, analysis, unit) {
   return [{ action: "supported_existing_impression", knowledgeId: first.id, subject: unit.name, claim: first.claim.label }];
 }
 
-function updateTraitKnowledge(state, analysis, unit, trait) {
+function updateTraitKnowledge(state, analysis, unit, trait, priorBelief = null) {
+  if (!trait.eligible) {
+    return [{ action: "trait_review_inconclusive_low_reliability", subject: unit.name, domain: trait.domain }];
+  }
   const rows = state.knowledge.filter((row) => row.kind === "trait"
     && row.subject.id === unit.id && row.claim.domain === trait.domain);
-  const existing = rows[0];
-  if (existing) {
-    supportKnowledge(existing, analysis, unit, trait);
-    if (trait.level > existing.claim.level) existing.claim = clone(trait);
-    return [{ action: "supported_trait", knowledgeId: existing.id, subject: unit.name, claim: existing.claim.label }];
+  const existing = rows[0] || null;
+  if (!existing) {
+    if (trait.level < 3) {
+      return [{ action: "observed_subthreshold_trait_without_prior", subject: unit.name, domain: trait.domain, level: trait.level }];
+    }
+    const row = appendKnowledge(state, {
+      kind: "trait",
+      subject: unitRef(unit),
+      scope: { type: "general", tags: [] },
+      claim: clone(trait),
+      relation: "first_impression",
+      corrects: null,
+      analysis,
+      unit,
+      trait,
+    });
+    return [{ action: "added_trait", knowledgeId: row.id, subject: unit.name, claim: row.claim.label }];
   }
-  const row = appendKnowledge(state, {
-    kind: "trait",
-    subject: unitRef(unit),
-    scope: { type: "general", tags: [] },
-    claim: clone(trait),
-    relation: "first_impression",
-    corrects: null,
-    analysis,
-    unit,
-    trait,
-  });
-  return [{ action: "added_trait", knowledgeId: row.id, subject: unit.name, claim: row.claim.label }];
+
+  const priorLevel = priorBelief?.weightedSemanticLevel ?? existing.claim.level;
+  const crossedSalienceBoundary = (priorLevel >= 3) !== (trait.level >= 3);
+  const materiallyDifferent = Math.abs(priorLevel - trait.level) >= 2;
+  if (crossedSalienceBoundary || materiallyDifferent) {
+    const relevantTags = salientContextTags(analysis.environment?.tags || []);
+    const scope = relevantTags.length > 0
+      ? contextScope(relevantTags, unit.allyContext)
+      : { type: "general_evidence", tags: [] };
+    const sameScope = rows.find((row) => row.scope.type === scope.type
+      && sameTags(row.scope.tags || [], scope.tags || [])
+      && sameAllyScope(row.scope, unit.allyContext)
+      && (row.claim.level >= 3) === (trait.level >= 3));
+    if (sameScope) {
+      supportKnowledge(sameScope, analysis, unit, trait);
+      return [{ action: "supported_trait_context_revision", knowledgeId: sameScope.id, subject: unit.name, domain: trait.domain, level: trait.level }];
+    }
+    const row = appendKnowledge(state, {
+      kind: "trait",
+      subject: unitRef(unit),
+      scope,
+      claim: clone(trait),
+      relation: "qualifies",
+      corrects: existing.id,
+      analysis,
+      unit,
+      trait,
+    });
+    return [{
+      action: trait.level >= 3 ? "added_trait_context_strengthening" : "added_trait_context_correction",
+      knowledgeId: row.id,
+      subject: unit.name,
+      domain: trait.domain,
+      previousLevel: round(priorLevel),
+      observedLevel: trait.level,
+      corrects: existing.id,
+    }];
+  }
+
+  supportKnowledge(existing, analysis, unit, trait);
+  return [{ action: "supported_trait", knowledgeId: existing.id, subject: unit.name, claim: existing.claim.label }];
 }
 
 function appendKnowledge(state, input) {
@@ -349,7 +449,7 @@ function appendKnowledge(state, input) {
     confidence: initialConfidence(input.unit, input.trait),
     evidenceCount: 1,
     evidenceReportIds: [input.analysis.reportId],
-    observedContexts: [clone(input.analysis.environment)],
+    observedContexts: [knowledgeContext(input.analysis, input.unit)],
     observations: input.kind === "strength"
       ? [buildStrengthObservation(input.analysis, input.unit)]
       : [],
@@ -362,22 +462,42 @@ function supportKnowledge(row, analysis, unit, trait = null) {
   row.evidenceCount += 1;
   row.confidence = round(Math.min(1, row.confidence + 0.12 + Math.min(0.08, unit.eventCount * 0.005)));
   if (!row.evidenceReportIds.includes(analysis.reportId)) row.evidenceReportIds.push(analysis.reportId);
-  row.observedContexts.push(clone(analysis.environment));
+  row.observedContexts.push(knowledgeContext(analysis, unit));
   if (row.kind === "strength") {
     if (!Array.isArray(row.observations)) row.observations = [];
     row.observations.push(buildStrengthObservation(analysis, unit));
   }
-  if (trait && trait.level > row.claim.level) row.claim = clone(trait);
+  // Historical trait rows remain immutable. Current trait belief is synthesized from
+  // the append-only trait-observation ledger, so later evidence never rewrites memory.
 }
 
 function buildStrengthObservation(analysis, unit) {
   return {
     subject: unitRef(unit),
     reportId: analysis.reportId,
-    observationOrder: analysis.observationOrder,
-    context: clone(analysis.environment),
+    observationOrder: unit.subjectObservationOrder || analysis.observationOrder,
+    globalBattleOrder: analysis.observationOrder,
+    context: knowledgeContext(analysis, unit),
+    allyContext: clone(unit.allyContext || null),
+    basis: buildComparisonBasis(analysis, unit),
     claim: clone(unit.strength),
     evidenceReliability: 1,
+  };
+}
+
+function buildTraitObservation(analysis, unit, trait) {
+  return {
+    subject: unitRef(unit),
+    reportId: analysis.reportId,
+    observationOrder: trait.subjectObservationOrder,
+    globalBattleOrder: analysis.observationOrder,
+    context: knowledgeContext(analysis, unit),
+    allyContext: clone(unit.allyContext || null),
+    basis: buildComparisonBasis(analysis, unit),
+    claim: clone(trait),
+    attempted: true,
+    evidenceReliability: trait.evidenceReliability,
+    eligible: trait.eligible,
   };
 }
 
@@ -385,20 +505,67 @@ function buildCurrentStrengthBelief(state, subjectId) {
   const rows = state.knowledge.filter((row) => row.kind === "strength" && row.subject.id === subjectId);
   const observations = (state.strengthObservations || [])
     .filter((observation) => observation.subject?.id === subjectId);
-  return synthesizeStrengthBelief(subjectId, rows, observations, {
+  const belief = synthesizeStrengthBelief(subjectId, rows, observations, {
     id: `current-belief:${subjectId}`,
     scope: { type: "general_current_belief", tags: [] },
     relation: "synthesizes_observations",
     retrievalScore: 1000,
   });
+  return applyCurrentStrengthScale(state, subjectId, belief);
 }
 
-function buildContextStrengthBelief(state, subjectId, contextTags) {
+function applyCurrentStrengthScale(state, subjectId, belief) {
+  if (!belief) return null;
+  const entry = state.strengthCognitionMatrix?.entries?.find((row) => row.subject?.id === subjectId);
+  if (!entry?.scaleView) return belief;
+  const priorClaim = clone(belief.claim);
+  const currentLevel = Number(entry.scaleView.level || 0);
+  const scaleClaim = strengthClaimFromLevel(currentLevel, 0);
+  belief.relation = "matrix_scale_current_belief";
+  belief.claim = {
+    ...scaleClaim,
+    matrixPosition: round(entry.position),
+    scaleBoundaryPosition: round(entry.scaleView.boundaryPosition),
+    relativeToScale: round(entry.scaleView.relativeToScale),
+    inTopThirtyPercent: Boolean(entry.scaleView.inTopThirtyPercent),
+    observationSynthesis: priorClaim,
+  };
+  belief.observationWeightedSemanticLevel = belief.weightedSemanticLevel;
+  belief.weightedSemanticLevel = round(entry.scaleView.relativeToScale);
+  belief.matrixUpdateRule = "one simultaneous weighted pairwise solve, then current position minus the live top-30-percent boundary";
+  belief.scale = clone(state.strengthCognitionMatrix.scale);
+  belief.rank = entry.scaleView.rank;
+  belief.cognitionStiffness = entry.stiffness;
+  return belief;
+}
+
+function listCurrentStrengthCognition(state) {
+  return (state.strengthCognitionMatrix?.entries || [])
+    .filter((entry) => entry.scaleView)
+    .slice()
+    .sort((a, b) => a.scaleView.rank - b.scaleView.rank)
+    .map((entry) => ({
+      subject: clone(entry.subject),
+      position: round(entry.position),
+      evidenceCount: entry.evidenceCount,
+      stiffness: round(entry.stiffness),
+      rank: entry.scaleView.rank,
+      populationSize: entry.scaleView.populationSize,
+      inTopThirtyPercent: entry.scaleView.inTopThirtyPercent,
+      scaleBoundaryPosition: round(entry.scaleView.boundaryPosition),
+      relativeToScale: round(entry.scaleView.relativeToScale),
+      level: entry.scaleView.level,
+      label: strengthClaimFromLevel(entry.scaleView.level, 0).label,
+    }));
+}
+
+function buildContextStrengthBelief(state, subjectId, contextTags, options = {}) {
   const tagSet = new Set(contextTags);
   const observations = (state.strengthObservations || []).filter((observation) => {
     if (observation.subject?.id !== subjectId) return false;
     const observedTags = salientContextTags(observation.context?.tags || []);
-    return observedTags.length === tagSet.size && observedTags.every((tag) => tagSet.has(tag));
+    return observedTags.length === tagSet.size && observedTags.every((tag) => tagSet.has(tag))
+      && observationMatchesAllyQuery(observation, options);
   });
   const rows = state.knowledge.filter((row) => row.kind === "strength"
     && row.subject.id === subjectId && rowHasExactContext(row, tagSet));
@@ -408,6 +575,99 @@ function buildContextStrengthBelief(state, subjectId, contextTags) {
     relation: "synthesizes_exact_context_observations",
     retrievalScore: 2000,
   });
+}
+
+function buildCurrentTraitBeliefs(state, subjectId) {
+  const domains = [...new Set((state.traitObservations || [])
+    .filter((observation) => observation.subject?.id === subjectId && observation.eligible)
+    .map((observation) => observation.claim.domain))];
+  return domains.map((domain) => buildCurrentTraitBelief(state, subjectId, domain)).filter(Boolean);
+}
+
+function buildCurrentTraitBelief(state, subjectId, domain) {
+  const rows = state.knowledge.filter((row) => row.kind === "trait"
+    && row.subject.id === subjectId && row.claim.domain === domain);
+  const observations = (state.traitObservations || []).filter((observation) => observation.subject?.id === subjectId
+    && observation.claim?.domain === domain && observation.eligible);
+  return synthesizeTraitBelief(subjectId, domain, rows, observations, {
+    id: `current-trait-belief:${subjectId}:${domain}`,
+    scope: { type: "general_current_trait_belief", tags: [] },
+    relation: "synthesizes_trait_revalidation",
+    retrievalScore: 900,
+  });
+}
+
+function buildContextTraitBeliefs(state, subjectId, contextTags, options = {}) {
+  const tagSet = new Set(contextTags);
+  const generalBeliefs = buildCurrentTraitBeliefs(state, subjectId);
+  const matching = (state.traitObservations || []).filter((observation) => {
+    if (observation.subject?.id !== subjectId || !observation.eligible) return false;
+    const observedTags = salientContextTags(observation.context?.tags || []);
+    return observedTags.length === tagSet.size && observedTags.every((tag) => tagSet.has(tag))
+      && observationMatchesAllyQuery(observation, options);
+  });
+  const domains = [...new Set(matching.map((observation) => observation.claim.domain))];
+  if (domains.length === 0) return generalBeliefs;
+  const exactBeliefs = domains.map((domain) => {
+    const observations = matching.filter((observation) => observation.claim.domain === domain);
+    const rows = state.knowledge.filter((row) => row.kind === "trait"
+      && row.subject.id === subjectId && row.claim.domain === domain);
+    return synthesizeTraitBelief(subjectId, domain, rows, observations, {
+      id: `context-trait-belief:${subjectId}:${domain}:${contextTags.join("+")}`,
+      scope: { type: "exact_context_current_trait_belief", tags: contextTags },
+      relation: "synthesizes_exact_context_trait_revalidation",
+      retrievalScore: 1900,
+    });
+  }).filter(Boolean);
+  const generalFallbacks = generalBeliefs.filter((belief) => !domains.includes(belief.claim.domain));
+  return [...exactBeliefs, ...generalFallbacks];
+}
+
+function synthesizeTraitBelief(subjectId, domain, rows, observations, metadata) {
+  if (observations.length === 0) return null;
+  let weightedLevel = 0;
+  let weightedMagnitude = 0;
+  let totalWeight = 0;
+  for (const observation of observations) {
+    const order = Math.max(1, Number(observation.observationOrder || 1));
+    const weight = Math.max(0.1, Number(observation.evidenceReliability || 1)) * (1 + 1 / order);
+    weightedLevel += Number(observation.claim.level || 0) * weight;
+    weightedMagnitude += Number(observation.claim.rawMagnitudePercent || 0) * weight;
+    totalWeight += weight;
+  }
+  const meanLevel = totalWeight > 0 ? weightedLevel / totalWeight : 0;
+  const level = Math.max(0, Math.min(9, Math.round(meanLevel)));
+  const firstRow = rows.slice().sort((a, b) => a.createdOrder - b.createdOrder)[0];
+  return {
+    id: metadata.id,
+    kind: "trait",
+    subject: clone(firstRow?.subject || observations[0].subject),
+    scope: clone(metadata.scope),
+    claim: {
+      domain,
+      label: DOMAIN_LABELS[domain],
+      rawMagnitudePercent: round(totalWeight > 0 ? weightedMagnitude / totalWeight : 0),
+      level,
+      currentSalient: level >= 3,
+      status: level >= 3 ? "currently_recognized_trait" : "currently_not_salient",
+      synthesized: true,
+    },
+    relation: metadata.relation,
+    corrects: null,
+    firstImpressionId: firstRow?.id || null,
+    observationCount: observations.length,
+    weightedSemanticLevel: round(meanLevel),
+    primacyRule: "trait observation weight = evidence reliability * (1 + 1 / subject-domain observation order)",
+    sourceKnowledgeIds: rows.map((row) => row.id),
+    evidenceBasis: observations.map((observation) => ({
+      reportId: observation.reportId,
+      context: clone(observation.context),
+      basis: clone(observation.basis),
+      observedLevel: observation.claim.level,
+      evidenceReliability: observation.evidenceReliability,
+    })),
+    retrievalScore: metadata.retrievalScore,
+  };
 }
 
 function synthesizeStrengthBelief(subjectId, rows, observations, metadata) {
@@ -440,8 +700,20 @@ function synthesizeStrengthBelief(subjectId, rows, observations, metadata) {
     firstImpressionId: firstRow?.id || null,
     observationCount: observations.length,
     weightedSemanticLevel: round(meanLevel),
-    primacyRule: "observation weight = evidence reliability * (1 + 1 / observation order)",
+    primacyRule: "observation weight = evidence reliability * (1 + 1 / subject observation order)",
     sourceKnowledgeIds: rows.map((row) => row.id),
+    measurementBasis: "team_relative_useful_contribution",
+    evidenceBasis: observations.map((observation) => ({
+      reportId: observation.reportId,
+      context: clone(observation.context),
+      basis: clone(observation.basis || null),
+      observedLevel: observation.claim.level,
+      evidenceReliability: observation.evidenceReliability,
+    })),
+    predictionBasisAvailable: observations.every((observation) => observation.basis
+      && Number.isFinite(observation.basis.subjectUsefulContribution)
+      && Number.isFinite(observation.basis.expectedUnitContribution)
+      && Array.isArray(observation.basis.teamContributions)),
     retrievalScore: metadata.retrievalScore,
   };
 }
@@ -626,6 +898,100 @@ function salientContextTags(tags) {
   return selected.length ? selected : tags.slice(0, 2);
 }
 
+function buildAllyContext(units, subjectId, profile) {
+  const subject = units.find((unit) => unit.id === subjectId);
+  const teammates = units.filter((unit) => unit.id !== subjectId).map((unit) => {
+    const relativeToSubjectPercent = subject?.usefulContribution > 0
+      ? (unit.usefulContribution / subject.usefulContribution - 1) * 100
+      : 0;
+    const comparedToSubject = perceiveSigned(relativeToSubjectPercent, profile);
+    return {
+      id: unit.id,
+      name: unit.name,
+      role: unit.role,
+      usefulContribution: unit.usefulContribution,
+      relativeToSubjectPercent: round(relativeToSubjectPercent),
+      perceivedComparedToSubjectLevel: comparedToSubject.level,
+      perceivedComparedToSubjectDirection: comparedToSubject.direction,
+    };
+  });
+  const weakCount = teammates.filter((unit) => unit.perceivedComparedToSubjectDirection === "weak").length;
+  const strongCount = teammates.filter((unit) => unit.perceivedComparedToSubjectDirection === "strong").length;
+  const neutralCount = teammates.length - weakCount - strongCount;
+  const majority = Math.max(1, Math.ceil(teammates.length * 2 / 3));
+  let performanceBand = "mixed_or_balanced";
+  if (weakCount >= majority) performanceBand = "mostly_weak_teammates";
+  else if (strongCount >= majority) performanceBand = "mostly_strong_teammates";
+  else if (weakCount > strongCount) performanceBand = "weak_leaning_teammates";
+  else if (strongCount > weakCount) performanceBand = "strong_leaning_teammates";
+  const descriptions = {
+    mostly_weak_teammates: "在多数队友表现偏弱的队伍中",
+    mostly_strong_teammates: "在多数队友表现偏强的队伍中",
+    weak_leaning_teammates: "在队友表现整体偏弱的队伍中",
+    strong_leaning_teammates: "在队友表现整体偏强的队伍中",
+    mixed_or_balanced: "在队友表现混合或接近平均的队伍中",
+  };
+  return {
+    performanceBand,
+    description: descriptions[performanceBand],
+    weakCount,
+    neutralCount,
+    strongCount,
+    rosterFingerprint: teammates.map((unit) => unit.id).sort().join("|"),
+    teammates,
+  };
+}
+
+function buildComparisonBasis(analysis, unit) {
+  return {
+    type: "team_relative_useful_contribution",
+    subjectUsefulContribution: unit.usefulContribution,
+    teamUsefulContribution: analysis.teamUsefulContribution,
+    expectedUnitContribution: analysis.expectedUnitContribution,
+    activeUnitCount: analysis.units.length,
+    rosterFingerprint: analysis.units.map((row) => row.id).sort().join("|"),
+    allyPerformanceBand: unit.allyContext?.performanceBand || "unknown",
+    teamContributions: analysis.units.map((row) => ({
+      id: row.id,
+      name: row.name,
+      role: row.role,
+      usefulContribution: row.usefulContribution,
+      relativeStrengthPercent: row.relativeStrengthPercent,
+      perceivedLevel: row.strength.level,
+    })),
+  };
+}
+
+function knowledgeContext(analysis, unit) {
+  return {
+    ...clone(analysis.environment || {}),
+    allies: clone(unit.allyContext || null),
+  };
+}
+
+function contextScope(tags, allyContext) {
+  return {
+    type: "context",
+    tags,
+    allyPerformanceBand: allyContext?.performanceBand || "unknown",
+    rosterFingerprint: allyContext?.rosterFingerprint || "",
+  };
+}
+
+function sameAllyScope(scope, allyContext) {
+  if (!scope?.allyPerformanceBand && !scope?.rosterFingerprint) return true;
+  return scope.allyPerformanceBand === (allyContext?.performanceBand || "unknown")
+    && scope.rosterFingerprint === (allyContext?.rosterFingerprint || "");
+}
+
+function observationMatchesAllyQuery(observation, options = {}) {
+  if (options.allyPerformanceBand
+    && observation.allyContext?.performanceBand !== options.allyPerformanceBand) return false;
+  if (options.rosterFingerprint
+    && observation.basis?.rosterFingerprint !== options.rosterFingerprint) return false;
+  return true;
+}
+
 function unitRef(unit) { return { id: unit.id, name: unit.name, role: unit.role }; }
 function sameTags(a, b) { return a.length === b.length && a.every((tag) => b.includes(tag)); }
 function slug(value) { return String(value).trim().toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, "-"); }
@@ -650,4 +1016,6 @@ module.exports = {
   perceiveSigned,
   scoreDomainEvidence,
   domainEvidenceEligible,
+  listCurrentStrengthCognition,
+  STRENGTH_MATRIX,
 };

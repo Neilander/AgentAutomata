@@ -15,6 +15,12 @@ const DEFAULT_CONFIG = Object.freeze({
   mismatch: {
     positiveScale: 0.5,
     negativeScale: 0.8,
+    positivePower: 1,
+    negativePower: 1,
+    confirmationConstant: 0.1,
+    confirmationPositivePower: 0.5,
+    confirmationNegativePower: 1.5,
+    confirmationMaxMultiplier: 2,
   },
   longHorizon: {
     failureWakePowerGrowth: 0.3,
@@ -150,6 +156,7 @@ function ingestEvent(state, rawEvent) {
     knowledgeBefore: matched ? summarizeKnowledge(matched) : null,
     expectedUtility: round(expectedUtility.value),
     expectationSource: expectedUtility.source,
+    expectationDetails: mismatch.details || expectedUtility.details || null,
     actualUtility: round(actualUtility),
     appraisal,
     processEmotion: round(processDelta),
@@ -403,6 +410,14 @@ function goalRelevance(event, state) {
 
 function expectationForEvent(state, event, matched) {
   if (event.settleExpectation === false) return { value: 0, source: "observation_only" };
+  if (event.rosterExpectationSettlement) {
+    closeSuppressedActionLedger(state, event);
+    return {
+      value: Number(event.rosterExpectationSettlement.expectedPerception?.intensity || 0),
+      source: "roster_prediction",
+      details: event.rosterExpectationSettlement,
+    };
+  }
   if (event.expectation?.phase === "open") {
     const value = matched ? expectedKnowledgeUtility(matched, event) : 0;
     state.expectationLedger.push({
@@ -469,6 +484,32 @@ function expectationForEvent(state, event, matched) {
 
 function resolveMismatch(state, event, expected, actual, H, appraisal) {
   if (event.settleExpectation === false) return { value: 0, status: "observation_only" };
+  if (expected?.source === "roster_prediction") {
+    const settlement = expected.details || event.rosterExpectationSettlement;
+    const delta = Number(settlement?.mismatchInput || 0);
+    const expectationWeight = clamp(settlement?.expectationWeight ?? 1, 0, 1);
+    const mismatch = mismatchFormula(delta, H, appraisal.goalWeight * expectationWeight, state.config.mismatch);
+    const confirmation = confirmationFormula(
+      settlement,
+      H,
+      appraisal.goalWeight,
+      state.config.mismatch,
+    );
+    const value = round(mismatch.value + confirmation.value);
+    return {
+      value,
+      status: "resolved_roster_prediction",
+      details: settlement ? {
+        ...structuredClone(settlement),
+        formula: {
+          ...mismatch,
+          mismatchValue: mismatch.value,
+          confirmation,
+          value,
+        },
+      } : null,
+    };
+  }
   if (event.expectation?.phase === "open") return { value: 0, status: "pending" };
   if (event.expectation?.phase === "accumulate") {
     const pending = expected.ledger || [...state.expectationLedger].reverse().find((row) => row.eventId === event.id && row.status === "pending");
@@ -488,17 +529,125 @@ function resolveMismatch(state, event, expected, actual, H, appraisal) {
       return { value: 0, status: "no_prior" };
     }
     const delta = actual - pending.expectedUtility;
-    const scale = delta >= 0 ? state.config.mismatch.positiveScale : state.config.mismatch.negativeScale;
     return {
-      value: round(delta * scale * H * appraisal.goalWeight),
+      value: mismatchEmotion(delta, H, appraisal.goalWeight, state.config.mismatch),
       status: pending.resolution,
     };
   }
   if (!expected || String(expected.source).startsWith("unknown")) return { value: 0, status: "no_prior" };
   const delta = actual - expected.value;
-  const scale = delta >= 0 ? state.config.mismatch.positiveScale : state.config.mismatch.negativeScale;
   const boundaryStatus = event.result?.boundary === "interrupted_by_defeat" ? "resolved_interrupted" : "resolved";
-  return { value: round(delta * scale * H * appraisal.goalWeight), status: boundaryStatus };
+  return {
+    value: mismatchEmotion(delta, H, appraisal.goalWeight, state.config.mismatch),
+    status: boundaryStatus,
+  };
+}
+
+function closeSuppressedActionLedger(state, event) {
+  if (event.expectation?.phase !== "close") return;
+  const pending = [...state.expectationLedger].reverse()
+    .find((row) => row.key === event.expectation.key && row.status === "pending");
+  if (!pending) return;
+  pending.status = "resolved";
+  pending.resolvedAt = event.time;
+  pending.resolutionBoundary = event.result?.boundary || "normal_end";
+  pending.resolution = "superseded_by_roster_prediction";
+}
+
+function mismatchEmotion(deltaInput, H, goalWeight, config) {
+  const delta = Number(deltaInput || 0);
+  const formula = mismatchFormula(delta, H, goalWeight, config);
+  return round(formula.value);
+}
+
+function mismatchFormula(deltaInput, H, goalWeight, config) {
+  const delta = Number(deltaInput || 0);
+  const positive = Math.max(delta, 0);
+  const negative = Math.max(-delta, 0);
+  const positiveScale = Number(config.positiveScale ?? 0.5);
+  const negativeScale = Number(config.negativeScale ?? 0.8);
+  const positivePower = Number(config.positivePower ?? 1);
+  const negativePower = Number(config.negativePower ?? 1);
+  const perceptualWeight = Number(H || 0) * Number(goalWeight || 0);
+  return {
+    delta: round(delta),
+    positiveScale,
+    negativeScale,
+    positivePower,
+    negativePower,
+    H: round(H),
+    goalWeight: round(goalWeight),
+    value: round((positiveScale * Math.pow(positive, positivePower)
+      - negativeScale * Math.pow(negative, negativePower)) * perceptualWeight),
+  };
+}
+
+function confirmationFormula(settlement, H, goalWeight, config) {
+  const confidence = clamp(
+    settlement?.effectivePredictionConfidence
+    ?? settlement?.predictionConfidence
+    ?? 0.5,
+    0,
+    1,
+  );
+  const constant = Number(config.confirmationConstant ?? 0.1);
+  const expectedProgress = combatProgress(settlement?.predictedCombatScore);
+  const actualProgress = combatProgress(settlement?.actualCombatScore);
+  const resultRatio = expectedProgress == null || actualProgress == null
+    ? 1
+    : actualProgress / Math.max(expectedProgress, 0.1);
+  const geometric = confirmationGeometricMultiplier(resultRatio, config);
+  const expectedLevel = Number(settlement?.expectedPerception?.level);
+  const actualLevel = Number(settlement?.actualPerception?.level);
+  const clearlyDisconfirmed = Number.isFinite(expectedLevel)
+    && Number.isFinite(actualLevel)
+    && actualLevel < expectedLevel;
+  const appliedMultiplier = clearlyDisconfirmed ? 0 : geometric.multiplier;
+  const perceptualWeight = Number(H || 0) * Number(goalWeight || 0);
+  return {
+    applied: confidence > 0 && !clearlyDisconfirmed,
+    samePerceivedBand: settlement?.confirmed === true,
+    clearlyDisconfirmed,
+    constant,
+    confidence: round(confidence),
+    H: round(H),
+    goalWeight: round(goalWeight),
+    expectedProgress: round(expectedProgress),
+    actualProgress: round(actualProgress),
+    resultRatio: round(resultRatio),
+    geometricMultiplier: appliedMultiplier,
+    rawGeometricMultiplier: geometric.multiplier,
+    geometricBranch: clearlyDisconfirmed
+      ? "clear_downward_disconfirmation_zeroes_confirmation"
+      : geometric.branch,
+    positivePower: geometric.positivePower,
+    negativePower: geometric.negativePower,
+    maxMultiplier: geometric.maxMultiplier,
+    value: round(constant * confidence * perceptualWeight * appliedMultiplier),
+  };
+}
+
+function confirmationGeometricMultiplier(ratioInput, config = {}) {
+  const ratio = Math.max(0, Number(ratioInput || 0));
+  const positivePower = Number(config.confirmationPositivePower ?? 0.5);
+  const negativePower = Number(config.confirmationNegativePower ?? 1.5);
+  const maxMultiplier = Number(config.confirmationMaxMultiplier ?? 2);
+  const multiplier = ratio >= 1
+    ? Math.min(maxMultiplier, Math.pow(ratio, positivePower))
+    : Math.pow(ratio, negativePower);
+  return {
+    ratio: round(ratio),
+    multiplier: round(multiplier),
+    branch: ratio >= 1 ? "self_serving_success_amplification" : "failed_confirmation_decay",
+    positivePower,
+    negativePower,
+    maxMultiplier,
+  };
+}
+
+function combatProgress(scoreInput) {
+  const score = Number(scoreInput);
+  return Number.isFinite(score) ? clamp((score + 1) / 2, 0, 1) : null;
 }
 
 function appraiseEvent(state, event, matched) {
@@ -777,6 +926,9 @@ function normalizeEvent(input) {
     process: input.process ? { ...input.process } : null,
     probability: input.probability ? { ...input.probability } : null,
     expectation: input.expectation ? { ...input.expectation } : null,
+    rosterExpectationSettlement: input.rosterExpectationSettlement
+      ? structuredClone(input.rosterExpectationSettlement)
+      : null,
     directResult: input.directResult,
     settleExpectation: input.settleExpectation,
     learn: input.learn,
@@ -833,4 +985,5 @@ module.exports = {
   matchKnowledge,
   receiveSignal,
   utilityOf,
+  confirmationGeometricMultiplier,
 };

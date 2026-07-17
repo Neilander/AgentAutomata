@@ -29,7 +29,8 @@ function node(id, name, type, requires, rewardHint, enemyHint, fieldEffectId = "
   return { id, name, type, requires, rewardHint, enemyHint, fieldEffectId };
 }
 
-function initialState(seed = "chapter-2") {
+function initialState(seed = "chapter-2", options = {}) {
+  const enrichedV1 = options.environmentVariant === "enriched_v1";
   let roster = ROSTER.createInitialRoster();
   roster = ROSTER.rescueHero(roster, "mage");
   roster = ROSTER.rescueHero(roster, "ranger");
@@ -45,7 +46,7 @@ function initialState(seed = "chapter-2") {
     inventory: [],
     roster,
     teamSlots: ["hero_warrior", "militia_barricade", "hero_mage", "hero_ranger"],
-    flags: { knightRescued: false, priestRescued: false, epicGranted: false, pendingTeamExperiment: false },
+    flags: { enrichedV1, knightRescued: false, priestRescued: false, epicGranted: false, pendingTeamExperiment: false },
     cognition: {
       concepts: ["关卡", "战斗", "装备", "战力", "角色名单", "装备等级"],
       knowledge: ["装备只有手动穿上后才改变战斗", "换入不同角色可能改变战斗贡献"],
@@ -87,7 +88,7 @@ function observe(rawState) {
     name: item.name,
     type: item.type,
     status: nodeStatus(state, item),
-    rewardHint: item.rewardHint,
+    rewardHint: rewardHintForNode(state, item),
     enemyHint: item.enemyHint,
     fieldEffect: fieldPublic(item.fieldEffectId),
   })).filter((item) => item.status !== "locked");
@@ -188,6 +189,8 @@ function settleWin(state, item, event) {
 
   if (firstClear && item.id === "r2_knight_rescue") unlockHero(state, event, "knight", "白垒骑士");
   if (firstClear && item.id === "r2_priest_rescue") unlockHero(state, event, "priest", "晨祷牧师");
+  if (state.flags.enrichedV1 && firstClear && item.id === "r2_entry") unlockHero(state, event, "warlock", "灰契术士");
+  if (state.flags.enrichedV1 && firstClear && item.id === "r2_confluence") unlockHero(state, event, "alchemist", "星釜炼金师");
   if (firstClear && item.id === "r2_confluence") {
     state.flags.epicGranted = true;
     if (!state.cognition.concepts.includes("史诗品质")) state.cognition.concepts.push("史诗品质");
@@ -239,7 +242,7 @@ function actionError(state, action, reason) {
 }
 
 function resolveCombat(state, item) {
-  const result = COMBAT_SIM.simulateTeams(playerTeam(state), enemyTeam(item), {
+  const result = COMBAT_SIM.simulateTeams(playerTeam(state), enemyTeam(item, state), {
     seed: `chapter2|${item.id}|${state.attempts[item.id] || 0}|${gearScore(state)}|${state.seed}`,
     randomizeStats: false,
     fieldEffectId: item.fieldEffectId || "",
@@ -274,7 +277,7 @@ function playerTeam(state) {
   return ROSTER.buildTeam(state.roster, state.teamSlots, 1);
 }
 
-function enemyTeam(item) {
+function enemyTeam(item, state = null) {
   const rolesByNode = {
     r2_entry: ["warrior", "ranger", "mage"],
     r2_knight_rescue: ["knight", "warrior", "ranger", "mage"],
@@ -293,8 +296,13 @@ function enemyTeam(item) {
     r2_confluence: 1.22,
     r2_boss: 1.32,
   };
+  const enrichedScale = state?.flags?.enrichedV1 && item.id === "r2_confluence"
+    ? 1.12
+    : state?.flags?.enrichedV1 && item.id === "r2_boss"
+      ? 1.08
+      : 1;
   return (rolesByNode[item.id] || ["warrior", "ranger", "mage", "priest"])
-    .map((role, index) => scaleSpec(enemySpec(role, index, item), scaleByNode[item.id] || 1))
+    .map((role, index) => scaleSpec(enemySpec(role, index, item), (scaleByNode[item.id] || 1) * enrichedScale))
     .map((spec, index) => tuneEncounterUnit(spec, item, index));
 }
 
@@ -358,13 +366,33 @@ function scaleSpec(spec, mult) {
 function lootFor(state, item, firstClear) {
   if (firstClear && item.id === "r2_entry") return [fixedHighLevelCommon("r2_level_lesson")];
   if (firstClear && item.id === "r2_confluence") return [fixedEpic("r2_first_epic")];
-  const rules = {
-    rescue: { level: [20, 25], rates: { common: 0.62, rare: 0.38 }, count: 2 },
-    trial: { level: [22, 27], rates: { common: 0.48, rare: 0.52 }, count: 2 },
-    main: { level: [21, 27], rates: { common: 0.55, rare: 0.45 }, count: 2 },
-    boss: { level: [25, 30], rates: { common: 0.28, rare: 0.62, epic: 0.1 }, count: 4 },
+  const seed = state.flags.enrichedV1
+    ? `${state.seed}|${item.id}|${state.attempts[item.id]}`
+    : `${state.seed}|${item.id}|${state.attempts[item.id]}|${state.inventory.length}`;
+  return EQUIPMENT.generateItems(dropRuleForNode(state, item), seed, `${item.id}_${state.attempts[item.id]}`);
+}
+
+function dropRuleForNode(state, item) {
+  if (!state.flags.enrichedV1) {
+    const regular = {
+      rescue: { level: [20, 25], rates: { common: 0.62, rare: 0.38 }, count: 2 },
+      trial: { level: [22, 27], rates: { common: 0.48, rare: 0.52 }, count: 2 },
+      main: { level: [21, 27], rates: { common: 0.55, rare: 0.45 }, count: 2 },
+      boss: { level: [25, 30], rates: { common: 0.28, rare: 0.62, epic: 0.1 }, count: 4 },
+    };
+    return regular[item.type] || regular.main;
+  }
+  const enriched = {
+    rescue: { level: [20, 25], rates: { common: 0.36, rare: 0.32, epic: 0.19, legendary: 0.12, mythic: 0.01 }, count: 2 },
+    trial: { level: [22, 27], rates: { common: 0.28, rare: 0.32, epic: 0.23, legendary: 0.16, mythic: 0.01 }, count: 2 },
+    main: { level: [21, 27], rates: { common: 0.3, rare: 0.32, epic: 0.22, legendary: 0.15, mythic: 0.01 }, count: 2 },
+    boss: { level: [25, 30], rates: { common: 0.16, rare: 0.25, epic: 0.28, legendary: 0.3, mythic: 0.01 }, count: 4 },
   };
-  return EQUIPMENT.generateItems(rules[item.type] || rules.main, `${state.seed}|${item.id}|${state.attempts[item.id]}|${state.inventory.length}`, `${item.id}_${state.attempts[item.id]}`);
+  return enriched[item.type] || enriched.main;
+}
+
+function rewardHintForNode(state, item) {
+  return state.flags.enrichedV1 ? `${item.rewardHint}；装备池含极低概率神话品质` : item.rewardHint;
 }
 
 function fixedHighLevelCommon(id) {
@@ -492,5 +520,5 @@ function round(value, digits = 4) {
   return Number(Number(value || 0).toFixed(digits));
 }
 
-return { nodes, initialState, normalizeState, observe, applyAction, resolveCombat, playerTeam, enemyTeam, gearScore, lootFor, fieldPublic };
+return { nodes, initialState, normalizeState, observe, applyAction, resolveCombat, playerTeam, enemyTeam, gearScore, lootFor, dropRuleForNode, fieldPublic };
 });

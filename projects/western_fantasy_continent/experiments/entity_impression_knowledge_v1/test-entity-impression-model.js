@@ -70,9 +70,12 @@ assert(warriorStrengthRows[0].primacyWeight > warriorStrengthRows[1].primacyWeig
 const defaultTop = MODEL.retrieveImpressions(state, "hero_warrior").find((row) => row.kind === "strength");
 const armorTop = MODEL.retrieveImpressions(state, "hero_warrior", ["elite", "high_armor"]).find((row) => row.kind === "strength");
 const swarmTop = MODEL.retrieveImpressions(state, "hero_warrior", ["swarm", "low_armor"]).find((row) => row.kind === "strength");
-assert.strictEqual(defaultTop.relation, "synthesizes_observations", "general retrieval should expose a revisable current belief");
-assert(defaultTop.claim.level > 0 && defaultTop.claim.level < warriorStrengthRows[0].claim.level,
-  "later counterevidence should weaken, but not erase, the biased first impression");
+assert.strictEqual(defaultTop.relation, "matrix_scale_current_belief", "general retrieval should expose the matrix-updated current belief");
+assert(defaultTop.claim.observationSynthesis.level > 0
+  && defaultTop.claim.observationSynthesis.level < warriorStrengthRows[0].claim.level,
+"later counterevidence should weaken the observation synthesis without erasing the biased first impression");
+assert.strictEqual(defaultTop.claim.level, 0,
+  "the Warrior currently defines the weakest member of the live top-30-percent ruler and must display at zero");
 assert.strictEqual(defaultTop.firstImpressionId, warriorStrengthRows[0].id, "current belief must preserve first-impression provenance");
 assert.strictEqual(armorTop.relation, "synthesizes_exact_context_observations", "exact high-armor context must retrieve its observed evidence");
 assert.strictEqual(armorTop.claim.level, warriorStrengthRows[2].claim.level);
@@ -82,7 +85,7 @@ const extraTagTop = MODEL.retrieveImpressions(state, "hero_warrior", ["elite", "
 assert.strictEqual(extraTagTop.relation, "synthesizes_exact_context_observations", "three-tag queries must use the same salient-context normalization as storage");
 assert.strictEqual(extraTagTop.claim.level, warriorStrengthRows[2].claim.level);
 const unknownContextTop = MODEL.retrieveImpressions(state, "hero_warrior", ["boss"]).find((row) => row.kind === "strength");
-assert.strictEqual(unknownContextTop.relation, "synthesizes_observations", "unknown context must use the revisable current belief fallback");
+assert.strictEqual(unknownContextTop.relation, "matrix_scale_current_belief", "unknown context must use the matrix-updated current belief fallback");
 
 const evidenceBeforeDuplicate = JSON.stringify(state.knowledge);
 const duplicateTrace = MODEL.ingestBattleAnalysis(state, armor);
@@ -94,8 +97,12 @@ MODEL.ingestBattleAnalysis(reversed, MODEL.analyzeBattleReport(reportById.get("b
 MODEL.ingestBattleAnalysis(reversed, MODEL.analyzeBattleReport(reportById.get("battle_1_weak_swarm"), { profile: "expert" }));
 const reversedGeneral = MODEL.retrieveImpressions(reversed, "hero_warrior").find((row) => row.kind === "strength");
 const reversedSwarm = MODEL.retrieveImpressions(reversed, "hero_warrior", ["swarm", "low_armor"]).find((row) => row.kind === "strength");
-assert(reversedGeneral.claim.level > 0, "large later counterevidence should be able to revise the current general belief");
-assert(reversedGeneral.claim.level < 9, "the earlier weak observation should still constrain the revised belief");
+assert(reversedGeneral.claim.observationSynthesis.level > 0,
+  "large later counterevidence should be able to revise the observation synthesis");
+assert(reversedGeneral.claim.observationSynthesis.level < 9,
+  "the earlier weak observation should still constrain the revised observation synthesis");
+assert(Number.isFinite(reversedGeneral.claim.relativeToScale),
+  "the current general belief must also expose its live position against the shared ruler");
 assert(reversedSwarm.claim.level > 0, "later weak-swarm evidence should create a positive contextual correction");
 
 const forwardFull = MODEL.createImpressionState({ profile: "expert" });
@@ -108,10 +115,13 @@ for (const reportId of ["battle_3_armored_elite", "battle_4_armored_elite_repeat
 }
 const forwardCurrent = MODEL.retrieveImpressions(forwardFull, "hero_warrior")[0];
 const reversedCurrent = MODEL.retrieveImpressions(reversedFull, "hero_warrior")[0];
-assert(forwardCurrent.claim.level > 0 && forwardCurrent.claim.level < 9,
-  "repeated counterevidence must revise an extreme first impression");
-assert(forwardCurrent.weightedSemanticLevel > reversedCurrent.weightedSemanticLevel,
+assert(forwardCurrent.observationWeightedSemanticLevel > 0
+  && forwardCurrent.observationWeightedSemanticLevel < 9,
+  "repeated counterevidence must revise an extreme observation synthesis");
+assert(forwardCurrent.observationWeightedSemanticLevel > reversedCurrent.observationWeightedSemanticLevel,
   "observation order should create finite primacy bias without permanently locking belief");
+assert.strictEqual(forwardCurrent.weightedSemanticLevel, forwardCurrent.claim.level,
+  "the public current level must be the deterministic matrix position relative to the live ruler");
 assert.strictEqual(forwardFull.knowledge[0].claim.level, 9, "immutable first-impression history must not be overwritten");
 
 const neutralThenStrong = MODEL.createImpressionState({ profile: "expert" });
@@ -125,7 +135,8 @@ assert.strictEqual(retainedNeutralContext.relation, "synthesizes_exact_context_o
 assert.strictEqual(retainedNeutralContext.claim.level, 0, "retained neutral evidence must win in its exact context after a later strong first impression");
 const neutralThenStrongBelief = MODEL.retrieveImpressions(neutralThenStrong, "hero_warrior")[0];
 assert.strictEqual(neutralThenStrongBelief.observationCount, 2, "a neutral first observation must affect current belief even though it creates no salient knowledge row");
-assert(neutralThenStrongBelief.claim.level < 9, "the retained neutral observation must constrain a later extreme observation");
+assert(neutralThenStrongBelief.claim.observationSynthesis.level < 9,
+  "the retained neutral observation must constrain a later extreme observation synthesis");
 
 const expertMixed = MODEL.analyzeBattleReport(reportById.get("battle_2_mixed_patrol"), { profile: "expert" });
 const mage = expertMixed.units.find((unit) => unit.id === "hero_mage");

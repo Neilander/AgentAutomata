@@ -1,14 +1,16 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-const [, , inputPath, outputPath] = process.argv;
-if (!inputPath) throw new Error("usage: node compact-request.js <request.json> [compact.json]");
+if (require.main === module) {
+  const [, , inputPath, outputPath] = process.argv;
+  if (!inputPath) throw new Error("usage: node compact-request.js <request.json> [compact.json]");
 
-const request = JSON.parse(fs.readFileSync(path.resolve(inputPath), "utf8"));
-const compact = request.type === "decision" ? compactDecision(request) : compactAttribution(request);
-const text = `${JSON.stringify(compact, null, 2)}\n`;
-if (outputPath) fs.writeFileSync(path.resolve(outputPath), text);
-else process.stdout.write(text);
+  const request = JSON.parse(fs.readFileSync(path.resolve(inputPath), "utf8"));
+  const compact = request.type === "decision" ? compactDecision(request) : compactAttribution(request);
+  const text = `${JSON.stringify(compact, null, 2)}\n`;
+  if (outputPath) fs.writeFileSync(path.resolve(outputPath), text);
+  else process.stdout.write(text);
+}
 
 function compactDecision(request) {
   return {
@@ -23,6 +25,8 @@ function compactDecision(request) {
       emotion: request.playerState.emotion,
       activeGoalId: request.playerState.activeGoalId,
       goals: request.playerState.goals,
+      characterImpressions: request.playerState.characterImpressions,
+      rosterChangeExpectations: request.playerState.rosterChangeExpectations,
       failureMemories: request.playerState.failureMemories,
       hypotheses: request.playerState.hypotheses,
       knowledge: (request.playerState.knowledge || []).map(compactKnowledge),
@@ -74,3 +78,5 @@ function compactKnowledge(row) {
     latestAttribution: row.latestAttribution || (row.attributions || []).at(-1) || null,
   };
 }
+
+module.exports = { compactDecision, compactAttribution };

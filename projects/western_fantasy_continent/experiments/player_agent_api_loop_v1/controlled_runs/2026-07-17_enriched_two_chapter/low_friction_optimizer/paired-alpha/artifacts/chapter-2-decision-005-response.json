@@ -1,0 +1,43 @@
+{
+  "action": "swap:1:hero_warlock",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "探索救援路线并评估新获得的完整英雄。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "术士说明为持续伤害与诅咒，适合压低高生命敌人。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "断旗堡提示重甲前排，当前允许把术士换入法师槽。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "保留已验证且当前伤害第1的游侠，用术士与法师位置做可逆比较。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "若术士适合重甲路线，其下一战伤害占比应至少20%。"
+    }
+  ],
+  "alternatives": [
+    "challenge:r2_knight_rescue",
+    "challenge:r2_priest_rescue"
+  ],
+  "hypothesis": {
+    "id": "hypothesis:r2_warlock_heavy_front",
+    "problem": "重甲前排是否值得使用新术士替代法师",
+    "cause": "术士的持续伤害和诅咒能压低高生命目标",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_warlock",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageShare",
+      "operator": ">=",
+      "value": 0.2
+    }
+  }
+}

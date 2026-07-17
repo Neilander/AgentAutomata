@@ -1,0 +1,43 @@
+{
+  "action": "swap:1:hero_mage",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "修正首领战只剩一敌人的输出缺口。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "骑士在失败战输出1.43%且最先阵亡；法师历史上多次伤害前2。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "法师已装备武器与火印护符，可直接换入骑士槽。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "保留游侠和狂战士两名主要输出，用法师替换本战贡献最低的骑士。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "若输出修正有效，法师重试时伤害占比应至少20%。"
+    }
+  ],
+  "alternatives": [
+    "challenge:r2_boss",
+    "swap:1:hero_warlock"
+  ],
+  "hypothesis": {
+    "id": "hypothesis:r2_boss_mage_recovery",
+    "problem": "首领只剩一敌时是否应以法师替换低输出骑士",
+    "cause": "法师的爆发和火印护符能补足击杀窗口",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_mage",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageShare",
+      "operator": ">=",
+      "value": 0.2
+    }
+  }
+}

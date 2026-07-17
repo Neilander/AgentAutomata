@@ -1,0 +1,42 @@
+{
+  "action": "swap:2:militia_drum",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "The current goal is to keep progressing through the Ashbelt outskirts."
+    },
+    {
+      "kind": "evidence",
+      "evidence": "The reserve drummer is a newly visible option that sometimes buffs the group, while the active spear militia is described as only slow single-target damage."
+    },
+    {
+      "kind": "affordance",
+      "evidence": "I can replace the spear militia with the drummer now at no visible resource cost."
+    },
+    {
+      "kind": "comparison",
+      "evidence": "This keeps the complete warrior, a frontliner, and the small healer while testing the unfamiliar support option instead of changing the most capable hero."
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "If the drummer's group buff is useful, the next combat should show a meaningful contribution from this team experiment."
+    }
+  ],
+  "alternatives": [
+    "challenge:r1_main_1"
+  ],
+  "hypothesis": {
+    "id": "test_drummer_group_buff_alpha_1",
+    "problem": "I do not yet know whether the newly visible drummer helps progression more than the incomplete spear militia.",
+    "cause": "The drummer may trade weak personal damage for a useful team-wide buff.",
+    "resultKind": "team_experiment_contribution",
+    "target": "militia_drum",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "skillCount",
+      "operator": ">=",
+      "value": 1
+    }
+  }
+}

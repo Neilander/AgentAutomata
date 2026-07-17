@@ -1,0 +1,275 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 16,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-b1d1f0be1a6e2c84",
+    "mode": "continue",
+    "turn": 94,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "damage_absolutist",
+    "label": "Damage absolutist",
+    "summary": "Believes direct damage solves most combat problems and initially discounts sustain.",
+    "decisionBias": {
+      "riskTolerance": 0.75,
+      "exploration": 0.35,
+      "changeAversion": 0.35,
+      "evidenceThreshold": 0.62,
+      "preferences": {
+        "damage": 1,
+        "survival": 0.15,
+        "novelty": 0.3,
+        "rarity": 0.35,
+        "simplicity": 0.7
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "maximizing_direct_damage",
+          "label": "maximizing direct damage"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "raises_win_probability",
+          "label": "raises win probability"
+        },
+        "confidence": 0.84,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:damage_absolutist:1"
+      },
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "using_healing_or_defensive_slots",
+          "label": "using healing or defensive slots"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "reduces_combat_tempo",
+          "label": "reduces combat tempo"
+        },
+        "confidence": 0.72,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:damage_absolutist:2"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "equip:hero_knight:r1_boss_1_2",
+  "outcome": "equipped",
+  "emotionBeforeAction": 90.7519,
+  "emotionAfterEvents": 90.7505,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:190",
+      "key": "player|region_2|unknown_environment|equipment|equip_item|equip:hero_knight:r1_boss_1_2",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_2",
+        "phase": "equipment",
+        "hero": {
+          "id": "hero_knight",
+          "name": "白垒骑士",
+          "role": "knight",
+          "kind": "hero"
+        }
+      },
+      "behavior": {
+        "kind": "equip_item",
+        "key": "equip:hero_knight:r1_boss_1_2",
+        "itemId": "r1_boss_1_2",
+        "target": "hero_knight"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "item_equipped": 1
+        },
+        "observations": [
+          {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r1_boss_1_2",
+              "name": "传说护手 Lv.22",
+              "slot": "gloves",
+              "slotLabel": "护手",
+              "rarity": "legendary",
+              "rarityLabel": "传说",
+              "level": 22,
+              "baseStats": {
+                "physicalPower": 11,
+                "armor": 2
+              },
+              "affixes": [
+                {
+                  "id": "shieldBreak",
+                  "stat": "shieldBreak",
+                  "label": "破盾",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 5
+                },
+                {
+                  "id": "lifeSteal",
+                  "stat": "lifeSteal",
+                  "label": "吸血",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 5
+                },
+                {
+                  "id": "shieldBreak",
+                  "stat": "shieldBreak",
+                  "label": "破盾",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 6
+                },
+                {
+                  "id": "might",
+                  "stat": "might",
+                  "label": "武力",
+                  "category": "major",
+                  "level": 1,
+                  "value": 2
+                },
+                {
+                  "id": "executeDamage",
+                  "stat": "executeDamage",
+                  "label": "处决伤害",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 5
+                },
+                {
+                  "id": "counterDamage",
+                  "stat": "counterDamage",
+                  "label": "反击伤害",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 5
+                },
+                {
+                  "id": "markPower",
+                  "stat": "markPower",
+                  "label": "标记强度",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 6
+                }
+              ]
+            },
+            "replacedItem": null,
+            "equippedPowerBefore": 1389,
+            "equippedPowerAfter": 1590,
+            "powerDelta": 201
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "equip_action:16:r1_boss_1_2:start",
+        "equip_action:16:r1_boss_1_2:result",
+        "equip_action:16:r1_boss_1_2:summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 654,
+  "visibleEvents": [
+    {
+      "id": "equip_action:16:r1_boss_1_2:result",
+      "time": 0.05,
+      "type": "equipment_change",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "item_equipped",
+        "occurred": true,
+        "amount": 201,
+        "before": 1389,
+        "after": 1590,
+        "itemName": "传说护手 Lv.22",
+        "heroId": "hero_knight"
+      },
+      "H": 0.1869,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:16:r1_boss_1_2:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 1590,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "item_equipped",
+            "amount": 201
+          }
+        ]
+      },
+      "H": 0.5663,
+      "emotionDelta": -0.0014
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 2,
+    "seed": "paired-alpha",
+    "profileId": "damage_absolutist",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

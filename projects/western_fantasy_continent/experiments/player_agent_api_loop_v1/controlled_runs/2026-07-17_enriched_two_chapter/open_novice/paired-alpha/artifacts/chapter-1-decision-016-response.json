@@ -1,0 +1,47 @@
+{
+  "action": "swap:2:hero_bard",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "Main stage 6 remains available and the new unlock creates a low-cost team experiment before it."
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "The berserker ranked fourth in main stage 5 and second in the armory camp, so its recent value has varied."
+    },
+    {
+      "kind": "evidence",
+      "evidence": "The newly unlocked full bard is described as amplifying teammates through rhythm and team buffs rather than personal damage."
+    },
+    {
+      "kind": "affordance",
+      "evidence": "The bard can legally replace the berserker in slot 2 while the warrior, top-ranked mage, and proven ranger remain active."
+    },
+    {
+      "kind": "comparison",
+      "evidence": "Equipping the ranger's new bow is a strong alternative, but the bard is a newly visible option with no combat evidence."
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "If the full bard actively supports the team, it should cast at least two skills in the next combat."
+    }
+  ],
+  "alternatives": [
+    "equip:hero_ranger:r1_bandit_key_1_ranger_weapon",
+    "challenge:r1_main_6"
+  ],
+  "hypothesis": {
+    "id": "test_new_bard_alpha_5",
+    "problem": "The berserker's recent damage rank has varied, while the newly unlocked full bard has no evidence.",
+    "cause": "The bard may contribute through repeated team-support skills even without high personal damage.",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_bard",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "skillCount",
+      "operator": ">=",
+      "value": 2
+    }
+  }
+}

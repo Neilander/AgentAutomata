@@ -1,0 +1,1718 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 20,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-b1d1f0be1a6e2c84",
+    "mode": "continue",
+    "turn": 40,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "damage_absolutist",
+    "label": "Damage absolutist",
+    "summary": "Believes direct damage solves most combat problems and initially discounts sustain.",
+    "decisionBias": {
+      "riskTolerance": 0.75,
+      "exploration": 0.35,
+      "changeAversion": 0.35,
+      "evidenceThreshold": 0.62,
+      "preferences": {
+        "damage": 1,
+        "survival": 0.15,
+        "novelty": 0.3,
+        "rarity": 0.35,
+        "simplicity": 0.7
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "maximizing_direct_damage",
+          "label": "maximizing direct damage"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "raises_win_probability",
+          "label": "raises win probability"
+        },
+        "confidence": 0.84,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:damage_absolutist:1"
+      },
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "using_healing_or_defensive_slots",
+          "label": "using healing or defensive slots"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "reduces_combat_tempo",
+          "label": "reduces combat tempo"
+        },
+        "confidence": 0.72,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:damage_absolutist:2"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "challenge:r1_main_7",
+  "outcome": "win",
+  "emotionBeforeAction": 54.08,
+  "emotionAfterEvents": 55.685,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:41",
+      "key": "hero_mage|region_1|region_1_mid_main|combat_pattern|combat_participation|fight:hero_mage",
+      "subject": {
+        "id": "hero_mage",
+        "name": "烬火法师",
+        "role": "mage",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_mid_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_mage",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 4,
+        "outcomeDistribution": {
+          "combat_contribution": 4
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 357.05,
+            "damageShare": 0.3735,
+            "damageRank": 1,
+            "teamDamage": 955.877,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 3
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 790.795,
+            "damageShare": 0.2801,
+            "damageRank": 2,
+            "teamDamage": 2822.765,
+            "healing": 0,
+            "shielding": 76.5,
+            "kills": 1,
+            "skillCasts": 8
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 339.179,
+            "damageShare": 0.2502,
+            "damageRank": 2,
+            "teamDamage": 1355.865,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 5
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 328.985,
+            "damageShare": 0.1898,
+            "damageRank": 3,
+            "teamDamage": 1733.1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_5:attempt:1:combat:33",
+        "r1_main_5:attempt:1:combat:34",
+        "r1_main_5:attempt:1:combat:35",
+        "r1_main_5:attempt:1:combat:36",
+        "r1_main_5:attempt:1:combat:37",
+        "r1_main_5:attempt:1:combat:38",
+        "r1_main_5:attempt:1:combat:39",
+        "r1_main_5:attempt:1:combat:40",
+        "r1_main_5:attempt:1:combat:64",
+        "r1_main_5:attempt:1:combat:73",
+        "r1_main_5:attempt:1:combat:93",
+        "r1_main_5:attempt:1:combat:120",
+        "r1_main_5:attempt:1:combat:151",
+        "r1_main_5:attempt:1:combat:162",
+        "r1_main_5:attempt:1:combat:173",
+        "r1_main_5:attempt:1:combat:180",
+        "r1_main_5:attempt:1:combat:181",
+        "r1_main_5:attempt:1:combat:207",
+        "r1_main_5:attempt:1:combat:208",
+        "r1_main_5:attempt:1:combat:209",
+        "r1_main_5:attempt:1:combat:210",
+        "r1_main_5:attempt:1:combat:211",
+        "r1_main_5:attempt:1:combat:212",
+        "r1_main_5:attempt:1:combat:213",
+        "r1_main_5:attempt:1:combat:214",
+        "r1_main_5:attempt:1:combat:245",
+        "r1_main_6:attempt:1:combat:3",
+        "r1_main_6:attempt:1:combat:41",
+        "r1_main_6:attempt:1:combat:42",
+        "r1_main_6:attempt:1:combat:43",
+        "r1_main_6:attempt:1:combat:44",
+        "r1_main_6:attempt:1:combat:164",
+        "r1_main_6:attempt:1:combat:185",
+        "r1_main_6:attempt:1:combat:186",
+        "r1_main_6:attempt:1:combat:187",
+        "r1_main_6:attempt:1:combat:188",
+        "r1_main_6:attempt:1:combat:192",
+        "r1_main_6:attempt:1:combat:213",
+        "r1_main_6:attempt:1:combat:231",
+        "r1_main_6:attempt:1:combat:257",
+        "r1_main_6:attempt:1:combat:299",
+        "r1_main_6:attempt:1:combat:300",
+        "r1_main_6:attempt:1:combat:301",
+        "r1_main_6:attempt:1:combat:302",
+        "r1_main_6:attempt:1:combat:303",
+        "r1_main_6:attempt:1:combat:304",
+        "r1_main_6:attempt:1:combat:305",
+        "r1_main_6:attempt:1:combat:306",
+        "r1_main_6:attempt:1:combat:307",
+        "r1_main_6:attempt:1:combat:308",
+        "r1_main_6:attempt:1:combat:309",
+        "r1_main_6:attempt:1:combat:310",
+        "r1_main_6:attempt:1:combat:311",
+        "r1_main_6:attempt:1:combat:326",
+        "r1_main_6:attempt:1:combat:339",
+        "r1_main_6:attempt:1:combat:340",
+        "r1_main_6:attempt:1:combat:341",
+        "r1_main_6:attempt:1:combat:345",
+        "r1_main_6:attempt:1:combat:346",
+        "r1_main_6:attempt:1:combat:368",
+        "r1_main_6:attempt:1:combat:377",
+        "r1_main_6:attempt:1:combat:378",
+        "r1_main_6:attempt:1:combat:387",
+        "r1_main_6:attempt:1:combat:388",
+        "r1_main_6:attempt:1:combat:400",
+        "r1_main_6:attempt:1:combat:401",
+        "r1_main_6:attempt:1:combat:427",
+        "r1_main_6:attempt:1:combat:428",
+        "r1_main_6:attempt:1:combat:459",
+        "r1_main_6:attempt:1:combat:460",
+        "r1_main_6:attempt:1:combat:461",
+        "r1_main_6:attempt:1:combat:462",
+        "r1_main_6:attempt:1:combat:490",
+        "r1_main_6:attempt:1:combat:525",
+        "r1_main_6:attempt:1:combat:529",
+        "r1_main_6:attempt:1:combat:530",
+        "r1_main_6:attempt:1:combat:531",
+        "r1_main_6:attempt:1:combat:573",
+        "r1_main_6:attempt:1:combat:574",
+        "r1_main_6:attempt:1:combat:575",
+        "r1_main_6:attempt:1:combat:576",
+        "r1_main_6:attempt:1:combat:577",
+        "r1_main_6:attempt:1:combat:578",
+        "r1_main_6:attempt:1:combat:579",
+        "r1_main_7:attempt:1:combat:21",
+        "r1_main_7:attempt:1:combat:22",
+        "r1_main_7:attempt:1:combat:23",
+        "r1_main_7:attempt:1:combat:24",
+        "r1_main_7:attempt:1:combat:25",
+        "r1_main_7:attempt:1:combat:26",
+        "r1_main_7:attempt:1:combat:27",
+        "r1_main_7:attempt:1:combat:38",
+        "r1_main_7:attempt:1:combat:45",
+        "r1_main_7:attempt:1:combat:51",
+        "r1_main_7:attempt:1:combat:68",
+        "r1_main_7:attempt:1:combat:94",
+        "r1_main_7:attempt:1:combat:108",
+        "r1_main_7:attempt:1:combat:117",
+        "r1_main_7:attempt:1:combat:136",
+        "r1_main_7:attempt:1:combat:137",
+        "r1_main_7:attempt:1:combat:138",
+        "r1_main_7:attempt:1:combat:147",
+        "r1_main_7:attempt:1:combat:162",
+        "r1_main_7:attempt:1:combat:184",
+        "r1_main_7:attempt:1:combat:185",
+        "r1_main_7:attempt:1:combat:215",
+        "r1_main_7:attempt:1:combat:222",
+        "r1_main_7:attempt:1:combat:223",
+        "r1_main_7:attempt:1:combat:231",
+        "r1_main_7:attempt:1:combat:232",
+        "r1_main_7:attempt:1:combat:233",
+        "r1_main_7:attempt:1:combat:245",
+        "r1_main_7:attempt:1:combat:267",
+        "r1_main_7:attempt:1:combat:286",
+        "r1_main_7:attempt:2:combat:21",
+        "r1_main_7:attempt:2:combat:22",
+        "r1_main_7:attempt:2:combat:23",
+        "r1_main_7:attempt:2:combat:24",
+        "r1_main_7:attempt:2:combat:25",
+        "r1_main_7:attempt:2:combat:26",
+        "r1_main_7:attempt:2:combat:27",
+        "r1_main_7:attempt:2:combat:38",
+        "r1_main_7:attempt:2:combat:52",
+        "r1_main_7:attempt:2:combat:58",
+        "r1_main_7:attempt:2:combat:81",
+        "r1_main_7:attempt:2:combat:98",
+        "r1_main_7:attempt:2:combat:106",
+        "r1_main_7:attempt:2:combat:122",
+        "r1_main_7:attempt:2:combat:140",
+        "r1_main_7:attempt:2:combat:141",
+        "r1_main_7:attempt:2:combat:142",
+        "r1_main_7:attempt:2:combat:145",
+        "r1_main_7:attempt:2:combat:180",
+        "r1_main_7:attempt:2:combat:187",
+        "r1_main_7:attempt:2:combat:219",
+        "r1_main_7:attempt:2:combat:220",
+        "r1_main_7:attempt:2:combat:265",
+        "r1_main_7:attempt:2:combat:266"
+      ],
+      "attributions": [
+        {
+          "id": "ai-attribution:11",
+          "knowledgeId": "knowledge:41",
+          "cause": "The armed mage remained damage rank one at 37.35%, while the armed warrior rose to rank two; the damage-focused weapon investment preserved the fast clear.",
+          "confidence": 0.9,
+          "evidenceEventIds": [
+            "r1_main_5:attempt:1:combat:212",
+            "r1_main_5:attempt:1:combat:213"
+          ],
+          "alternativeCauses": [
+            "The berserker nearly matched the warrior and kept the top three damage shares tightly grouped.",
+            "The encounter may differ from the prior one, so the exact weapon gain is not isolated."
+          ],
+          "nextTest": "Continue to the newly opened main encounter with the same damage core and use the first loss or ally death as evidence that more sustain is needed.",
+          "learnedAfterFeedback": true
+        }
+      ]
+    },
+    {
+      "id": "knowledge:42",
+      "key": "hero_warrior|region_1|region_1_mid_main|combat_pattern|combat_participation|fight:hero_warrior",
+      "subject": {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_mid_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_warrior",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 4,
+        "outcomeDistribution": {
+          "combat_contribution": 4
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 254.435,
+            "damageShare": 0.2662,
+            "damageRank": 2,
+            "teamDamage": 955.877,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 4
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 681.212,
+            "damageShare": 0.2413,
+            "damageRank": 3,
+            "teamDamage": 2822.765,
+            "healing": 0,
+            "shielding": 119.34,
+            "kills": 0,
+            "skillCasts": 6
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 209.983,
+            "damageShare": 0.1549,
+            "damageRank": 3,
+            "teamDamage": 1355.865,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 2
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 209.983,
+            "damageShare": 0.1212,
+            "damageRank": 4,
+            "teamDamage": 1733.1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 2
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_5:attempt:1:combat:88",
+        "r1_main_5:attempt:1:combat:89",
+        "r1_main_5:attempt:1:combat:94",
+        "r1_main_5:attempt:1:combat:95",
+        "r1_main_5:attempt:1:combat:96",
+        "r1_main_5:attempt:1:combat:102",
+        "r1_main_5:attempt:1:combat:145",
+        "r1_main_5:attempt:1:combat:175",
+        "r1_main_5:attempt:1:combat:294",
+        "r1_main_5:attempt:1:combat:295",
+        "r1_main_5:attempt:1:combat:296",
+        "r1_main_5:attempt:1:combat:298",
+        "r1_main_5:attempt:1:combat:299",
+        "r1_main_5:attempt:1:combat:300",
+        "r1_main_6:attempt:1:combat:1",
+        "r1_main_6:attempt:1:combat:80",
+        "r1_main_6:attempt:1:combat:81",
+        "r1_main_6:attempt:1:combat:82",
+        "r1_main_6:attempt:1:combat:148",
+        "r1_main_6:attempt:1:combat:175",
+        "r1_main_6:attempt:1:combat:208",
+        "r1_main_6:attempt:1:combat:210",
+        "r1_main_6:attempt:1:combat:211",
+        "r1_main_6:attempt:1:combat:212",
+        "r1_main_6:attempt:1:combat:273",
+        "r1_main_6:attempt:1:combat:279",
+        "r1_main_6:attempt:1:combat:280",
+        "r1_main_6:attempt:1:combat:281",
+        "r1_main_6:attempt:1:combat:364",
+        "r1_main_6:attempt:1:combat:379",
+        "r1_main_6:attempt:1:combat:380",
+        "r1_main_6:attempt:1:combat:381",
+        "r1_main_6:attempt:1:combat:426",
+        "r1_main_6:attempt:1:combat:464",
+        "r1_main_6:attempt:1:combat:499",
+        "r1_main_6:attempt:1:combat:500",
+        "r1_main_6:attempt:1:combat:501",
+        "r1_main_6:attempt:1:combat:510",
+        "r1_main_7:attempt:1:combat:52",
+        "r1_main_7:attempt:1:combat:53",
+        "r1_main_7:attempt:1:combat:54",
+        "r1_main_7:attempt:1:combat:55",
+        "r1_main_7:attempt:1:combat:56",
+        "r1_main_7:attempt:1:combat:64",
+        "r1_main_7:attempt:1:combat:82",
+        "r1_main_7:attempt:1:combat:109",
+        "r1_main_7:attempt:1:combat:130",
+        "r1_main_7:attempt:1:combat:160",
+        "r1_main_7:attempt:2:combat:64",
+        "r1_main_7:attempt:2:combat:65",
+        "r1_main_7:attempt:2:combat:66",
+        "r1_main_7:attempt:2:combat:67",
+        "r1_main_7:attempt:2:combat:68",
+        "r1_main_7:attempt:2:combat:71",
+        "r1_main_7:attempt:2:combat:93",
+        "r1_main_7:attempt:2:combat:115",
+        "r1_main_7:attempt:2:combat:134",
+        "r1_main_7:attempt:2:combat:164"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:43",
+      "key": "hero_berserker|region_1|region_1_mid_main|combat_pattern|combat_participation|fight:hero_berserker",
+      "subject": {
+        "id": "hero_berserker",
+        "name": "赤潮狂战士",
+        "role": "berserker",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_mid_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_berserker",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 4,
+        "outcomeDistribution": {
+          "combat_contribution": 4
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 251.32,
+            "damageShare": 0.2629,
+            "damageRank": 3,
+            "teamDamage": 955.877,
+            "healing": 30.5574,
+            "shielding": 0,
+            "kills": 2,
+            "skillCasts": 4
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 1175.619,
+            "damageShare": 0.4165,
+            "damageRank": 1,
+            "teamDamage": 2822.765,
+            "healing": 167.9718,
+            "shielding": 0,
+            "kills": 2,
+            "skillCasts": 6
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 672.183,
+            "damageShare": 0.4958,
+            "damageRank": 1,
+            "teamDamage": 1355.865,
+            "healing": 99.7989,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 838.973,
+            "damageShare": 0.4841,
+            "damageRank": 1,
+            "teamDamage": 1733.1,
+            "healing": 129.7697,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_5:attempt:1:combat:111",
+        "r1_main_5:attempt:1:combat:112",
+        "r1_main_5:attempt:1:combat:113",
+        "r1_main_5:attempt:1:combat:114",
+        "r1_main_5:attempt:1:combat:115",
+        "r1_main_5:attempt:1:combat:149",
+        "r1_main_5:attempt:1:combat:150",
+        "r1_main_5:attempt:1:combat:160",
+        "r1_main_5:attempt:1:combat:161",
+        "r1_main_5:attempt:1:combat:177",
+        "r1_main_5:attempt:1:combat:178",
+        "r1_main_5:attempt:1:combat:179",
+        "r1_main_5:attempt:1:combat:182",
+        "r1_main_5:attempt:1:combat:184",
+        "r1_main_5:attempt:1:combat:256",
+        "r1_main_5:attempt:1:combat:260",
+        "r1_main_5:attempt:1:combat:261",
+        "r1_main_5:attempt:1:combat:262",
+        "r1_main_5:attempt:1:combat:263",
+        "r1_main_5:attempt:1:combat:264",
+        "r1_main_5:attempt:1:combat:265",
+        "r1_main_5:attempt:1:combat:266",
+        "r1_main_6:attempt:1:combat:132",
+        "r1_main_6:attempt:1:combat:133",
+        "r1_main_6:attempt:1:combat:134",
+        "r1_main_6:attempt:1:combat:136",
+        "r1_main_6:attempt:1:combat:137",
+        "r1_main_6:attempt:1:combat:138",
+        "r1_main_6:attempt:1:combat:158",
+        "r1_main_6:attempt:1:combat:159",
+        "r1_main_6:attempt:1:combat:160",
+        "r1_main_6:attempt:1:combat:162",
+        "r1_main_6:attempt:1:combat:193",
+        "r1_main_6:attempt:1:combat:194",
+        "r1_main_6:attempt:1:combat:195",
+        "r1_main_6:attempt:1:combat:197",
+        "r1_main_6:attempt:1:combat:207",
+        "r1_main_6:attempt:1:combat:225",
+        "r1_main_6:attempt:1:combat:226",
+        "r1_main_6:attempt:1:combat:227",
+        "r1_main_6:attempt:1:combat:229",
+        "r1_main_6:attempt:1:combat:243",
+        "r1_main_6:attempt:1:combat:244",
+        "r1_main_6:attempt:1:combat:245",
+        "r1_main_6:attempt:1:combat:247",
+        "r1_main_6:attempt:1:combat:275",
+        "r1_main_6:attempt:1:combat:276",
+        "r1_main_6:attempt:1:combat:277",
+        "r1_main_6:attempt:1:combat:282",
+        "r1_main_6:attempt:1:combat:283",
+        "r1_main_6:attempt:1:combat:284",
+        "r1_main_6:attempt:1:combat:286",
+        "r1_main_6:attempt:1:combat:312",
+        "r1_main_6:attempt:1:combat:313",
+        "r1_main_6:attempt:1:combat:314",
+        "r1_main_6:attempt:1:combat:316",
+        "r1_main_6:attempt:1:combat:342",
+        "r1_main_6:attempt:1:combat:343",
+        "r1_main_6:attempt:1:combat:344",
+        "r1_main_6:attempt:1:combat:347",
+        "r1_main_6:attempt:1:combat:349",
+        "r1_main_6:attempt:1:combat:398",
+        "r1_main_6:attempt:1:combat:399",
+        "r1_main_6:attempt:1:combat:410",
+        "r1_main_6:attempt:1:combat:411",
+        "r1_main_6:attempt:1:combat:412",
+        "r1_main_6:attempt:1:combat:440",
+        "r1_main_6:attempt:1:combat:441",
+        "r1_main_6:attempt:1:combat:442",
+        "r1_main_6:attempt:1:combat:443",
+        "r1_main_6:attempt:1:combat:444",
+        "r1_main_6:attempt:1:combat:445",
+        "r1_main_6:attempt:1:combat:447",
+        "r1_main_6:attempt:1:combat:473",
+        "r1_main_6:attempt:1:combat:474",
+        "r1_main_6:attempt:1:combat:475",
+        "r1_main_6:attempt:1:combat:477",
+        "r1_main_6:attempt:1:combat:492",
+        "r1_main_6:attempt:1:combat:493",
+        "r1_main_6:attempt:1:combat:494",
+        "r1_main_6:attempt:1:combat:496",
+        "r1_main_6:attempt:1:combat:526",
+        "r1_main_6:attempt:1:combat:527",
+        "r1_main_6:attempt:1:combat:528",
+        "r1_main_6:attempt:1:combat:532",
+        "r1_main_7:attempt:1:combat:75",
+        "r1_main_7:attempt:1:combat:76",
+        "r1_main_7:attempt:1:combat:77",
+        "r1_main_7:attempt:1:combat:78",
+        "r1_main_7:attempt:1:combat:79",
+        "r1_main_7:attempt:1:combat:92",
+        "r1_main_7:attempt:1:combat:93",
+        "r1_main_7:attempt:1:combat:110",
+        "r1_main_7:attempt:1:combat:111",
+        "r1_main_7:attempt:1:combat:139",
+        "r1_main_7:attempt:1:combat:140",
+        "r1_main_7:attempt:1:combat:153",
+        "r1_main_7:attempt:1:combat:168",
+        "r1_main_7:attempt:1:combat:169",
+        "r1_main_7:attempt:1:combat:186",
+        "r1_main_7:attempt:1:combat:187",
+        "r1_main_7:attempt:1:combat:193",
+        "r1_main_7:attempt:1:combat:194",
+        "r1_main_7:attempt:1:combat:195",
+        "r1_main_7:attempt:1:combat:204",
+        "r1_main_7:attempt:1:combat:205",
+        "r1_main_7:attempt:1:combat:240",
+        "r1_main_7:attempt:1:combat:255",
+        "r1_main_7:attempt:1:combat:256",
+        "r1_main_7:attempt:2:combat:83",
+        "r1_main_7:attempt:2:combat:84",
+        "r1_main_7:attempt:2:combat:85",
+        "r1_main_7:attempt:2:combat:86",
+        "r1_main_7:attempt:2:combat:87",
+        "r1_main_7:attempt:2:combat:96",
+        "r1_main_7:attempt:2:combat:97",
+        "r1_main_7:attempt:2:combat:108",
+        "r1_main_7:attempt:2:combat:109",
+        "r1_main_7:attempt:2:combat:143",
+        "r1_main_7:attempt:2:combat:144",
+        "r1_main_7:attempt:2:combat:153",
+        "r1_main_7:attempt:2:combat:170",
+        "r1_main_7:attempt:2:combat:171",
+        "r1_main_7:attempt:2:combat:188",
+        "r1_main_7:attempt:2:combat:189",
+        "r1_main_7:attempt:2:combat:195",
+        "r1_main_7:attempt:2:combat:196",
+        "r1_main_7:attempt:2:combat:197",
+        "r1_main_7:attempt:2:combat:212",
+        "r1_main_7:attempt:2:combat:213",
+        "r1_main_7:attempt:2:combat:241",
+        "r1_main_7:attempt:2:combat:242",
+        "r1_main_7:attempt:2:combat:252",
+        "r1_main_7:attempt:2:combat:253",
+        "r1_main_7:attempt:2:combat:263",
+        "r1_main_7:attempt:2:combat:264"
+      ],
+      "attributions": [
+        {
+          "id": "ai-attribution:14",
+          "knowledgeId": "knowledge:43",
+          "cause": "The strengthened berserker became damage rank one at 41.65% and scored multiple visible kills, letting the all-damage roster clear the heavy-shield encounter without the optional armory.",
+          "confidence": 0.9,
+          "evidenceEventIds": [
+            "r1_main_6:attempt:1:combat:344",
+            "r1_main_6:attempt:1:combat:496",
+            "r1_main_6:attempt:1:combat:528"
+          ],
+          "alternativeCauses": [
+            "The mage and warrior together supplied another 52.14% of damage.",
+            "The team may have overpowered this specific shield encounter through accumulated equipment rather than proving shield-breaking gear unnecessary everywhere."
+          ],
+          "nextTest": "Continue the main route with the current damage core; reconsider the optional armory only if a later shielded fight produces a loss or severe slowdown.",
+          "learnedAfterFeedback": true
+        }
+      ]
+    },
+    {
+      "id": "knowledge:47",
+      "key": "concept:enemy_minion_melee|region_1|region_1_mid_main|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_melee",
+      "subject": {
+        "id": "concept:enemy_minion_melee",
+        "name": "近战小怪",
+        "conceptId": "enemy_minion_melee"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_mid_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_melee",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 3
+        },
+        "observations": [
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 2,
+            "damage": 180.9492,
+            "damageShare": 0.4678,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4,
+            "observedTargets": [
+              "灰鸦战士",
+              "短矛民兵",
+              "烬火法师",
+              "赤潮狂战士"
+            ],
+            "supportTargets": []
+          },
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 1620.3154,
+            "damageShare": 1,
+            "threatRank": 1,
+            "healing": 262.5,
+            "shielding": 0,
+            "kills": 4,
+            "skillCasts": 4,
+            "observedTargets": [
+              "灰鸦战士",
+              "近战小怪",
+              "短矛民兵",
+              "赤潮狂战士",
+              "烬火法师"
+            ],
+            "supportTargets": [
+              "近战小怪"
+            ]
+          },
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 1251.2769,
+            "damageShare": 1,
+            "threatRank": 1,
+            "healing": 208.5617,
+            "shielding": 0,
+            "kills": 2,
+            "skillCasts": 4,
+            "observedTargets": [
+              "灰鸦战士",
+              "近战小怪",
+              "赤潮狂战士",
+              "烬火法师",
+              "林地游侠"
+            ],
+            "supportTargets": [
+              "近战小怪"
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_5:attempt:1:combat:90",
+        "r1_main_5:attempt:1:combat:91",
+        "r1_main_5:attempt:1:combat:92",
+        "r1_main_5:attempt:1:combat:97",
+        "r1_main_5:attempt:1:combat:98",
+        "r1_main_5:attempt:1:combat:99",
+        "r1_main_5:attempt:1:combat:101",
+        "r1_main_5:attempt:1:combat:131",
+        "r1_main_5:attempt:1:combat:132",
+        "r1_main_5:attempt:1:combat:133",
+        "r1_main_5:attempt:1:combat:142",
+        "r1_main_5:attempt:1:combat:143",
+        "r1_main_5:attempt:1:combat:144",
+        "r1_main_5:attempt:1:combat:147",
+        "r1_main_5:attempt:1:combat:148",
+        "r1_main_5:attempt:1:combat:174",
+        "r1_main_7:attempt:1:combat:57",
+        "r1_main_7:attempt:1:combat:58",
+        "r1_main_7:attempt:1:combat:65",
+        "r1_main_7:attempt:1:combat:66",
+        "r1_main_7:attempt:1:combat:67",
+        "r1_main_7:attempt:1:combat:80",
+        "r1_main_7:attempt:1:combat:81",
+        "r1_main_7:attempt:1:combat:100",
+        "r1_main_7:attempt:1:combat:101",
+        "r1_main_7:attempt:1:combat:102",
+        "r1_main_7:attempt:1:combat:103",
+        "r1_main_7:attempt:1:combat:104",
+        "r1_main_7:attempt:1:combat:106",
+        "r1_main_7:attempt:1:combat:118",
+        "r1_main_7:attempt:1:combat:119",
+        "r1_main_7:attempt:1:combat:120",
+        "r1_main_7:attempt:1:combat:122",
+        "r1_main_7:attempt:1:combat:141",
+        "r1_main_7:attempt:1:combat:142",
+        "r1_main_7:attempt:1:combat:143",
+        "r1_main_7:attempt:1:combat:145",
+        "r1_main_7:attempt:1:combat:154",
+        "r1_main_7:attempt:1:combat:155",
+        "r1_main_7:attempt:1:combat:156",
+        "r1_main_7:attempt:1:combat:158",
+        "r1_main_7:attempt:1:combat:161",
+        "r1_main_7:attempt:1:combat:170",
+        "r1_main_7:attempt:1:combat:171",
+        "r1_main_7:attempt:1:combat:172",
+        "r1_main_7:attempt:1:combat:173",
+        "r1_main_7:attempt:1:combat:175",
+        "r1_main_7:attempt:1:combat:206",
+        "r1_main_7:attempt:1:combat:207",
+        "r1_main_7:attempt:1:combat:208",
+        "r1_main_7:attempt:1:combat:209",
+        "r1_main_7:attempt:1:combat:210",
+        "r1_main_7:attempt:1:combat:211",
+        "r1_main_7:attempt:1:combat:213",
+        "r1_main_7:attempt:1:combat:224",
+        "r1_main_7:attempt:1:combat:225",
+        "r1_main_7:attempt:1:combat:226",
+        "r1_main_7:attempt:1:combat:227",
+        "r1_main_7:attempt:1:combat:229",
+        "r1_main_7:attempt:1:combat:241",
+        "r1_main_7:attempt:1:combat:242",
+        "r1_main_7:attempt:1:combat:243",
+        "r1_main_7:attempt:1:combat:262",
+        "r1_main_7:attempt:1:combat:263",
+        "r1_main_7:attempt:1:combat:264",
+        "r1_main_7:attempt:1:combat:268",
+        "r1_main_7:attempt:1:combat:269",
+        "r1_main_7:attempt:1:combat:270",
+        "r1_main_7:attempt:1:combat:271",
+        "r1_main_7:attempt:1:combat:279",
+        "r1_main_7:attempt:1:combat:280",
+        "r1_main_7:attempt:1:combat:287",
+        "r1_main_7:attempt:1:combat:288",
+        "r1_main_7:attempt:1:combat:289",
+        "r1_main_7:attempt:2:combat:69",
+        "r1_main_7:attempt:2:combat:70",
+        "r1_main_7:attempt:2:combat:72",
+        "r1_main_7:attempt:2:combat:73",
+        "r1_main_7:attempt:2:combat:74",
+        "r1_main_7:attempt:2:combat:94",
+        "r1_main_7:attempt:2:combat:95",
+        "r1_main_7:attempt:2:combat:104",
+        "r1_main_7:attempt:2:combat:105",
+        "r1_main_7:attempt:2:combat:116",
+        "r1_main_7:attempt:2:combat:117",
+        "r1_main_7:attempt:2:combat:118",
+        "r1_main_7:attempt:2:combat:120",
+        "r1_main_7:attempt:2:combat:128",
+        "r1_main_7:attempt:2:combat:129",
+        "r1_main_7:attempt:2:combat:130",
+        "r1_main_7:attempt:2:combat:132",
+        "r1_main_7:attempt:2:combat:157",
+        "r1_main_7:attempt:2:combat:158",
+        "r1_main_7:attempt:2:combat:159",
+        "r1_main_7:attempt:2:combat:161",
+        "r1_main_7:attempt:2:combat:163",
+        "r1_main_7:attempt:2:combat:172",
+        "r1_main_7:attempt:2:combat:173",
+        "r1_main_7:attempt:2:combat:174",
+        "r1_main_7:attempt:2:combat:175",
+        "r1_main_7:attempt:2:combat:177",
+        "r1_main_7:attempt:2:combat:203",
+        "r1_main_7:attempt:2:combat:204",
+        "r1_main_7:attempt:2:combat:205",
+        "r1_main_7:attempt:2:combat:206",
+        "r1_main_7:attempt:2:combat:207",
+        "r1_main_7:attempt:2:combat:208",
+        "r1_main_7:attempt:2:combat:210",
+        "r1_main_7:attempt:2:combat:221",
+        "r1_main_7:attempt:2:combat:222",
+        "r1_main_7:attempt:2:combat:223",
+        "r1_main_7:attempt:2:combat:224",
+        "r1_main_7:attempt:2:combat:226",
+        "r1_main_7:attempt:2:combat:237",
+        "r1_main_7:attempt:2:combat:238",
+        "r1_main_7:attempt:2:combat:239",
+        "r1_main_7:attempt:2:combat:248",
+        "r1_main_7:attempt:2:combat:249",
+        "r1_main_7:attempt:2:combat:250",
+        "r1_main_7:attempt:2:combat:259",
+        "r1_main_7:attempt:2:combat:260",
+        "r1_main_7:attempt:2:combat:261"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:59",
+      "key": "player_squad|region_1|r1_main_7|encounter|challenge_level|challenge:r1_main_7",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_7",
+        "phase": "encounter",
+        "team": [
+          "hero_warrior",
+          "hero_mage",
+          "militia_spear",
+          "hero_berserker"
+        ]
+      },
+      "behavior": {
+        "kind": "challenge_level",
+        "key": "challenge:r1_main_7",
+        "target": "r1_main_7"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "loss": 1,
+          "win": 1
+        },
+        "observations": [
+          {
+            "outcome": "loss",
+            "duration": 14.56,
+            "survivors": {
+              "player": 0,
+              "enemy": 1
+            },
+            "resolution": "elimination",
+            "firstClear": false
+          },
+          {
+            "outcome": "win",
+            "duration": 13.44,
+            "survivors": {
+              "player": 2,
+              "enemy": 0
+            },
+            "resolution": "elimination",
+            "firstClear": true
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r1_main_7:17:result",
+        "map_action:r1_main_7:17:summary",
+        "map_action:r1_main_7:20:result",
+        "map_action:r1_main_7:20:summary"
+      ],
+      "attributions": [
+        {
+          "id": "ai-attribution:17",
+          "knowledgeId": "knowledge:59",
+          "cause": "The damage-heavy team left the single high-health enemy at only 5% health but lost all four allies, so its current sustained damage and uptime were just short of the clear.",
+          "confidence": 0.88,
+          "evidenceEventIds": [
+            "map_action:r1_main_7:17:result"
+          ],
+          "alternativeCauses": [
+            "The warrior died first at 9.28 seconds, cutting off a proven damage source early.",
+            "The enemy visibly healed during the fight, increasing the sustained damage requirement."
+          ],
+          "nextTest": "Pursue the visible prison rescue for the sustained single-target ranger, then compare that damage specialist against the current lowest-ranked spear militia on a Main 7 retry.",
+          "learnedAfterFeedback": true
+        }
+      ]
+    },
+    {
+      "id": "knowledge:60",
+      "key": "player_squad|region_1|r1_main_7|combat|attack_enemy_squad|team_damage:r1_main_7",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_7",
+        "phase": "combat",
+        "team": [
+          "hero_warrior",
+          "hero_mage",
+          "militia_spear",
+          "hero_berserker"
+        ]
+      },
+      "behavior": {
+        "kind": "attack_enemy_squad",
+        "key": "team_damage:r1_main_7"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "damage_profile": 2
+        },
+        "observations": [
+          {
+            "outcome": "damage_profile",
+            "d50": 18.96,
+            "d90": 65.97,
+            "frequency": 2.885,
+            "impact": 0.193,
+            "hitCount": 42,
+            "killCount": 0,
+            "totalDamage": 1355.865
+          },
+          {
+            "outcome": "damage_profile",
+            "d50": 22.605,
+            "d90": 56.044,
+            "frequency": 3.125,
+            "impact": 0.527,
+            "hitCount": 42,
+            "killCount": 1,
+            "totalDamage": 1733.1
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_7:attempt:1:combat:22",
+        "r1_main_7:attempt:1:combat:24",
+        "r1_main_7:attempt:1:combat:26",
+        "r1_main_7:attempt:1:combat:38",
+        "r1_main_7:attempt:1:combat:45",
+        "r1_main_7:attempt:1:combat:51",
+        "r1_main_7:attempt:1:combat:54",
+        "r1_main_7:attempt:1:combat:56",
+        "r1_main_7:attempt:1:combat:64",
+        "r1_main_7:attempt:1:combat:68",
+        "r1_main_7:attempt:1:combat:76",
+        "r1_main_7:attempt:1:combat:78",
+        "r1_main_7:attempt:1:combat:82",
+        "r1_main_7:attempt:1:combat:85",
+        "r1_main_7:attempt:1:combat:91",
+        "r1_main_7:attempt:1:combat:94",
+        "r1_main_7:attempt:1:combat:108",
+        "r1_main_7:attempt:1:combat:109",
+        "r1_main_7:attempt:1:combat:110",
+        "r1_main_7:attempt:1:combat:117",
+        "r1_main_7:attempt:1:combat:129",
+        "r1_main_7:attempt:1:combat:130",
+        "r1_main_7:attempt:1:combat:137",
+        "r1_main_7:attempt:1:combat:139",
+        "r1_main_7:attempt:1:combat:147",
+        "r1_main_7:attempt:1:combat:160",
+        "r1_main_7:attempt:1:combat:162",
+        "r1_main_7:attempt:1:combat:168",
+        "r1_main_7:attempt:1:combat:177",
+        "r1_main_7:attempt:1:combat:184",
+        "r1_main_7:attempt:1:combat:185",
+        "r1_main_7:attempt:1:combat:186",
+        "r1_main_7:attempt:1:combat:194",
+        "r1_main_7:attempt:1:combat:198",
+        "r1_main_7:attempt:1:combat:204",
+        "r1_main_7:attempt:1:combat:215",
+        "r1_main_7:attempt:1:combat:216",
+        "r1_main_7:attempt:1:combat:232",
+        "r1_main_7:attempt:1:combat:245",
+        "r1_main_7:attempt:1:combat:255",
+        "r1_main_7:attempt:1:combat:266",
+        "r1_main_7:attempt:1:combat:267",
+        "r1_main_7:attempt:1:combat:286",
+        "r1_main_7:attempt:2:combat:22",
+        "r1_main_7:attempt:2:combat:24",
+        "r1_main_7:attempt:2:combat:26",
+        "r1_main_7:attempt:2:combat:38",
+        "r1_main_7:attempt:2:combat:47",
+        "r1_main_7:attempt:2:combat:50",
+        "r1_main_7:attempt:2:combat:51",
+        "r1_main_7:attempt:2:combat:52",
+        "r1_main_7:attempt:2:combat:58",
+        "r1_main_7:attempt:2:combat:66",
+        "r1_main_7:attempt:2:combat:68",
+        "r1_main_7:attempt:2:combat:71",
+        "r1_main_7:attempt:2:combat:80",
+        "r1_main_7:attempt:2:combat:81",
+        "r1_main_7:attempt:2:combat:84",
+        "r1_main_7:attempt:2:combat:86",
+        "r1_main_7:attempt:2:combat:93",
+        "r1_main_7:attempt:2:combat:98",
+        "r1_main_7:attempt:2:combat:106",
+        "r1_main_7:attempt:2:combat:107",
+        "r1_main_7:attempt:2:combat:108",
+        "r1_main_7:attempt:2:combat:115",
+        "r1_main_7:attempt:2:combat:122",
+        "r1_main_7:attempt:2:combat:134",
+        "r1_main_7:attempt:2:combat:141",
+        "r1_main_7:attempt:2:combat:143",
+        "r1_main_7:attempt:2:combat:145",
+        "r1_main_7:attempt:2:combat:146",
+        "r1_main_7:attempt:2:combat:156",
+        "r1_main_7:attempt:2:combat:164",
+        "r1_main_7:attempt:2:combat:170",
+        "r1_main_7:attempt:2:combat:180",
+        "r1_main_7:attempt:2:combat:186",
+        "r1_main_7:attempt:2:combat:187",
+        "r1_main_7:attempt:2:combat:188",
+        "r1_main_7:attempt:2:combat:196",
+        "r1_main_7:attempt:2:combat:212",
+        "r1_main_7:attempt:2:combat:231",
+        "r1_main_7:attempt:2:combat:241",
+        "r1_main_7:attempt:2:combat:252",
+        "r1_main_7:attempt:2:combat:263",
+        "r1_main_7:attempt:2:combat:265"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:61",
+      "key": "enemy_squad:r1_main_7|region_1|r1_main_7|combat|attack_player_squad|enemy_attack:r1_main_7",
+      "subject": {
+        "id": "enemy_squad:r1_main_7",
+        "name": "enemy squad"
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_7",
+        "phase": "combat"
+      },
+      "behavior": {
+        "kind": "attack_player_squad",
+        "key": "enemy_attack:r1_main_7",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "threat_profile": 2
+        },
+        "observations": [
+          {
+            "outcome": "threat_profile",
+            "firstAllyDeath": {
+              "time": 9.28,
+              "name": "灰鸦战士",
+              "killer": "狂鬃熊王"
+            },
+            "incomingDamage": {
+              "physical": 1536.7,
+              "magic": 0,
+              "effect": 0
+            },
+            "dominantDamage": "physical",
+            "enemySurvivors": [
+              {
+                "name": "狂鬃熊王",
+                "role": "berserker",
+                "hpRatio": 0.05
+              }
+            ],
+            "enemySurvivorCount": 1
+          },
+          {
+            "outcome": "threat_profile",
+            "firstAllyDeath": {
+              "time": 9.12,
+              "name": "灰鸦战士",
+              "killer": "狂鬃熊王"
+            },
+            "incomingDamage": {
+              "physical": 1201.3,
+              "magic": 0,
+              "effect": 0
+            },
+            "dominantDamage": "physical",
+            "enemySurvivors": [],
+            "enemySurvivorCount": 0
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_7:attempt:1:combat:57",
+        "r1_main_7:attempt:1:combat:66",
+        "r1_main_7:attempt:1:combat:80",
+        "r1_main_7:attempt:1:combat:102",
+        "r1_main_7:attempt:1:combat:104",
+        "r1_main_7:attempt:1:combat:106",
+        "r1_main_7:attempt:1:combat:118",
+        "r1_main_7:attempt:1:combat:120",
+        "r1_main_7:attempt:1:combat:122",
+        "r1_main_7:attempt:1:combat:141",
+        "r1_main_7:attempt:1:combat:143",
+        "r1_main_7:attempt:1:combat:145",
+        "r1_main_7:attempt:1:combat:154",
+        "r1_main_7:attempt:1:combat:156",
+        "r1_main_7:attempt:1:combat:158",
+        "r1_main_7:attempt:1:combat:170",
+        "r1_main_7:attempt:1:combat:173",
+        "r1_main_7:attempt:1:combat:175",
+        "r1_main_7:attempt:1:combat:207",
+        "r1_main_7:attempt:1:combat:209",
+        "r1_main_7:attempt:1:combat:211",
+        "r1_main_7:attempt:1:combat:213",
+        "r1_main_7:attempt:1:combat:224",
+        "r1_main_7:attempt:1:combat:227",
+        "r1_main_7:attempt:1:combat:229",
+        "r1_main_7:attempt:1:combat:241",
+        "r1_main_7:attempt:1:combat:243",
+        "r1_main_7:attempt:1:combat:262",
+        "r1_main_7:attempt:1:combat:264",
+        "r1_main_7:attempt:1:combat:268",
+        "r1_main_7:attempt:1:combat:271",
+        "r1_main_7:attempt:1:combat:279",
+        "r1_main_7:attempt:1:combat:287",
+        "r1_main_7:attempt:2:combat:69",
+        "r1_main_7:attempt:2:combat:73",
+        "r1_main_7:attempt:2:combat:94",
+        "r1_main_7:attempt:2:combat:116",
+        "r1_main_7:attempt:2:combat:118",
+        "r1_main_7:attempt:2:combat:120",
+        "r1_main_7:attempt:2:combat:128",
+        "r1_main_7:attempt:2:combat:130",
+        "r1_main_7:attempt:2:combat:132",
+        "r1_main_7:attempt:2:combat:157",
+        "r1_main_7:attempt:2:combat:159",
+        "r1_main_7:attempt:2:combat:161",
+        "r1_main_7:attempt:2:combat:172",
+        "r1_main_7:attempt:2:combat:175",
+        "r1_main_7:attempt:2:combat:177",
+        "r1_main_7:attempt:2:combat:204",
+        "r1_main_7:attempt:2:combat:206",
+        "r1_main_7:attempt:2:combat:208",
+        "r1_main_7:attempt:2:combat:210",
+        "r1_main_7:attempt:2:combat:221",
+        "r1_main_7:attempt:2:combat:224",
+        "r1_main_7:attempt:2:combat:226",
+        "r1_main_7:attempt:2:combat:237",
+        "r1_main_7:attempt:2:combat:239",
+        "r1_main_7:attempt:2:combat:248",
+        "r1_main_7:attempt:2:combat:250",
+        "r1_main_7:attempt:2:combat:259",
+        "r1_main_7:attempt:2:combat:261"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:74",
+      "key": "player_squad|region_1|r1_main_7|map_progression|clear_level|challenge:r1_main_7",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_7",
+        "phase": "map_progression"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r1_main_7",
+        "target": "r1_main_7"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "win": 1
+        },
+        "observations": [
+          {
+            "outcome": "win",
+            "unlockedNodes": [
+              "r1_main_8"
+            ],
+            "clearedNode": "r1_main_7"
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_unlock:r1_main_7:20"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:75",
+      "key": "player_squad|region_1|r1_main_7|loot_drop|clear_level|challenge:r1_main_7",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_berserker",
+            "name": "赤潮狂战士",
+            "role": "berserker",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_main_7",
+        "phase": "loot_drop"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r1_main_7",
+        "target": "r1_main_7"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "loot_obtained": 1
+        },
+        "observations": [
+          {
+            "outcome": "loot_obtained",
+            "drops": [
+              {
+                "id": "r1_main_7_2_0",
+                "name": "史诗头盔 Lv.8",
+                "slot": "helm",
+                "rarity": "epic",
+                "level": 8
+              },
+              {
+                "id": "r1_main_7_2_1",
+                "name": "稀有靴子 Lv.8",
+                "slot": "boots",
+                "rarity": "rare",
+                "level": 8
+              }
+            ],
+            "inventoryCountBefore": 7,
+            "inventoryCountAfter": 9,
+            "equippedPowerBefore": 399,
+            "equippedPowerAfter": 399,
+            "powerChanged": false
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r1_main_7:20:result",
+        "map_action:r1_main_7:20:loot:1",
+        "map_action:r1_main_7:20:loot:2"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:76",
+      "key": "hero_ranger|region_1|region_1_mid_main|combat_pattern|combat_participation|fight:hero_ranger",
+      "subject": {
+        "id": "hero_ranger",
+        "name": "林地游侠",
+        "role": "ranger",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_mid_main",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_ranger",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 355.159,
+            "damageShare": 0.2049,
+            "damageRank": 2,
+            "teamDamage": 1733.1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_main_7:attempt:2:combat:45",
+        "r1_main_7:attempt:2:combat:46",
+        "r1_main_7:attempt:2:combat:47",
+        "r1_main_7:attempt:2:combat:48",
+        "r1_main_7:attempt:2:combat:49",
+        "r1_main_7:attempt:2:combat:50",
+        "r1_main_7:attempt:2:combat:51",
+        "r1_main_7:attempt:2:combat:80",
+        "r1_main_7:attempt:2:combat:107",
+        "r1_main_7:attempt:2:combat:146",
+        "r1_main_7:attempt:2:combat:154",
+        "r1_main_7:attempt:2:combat:155",
+        "r1_main_7:attempt:2:combat:156",
+        "r1_main_7:attempt:2:combat:186",
+        "r1_main_7:attempt:2:combat:229",
+        "r1_main_7:attempt:2:combat:230",
+        "r1_main_7:attempt:2:combat:231"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 229,
+  "visibleEvents": [
+    {
+      "id": "r1_main_7:attempt:2:combat:120",
+      "time": 6.8,
+      "type": "damage",
+      "subject": "近战小怪",
+      "behavior": "旋风溅射",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 11.4895,
+        "target": "烬火法师"
+      },
+      "H": 0.2708,
+      "emotionDelta": 0.0015
+    },
+    {
+      "id": "r1_main_7:attempt:2:combat:174",
+      "time": 9.12,
+      "type": "death",
+      "subject": "近战小怪",
+      "behavior": "战吼普攻",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "灰鸦战士"
+      },
+      "H": 0.2274,
+      "emotionDelta": -0.0489
+    },
+    {
+      "id": "r1_main_7:attempt:2:combat:223",
+      "time": 11.36,
+      "type": "death",
+      "subject": "近战小怪",
+      "behavior": "战吼普攻",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "烬火法师"
+      },
+      "H": 0.2274,
+      "emotionDelta": -0.0475
+    },
+    {
+      "id": "map_action:r1_main_7:20:result",
+      "time": 13.44,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "challenge:r1_main_7",
+      "result": {
+        "kind": "combat_win",
+        "occurred": true,
+        "observedPower": 399,
+        "boundary": "normal_end",
+        "firstClear": true,
+        "survivors": {
+          "player": 2,
+          "enemy": 0
+        }
+      },
+      "H": 0.6792,
+      "emotionDelta": 0.5876
+    },
+    {
+      "id": "r1_main_7:attempt:2:combat:266",
+      "time": 13.44,
+      "type": "death",
+      "subject": "烬火法师",
+      "behavior": "燃烧",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "近战小怪"
+      },
+      "H": 0.2011,
+      "emotionDelta": 0.0367
+    },
+    {
+      "id": "map_action:r1_main_7:20:loot-outcome",
+      "time": 13.445,
+      "type": "loot_outcome",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "probability_outcome",
+        "occurred": true,
+        "components": [
+          {
+            "kind": "loot"
+          },
+          {
+            "kind": "loot"
+          }
+        ]
+      },
+      "H": 0.5148,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:r1_main_7:20:loot:1",
+      "time": 13.45,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "epic",
+        "itemName": "史诗头盔 Lv.8",
+        "equipmentLevel": 8,
+        "baseStats": {
+          "maxHp": 22,
+          "armor": 1
+        },
+        "affixCount": 4
+      },
+      "H": 0.6578,
+      "emotionDelta": 1.1997
+    },
+    {
+      "id": "map_action:r1_main_7:20:loot:2",
+      "time": 13.459999999999999,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "rare",
+        "itemName": "稀有靴子 Lv.8",
+        "equipmentLevel": 8,
+        "baseStats": {
+          "maxHp": 22,
+          "armor": 1
+        },
+        "affixCount": 2
+      },
+      "H": 0.6578,
+      "emotionDelta": 0.0417
+    },
+    {
+      "id": "team-experiment:20:team-experiment:hero_ranger",
+      "time": 13.5,
+      "type": "team_experiment_result",
+      "subject": "player_squad",
+      "behavior": "team_experiment",
+      "result": {
+        "kind": "team_experiment_result",
+        "occurred": true,
+        "heroId": "hero_ranger",
+        "components": [
+          {
+            "kind": "team_experiment_contribution"
+          }
+        ]
+      },
+      "H": 0.2831,
+      "emotionDelta": 0.06
+    },
+    {
+      "id": "map_unlock:r1_main_7:20",
+      "time": 13.514999999999999,
+      "type": "map_unlock",
+      "subject": "player squad",
+      "behavior": "clear_level",
+      "result": {
+        "kind": "map_unlock",
+        "occurred": true,
+        "clearedNode": "r1_main_7",
+        "unlockedNodes": [
+          "r1_main_8"
+        ]
+      },
+      "H": 0.177,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:r1_main_7:20:summary",
+      "time": 13.52,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "challenge:r1_main_7",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 399,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "combat_win"
+          }
+        ]
+      },
+      "H": 0.5363,
+      "emotionDelta": -0.2172
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 1,
+    "seed": "paired-alpha",
+    "profileId": "damage_absolutist",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

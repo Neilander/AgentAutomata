@@ -29,7 +29,8 @@ for (let index = 0; index < expected.analyses.length; index += 1) {
 }
 
 const codeBelief = expected.warriorDefaultRetrieval[0];
-check(close(agent.finalCurrentBelief.noContextSynthesis.currentSemanticLevel, codeBelief.weightedSemanticLevel), "final Warrior weighted current belief matches");
+check(close(agent.finalCurrentBelief.noContextSynthesis.currentSemanticLevel, codeBelief.observationWeightedSemanticLevel),
+  "final Warrior observation-weighted belief matches");
 check(JSON.stringify(agent.finalCurrentBelief.noContextSynthesis.observationLevelsInOrder)
   === JSON.stringify(expected.state.strengthObservations
     .filter((observation) => observation.subject.id === "hero_warrior")
@@ -39,7 +40,7 @@ const result = {
   status: checks.every((row) => row.pass) ? "PASS" : "FAIL",
   checkCount: checks.length,
   failed: checks.filter((row) => !row.pass),
-  note: "The Agent was isolated from deterministic-result.json and source code. This validates arithmetic and evidence-bound knowledge, not causal truth or calibrated human psychology.",
+  note: "The frozen Agent artifact validates battle arithmetic and the observation-weighted belief layer. The newer code-owned strength matrix and top-30-percent ruler are validated by deterministic regressions; neither result proves calibrated human psychology.",
 };
 
 if (process.argv.includes("--write")) {

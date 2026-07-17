@@ -1,0 +1,204 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 21,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-32029c5303dcbc98",
+    "mode": "continue",
+    "turn": 42,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "inertial_player",
+    "label": "Inertial player",
+    "summary": "Dislikes menus and composition changes; prefers another attempt with the current setup.",
+    "decisionBias": {
+      "riskTolerance": 0.58,
+      "exploration": 0.16,
+      "changeAversion": 0.92,
+      "evidenceThreshold": 0.82,
+      "preferences": {
+        "damage": 0.55,
+        "survival": 0.5,
+        "novelty": 0.1,
+        "rarity": 0.25,
+        "simplicity": 1
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "current_team",
+          "label": "current team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "retrying_a_familiar_encounter",
+          "label": "retrying a familiar encounter"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "is_cheaper_than_rebuilding",
+          "label": "is cheaper than rebuilding"
+        },
+        "confidence": 0.78,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:inertial_player:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "swap:2:hero_ranger",
+  "outcome": "team_changed",
+  "emotionBeforeAction": 54.2091,
+  "emotionAfterEvents": 54.2091,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:77",
+      "key": "player|region_1|unknown_environment|team_management|swap_team_member|swap:2:hero_ranger",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_1",
+        "phase": "team_management"
+      },
+      "behavior": {
+        "kind": "swap_team_member",
+        "key": "swap:2:hero_ranger"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "team_changed": 1
+        },
+        "observations": [
+          {
+            "outcome": "team_changed",
+            "teamBefore": [
+              "hero_warrior",
+              "hero_berserker",
+              "militia_spear",
+              "militia_herb"
+            ],
+            "teamAfter": [
+              "hero_warrior",
+              "hero_berserker",
+              "hero_ranger",
+              "militia_herb"
+            ],
+            "equippedPowerBefore": 374,
+            "equippedPowerAfter": 374
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:2:21:result",
+        "map_action:2:21:start",
+        "team-change:21:hero_ranger",
+        "map_action:2:21:summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 273,
+  "visibleEvents": [
+    {
+      "id": "map_action:2:21:result",
+      "time": 0,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "swap:2:hero_ranger",
+      "result": {
+        "kind": "action_changed",
+        "occurred": true,
+        "observedPower": 374,
+        "boundary": "normal_end",
+        "firstClear": false
+      },
+      "H": 0.8692,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:2:21:start",
+      "time": 0,
+      "type": "action_start",
+      "subject": "player squad",
+      "behavior": "swap:2:hero_ranger",
+      "result": {
+        "kind": "action_started",
+        "occurred": true
+      },
+      "H": 0.2265,
+      "emotionDelta": 0
+    },
+    {
+      "id": "team-change:21:hero_ranger",
+      "time": 0.04,
+      "type": "team_change",
+      "subject": "player_squad",
+      "behavior": "team_management",
+      "result": {
+        "kind": "team_changed",
+        "occurred": true,
+        "heroId": "hero_ranger"
+      },
+      "H": 0.2265,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:2:21:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "swap:2:hero_ranger",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 374,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "action_changed"
+          }
+        ]
+      },
+      "H": 0.6862,
+      "emotionDelta": 0
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 1,
+    "seed": "paired-alpha",
+    "profileId": "inertial_player",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

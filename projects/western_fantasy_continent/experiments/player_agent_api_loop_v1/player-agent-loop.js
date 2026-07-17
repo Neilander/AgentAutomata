@@ -7,24 +7,36 @@ const SIGNAL_INTERPRETER = require("./signal-concept-interpreter");
 const KNOWLEDGE_RETRIEVAL = require("./knowledge-retrieval");
 const PERSISTENT_AGENT = require("./persistent-agent-context");
 const PLAYER_PROFILES = require("./player-profiles");
+const ENTITY_IMPRESSIONS = require("../entity_impression_knowledge_v1/entity-impression-model");
+const ROSTER_EXPECTATIONS = require("./roster-change-expectation");
+const ROSTER_EXPECTATION_A = require("./roster-expectation-a");
 
 const SCHEMA = "player_agent_api_loop_v1";
 
 function createSession(seed = "player-agent-api-loop", maxCycles = 2, options = {}) {
   const profileState = PLAYER_PROFILES.createProfileState(options.profileId || "open_novice");
+  const environmentVariant = options.environmentVariant === "enriched_v1" ? "enriched_v1" : "default";
+  const perceptionProfile = ENTITY_IMPRESSIONS.POSITIVE_BANDS[options.perceptionProfile]
+    ? options.perceptionProfile
+    : "ordinary";
   return {
     schema: SCHEMA,
     seed,
+    environmentVariant,
     maxCycles,
     cycle: 0,
     phase: "decision",
-    gameState: REGION_1_CORE.initialState(seed, { starterVariant: "player_agent_role_wave" }),
+    gameState: REGION_1_CORE.initialState(seed, { starterVariant: "player_agent_role_wave", environmentVariant }),
     cognitionState: RUNTIME.createState(seed),
     evaluatorState: createEvaluatorState(),
     conceptState: SIGNAL_INTERPRETER.createConceptState(),
     agentContext: PERSISTENT_AGENT.create(`${seed}:profile:${profileState.profileId}`),
     playerProfile: profileState,
+    perceptionProfile,
     knowledgeBase: [],
+    entityImpressionState: ENTITY_IMPRESSIONS.createImpressionState({ profile: perceptionProfile }),
+    rosterExpectationState: ROSTER_EXPECTATIONS.createState(),
+    rosterPredictionAState: ROSTER_EXPECTATION_A.createState(),
     history: [],
     pendingAttribution: null,
     apiCalls: [],
@@ -46,6 +58,7 @@ function applyDecisionResponse(sessionInput, responseInput) {
   const knowledgeBeforeAction = clone(session.knowledgeBase);
   const conceptStateBeforeAction = clone(session.conceptState);
   const observation = observeGame(session.gameState);
+  const decisionRequest = buildDecisionRequest(session);
   const response = normalizeDecisionResponse(responseInput);
   if (!(observation.allowedActions || []).includes(response.action)) {
     throw new Error(`decision agent returned unavailable action: ${response.action}`);
@@ -77,12 +90,27 @@ function applyDecisionResponse(sessionInput, responseInput) {
     }
   }
   const emotionAfterDecision = Number(afterDecision.emotion.value);
-  const result = runPlayerAction(session.gameState, response.action, afterDecision, session.conceptState, session.evaluatorState);
+  const frozenRosterPrediction = ROSTER_EXPECTATION_A.freezeSelectedPrediction(session.rosterPredictionAState, {
+    action: response.action,
+    rosterChangeExpectations: decisionRequest.playerState.rosterChangeExpectations,
+    gameState: session.gameState,
+    perceptionProfile: session.perceptionProfile,
+    cycle: session.cycle + 1,
+  });
+  const result = runPlayerAction(
+    session.gameState,
+    response.action,
+    afterDecision,
+    session.conceptState,
+    session.evaluatorState,
+    frozenRosterPrediction.state,
+    session.cycle + 1,
+  );
   if (!result.ok) throw new Error(`game rejected action ${response.action}: ${result.error || "unknown"}`);
 
   const record = {
     cycle: session.cycle + 1,
-    decisionRequest: buildDecisionRequest(session),
+    decisionRequest,
     decisionResponse: response,
     action: response.action,
     outcome: result.event.outcome,
@@ -95,13 +123,31 @@ function applyDecisionResponse(sessionInput, responseInput) {
     conceptInterpretation: result.conceptInterpretation,
     eventTrace: summarizeNewTrace(afterDecision, result.cognitionState),
     gameEvent: result.event,
+    rosterPredictionSelection: frozenRosterPrediction.record,
+    rosterPredictionEquipmentAdjustment: result.rosterPredictionEquipmentAdjustment || null,
+    rosterPredictionResolution: result.rosterPredictionResolution,
     attribution: null,
   };
+
+  if (record.action.startsWith("challenge:")) {
+    const impressionUpdate = updateEntityImpressionsFromChallenge(session, record, gameStateBefore);
+    session.entityImpressionState = impressionUpdate.state;
+    record.entityImpressionUpdate = impressionUpdate.record;
+    const rosterUpdate = ROSTER_EXPECTATIONS.recordChallenge(session.rosterExpectationState, {
+      record,
+      gameStateBefore,
+      entityImpressionState: session.entityImpressionState,
+      region: gameRegion(gameStateBefore),
+    });
+    session.rosterExpectationState = rosterUpdate.state;
+    record.rosterExpectationUpdate = rosterUpdate.observation;
+  }
 
   session.gameState = result.state;
   session.cognitionState = result.cognitionState;
   session.evaluatorState = result.evaluatorState;
   session.conceptState = result.conceptState;
+  session.rosterPredictionAState = result.rosterPredictionAState;
   session.history.push(record);
   const knowledgeIds = updateKnowledgeFromFeedback(session, record, {
     gameStateBefore,
@@ -185,18 +231,29 @@ function buildDecisionRequest(session) {
     hypotheses: visibleHypotheses,
     history: session.history,
   });
+  const rosterChangeExpectations = ROSTER_EXPECTATIONS.buildExpectations({
+    state: session.rosterExpectationState,
+    currentTeamIds: session.gameState.teamSlots,
+    gameState: session.gameState,
+    allowedActions: observation.allowedActions,
+    visibleNodeIds: observation.visibleNodes.map((node) => node.id),
+    currentPower: gameCore(session.gameState).gearScore(session.gameState),
+    entityImpressionState: session.entityImpressionState,
+  });
   return {
     type: "decision",
     schema: "player_decision_request_v2",
     cycle: session.cycle + 1,
     agentSession: PERSISTENT_AGENT.requestMetadata(session.agentContext, "decision"),
     playerProfile: clone(session.playerProfile),
-    instruction: "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
+    instruction: "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. rosterChangeExpectations are fallible code-owned predictions scoped to the shown encounter and team; unknown means there is not enough player evidence. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
     playerState: {
       emotion: round(session.cognitionState.emotion.value),
       activeGoalId,
       goals,
       knowledge: retrieval.knowledge,
+      characterImpressions: summarizeCharacterImpressions(session.entityImpressionState),
+      rosterChangeExpectations,
       knowledgeStoreCount: session.knowledgeBase.length,
       eventStatisticsCount: session.cognitionState.knowledge.length,
       failureMemories: session.cognitionState.failureMemories,
@@ -327,12 +384,30 @@ function observeGame(rawState) {
   };
 }
 
-function runPlayerAction(rawState, action, cognitionState, conceptState, evaluatorState) {
-  if (String(action).startsWith("equip:")) return runEquipAction(rawState, action, cognitionState, conceptState, evaluatorState);
-  return runCoreActionWithoutAutoEquip(rawState, action, cognitionState, conceptState, evaluatorState);
+function runPlayerAction(rawState, action, cognitionState, conceptState, evaluatorState, rosterPredictionAState, cycle) {
+  if (String(action).startsWith("equip:")) {
+    return runEquipAction(rawState, action, cognitionState, conceptState, evaluatorState, rosterPredictionAState, cycle);
+  }
+  return runCoreActionWithoutAutoEquip(
+    rawState,
+    action,
+    cognitionState,
+    conceptState,
+    evaluatorState,
+    rosterPredictionAState,
+    cycle,
+  );
 }
 
-function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, conceptState, evaluatorStateInput) {
+function runCoreActionWithoutAutoEquip(
+  rawState,
+  action,
+  cognitionState,
+  conceptState,
+  evaluatorStateInput,
+  rosterPredictionAStateInput,
+  cycle,
+) {
   const before = clone(rawState);
   const core = gameCore(before);
   const evaluatorState = clone(evaluatorStateInput || createEvaluatorState());
@@ -379,6 +454,14 @@ function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, concept
     nodeType: node?.type || "map",
   });
   const eventLog = interpreted.events;
+  const rosterPredictionResolution = ROSTER_EXPECTATION_A.resolveChallenge(rosterPredictionAStateInput, {
+    action,
+    gameStateBefore: rawState,
+    gameEvent: result.event,
+    encounterSignal: visibleEncounterExpectationSignal(node),
+    cycle,
+  });
+  ROSTER_EXPECTATION_A.attachSettlement(eventLog, rosterPredictionResolution.settlement);
   const nextCognitionState = removeEvaluatorScaffolding(RUNTIME.ingestEvents(cognitionState, eventLog));
   return {
     ...result,
@@ -388,6 +471,8 @@ function runCoreActionWithoutAutoEquip(rawState, action, cognitionState, concept
     conceptInterpretation: interpreted.interpretation,
     rawEventLog,
     eventLog,
+    rosterPredictionAState: rosterPredictionResolution.state,
+    rosterPredictionResolution: rosterPredictionResolution.resolution,
   };
 }
 
@@ -409,7 +494,7 @@ function appendMapUnlockEvent(eventLog, action, event, beforeState, afterState) 
   });
 }
 
-function runEquipAction(rawState, action, cognitionState, conceptState, evaluatorState) {
+function runEquipAction(rawState, action, cognitionState, conceptState, evaluatorState, rosterPredictionAState, cycle) {
   const state = clone(rawState);
   const core = gameCore(state);
   const [, heroId, itemId] = String(action).split(":");
@@ -442,6 +527,11 @@ function runEquipAction(rawState, action, cognitionState, conceptState, evaluato
     environment: "equipment",
   });
   const eventLog = interpreted.events;
+  const rebasedRosterPrediction = ROSTER_EXPECTATION_A.rebaseEquipmentExpectation(rosterPredictionAState, {
+    gameStateAfter: state,
+    cycle,
+    source: "explicit_equipment_action",
+  });
   return {
     ok: true,
     state,
@@ -453,7 +543,31 @@ function runEquipAction(rawState, action, cognitionState, conceptState, evaluato
     conceptInterpretation: interpreted.interpretation,
     cognitionState: RUNTIME.ingestEvents(cognitionState, eventLog),
     evaluatorState: clone(evaluatorState || createEvaluatorState()),
+    rosterPredictionAState: rebasedRosterPrediction.state,
+    rosterPredictionEquipmentAdjustment: rebasedRosterPrediction.record,
+    rosterPredictionResolution: null,
   };
+}
+
+function visibleEncounterExpectationSignal(node) {
+  if (!node) return null;
+  if (node.type === "boss") {
+    return {
+      direction: "harder",
+      strength: 0.9,
+      performanceDelta: 0.22,
+      source: "visible_boss_encounter_label",
+    };
+  }
+  if (node.fieldEffectId || node.type === "trial") {
+    return {
+      direction: "harder",
+      strength: 0.75,
+      performanceDelta: 0.14,
+      source: node.fieldEffectId ? "visible_field_rule" : "visible_trial_encounter_label",
+    };
+  }
+  return null;
 }
 
 function createEvaluatorState() {
@@ -618,7 +732,7 @@ function normalizeDecisionResponse(input) {
 
 function createChapter2Session(seed = "player-agent-api-loop-chapter2", maxCycles = 24, priorPlayerState = null, options = {}) {
   const session = createSession(seed, maxCycles, options);
-  session.gameState = REGION_2_CORE.initialState(seed);
+  session.gameState = REGION_2_CORE.initialState(seed, { environmentVariant: session.environmentVariant });
   if (priorPlayerState) inheritPriorPlayerState(session, priorPlayerState);
   return session;
 }
@@ -631,21 +745,44 @@ function createChapter2SessionFromChapter1(chapter1Input, maxCycles = 24, seed =
   const chapter2Seed = String(seed || `${source.seed}:chapter2`);
   const session = createChapter2Session(chapter2Seed, maxCycles, null, {
     profileId: source.playerProfile.profileId,
+    perceptionProfile: source.perceptionProfile,
+    environmentVariant: source.environmentVariant,
   });
+  if (source.environmentVariant === "enriched_v1") {
+    session.gameState.roster = clone(source.gameState.roster);
+    session.gameState.teamSlots = clone(source.gameState.teamSlots);
+    session.gameState.inventory = clone(source.gameState.inventory);
+  }
   session.cognitionState = clone(source.cognitionState);
   session.evaluatorState = createEvaluatorState();
   session.conceptState = clone(source.conceptState);
   session.agentContext = clone(source.agentContext);
   session.playerProfile = clone(source.playerProfile);
   session.knowledgeBase = clone(source.knowledgeBase);
+  session.entityImpressionState = clone(source.entityImpressionState);
+  session.rosterExpectationState = clone(source.rosterExpectationState);
+  session.rosterPredictionAState = ROSTER_EXPECTATION_A.ensureState(source.rosterPredictionAState);
+  if (session.rosterPredictionAState.pending) {
+    session.rosterPredictionAState.history.push({
+      ...session.rosterPredictionAState.pending,
+      status: "invalidated",
+      resolutionReason: "chapter_transition",
+    });
+    session.rosterPredictionAState.pending = null;
+  }
   session.chapterTransition = {
     schema: "player_chapter_transition_v1",
     fromSessionSeed: source.seed,
     toSessionSeed: chapter2Seed,
     inheritedEmotion: round(source.cognitionState.emotion.value),
     inheritedKnowledgeCount: source.knowledgeBase.length,
+    inheritedCharacterImpressionCount: source.entityImpressionState?.strengthCognitionMatrix?.entries?.length || 0,
+    inheritedRosterExpectationCount: source.rosterExpectationState?.observations?.length || 0,
     inheritedConceptCount: source.conceptState.concepts.length,
     inheritedAgentSessionId: source.agentContext.id,
+    carriedEquipmentCount: source.environmentVariant === "enriched_v1"
+      ? source.gameState.roster.flatMap((unit) => Object.values(unit.equipment || {})).length + source.gameState.inventory.length
+      : 0,
   };
   return session;
 }
@@ -660,6 +797,11 @@ function inheritPriorPlayerState(session, prior) {
   session.cognitionState.failureMemories = clone(prior.failureMemories || []);
   session.cognitionState.hypotheses = clone(prior.hypotheses || []).filter((row) => row.status !== "pending");
   session.knowledgeBase = (prior.knowledge || []).map((row, index) => normalizeInheritedKnowledge(row, index));
+  if (prior.entityImpressionState) session.entityImpressionState = clone(prior.entityImpressionState);
+  if (prior.rosterExpectationState) session.rosterExpectationState = clone(prior.rosterExpectationState);
+  if (prior.rosterPredictionAState) {
+    session.rosterPredictionAState = ROSTER_EXPECTATION_A.ensureState(prior.rosterPredictionAState);
+  }
 }
 
 function normalizeInheritedKnowledge(row, index) {
@@ -752,6 +894,9 @@ function summarizeNewTrace(beforeState, afterState) {
     processEmotion: round(row.processEmotion),
     acquiredEmotion: round(row.acquiredEmotion),
     expectationEmotion: round(row.expectationEmotion),
+    expectationSource: row.expectationSource || null,
+    expectationDetails: row.expectationDetails || null,
+    mismatchStatus: row.mismatchStatus || null,
     EVerify: Number(row.EVerify || 0),
     hypothesisId: row.hypothesisId || null,
     hypothesisEvidence: row.hypothesisEvidence || [],
@@ -1276,8 +1421,17 @@ function compactResult(result = {}) {
 function cloneAndValidate(input) {
   const session = clone(input);
   if (!session || session.schema !== SCHEMA) throw new Error("invalid player agent loop session");
+  session.environmentVariant = session.environmentVariant === "enriched_v1" ? "enriched_v1" : "default";
   if (!session.conceptState) session.conceptState = SIGNAL_INTERPRETER.createConceptState();
   session.playerProfile = PLAYER_PROFILES.ensureProfileState(session.playerProfile, "open_novice");
+  session.perceptionProfile = ENTITY_IMPRESSIONS.POSITIVE_BANDS[session.perceptionProfile]
+    ? session.perceptionProfile
+    : "ordinary";
+  if (!session.entityImpressionState) {
+    session.entityImpressionState = ENTITY_IMPRESSIONS.createImpressionState({ profile: session.perceptionProfile });
+  }
+  session.rosterExpectationState = ROSTER_EXPECTATIONS.ensureState(session.rosterExpectationState);
+  session.rosterPredictionAState = ROSTER_EXPECTATION_A.ensureState(session.rosterPredictionAState);
   session.agentContext = PERSISTENT_AGENT.ensure(
     session.agentContext,
     `${session.seed}:profile:${session.playerProfile.profileId}`,
@@ -1289,6 +1443,54 @@ function cloneAndValidate(input) {
   }
   session.cognitionState = removeEvaluatorScaffolding(session.cognitionState);
   return session;
+}
+
+function updateEntityImpressionsFromChallenge(session, record, gameStateBefore) {
+  const node = record.gameEvent.node || record.action.split(":")[1];
+  const playerTeam = (gameStateBefore.teamSlots || [])
+    .map((id) => gameStateBefore.roster.find((unit) => unit.id === id))
+    .filter(Boolean)
+    .map((unit) => ({ id: unit.id, name: unit.name, role: unit.role }));
+  const analysis = ENTITY_IMPRESSIONS.analyzeBattleReport({
+    id: `player-session:${session.seed}:cycle:${record.cycle}:${record.action}`,
+    environment: {
+      id: node,
+      label: node,
+      region: gameRegion(gameStateBefore),
+      tags: [encounterBand(node), gameRegion(gameStateBefore)].filter(Boolean),
+    },
+    playerTeam,
+    gameEvent: record.gameEvent,
+    eventLog: record.eventLog,
+  }, { profile: session.perceptionProfile });
+  const state = clone(session.entityImpressionState
+    || ENTITY_IMPRESSIONS.createImpressionState({ profile: session.perceptionProfile }));
+  const trace = ENTITY_IMPRESSIONS.ingestBattleAnalysis(state, analysis);
+  return {
+    state,
+    record: {
+      reportId: analysis.reportId,
+      profile: analysis.profile,
+      teamUsefulContribution: analysis.teamUsefulContribution,
+      scale: clone(state.strengthCognitionMatrix?.scale || null),
+      movements: trace.changes.find((change) => change.action === "updated_strength_cognition_matrix")?.movements || [],
+      currentStrengthCognition: summarizeCharacterImpressions(state),
+    },
+  };
+}
+
+function summarizeCharacterImpressions(state) {
+  return ENTITY_IMPRESSIONS.listCurrentStrengthCognition(state).map((row) => ({
+    subject: row.subject,
+    position: row.position,
+    currentLevel: row.level,
+    currentLabel: row.label,
+    relativeToTopThirtyBoundary: row.relativeToScale,
+    inTopThirtyPercent: row.inTopThirtyPercent,
+    rank: row.rank,
+    populationSize: row.populationSize,
+    evidenceCount: row.evidenceCount,
+  }));
 }
 
 function clone(value) { return structuredClone(value); }

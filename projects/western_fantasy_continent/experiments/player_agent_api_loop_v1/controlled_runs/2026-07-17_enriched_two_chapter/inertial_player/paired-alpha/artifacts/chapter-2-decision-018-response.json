@@ -1,0 +1,47 @@
+{
+  "action": "swap:0:hero_alchemist",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "需要突破连续三次同样停在剩余2敌的首领。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "牧师与骑士各自强化后仍未改变失败结果，普通战士稳定贡献约24%伤害但没有首领针对机制。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "汇流刚解锁星釜炼金师，其说明是用药剂、异常状态和临场支援改变节奏，尚无实战认知。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "可以只把前排1的普通战士换成炼金师。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "保留已验证的骑士、神话游侠和史诗牧师，仅替换连续三战没有解决机制问题的槽位。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "炼金师下一战应至少施放5次技能，证明能持续参与首领战。"
+    }
+  ],
+  "alternatives": [
+    "swap:0:hero_mage",
+    "equip:hero_knight:r1_main_5_1_0"
+  ],
+  "hypothesis": {
+    "id": "alchemist_changes_boss_rhythm",
+    "problem": "当前阵容三次首领战都剩余2敌全灭",
+    "cause": "普通战士缺少针对首领的异常状态与支援机制",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_alchemist",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "skillCount",
+      "operator": ">=",
+      "value": 5
+    }
+  }
+}

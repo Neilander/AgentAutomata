@@ -61,6 +61,7 @@
 
   function initialState(seed = "player", options = {}) {
     const playerAgentRoleWave = options.starterVariant === "player_agent_role_wave";
+    const enrichedV1 = options.environmentVariant === "enriched_v1";
     const initialRoster = playerAgentRoleWave
       ? ROSTER.createInitialRoster().filter((unit) => unit.id !== "hero_mage")
       : ROSTER.createInitialRoster();
@@ -77,7 +78,7 @@
       teamSlots: playerAgentRoleWave
         ? ["hero_warrior", "militia_barricade", "militia_spear", "militia_herb"]
         : [...ROSTER.INITIAL_TEAM_SLOTS],
-      flags: { playerAgentRoleWave, mageRecruited: false, prisonFailed: false, rangerRescued: false, pendingTeamExperiment: false },
+      flags: { playerAgentRoleWave, enrichedV1, mageRecruited: false, prisonFailed: false, rangerRescued: false, pendingTeamExperiment: false },
       cognition: {
         concepts: ["关卡", "战斗", "装备", "战力", "监狱", "营地"],
         knowledge: ["胜利可以推进地图", "装备能够提高队伍强度", "监狱里可能关着新角色"],
@@ -240,6 +241,9 @@
         event.characterUnlock = { id: "mage", heroId: "hero_mage", name: "烬火法师" };
         event.reward = "烬火法师加入角色名单，当前队伍没有自动改变";
       }
+      if (state.flags.enrichedV1 && id === "r1_main_3" && firstClear) unlockEnrichedHero(state, event, "berserker");
+      if (state.flags.enrichedV1 && id === "r1_bandit" && firstClear) unlockEnrichedHero(state, event, "bard");
+      if (state.flags.enrichedV1 && id === "r1_main_8" && firstClear) unlockEnrichedHero(state, event, "assassin");
       if (id === "r1_prison" && firstClear) {
         state.flags.rangerRescued = true;
         state.roster = ROSTER.rescueHero(state.roster, "ranger");
@@ -297,6 +301,17 @@
     const output = { ok: true, state, observation: observe(state), event };
     if (analysis) output.analysis = analysis;
     return output;
+  }
+
+  function unlockEnrichedHero(state, event, rewardId) {
+    const beforeIds = new Set(state.roster.map((unit) => unit.id));
+    state.roster = ROSTER.rescueHero(state.roster, rewardId);
+    const unit = state.roster.find((row) => !beforeIds.has(row.id));
+    if (!unit) return;
+    if (!state.cognition.concepts.includes("角色名单")) state.cognition.concepts.push("角色名单");
+    if (!state.cognition.behaviors.includes("调整队伍")) state.cognition.behaviors.push("调整队伍");
+    event.characterUnlock = { id: rewardId, heroId: unit.id, name: unit.name };
+    event.reward = `${unit.name}加入角色名单，当前队伍没有自动改变`;
   }
 
   function applySwapAction(state, actionText, slotText, heroId) {
@@ -513,6 +528,10 @@
       const roles = ["knight", "knight", "priest", "ranger"];
       return roles.map((role, index) => scaleSpec(enemySpec(role, index, item), enemyScale(item) * 1.9));
     }
+    if (state?.flags?.enrichedV1 && item.id === "r1_main_9") {
+      const roles = enemyRoles(item);
+      return roles.map((role, index) => scaleSpec(enemySpec(role, index, item), enemyScale(item) * 1.2));
+    }
     const roles = enemyRoles(item);
     const mult = enemyScale(item);
     return roles.map((role, index) => scaleSpec(enemySpec(role, index, item), mult));
@@ -614,7 +633,10 @@
 
   function rollLoot(state, item) {
     const rule = dropRuleForNode(item, state);
-    return EQUIPMENT.generateItems(rule, `${state.seed}|${item.id}|${state.attempts[item.id]}|${state.inventory.length}`, `${item.id}_${state.attempts[item.id]}`);
+    const seed = state.flags.enrichedV1
+      ? `${state.seed}|${item.id}|${state.attempts[item.id]}`
+      : `${state.seed}|${item.id}|${state.attempts[item.id]}|${state.inventory.length}`;
+    return EQUIPMENT.generateItems(rule, seed, `${item.id}_${state.attempts[item.id]}`);
   }
 
   function lootFor(state, item, firstClear) {
@@ -634,6 +656,7 @@
   }
 
   function dropRuleForNode(item, state = null) {
+    if (state?.flags?.enrichedV1) return enrichedDropRuleForNode(item);
     if (isBossRecoveryActive(state) && item.id === "r1_main_9") {
       return { level: [10, 16], rates: { common: 0.7, rare: 0.28, epic: 0.02 }, count: 3 };
     }
@@ -648,12 +671,23 @@
     return { level: [9, 15], rates: { common: 0.82, rare: 0.17, epic: 0.01 }, count: 2 };
   }
 
+  function enrichedDropRuleForNode(item) {
+    if (item.type === "boss") return { level: [14, 22], rates: { common: 0.2, rare: 0.3, epic: 0.25, legendary: 0.24, mythic: 0.01 }, count: 4 };
+    if (item.id === "r1_prison" || item.id === "r1_bandit") return { level: [9, 16], rates: { common: 0.38, rare: 0.32, epic: 0.18, legendary: 0.11, mythic: 0.01 }, count: 2 };
+    const mainNo = Number(item.id.split("_").pop() || 1);
+    if (mainNo <= 2) return { level: [1, 4], rates: { common: 0.74, rare: 0.18, epic: 0.05, legendary: 0.02, mythic: 0.01 }, count: 2 };
+    if (mainNo <= 4) return { level: [3, 7], rates: { common: 0.68, rare: 0.2, epic: 0.07, legendary: 0.04, mythic: 0.01 }, count: 2 };
+    if (mainNo <= 6) return { level: [5, 10], rates: { common: 0.6, rare: 0.24, epic: 0.1, legendary: 0.05, mythic: 0.01 }, count: 2 };
+    if (mainNo <= 8) return { level: [7, 12], rates: { common: 0.52, rare: 0.28, epic: 0.12, legendary: 0.07, mythic: 0.01 }, count: 2 };
+    return { level: [9, 16], rates: { common: 0.42, rare: 0.31, epic: 0.16, legendary: 0.1, mythic: 0.01 }, count: 2 };
+  }
+
   function rewardHintForNode(state, item) {
     if (isBossRecoveryActive(state) && item.id === "r1_main_9") return "首领整备点：3件 Lv10-16 装备，稀有率提升";
     if (state.flags.playerAgentRoleWave && item.id === "r1_prison" && !state.cleared.r1_prison) {
       return "首通营救林地游侠：持续锁定单体并累积猎标；复战无首通奖励";
     }
-    return item.rewardHint;
+    return state.flags.enrichedV1 ? `${item.rewardHint}；装备池含极低概率神话品质` : item.rewardHint;
   }
 
   function isBossRecoveryActive(state) {
@@ -705,6 +739,7 @@
     fieldEffectId: fieldEffect,
     gearScore,
     lootFor,
+    dropRuleForNode,
     nodeStatus,
     rewardHintForNode,
     enemyHintForNode,

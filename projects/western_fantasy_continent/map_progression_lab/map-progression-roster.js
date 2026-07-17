@@ -28,6 +28,11 @@
   ];
 
   const HERO_REWARDS = {
+    berserker: hero("hero_berserker", "赤潮狂战士", "berserker", "低血时更危险的近战输出，擅长用高风险换取爆发。"),
+    bard: hero("hero_bard", "银弦吟游诗人", "bard", "以节奏和团队增益放大队友，不依赖个人伤害证明价值。"),
+    assassin: hero("hero_assassin", "夜幕刺客", "assassin", "擅长切入脆弱后排并收割低血目标。"),
+    warlock: hero("hero_warlock", "灰契术士", "warlock", "通过持续伤害与诅咒压低高生命敌人。"),
+    alchemist: hero("hero_alchemist", "星釜炼金师", "alchemist", "用药剂、异常状态与临场支援改变战斗节奏。"),
     mage: hero("hero_mage", "烬火法师", "mage", "完整输出英雄，负责清怪与爆发。"),
     ranger: hero("hero_ranger", "林地游侠", "ranger", "完整远程物理英雄，持续盯住当前目标并累积猎标。"),
     knight: hero("hero_knight", "白垒骑士", "knight", "完整守护英雄，能承接集火、制造护盾并稳定前排。"),

@@ -1,0 +1,1262 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 20,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-4b256d6ea45b8432",
+    "mode": "continue",
+    "turn": 114,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "challenge:r2_boss",
+  "outcome": "win",
+  "emotionBeforeAction": 95.7121,
+  "emotionAfterEvents": 99.627,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:196",
+      "key": "player_squad|region_2|r2_boss|encounter|challenge_level|challenge:r2_boss",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_priest",
+            "name": "晨祷牧师",
+            "role": "priest",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_boss",
+        "phase": "encounter",
+        "team": [
+          "hero_warrior",
+          "hero_ranger",
+          "hero_mage",
+          "hero_priest"
+        ]
+      },
+      "behavior": {
+        "kind": "challenge_level",
+        "key": "challenge:r2_boss",
+        "target": "r2_boss"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "win": 1
+        },
+        "observations": [
+          {
+            "outcome": "win",
+            "duration": 20.72,
+            "survivors": {
+              "player": 4,
+              "enemy": 0
+            },
+            "resolution": "elimination",
+            "firstClear": true
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r2_boss:20:result",
+        "map_action:r2_boss:20:summary"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:197",
+      "key": "player_squad|region_2|r2_boss|loot_drop|clear_level|challenge:r2_boss",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_priest",
+            "name": "晨祷牧师",
+            "role": "priest",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_boss",
+        "phase": "loot_drop"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r2_boss",
+        "target": "r2_boss"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "loot_obtained": 1
+        },
+        "observations": [
+          {
+            "outcome": "loot_obtained",
+            "drops": [
+              {
+                "id": "r2_boss_1_0",
+                "name": "传说头盔 Lv.25",
+                "slot": "helm",
+                "rarity": "legendary",
+                "level": 25
+              },
+              {
+                "id": "r2_boss_1_1",
+                "name": "史诗腿甲 Lv.28",
+                "slot": "legs",
+                "rarity": "epic",
+                "level": 28
+              },
+              {
+                "id": "r2_boss_1_2",
+                "name": "稀有胸甲 Lv.27",
+                "slot": "chest",
+                "rarity": "rare",
+                "level": 27
+              },
+              {
+                "id": "r2_boss_1_3",
+                "name": "传说胸甲 Lv.30",
+                "slot": "chest",
+                "rarity": "legendary",
+                "level": 30
+              }
+            ],
+            "inventoryCountBefore": 13,
+            "inventoryCountAfter": 17,
+            "equippedPowerBefore": 1487,
+            "equippedPowerAfter": 1487,
+            "powerChanged": false
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r2_boss:20:result",
+        "map_action:r2_boss:20:loot:1",
+        "map_action:r2_boss:20:loot:2",
+        "map_action:r2_boss:20:loot:3",
+        "map_action:r2_boss:20:loot:4"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:198",
+      "key": "field:king_flag|region_2|r2_boss|field_rule|affect_battle|field:king_flag",
+      "subject": {
+        "id": "field:king_flag",
+        "name": "王旗落地"
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_boss",
+        "phase": "field_rule"
+      },
+      "behavior": {
+        "kind": "affect_battle",
+        "key": "field:king_flag",
+        "target": "both_teams"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "field_effect_observed": 1
+        },
+        "observations": [
+          {
+            "outcome": "field_effect_observed",
+            "rule": "双方前排守旗；守旗者阵亡后队友获得反扑窗口",
+            "signalCount": 3,
+            "visibleSignals": [
+              "守旗",
+              "王旗反扑"
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_boss:attempt:1:combat:1",
+        "r2_boss:attempt:1:combat:2",
+        "r2_boss:attempt:1:combat:488"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:199",
+      "key": "hero_mage|region_2|region_2_boss|combat_pattern|combat_participation|fight:hero_mage",
+      "subject": {
+        "id": "hero_mage",
+        "name": "烬火法师",
+        "role": "mage",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_boss",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_mage",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 797.39,
+            "damageShare": 0.4105,
+            "damageRank": 1,
+            "teamDamage": 1942.451,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 2,
+            "skillCasts": 7
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_boss:attempt:1:combat:56",
+        "r2_boss:attempt:1:combat:57",
+        "r2_boss:attempt:1:combat:58",
+        "r2_boss:attempt:1:combat:59",
+        "r2_boss:attempt:1:combat:69",
+        "r2_boss:attempt:1:combat:70",
+        "r2_boss:attempt:1:combat:71",
+        "r2_boss:attempt:1:combat:72",
+        "r2_boss:attempt:1:combat:87",
+        "r2_boss:attempt:1:combat:211",
+        "r2_boss:attempt:1:combat:212",
+        "r2_boss:attempt:1:combat:213",
+        "r2_boss:attempt:1:combat:214",
+        "r2_boss:attempt:1:combat:238",
+        "r2_boss:attempt:1:combat:254",
+        "r2_boss:attempt:1:combat:268",
+        "r2_boss:attempt:1:combat:269",
+        "r2_boss:attempt:1:combat:270",
+        "r2_boss:attempt:1:combat:271",
+        "r2_boss:attempt:1:combat:272",
+        "r2_boss:attempt:1:combat:273",
+        "r2_boss:attempt:1:combat:274",
+        "r2_boss:attempt:1:combat:275",
+        "r2_boss:attempt:1:combat:289",
+        "r2_boss:attempt:1:combat:290",
+        "r2_boss:attempt:1:combat:291",
+        "r2_boss:attempt:1:combat:292",
+        "r2_boss:attempt:1:combat:293",
+        "r2_boss:attempt:1:combat:294",
+        "r2_boss:attempt:1:combat:295",
+        "r2_boss:attempt:1:combat:308",
+        "r2_boss:attempt:1:combat:309",
+        "r2_boss:attempt:1:combat:310",
+        "r2_boss:attempt:1:combat:337",
+        "r2_boss:attempt:1:combat:344",
+        "r2_boss:attempt:1:combat:370",
+        "r2_boss:attempt:1:combat:375",
+        "r2_boss:attempt:1:combat:376",
+        "r2_boss:attempt:1:combat:377",
+        "r2_boss:attempt:1:combat:378",
+        "r2_boss:attempt:1:combat:379",
+        "r2_boss:attempt:1:combat:393",
+        "r2_boss:attempt:1:combat:412",
+        "r2_boss:attempt:1:combat:414",
+        "r2_boss:attempt:1:combat:425",
+        "r2_boss:attempt:1:combat:440",
+        "r2_boss:attempt:1:combat:464",
+        "r2_boss:attempt:1:combat:489",
+        "r2_boss:attempt:1:combat:523",
+        "r2_boss:attempt:1:combat:524",
+        "r2_boss:attempt:1:combat:525",
+        "r2_boss:attempt:1:combat:526"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:200",
+      "key": "hero_ranger|region_2|region_2_boss|combat_pattern|combat_participation|fight:hero_ranger",
+      "subject": {
+        "id": "hero_ranger",
+        "name": "林地游侠",
+        "role": "ranger",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_boss",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_ranger",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 668.206,
+            "damageShare": 0.344,
+            "damageRank": 2,
+            "teamDamage": 1942.451,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 7
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_boss:attempt:1:combat:35",
+        "r2_boss:attempt:1:combat:36",
+        "r2_boss:attempt:1:combat:37",
+        "r2_boss:attempt:1:combat:38",
+        "r2_boss:attempt:1:combat:39",
+        "r2_boss:attempt:1:combat:40",
+        "r2_boss:attempt:1:combat:41",
+        "r2_boss:attempt:1:combat:86",
+        "r2_boss:attempt:1:combat:125",
+        "r2_boss:attempt:1:combat:144",
+        "r2_boss:attempt:1:combat:163",
+        "r2_boss:attempt:1:combat:164",
+        "r2_boss:attempt:1:combat:165",
+        "r2_boss:attempt:1:combat:185",
+        "r2_boss:attempt:1:combat:217",
+        "r2_boss:attempt:1:combat:250",
+        "r2_boss:attempt:1:combat:251",
+        "r2_boss:attempt:1:combat:252",
+        "r2_boss:attempt:1:combat:253",
+        "r2_boss:attempt:1:combat:298",
+        "r2_boss:attempt:1:combat:312",
+        "r2_boss:attempt:1:combat:313",
+        "r2_boss:attempt:1:combat:314",
+        "r2_boss:attempt:1:combat:342",
+        "r2_boss:attempt:1:combat:343",
+        "r2_boss:attempt:1:combat:435",
+        "r2_boss:attempt:1:combat:436",
+        "r2_boss:attempt:1:combat:437",
+        "r2_boss:attempt:1:combat:438",
+        "r2_boss:attempt:1:combat:468",
+        "r2_boss:attempt:1:combat:469",
+        "r2_boss:attempt:1:combat:470",
+        "r2_boss:attempt:1:combat:481"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:201",
+      "key": "hero_warrior|region_2|region_2_boss|combat_pattern|combat_participation|fight:hero_warrior",
+      "subject": {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_boss",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_warrior",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 370.928,
+            "damageShare": 0.191,
+            "damageRank": 3,
+            "teamDamage": 1942.451,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 6
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_boss:attempt:1:combat:101",
+        "r2_boss:attempt:1:combat:102",
+        "r2_boss:attempt:1:combat:103",
+        "r2_boss:attempt:1:combat:104",
+        "r2_boss:attempt:1:combat:105",
+        "r2_boss:attempt:1:combat:106",
+        "r2_boss:attempt:1:combat:110",
+        "r2_boss:attempt:1:combat:227",
+        "r2_boss:attempt:1:combat:228",
+        "r2_boss:attempt:1:combat:266",
+        "r2_boss:attempt:1:combat:278",
+        "r2_boss:attempt:1:combat:279",
+        "r2_boss:attempt:1:combat:280",
+        "r2_boss:attempt:1:combat:360",
+        "r2_boss:attempt:1:combat:372",
+        "r2_boss:attempt:1:combat:373",
+        "r2_boss:attempt:1:combat:374",
+        "r2_boss:attempt:1:combat:423",
+        "r2_boss:attempt:1:combat:451",
+        "r2_boss:attempt:1:combat:465",
+        "r2_boss:attempt:1:combat:466",
+        "r2_boss:attempt:1:combat:467",
+        "r2_boss:attempt:1:combat:486",
+        "r2_boss:attempt:1:combat:487"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:202",
+      "key": "hero_priest|region_2|region_2_boss|combat_pattern|combat_participation|fight:hero_priest",
+      "subject": {
+        "id": "hero_priest",
+        "name": "晨祷牧师",
+        "role": "priest",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_boss",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_priest",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 105.927,
+            "damageShare": 0.0545,
+            "damageRank": 4,
+            "teamDamage": 1942.451,
+            "healing": 209.3219,
+            "shielding": 185.167,
+            "kills": 0,
+            "skillCasts": 5
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_boss:attempt:1:combat:73",
+        "r2_boss:attempt:1:combat:74",
+        "r2_boss:attempt:1:combat:75",
+        "r2_boss:attempt:1:combat:76",
+        "r2_boss:attempt:1:combat:77",
+        "r2_boss:attempt:1:combat:126",
+        "r2_boss:attempt:1:combat:154",
+        "r2_boss:attempt:1:combat:201",
+        "r2_boss:attempt:1:combat:229",
+        "r2_boss:attempt:1:combat:248",
+        "r2_boss:attempt:1:combat:249",
+        "r2_boss:attempt:1:combat:267",
+        "r2_boss:attempt:1:combat:325",
+        "r2_boss:attempt:1:combat:350",
+        "r2_boss:attempt:1:combat:351",
+        "r2_boss:attempt:1:combat:361",
+        "r2_boss:attempt:1:combat:434",
+        "r2_boss:attempt:1:combat:441",
+        "r2_boss:attempt:1:combat:442",
+        "r2_boss:attempt:1:combat:480"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:203",
+      "key": "player_squad|region_2|r2_boss|combat|attack_enemy_squad|team_damage:r2_boss",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_priest",
+            "name": "晨祷牧师",
+            "role": "priest",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_boss",
+        "phase": "combat",
+        "team": [
+          "hero_warrior",
+          "hero_ranger",
+          "hero_mage",
+          "hero_priest"
+        ]
+      },
+      "behavior": {
+        "kind": "attack_enemy_squad",
+        "key": "team_damage:r2_boss"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "damage_profile": 1
+        },
+        "observations": [
+          {
+            "outcome": "damage_profile",
+            "totalDamage": 1942.451
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_boss:attempt:1:combat:37",
+        "r2_boss:attempt:1:combat:38",
+        "r2_boss:attempt:1:combat:41",
+        "r2_boss:attempt:1:combat:57",
+        "r2_boss:attempt:1:combat:58",
+        "r2_boss:attempt:1:combat:70",
+        "r2_boss:attempt:1:combat:72",
+        "r2_boss:attempt:1:combat:77",
+        "r2_boss:attempt:1:combat:86",
+        "r2_boss:attempt:1:combat:87",
+        "r2_boss:attempt:1:combat:103",
+        "r2_boss:attempt:1:combat:105",
+        "r2_boss:attempt:1:combat:106",
+        "r2_boss:attempt:1:combat:110",
+        "r2_boss:attempt:1:combat:125",
+        "r2_boss:attempt:1:combat:126",
+        "r2_boss:attempt:1:combat:144",
+        "r2_boss:attempt:1:combat:154",
+        "r2_boss:attempt:1:combat:165",
+        "r2_boss:attempt:1:combat:185",
+        "r2_boss:attempt:1:combat:201",
+        "r2_boss:attempt:1:combat:212",
+        "r2_boss:attempt:1:combat:217",
+        "r2_boss:attempt:1:combat:229",
+        "r2_boss:attempt:1:combat:238",
+        "r2_boss:attempt:1:combat:252",
+        "r2_boss:attempt:1:combat:253",
+        "r2_boss:attempt:1:combat:254",
+        "r2_boss:attempt:1:combat:266",
+        "r2_boss:attempt:1:combat:267",
+        "r2_boss:attempt:1:combat:269",
+        "r2_boss:attempt:1:combat:271",
+        "r2_boss:attempt:1:combat:273",
+        "r2_boss:attempt:1:combat:275",
+        "r2_boss:attempt:1:combat:279",
+        "r2_boss:attempt:1:combat:280",
+        "r2_boss:attempt:1:combat:290",
+        "r2_boss:attempt:1:combat:292",
+        "r2_boss:attempt:1:combat:294",
+        "r2_boss:attempt:1:combat:298",
+        "r2_boss:attempt:1:combat:308",
+        "r2_boss:attempt:1:combat:309",
+        "r2_boss:attempt:1:combat:310",
+        "r2_boss:attempt:1:combat:314",
+        "r2_boss:attempt:1:combat:325",
+        "r2_boss:attempt:1:combat:337",
+        "r2_boss:attempt:1:combat:342",
+        "r2_boss:attempt:1:combat:344",
+        "r2_boss:attempt:1:combat:360",
+        "r2_boss:attempt:1:combat:361",
+        "r2_boss:attempt:1:combat:370",
+        "r2_boss:attempt:1:combat:374",
+        "r2_boss:attempt:1:combat:375",
+        "r2_boss:attempt:1:combat:377",
+        "r2_boss:attempt:1:combat:378",
+        "r2_boss:attempt:1:combat:393",
+        "r2_boss:attempt:1:combat:412",
+        "r2_boss:attempt:1:combat:414",
+        "r2_boss:attempt:1:combat:423",
+        "r2_boss:attempt:1:combat:425",
+        "r2_boss:attempt:1:combat:434",
+        "r2_boss:attempt:1:combat:437",
+        "r2_boss:attempt:1:combat:438",
+        "r2_boss:attempt:1:combat:440",
+        "r2_boss:attempt:1:combat:451",
+        "r2_boss:attempt:1:combat:464",
+        "r2_boss:attempt:1:combat:466",
+        "r2_boss:attempt:1:combat:467",
+        "r2_boss:attempt:1:combat:470",
+        "r2_boss:attempt:1:combat:480",
+        "r2_boss:attempt:1:combat:481",
+        "r2_boss:attempt:1:combat:486",
+        "r2_boss:attempt:1:combat:489",
+        "r2_boss:attempt:1:combat:524"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:204",
+      "key": "enemy_squad:r2_boss|region_2|r2_boss|combat|attack_player_squad|enemy_attack:r2_boss",
+      "subject": {
+        "id": "enemy_squad:r2_boss",
+        "name": "enemy squad"
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_boss",
+        "phase": "combat"
+      },
+      "behavior": {
+        "kind": "attack_player_squad",
+        "key": "enemy_attack:r2_boss",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "threat_profile": 1
+        },
+        "observations": [
+          {
+            "outcome": "threat_profile",
+            "enemySurvivorCount": 0
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_boss:attempt:1:combat:52",
+        "r2_boss:attempt:1:combat:55",
+        "r2_boss:attempt:1:combat:60",
+        "r2_boss:attempt:1:combat:109",
+        "r2_boss:attempt:1:combat:135",
+        "r2_boss:attempt:1:combat:153",
+        "r2_boss:attempt:1:combat:167",
+        "r2_boss:attempt:1:combat:171",
+        "r2_boss:attempt:1:combat:180",
+        "r2_boss:attempt:1:combat:182",
+        "r2_boss:attempt:1:combat:196",
+        "r2_boss:attempt:1:combat:198",
+        "r2_boss:attempt:1:combat:210",
+        "r2_boss:attempt:1:combat:239",
+        "r2_boss:attempt:1:combat:265",
+        "r2_boss:attempt:1:combat:296",
+        "r2_boss:attempt:1:combat:297",
+        "r2_boss:attempt:1:combat:307",
+        "r2_boss:attempt:1:combat:328",
+        "r2_boss:attempt:1:combat:346",
+        "r2_boss:attempt:1:combat:349",
+        "r2_boss:attempt:1:combat:371",
+        "r2_boss:attempt:1:combat:384",
+        "r2_boss:attempt:1:combat:394",
+        "r2_boss:attempt:1:combat:403",
+        "r2_boss:attempt:1:combat:413",
+        "r2_boss:attempt:1:combat:424",
+        "r2_boss:attempt:1:combat:439",
+        "r2_boss:attempt:1:combat:454",
+        "r2_boss:attempt:1:combat:455",
+        "r2_boss:attempt:1:combat:484",
+        "r2_boss:attempt:1:combat:485",
+        "r2_boss:attempt:1:combat:511",
+        "r2_boss:attempt:1:combat:512",
+        "r2_boss:attempt:1:combat:513",
+        "r2_boss:attempt:1:combat:522"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:205",
+      "key": "concept:enemy_minion_ranged|region_2|region_2_boss|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_ranged",
+      "subject": {
+        "id": "concept:enemy_minion_ranged",
+        "name": "远程小怪",
+        "conceptId": "enemy_minion_ranged"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_boss",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_ranged",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 1
+        },
+        "observations": [
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 475.1883,
+            "damageShare": 0.5467,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 8,
+            "observedTargets": [
+              "灰鸦战士",
+              "烬火法师",
+              "晨祷牧师"
+            ],
+            "supportTargets": []
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_boss:attempt:1:combat:50",
+        "r2_boss:attempt:1:combat:51",
+        "r2_boss:attempt:1:combat:52",
+        "r2_boss:attempt:1:combat:53",
+        "r2_boss:attempt:1:combat:54",
+        "r2_boss:attempt:1:combat:55",
+        "r2_boss:attempt:1:combat:60",
+        "r2_boss:attempt:1:combat:186",
+        "r2_boss:attempt:1:combat:187",
+        "r2_boss:attempt:1:combat:263",
+        "r2_boss:attempt:1:combat:264",
+        "r2_boss:attempt:1:combat:265",
+        "r2_boss:attempt:1:combat:297",
+        "r2_boss:attempt:1:combat:326",
+        "r2_boss:attempt:1:combat:327",
+        "r2_boss:attempt:1:combat:328",
+        "r2_boss:attempt:1:combat:346",
+        "r2_boss:attempt:1:combat:371",
+        "r2_boss:attempt:1:combat:394",
+        "r2_boss:attempt:1:combat:413",
+        "r2_boss:attempt:1:combat:439",
+        "r2_boss:attempt:1:combat:452",
+        "r2_boss:attempt:1:combat:453",
+        "r2_boss:attempt:1:combat:454",
+        "r2_boss:attempt:1:combat:482",
+        "r2_boss:attempt:1:combat:483",
+        "r2_boss:attempt:1:combat:484",
+        "r2_boss:attempt:1:combat:485",
+        "r2_boss:attempt:1:combat:510",
+        "r2_boss:attempt:1:combat:511",
+        "r2_boss:attempt:1:combat:512",
+        "r2_boss:attempt:1:combat:513",
+        "r2_boss:attempt:1:combat:522"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:206",
+      "key": "concept:enemy_minion_melee|region_2|region_2_boss|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_melee",
+      "subject": {
+        "id": "concept:enemy_minion_melee",
+        "name": "近战小怪",
+        "conceptId": "enemy_minion_melee"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_boss",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_melee",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 1
+        },
+        "observations": [
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 334.2483,
+            "damageShare": 0.3845,
+            "threatRank": 2,
+            "healing": 62.4601,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 2,
+            "observedTargets": [
+              "近战小怪",
+              "林地游侠",
+              "晨祷牧师"
+            ],
+            "supportTargets": [
+              "近战小怪"
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_boss:attempt:1:combat:166",
+        "r2_boss:attempt:1:combat:167",
+        "r2_boss:attempt:1:combat:168",
+        "r2_boss:attempt:1:combat:169",
+        "r2_boss:attempt:1:combat:170",
+        "r2_boss:attempt:1:combat:180",
+        "r2_boss:attempt:1:combat:181",
+        "r2_boss:attempt:1:combat:182",
+        "r2_boss:attempt:1:combat:196",
+        "r2_boss:attempt:1:combat:197",
+        "r2_boss:attempt:1:combat:198"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 652,
+  "visibleEvents": [
+    {
+      "id": "r2_boss:attempt:1:combat:343",
+      "time": 13.04,
+      "type": "death",
+      "subject": "林地游侠",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.1538,
+      "emotionDelta": 0.0289
+    },
+    {
+      "id": "r2_boss:attempt:1:combat:344",
+      "time": 13.04,
+      "type": "damage",
+      "subject": "烬火法师",
+      "behavior": "火种余爆",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 40.0742,
+        "target": "远程小怪"
+      },
+      "H": 0.2023,
+      "emotionDelta": 0.0022
+    },
+    {
+      "id": "r2_boss:attempt:1:combat:351",
+      "time": 13.36,
+      "type": "shield",
+      "subject": "晨祷牧师",
+      "behavior": "净血",
+      "result": {
+        "kind": "shield",
+        "occurred": true,
+        "amount": 73.86,
+        "target": "林地游侠"
+      },
+      "H": 0.3393,
+      "emotionDelta": 0.0006
+    },
+    {
+      "id": "r2_boss:attempt:1:combat:370",
+      "time": 14.08,
+      "type": "damage",
+      "subject": "烬火法师",
+      "behavior": "燃烧",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.5142,
+        "target": "远程小怪"
+      },
+      "H": 0.2023,
+      "emotionDelta": -0.0006
+    },
+    {
+      "id": "r2_boss:attempt:1:combat:393",
+      "time": 15.12,
+      "type": "damage",
+      "subject": "烬火法师",
+      "behavior": "燃烧",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.5142,
+        "target": "远程小怪"
+      },
+      "H": 0.2023,
+      "emotionDelta": -0.0002
+    },
+    {
+      "id": "r2_boss:attempt:1:combat:412",
+      "time": 16.16,
+      "type": "damage",
+      "subject": "烬火法师",
+      "behavior": "燃烧",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 7.5142,
+        "target": "远程小怪"
+      },
+      "H": 0.2962,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r2_boss:attempt:1:combat:442",
+      "time": 17.28,
+      "type": "heal",
+      "subject": "晨祷牧师",
+      "behavior": "急救",
+      "result": {
+        "kind": "heal",
+        "occurred": true,
+        "amount": 73.74,
+        "target": "林地游侠"
+      },
+      "H": 0.3382,
+      "emotionDelta": 0.0011
+    },
+    {
+      "id": "r2_boss:attempt:1:combat:487",
+      "time": 18.96,
+      "type": "death",
+      "subject": "灰鸦战士",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.1538,
+      "emotionDelta": 0.0289
+    },
+    {
+      "id": "r2_boss:attempt:1:combat:512",
+      "time": 20.08,
+      "type": "damage",
+      "subject": "远程小怪",
+      "behavior": "箭雨",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 73.6272,
+        "target": "烬火法师"
+      },
+      "H": 0.2889,
+      "emotionDelta": -0.0074
+    },
+    {
+      "id": "r2_boss:attempt:1:combat:513",
+      "time": 20.08,
+      "type": "damage",
+      "subject": "远程小怪",
+      "behavior": "箭雨",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 69.3072,
+        "target": "晨祷牧师"
+      },
+      "H": 0.2889,
+      "emotionDelta": -0.0021
+    },
+    {
+      "id": "map_action:r2_boss:20:result",
+      "time": 20.72,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "challenge:r2_boss",
+      "result": {
+        "kind": "combat_win",
+        "occurred": true,
+        "observedPower": 1487,
+        "boundary": "normal_end",
+        "firstClear": true,
+        "survivors": {
+          "player": 4,
+          "enemy": 0
+        }
+      },
+      "H": 0.7172,
+      "emotionDelta": 0.7941
+    },
+    {
+      "id": "r2_boss:attempt:1:combat:525",
+      "time": 20.72,
+      "type": "death",
+      "subject": "烬火法师",
+      "behavior": "余烬火球",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "远程小怪"
+      },
+      "H": 0.2401,
+      "emotionDelta": 0.0487
+    },
+    {
+      "id": "map_action:r2_boss:20:loot-outcome",
+      "time": 20.724999999999998,
+      "type": "loot_outcome",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "probability_outcome",
+        "occurred": true,
+        "components": [
+          {
+            "kind": "loot"
+          },
+          {
+            "kind": "loot"
+          },
+          {
+            "kind": "loot"
+          },
+          {
+            "kind": "loot"
+          }
+        ]
+      },
+      "H": 0.5436,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:r2_boss:20:loot:1",
+      "time": 20.73,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "legendary",
+        "itemName": "传说头盔 Lv.25",
+        "equipmentLevel": 25,
+        "baseStats": {
+          "maxHp": 71,
+          "armor": 2
+        },
+        "affixCount": 7
+      },
+      "H": 0.6946,
+      "emotionDelta": 2.0145
+    },
+    {
+      "id": "map_action:r2_boss:20:loot:2",
+      "time": 20.74,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "epic",
+        "itemName": "史诗腿甲 Lv.28",
+        "equipmentLevel": 28,
+        "baseStats": {
+          "maxHp": 80,
+          "armor": 2
+        },
+        "affixCount": 4
+      },
+      "H": 0.6946,
+      "emotionDelta": 0.5647
+    },
+    {
+      "id": "map_action:r2_boss:20:loot:3",
+      "time": 20.75,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "rare",
+        "itemName": "稀有胸甲 Lv.27",
+        "equipmentLevel": 27,
+        "baseStats": {
+          "maxHp": 78,
+          "armor": 2
+        },
+        "affixCount": 2
+      },
+      "H": 0.6946,
+      "emotionDelta": -0.4272
+    },
+    {
+      "id": "map_action:r2_boss:20:loot:4",
+      "time": 20.759999999999998,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "legendary",
+        "itemName": "传说胸甲 Lv.30",
+        "equipmentLevel": 30,
+        "baseStats": {
+          "maxHp": 81,
+          "armor": 2
+        },
+        "affixCount": 7
+      },
+      "H": 0.6946,
+      "emotionDelta": 1.7779
+    },
+    {
+      "id": "map_action:r2_boss:20:summary",
+      "time": 20.799999999999997,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "challenge:r2_boss",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 1487,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "combat_win"
+          }
+        ]
+      },
+      "H": 0.5663,
+      "emotionDelta": -0.373
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 2,
+    "seed": "paired-beta",
+    "profileId": "open_novice",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

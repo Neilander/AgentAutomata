@@ -1,0 +1,208 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 13,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-98ab7f3f71446006",
+    "mode": "continue",
+    "turn": 94,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "low_friction_optimizer",
+    "label": "Low-friction optimizer",
+    "summary": "Changes team and equipment readily when recent evidence predicts a measurable gain.",
+    "decisionBias": {
+      "riskTolerance": 0.55,
+      "exploration": 0.65,
+      "changeAversion": 0.05,
+      "evidenceThreshold": 0.3,
+      "preferences": {
+        "damage": 0.65,
+        "survival": 0.6,
+        "novelty": 0.45,
+        "rarity": 0.25,
+        "simplicity": 0.25
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_build",
+          "label": "player build"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "testing_a_visible_upgrade_after_comparison",
+          "label": "testing a visible upgrade after comparison"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "often_improves_the_next_result",
+          "label": "often improves the next result"
+        },
+        "confidence": 0.7,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:low_friction_optimizer:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "equip:hero_knight:r2_shield_trial_1_1",
+  "outcome": "equipped",
+  "emotionBeforeAction": 84.9709,
+  "emotionAfterEvents": 84.9695,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:164",
+      "key": "player|region_2|unknown_environment|equipment|equip_item|equip:hero_knight:r2_shield_trial_1_1",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_2",
+        "phase": "equipment",
+        "hero": {
+          "id": "hero_knight",
+          "name": "白垒骑士",
+          "role": "knight",
+          "kind": "hero"
+        }
+      },
+      "behavior": {
+        "kind": "equip_item",
+        "key": "equip:hero_knight:r2_shield_trial_1_1",
+        "itemId": "r2_shield_trial_1_1",
+        "target": "hero_knight"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "item_equipped": 1
+        },
+        "observations": [
+          {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r2_shield_trial_1_1",
+              "name": "稀有腿甲 Lv.26",
+              "slot": "legs",
+              "slotLabel": "腿甲",
+              "rarity": "rare",
+              "rarityLabel": "稀有",
+              "level": 26,
+              "baseStats": {
+                "maxHp": 75,
+                "armor": 2
+              },
+              "affixes": [
+                {
+                  "id": "fortitude",
+                  "stat": "fortitude",
+                  "label": "坚韧",
+                  "category": "major",
+                  "level": 1,
+                  "value": 2
+                },
+                {
+                  "id": "lowHpHealingReceived",
+                  "stat": "lowHpHealingReceived",
+                  "label": "低血受治愈",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 6
+                }
+              ]
+            },
+            "replacedItem": null,
+            "equippedPowerBefore": 1331,
+            "equippedPowerAfter": 1331,
+            "powerDelta": 0
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "equip_action:13:r2_shield_trial_1_1:start",
+        "equip_action:13:r2_shield_trial_1_1:result",
+        "equip_action:13:r2_shield_trial_1_1:summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 532,
+  "visibleEvents": [
+    {
+      "id": "equip_action:13:r2_shield_trial_1_1:result",
+      "time": 0.05,
+      "type": "equipment_change",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "item_equipped",
+        "occurred": true,
+        "amount": 0,
+        "before": 1331,
+        "after": 1331,
+        "itemName": "稀有腿甲 Lv.26",
+        "heroId": "hero_knight"
+      },
+      "H": 0.177,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:13:r2_shield_trial_1_1:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 1331,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "item_equipped",
+            "amount": 0
+          }
+        ]
+      },
+      "H": 0.5363,
+      "emotionDelta": -0.0014
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 2,
+    "seed": "paired-alpha",
+    "profileId": "low_friction_optimizer",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

@@ -7,6 +7,8 @@ code-owned game state
 -> automatic real event generation
 -> automatic signal, expectation, PQRA, emotion, and event-statistics update
 -> code updates canonical subject-environment-behavior-result knowledge
+-> code updates character impressions and the shared relative-strength ruler
+-> code scopes combat outcome to the exact roster and re-estimates every legal replacement
 -> decision API request
 -> AI returns one structured action
 -> code executes the action
@@ -19,6 +21,12 @@ code-owned game state
 Before the emotion runtime or canonical knowledge sees combat events, `signal-concept-interpreter.js` converts the engine log into a player-semantic log. The session keeps `rawEventLog` only for audit; agent requests and learned knowledge use `eventLog`, where disposable enemy identities are replaced by concepts such as `近战小怪` and `远程小怪`.
 
 The AI is not allowed to set emotion or PQRA values. The decision response must select an allowed action. The attribution response must cite event IDs produced by the game. Low-level Frozen V3 entries are treated as event-statistics caches, not player knowledge. Canonical knowledge always contains subject, environment, behavior, and structured result observations. This experiment does not modify Frozen V3, formal combat values, production skills, or any webpage.
+
+The same persisted session also owns `entityImpressionState`. Every completed battle feeds its visible four-character report into deterministic impression code. Pairwise battle differences update all known character positions together; the weakest member of the current top 30% becomes the zero boundary, and compact relative levels enter the next decision request as `playerState.characterImpressions`. This is parallel to causal knowledge, not a replacement for it, and AI output cannot write the matrix.
+
+`rosterExpectationState` stores encounter results with the exact active-team and equipped-build fingerprints. The next decision request includes one `rosterChangeExpectations` entry per legal one-slot swap. Exact comparable composition history wins; otherwise the code compares the incoming and outgoing characters' current positions and context-relevant traits. A failed swap therefore applies to that team, while a materially different known replacement can reopen the expectation. Untested characters remain unknown. See `ROSTER_CHANGE_EXPECTATION_CONTRACT.md`; run `node test-roster-change-expectation.js` for the focused case and `node test-roster-change-expectation-edge-cases.js` for continuous and boundary cases.
+
+`rosterPredictionAState` is the separate code-owned settlement ledger. When the Agent selects a swap with a numeric prediction, `roster-expectation-a.js` freezes that candidate's baseline score, predicted score, exact candidate team/build, target encounter, persistent perception profile, and confidence. Settlement quantizes expected and actual relative improvement through that profile and computes asymmetric mismatch A. Self-serving confirmation C compares visible actual and expected combat progress: above-expectation results grow by a capped square-root multiplier, slightly lower same-band results decay by a 1.5-power curve, and clear downward band crossings receive no C. Equipment changes rebase the prediction from base cognition strength and equipment multiplier instead of invalidating it. A different encounter weakly carries the expectation at weight `0.25`; visible Boss/trial/field-rule signals can override it. A different team still invalidates, and a newer swap supersedes. The Agent never supplies A, C, or emotion intensity. Run `node test-expectation-repair-trio.js`, `node test-roster-expectation-a.js`, and `node test-player-agent-roster-a-integration.js` for the focused formula and player-loop regressions.
 
 ## Causal Knowledge Rules
 
@@ -133,3 +141,35 @@ The current onboarding run is `role_wave_run_2026-07-13_105247/` with seed `role
 - Decisions and attributions were supplied through a single isolated player sub-agent. Combat, loot, emotion, concepts, knowledge consolidation, and state transitions were computed by repository code; the sub-agent was closed after completing the run.
 
 The earlier Boss-pressure comparison remains under `real_main7_run_2026-07-13_170746/`. It reached the regional Boss twice in 30 cycles but did not clear it; use it as historical evidence for late-region pressure, not as evidence for the current starter-roster and Mage-onboarding flow.
+
+## Enriched Two-Chapter Program Variant
+
+`enriched-two-chapter-run.js` is an isolated program-only variant selected with `environmentVariant: "enriched_v1"`. It keeps the default two chapters unchanged while adding five milestone-unlocked heroes, later pressure points, richer Epic/Legendary equipment, and an exact 1% Mythic rate per normally generated item. The enriched transition preserves the same player Agent context plus the Chapter 1 roster, equipped items, and inventory.
+
+Use `enriched-two-chapter-cli.js` for persistent real-Agent runs. Every request and response is archived beside the authoritative session:
+
+```powershell
+node enriched-two-chapter-cli.js init session.json paired-alpha open_novice ordinary
+node enriched-two-chapter-cli.js request session.json request.json
+node enriched-two-chapter-cli.js decision session.json response.json
+node enriched-two-chapter-cli.js attribution session.json response.json
+node enriched-two-chapter-cli.js advance session.json
+node enriched-two-chapter-cli.js summary session.json summary.json
+```
+
+Run `node validate-enriched-two-chapter-run.js` for exact drop tables, a 100,000-item Mythic sample, new-character semantic events, bottleneck scaling, paired loot seeds, and cross-chapter persistence. Run `node analyze-enriched-bottlenecks.js <output.json>` for exhaustive four-character combination checks in canonical and reversed formation.
+
+## 纯程序战斗信息解析器
+
+`battle-information-parser.js` 目前是独立模块，尚未接入玩家 Agent。它只使用界面可见事件，把原始战斗日志压缩成玩家语言。三档不再按单场条数硬切；每条合法信号根据自身强度独立决定是否被接收，25%/50%/75%只是大量非强制信号上的长期校准目标。
+
+- 敌人只按本场实际可见行为描述，例如“使用过治疗的敌方单位”，不根据 `priest` 推断后排或固定职责。
+- 信号强度由显眼度、画面清晰度、相对幅度、当前目标和同屏竞争共同形成；重复事件通过饱和的“有效观察机会”累积，而不是无限相加。
+- 三档共用同一份确定性检测值，只改变敏感度，因此窄幅结果必然包含于普通档，普通档必然包含于宽幅档。
+- 胜负是强制锚点；我方死亡和神话掉落使用接近必达的感知下限，不会被普通随机遗漏压过。
+- 平淡战斗中宽幅玩家也可以什么都没多注意；大量强制展示信号出现时，窄幅玩家也可以远超 25%，没有单场配额。
+- 输出不包含临时敌人名、内部 ID/role、原始 diagnosis、H、emotionDelta、精确事件 ID 或内部实验结果。
+- 玩家输出不披露候选总量、漏看比例或接收概率；稳定信号 ID 为无顺序含义的语义哈希，不会用编号空洞暗示漏掉的信息。
+- 重复伤害、治疗、护盾、状态和技能会先压缩，避免合法事件逐条刷屏。
+
+运行 `node test-battle-information-parser.js` 会检查固定 17 事件样本、存档中的 355 事件真实战斗、重复积累、同屏竞争、目标相关性、无配额边界、三档嵌套和信息泄漏。

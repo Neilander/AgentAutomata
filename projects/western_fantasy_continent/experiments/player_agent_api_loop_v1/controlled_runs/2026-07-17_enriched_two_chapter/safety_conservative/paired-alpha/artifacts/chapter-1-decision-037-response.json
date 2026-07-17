@@ -1,0 +1,46 @@
+{
+  "action": "swap:2:hero_ranger",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "为高生命蛮熊寻找持续单体方案，但先控制测试风险。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "林地游侠可见说明为完整远程物理英雄，会持续锁定当前目标并累积猎标，直接匹配主线7需求。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "只替换后排法师，仍保留两名前排与草药治疗；法师装备保留为失败时的回退。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "可以换入游侠并在已多次全员存活的主线5测试。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "受控安全测试比直接把未知游侠带回失败的主线7更符合保守偏好。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "若游侠具备可用输出，他在下一场安全测试中应进入伤害前二。"
+    }
+  ],
+  "alternatives": [
+    "challenge:r1_main_5"
+  ],
+  "hypothesis": {
+    "id": "safe_test_ranger_output_before_bear_retry",
+    "problem": "主线7高生命蛮熊让当前队伍全灭",
+    "cause": "现阵容缺少可见要求的持续单体输出",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_ranger",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageRank",
+      "operator": "<=",
+      "value": 2
+    }
+  }
+}

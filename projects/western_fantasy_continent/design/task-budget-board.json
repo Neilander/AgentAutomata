@@ -1,6 +1,6 @@
 {
   "schema": "agent_automata_task_budget_board_v2",
-  "updatedAt": "2026-07-15",
+  "updatedAt": "2026-07-17",
   "workflow": [
     "先围绕可玩的角色搭配定义本阶段体验目标。",
     "用统一 4v4 战斗验证队伍 combo、克制和强度感。",
@@ -1369,6 +1369,251 @@
         "不使用恐惧或固定负面常量修补结果"
       ],
       "lastEvidence": "2026-07-15 open: controlled Main 6 run showed twelve full-hypothesis swaps each gained +0.16 before verification; repeated refuted swaps and exhausted options did not reduce Agency or settle a meaningful negative expectation."
+    },
+    {
+      "id": "expectation-signal-repair-suite",
+      "name": "预期与玩家信号修复",
+      "detail": "统一修复玩家怎样形成预期、怎样把角色与装备换算成有效强度、怎样因判断被证实而获得确认感、怎样把上一关经验弱迁移到新关，以及原始战斗信息怎样先解释成玩家真正可获取的信号。",
+      "type": "design",
+      "category": "design",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "emotion-decision-expectation-settlement",
+      "sourceTaskId": "emotion-decision-expectation-settlement",
+      "outcome": "所有预期都拥有明确来源、强度、期限和结算方式；概率、换人、换装、新关惯性与确认感共享同一套可审计账本，玩家知识只消费解释后的可见信号。",
+      "nextAction": "先冻结五项共同输入输出合同，再按“信息筛选→概率预期→有效强度→新关惯性→确认感”顺序制作配对测试。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "high",
+      "blastRadius": "high",
+      "attemptBudget": 5,
+      "attemptsUsed": 3,
+      "status": "active",
+      "links": [
+        "projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/controlled_runs/2026-07-17_enriched_two_chapter/STATISTICAL_REPORT.md",
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/SKILL.md"
+      ],
+      "tags": [
+        "expectation",
+        "probability",
+        "equipment",
+        "confirmation",
+        "inertia",
+        "signal-filter"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation",
+        "phenomenon-math-modeling",
+        "comparative-analysis"
+      ],
+      "successCriteria": [
+        "五类预期使用统一的来源、信心、期限、上下文和结算字段",
+        "结果可拆分为直接 R、偏差 A 与判断确认 C",
+        "所有玩家可见知识只消费概念解释后的信号",
+        "真实多玩家轨迹中的自然推进和换装不再让大多数预测直接失效"
+      ],
+      "lastEvidence": "2026-07-17 partial implementation: confirmation C, equipment effective-strength rebasing, and weak new-encounter inertia pass focused deterministic tests; probability distribution and player-visible signal filtering remain queued."
+    },
+    {
+      "id": "expectation-probability-distribution",
+      "name": "概率型掉落预期",
+      "detail": "玩家应维护普通到神话的概率分布而不是沿用上一件掉落价值；一次低概率神话只产生大惊喜和小幅概率修正，同批奖励冻结旧分布后统一结算。",
+      "type": "design",
+      "category": "design",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "expectation-signal-repair-suite",
+      "sourceTaskId": "expectation-signal-repair-suite",
+      "outcome": "神话仍然惊喜，但不会让玩家连续期待神话；随后出现的常见掉落按高概率正常结果结算。",
+      "nextAction": "建立按稀有度分类的先验与有效样本量，并制作“神话后普通、普通后神话、整批换序”三组顺序不变性测试。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "high",
+      "blastRadius": "high",
+      "attemptBudget": 1,
+      "attemptsUsed": 0,
+      "status": "queued",
+      "links": [
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/references/probability-expectation.md"
+      ],
+      "tags": [
+        "probability",
+        "loot",
+        "expectation",
+        "batch-freeze"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation",
+        "phenomenon-math-modeling"
+      ],
+      "successCriteria": [
+        "单次神话不会把下一次神话预期抬到常见水平",
+        "同一批掉落调换顺序不改变总 A 与总确认感",
+        "常见掉落在常见分布下不产生神话级失望",
+        "概率知识更新发生在整批结算之后"
+      ],
+      "lastEvidence": "2026-07-17: 56 same-batch order penalties were observed; worst A was -2.3646 after a higher-value item changed the expectation for a later item in the same reveal."
+    },
+    {
+      "id": "expectation-equipment-effective-strength",
+      "name": "换装后的有效强度预期",
+      "detail": "用角色基础认知强度乘以装备倍率得到当前有效强度，并把角色本体贡献与装备增量分开记录；换装应重算预测而不是直接让换人预测失效。",
+      "type": "design",
+      "category": "design",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "expectation-signal-repair-suite",
+      "sourceTaskId": "expectation-signal-repair-suite",
+      "outcome": "玩家能够形成“基础强度5、装备倍率200%、有效强度10”的可解释预期，同时保留角色与装备的归因边界。",
+      "nextAction": "统一装备倍率语义，接入角色强度矩阵，并用裸装换人、换人后换装、同强度不同词条三组战斗验证。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "medium",
+      "blastRadius": "high",
+      "attemptBudget": 1,
+      "attemptsUsed": 1,
+      "status": "done",
+      "links": [
+        "projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/ROSTER_CHANGE_EXPECTATION_CONTRACT.md"
+      ],
+      "tags": [
+        "equipment",
+        "effective-strength",
+        "roster-expectation"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation",
+        "phenomenon-math-modeling"
+      ],
+      "successCriteria": [
+        "换装后预测按新的有效强度重算而不是直接失效",
+        "角色基础贡献与装备增量可分别审计",
+        "相同总强度但不同机制词条不会被误判为完全相同",
+        "自然换人加换装轨迹仍能产生带混淆标记的结算"
+      ],
+      "lastEvidence": "2026-07-17 PASS: base cognition strength 5 x equipment multiplier 2 = effective strength 10; pending prediction recalculated from score 0 to 0.6 and remained awaiting_combat."
+    },
+    {
+      "id": "expectation-confirmation-constant-c",
+      "name": "符合预期的确认感 C",
+      "detail": "在预期偏差 A 之外加入判断被证实的正确认感 C；实际落入玩家感知范围时仍有小幅正反馈，C 随预测信心、重要性和验证质量变化。",
+      "type": "design",
+      "category": "design",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "expectation-signal-repair-suite",
+      "sourceTaskId": "expectation-signal-repair-suite",
+      "outcome": "符合预期不再等于零体验；失败符合预期时 C 可小幅为正，但仍与失败本身的负 R 分开，净体验不会被错误翻正。",
+      "nextAction": "确定 C 的信心、重要性和误差带映射，制作预期成功/失败分别被确认、轻微偏离和严重证伪的九宫格测试。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "medium",
+      "blastRadius": "high",
+      "attemptBudget": 1,
+      "attemptsUsed": 1,
+      "status": "done",
+      "links": [
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/references/improvement-perception-granularity.md"
+      ],
+      "tags": [
+        "confirmation",
+        "A",
+        "C",
+        "expectation"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation",
+        "phenomenon-math-modeling"
+      ],
+      "successCriteria": [
+        "实际符合预期时产生与信心和重要性一致的小幅正 C",
+        "C 与战斗结果 R、超预期或低于预期 A 分账",
+        "预期失败后真的失败不会因 C 变成净正体验",
+        "低信心猜测的 C 明显低于高信心验证"
+      ],
+      "lastEvidence": "2026-07-17 PASS: base constant stayed 0.1; exact C=0.0228, slightly lower same-band C=0.0203, slightly higher C=0.0237, clear downward band crossing C=0 with net expectation -0.0948, and clearly higher C=0.0251 with net expectation +0.0794."
+    },
+    {
+      "id": "expectation-new-encounter-inertia",
+      "name": "新关卡的弱惯性预期",
+      "detail": "进入没有直接证据的新关卡时，玩家默认沿用上一关的结果与阵容判断，但只形成低信心惯性预期；明确的难度、机制或奖励信号可以在战前提高、降低或替换它。",
+      "type": "design",
+      "category": "design",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "expectation-signal-repair-suite",
+      "sourceTaskId": "expectation-signal-repair-suite",
+      "outcome": "玩家自然前进时不再完全没有预期，也不会把上一关结论强行当成新关事实；强烈可见信号能够覆盖弱惯性。",
+      "nextAction": "定义上一关结果到新关的低信心迁移和信号覆盖规则，测试连续普通关、明显Boss门、显著简单奖励关和隐藏难度突增。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "high",
+      "blastRadius": "high",
+      "attemptBudget": 1,
+      "attemptsUsed": 1,
+      "status": "done",
+      "links": [
+        "projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/ROSTER_CHANGE_EXPECTATION_CONTRACT.md"
+      ],
+      "tags": [
+        "encounter-inertia",
+        "expectation",
+        "difficulty-signal",
+        "natural-progression"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation",
+        "phenomenon-math-modeling",
+        "comparative-analysis"
+      ],
+      "successCriteria": [
+        "无新信号时新关继承上一关的低信心惯性预期",
+        "Boss、显著战力和机制提示等强信号能覆盖惯性预期",
+        "角色贡献预测可跨新关验证，关卡胜负预测保留难度上下文",
+        "自然推进不再直接取消全部换人反馈"
+      ],
+      "lastEvidence": "2026-07-17 PASS: inherited expected strength stayed 5 while source confidence 0.7 became effective confidence 0.175; a visible hard Boss signal replaced the inherited score."
+    },
+    {
+      "id": "player-signal-visibility-filter",
+      "name": "玩家接收信息的语义筛选",
+      "detail": "原始战斗事件、临时敌人名和内部职业标签必须先解释成玩家实际可观察、可理解的语义信号，再进入注意、情绪、知识、归因和决策。",
+      "type": "bug",
+      "category": "bug",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "expectation-signal-repair-suite",
+      "sourceTaskId": "expectation-signal-repair-suite",
+      "outcome": "玩家只能学习诸如“本场表现出近身攻击”“本场使用过治疗或护盾”等可见行为概念，不能读取临时对象名、内部职业，也不能从职业预设站位或固定职责。",
+      "nextAction": "把已通过独立审计的 battle-information-parser 接到事件解释器与玩家请求之间，删除原始 diagnosis 知识入口，并补玩家请求边界回归。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "low",
+      "blastRadius": "high",
+      "attemptBudget": 1,
+      "attemptsUsed": 1,
+      "status": "active",
+      "links": [
+        "projects/western_fantasy_continent/PLAYER_MODEL_RUNTIME.md",
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/references/signal-concept-interpretation.md"
+      ],
+      "tags": [
+        "signal-filter",
+        "concept-interpreter",
+        "player-visible",
+        "bug"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation",
+        "comparative-analysis"
+      ],
+      "successCriteria": [
+        "玩家请求中不再出现临时敌人名、内部role和未解释diagnosis",
+        "每条玩家知识都能追溯到可见事件和解释后的概念",
+        "信息减少后归因仍能使用玩家实际观察到的信号完成",
+        "原始事件只保留在审计层"
+      ],
+      "lastEvidence": "2026-07-17 threshold parser v2 PASS: removed per-battle quotas; discretionary long-run rates across real trajectories stayed around 25-28%/50-55%/75-80%. Repetition 1->6 raised low/ordinary/high reception from 15.3/34.1/59.7% to 51.4/83.6/98.0%; crowded attention reduced availability 1.0->0.4126. Quiet high perception can receive nothing, blocking loud low perception can receive everything. No enemy identity/role/diagnosis/H/emotionDelta/raw ID or missed-count leakage. Still not connected to Agent requests."
     },
     {
       "id": "emotion-failure-experience-settlement",

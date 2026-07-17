@@ -1,0 +1,268 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 19,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-4b256d6ea45b8432",
+    "mode": "continue",
+    "turn": 112,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "equip:hero_mage:r2_first_epic",
+  "outcome": "equipped",
+  "emotionBeforeAction": 95.5535,
+  "emotionAfterEvents": 95.5521,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:195",
+      "key": "player|region_2|unknown_environment|equipment|equip_item|equip:hero_mage:r2_first_epic",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_2",
+        "phase": "equipment",
+        "hero": {
+          "id": "hero_mage",
+          "name": "烬火法师",
+          "role": "mage",
+          "kind": "hero"
+        }
+      },
+      "behavior": {
+        "kind": "equip_item",
+        "key": "equip:hero_mage:r2_first_epic",
+        "itemId": "r2_first_epic",
+        "target": "hero_mage"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "item_equipped": 1
+        },
+        "observations": [
+          {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r2_first_epic",
+              "name": "史诗火印护符 Lv.24",
+              "slot": "charm",
+              "slotLabel": "护符",
+              "rarity": "epic",
+              "rarityLabel": "史诗",
+              "level": 24,
+              "baseStats": {
+                "magicPower": 12
+              },
+              "affixes": [
+                {
+                  "id": "arcana",
+                  "stat": "arcana",
+                  "label": "奥术",
+                  "category": "major",
+                  "level": 1,
+                  "value": 2
+                },
+                {
+                  "id": "rhythm",
+                  "stat": "rhythm",
+                  "label": "节律",
+                  "category": "major",
+                  "level": 1,
+                  "value": 2
+                },
+                {
+                  "id": "fireAmp",
+                  "stat": "fireAmp",
+                  "label": "火焰增幅",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 2
+                },
+                {
+                  "id": "critChance",
+                  "stat": "critChance",
+                  "label": "暴击率",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 2
+                }
+              ]
+            },
+            "replacedItem": {
+              "id": "r1_main_6_1_1",
+              "name": "史诗护符 Lv.7",
+              "slot": "charm",
+              "slotLabel": "护符",
+              "rarity": "epic",
+              "rarityLabel": "史诗",
+              "level": 7,
+              "baseStats": {
+                "magicPower": 4
+              },
+              "affixes": [
+                {
+                  "id": "counterDamage",
+                  "stat": "counterDamage",
+                  "label": "反击伤害",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 4
+                },
+                {
+                  "id": "arcaneAmp",
+                  "stat": "arcaneAmp",
+                  "label": "奥术增幅",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 3
+                },
+                {
+                  "id": "counterDamage",
+                  "stat": "counterDamage",
+                  "label": "反击伤害",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 3
+                },
+                {
+                  "id": "counterDamage",
+                  "stat": "counterDamage",
+                  "label": "反击伤害",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 4
+                }
+              ]
+            },
+            "equippedPowerBefore": 1407,
+            "equippedPowerAfter": 1487,
+            "powerDelta": 80
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "equip_action:19:r2_first_epic:start",
+        "equip_action:19:r2_first_epic:result",
+        "equip_action:19:r2_first_epic:summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 615,
+  "visibleEvents": [
+    {
+      "id": "equip_action:19:r2_first_epic:result",
+      "time": 0.05,
+      "type": "equipment_change",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "item_equipped",
+        "occurred": true,
+        "amount": 80,
+        "before": 1407,
+        "after": 1487,
+        "itemName": "史诗火印护符 Lv.24",
+        "heroId": "hero_mage"
+      },
+      "H": 0.1869,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:19:r2_first_epic:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 1487,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "item_equipped",
+            "amount": 80
+          }
+        ]
+      },
+      "H": 0.5663,
+      "emotionDelta": -0.0014
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 2,
+    "seed": "paired-beta",
+    "profileId": "open_novice",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

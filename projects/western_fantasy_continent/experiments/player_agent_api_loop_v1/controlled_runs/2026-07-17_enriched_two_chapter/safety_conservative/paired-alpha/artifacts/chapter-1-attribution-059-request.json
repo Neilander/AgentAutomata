@@ -1,0 +1,266 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 59,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-153d4cc85a83206d",
+    "mode": "continue",
+    "turn": 118,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "safety_conservative",
+    "label": "Safety conservative",
+    "summary": "Values frontline stability and healing, and avoids uncertain fights after failure.",
+    "decisionBias": {
+      "riskTolerance": 0.2,
+      "exploration": 0.3,
+      "changeAversion": 0.4,
+      "evidenceThreshold": 0.48,
+      "preferences": {
+        "damage": 0.35,
+        "survival": 1,
+        "novelty": 0.2,
+        "rarity": 0.3,
+        "simplicity": 0.65
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "protecting_the_frontline_with_healing",
+          "label": "protecting the frontline with healing"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "creates_enough_time_to_win",
+          "label": "creates enough time to win"
+        },
+        "confidence": 0.8,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:safety_conservative:1"
+      },
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "uncertain_encounter",
+          "label": "uncertain encounter"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "retrying_without_a_clear_improvement",
+          "label": "retrying without a clear improvement"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "is_likely_to_fail_again",
+          "label": "is likely to fail again"
+        },
+        "confidence": 0.68,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:safety_conservative:2"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "swap:2:hero_mage",
+  "outcome": "team_changed",
+  "emotionBeforeAction": 57.7049,
+  "emotionAfterEvents": 57.7049,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:71",
+      "key": "player|region_1|unknown_environment|team_management|swap_team_member|swap:2:hero_mage",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_1",
+        "phase": "team_management"
+      },
+      "behavior": {
+        "kind": "swap_team_member",
+        "key": "swap:2:hero_mage"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "team_changed": 2
+        },
+        "observations": [
+          {
+            "outcome": "team_changed",
+            "teamBefore": [
+              "hero_warrior",
+              "militia_barricade",
+              "militia_spear",
+              "militia_herb"
+            ],
+            "teamAfter": [
+              "hero_warrior",
+              "militia_barricade",
+              "hero_mage",
+              "militia_herb"
+            ],
+            "equippedPowerBefore": 643,
+            "equippedPowerAfter": 605
+          },
+          {
+            "outcome": "team_changed",
+            "teamBefore": [
+              "hero_warrior",
+              "militia_barricade",
+              "hero_assassin",
+              "militia_herb"
+            ],
+            "teamAfter": [
+              "hero_warrior",
+              "militia_barricade",
+              "hero_mage",
+              "militia_herb"
+            ],
+            "equippedPowerBefore": 962,
+            "equippedPowerAfter": 1067
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:2:26:result",
+        "map_action:2:26:start",
+        "team-change:26:hero_mage",
+        "map_action:2:26:summary",
+        "map_action:2:59:result",
+        "map_action:2:59:start",
+        "team-change:59:hero_mage",
+        "map_action:2:59:summary"
+      ],
+      "attributions": [
+        {
+          "id": "ai-attribution:26",
+          "knowledgeId": "knowledge:71",
+          "cause": "把后排短矛民兵换成烬火法师后，队伍已变更；随短矛装备离队，已装备强度从643降至605。",
+          "confidence": 0.99,
+          "evidenceEventIds": [
+            "map_action:2:26:result",
+            "team-change:26:hero_mage"
+          ],
+          "alternativeCauses": [],
+          "nextTest": "只在已验证安全的主线5测试烬火法师是否进入伤害前二，不直接挑战失败目标。",
+          "learnedAfterFeedback": true
+        }
+      ]
+    }
+  ],
+  "eventStatisticsCount": 462,
+  "visibleEvents": [
+    {
+      "id": "map_action:2:59:result",
+      "time": 0,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "swap:2:hero_mage",
+      "result": {
+        "kind": "action_changed",
+        "occurred": true,
+        "observedPower": 1067,
+        "boundary": "normal_end",
+        "firstClear": false
+      },
+      "H": 0.9072,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:2:59:start",
+      "time": 0,
+      "type": "action_start",
+      "subject": "player squad",
+      "behavior": "swap:2:hero_mage",
+      "result": {
+        "kind": "action_started",
+        "occurred": true
+      },
+      "H": 0.2364,
+      "emotionDelta": 0
+    },
+    {
+      "id": "team-change:59:hero_mage",
+      "time": 0.04,
+      "type": "team_change",
+      "subject": "player_squad",
+      "behavior": "team_management",
+      "result": {
+        "kind": "team_changed",
+        "occurred": true,
+        "heroId": "hero_mage"
+      },
+      "H": 0.2364,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:2:59:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "swap:2:hero_mage",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 1067,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "action_changed"
+          }
+        ]
+      },
+      "H": 0.7162,
+      "emotionDelta": 0
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 1,
+    "seed": "paired-alpha",
+    "profileId": "safety_conservative",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

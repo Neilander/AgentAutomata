@@ -1,0 +1,234 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 19,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-153d4cc85a83206d",
+    "mode": "continue",
+    "turn": 38,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "safety_conservative",
+    "label": "Safety conservative",
+    "summary": "Values frontline stability and healing, and avoids uncertain fights after failure.",
+    "decisionBias": {
+      "riskTolerance": 0.2,
+      "exploration": 0.3,
+      "changeAversion": 0.4,
+      "evidenceThreshold": 0.48,
+      "preferences": {
+        "damage": 0.35,
+        "survival": 1,
+        "novelty": 0.2,
+        "rarity": 0.3,
+        "simplicity": 0.65
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "protecting_the_frontline_with_healing",
+          "label": "protecting the frontline with healing"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "creates_enough_time_to_win",
+          "label": "creates enough time to win"
+        },
+        "confidence": 0.8,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:safety_conservative:1"
+      },
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "uncertain_encounter",
+          "label": "uncertain encounter"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "retrying_without_a_clear_improvement",
+          "label": "retrying without a clear improvement"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "is_likely_to_fail_again",
+          "label": "is likely to fail again"
+        },
+        "confidence": 0.68,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:safety_conservative:2"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "equip:militia_herb:r1_main_5_2_1",
+  "outcome": "equipped",
+  "emotionBeforeAction": 44.079,
+  "emotionAfterEvents": 44.0776,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:66",
+      "key": "player|region_1|unknown_environment|equipment|equip_item|equip:militia_herb:r1_main_5_2_1",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_1",
+        "phase": "equipment",
+        "hero": {
+          "id": "militia_herb",
+          "name": "草药民兵",
+          "role": "priest",
+          "kind": "militia"
+        }
+      },
+      "behavior": {
+        "kind": "equip_item",
+        "key": "equip:militia_herb:r1_main_5_2_1",
+        "itemId": "r1_main_5_2_1",
+        "target": "militia_herb"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "item_equipped": 1
+        },
+        "observations": [
+          {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r1_main_5_2_1",
+              "name": "稀有护符 Lv.10",
+              "slot": "charm",
+              "slotLabel": "护符",
+              "rarity": "rare",
+              "rarityLabel": "稀有",
+              "level": 10,
+              "baseStats": {
+                "magicPower": 5
+              },
+              "affixes": [
+                {
+                  "id": "resilience",
+                  "stat": "resilience",
+                  "label": "韧性",
+                  "category": "major",
+                  "level": 1,
+                  "value": 1
+                },
+                {
+                  "id": "stealthDuration",
+                  "stat": "stealthDuration",
+                  "label": "隐身持续",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 3
+                }
+              ]
+            },
+            "replacedItem": null,
+            "equippedPowerBefore": 439,
+            "equippedPowerAfter": 496,
+            "powerDelta": 57
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "equip_action:19:r1_main_5_2_1:start",
+        "equip_action:19:r1_main_5_2_1:result",
+        "equip_action:19:r1_main_5_2_1:summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 188,
+  "visibleEvents": [
+    {
+      "id": "equip_action:19:r1_main_5_2_1:result",
+      "time": 0.05,
+      "type": "equipment_change",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "item_equipped",
+        "occurred": true,
+        "amount": 57,
+        "before": 439,
+        "after": 496,
+        "itemName": "稀有护符 Lv.10",
+        "heroId": "militia_herb"
+      },
+      "H": 0.1869,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:19:r1_main_5_2_1:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 496,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "item_equipped",
+            "amount": 57
+          }
+        ]
+      },
+      "H": 0.5663,
+      "emotionDelta": -0.0014
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 1,
+    "seed": "paired-alpha",
+    "profileId": "safety_conservative",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

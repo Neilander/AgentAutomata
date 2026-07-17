@@ -2,7 +2,43 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-17
+
+- `2026-07-17_1745_threshold-perception-model.md`：删除单场25/50/75硬配额，改为显眼度、幅度、目标、竞争和重复积累共同决定的信号级接收模型；多轨迹长期校准和越界审计通过。
+
+- `2026-07-17_1612_battle-information-parser.md`：新增不接 Agent 的纯程序战斗信息解析器；三档玩家接收 25%/50%/75% 合法信号，固定样本与 355 事件真实战斗的完整性和越界审计通过。
+
+- `2026-07-17_1505_clear-failure-zero-confirmation.md`：增加明显失败的确认感归零边界；略低同档仍衰减保留，向下跨档直接 C=0。
+
+- `2026-07-17_1449_self-serving-geometric-confirmation.md`：基础常数保持 0.1，为确认感加入成功平方根放大、失败 1.5 次幂衰减和 2 倍上限，并通过六点曲线与实际结算测试。
+
+- `2026-07-17_1337_confirmation-boundaries-and-inertia-confidence.md`：补测实际略低、略高和跨感知档位时的确认感，并把新关惯性明确修正为“预期强度不变，只降低有效信心”。
+
+- `2026-07-17_1302_confirmation-equipment-inertia-repairs.md`：完成确认感 C、换装有效强度重算和新关弱惯性，并验证明确难度信号能够覆盖惯性；聚焦测试与因果闭环回归全部通过。
+
+- `2026-07-17_1246_expectation-signal-repair-task-group.md`: adds a critical task-board repair suite for probability-aware loot expectation, equipment-adjusted effective strength, confirmation C, weak new-encounter inertia, and player-visible semantic signal filtering.
+
+- `2026-07-17_1130_enriched-two-chapter-player-ensemble.md`: completes the richer two-chapter program variant, five-profile alpha ensemble plus open beta, exact 1% Mythic validation, full mid/terminal formation enumeration, aggregate diagnosis, and independent `reject` verdict for full cognition/progression validation.
+
+- `2026-07-17_1125_open-novice-paired-beta-run.md`: completes the persistent open-novice paired-beta two-chapter run in 57 cycles with validation PASS, while flagging that a simulator-generated mythic drop invalidated the intended non-jackpot comparison assumption.
+
+- `2026-07-17_1000_enriched-two-chapter-independent-review.md`: independently rejects the three paired-alpha runs as full cognition/progression validation despite profile-plausible behaviour, citing raw diagnosis leakage, incomplete cognition coverage, same-batch expectation contamination, and equipment bypass of Chapter 2 mechanics.
+
 ## 2026-07-16
+
+- `2026-07-16_2315_roster-prediction-a-settlement.md`: makes A code-owned for selected roster predictions, freezes the chosen candidate at swap time, settles once through the persistent perception profile on the next comparable combat, passes 10/10 prior real-Agent settlements, and receives independent `ACCEPT`.
+
+- `2026-07-16_2044_real-agent-roster-and-a-audit.md`: runs six persistent real player Agents through a two-swap controlled episode, accepts the differentiated roster behavior for five adaptive profiles, and rejects the current A wiring because all 10 selected-swap settlements use generic knowledge instead of the chosen roster prediction.
+
+- `2026-07-16_1730_roster-expectation-edge-cases.md`: validates a continuous fail-swap-fail-swap-success story, mixed and stale history, trait decline, equal-score build changes, candidate-specific power, and same-report three-profile replay; independent verdict `ACCEPT` for calculation and wiring, not live Agent behavior.
+
+- `2026-07-16_1646_roster-change-expectation.md`: scopes battle failure to the exact roster and encounter, re-estimates every legal replacement from current strength/trait cognition, passes formal/compact/chapter regressions, and receives independent `ACCEPT` with calibration guardrails.
+
+- `2026-07-16_1550_character-strength-matrix-relative-ruler.md`: adds a simultaneous global character-strength solve, top-30-percent relative ruler, formal player-session integration, zero-difference order regression, and independent `ACCEPT_WITH_GUARDRAILS`.
+
+- `2026-07-16_1332_entity-impression-environment-revalidation.md`: stores decomposable ally environment in strength cognition, revalidates attempted traits every battle, passes the 1,440-sequence matrix, and receives independent `ACCEPT` with guardrails.
+
+- `2026-07-16_1107_entity-impression-systematic-credibility.md`: runs 1,440 five-battle sequences across three perception profiles, fixes subject-local primacy, passes order/identity checks, and returns `REVISE` because team-relative evidence and trait correction are not prediction-ready.
 
 - `2026-07-16_0213_entity-impression-knowledge-experiment.md`: builds and validates biased-but-correctable subject strength/trait knowledge, including five blind Agent-analyzed battles, 118 passing comparisons, and two final independent reviewer passes.
 

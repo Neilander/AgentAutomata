@@ -1,0 +1,47 @@
+{
+  "action": "equip:hero_warlock:r2_knight_rescue_1_0",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "在推进另一条救援路线前修正术士试验的明确弱点。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "术士无装备时伤害占比18.76%，略低于20%门槛。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "新传说戒指对术士显示+176.8，且有两条DOT增幅。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "术士戒指槽为空且当前允许装备。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "先补上直接对应持续伤害的装备，比立刻判定角色无效更有信息。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "装备戒指后，术士下一战伤害占比应达到20%。"
+    }
+  ],
+  "alternatives": [
+    "swap:1:hero_mage",
+    "challenge:r2_priest_rescue"
+  ],
+  "hypothesis": {
+    "id": "hypothesis:r2_warlock_dot_ring",
+    "problem": "术士首次略低于20%是否主要因为没有装备",
+    "cause": "传说戒指提供魔法强度和两条DOT增幅",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_warlock",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageShare",
+      "operator": ">=",
+      "value": 0.2
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "action": "swap:2:hero_knight",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "A remaining rescue and a newly visible shield trial both offer chapter progress."
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "The warlock's damage-share hypothesis was refuted at 15.79%, so its place in the team is not strongly supported."
+    },
+    {
+      "kind": "evidence",
+      "evidence": "The newly rescued knight is described as generating shields and stabilizing the front line, but has no combat evidence."
+    },
+    {
+      "kind": "affordance",
+      "evidence": "The knight can replace the unequipped warlock in slot 2 without lowering displayed equipped power further."
+    },
+    {
+      "kind": "comparison",
+      "evidence": "The shield trial explicitly reacts to large shields, making the knight a more informative new option than repeating the refuted warlock setup."
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "If the knight performs its stated guarding role, it should provide a positive amount of shielding in the next combat."
+    }
+  ],
+  "alternatives": [
+    "challenge:r2_priest_rescue",
+    "challenge:r2_shield_trial",
+    "swap:2:hero_berserker"
+  ],
+  "hypothesis": {
+    "id": "test_new_knight_alpha_8",
+    "problem": "The warlock test was refuted, while the new knight's defensive value is unknown.",
+    "cause": "The knight may stabilize the team by repeatedly generating shields and absorbing pressure.",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_knight",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "shield",
+      "operator": ">",
+      "value": 0
+    }
+  }
+}

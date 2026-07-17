@@ -1,0 +1,248 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 14,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-a7246b66636ea2e4",
+    "mode": "continue",
+    "turn": 28,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "equip:hero_warrior:r1_prison_1_0",
+  "outcome": "equipped",
+  "emotionBeforeAction": 52.5354,
+  "emotionAfterEvents": 52.534,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:62",
+      "key": "player|region_1|unknown_environment|equipment|equip_item|equip:hero_warrior:r1_prison_1_0",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_1",
+        "phase": "equipment",
+        "hero": {
+          "id": "hero_warrior",
+          "name": "灰鸦战士",
+          "role": "warrior",
+          "kind": "hero"
+        }
+      },
+      "behavior": {
+        "kind": "equip_item",
+        "key": "equip:hero_warrior:r1_prison_1_0",
+        "itemId": "r1_prison_1_0",
+        "target": "hero_warrior"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "item_equipped": 1
+        },
+        "observations": [
+          {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r1_prison_1_0",
+              "name": "传说头盔 Lv.14",
+              "slot": "helm",
+              "slotLabel": "头盔",
+              "rarity": "legendary",
+              "rarityLabel": "传说",
+              "level": 14,
+              "baseStats": {
+                "maxHp": 42,
+                "armor": 1
+              },
+              "affixes": [
+                {
+                  "id": "effectPower",
+                  "stat": "effectPower",
+                  "label": "效果强度",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 4
+                },
+                {
+                  "id": "auraPower",
+                  "stat": "auraPower",
+                  "label": "光环强度",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 4
+                },
+                {
+                  "id": "effectPower",
+                  "stat": "effectPower",
+                  "label": "效果强度",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 5
+                },
+                {
+                  "id": "cleanseEfficiency",
+                  "stat": "cleanseEfficiency",
+                  "label": "净化效率",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 4
+                },
+                {
+                  "id": "poisonAmp",
+                  "stat": "poisonAmp",
+                  "label": "剧毒增幅",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 5
+                },
+                {
+                  "id": "arcana",
+                  "stat": "arcana",
+                  "label": "奥术",
+                  "category": "major",
+                  "level": 1,
+                  "value": 1
+                },
+                {
+                  "id": "controlPower",
+                  "stat": "controlPower",
+                  "label": "控制强度",
+                  "category": "specialist",
+                  "level": 1,
+                  "value": 4
+                }
+              ]
+            },
+            "replacedItem": null,
+            "equippedPowerBefore": 158,
+            "equippedPowerAfter": 263,
+            "powerDelta": 105
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "equip_action:14:r1_prison_1_0:start",
+        "equip_action:14:r1_prison_1_0:result",
+        "equip_action:14:r1_prison_1_0:summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 179,
+  "visibleEvents": [
+    {
+      "id": "equip_action:14:r1_prison_1_0:result",
+      "time": 0.05,
+      "type": "equipment_change",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "item_equipped",
+        "occurred": true,
+        "amount": 105,
+        "before": 158,
+        "after": 263,
+        "itemName": "传说头盔 Lv.14",
+        "heroId": "hero_warrior"
+      },
+      "H": 0.1671,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:14:r1_prison_1_0:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 263,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "item_equipped",
+            "amount": 105
+          }
+        ]
+      },
+      "H": 0.5063,
+      "emotionDelta": -0.0014
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 1,
+    "seed": "paired-alpha",
+    "profileId": "open_novice",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

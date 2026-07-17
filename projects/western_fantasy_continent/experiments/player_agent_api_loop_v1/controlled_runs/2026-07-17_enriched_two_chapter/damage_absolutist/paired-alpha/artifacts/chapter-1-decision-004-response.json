@@ -1,0 +1,47 @@
+{
+  "action": "challenge:r1_main_2",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "The visible progression goal is advanced by challenging the newly available second main encounter."
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "The current team cleared the first encounter with all four allies alive, and the full warrior supplied 57.64% of damage at rank one."
+    },
+    {
+      "kind": "evidence",
+      "evidence": "The full warrior now also holds the largest visible equipment upgrade."
+    },
+    {
+      "kind": "affordance",
+      "evidence": "The second main encounter is available to challenge with the current upgraded roster."
+    },
+    {
+      "kind": "comparison",
+      "evidence": "Progressing tests the successful damage-led team against new enemies, while swapping to the untested low-output drummer would discard known damage evidence."
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "If the full warrior remains the team's decisive damage source, it should again finish the next combat at damage rank one."
+    }
+  ],
+  "alternatives": [
+    "challenge:r1_main_1",
+    "swap:1:militia_drum"
+  ],
+  "hypothesis": {
+    "id": "alpha-warrior-damage-lead-main2",
+    "problem": "The team must keep enough damage while advancing into a new encounter.",
+    "cause": "The full warrior's observed rank-one direct damage is the team's main clearing engine.",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_warrior",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageRank",
+      "operator": "==",
+      "value": 1
+    }
+  }
+}

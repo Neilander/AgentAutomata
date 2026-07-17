@@ -1,0 +1,47 @@
+{
+  "action": "swap:1:hero_mage",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "提高下一场新主线的可见作战效率。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "拒马民兵连续两场伤害排名第4，当前印象为非常弱。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "新解锁法师的可见说明是完整输出英雄，负责清怪与爆发，但尚无实战证据。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "可以用法师替换第2个位置的拒马民兵。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "保留高贡献战士、短矛和已有治疗，只替换当前最低贡献者，测试成本最低。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "若法师确实提供完整输出，则下一场应进入队伍伤害前二。"
+    }
+  ],
+  "alternatives": [
+    "equip:hero_warrior:r1_main_2_1_1",
+    "challenge:r1_main_3"
+  ],
+  "hypothesis": {
+    "id": "mage_replaces_barricade_test",
+    "problem": "拒马民兵连续表现为最低贡献。",
+    "cause": "拒马民兵缺少伤害且新法师可能提供更高输出。",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_mage",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageRank",
+      "operator": "<=",
+      "value": 2
+    }
+  }
+}

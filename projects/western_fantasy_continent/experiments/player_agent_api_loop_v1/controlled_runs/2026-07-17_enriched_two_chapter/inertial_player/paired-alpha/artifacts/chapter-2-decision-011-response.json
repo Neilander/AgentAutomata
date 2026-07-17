@@ -1,0 +1,47 @@
+{
+  "action": "swap:1:hero_knight",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "突破第三次失败的汇流。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "狂战士本场只有2.05%伤害，完整牧师虽未达到200治疗但提供了约138护盾。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "白垒骑士是完整前排英雄，尚无实战认知。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "只把前排2的狂战士换成白垒骑士。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "保留战士、神话游侠与完整牧师，直接替换本场失效槽位。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "骑士下一战应提供至少200护盾，改善前排崩溃。"
+    }
+  ],
+  "alternatives": [
+    "swap:0:hero_knight",
+    "equip:hero_priest:r2_priest_rescue_1_0"
+  ],
+  "hypothesis": {
+    "id": "knight_replaces_collapsed_berserker",
+    "problem": "汇流三次全灭且狂战士本场几乎无贡献",
+    "cause": "前排保护不足",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_knight",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "shield",
+      "operator": ">=",
+      "value": 200
+    }
+  }
+}

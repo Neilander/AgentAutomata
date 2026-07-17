@@ -1,0 +1,47 @@
+{
+  "action": "swap:2:hero_berserker",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "继续以低成本替换明显偏弱成员，准备主线4。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "短矛民兵在最近战斗伤害第3，当前角色印象为非常弱。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "新狂战士可见说明为高风险近战爆发，但尚无实战数据。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "可以只替换短矛民兵而保留战士、法师和治疗。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "比替换已验证的法师或主力战士风险更低，且能直接比较新角色贡献。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "若狂战士的爆发有效，下一场应达到伤害前二。"
+    }
+  ],
+  "alternatives": [
+    "equip:hero_warrior:r1_main_3_1_0",
+    "challenge:r1_main_4"
+  ],
+  "hypothesis": {
+    "id": "berserker_replaces_spear_test",
+    "problem": "短矛民兵在当前完整英雄队伍中贡献偏低。",
+    "cause": "新狂战士的爆发可能比短矛民兵更高。",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_berserker",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "damageRank",
+      "operator": "<=",
+      "value": 2
+    }
+  }
+}

@@ -1,0 +1,222 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 13,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-4b256d6ea45b8432",
+    "mode": "continue",
+    "turn": 100,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "equip:hero_priest:r2_flag_trial_1_1",
+  "outcome": "equipped",
+  "emotionBeforeAction": 84.5865,
+  "emotionAfterEvents": 84.5851,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:167",
+      "key": "player|region_2|unknown_environment|equipment|equip_item|equip:hero_priest:r2_flag_trial_1_1",
+      "subject": {
+        "id": "player",
+        "role": "player"
+      },
+      "environment": {
+        "region": "region_2",
+        "phase": "equipment",
+        "hero": {
+          "id": "hero_priest",
+          "name": "晨祷牧师",
+          "role": "priest",
+          "kind": "hero"
+        }
+      },
+      "behavior": {
+        "kind": "equip_item",
+        "key": "equip:hero_priest:r2_flag_trial_1_1",
+        "itemId": "r2_flag_trial_1_1",
+        "target": "hero_priest"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "item_equipped": 1
+        },
+        "observations": [
+          {
+            "outcome": "item_equipped",
+            "item": {
+              "id": "r2_flag_trial_1_1",
+              "name": "普通靴子 Lv.27",
+              "slot": "boots",
+              "slotLabel": "靴子",
+              "rarity": "common",
+              "rarityLabel": "普通",
+              "level": 27,
+              "baseStats": {
+                "maxHp": 81,
+                "armor": 2
+              },
+              "affixes": [
+                {
+                  "id": "stealthDuration",
+                  "stat": "stealthDuration",
+                  "label": "隐身持续",
+                  "category": "archetype",
+                  "level": 1,
+                  "value": 7
+                }
+              ]
+            },
+            "replacedItem": {
+              "id": "r1_boss_1_2",
+              "name": "普通靴子 Lv.14",
+              "slot": "boots",
+              "slotLabel": "靴子",
+              "rarity": "common",
+              "rarityLabel": "普通",
+              "level": 14,
+              "baseStats": {
+                "maxHp": 41,
+                "armor": 1
+              },
+              "affixes": [
+                {
+                  "id": "effectResist",
+                  "stat": "effectResist",
+                  "label": "效果抗性",
+                  "category": "basic",
+                  "level": 1,
+                  "value": 4
+                }
+              ]
+            },
+            "equippedPowerBefore": 1098,
+            "equippedPowerAfter": 1120,
+            "powerDelta": 22
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "equip_action:13:r2_flag_trial_1_1:start",
+        "equip_action:13:r2_flag_trial_1_1:result",
+        "equip_action:13:r2_flag_trial_1_1:summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 503,
+  "visibleEvents": [
+    {
+      "id": "equip_action:13:r2_flag_trial_1_1:result",
+      "time": 0.05,
+      "type": "equipment_change",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "item_equipped",
+        "occurred": true,
+        "amount": 22,
+        "before": 1098,
+        "after": 1120,
+        "itemName": "普通靴子 Lv.27",
+        "heroId": "hero_priest"
+      },
+      "H": 0.1869,
+      "emotionDelta": 0
+    },
+    {
+      "id": "equip_action:13:r2_flag_trial_1_1:summary",
+      "time": 0.08,
+      "type": "action_summary",
+      "subject": "player",
+      "behavior": "equip_item",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 1120,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "item_equipped",
+            "amount": 22
+          }
+        ]
+      },
+      "H": 0.5663,
+      "emotionDelta": -0.0014
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 2,
+    "seed": "paired-beta",
+    "profileId": "open_novice",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

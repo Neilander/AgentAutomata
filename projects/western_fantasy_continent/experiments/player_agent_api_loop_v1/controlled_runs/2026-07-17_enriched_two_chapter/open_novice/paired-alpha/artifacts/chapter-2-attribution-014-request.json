@@ -1,0 +1,1378 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 14,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-a7246b66636ea2e4",
+    "mode": "continue",
+    "turn": 94,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "challenge:r2_confluence",
+  "outcome": "win",
+  "emotionBeforeAction": 96.1229,
+  "emotionAfterEvents": 94.6948,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:176",
+      "key": "player_squad|region_2|r2_confluence|encounter|challenge_level|challenge:r2_confluence",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_priest",
+            "name": "晨祷牧师",
+            "role": "priest",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_confluence",
+        "phase": "encounter",
+        "team": [
+          "hero_warrior",
+          "hero_mage",
+          "hero_priest",
+          "hero_ranger"
+        ]
+      },
+      "behavior": {
+        "kind": "challenge_level",
+        "key": "challenge:r2_confluence",
+        "target": "r2_confluence"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "win": 2
+        },
+        "observations": [
+          {
+            "outcome": "win",
+            "duration": 17.2,
+            "survivors": {
+              "player": 4,
+              "enemy": 0
+            },
+            "resolution": "elimination",
+            "firstClear": true
+          },
+          {
+            "outcome": "win",
+            "duration": 13.84,
+            "survivors": {
+              "player": 4,
+              "enemy": 0
+            },
+            "resolution": "elimination",
+            "firstClear": false
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r2_confluence:11:result",
+        "map_action:r2_confluence:11:summary",
+        "map_action:r2_confluence:14:result",
+        "map_action:r2_confluence:14:summary"
+      ],
+      "attributions": [
+        {
+          "id": "ai-attribution:11",
+          "knowledgeId": "knowledge:176",
+          "cause": "The upgraded warrior and confirmed priest lineup cleared the combined confluence in 17.2 seconds with all four allies alive; the warrior led damage while the priest supplied both healing and shielding.",
+          "confidence": 0.99,
+          "evidenceEventIds": [
+            "map_action:r2_confluence:11:result",
+            "map_action:r2_confluence:11:summary"
+          ],
+          "alternativeCauses": [
+            "The ranger and mage also each supplied over 31% of team damage, so the clean result reflects a balanced core."
+          ],
+          "nextTest": "Inspect the newly unlocked alchemist and the fixed epic charm before choosing whether to experiment or keep the clean lineup for the boss.",
+          "learnedAfterFeedback": true
+        }
+      ]
+    },
+    {
+      "id": "knowledge:178",
+      "key": "player_squad|region_2|r2_confluence|loot_drop|clear_level|challenge:r2_confluence",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_priest",
+            "name": "晨祷牧师",
+            "role": "priest",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_confluence",
+        "phase": "loot_drop"
+      },
+      "behavior": {
+        "kind": "clear_level",
+        "key": "challenge:r2_confluence",
+        "target": "r2_confluence"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "loot_obtained": 2
+        },
+        "observations": [
+          {
+            "outcome": "loot_obtained",
+            "drops": [
+              {
+                "id": "r2_first_epic",
+                "name": "史诗火印护符 Lv.24",
+                "slot": "charm",
+                "rarity": "epic",
+                "level": 24
+              }
+            ],
+            "inventoryCountBefore": 26,
+            "inventoryCountAfter": 27,
+            "equippedPowerBefore": 1099,
+            "equippedPowerAfter": 1099,
+            "powerChanged": false
+          },
+          {
+            "outcome": "loot_obtained",
+            "drops": [
+              {
+                "id": "r2_confluence_2_0",
+                "name": "普通护手 Lv.27",
+                "slot": "gloves",
+                "rarity": "common",
+                "level": 27
+              },
+              {
+                "id": "r2_confluence_2_1",
+                "name": "普通腿甲 Lv.21",
+                "slot": "legs",
+                "rarity": "common",
+                "level": 21
+              }
+            ],
+            "inventoryCountBefore": 26,
+            "inventoryCountAfter": 28,
+            "equippedPowerBefore": 1250,
+            "equippedPowerAfter": 1250,
+            "powerChanged": false
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r2_confluence:11:result",
+        "map_action:r2_confluence:11:loot:1",
+        "map_action:r2_confluence:14:result",
+        "map_action:r2_confluence:14:loot:1",
+        "map_action:r2_confluence:14:loot:2"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:180",
+      "key": "hero_warrior|region_2|region_2_confluence|combat_pattern|combat_participation|fight:hero_warrior",
+      "subject": {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_confluence",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_warrior",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "combat_contribution": 2
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 608.129,
+            "damageShare": 0.3429,
+            "damageRank": 1,
+            "teamDamage": 1773.454,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 5
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 467.133,
+            "damageShare": 0.2736,
+            "damageRank": 2,
+            "teamDamage": 1707.287,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:94",
+        "r2_confluence:attempt:1:combat:95",
+        "r2_confluence:attempt:1:combat:96",
+        "r2_confluence:attempt:1:combat:103",
+        "r2_confluence:attempt:1:combat:104",
+        "r2_confluence:attempt:1:combat:105",
+        "r2_confluence:attempt:1:combat:108",
+        "r2_confluence:attempt:1:combat:221",
+        "r2_confluence:attempt:1:combat:222",
+        "r2_confluence:attempt:1:combat:223",
+        "r2_confluence:attempt:1:combat:234",
+        "r2_confluence:attempt:1:combat:265",
+        "r2_confluence:attempt:1:combat:267",
+        "r2_confluence:attempt:1:combat:268",
+        "r2_confluence:attempt:1:combat:269",
+        "r2_confluence:attempt:1:combat:301",
+        "r2_confluence:attempt:1:combat:331",
+        "r2_confluence:attempt:1:combat:408",
+        "r2_confluence:attempt:1:combat:409",
+        "r2_confluence:attempt:1:combat:410",
+        "r2_confluence:attempt:1:combat:411",
+        "r2_confluence:attempt:2:combat:106",
+        "r2_confluence:attempt:2:combat:107",
+        "r2_confluence:attempt:2:combat:108",
+        "r2_confluence:attempt:2:combat:114",
+        "r2_confluence:attempt:2:combat:115",
+        "r2_confluence:attempt:2:combat:116",
+        "r2_confluence:attempt:2:combat:119",
+        "r2_confluence:attempt:2:combat:238",
+        "r2_confluence:attempt:2:combat:247",
+        "r2_confluence:attempt:2:combat:248",
+        "r2_confluence:attempt:2:combat:249",
+        "r2_confluence:attempt:2:combat:264",
+        "r2_confluence:attempt:2:combat:298",
+        "r2_confluence:attempt:2:combat:304",
+        "r2_confluence:attempt:2:combat:305",
+        "r2_confluence:attempt:2:combat:306"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:181",
+      "key": "hero_ranger|region_2|region_2_confluence|combat_pattern|combat_participation|fight:hero_ranger",
+      "subject": {
+        "id": "hero_ranger",
+        "name": "林地游侠",
+        "role": "ranger",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_confluence",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_ranger",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "combat_contribution": 2
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 565.453,
+            "damageShare": 0.3188,
+            "damageRank": 2,
+            "teamDamage": 1773.454,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 5
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 436.204,
+            "damageShare": 0.2555,
+            "damageRank": 3,
+            "teamDamage": 1707.287,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:56",
+        "r2_confluence:attempt:1:combat:57",
+        "r2_confluence:attempt:1:combat:58",
+        "r2_confluence:attempt:1:combat:67",
+        "r2_confluence:attempt:1:combat:68",
+        "r2_confluence:attempt:1:combat:69",
+        "r2_confluence:attempt:1:combat:70",
+        "r2_confluence:attempt:1:combat:112",
+        "r2_confluence:attempt:1:combat:144",
+        "r2_confluence:attempt:1:combat:168",
+        "r2_confluence:attempt:1:combat:169",
+        "r2_confluence:attempt:1:combat:185",
+        "r2_confluence:attempt:1:combat:186",
+        "r2_confluence:attempt:1:combat:187",
+        "r2_confluence:attempt:1:combat:210",
+        "r2_confluence:attempt:1:combat:248",
+        "r2_confluence:attempt:1:combat:262",
+        "r2_confluence:attempt:1:combat:263",
+        "r2_confluence:attempt:1:combat:264",
+        "r2_confluence:attempt:1:combat:290",
+        "r2_confluence:attempt:1:combat:317",
+        "r2_confluence:attempt:1:combat:318",
+        "r2_confluence:attempt:1:combat:319",
+        "r2_confluence:attempt:1:combat:328",
+        "r2_confluence:attempt:1:combat:396",
+        "r2_confluence:attempt:2:combat:55",
+        "r2_confluence:attempt:2:combat:56",
+        "r2_confluence:attempt:2:combat:57",
+        "r2_confluence:attempt:2:combat:67",
+        "r2_confluence:attempt:2:combat:68",
+        "r2_confluence:attempt:2:combat:69",
+        "r2_confluence:attempt:2:combat:80",
+        "r2_confluence:attempt:2:combat:128",
+        "r2_confluence:attempt:2:combat:162",
+        "r2_confluence:attempt:2:combat:193",
+        "r2_confluence:attempt:2:combat:211",
+        "r2_confluence:attempt:2:combat:212",
+        "r2_confluence:attempt:2:combat:213",
+        "r2_confluence:attempt:2:combat:236",
+        "r2_confluence:attempt:2:combat:275",
+        "r2_confluence:attempt:2:combat:370",
+        "r2_confluence:attempt:2:combat:371",
+        "r2_confluence:attempt:2:combat:372",
+        "r2_confluence:attempt:2:combat:373"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:182",
+      "key": "hero_mage|region_2|region_2_confluence|combat_pattern|combat_participation|fight:hero_mage",
+      "subject": {
+        "id": "hero_mage",
+        "name": "烬火法师",
+        "role": "mage",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_confluence",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_mage",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "combat_contribution": 2
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 553.968,
+            "damageShare": 0.3124,
+            "damageRank": 3,
+            "teamDamage": 1773.454,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 6
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 537.902,
+            "damageShare": 0.3151,
+            "damageRank": 1,
+            "teamDamage": 1707.287,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 2,
+            "skillCasts": 6
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:33",
+        "r2_confluence:attempt:1:combat:34",
+        "r2_confluence:attempt:1:combat:35",
+        "r2_confluence:attempt:1:combat:36",
+        "r2_confluence:attempt:1:combat:37",
+        "r2_confluence:attempt:1:combat:38",
+        "r2_confluence:attempt:1:combat:39",
+        "r2_confluence:attempt:1:combat:40",
+        "r2_confluence:attempt:1:combat:71",
+        "r2_confluence:attempt:1:combat:85",
+        "r2_confluence:attempt:1:combat:97",
+        "r2_confluence:attempt:1:combat:125",
+        "r2_confluence:attempt:1:combat:145",
+        "r2_confluence:attempt:1:combat:155",
+        "r2_confluence:attempt:1:combat:164",
+        "r2_confluence:attempt:1:combat:170",
+        "r2_confluence:attempt:1:combat:196",
+        "r2_confluence:attempt:1:combat:197",
+        "r2_confluence:attempt:1:combat:198",
+        "r2_confluence:attempt:1:combat:199",
+        "r2_confluence:attempt:1:combat:212",
+        "r2_confluence:attempt:1:combat:233",
+        "r2_confluence:attempt:1:combat:266",
+        "r2_confluence:attempt:1:combat:270",
+        "r2_confluence:attempt:1:combat:271",
+        "r2_confluence:attempt:1:combat:272",
+        "r2_confluence:attempt:1:combat:273",
+        "r2_confluence:attempt:1:combat:284",
+        "r2_confluence:attempt:1:combat:285",
+        "r2_confluence:attempt:1:combat:286",
+        "r2_confluence:attempt:1:combat:287",
+        "r2_confluence:attempt:1:combat:288",
+        "r2_confluence:attempt:1:combat:289",
+        "r2_confluence:attempt:1:combat:313",
+        "r2_confluence:attempt:1:combat:340",
+        "r2_confluence:attempt:1:combat:341",
+        "r2_confluence:attempt:1:combat:357",
+        "r2_confluence:attempt:1:combat:374",
+        "r2_confluence:attempt:1:combat:384",
+        "r2_confluence:attempt:1:combat:385",
+        "r2_confluence:attempt:1:combat:386",
+        "r2_confluence:attempt:1:combat:395",
+        "r2_confluence:attempt:1:combat:397",
+        "r2_confluence:attempt:2:combat:33",
+        "r2_confluence:attempt:2:combat:34",
+        "r2_confluence:attempt:2:combat:35",
+        "r2_confluence:attempt:2:combat:36",
+        "r2_confluence:attempt:2:combat:37",
+        "r2_confluence:attempt:2:combat:38",
+        "r2_confluence:attempt:2:combat:39",
+        "r2_confluence:attempt:2:combat:40",
+        "r2_confluence:attempt:2:combat:79",
+        "r2_confluence:attempt:2:combat:92",
+        "r2_confluence:attempt:2:combat:105",
+        "r2_confluence:attempt:2:combat:141",
+        "r2_confluence:attempt:2:combat:166",
+        "r2_confluence:attempt:2:combat:178",
+        "r2_confluence:attempt:2:combat:179",
+        "r2_confluence:attempt:2:combat:180",
+        "r2_confluence:attempt:2:combat:208",
+        "r2_confluence:attempt:2:combat:209",
+        "r2_confluence:attempt:2:combat:210",
+        "r2_confluence:attempt:2:combat:223",
+        "r2_confluence:attempt:2:combat:235",
+        "r2_confluence:attempt:2:combat:262",
+        "r2_confluence:attempt:2:combat:288",
+        "r2_confluence:attempt:2:combat:289",
+        "r2_confluence:attempt:2:combat:290",
+        "r2_confluence:attempt:2:combat:291",
+        "r2_confluence:attempt:2:combat:292",
+        "r2_confluence:attempt:2:combat:293",
+        "r2_confluence:attempt:2:combat:294",
+        "r2_confluence:attempt:2:combat:299",
+        "r2_confluence:attempt:2:combat:300",
+        "r2_confluence:attempt:2:combat:301",
+        "r2_confluence:attempt:2:combat:302",
+        "r2_confluence:attempt:2:combat:303",
+        "r2_confluence:attempt:2:combat:310",
+        "r2_confluence:attempt:2:combat:332",
+        "r2_confluence:attempt:2:combat:352",
+        "r2_confluence:attempt:2:combat:366",
+        "r2_confluence:attempt:2:combat:367",
+        "r2_confluence:attempt:2:combat:368",
+        "r2_confluence:attempt:2:combat:369"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:184",
+      "key": "player_squad|region_2|r2_confluence|combat|attack_enemy_squad|team_damage:r2_confluence",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_mage",
+            "name": "烬火法师",
+            "role": "mage",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_priest",
+            "name": "晨祷牧师",
+            "role": "priest",
+            "kind": "hero"
+          },
+          {
+            "id": "hero_ranger",
+            "name": "林地游侠",
+            "role": "ranger",
+            "kind": "hero"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_confluence",
+        "phase": "combat",
+        "team": [
+          "hero_warrior",
+          "hero_mage",
+          "hero_priest",
+          "hero_ranger"
+        ]
+      },
+      "behavior": {
+        "kind": "attack_enemy_squad",
+        "key": "team_damage:r2_confluence"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "damage_profile": 2
+        },
+        "observations": [
+          {
+            "outcome": "damage_profile",
+            "totalDamage": 1773.454
+          },
+          {
+            "outcome": "damage_profile",
+            "totalDamage": 1707.287
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:34",
+        "r2_confluence:attempt:1:combat:35",
+        "r2_confluence:attempt:1:combat:37",
+        "r2_confluence:attempt:1:combat:39",
+        "r2_confluence:attempt:1:combat:58",
+        "r2_confluence:attempt:1:combat:69",
+        "r2_confluence:attempt:1:combat:70",
+        "r2_confluence:attempt:1:combat:71",
+        "r2_confluence:attempt:1:combat:76",
+        "r2_confluence:attempt:1:combat:85",
+        "r2_confluence:attempt:1:combat:96",
+        "r2_confluence:attempt:1:combat:97",
+        "r2_confluence:attempt:1:combat:104",
+        "r2_confluence:attempt:1:combat:105",
+        "r2_confluence:attempt:1:combat:108",
+        "r2_confluence:attempt:1:combat:112",
+        "r2_confluence:attempt:1:combat:125",
+        "r2_confluence:attempt:1:combat:144",
+        "r2_confluence:attempt:1:combat:145",
+        "r2_confluence:attempt:1:combat:155",
+        "r2_confluence:attempt:1:combat:164",
+        "r2_confluence:attempt:1:combat:168",
+        "r2_confluence:attempt:1:combat:170",
+        "r2_confluence:attempt:1:combat:187",
+        "r2_confluence:attempt:1:combat:197",
+        "r2_confluence:attempt:1:combat:199",
+        "r2_confluence:attempt:1:combat:210",
+        "r2_confluence:attempt:1:combat:212",
+        "r2_confluence:attempt:1:combat:223",
+        "r2_confluence:attempt:1:combat:224",
+        "r2_confluence:attempt:1:combat:233",
+        "r2_confluence:attempt:1:combat:234",
+        "r2_confluence:attempt:1:combat:248",
+        "r2_confluence:attempt:1:combat:261",
+        "r2_confluence:attempt:1:combat:264",
+        "r2_confluence:attempt:1:combat:265",
+        "r2_confluence:attempt:1:combat:266",
+        "r2_confluence:attempt:1:combat:268",
+        "r2_confluence:attempt:1:combat:269",
+        "r2_confluence:attempt:1:combat:270",
+        "r2_confluence:attempt:1:combat:272",
+        "r2_confluence:attempt:1:combat:273",
+        "r2_confluence:attempt:1:combat:286",
+        "r2_confluence:attempt:1:combat:288",
+        "r2_confluence:attempt:1:combat:290",
+        "r2_confluence:attempt:1:combat:301",
+        "r2_confluence:attempt:1:combat:302",
+        "r2_confluence:attempt:1:combat:313",
+        "r2_confluence:attempt:1:combat:319",
+        "r2_confluence:attempt:1:combat:328",
+        "r2_confluence:attempt:1:combat:331",
+        "r2_confluence:attempt:1:combat:340",
+        "r2_confluence:attempt:1:combat:341",
+        "r2_confluence:attempt:1:combat:342",
+        "r2_confluence:attempt:1:combat:357",
+        "r2_confluence:attempt:1:combat:374",
+        "r2_confluence:attempt:1:combat:383",
+        "r2_confluence:attempt:1:combat:385",
+        "r2_confluence:attempt:1:combat:395",
+        "r2_confluence:attempt:1:combat:396",
+        "r2_confluence:attempt:1:combat:397",
+        "r2_confluence:attempt:1:combat:410",
+        "r2_confluence:attempt:2:combat:34",
+        "r2_confluence:attempt:2:combat:35",
+        "r2_confluence:attempt:2:combat:37",
+        "r2_confluence:attempt:2:combat:39",
+        "r2_confluence:attempt:2:combat:57",
+        "r2_confluence:attempt:2:combat:69",
+        "r2_confluence:attempt:2:combat:75",
+        "r2_confluence:attempt:2:combat:76",
+        "r2_confluence:attempt:2:combat:77",
+        "r2_confluence:attempt:2:combat:78",
+        "r2_confluence:attempt:2:combat:79",
+        "r2_confluence:attempt:2:combat:80",
+        "r2_confluence:attempt:2:combat:82",
+        "r2_confluence:attempt:2:combat:83",
+        "r2_confluence:attempt:2:combat:92",
+        "r2_confluence:attempt:2:combat:93",
+        "r2_confluence:attempt:2:combat:94",
+        "r2_confluence:attempt:2:combat:95",
+        "r2_confluence:attempt:2:combat:104",
+        "r2_confluence:attempt:2:combat:105",
+        "r2_confluence:attempt:2:combat:108",
+        "r2_confluence:attempt:2:combat:115",
+        "r2_confluence:attempt:2:combat:116",
+        "r2_confluence:attempt:2:combat:119",
+        "r2_confluence:attempt:2:combat:128",
+        "r2_confluence:attempt:2:combat:138",
+        "r2_confluence:attempt:2:combat:139",
+        "r2_confluence:attempt:2:combat:140",
+        "r2_confluence:attempt:2:combat:141",
+        "r2_confluence:attempt:2:combat:162",
+        "r2_confluence:attempt:2:combat:163",
+        "r2_confluence:attempt:2:combat:164",
+        "r2_confluence:attempt:2:combat:165",
+        "r2_confluence:attempt:2:combat:166",
+        "r2_confluence:attempt:2:combat:178",
+        "r2_confluence:attempt:2:combat:180",
+        "r2_confluence:attempt:2:combat:191",
+        "r2_confluence:attempt:2:combat:192",
+        "r2_confluence:attempt:2:combat:193",
+        "r2_confluence:attempt:2:combat:209",
+        "r2_confluence:attempt:2:combat:213",
+        "r2_confluence:attempt:2:combat:222",
+        "r2_confluence:attempt:2:combat:223",
+        "r2_confluence:attempt:2:combat:224",
+        "r2_confluence:attempt:2:combat:235",
+        "r2_confluence:attempt:2:combat:236",
+        "r2_confluence:attempt:2:combat:238",
+        "r2_confluence:attempt:2:combat:249",
+        "r2_confluence:attempt:2:combat:250",
+        "r2_confluence:attempt:2:combat:251",
+        "r2_confluence:attempt:2:combat:252",
+        "r2_confluence:attempt:2:combat:262",
+        "r2_confluence:attempt:2:combat:264",
+        "r2_confluence:attempt:2:combat:275",
+        "r2_confluence:attempt:2:combat:288",
+        "r2_confluence:attempt:2:combat:290",
+        "r2_confluence:attempt:2:combat:292",
+        "r2_confluence:attempt:2:combat:293",
+        "r2_confluence:attempt:2:combat:295",
+        "r2_confluence:attempt:2:combat:298",
+        "r2_confluence:attempt:2:combat:300",
+        "r2_confluence:attempt:2:combat:302",
+        "r2_confluence:attempt:2:combat:305",
+        "r2_confluence:attempt:2:combat:306",
+        "r2_confluence:attempt:2:combat:308",
+        "r2_confluence:attempt:2:combat:310",
+        "r2_confluence:attempt:2:combat:332",
+        "r2_confluence:attempt:2:combat:352",
+        "r2_confluence:attempt:2:combat:356",
+        "r2_confluence:attempt:2:combat:357",
+        "r2_confluence:attempt:2:combat:367",
+        "r2_confluence:attempt:2:combat:369",
+        "r2_confluence:attempt:2:combat:372"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:185",
+      "key": "enemy_squad:r2_confluence|region_2|r2_confluence|combat|attack_player_squad|enemy_attack:r2_confluence",
+      "subject": {
+        "id": "enemy_squad:r2_confluence",
+        "name": "enemy squad"
+      },
+      "environment": {
+        "region": "region_2",
+        "node": "r2_confluence",
+        "phase": "combat"
+      },
+      "behavior": {
+        "kind": "attack_player_squad",
+        "key": "enemy_attack:r2_confluence",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "threat_profile": 2
+        },
+        "observations": [
+          {
+            "outcome": "threat_profile",
+            "enemySurvivorCount": 0
+          },
+          {
+            "outcome": "threat_profile",
+            "enemySurvivorCount": 0
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:51",
+        "r2_confluence:attempt:1:combat:54",
+        "r2_confluence:attempt:1:combat:55",
+        "r2_confluence:attempt:1:combat:109",
+        "r2_confluence:attempt:1:combat:135",
+        "r2_confluence:attempt:1:combat:154",
+        "r2_confluence:attempt:1:combat:166",
+        "r2_confluence:attempt:1:combat:181",
+        "r2_confluence:attempt:1:combat:184",
+        "r2_confluence:attempt:1:combat:208",
+        "r2_confluence:attempt:1:combat:209",
+        "r2_confluence:attempt:1:combat:211",
+        "r2_confluence:attempt:1:combat:236",
+        "r2_confluence:attempt:1:combat:239",
+        "r2_confluence:attempt:1:combat:249",
+        "r2_confluence:attempt:1:combat:260",
+        "r2_confluence:attempt:1:combat:291",
+        "r2_confluence:attempt:1:combat:300",
+        "r2_confluence:attempt:1:combat:316",
+        "r2_confluence:attempt:2:combat:51",
+        "r2_confluence:attempt:2:combat:54",
+        "r2_confluence:attempt:2:combat:58",
+        "r2_confluence:attempt:2:combat:120",
+        "r2_confluence:attempt:2:combat:123",
+        "r2_confluence:attempt:2:combat:129",
+        "r2_confluence:attempt:2:combat:151",
+        "r2_confluence:attempt:2:combat:152",
+        "r2_confluence:attempt:2:combat:153",
+        "r2_confluence:attempt:2:combat:175",
+        "r2_confluence:attempt:2:combat:176",
+        "r2_confluence:attempt:2:combat:177",
+        "r2_confluence:attempt:2:combat:202",
+        "r2_confluence:attempt:2:combat:203",
+        "r2_confluence:attempt:2:combat:204",
+        "r2_confluence:attempt:2:combat:207",
+        "r2_confluence:attempt:2:combat:233",
+        "r2_confluence:attempt:2:combat:234",
+        "r2_confluence:attempt:2:combat:237",
+        "r2_confluence:attempt:2:combat:265",
+        "r2_confluence:attempt:2:combat:266",
+        "r2_confluence:attempt:2:combat:276",
+        "r2_confluence:attempt:2:combat:287",
+        "r2_confluence:attempt:2:combat:323",
+        "r2_confluence:attempt:2:combat:343",
+        "r2_confluence:attempt:2:combat:353"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:186",
+      "key": "concept:enemy_minion_ranged|region_2|region_2_confluence|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_ranged",
+      "subject": {
+        "id": "concept:enemy_minion_ranged",
+        "name": "远程小怪",
+        "conceptId": "enemy_minion_ranged"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_confluence",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_ranged",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 2
+        },
+        "observations": [
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 262.7398,
+            "damageShare": 0.7239,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 5,
+            "observedTargets": [
+              "灰鸦战士"
+            ],
+            "supportTargets": []
+          },
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 326.7869,
+            "damageShare": 0.7678,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 5,
+            "observedTargets": [
+              "灰鸦战士"
+            ],
+            "supportTargets": []
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:1:combat:49",
+        "r2_confluence:attempt:1:combat:50",
+        "r2_confluence:attempt:1:combat:51",
+        "r2_confluence:attempt:1:combat:52",
+        "r2_confluence:attempt:1:combat:53",
+        "r2_confluence:attempt:1:combat:54",
+        "r2_confluence:attempt:1:combat:55",
+        "r2_confluence:attempt:1:combat:182",
+        "r2_confluence:attempt:1:combat:183",
+        "r2_confluence:attempt:1:combat:184",
+        "r2_confluence:attempt:1:combat:208",
+        "r2_confluence:attempt:1:combat:236",
+        "r2_confluence:attempt:1:combat:258",
+        "r2_confluence:attempt:1:combat:259",
+        "r2_confluence:attempt:1:combat:260",
+        "r2_confluence:attempt:1:combat:291",
+        "r2_confluence:attempt:1:combat:314",
+        "r2_confluence:attempt:1:combat:315",
+        "r2_confluence:attempt:1:combat:316",
+        "r2_confluence:attempt:2:combat:49",
+        "r2_confluence:attempt:2:combat:50",
+        "r2_confluence:attempt:2:combat:51",
+        "r2_confluence:attempt:2:combat:52",
+        "r2_confluence:attempt:2:combat:53",
+        "r2_confluence:attempt:2:combat:54",
+        "r2_confluence:attempt:2:combat:58",
+        "r2_confluence:attempt:2:combat:123",
+        "r2_confluence:attempt:2:combat:151",
+        "r2_confluence:attempt:2:combat:175",
+        "r2_confluence:attempt:2:combat:203",
+        "r2_confluence:attempt:2:combat:205",
+        "r2_confluence:attempt:2:combat:206",
+        "r2_confluence:attempt:2:combat:207",
+        "r2_confluence:attempt:2:combat:234",
+        "r2_confluence:attempt:2:combat:266",
+        "r2_confluence:attempt:2:combat:285",
+        "r2_confluence:attempt:2:combat:286",
+        "r2_confluence:attempt:2:combat:287",
+        "r2_confluence:attempt:2:combat:323",
+        "r2_confluence:attempt:2:combat:341",
+        "r2_confluence:attempt:2:combat:342",
+        "r2_confluence:attempt:2:combat:343",
+        "r2_confluence:attempt:2:combat:353"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:189",
+      "key": "hero_alchemist|region_2|region_2_confluence|combat_pattern|combat_participation|fight:hero_alchemist",
+      "subject": {
+        "id": "hero_alchemist",
+        "name": "星釜炼金师",
+        "role": "alchemist",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_2",
+        "encounterBand": "region_2_confluence",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_alchemist",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "combat_contribution": 1
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 266.048,
+            "damageShare": 0.1558,
+            "damageRank": 4,
+            "teamDamage": 1707.287,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r2_confluence:attempt:2:combat:70",
+        "r2_confluence:attempt:2:combat:71",
+        "r2_confluence:attempt:2:combat:72",
+        "r2_confluence:attempt:2:combat:73",
+        "r2_confluence:attempt:2:combat:74",
+        "r2_confluence:attempt:2:combat:75",
+        "r2_confluence:attempt:2:combat:76",
+        "r2_confluence:attempt:2:combat:77",
+        "r2_confluence:attempt:2:combat:78",
+        "r2_confluence:attempt:2:combat:81",
+        "r2_confluence:attempt:2:combat:82",
+        "r2_confluence:attempt:2:combat:83",
+        "r2_confluence:attempt:2:combat:93",
+        "r2_confluence:attempt:2:combat:94",
+        "r2_confluence:attempt:2:combat:95",
+        "r2_confluence:attempt:2:combat:104",
+        "r2_confluence:attempt:2:combat:138",
+        "r2_confluence:attempt:2:combat:139",
+        "r2_confluence:attempt:2:combat:140",
+        "r2_confluence:attempt:2:combat:163",
+        "r2_confluence:attempt:2:combat:164",
+        "r2_confluence:attempt:2:combat:165",
+        "r2_confluence:attempt:2:combat:191",
+        "r2_confluence:attempt:2:combat:192",
+        "r2_confluence:attempt:2:combat:222",
+        "r2_confluence:attempt:2:combat:224",
+        "r2_confluence:attempt:2:combat:250",
+        "r2_confluence:attempt:2:combat:251",
+        "r2_confluence:attempt:2:combat:252",
+        "r2_confluence:attempt:2:combat:295",
+        "r2_confluence:attempt:2:combat:307",
+        "r2_confluence:attempt:2:combat:308",
+        "r2_confluence:attempt:2:combat:309",
+        "r2_confluence:attempt:2:combat:354",
+        "r2_confluence:attempt:2:combat:355",
+        "r2_confluence:attempt:2:combat:356",
+        "r2_confluence:attempt:2:combat:357"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 628,
+  "visibleEvents": [
+    {
+      "id": "r2_confluence:attempt:2:combat:176",
+      "time": 6.32,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 10.26,
+        "target": "烬火法师"
+      },
+      "H": 0.2708,
+      "emotionDelta": -0.0008
+    },
+    {
+      "id": "r2_confluence:attempt:2:combat:179",
+      "time": 6.56,
+      "type": "death",
+      "subject": "烬火法师",
+      "behavior": "攻击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.1456,
+      "emotionDelta": 0.0231
+    },
+    {
+      "id": "r2_confluence:attempt:2:combat:192",
+      "time": 7.04,
+      "type": "damage",
+      "subject": "星釜炼金师",
+      "behavior": "剧毒",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 4.2,
+        "target": "远程小怪"
+      },
+      "H": 0.277,
+      "emotionDelta": -0.0001
+    },
+    {
+      "id": "r2_confluence:attempt:2:combat:202",
+      "time": 7.36,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 10.26,
+        "target": "烬火法师"
+      },
+      "H": 0.2708,
+      "emotionDelta": -0.0007
+    },
+    {
+      "id": "r2_confluence:attempt:2:combat:222",
+      "time": 8.08,
+      "type": "damage",
+      "subject": "星釜炼金师",
+      "behavior": "剧毒",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 4.2,
+        "target": "远程小怪"
+      },
+      "H": 0.277,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r2_confluence:attempt:2:combat:233",
+      "time": 8.56,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 10.26,
+        "target": "烬火法师"
+      },
+      "H": 0.2708,
+      "emotionDelta": -0.0008
+    },
+    {
+      "id": "r2_confluence:attempt:2:combat:250",
+      "time": 9.12,
+      "type": "damage",
+      "subject": "星釜炼金师",
+      "behavior": "剧毒",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 4.2,
+        "target": "远程小怪"
+      },
+      "H": 0.277,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r2_confluence:attempt:2:combat:265",
+      "time": 10.08,
+      "type": "damage",
+      "subject": "普通小怪",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 10.26,
+        "target": "烬火法师"
+      },
+      "H": 0.2708,
+      "emotionDelta": -0.0008
+    },
+    {
+      "id": "r2_confluence:attempt:2:combat:291",
+      "time": 10.72,
+      "type": "death",
+      "subject": "烬火法师",
+      "behavior": "烈焰扩散",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.0995,
+      "emotionDelta": 0.0181
+    },
+    {
+      "id": "r2_confluence:attempt:2:combat:309",
+      "time": 11.04,
+      "type": "death",
+      "subject": "星釜炼金师",
+      "behavior": "爆裂瓶",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.1026,
+      "emotionDelta": 0.0187
+    },
+    {
+      "id": "r2_confluence:attempt:2:combat:332",
+      "time": 12,
+      "type": "damage",
+      "subject": "烬火法师",
+      "behavior": "燃烧",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 5.2159,
+        "target": "远程小怪"
+      },
+      "H": 0.2805,
+      "emotionDelta": -0.0036
+    },
+    {
+      "id": "map_action:r2_confluence:14:result",
+      "time": 13.84,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "challenge:r2_confluence",
+      "result": {
+        "kind": "combat_win",
+        "occurred": true,
+        "observedPower": 1250,
+        "boundary": "normal_end",
+        "firstClear": false,
+        "survivors": {
+          "player": 4,
+          "enemy": 0
+        }
+      },
+      "H": 0.6792,
+      "emotionDelta": 0.2203
+    },
+    {
+      "id": "r2_confluence:attempt:2:combat:373",
+      "time": 13.84,
+      "type": "death",
+      "subject": "林地游侠",
+      "behavior": "猎标箭",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "远程小怪"
+      },
+      "H": 0.119,
+      "emotionDelta": 0.0289
+    },
+    {
+      "id": "map_action:r2_confluence:14:loot-outcome",
+      "time": 13.845,
+      "type": "loot_outcome",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "probability_outcome",
+        "occurred": true,
+        "components": []
+      },
+      "H": 0.4118,
+      "emotionDelta": 0
+    },
+    {
+      "id": "map_action:r2_confluence:14:loot:1",
+      "time": 13.85,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "common",
+        "itemName": "普通护手 Lv.27",
+        "equipmentLevel": 27,
+        "baseStats": {
+          "physicalPower": 13,
+          "armor": 2
+        },
+        "affixCount": 1
+      },
+      "H": 0.6578,
+      "emotionDelta": -0.8413
+    },
+    {
+      "id": "map_action:r2_confluence:14:loot:2",
+      "time": 13.86,
+      "type": "loot",
+      "subject": "player squad",
+      "behavior": "encounter reward",
+      "result": {
+        "kind": "loot",
+        "occurred": true,
+        "rarity": "common",
+        "itemName": "普通腿甲 Lv.21",
+        "equipmentLevel": 21,
+        "baseStats": {
+          "maxHp": 58,
+          "armor": 2
+        },
+        "affixCount": 1
+      },
+      "H": 0.6578,
+      "emotionDelta": -0.6098
+    },
+    {
+      "id": "team-experiment:14:team-experiment:hero_alchemist",
+      "time": 13.9,
+      "type": "team_experiment_result",
+      "subject": "player_squad",
+      "behavior": "team_experiment",
+      "result": {
+        "kind": "team_experiment_result",
+        "occurred": true,
+        "heroId": "hero_alchemist",
+        "components": [
+          {
+            "kind": "team_experiment_contribution"
+          }
+        ]
+      },
+      "H": 0.2831,
+      "emotionDelta": 0.06
+    },
+    {
+      "id": "map_action:r2_confluence:14:summary",
+      "time": 13.92,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "challenge:r2_confluence",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 1250,
+        "boundary": "normal_end",
+        "components": [
+          {
+            "kind": "combat_win"
+          }
+        ]
+      },
+      "H": 0.5363,
+      "emotionDelta": -0.3113
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 2,
+    "seed": "paired-alpha",
+    "profileId": "open_novice",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

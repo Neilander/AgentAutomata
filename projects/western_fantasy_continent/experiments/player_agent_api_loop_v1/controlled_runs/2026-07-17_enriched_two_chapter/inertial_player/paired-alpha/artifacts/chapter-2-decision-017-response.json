@@ -1,0 +1,47 @@
+{
+  "action": "challenge:r2_boss",
+  "goalId": "grow_and_progress",
+  "reasoningChain": [
+    {
+      "kind": "goal",
+      "evidence": "目标仍是击败双垒督军。"
+    },
+    {
+      "kind": "knowledge",
+      "evidence": "前两战都剩余2敌，骑士两次仅有137.63护盾。"
+    },
+    {
+      "kind": "evidence",
+      "evidence": "刚为骑士装备稀有护手，总战力从893提高到1000。"
+    },
+    {
+      "kind": "affordance",
+      "evidence": "首领可立即重试。"
+    },
+    {
+      "kind": "comparison",
+      "evidence": "与上一战相比阵容不变，只增加骑士护手，能直接比较。"
+    },
+    {
+      "kind": "hypothesis",
+      "evidence": "骑士装备后应在本场提供至少160护盾。"
+    }
+  ],
+  "alternatives": [
+    "equip:hero_knight:r1_main_5_1_0",
+    "swap:0:hero_mage"
+  ],
+  "hypothesis": {
+    "id": "rare_gloves_improve_knight_protection",
+    "problem": "骑士在前两次首领战都只有137.63护盾",
+    "cause": "骑士零装备导致前排保护不足",
+    "resultKind": "team_experiment_contribution",
+    "target": "hero_knight",
+    "verificationScope": "next_combat",
+    "targetCondition": {
+      "metric": "shield",
+      "operator": ">=",
+      "value": 160
+    }
+  }
+}

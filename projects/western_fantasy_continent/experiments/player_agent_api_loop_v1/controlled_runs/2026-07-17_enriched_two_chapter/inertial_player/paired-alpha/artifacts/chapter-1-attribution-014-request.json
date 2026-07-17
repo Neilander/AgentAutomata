@@ -1,0 +1,2193 @@
+{
+  "type": "attribution",
+  "schema": "player_attribution_request_v1",
+  "cycle": 14,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-32029c5303dcbc98",
+    "mode": "continue",
+    "turn": 28,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "inertial_player",
+    "label": "Inertial player",
+    "summary": "Dislikes menus and composition changes; prefers another attempt with the current setup.",
+    "decisionBias": {
+      "riskTolerance": 0.58,
+      "exploration": 0.16,
+      "changeAversion": 0.92,
+      "evidenceThreshold": 0.82,
+      "preferences": {
+        "damage": 0.55,
+        "survival": 0.5,
+        "novelty": 0.1,
+        "rarity": 0.25,
+        "simplicity": 1
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "current_team",
+          "label": "current team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "retrying_a_familiar_encounter",
+          "label": "retrying a familiar encounter"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "is_cheaper_than_rebuilding",
+          "label": "is cheaper than rebuilding"
+        },
+        "confidence": 0.78,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:inertial_player:1"
+      }
+    ]
+  },
+  "instruction": "Explain the observed result using only cited visible event ids and existing knowledge. Do not set emotion or PQRA values.",
+  "action": "challenge:r1_bandit",
+  "outcome": "loss",
+  "emotionBeforeAction": 42.3116,
+  "emotionAfterEvents": 41.1976,
+  "existingKnowledge": [
+    {
+      "id": "knowledge:47",
+      "key": "player_squad|region_1|r1_bandit|encounter|challenge_level|challenge:r1_bandit",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_bandit",
+        "phase": "encounter",
+        "team": [
+          "hero_warrior",
+          "militia_barricade",
+          "militia_spear",
+          "militia_herb"
+        ]
+      },
+      "behavior": {
+        "kind": "challenge_level",
+        "key": "challenge:r1_bandit",
+        "target": "r1_bandit"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "loss": 3
+        },
+        "observations": [
+          {
+            "outcome": "loss",
+            "duration": 22.72,
+            "survivors": {
+              "player": 0,
+              "enemy": 4
+            },
+            "resolution": "elimination",
+            "firstClear": false
+          },
+          {
+            "outcome": "loss",
+            "duration": 23.28,
+            "survivors": {
+              "player": 0,
+              "enemy": 4
+            },
+            "resolution": "elimination",
+            "firstClear": false
+          },
+          {
+            "outcome": "loss",
+            "duration": 28.24,
+            "survivors": {
+              "player": 0,
+              "enemy": 2
+            },
+            "resolution": "elimination",
+            "firstClear": false
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "map_action:r1_bandit:9:result",
+        "map_action:r1_bandit:9:summary",
+        "map_action:r1_bandit:11:result",
+        "map_action:r1_bandit:11:summary",
+        "map_action:r1_bandit:14:result",
+        "map_action:r1_bandit:14:summary"
+      ],
+      "attributions": [
+        {
+          "id": "ai-attribution:9",
+          "knowledgeId": "knowledge:47",
+          "cause": "相同低配阵容即使有一件神话装备，面对持盾军械队仍全灭且没有击杀，说明单点强化仍不够。",
+          "confidence": 0.95,
+          "evidenceEventIds": [
+            "map_action:r1_bandit:9:result",
+            "map_action:r1_bandit:9:summary"
+          ],
+          "alternativeCauses": [
+            "敌方同时有重盾、远程和魔法伤害，阵容中的三名弱民兵可能共同拖累。"
+          ],
+          "nextTest": "仍不大改阵容，给核心灰鸦战士再补一件不同栏位的显著装备，使总强化跨过失败记忆的30%唤醒幅度。",
+          "learnedAfterFeedback": true
+        },
+        {
+          "id": "ai-attribution:11",
+          "knowledgeId": "knowledge:47",
+          "cause": "164点强化让第一名重甲敌人只剩约9%生命，但原队仍零击杀全灭，说明方向有改善却未跨过门槛。",
+          "confidence": 0.94,
+          "evidenceEventIds": [
+            "map_action:r1_bandit:11:result",
+            "map_action:r1_bandit:11:summary"
+          ],
+          "alternativeCauses": [
+            "三名低贡献民兵仍可能让核心强化无法转化成击杀。"
+          ],
+          "nextTest": "继续用已证明能缩小差距的装备轴，补齐两个空栏位，使提升明显超过新的失败基线后再重试。",
+          "learnedAfterFeedback": true
+        }
+      ]
+    },
+    {
+      "id": "knowledge:48",
+      "key": "field:heavy_shield_line|region_1|r1_bandit|field_rule|affect_battle|field:heavy_shield_line",
+      "subject": {
+        "id": "field:heavy_shield_line",
+        "name": "重盾"
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_bandit",
+        "phase": "field_rule"
+      },
+      "behavior": {
+        "kind": "affect_battle",
+        "key": "field:heavy_shield_line",
+        "target": "both_teams"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "field_effect_observed": 3
+        },
+        "observations": [
+          {
+            "outcome": "field_effect_observed",
+            "rule": "",
+            "signalCount": 4,
+            "visibleSignals": [
+              "重盾"
+            ]
+          },
+          {
+            "outcome": "field_effect_observed",
+            "rule": "",
+            "signalCount": 4,
+            "visibleSignals": [
+              "重盾"
+            ]
+          },
+          {
+            "outcome": "field_effect_observed",
+            "rule": "",
+            "signalCount": 4,
+            "visibleSignals": [
+              "重盾"
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_bandit:attempt:1:combat:2",
+        "r1_bandit:attempt:1:combat:4",
+        "r1_bandit:attempt:1:combat:6",
+        "r1_bandit:attempt:1:combat:8",
+        "r1_bandit:attempt:2:combat:2",
+        "r1_bandit:attempt:2:combat:4",
+        "r1_bandit:attempt:2:combat:6",
+        "r1_bandit:attempt:2:combat:8",
+        "r1_bandit:attempt:3:combat:2",
+        "r1_bandit:attempt:3:combat:4",
+        "r1_bandit:attempt:3:combat:6",
+        "r1_bandit:attempt:3:combat:8"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:49",
+      "key": "hero_warrior|region_1|region_1_optional_branch|combat_pattern|combat_participation|fight:hero_warrior",
+      "subject": {
+        "id": "hero_warrior",
+        "name": "灰鸦战士",
+        "role": "warrior",
+        "kind": "hero"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:hero_warrior",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "combat_contribution": 3
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 628.77,
+            "damageShare": 0.6972,
+            "damageRank": 1,
+            "teamDamage": 901.803,
+            "healing": 0,
+            "shielding": 119.34,
+            "kills": 0,
+            "skillCasts": 5
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 695.968,
+            "damageShare": 0.7018,
+            "damageRank": 1,
+            "teamDamage": 991.641,
+            "healing": 0,
+            "shielding": 119.34,
+            "kills": 0,
+            "skillCasts": 6
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 875.078,
+            "damageShare": 0.6886,
+            "damageRank": 1,
+            "teamDamage": 1270.727,
+            "healing": 0,
+            "shielding": 141.7647,
+            "kills": 1,
+            "skillCasts": 8
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_bandit:attempt:1:combat:1",
+        "r1_bandit:attempt:1:combat:94",
+        "r1_bandit:attempt:1:combat:95",
+        "r1_bandit:attempt:1:combat:96",
+        "r1_bandit:attempt:1:combat:97",
+        "r1_bandit:attempt:1:combat:98",
+        "r1_bandit:attempt:1:combat:161",
+        "r1_bandit:attempt:1:combat:186",
+        "r1_bandit:attempt:1:combat:215",
+        "r1_bandit:attempt:1:combat:216",
+        "r1_bandit:attempt:1:combat:217",
+        "r1_bandit:attempt:1:combat:227",
+        "r1_bandit:attempt:1:combat:259",
+        "r1_bandit:attempt:1:combat:265",
+        "r1_bandit:attempt:1:combat:266",
+        "r1_bandit:attempt:1:combat:267",
+        "r1_bandit:attempt:1:combat:300",
+        "r1_bandit:attempt:1:combat:323",
+        "r1_bandit:attempt:1:combat:349",
+        "r1_bandit:attempt:1:combat:350",
+        "r1_bandit:attempt:1:combat:351",
+        "r1_bandit:attempt:1:combat:385",
+        "r1_bandit:attempt:1:combat:408",
+        "r1_bandit:attempt:2:combat:1",
+        "r1_bandit:attempt:2:combat:94",
+        "r1_bandit:attempt:2:combat:95",
+        "r1_bandit:attempt:2:combat:96",
+        "r1_bandit:attempt:2:combat:97",
+        "r1_bandit:attempt:2:combat:139",
+        "r1_bandit:attempt:2:combat:165",
+        "r1_bandit:attempt:2:combat:198",
+        "r1_bandit:attempt:2:combat:217",
+        "r1_bandit:attempt:2:combat:218",
+        "r1_bandit:attempt:2:combat:219",
+        "r1_bandit:attempt:2:combat:229",
+        "r1_bandit:attempt:2:combat:269",
+        "r1_bandit:attempt:2:combat:274",
+        "r1_bandit:attempt:2:combat:275",
+        "r1_bandit:attempt:2:combat:276",
+        "r1_bandit:attempt:2:combat:298",
+        "r1_bandit:attempt:2:combat:346",
+        "r1_bandit:attempt:2:combat:347",
+        "r1_bandit:attempt:2:combat:348",
+        "r1_bandit:attempt:2:combat:382",
+        "r1_bandit:attempt:2:combat:414",
+        "r1_bandit:attempt:2:combat:445",
+        "r1_bandit:attempt:2:combat:447",
+        "r1_bandit:attempt:2:combat:448",
+        "r1_bandit:attempt:2:combat:449",
+        "r1_bandit:attempt:3:combat:1",
+        "r1_bandit:attempt:3:combat:94",
+        "r1_bandit:attempt:3:combat:95",
+        "r1_bandit:attempt:3:combat:96",
+        "r1_bandit:attempt:3:combat:97",
+        "r1_bandit:attempt:3:combat:98",
+        "r1_bandit:attempt:3:combat:161",
+        "r1_bandit:attempt:3:combat:185",
+        "r1_bandit:attempt:3:combat:215",
+        "r1_bandit:attempt:3:combat:216",
+        "r1_bandit:attempt:3:combat:217",
+        "r1_bandit:attempt:3:combat:218",
+        "r1_bandit:attempt:3:combat:251",
+        "r1_bandit:attempt:3:combat:265",
+        "r1_bandit:attempt:3:combat:266",
+        "r1_bandit:attempt:3:combat:267",
+        "r1_bandit:attempt:3:combat:291",
+        "r1_bandit:attempt:3:combat:323",
+        "r1_bandit:attempt:3:combat:345",
+        "r1_bandit:attempt:3:combat:346",
+        "r1_bandit:attempt:3:combat:347",
+        "r1_bandit:attempt:3:combat:348",
+        "r1_bandit:attempt:3:combat:383",
+        "r1_bandit:attempt:3:combat:407",
+        "r1_bandit:attempt:3:combat:433",
+        "r1_bandit:attempt:3:combat:448",
+        "r1_bandit:attempt:3:combat:449",
+        "r1_bandit:attempt:3:combat:450",
+        "r1_bandit:attempt:3:combat:464",
+        "r1_bandit:attempt:3:combat:473",
+        "r1_bandit:attempt:3:combat:474",
+        "r1_bandit:attempt:3:combat:475",
+        "r1_bandit:attempt:3:combat:476",
+        "r1_bandit:attempt:3:combat:499",
+        "r1_bandit:attempt:3:combat:500",
+        "r1_bandit:attempt:3:combat:501",
+        "r1_bandit:attempt:3:combat:502",
+        "r1_bandit:attempt:3:combat:503",
+        "r1_bandit:attempt:3:combat:504",
+        "r1_bandit:attempt:3:combat:513",
+        "r1_bandit:attempt:3:combat:551"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:50",
+      "key": "militia_spear|region_1|region_1_optional_branch|combat_pattern|combat_participation|fight:militia_spear",
+      "subject": {
+        "id": "militia_spear",
+        "name": "短矛民兵",
+        "role": "warrior",
+        "kind": "militia"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:militia_spear",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "combat_contribution": 3
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 197.981,
+            "damageShare": 0.2195,
+            "damageRank": 2,
+            "teamDamage": 901.803,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 3
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 220.24,
+            "damageShare": 0.2221,
+            "damageRank": 2,
+            "teamDamage": 991.641,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 281.797,
+            "damageShare": 0.2218,
+            "damageRank": 2,
+            "teamDamage": 1270.727,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 1,
+            "skillCasts": 5
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_bandit:attempt:1:combat:118",
+        "r1_bandit:attempt:1:combat:119",
+        "r1_bandit:attempt:1:combat:195",
+        "r1_bandit:attempt:1:combat:228",
+        "r1_bandit:attempt:1:combat:229",
+        "r1_bandit:attempt:1:combat:230",
+        "r1_bandit:attempt:1:combat:243",
+        "r1_bandit:attempt:1:combat:340",
+        "r1_bandit:attempt:1:combat:368",
+        "r1_bandit:attempt:1:combat:369",
+        "r1_bandit:attempt:1:combat:370",
+        "r1_bandit:attempt:1:combat:394",
+        "r1_bandit:attempt:1:combat:432",
+        "r1_bandit:attempt:2:combat:117",
+        "r1_bandit:attempt:2:combat:118",
+        "r1_bandit:attempt:2:combat:151",
+        "r1_bandit:attempt:2:combat:197",
+        "r1_bandit:attempt:2:combat:230",
+        "r1_bandit:attempt:2:combat:231",
+        "r1_bandit:attempt:2:combat:232",
+        "r1_bandit:attempt:2:combat:247",
+        "r1_bandit:attempt:2:combat:299",
+        "r1_bandit:attempt:2:combat:337",
+        "r1_bandit:attempt:2:combat:367",
+        "r1_bandit:attempt:2:combat:368",
+        "r1_bandit:attempt:2:combat:369",
+        "r1_bandit:attempt:2:combat:391",
+        "r1_bandit:attempt:2:combat:430",
+        "r1_bandit:attempt:2:combat:483",
+        "r1_bandit:attempt:2:combat:494",
+        "r1_bandit:attempt:2:combat:495",
+        "r1_bandit:attempt:2:combat:496",
+        "r1_bandit:attempt:3:combat:118",
+        "r1_bandit:attempt:3:combat:119",
+        "r1_bandit:attempt:3:combat:195",
+        "r1_bandit:attempt:3:combat:228",
+        "r1_bandit:attempt:3:combat:229",
+        "r1_bandit:attempt:3:combat:230",
+        "r1_bandit:attempt:3:combat:244",
+        "r1_bandit:attempt:3:combat:336",
+        "r1_bandit:attempt:3:combat:369",
+        "r1_bandit:attempt:3:combat:370",
+        "r1_bandit:attempt:3:combat:393",
+        "r1_bandit:attempt:3:combat:432",
+        "r1_bandit:attempt:3:combat:482",
+        "r1_bandit:attempt:3:combat:496",
+        "r1_bandit:attempt:3:combat:497",
+        "r1_bandit:attempt:3:combat:498",
+        "r1_bandit:attempt:3:combat:541",
+        "r1_bandit:attempt:3:combat:582",
+        "r1_bandit:attempt:3:combat:616",
+        "r1_bandit:attempt:3:combat:617",
+        "r1_bandit:attempt:3:combat:618",
+        "r1_bandit:attempt:3:combat:619"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:51",
+      "key": "militia_herb|region_1|region_1_optional_branch|combat_pattern|combat_participation|fight:militia_herb",
+      "subject": {
+        "id": "militia_herb",
+        "name": "草药民兵",
+        "role": "priest",
+        "kind": "militia"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:militia_herb",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "combat_contribution": 3
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 55.613,
+            "damageShare": 0.0617,
+            "damageRank": 3,
+            "teamDamage": 901.803,
+            "healing": 184.68,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 3
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 60.973,
+            "damageShare": 0.0615,
+            "damageRank": 3,
+            "teamDamage": 991.641,
+            "healing": 184.68,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 3
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 94.413,
+            "damageShare": 0.0743,
+            "damageRank": 3,
+            "teamDamage": 1270.727,
+            "healing": 243.1278,
+            "shielding": 0,
+            "kills": 0,
+            "skillCasts": 4
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_bandit:attempt:1:combat:67",
+        "r1_bandit:attempt:1:combat:68",
+        "r1_bandit:attempt:1:combat:232",
+        "r1_bandit:attempt:1:combat:233",
+        "r1_bandit:attempt:1:combat:303",
+        "r1_bandit:attempt:1:combat:335",
+        "r1_bandit:attempt:1:combat:382",
+        "r1_bandit:attempt:1:combat:407",
+        "r1_bandit:attempt:1:combat:418",
+        "r1_bandit:attempt:1:combat:419",
+        "r1_bandit:attempt:1:combat:452",
+        "r1_bandit:attempt:1:combat:491",
+        "r1_bandit:attempt:1:combat:515",
+        "r1_bandit:attempt:2:combat:67",
+        "r1_bandit:attempt:2:combat:68",
+        "r1_bandit:attempt:2:combat:233",
+        "r1_bandit:attempt:2:combat:234",
+        "r1_bandit:attempt:2:combat:297",
+        "r1_bandit:attempt:2:combat:333",
+        "r1_bandit:attempt:2:combat:372",
+        "r1_bandit:attempt:2:combat:405",
+        "r1_bandit:attempt:2:combat:415",
+        "r1_bandit:attempt:2:combat:416",
+        "r1_bandit:attempt:2:combat:446",
+        "r1_bandit:attempt:2:combat:493",
+        "r1_bandit:attempt:2:combat:528",
+        "r1_bandit:attempt:2:combat:554",
+        "r1_bandit:attempt:3:combat:67",
+        "r1_bandit:attempt:3:combat:68",
+        "r1_bandit:attempt:3:combat:232",
+        "r1_bandit:attempt:3:combat:233",
+        "r1_bandit:attempt:3:combat:296",
+        "r1_bandit:attempt:3:combat:335",
+        "r1_bandit:attempt:3:combat:382",
+        "r1_bandit:attempt:3:combat:408",
+        "r1_bandit:attempt:3:combat:417",
+        "r1_bandit:attempt:3:combat:418",
+        "r1_bandit:attempt:3:combat:451",
+        "r1_bandit:attempt:3:combat:494",
+        "r1_bandit:attempt:3:combat:532",
+        "r1_bandit:attempt:3:combat:572",
+        "r1_bandit:attempt:3:combat:594",
+        "r1_bandit:attempt:3:combat:595",
+        "r1_bandit:attempt:3:combat:604",
+        "r1_bandit:attempt:3:combat:641",
+        "r1_bandit:attempt:3:combat:679"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:52",
+      "key": "militia_barricade|region_1|region_1_optional_branch|combat_pattern|combat_participation|fight:militia_barricade",
+      "subject": {
+        "id": "militia_barricade",
+        "name": "拒马民兵",
+        "role": "warrior",
+        "kind": "militia"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "combat_participation",
+        "key": "fight:militia_barricade",
+        "target": "enemy_squad"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "combat_contribution": 3
+        },
+        "observations": [
+          {
+            "outcome": "combat_contribution",
+            "damage": 19.439,
+            "damageShare": 0.0216,
+            "damageRank": 4,
+            "teamDamage": 901.803,
+            "healing": 82.67,
+            "shielding": 132.6,
+            "kills": 0,
+            "skillCasts": 2
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 14.46,
+            "damageShare": 0.0146,
+            "damageRank": 4,
+            "teamDamage": 991.641,
+            "healing": 82.67,
+            "shielding": 132.6,
+            "kills": 0,
+            "skillCasts": 2
+          },
+          {
+            "outcome": "combat_contribution",
+            "damage": 19.439,
+            "damageShare": 0.0153,
+            "damageRank": 4,
+            "teamDamage": 1270.727,
+            "healing": 85.2151,
+            "shielding": 132.6,
+            "kills": 0,
+            "skillCasts": 2
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_bandit:attempt:1:combat:3",
+        "r1_bandit:attempt:1:combat:83",
+        "r1_bandit:attempt:1:combat:84",
+        "r1_bandit:attempt:1:combat:185",
+        "r1_bandit:attempt:1:combat:231",
+        "r1_bandit:attempt:1:combat:260",
+        "r1_bandit:attempt:1:combat:261",
+        "r1_bandit:attempt:1:combat:276",
+        "r1_bandit:attempt:2:combat:3",
+        "r1_bandit:attempt:2:combat:83",
+        "r1_bandit:attempt:2:combat:84",
+        "r1_bandit:attempt:2:combat:161",
+        "r1_bandit:attempt:2:combat:187",
+        "r1_bandit:attempt:2:combat:235",
+        "r1_bandit:attempt:2:combat:270",
+        "r1_bandit:attempt:2:combat:271",
+        "r1_bandit:attempt:3:combat:3",
+        "r1_bandit:attempt:3:combat:80",
+        "r1_bandit:attempt:3:combat:81",
+        "r1_bandit:attempt:3:combat:186",
+        "r1_bandit:attempt:3:combat:231",
+        "r1_bandit:attempt:3:combat:260",
+        "r1_bandit:attempt:3:combat:261",
+        "r1_bandit:attempt:3:combat:276"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:53",
+      "key": "player_squad|region_1|r1_bandit|combat|attack_enemy_squad|team_damage:r1_bandit",
+      "subject": {
+        "id": "player_squad",
+        "members": [
+          {
+            "id": "hero_warrior",
+            "name": "灰鸦战士",
+            "role": "warrior",
+            "kind": "hero"
+          },
+          {
+            "id": "militia_barricade",
+            "name": "拒马民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_spear",
+            "name": "短矛民兵",
+            "role": "warrior",
+            "kind": "militia"
+          },
+          {
+            "id": "militia_herb",
+            "name": "草药民兵",
+            "role": "priest",
+            "kind": "militia"
+          }
+        ]
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_bandit",
+        "phase": "combat",
+        "team": [
+          "hero_warrior",
+          "militia_barricade",
+          "militia_spear",
+          "militia_herb"
+        ]
+      },
+      "behavior": {
+        "kind": "attack_enemy_squad",
+        "key": "team_damage:r1_bandit"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "damage_profile": 3
+        },
+        "observations": [
+          {
+            "outcome": "damage_profile",
+            "d50": 5.36,
+            "d90": 33.303,
+            "frequency": 1.364,
+            "impact": 0.057,
+            "hitCount": 31,
+            "killCount": 0,
+            "totalDamage": 901.803
+          },
+          {
+            "outcome": "damage_profile",
+            "d50": 5.827,
+            "d90": 34.493,
+            "frequency": 1.632,
+            "impact": 0.071,
+            "hitCount": 38,
+            "killCount": 0,
+            "totalDamage": 991.641
+          },
+          {
+            "outcome": "damage_profile",
+            "d50": 10.4,
+            "d90": 34.493,
+            "frequency": 1.735,
+            "impact": 0.155,
+            "hitCount": 49,
+            "killCount": 2,
+            "totalDamage": 1270.727
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_bandit:attempt:1:combat:97",
+        "r1_bandit:attempt:1:combat:98",
+        "r1_bandit:attempt:1:combat:161",
+        "r1_bandit:attempt:1:combat:185",
+        "r1_bandit:attempt:1:combat:186",
+        "r1_bandit:attempt:1:combat:195",
+        "r1_bandit:attempt:1:combat:217",
+        "r1_bandit:attempt:1:combat:227",
+        "r1_bandit:attempt:1:combat:230",
+        "r1_bandit:attempt:1:combat:231",
+        "r1_bandit:attempt:1:combat:243",
+        "r1_bandit:attempt:1:combat:259",
+        "r1_bandit:attempt:1:combat:266",
+        "r1_bandit:attempt:1:combat:267",
+        "r1_bandit:attempt:1:combat:276",
+        "r1_bandit:attempt:1:combat:300",
+        "r1_bandit:attempt:1:combat:303",
+        "r1_bandit:attempt:1:combat:323",
+        "r1_bandit:attempt:1:combat:335",
+        "r1_bandit:attempt:1:combat:340",
+        "r1_bandit:attempt:1:combat:351",
+        "r1_bandit:attempt:1:combat:370",
+        "r1_bandit:attempt:1:combat:382",
+        "r1_bandit:attempt:1:combat:385",
+        "r1_bandit:attempt:1:combat:394",
+        "r1_bandit:attempt:1:combat:407",
+        "r1_bandit:attempt:1:combat:408",
+        "r1_bandit:attempt:1:combat:432",
+        "r1_bandit:attempt:1:combat:452",
+        "r1_bandit:attempt:1:combat:491",
+        "r1_bandit:attempt:1:combat:515",
+        "r1_bandit:attempt:2:combat:97",
+        "r1_bandit:attempt:2:combat:139",
+        "r1_bandit:attempt:2:combat:151",
+        "r1_bandit:attempt:2:combat:161",
+        "r1_bandit:attempt:2:combat:165",
+        "r1_bandit:attempt:2:combat:187",
+        "r1_bandit:attempt:2:combat:197",
+        "r1_bandit:attempt:2:combat:198",
+        "r1_bandit:attempt:2:combat:219",
+        "r1_bandit:attempt:2:combat:229",
+        "r1_bandit:attempt:2:combat:232",
+        "r1_bandit:attempt:2:combat:235",
+        "r1_bandit:attempt:2:combat:247",
+        "r1_bandit:attempt:2:combat:269",
+        "r1_bandit:attempt:2:combat:275",
+        "r1_bandit:attempt:2:combat:276",
+        "r1_bandit:attempt:2:combat:297",
+        "r1_bandit:attempt:2:combat:298",
+        "r1_bandit:attempt:2:combat:299",
+        "r1_bandit:attempt:2:combat:333",
+        "r1_bandit:attempt:2:combat:337",
+        "r1_bandit:attempt:2:combat:348",
+        "r1_bandit:attempt:2:combat:369",
+        "r1_bandit:attempt:2:combat:372",
+        "r1_bandit:attempt:2:combat:382",
+        "r1_bandit:attempt:2:combat:391",
+        "r1_bandit:attempt:2:combat:405",
+        "r1_bandit:attempt:2:combat:414",
+        "r1_bandit:attempt:2:combat:430",
+        "r1_bandit:attempt:2:combat:445",
+        "r1_bandit:attempt:2:combat:446",
+        "r1_bandit:attempt:2:combat:448",
+        "r1_bandit:attempt:2:combat:449",
+        "r1_bandit:attempt:2:combat:483",
+        "r1_bandit:attempt:2:combat:493",
+        "r1_bandit:attempt:2:combat:496",
+        "r1_bandit:attempt:2:combat:528",
+        "r1_bandit:attempt:2:combat:554",
+        "r1_bandit:attempt:3:combat:97",
+        "r1_bandit:attempt:3:combat:98",
+        "r1_bandit:attempt:3:combat:161",
+        "r1_bandit:attempt:3:combat:185",
+        "r1_bandit:attempt:3:combat:186",
+        "r1_bandit:attempt:3:combat:195",
+        "r1_bandit:attempt:3:combat:217",
+        "r1_bandit:attempt:3:combat:218",
+        "r1_bandit:attempt:3:combat:230",
+        "r1_bandit:attempt:3:combat:231",
+        "r1_bandit:attempt:3:combat:244",
+        "r1_bandit:attempt:3:combat:251",
+        "r1_bandit:attempt:3:combat:266",
+        "r1_bandit:attempt:3:combat:267",
+        "r1_bandit:attempt:3:combat:276",
+        "r1_bandit:attempt:3:combat:291",
+        "r1_bandit:attempt:3:combat:296",
+        "r1_bandit:attempt:3:combat:323",
+        "r1_bandit:attempt:3:combat:335",
+        "r1_bandit:attempt:3:combat:336",
+        "r1_bandit:attempt:3:combat:347",
+        "r1_bandit:attempt:3:combat:348",
+        "r1_bandit:attempt:3:combat:382",
+        "r1_bandit:attempt:3:combat:383",
+        "r1_bandit:attempt:3:combat:393",
+        "r1_bandit:attempt:3:combat:407",
+        "r1_bandit:attempt:3:combat:408",
+        "r1_bandit:attempt:3:combat:432",
+        "r1_bandit:attempt:3:combat:433",
+        "r1_bandit:attempt:3:combat:449",
+        "r1_bandit:attempt:3:combat:450",
+        "r1_bandit:attempt:3:combat:451",
+        "r1_bandit:attempt:3:combat:464",
+        "r1_bandit:attempt:3:combat:475",
+        "r1_bandit:attempt:3:combat:482",
+        "r1_bandit:attempt:3:combat:494",
+        "r1_bandit:attempt:3:combat:498",
+        "r1_bandit:attempt:3:combat:503",
+        "r1_bandit:attempt:3:combat:504",
+        "r1_bandit:attempt:3:combat:513",
+        "r1_bandit:attempt:3:combat:532",
+        "r1_bandit:attempt:3:combat:541",
+        "r1_bandit:attempt:3:combat:551",
+        "r1_bandit:attempt:3:combat:572",
+        "r1_bandit:attempt:3:combat:582",
+        "r1_bandit:attempt:3:combat:604",
+        "r1_bandit:attempt:3:combat:618",
+        "r1_bandit:attempt:3:combat:641",
+        "r1_bandit:attempt:3:combat:679"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:54",
+      "key": "enemy_squad:r1_bandit|region_1|r1_bandit|combat|attack_player_squad|enemy_attack:r1_bandit",
+      "subject": {
+        "id": "enemy_squad:r1_bandit",
+        "name": "enemy squad"
+      },
+      "environment": {
+        "region": "region_1",
+        "node": "r1_bandit",
+        "phase": "combat"
+      },
+      "behavior": {
+        "kind": "attack_player_squad",
+        "key": "enemy_attack:r1_bandit",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "threat_profile": 3
+        },
+        "observations": [
+          {
+            "outcome": "threat_profile",
+            "firstAllyDeath": {
+              "time": 11.84,
+              "name": "拒马民兵",
+              "killer": "火把学徒4"
+            },
+            "incomingDamage": {
+              "physical": 1139.5,
+              "magic": 246.3,
+              "effect": 63.7
+            },
+            "dominantDamage": "physical",
+            "enemySurvivors": [
+              {
+                "name": "重甲盗匪1",
+                "role": "knight",
+                "hpRatio": 0.213
+              },
+              {
+                "name": "盗匪盾手2",
+                "role": "warrior",
+                "hpRatio": 0.683
+              },
+              {
+                "name": "路匪弓手3",
+                "role": "ranger",
+                "hpRatio": 1
+              },
+              {
+                "name": "火把学徒4",
+                "role": "mage",
+                "hpRatio": 1
+              }
+            ],
+            "enemySurvivorCount": 4
+          },
+          {
+            "outcome": "threat_profile",
+            "firstAllyDeath": {
+              "time": 10.88,
+              "name": "拒马民兵",
+              "killer": "盗匪盾手2"
+            },
+            "incomingDamage": {
+              "physical": 1129.3,
+              "magic": 241.2,
+              "effect": 50.5
+            },
+            "dominantDamage": "physical",
+            "enemySurvivors": [
+              {
+                "name": "重甲盗匪1",
+                "role": "knight",
+                "hpRatio": 0.087
+              },
+              {
+                "name": "盗匪盾手2",
+                "role": "warrior",
+                "hpRatio": 0.547
+              },
+              {
+                "name": "路匪弓手3",
+                "role": "ranger",
+                "hpRatio": 1
+              },
+              {
+                "name": "火把学徒4",
+                "role": "mage",
+                "hpRatio": 1
+              }
+            ],
+            "enemySurvivorCount": 4
+          },
+          {
+            "outcome": "threat_profile",
+            "firstAllyDeath": {
+              "time": 12.64,
+              "name": "拒马民兵",
+              "killer": "路匪弓手3"
+            },
+            "incomingDamage": {
+              "physical": 1191.6,
+              "magic": 329.8,
+              "effect": 72.9
+            },
+            "dominantDamage": "physical",
+            "enemySurvivors": [
+              {
+                "name": "路匪弓手3",
+                "role": "ranger",
+                "hpRatio": 0.736
+              },
+              {
+                "name": "火把学徒4",
+                "role": "mage",
+                "hpRatio": 0.88
+              }
+            ],
+            "enemySurvivorCount": 2
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_bandit:attempt:1:combat:57",
+        "r1_bandit:attempt:1:combat:58",
+        "r1_bandit:attempt:1:combat:79",
+        "r1_bandit:attempt:1:combat:81",
+        "r1_bandit:attempt:1:combat:82",
+        "r1_bandit:attempt:1:combat:85",
+        "r1_bandit:attempt:1:combat:105",
+        "r1_bandit:attempt:1:combat:106",
+        "r1_bandit:attempt:1:combat:108",
+        "r1_bandit:attempt:1:combat:117",
+        "r1_bandit:attempt:1:combat:128",
+        "r1_bandit:attempt:1:combat:129",
+        "r1_bandit:attempt:1:combat:138",
+        "r1_bandit:attempt:1:combat:140",
+        "r1_bandit:attempt:1:combat:150",
+        "r1_bandit:attempt:1:combat:160",
+        "r1_bandit:attempt:1:combat:162",
+        "r1_bandit:attempt:1:combat:163",
+        "r1_bandit:attempt:1:combat:172",
+        "r1_bandit:attempt:1:combat:175",
+        "r1_bandit:attempt:1:combat:176",
+        "r1_bandit:attempt:1:combat:196",
+        "r1_bandit:attempt:1:combat:198",
+        "r1_bandit:attempt:1:combat:199",
+        "r1_bandit:attempt:1:combat:203",
+        "r1_bandit:attempt:1:combat:204",
+        "r1_bandit:attempt:1:combat:205",
+        "r1_bandit:attempt:1:combat:206",
+        "r1_bandit:attempt:1:combat:218",
+        "r1_bandit:attempt:1:combat:234",
+        "r1_bandit:attempt:1:combat:244",
+        "r1_bandit:attempt:1:combat:245",
+        "r1_bandit:attempt:1:combat:246",
+        "r1_bandit:attempt:1:combat:247",
+        "r1_bandit:attempt:1:combat:250",
+        "r1_bandit:attempt:1:combat:263",
+        "r1_bandit:attempt:1:combat:264",
+        "r1_bandit:attempt:1:combat:277",
+        "r1_bandit:attempt:1:combat:278",
+        "r1_bandit:attempt:1:combat:280",
+        "r1_bandit:attempt:1:combat:290",
+        "r1_bandit:attempt:1:combat:293",
+        "r1_bandit:attempt:1:combat:294",
+        "r1_bandit:attempt:1:combat:299",
+        "r1_bandit:attempt:1:combat:314",
+        "r1_bandit:attempt:1:combat:324",
+        "r1_bandit:attempt:1:combat:325",
+        "r1_bandit:attempt:1:combat:326",
+        "r1_bandit:attempt:1:combat:338",
+        "r1_bandit:attempt:1:combat:339",
+        "r1_bandit:attempt:1:combat:357",
+        "r1_bandit:attempt:1:combat:358",
+        "r1_bandit:attempt:1:combat:371",
+        "r1_bandit:attempt:1:combat:372",
+        "r1_bandit:attempt:1:combat:373",
+        "r1_bandit:attempt:1:combat:383",
+        "r1_bandit:attempt:1:combat:384",
+        "r1_bandit:attempt:1:combat:403",
+        "r1_bandit:attempt:1:combat:404",
+        "r1_bandit:attempt:1:combat:405",
+        "r1_bandit:attempt:1:combat:406",
+        "r1_bandit:attempt:1:combat:417",
+        "r1_bandit:attempt:1:combat:430",
+        "r1_bandit:attempt:1:combat:431",
+        "r1_bandit:attempt:1:combat:434",
+        "r1_bandit:attempt:1:combat:436",
+        "r1_bandit:attempt:1:combat:437",
+        "r1_bandit:attempt:1:combat:438",
+        "r1_bandit:attempt:1:combat:440",
+        "r1_bandit:attempt:1:combat:453",
+        "r1_bandit:attempt:1:combat:454",
+        "r1_bandit:attempt:1:combat:455",
+        "r1_bandit:attempt:1:combat:466",
+        "r1_bandit:attempt:1:combat:469",
+        "r1_bandit:attempt:1:combat:492",
+        "r1_bandit:attempt:1:combat:502",
+        "r1_bandit:attempt:1:combat:505",
+        "r1_bandit:attempt:1:combat:524",
+        "r1_bandit:attempt:1:combat:525",
+        "r1_bandit:attempt:1:combat:526",
+        "r1_bandit:attempt:1:combat:527",
+        "r1_bandit:attempt:1:combat:544",
+        "r1_bandit:attempt:1:combat:547",
+        "r1_bandit:attempt:2:combat:55",
+        "r1_bandit:attempt:2:combat:58",
+        "r1_bandit:attempt:2:combat:79",
+        "r1_bandit:attempt:2:combat:81",
+        "r1_bandit:attempt:2:combat:82",
+        "r1_bandit:attempt:2:combat:85",
+        "r1_bandit:attempt:2:combat:101",
+        "r1_bandit:attempt:2:combat:98",
+        "r1_bandit:attempt:2:combat:106",
+        "r1_bandit:attempt:2:combat:116",
+        "r1_bandit:attempt:2:combat:127",
+        "r1_bandit:attempt:2:combat:128",
+        "r1_bandit:attempt:2:combat:138",
+        "r1_bandit:attempt:2:combat:140",
+        "r1_bandit:attempt:2:combat:150",
+        "r1_bandit:attempt:2:combat:162",
+        "r1_bandit:attempt:2:combat:163",
+        "r1_bandit:attempt:2:combat:164",
+        "r1_bandit:attempt:2:combat:174",
+        "r1_bandit:attempt:2:combat:177",
+        "r1_bandit:attempt:2:combat:178",
+        "r1_bandit:attempt:2:combat:196",
+        "r1_bandit:attempt:2:combat:200",
+        "r1_bandit:attempt:2:combat:201",
+        "r1_bandit:attempt:2:combat:203",
+        "r1_bandit:attempt:2:combat:204",
+        "r1_bandit:attempt:2:combat:207",
+        "r1_bandit:attempt:2:combat:208",
+        "r1_bandit:attempt:2:combat:220",
+        "r1_bandit:attempt:2:combat:236",
+        "r1_bandit:attempt:2:combat:245",
+        "r1_bandit:attempt:2:combat:246",
+        "r1_bandit:attempt:2:combat:248",
+        "r1_bandit:attempt:2:combat:249",
+        "r1_bandit:attempt:2:combat:252",
+        "r1_bandit:attempt:2:combat:262",
+        "r1_bandit:attempt:2:combat:264",
+        "r1_bandit:attempt:2:combat:265",
+        "r1_bandit:attempt:2:combat:266",
+        "r1_bandit:attempt:2:combat:286",
+        "r1_bandit:attempt:2:combat:287",
+        "r1_bandit:attempt:2:combat:296",
+        "r1_bandit:attempt:2:combat:312",
+        "r1_bandit:attempt:2:combat:313",
+        "r1_bandit:attempt:2:combat:322",
+        "r1_bandit:attempt:2:combat:323",
+        "r1_bandit:attempt:2:combat:324",
+        "r1_bandit:attempt:2:combat:336",
+        "r1_bandit:attempt:2:combat:353",
+        "r1_bandit:attempt:2:combat:355",
+        "r1_bandit:attempt:2:combat:356",
+        "r1_bandit:attempt:2:combat:366",
+        "r1_bandit:attempt:2:combat:370",
+        "r1_bandit:attempt:2:combat:371",
+        "r1_bandit:attempt:2:combat:381",
+        "r1_bandit:attempt:2:combat:392",
+        "r1_bandit:attempt:2:combat:401",
+        "r1_bandit:attempt:2:combat:402",
+        "r1_bandit:attempt:2:combat:403",
+        "r1_bandit:attempt:2:combat:425",
+        "r1_bandit:attempt:2:combat:426",
+        "r1_bandit:attempt:2:combat:429",
+        "r1_bandit:attempt:2:combat:431",
+        "r1_bandit:attempt:2:combat:434",
+        "r1_bandit:attempt:2:combat:435",
+        "r1_bandit:attempt:2:combat:444",
+        "r1_bandit:attempt:2:combat:458",
+        "r1_bandit:attempt:2:combat:461",
+        "r1_bandit:attempt:2:combat:463",
+        "r1_bandit:attempt:2:combat:464",
+        "r1_bandit:attempt:2:combat:471",
+        "r1_bandit:attempt:2:combat:472",
+        "r1_bandit:attempt:2:combat:481",
+        "r1_bandit:attempt:2:combat:482",
+        "r1_bandit:attempt:2:combat:484",
+        "r1_bandit:attempt:2:combat:508",
+        "r1_bandit:attempt:2:combat:509",
+        "r1_bandit:attempt:2:combat:511",
+        "r1_bandit:attempt:2:combat:513",
+        "r1_bandit:attempt:2:combat:527",
+        "r1_bandit:attempt:2:combat:553",
+        "r1_bandit:attempt:2:combat:563",
+        "r1_bandit:attempt:2:combat:566",
+        "r1_bandit:attempt:3:combat:55",
+        "r1_bandit:attempt:3:combat:58",
+        "r1_bandit:attempt:3:combat:79",
+        "r1_bandit:attempt:3:combat:83",
+        "r1_bandit:attempt:3:combat:84",
+        "r1_bandit:attempt:3:combat:85",
+        "r1_bandit:attempt:3:combat:101",
+        "r1_bandit:attempt:3:combat:102",
+        "r1_bandit:attempt:3:combat:108",
+        "r1_bandit:attempt:3:combat:117",
+        "r1_bandit:attempt:3:combat:128",
+        "r1_bandit:attempt:3:combat:129",
+        "r1_bandit:attempt:3:combat:138",
+        "r1_bandit:attempt:3:combat:140",
+        "r1_bandit:attempt:3:combat:150",
+        "r1_bandit:attempt:3:combat:160",
+        "r1_bandit:attempt:3:combat:162",
+        "r1_bandit:attempt:3:combat:163",
+        "r1_bandit:attempt:3:combat:172",
+        "r1_bandit:attempt:3:combat:175",
+        "r1_bandit:attempt:3:combat:176",
+        "r1_bandit:attempt:3:combat:196",
+        "r1_bandit:attempt:3:combat:198",
+        "r1_bandit:attempt:3:combat:199",
+        "r1_bandit:attempt:3:combat:201",
+        "r1_bandit:attempt:3:combat:202",
+        "r1_bandit:attempt:3:combat:205",
+        "r1_bandit:attempt:3:combat:206",
+        "r1_bandit:attempt:3:combat:227",
+        "r1_bandit:attempt:3:combat:234",
+        "r1_bandit:attempt:3:combat:243",
+        "r1_bandit:attempt:3:combat:245",
+        "r1_bandit:attempt:3:combat:246",
+        "r1_bandit:attempt:3:combat:247",
+        "r1_bandit:attempt:3:combat:250",
+        "r1_bandit:attempt:3:combat:263",
+        "r1_bandit:attempt:3:combat:264",
+        "r1_bandit:attempt:3:combat:277",
+        "r1_bandit:attempt:3:combat:279",
+        "r1_bandit:attempt:3:combat:281",
+        "r1_bandit:attempt:3:combat:290",
+        "r1_bandit:attempt:3:combat:293",
+        "r1_bandit:attempt:3:combat:307",
+        "r1_bandit:attempt:3:combat:309",
+        "r1_bandit:attempt:3:combat:310",
+        "r1_bandit:attempt:3:combat:324",
+        "r1_bandit:attempt:3:combat:325",
+        "r1_bandit:attempt:3:combat:326",
+        "r1_bandit:attempt:3:combat:355",
+        "r1_bandit:attempt:3:combat:357",
+        "r1_bandit:attempt:3:combat:358",
+        "r1_bandit:attempt:3:combat:368",
+        "r1_bandit:attempt:3:combat:371",
+        "r1_bandit:attempt:3:combat:372",
+        "r1_bandit:attempt:3:combat:373",
+        "r1_bandit:attempt:3:combat:384",
+        "r1_bandit:attempt:3:combat:394",
+        "r1_bandit:attempt:3:combat:403",
+        "r1_bandit:attempt:3:combat:404",
+        "r1_bandit:attempt:3:combat:405",
+        "r1_bandit:attempt:3:combat:406",
+        "r1_bandit:attempt:3:combat:429",
+        "r1_bandit:attempt:3:combat:430",
+        "r1_bandit:attempt:3:combat:431",
+        "r1_bandit:attempt:3:combat:435",
+        "r1_bandit:attempt:3:combat:437",
+        "r1_bandit:attempt:3:combat:438",
+        "r1_bandit:attempt:3:combat:447",
+        "r1_bandit:attempt:3:combat:462",
+        "r1_bandit:attempt:3:combat:463",
+        "r1_bandit:attempt:3:combat:477",
+        "r1_bandit:attempt:3:combat:480",
+        "r1_bandit:attempt:3:combat:481",
+        "r1_bandit:attempt:3:combat:485",
+        "r1_bandit:attempt:3:combat:495",
+        "r1_bandit:attempt:3:combat:515",
+        "r1_bandit:attempt:3:combat:516",
+        "r1_bandit:attempt:3:combat:518",
+        "r1_bandit:attempt:3:combat:520",
+        "r1_bandit:attempt:3:combat:530",
+        "r1_bandit:attempt:3:combat:531",
+        "r1_bandit:attempt:3:combat:542",
+        "r1_bandit:attempt:3:combat:552",
+        "r1_bandit:attempt:3:combat:561",
+        "r1_bandit:attempt:3:combat:562",
+        "r1_bandit:attempt:3:combat:563",
+        "r1_bandit:attempt:3:combat:566",
+        "r1_bandit:attempt:3:combat:568",
+        "r1_bandit:attempt:3:combat:569",
+        "r1_bandit:attempt:3:combat:591",
+        "r1_bandit:attempt:3:combat:592",
+        "r1_bandit:attempt:3:combat:593",
+        "r1_bandit:attempt:3:combat:607",
+        "r1_bandit:attempt:3:combat:630",
+        "r1_bandit:attempt:3:combat:631",
+        "r1_bandit:attempt:3:combat:652",
+        "r1_bandit:attempt:3:combat:653",
+        "r1_bandit:attempt:3:combat:657",
+        "r1_bandit:attempt:3:combat:659",
+        "r1_bandit:attempt:3:combat:670",
+        "r1_bandit:attempt:3:combat:690"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:55",
+      "key": "concept:enemy_minion_ranged|region_1|region_1_optional_branch|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_ranged",
+      "subject": {
+        "id": "concept:enemy_minion_ranged",
+        "name": "远程小怪",
+        "conceptId": "enemy_minion_ranged"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_ranged",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 3
+        },
+        "observations": [
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 2,
+            "damage": 874.2465,
+            "damageShare": 0.6031,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 2,
+            "skillCasts": 15,
+            "observedTargets": [
+              "灰鸦战士",
+              "拒马民兵",
+              "短矛民兵",
+              "草药民兵"
+            ],
+            "supportTargets": []
+          },
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 2,
+            "damage": 838.586,
+            "damageShare": 0.5901,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 2,
+            "skillCasts": 15,
+            "observedTargets": [
+              "灰鸦战士",
+              "拒马民兵",
+              "短矛民兵",
+              "草药民兵"
+            ],
+            "supportTargets": []
+          },
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 2,
+            "damage": 1027.4905,
+            "damageShare": 0.6444,
+            "threatRank": 1,
+            "healing": 0,
+            "shielding": 0,
+            "kills": 4,
+            "skillCasts": 18,
+            "observedTargets": [
+              "灰鸦战士",
+              "拒马民兵",
+              "短矛民兵",
+              "草药民兵"
+            ],
+            "supportTargets": []
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_bandit:attempt:1:combat:49",
+        "r1_bandit:attempt:1:combat:50",
+        "r1_bandit:attempt:1:combat:51",
+        "r1_bandit:attempt:1:combat:52",
+        "r1_bandit:attempt:1:combat:53",
+        "r1_bandit:attempt:1:combat:54",
+        "r1_bandit:attempt:1:combat:55",
+        "r1_bandit:attempt:1:combat:56",
+        "r1_bandit:attempt:1:combat:57",
+        "r1_bandit:attempt:1:combat:58",
+        "r1_bandit:attempt:1:combat:105",
+        "r1_bandit:attempt:1:combat:106",
+        "r1_bandit:attempt:1:combat:117",
+        "r1_bandit:attempt:1:combat:129",
+        "r1_bandit:attempt:1:combat:138",
+        "r1_bandit:attempt:1:combat:150",
+        "r1_bandit:attempt:1:combat:162",
+        "r1_bandit:attempt:1:combat:163",
+        "r1_bandit:attempt:1:combat:173",
+        "r1_bandit:attempt:1:combat:174",
+        "r1_bandit:attempt:1:combat:175",
+        "r1_bandit:attempt:1:combat:176",
+        "r1_bandit:attempt:1:combat:197",
+        "r1_bandit:attempt:1:combat:198",
+        "r1_bandit:attempt:1:combat:199",
+        "r1_bandit:attempt:1:combat:200",
+        "r1_bandit:attempt:1:combat:204",
+        "r1_bandit:attempt:1:combat:205",
+        "r1_bandit:attempt:1:combat:218",
+        "r1_bandit:attempt:1:combat:244",
+        "r1_bandit:attempt:1:combat:245",
+        "r1_bandit:attempt:1:combat:247",
+        "r1_bandit:attempt:1:combat:248",
+        "r1_bandit:attempt:1:combat:249",
+        "r1_bandit:attempt:1:combat:250",
+        "r1_bandit:attempt:1:combat:278",
+        "r1_bandit:attempt:1:combat:279",
+        "r1_bandit:attempt:1:combat:280",
+        "r1_bandit:attempt:1:combat:281",
+        "r1_bandit:attempt:1:combat:290",
+        "r1_bandit:attempt:1:combat:292",
+        "r1_bandit:attempt:1:combat:293",
+        "r1_bandit:attempt:1:combat:294",
+        "r1_bandit:attempt:1:combat:312",
+        "r1_bandit:attempt:1:combat:313",
+        "r1_bandit:attempt:1:combat:314",
+        "r1_bandit:attempt:1:combat:324",
+        "r1_bandit:attempt:1:combat:325",
+        "r1_bandit:attempt:1:combat:356",
+        "r1_bandit:attempt:1:combat:357",
+        "r1_bandit:attempt:1:combat:358",
+        "r1_bandit:attempt:1:combat:359",
+        "r1_bandit:attempt:1:combat:371",
+        "r1_bandit:attempt:1:combat:372",
+        "r1_bandit:attempt:1:combat:384",
+        "r1_bandit:attempt:1:combat:403",
+        "r1_bandit:attempt:1:combat:404",
+        "r1_bandit:attempt:1:combat:406",
+        "r1_bandit:attempt:1:combat:428",
+        "r1_bandit:attempt:1:combat:429",
+        "r1_bandit:attempt:1:combat:430",
+        "r1_bandit:attempt:1:combat:431",
+        "r1_bandit:attempt:1:combat:436",
+        "r1_bandit:attempt:1:combat:437",
+        "r1_bandit:attempt:1:combat:440",
+        "r1_bandit:attempt:1:combat:454",
+        "r1_bandit:attempt:1:combat:464",
+        "r1_bandit:attempt:1:combat:465",
+        "r1_bandit:attempt:1:combat:466",
+        "r1_bandit:attempt:1:combat:492",
+        "r1_bandit:attempt:1:combat:501",
+        "r1_bandit:attempt:1:combat:502",
+        "r1_bandit:attempt:1:combat:503",
+        "r1_bandit:attempt:1:combat:504",
+        "r1_bandit:attempt:1:combat:505",
+        "r1_bandit:attempt:1:combat:506",
+        "r1_bandit:attempt:1:combat:525",
+        "r1_bandit:attempt:1:combat:526",
+        "r1_bandit:attempt:1:combat:527",
+        "r1_bandit:attempt:1:combat:544",
+        "r1_bandit:attempt:1:combat:545",
+        "r1_bandit:attempt:1:combat:546",
+        "r1_bandit:attempt:1:combat:547",
+        "r1_bandit:attempt:1:combat:548",
+        "r1_bandit:attempt:2:combat:49",
+        "r1_bandit:attempt:2:combat:50",
+        "r1_bandit:attempt:2:combat:51",
+        "r1_bandit:attempt:2:combat:52",
+        "r1_bandit:attempt:2:combat:53",
+        "r1_bandit:attempt:2:combat:54",
+        "r1_bandit:attempt:2:combat:55",
+        "r1_bandit:attempt:2:combat:56",
+        "r1_bandit:attempt:2:combat:57",
+        "r1_bandit:attempt:2:combat:58",
+        "r1_bandit:attempt:2:combat:101",
+        "r1_bandit:attempt:2:combat:98",
+        "r1_bandit:attempt:2:combat:116",
+        "r1_bandit:attempt:2:combat:128",
+        "r1_bandit:attempt:2:combat:138",
+        "r1_bandit:attempt:2:combat:150",
+        "r1_bandit:attempt:2:combat:163",
+        "r1_bandit:attempt:2:combat:164",
+        "r1_bandit:attempt:2:combat:175",
+        "r1_bandit:attempt:2:combat:176",
+        "r1_bandit:attempt:2:combat:177",
+        "r1_bandit:attempt:2:combat:178",
+        "r1_bandit:attempt:2:combat:199",
+        "r1_bandit:attempt:2:combat:200",
+        "r1_bandit:attempt:2:combat:201",
+        "r1_bandit:attempt:2:combat:202",
+        "r1_bandit:attempt:2:combat:203",
+        "r1_bandit:attempt:2:combat:204",
+        "r1_bandit:attempt:2:combat:220",
+        "r1_bandit:attempt:2:combat:245",
+        "r1_bandit:attempt:2:combat:246",
+        "r1_bandit:attempt:2:combat:249",
+        "r1_bandit:attempt:2:combat:250",
+        "r1_bandit:attempt:2:combat:251",
+        "r1_bandit:attempt:2:combat:252",
+        "r1_bandit:attempt:2:combat:264",
+        "r1_bandit:attempt:2:combat:265",
+        "r1_bandit:attempt:2:combat:285",
+        "r1_bandit:attempt:2:combat:286",
+        "r1_bandit:attempt:2:combat:287",
+        "r1_bandit:attempt:2:combat:310",
+        "r1_bandit:attempt:2:combat:311",
+        "r1_bandit:attempt:2:combat:312",
+        "r1_bandit:attempt:2:combat:322",
+        "r1_bandit:attempt:2:combat:323",
+        "r1_bandit:attempt:2:combat:354",
+        "r1_bandit:attempt:2:combat:355",
+        "r1_bandit:attempt:2:combat:356",
+        "r1_bandit:attempt:2:combat:357",
+        "r1_bandit:attempt:2:combat:366",
+        "r1_bandit:attempt:2:combat:370",
+        "r1_bandit:attempt:2:combat:381",
+        "r1_bandit:attempt:2:combat:401",
+        "r1_bandit:attempt:2:combat:402",
+        "r1_bandit:attempt:2:combat:426",
+        "r1_bandit:attempt:2:combat:427",
+        "r1_bandit:attempt:2:combat:428",
+        "r1_bandit:attempt:2:combat:429",
+        "r1_bandit:attempt:2:combat:431",
+        "r1_bandit:attempt:2:combat:458",
+        "r1_bandit:attempt:2:combat:459",
+        "r1_bandit:attempt:2:combat:460",
+        "r1_bandit:attempt:2:combat:461",
+        "r1_bandit:attempt:2:combat:462",
+        "r1_bandit:attempt:2:combat:463",
+        "r1_bandit:attempt:2:combat:464",
+        "r1_bandit:attempt:2:combat:481",
+        "r1_bandit:attempt:2:combat:482",
+        "r1_bandit:attempt:2:combat:507",
+        "r1_bandit:attempt:2:combat:508",
+        "r1_bandit:attempt:2:combat:509",
+        "r1_bandit:attempt:2:combat:510",
+        "r1_bandit:attempt:2:combat:513",
+        "r1_bandit:attempt:2:combat:526",
+        "r1_bandit:attempt:2:combat:527",
+        "r1_bandit:attempt:2:combat:553",
+        "r1_bandit:attempt:2:combat:564",
+        "r1_bandit:attempt:2:combat:565",
+        "r1_bandit:attempt:2:combat:566",
+        "r1_bandit:attempt:2:combat:567",
+        "r1_bandit:attempt:3:combat:49",
+        "r1_bandit:attempt:3:combat:50",
+        "r1_bandit:attempt:3:combat:51",
+        "r1_bandit:attempt:3:combat:52",
+        "r1_bandit:attempt:3:combat:53",
+        "r1_bandit:attempt:3:combat:54",
+        "r1_bandit:attempt:3:combat:55",
+        "r1_bandit:attempt:3:combat:56",
+        "r1_bandit:attempt:3:combat:57",
+        "r1_bandit:attempt:3:combat:58",
+        "r1_bandit:attempt:3:combat:101",
+        "r1_bandit:attempt:3:combat:102",
+        "r1_bandit:attempt:3:combat:117",
+        "r1_bandit:attempt:3:combat:129",
+        "r1_bandit:attempt:3:combat:138",
+        "r1_bandit:attempt:3:combat:150",
+        "r1_bandit:attempt:3:combat:162",
+        "r1_bandit:attempt:3:combat:163",
+        "r1_bandit:attempt:3:combat:173",
+        "r1_bandit:attempt:3:combat:174",
+        "r1_bandit:attempt:3:combat:175",
+        "r1_bandit:attempt:3:combat:176",
+        "r1_bandit:attempt:3:combat:197",
+        "r1_bandit:attempt:3:combat:198",
+        "r1_bandit:attempt:3:combat:199",
+        "r1_bandit:attempt:3:combat:200",
+        "r1_bandit:attempt:3:combat:201",
+        "r1_bandit:attempt:3:combat:202",
+        "r1_bandit:attempt:3:combat:227",
+        "r1_bandit:attempt:3:combat:243",
+        "r1_bandit:attempt:3:combat:245",
+        "r1_bandit:attempt:3:combat:247",
+        "r1_bandit:attempt:3:combat:248",
+        "r1_bandit:attempt:3:combat:249",
+        "r1_bandit:attempt:3:combat:250",
+        "r1_bandit:attempt:3:combat:278",
+        "r1_bandit:attempt:3:combat:279",
+        "r1_bandit:attempt:3:combat:280",
+        "r1_bandit:attempt:3:combat:281",
+        "r1_bandit:attempt:3:combat:290",
+        "r1_bandit:attempt:3:combat:305",
+        "r1_bandit:attempt:3:combat:306",
+        "r1_bandit:attempt:3:combat:307",
+        "r1_bandit:attempt:3:combat:308",
+        "r1_bandit:attempt:3:combat:309",
+        "r1_bandit:attempt:3:combat:310",
+        "r1_bandit:attempt:3:combat:324",
+        "r1_bandit:attempt:3:combat:325",
+        "r1_bandit:attempt:3:combat:356",
+        "r1_bandit:attempt:3:combat:357",
+        "r1_bandit:attempt:3:combat:358",
+        "r1_bandit:attempt:3:combat:359",
+        "r1_bandit:attempt:3:combat:371",
+        "r1_bandit:attempt:3:combat:372",
+        "r1_bandit:attempt:3:combat:384",
+        "r1_bandit:attempt:3:combat:403",
+        "r1_bandit:attempt:3:combat:404",
+        "r1_bandit:attempt:3:combat:406",
+        "r1_bandit:attempt:3:combat:427",
+        "r1_bandit:attempt:3:combat:428",
+        "r1_bandit:attempt:3:combat:429",
+        "r1_bandit:attempt:3:combat:431",
+        "r1_bandit:attempt:3:combat:435",
+        "r1_bandit:attempt:3:combat:460",
+        "r1_bandit:attempt:3:combat:461",
+        "r1_bandit:attempt:3:combat:462",
+        "r1_bandit:attempt:3:combat:463",
+        "r1_bandit:attempt:3:combat:480",
+        "r1_bandit:attempt:3:combat:481",
+        "r1_bandit:attempt:3:combat:495",
+        "r1_bandit:attempt:3:combat:514",
+        "r1_bandit:attempt:3:combat:515",
+        "r1_bandit:attempt:3:combat:516",
+        "r1_bandit:attempt:3:combat:517",
+        "r1_bandit:attempt:3:combat:519",
+        "r1_bandit:attempt:3:combat:520",
+        "r1_bandit:attempt:3:combat:521",
+        "r1_bandit:attempt:3:combat:530",
+        "r1_bandit:attempt:3:combat:531",
+        "r1_bandit:attempt:3:combat:542",
+        "r1_bandit:attempt:3:combat:561",
+        "r1_bandit:attempt:3:combat:562",
+        "r1_bandit:attempt:3:combat:563",
+        "r1_bandit:attempt:3:combat:564",
+        "r1_bandit:attempt:3:combat:565",
+        "r1_bandit:attempt:3:combat:566",
+        "r1_bandit:attempt:3:combat:567",
+        "r1_bandit:attempt:3:combat:568",
+        "r1_bandit:attempt:3:combat:569",
+        "r1_bandit:attempt:3:combat:592",
+        "r1_bandit:attempt:3:combat:593",
+        "r1_bandit:attempt:3:combat:630",
+        "r1_bandit:attempt:3:combat:631",
+        "r1_bandit:attempt:3:combat:651",
+        "r1_bandit:attempt:3:combat:652",
+        "r1_bandit:attempt:3:combat:653",
+        "r1_bandit:attempt:3:combat:654",
+        "r1_bandit:attempt:3:combat:655",
+        "r1_bandit:attempt:3:combat:656",
+        "r1_bandit:attempt:3:combat:657",
+        "r1_bandit:attempt:3:combat:658",
+        "r1_bandit:attempt:3:combat:659",
+        "r1_bandit:attempt:3:combat:670",
+        "r1_bandit:attempt:3:combat:688",
+        "r1_bandit:attempt:3:combat:689",
+        "r1_bandit:attempt:3:combat:690",
+        "r1_bandit:attempt:3:combat:691"
+      ],
+      "attributions": []
+    },
+    {
+      "id": "knowledge:56",
+      "key": "concept:enemy_minion_melee|region_1|region_1_optional_branch|combat_pattern|fight_player_squad|enemy_concept_threat:enemy_minion_melee",
+      "subject": {
+        "id": "concept:enemy_minion_melee",
+        "name": "近战小怪",
+        "conceptId": "enemy_minion_melee"
+      },
+      "environment": {
+        "region": "region_1",
+        "encounterBand": "region_1_optional_branch",
+        "phase": "combat_pattern"
+      },
+      "behavior": {
+        "kind": "fight_player_squad",
+        "key": "enemy_concept_threat:enemy_minion_melee",
+        "target": "player_squad"
+      },
+      "result": {
+        "sampleCount": 3,
+        "outcomeDistribution": {
+          "enemy_concept_threat": 3
+        },
+        "observations": [
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 475.433,
+            "damageShare": 0.328,
+            "threatRank": 2,
+            "healing": 0,
+            "shielding": 100.64,
+            "kills": 2,
+            "skillCasts": 7,
+            "observedTargets": [
+              "拒马民兵",
+              "草药民兵",
+              "灰鸦战士",
+              "短矛民兵"
+            ],
+            "supportTargets": [
+              "近战小怪"
+            ]
+          },
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 478.0106,
+            "damageShare": 0.3364,
+            "threatRank": 2,
+            "healing": 0,
+            "shielding": 100.64,
+            "kills": 2,
+            "skillCasts": 7,
+            "observedTargets": [
+              "拒马民兵",
+              "草药民兵",
+              "灰鸦战士",
+              "短矛民兵"
+            ],
+            "supportTargets": [
+              "近战小怪"
+            ]
+          },
+          {
+            "outcome": "enemy_concept_threat",
+            "observedUnitCount": 1,
+            "damage": 482.1671,
+            "damageShare": 0.3024,
+            "threatRank": 2,
+            "healing": 0,
+            "shielding": 100.64,
+            "kills": 0,
+            "skillCasts": 8,
+            "observedTargets": [
+              "拒马民兵",
+              "草药民兵",
+              "灰鸦战士",
+              "短矛民兵"
+            ],
+            "supportTargets": [
+              "近战小怪"
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "r1_bandit:attempt:1:combat:7",
+        "r1_bandit:attempt:1:combat:77",
+        "r1_bandit:attempt:1:combat:78",
+        "r1_bandit:attempt:1:combat:79",
+        "r1_bandit:attempt:1:combat:80",
+        "r1_bandit:attempt:1:combat:81",
+        "r1_bandit:attempt:1:combat:82",
+        "r1_bandit:attempt:1:combat:85",
+        "r1_bandit:attempt:1:combat:128",
+        "r1_bandit:attempt:1:combat:160",
+        "r1_bandit:attempt:1:combat:196",
+        "r1_bandit:attempt:1:combat:201",
+        "r1_bandit:attempt:1:combat:202",
+        "r1_bandit:attempt:1:combat:203",
+        "r1_bandit:attempt:1:combat:234",
+        "r1_bandit:attempt:1:combat:262",
+        "r1_bandit:attempt:1:combat:263",
+        "r1_bandit:attempt:1:combat:264",
+        "r1_bandit:attempt:1:combat:277",
+        "r1_bandit:attempt:1:combat:336",
+        "r1_bandit:attempt:1:combat:337",
+        "r1_bandit:attempt:1:combat:338",
+        "r1_bandit:attempt:1:combat:339",
+        "r1_bandit:attempt:1:combat:383",
+        "r1_bandit:attempt:1:combat:417",
+        "r1_bandit:attempt:1:combat:433",
+        "r1_bandit:attempt:1:combat:434",
+        "r1_bandit:attempt:1:combat:435",
+        "r1_bandit:attempt:1:combat:438",
+        "r1_bandit:attempt:1:combat:455",
+        "r1_bandit:attempt:1:combat:467",
+        "r1_bandit:attempt:1:combat:468",
+        "r1_bandit:attempt:1:combat:469",
+        "r1_bandit:attempt:1:combat:470",
+        "r1_bandit:attempt:1:combat:524",
+        "r1_bandit:attempt:2:combat:7",
+        "r1_bandit:attempt:2:combat:77",
+        "r1_bandit:attempt:2:combat:78",
+        "r1_bandit:attempt:2:combat:79",
+        "r1_bandit:attempt:2:combat:80",
+        "r1_bandit:attempt:2:combat:81",
+        "r1_bandit:attempt:2:combat:82",
+        "r1_bandit:attempt:2:combat:85",
+        "r1_bandit:attempt:2:combat:127",
+        "r1_bandit:attempt:2:combat:162",
+        "r1_bandit:attempt:2:combat:196",
+        "r1_bandit:attempt:2:combat:205",
+        "r1_bandit:attempt:2:combat:206",
+        "r1_bandit:attempt:2:combat:207",
+        "r1_bandit:attempt:2:combat:236",
+        "r1_bandit:attempt:2:combat:261",
+        "r1_bandit:attempt:2:combat:262",
+        "r1_bandit:attempt:2:combat:263",
+        "r1_bandit:attempt:2:combat:266",
+        "r1_bandit:attempt:2:combat:313",
+        "r1_bandit:attempt:2:combat:334",
+        "r1_bandit:attempt:2:combat:335",
+        "r1_bandit:attempt:2:combat:336",
+        "r1_bandit:attempt:2:combat:353",
+        "r1_bandit:attempt:2:combat:392",
+        "r1_bandit:attempt:2:combat:425",
+        "r1_bandit:attempt:2:combat:433",
+        "r1_bandit:attempt:2:combat:434",
+        "r1_bandit:attempt:2:combat:435",
+        "r1_bandit:attempt:2:combat:469",
+        "r1_bandit:attempt:2:combat:470",
+        "r1_bandit:attempt:2:combat:471",
+        "r1_bandit:attempt:2:combat:472",
+        "r1_bandit:attempt:2:combat:511",
+        "r1_bandit:attempt:2:combat:512",
+        "r1_bandit:attempt:2:combat:563",
+        "r1_bandit:attempt:3:combat:7",
+        "r1_bandit:attempt:3:combat:77",
+        "r1_bandit:attempt:3:combat:78",
+        "r1_bandit:attempt:3:combat:79",
+        "r1_bandit:attempt:3:combat:82",
+        "r1_bandit:attempt:3:combat:83",
+        "r1_bandit:attempt:3:combat:84",
+        "r1_bandit:attempt:3:combat:85",
+        "r1_bandit:attempt:3:combat:128",
+        "r1_bandit:attempt:3:combat:160",
+        "r1_bandit:attempt:3:combat:196",
+        "r1_bandit:attempt:3:combat:203",
+        "r1_bandit:attempt:3:combat:204",
+        "r1_bandit:attempt:3:combat:205",
+        "r1_bandit:attempt:3:combat:234",
+        "r1_bandit:attempt:3:combat:262",
+        "r1_bandit:attempt:3:combat:263",
+        "r1_bandit:attempt:3:combat:264",
+        "r1_bandit:attempt:3:combat:277",
+        "r1_bandit:attempt:3:combat:353",
+        "r1_bandit:attempt:3:combat:354",
+        "r1_bandit:attempt:3:combat:355",
+        "r1_bandit:attempt:3:combat:368",
+        "r1_bandit:attempt:3:combat:394",
+        "r1_bandit:attempt:3:combat:430",
+        "r1_bandit:attempt:3:combat:436",
+        "r1_bandit:attempt:3:combat:437",
+        "r1_bandit:attempt:3:combat:438",
+        "r1_bandit:attempt:3:combat:477",
+        "r1_bandit:attempt:3:combat:483",
+        "r1_bandit:attempt:3:combat:484",
+        "r1_bandit:attempt:3:combat:485",
+        "r1_bandit:attempt:3:combat:518",
+        "r1_bandit:attempt:3:combat:552",
+        "r1_bandit:attempt:3:combat:591",
+        "r1_bandit:attempt:3:combat:605",
+        "r1_bandit:attempt:3:combat:606",
+        "r1_bandit:attempt:3:combat:607"
+      ],
+      "attributions": []
+    }
+  ],
+  "eventStatisticsCount": 185,
+  "visibleEvents": [
+    {
+      "id": "r1_bandit:attempt:3:combat:408",
+      "time": 16.72,
+      "type": "damage",
+      "subject": "草药民兵",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 5.36,
+        "target": "近战小怪"
+      },
+      "H": 0.216,
+      "emotionDelta": 0.0003
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:417",
+      "time": 17.04,
+      "type": "skill",
+      "subject": "草药民兵",
+      "behavior": "急救",
+      "result": {
+        "kind": "skill",
+        "occurred": true,
+        "amount": 0,
+        "target": "近战小怪"
+      },
+      "H": 0.2012,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:438",
+      "time": 17.92,
+      "type": "damage",
+      "subject": "近战小怪",
+      "behavior": "顺劈",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 25.97,
+        "target": "短矛民兵"
+      },
+      "H": 0.3163,
+      "emotionDelta": -0.002
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:450",
+      "time": 18.16,
+      "type": "damage",
+      "subject": "灰鸦战士",
+      "behavior": "顺劈",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 31.2144,
+        "target": "近战小怪"
+      },
+      "H": 0.216,
+      "emotionDelta": 0.001
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:451",
+      "time": 18.24,
+      "type": "damage",
+      "subject": "草药民兵",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 5.36,
+        "target": "近战小怪"
+      },
+      "H": 0.216,
+      "emotionDelta": 0.0004
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:476",
+      "time": 19.12,
+      "type": "death",
+      "subject": "灰鸦战士",
+      "behavior": "重击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "普通小怪"
+      },
+      "H": 0.2656,
+      "emotionDelta": 0.0564
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:502",
+      "time": 20.08,
+      "type": "status",
+      "subject": "灰鸦战士",
+      "behavior": "战旗冲锋",
+      "result": {
+        "kind": "status",
+        "occurred": true,
+        "amount": 3.5,
+        "target": "草药民兵"
+      },
+      "H": 0.2728,
+      "emotionDelta": 0
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:504",
+      "time": 20.08,
+      "type": "damage",
+      "subject": "灰鸦战士",
+      "behavior": "冲锋",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 50.92,
+        "target": "远程小怪"
+      },
+      "H": 0.3195,
+      "emotionDelta": 0.0071
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:567",
+      "time": 22.72,
+      "type": "death",
+      "subject": "远程小怪",
+      "behavior": "猎标箭",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "灰鸦战士"
+      },
+      "H": 0.1814,
+      "emotionDelta": -0.0424
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:568",
+      "time": 22.72,
+      "type": "damage",
+      "subject": "远程小怪",
+      "behavior": "火种余爆",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 31.86,
+        "target": "短矛民兵"
+      },
+      "H": 0.3276,
+      "emotionDelta": -0.0043
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:569",
+      "time": 22.72,
+      "type": "damage",
+      "subject": "远程小怪",
+      "behavior": "火种余爆",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 32.62,
+        "target": "草药民兵"
+      },
+      "H": 0.3276,
+      "emotionDelta": -0.0039
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:619",
+      "time": 24.88,
+      "type": "death",
+      "subject": "短矛民兵",
+      "behavior": "重击",
+      "result": {
+        "kind": "enemy_kill",
+        "occurred": true,
+        "amount": 0,
+        "target": "近战小怪"
+      },
+      "H": 0.2349,
+      "emotionDelta": 0.0491
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:641",
+      "time": 26.24,
+      "type": "damage",
+      "subject": "草药民兵",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 10.4,
+        "target": "远程小怪"
+      },
+      "H": 0.3163,
+      "emotionDelta": -0.0015
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:658",
+      "time": 26.64,
+      "type": "death",
+      "subject": "远程小怪",
+      "behavior": "钉足箭",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "短矛民兵"
+      },
+      "H": 0.1952,
+      "emotionDelta": -0.0444
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:679",
+      "time": 27.76,
+      "type": "damage",
+      "subject": "草药民兵",
+      "behavior": "攻击",
+      "result": {
+        "kind": "damage",
+        "occurred": true,
+        "amount": 10.4,
+        "target": "远程小怪"
+      },
+      "H": 0.3163,
+      "emotionDelta": -0.0008
+    },
+    {
+      "id": "map_action:r1_bandit:14:result",
+      "time": 28.24,
+      "type": "combat_result",
+      "subject": "player squad",
+      "behavior": "challenge:r1_bandit",
+      "result": {
+        "kind": "combat_loss",
+        "occurred": true,
+        "observedPower": 240,
+        "boundary": "interrupted_by_defeat",
+        "firstClear": false,
+        "survivors": {
+          "player": 0,
+          "enemy": 2
+        }
+      },
+      "H": 0.7932,
+      "emotionDelta": -0.5774
+    },
+    {
+      "id": "r1_bandit:attempt:3:combat:691",
+      "time": 28.24,
+      "type": "death",
+      "subject": "远程小怪",
+      "behavior": "猎标箭",
+      "result": {
+        "kind": "ally_death",
+        "occurred": true,
+        "amount": 0,
+        "target": "草药民兵"
+      },
+      "H": 0.2783,
+      "emotionDelta": -0.0634
+    },
+    {
+      "id": "map_action:r1_bandit:14:summary",
+      "time": 28.319999999999997,
+      "type": "action_summary",
+      "subject": "player squad",
+      "behavior": "challenge:r1_bandit",
+      "result": {
+        "kind": "action_summary",
+        "occurred": true,
+        "observedPower": 240,
+        "boundary": "interrupted_by_defeat",
+        "components": [
+          {
+            "kind": "combat_loss"
+          }
+        ]
+      },
+      "H": 0.6563,
+      "emotionDelta": -0.4159
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "one exact id from existingKnowledge created by this action",
+    "primaryCause": "short causal statement",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact visible event ids"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  },
+  "enrichedRun": {
+    "environmentVariant": "enriched_v1",
+    "chapter": 1,
+    "seed": "paired-alpha",
+    "profileId": "inertial_player",
+    "requestedModel": "5.5fast",
+    "actualModel": "unknown_platform_default"
+  }
+}

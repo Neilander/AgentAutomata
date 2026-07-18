@@ -1,6 +1,6 @@
 {
   "schema": "agent_automata_task_budget_board_v2",
-  "updatedAt": "2026-07-17",
+  "updatedAt": "2026-07-18",
   "workflow": [
     "先围绕可玩的角色搭配定义本阶段体验目标。",
     "用统一 4v4 战斗验证队伍 combo、克制和强度感。",
@@ -1380,7 +1380,7 @@
       "parentId": "emotion-decision-expectation-settlement",
       "sourceTaskId": "emotion-decision-expectation-settlement",
       "outcome": "所有预期都拥有明确来源、强度、期限和结算方式；概率、换人、换装、新关惯性与确认感共享同一套可审计账本，玩家知识只消费解释后的可见信号。",
-      "nextAction": "先冻结五项共同输入输出合同，再按“信息筛选→概率预期→有效强度→新关惯性→确认感”顺序制作配对测试。",
+      "nextAction": "信息筛选、有效强度、新关惯性和确认感已经完成；下一步只处理概率型掉落预期，先做同批掉落顺序不变性。",
       "owner": "agent",
       "priority": "critical",
       "importance": "critical",
@@ -1412,7 +1412,7 @@
         "所有玩家可见知识只消费概念解释后的信号",
         "真实多玩家轨迹中的自然推进和换装不再让大多数预测直接失效"
       ],
-      "lastEvidence": "2026-07-17 partial implementation: confirmation C, equipment effective-strength rebasing, and weak new-encounter inertia pass focused deterministic tests; probability distribution and player-visible signal filtering remain queued."
+      "lastEvidence": "2026-07-18：信息筛选、装备有效强度、新关弱惯性和确认感C均已完成并通过正式回归；过滤知识已接入旧canonical知识库，真实Agent消融对照证明历史认知坐标会改变行为。该修复组只剩概率型掉落预期。"
     },
     {
       "id": "expectation-probability-distribution",
@@ -1464,7 +1464,7 @@
       "parentId": "expectation-signal-repair-suite",
       "sourceTaskId": "expectation-signal-repair-suite",
       "outcome": "玩家能够形成“基础强度5、装备倍率200%、有效强度10”的可解释预期，同时保留角色与装备的归因边界。",
-      "nextAction": "统一装备倍率语义，接入角色强度矩阵，并用裸装换人、换人后换装、同强度不同词条三组战斗验证。",
+      "nextAction": "",
       "owner": "agent",
       "priority": "critical",
       "importance": "critical",
@@ -1503,7 +1503,7 @@
       "parentId": "expectation-signal-repair-suite",
       "sourceTaskId": "expectation-signal-repair-suite",
       "outcome": "符合预期不再等于零体验；失败符合预期时 C 可小幅为正，但仍与失败本身的负 R 分开，净体验不会被错误翻正。",
-      "nextAction": "确定 C 的信心、重要性和误差带映射，制作预期成功/失败分别被确认、轻微偏离和严重证伪的九宫格测试。",
+      "nextAction": "",
       "owner": "agent",
       "priority": "critical",
       "importance": "critical",
@@ -1543,7 +1543,7 @@
       "parentId": "expectation-signal-repair-suite",
       "sourceTaskId": "expectation-signal-repair-suite",
       "outcome": "玩家自然前进时不再完全没有预期，也不会把上一关结论强行当成新关事实；强烈可见信号能够覆盖弱惯性。",
-      "nextAction": "定义上一关结果到新关的低信心迁移和信号覆盖规则，测试连续普通关、明显Boss门、显著简单奖励关和隐藏难度突增。",
+      "nextAction": "",
       "owner": "agent",
       "priority": "critical",
       "importance": "critical",
@@ -1584,7 +1584,7 @@
       "parentId": "expectation-signal-repair-suite",
       "sourceTaskId": "expectation-signal-repair-suite",
       "outcome": "玩家只能学习诸如“本场表现出近身攻击”“本场使用过治疗或护盾”等可见行为概念，不能读取临时对象名、内部职业，也不能从职业预设站位或固定职责。",
-      "nextAction": "请用户审阅带真实站位和完整认知坐标的类型1关系；通过后接入旧canonical合并入口并作为Agent知识输入。提示文本必须同时保留矩阵位置、当时标尺、相对标尺距离和等级。",
+      "nextAction": "后续在多玩家、跨关卡真实长流程中监测过滤是否遗漏决策关键信号，并用更多历史认知坐标对照校准行为稳定性。",
       "owner": "agent",
       "priority": "critical",
       "importance": "critical",
@@ -1592,7 +1592,7 @@
       "blastRadius": "high",
       "attemptBudget": 3,
       "attemptsUsed": 3,
-      "status": "active",
+      "status": "done",
       "links": [
         "projects/western_fantasy_continent/PLAYER_MODEL_RUNTIME.md",
         "projects/western_fantasy_continent/skills/player-cognition-simulation/references/signal-concept-interpretation.md"
@@ -1613,7 +1613,7 @@
         "信息减少后归因仍能使用玩家实际观察到的信号完成",
         "原始事件只保留在审计层"
       ],
-      "lastEvidence": "2026-07-18 类型1 V7 PASS：22场形成134条关系、107个合并键、17个重复证据键；22/22条关卡挑战均按真实站位1到4保存角色矩阵位置、当时前30%标尺、相对标尺距离、认知等级和证据数，全部满足矩阵位置减标尺等于相对距离。数值直接来自既有角色富集矩阵和前30%标尺，不新增评分。换位仍分键，整理层仍只提供事实给Agent。"
+      "lastEvidence": "2026-07-18 正式接线与真实Agent对照PASS：过滤后的类型1关系已复用旧canonical合并、检索和归因入口；首场正式战斗只生成4条因果知识，角色详细表现仍进入旧角色认知，公开证据ID无原始事件泄漏。完整请求中Agent准确比较历史相对标尺-2.2与当前+3.951并选择重试；删除历史认知坐标、其余条件不变时，独立Agent改为换人且没有编造坐标。"
     },
     {
       "id": "emotion-failure-experience-settlement",

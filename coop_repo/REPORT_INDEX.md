@@ -4,6 +4,8 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-18
 
+- `2026-07-18_1241_formal-filtered-knowledge-agent-ablation.md`：类型1 V7正式复用旧知识合并、检索和归因入口；公开信号ID取代原始事件ID。真实Agent在完整历史坐标下引用-2.2→+3.951并重试，删除坐标后独立Agent改为换人，正式运行时与全部旧回归通过。
+
 - `2026-07-18_1203_complete-cognition-coordinate-snapshot.md`：类型1 V7 将既有角色富集矩阵完整接入战斗知识，逐站位保存矩阵位置、当时前30%标尺、相对标尺距离和认知等级；22/22场数学关系与站位对齐通过，未新增评分，仍隔离待正式Agent接入。
 
 - `2026-07-18_1156_formation-aware-agent-knowledge.md`：纠正上一版抹掉站位和程序裁决历史知识的问题；V6按真实站位1到4保存角色认知，同四人换位使用不同知识键，历史事实由Agent自行理解；22/22场站位对齐及全部旧回归通过，仍隔离待正式接入。

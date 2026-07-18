@@ -11,6 +11,7 @@ const ENTITY_IMPRESSIONS = require("../entity_impression_knowledge_v1/entity-imp
 const ROSTER_EXPECTATIONS = require("./roster-change-expectation");
 const ROSTER_EXPECTATION_A = require("./roster-expectation-a");
 const CHARACTER_EVENT_ADAPTER = require("./stable-character-event-adapter");
+const RECEIVED_INFORMATION_ORGANIZER = require("./received-information-organizer");
 const { INFORMATION_PRESENTATION_CONTRACT } = require("../../game_data/combat-signals");
 
 const SCHEMA = "player_agent_api_loop_v1";
@@ -168,7 +169,7 @@ function applyDecisionResponse(sessionInput, responseInput) {
     historyIndex: session.history.length - 1,
     action: response.action,
     outcome: result.event.outcome,
-    eventIds: result.eventLog.map((row) => row.id),
+    eventIds: attributionEvidenceIds(record),
     knowledgeIds,
   };
   session.phase = "attribution";
@@ -248,7 +249,7 @@ function buildDecisionRequest(session) {
     cycle: session.cycle + 1,
     agentSession: PERSISTENT_AGENT.requestMetadata(session.agentContext, "decision"),
     playerProfile: clone(session.playerProfile),
-    instruction: "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. rosterChangeExpectations are fallible code-owned predictions scoped to the shown encounter and team; unknown means there is not enough player evidence. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
+    instruction: "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. Historical encounter facts preserve formation slots and the character-cognition coordinates that existed when the result occurred: matrix position, that moment's top-30-percent scale boundary, and position relative to that boundary. Treat them as historical player evidence, compare them with current characterImpressions, and make your own judgment; the organizer does not decide whether a past result still applies. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. rosterChangeExpectations are fallible code-owned predictions scoped to the shown encounter and team; unknown means there is not enough player evidence. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
     playerState: {
       emotion: round(session.cognitionState.emotion.value),
       activeGoalId,
@@ -288,7 +289,8 @@ function buildDecisionRequest(session) {
         requiredFields: ["id", "problem", "cause", "resultKind", "target", "verificationScope"],
         verificationScope: "current_action|next_combat",
         nextCombatResultKind: "team_experiment_contribution",
-        optionalTargetCondition: {
+        nextCombatTargetCondition: {
+          requirement: "required when verificationScope is next_combat",
           metric: "damage|heal|shield|skillCount|damageShare|damageRank",
           operator: ">|>=|<|<=|==",
           value: "number",
@@ -958,13 +960,83 @@ function selectRuntimeKnowledge(rows, limit) {
 }
 
 function updateKnowledgeFromFeedback(session, record, context) {
-  if (record.action.startsWith("challenge:")) return learnFromChallenge(session.knowledgeBase, record, context);
+  if (record.action.startsWith("challenge:")) return learnFromChallenge(session, record, context);
   if (record.action.startsWith("equip:")) return learnFromEquipment(session.knowledgeBase, record, context);
   if (record.action.startsWith("swap:")) return learnFromTeamSwap(session.knowledgeBase, record, context);
   return [];
 }
 
-function learnFromChallenge(knowledgeBase, record, context) {
+function learnFromChallenge(session, record, context) {
+  const before = context.gameStateBefore;
+  const teamIds = [...(before.teamSlots || [])];
+  const rosterById = new Map((before.roster || []).map((unit) => [unit.id, unit]));
+  const cognitionById = new Map(
+    ENTITY_IMPRESSIONS.listCurrentStrengthCognition(session.entityImpressionState)
+      .map((row) => [row.subject?.id, row]),
+  );
+  const teamMembers = teamIds.map((id, index) => {
+    const unit = rosterById.get(id) || { id, name: id };
+    const cognition = cognitionById.get(id);
+    return {
+      id,
+      name: unit.name,
+      role: unit.role,
+      kind: unit.kind,
+      formationSlot: index + 1,
+      cognitionMatrixPosition: cognition?.position ?? null,
+      cognitionScaleBoundaryPosition: cognition?.scaleBoundaryPosition ?? null,
+      cognitionRelativeToScale: cognition?.relativeToScale ?? null,
+      cognitionLevel: cognition?.level ?? null,
+      cognitionLabel: cognition?.label ?? null,
+      cognitionInTopThirtyPercent: cognition?.inTopThirtyPercent ?? null,
+      cognitionEvidenceCount: cognition?.evidenceCount ?? null,
+    };
+  });
+  const routed = RECEIVED_INFORMATION_ORGANIZER.organizeReceivedBattleInformation(
+    record.rawEventLog || record.eventLog || [],
+    {
+      seed: `formal:${record.cycle}:${record.action}`,
+      episodeId: `formal:${record.cycle}`,
+      perceptionLevel: informationPerceptionLevel(session.perceptionProfile),
+      causalContext: {
+        action: record.action,
+        node: record.gameEvent?.node,
+        region: gameRegion(before),
+        encounterBand: encounterBand(record.gameEvent?.node),
+        teamIds,
+        teamMembers,
+        gameEvent: record.gameEvent,
+        performanceScore: record.rosterExpectationUpdate?.performanceScore,
+      },
+    },
+  );
+
+  record.receivedInformation = {
+    schema: routed.schema,
+    perceptionLevel: routed.perceptionLevel,
+    receivedObservations: clone(routed.receivedObservations),
+    probabilityOpportunities: clone(routed.routes.probabilityLedger),
+    audit: clone(routed.audit),
+  };
+
+  const ids = [];
+  for (const route of routed.routes.causalKnowledge) {
+    const row = mergeKnowledgeObservation(
+      session.knowledgeBase,
+      route.tuple,
+      route.observation,
+      route.evidencePublicSignalIds,
+    );
+    if (row.key !== route.knowledgeKeyPreview) {
+      throw new Error(`filtered type1 key mismatch: ${row.key} !== ${route.knowledgeKeyPreview}`);
+    }
+    if (!ids.includes(row.id)) ids.push(row.id);
+  }
+  return ids;
+}
+
+// Kept only as a regression reference. The runtime no longer calls this unfiltered path.
+function learnFromChallengeLegacy(knowledgeBase, record, context) {
   const before = context.gameStateBefore;
   const after = context.gameStateAfter;
   const core = gameCore(after);
@@ -1268,6 +1340,7 @@ function knowledgeKey(tuple) {
     tuple.environment?.region || "unknown_region",
     tuple.environment?.node || tuple.environment?.encounterBand || "unknown_environment",
     tuple.environment?.phase || "unknown_phase",
+    tuple.environment?.teamFingerprint || "no_exact_team",
     tuple.behavior?.kind || "unknown_behavior",
     tuple.behavior?.key || "unknown_key",
   ].join("|");
@@ -1379,6 +1452,10 @@ function gameRegion(state) {
   return state?.schema === "map_cognition_chapter2_v1" ? "region_2" : "region_1";
 }
 
+function informationPerceptionLevel(profile) {
+  return profile === "expert" ? "high" : "ordinary";
+}
+
 function unitRef(unit) {
   if (!unit) return null;
   return { id: unit.id, name: unit.name, role: unit.role, kind: unit.kind };
@@ -1416,6 +1493,17 @@ function summarizeEvent(row) {
 }
 
 function buildAttributionEvidence(record) {
+  if (record.receivedInformation?.receivedObservations?.length) {
+    return record.receivedInformation.receivedObservations.map((row) => ({
+      id: row.sourceSignalId,
+      type: row.sourceSignalType,
+      subject: row.subject?.label || row.subject?.id || null,
+      environment: row.environment || {},
+      statement: row.statement,
+      evidenceWeight: row.evidenceWeight,
+      persistentFact: Boolean(row.persistentFact),
+    }));
+  }
   const alwaysKeep = new Set(["combat_result", "loot_outcome", "loot", "equipment_change", "map_unlock", "character_unlock", "action_summary"]);
   const traceById = new Map(record.eventTrace.map((row) => [row.eventId, row]));
   const salient = record.eventLog.filter((event) => {
@@ -1434,6 +1522,15 @@ function buildAttributionEvidence(record) {
       emotionDelta: round(trace?.emotionDelta),
     };
   });
+}
+
+function attributionEvidenceIds(record) {
+  if (record.receivedInformation?.receivedObservations?.length) {
+    return record.receivedInformation.receivedObservations
+      .map((row) => row.sourceSignalId)
+      .filter(Boolean);
+  }
+  return (record.eventLog || []).map((row) => row.id).filter(Boolean);
 }
 
 function compactResult(result = {}) {
@@ -1520,6 +1617,7 @@ function summarizeCharacterImpressions(state) {
   return ENTITY_IMPRESSIONS.listCurrentStrengthCognition(state).map((row) => ({
     subject: row.subject,
     position: row.position,
+    scaleBoundaryPosition: row.scaleBoundaryPosition,
     currentLevel: row.level,
     currentLabel: row.label,
     relativeToTopThirtyBoundary: row.relativeToScale,

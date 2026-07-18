@@ -164,6 +164,7 @@ function scoreKnowledge(row, index, total, context) {
 
 function summarizeKnowledge(row) {
   const observations = row.result?.observations || [];
+  const playerReadableFact = summarizePlayerReadableFact(row);
   return {
     id: row.id,
     key: row.key,
@@ -180,7 +181,27 @@ function summarizeKnowledge(row) {
       recentEventIds: (row.evidenceEventIds || []).slice(-3),
     },
     latestAttribution: compactAttribution((row.attributions || []).at(-1) || row.latestAttribution || null),
+    ...(playerReadableFact ? { playerReadableFact } : {}),
   };
+}
+
+function summarizePlayerReadableFact(row) {
+  if (row.behavior?.kind !== "challenge_level") return null;
+  const observation = latestObservation(row);
+  const snapshot = observation.teamCognitionSnapshot || [];
+  if (!snapshot.length) return null;
+  const slotLabels = ["前排1", "前排2", "后排1", "后排2"];
+  const formation = snapshot.map((member, index) => {
+    const slotIndex = Math.max(0, Number(member.formationSlot || index + 1) - 1);
+    const matrix = formatNumber(member.cognitionMatrixPosition);
+    const boundary = formatNumber(member.cognitionScaleBoundaryPosition);
+    const relative = formatSignedNumber(member.cognitionRelativeToScale);
+    return `${slotLabels[slotIndex] || `站位${slotIndex + 1}`} ${member.name || member.id}`
+      + `（矩阵位置${matrix}，当时前30%标尺${boundary}，相对标尺${relative}，${member.cognitionLabel || `认知等级${member.cognitionLevel}`}，证据${member.cognitionEvidenceCount || 0}场）`;
+  });
+  return `历史战斗事实：${row.environment?.node || "未知关卡"}；阵型：${formation.join("；")}；`
+    + `结果${observation.outcome || "unknown"}，表现分${formatNumber(observation.performanceScore)}。`
+    + "相对标尺=矩阵位置-当时前30%标尺；这是当时认知，不是程序对当前结果的裁决。";
 }
 
 function compactObservation(value) {
@@ -257,6 +278,14 @@ function actionTarget(action) { return String(action).split(":")[1] || ""; }
 function nodeBandToken(node) { return String(node).replace(/_\d+$/, ""); }
 function latestObservation(row) { return row.result?.observations?.at?.(-1) || row.result?.latestObservation || {}; }
 function byteLength(value) { return Buffer.byteLength(JSON.stringify(value), "utf8"); }
+function formatNumber(value) {
+  return Number.isFinite(Number(value)) ? String(round(value)) : "未知";
+}
+function formatSignedNumber(value) {
+  if (!Number.isFinite(Number(value))) return "未知";
+  const number = round(value);
+  return number > 0 ? `+${number}` : String(number);
+}
 function round(value) { return Number(Number(value || 0).toFixed(4)); }
 
 module.exports = {

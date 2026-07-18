@@ -92,15 +92,20 @@ left-4 → 草药民兵 → militia_herb
 
 旧正式流程原先因身份不匹配，详细特点证据实际没有达到复核门槛。修正后，旧角色认知算法本身没有改，只恢复了它原本应该收到的详细证据。
 
-## 当前接入边界
+## 当前接入状态
 
 - `left-*` 永久身份修正已经接入正式角色认知入口。
-- 三块组合模块仍是隔离验证程序，没有替换正式类型1知识入口。
-- 非角色事件过滤器仍需用户确认输出，再单独接入；接入时不能关闭或绕过旧角色认知。
+- 三块的职责边界保持隔离，但已经在正式流程中按顺序组合：旧角色认知先更新，过滤器再生成非角色类型1关系，换人预期读取更新后的认知。
+- 过滤后的类型1关系复用旧 `knowledgeBase` 和旧合并入口，没有第二套通用知识库。
+- 角色详细事件不会被非角色过滤器压缩；它们继续只更新旧强度矩阵和特点复核。
+- 正式 Agent 请求同时包含当前角色认知，以及历史战斗中四人按真实站位保存的认知坐标。
+- 原始事件和内部诊断只保留在审计层；归因使用玩家可见的公开语义信号ID。
 
 验证命令：
 
 ```powershell
 node projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/test-isolated-player-cognition-composition.js
 node projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/test-received-information-organizer.js
+node projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/verify-causal-loop.js
+node projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/validate-formal-cognition-agent-responses.js
 ```

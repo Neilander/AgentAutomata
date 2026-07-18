@@ -76,6 +76,7 @@ function compactKnowledge(row) {
     },
     evidence: row.evidence || { count: (row.evidenceEventIds || []).length, recentEventIds: (row.evidenceEventIds || []).slice(-4) },
     latestAttribution: row.latestAttribution || (row.attributions || []).at(-1) || null,
+    ...(row.playerReadableFact ? { playerReadableFact: row.playerReadableFact } : {}),
   };
 }
 

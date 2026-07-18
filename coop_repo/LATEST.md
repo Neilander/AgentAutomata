@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-18_1203_complete-cognition-coordinate-snapshot.md`](reports/2026-07-18_1203_complete-cognition-coordinate-snapshot.md)
+[`reports/2026-07-18_1241_formal-filtered-knowledge-agent-ablation.md`](reports/2026-07-18_1241_formal-filtered-knowledge-agent-ablation.md)
 
 Last updated: 2026-07-18
 
-当前重点：类型1 V7 已按真实站位保存既有富集矩阵位置、当时前30%标尺、相对标尺距离和认知等级；22/22场验证通过。请用户确认后接入旧canonical合并入口并检查实际Agent知识文本。
+当前重点：类型1 V7已正式复用旧canonical合并、检索和归因入口；角色认知仍独立先更新，公开信号ID无原始事件泄漏。真实Agent在完整历史坐标下选择重试，删除坐标后独立Agent改为换人。下一步只做多场行为矩阵校准，不再改当前结构。

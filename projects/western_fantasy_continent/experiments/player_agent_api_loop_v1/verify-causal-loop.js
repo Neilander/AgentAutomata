@@ -55,34 +55,36 @@ assert.deepEqual(lootFact.result.observations[0].unlockedNodes, undefined);
 
 const progressionFact = session.knowledgeBase.find((row) => row.environment.phase === "map_progression");
 assert.deepEqual(progressionFact.result.observations[0].unlockedNodes, ["r1_main_2"]);
-assert.deepEqual(progressionFact.evidenceEventIds, ["map_unlock:r1_main_1:1"]);
-const threatFacts = session.knowledgeBase.filter((row) => row.result.observations[0].outcome === "enemy_concept_threat");
+assert(progressionFact.evidenceEventIds.every((id) => id.startsWith("battle_signal:")));
+const threatFacts = session.knowledgeBase.filter((row) => row.result.observations[0].outcome === "visible_damage_pattern");
 assert.equal(threatFacts.length, 1);
-assert.equal(threatFacts[0].result.observations[0].observedUnitCount, 10);
-assert.equal(threatFacts[0].subject.name, "普通小怪");
+assert(threatFacts[0].result.observations[0].observedHitCount > 0);
+assert(String(threatFacts[0].subject.id).startsWith("enemy_pattern:"));
 const engineEnemyPattern = /盗匪|路匪|郊野短刀兵|郊野投石手/;
 assert(session.history[0].rawEventLog.some((row) => engineEnemyPattern.test(row.subject?.name || "")), "raw audit log should retain engine identities");
 assert.equal(session.history[0].eventLog.some((row) => engineEnemyPattern.test(JSON.stringify(row))), false, "player semantic events must not leak engine enemy identities");
 assert.equal(session.knowledgeBase.some((row) => engineEnemyPattern.test(JSON.stringify(row))), false, "knowledge must be learned from concepts, not engine enemy identities");
 assert(session.history[0].conceptInterpretation.decisions.every((row) => row.visibleEvidence.every((evidence) => evidence.eventId)), "concept matches must cite visible events");
-assert.equal(session.history[0].learningDelta.addedKnowledge.length, 10, "first challenge must persist its exact knowledge additions");
+assert.equal(session.history[0].learningDelta.addedKnowledge.length, 4, "first challenge must persist only filtered type1 relations");
 assert.deepEqual(session.history[0].learningDelta.matchedConcepts.map((row) => row.label).sort(), ["普通小怪"]);
 assert.equal(session.history[0].learningDelta.conceptLibraryChanged, false, "matching an existing concept is not concept creation");
-const herbContribution = session.knowledgeBase.find((row) => row.subject.id === "militia_herb" && row.behavior.kind === "combat_participation");
-assert(herbContribution.result.observations[0].healing > 0, "low damage must not erase support contribution");
-const firstCycleEventIds = new Set(session.history[0].eventLog.map((row) => row.id));
+assert.equal(session.knowledgeBase.some((row) => row.behavior.kind === "combat_participation"), false,
+  "character contribution must remain in the old character-cognition branch instead of type1");
+assert(session.history[0].receivedInformation.audit.divertedCharacterSignalCount > 0);
+const firstCycleEventIds = new Set(
+  session.history[0].receivedInformation.receivedObservations.map((row) => row.sourceSignalId),
+);
 for (const row of session.knowledgeBase) {
   assert(row.evidenceEventIds.length > 0, `knowledge lacks evidence: ${row.id}`);
   assert(row.evidenceEventIds.every((id) => firstCycleEventIds.has(id)), `knowledge cites non-game evidence: ${row.id}`);
 }
 
-const combatResultId = session.history[0].eventLog.find((row) => row.type === "combat_result").id;
-const summaryId = session.history[0].eventLog.find((row) => row.type === "action_summary").id;
+const combatResultId = session.knowledgeBase.find((row) => row.behavior.kind === "challenge_level").evidenceEventIds[0];
 session = LOOP.applyAttributionResponse(session, {
   knowledgeId: "knowledge:1",
   primaryCause: "The squad eliminated every enemy and survived the encounter.",
   confidence: 0.95,
-  evidenceEventIds: [combatResultId, summaryId],
+  evidenceEventIds: [combatResultId],
   alternativeCauses: [],
   nextTest: "Equip one dropped item.",
 });
@@ -91,7 +93,13 @@ const request = LOOP.getPendingRequest(session);
 assert.equal(request.playerState.characterImpressions.length, 4,
   "the next decision must receive code-owned current character impressions");
 assert(request.playerState.characterImpressions.every((row) => Number.isFinite(row.position)
-  && Number.isFinite(row.currentLevel)), "character impression summaries must expose fixed numeric outputs");
+  && Number.isFinite(row.scaleBoundaryPosition)
+  && Number.isFinite(row.relativeToTopThirtyBoundary)
+  && Number.isFinite(row.currentLevel)), "character impression summaries must expose complete current cognition coordinates");
+const retrievedEncounter = request.playerState.knowledge.find((row) => row.behavior.kind === "challenge_level");
+assert(retrievedEncounter.playerReadableFact.includes("当时前30%标尺"));
+assert(retrievedEncounter.playerReadableFact.includes("相对标尺"));
+assert.equal(retrievedEncounter.result.latestObservation.teamCognitionSnapshot.length, 4);
 assert.equal(request.playerState.rosterChangeExpectations.baseline.evidenceScope,
   "exact_current_team_and_encounter");
 assert(request.playerState.rosterChangeExpectations.actions.length > 0,
@@ -154,7 +162,9 @@ assert.equal(main2Record.outcome, "win", "starter team must be able to earn the 
 assert.equal(main2Record.gameEvent.characterUnlock?.heroId, "hero_mage");
 assert(main2Record.eventLog.some((row) => row.type === "character_unlock" && row.result.character === "mage"));
 assert(onboarding.knowledgeBase.some((row) => row.environment.phase === "character_reward"
-  && row.result.observations.some((observation) => observation.character?.heroId === "hero_mage")));
+  && row.result.observations.some((observation) => (
+    observation.characters?.some((character) => character.id === "hero_mage")
+  ))));
 onboarding = attributePending(onboarding);
 
 const postMain2Request = LOOP.getPendingRequest(onboarding);
@@ -272,19 +282,17 @@ for (let cycle = 0; cycle < 9; cycle += 1) {
     alternatives: [],
     hypothesis: null,
   });
-  const repeatedResultId = repeated.history.at(-1).eventLog.find((row) => row.type === "combat_result").id;
-  const repeatedSummaryId = repeated.history.at(-1).eventLog.find((row) => row.type === "action_summary").id;
   const encounterKnowledge = repeated.knowledgeBase.find((row) => row.behavior.kind === "challenge_level");
   repeated = LOOP.applyAttributionResponse(repeated, {
     knowledgeId: encounterKnowledge.id,
     primaryCause: "The squad completed the repeated encounter.",
     confidence: 0.9,
-    evidenceEventIds: [repeatedResultId, repeatedSummaryId],
+    evidenceEventIds: encounterKnowledge.evidenceEventIds.slice(-1),
     alternativeCauses: [],
     nextTest: "",
   });
 }
-assert.equal(repeated.knowledgeBase.length, 10, "repeating one encounter must update existing knowledge instead of creating detail spam");
+assert(repeated.knowledgeBase.length <= 7, "repeating one encounter must update filtered knowledge instead of creating detail spam");
 assert(repeated.knowledgeBase.every((row) => row.result.observations.length <= 8), "knowledge history must stay bounded");
 assert.equal(repeated.knowledgeBase.some((row) => ["skill_cast", "skill_effect", "damage"].includes(row.behavior.kind)), false);
 assert.equal(repeated.knowledgeBase.some((row) => /^right-/.test(row.subject.id)), false, "individual disposable enemies must not become long-term knowledge");

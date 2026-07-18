@@ -169,11 +169,13 @@ The human-facing rules and frozen calibration evidence are in `../../design/INFO
 
 ## 三块隔离的玩家认知组合
 
-角色认知、过滤后的类型1因果知识和换人预期现在按三块隔离验证。旧角色认知继续独占详细角色表现、强度矩阵、前30%标尺和特点复核；`received-information-organizer.js` 先筛选玩家实际接收的非角色信号，再按旧合同生成“主体 + 环境 + 行为 → 结构化结果”；换人预期只读取更新后的角色认知、四人阵容、装备与本场结果。
+角色认知、过滤后的类型1因果知识和换人预期保持三块职责隔离，并已经接入正式运行顺序。旧角色认知继续独占详细角色表现、强度矩阵、前30%标尺和特点复核；它更新完成后，`received-information-organizer.js` 才筛选玩家实际接收的非角色信号，并按旧合同生成“主体 + 环境 + 行为 → 结构化结果”；换人预期只读取更新后的角色认知、四人阵容、装备与本场结果。
 
 `stable-character-event-adapter.js` 已接入正式角色认知入口。它按每场可见角色名称把 `left-1` 等临时站位映射回永久角色ID，不把站位固定绑定到某个角色。真实22场验证得到88/88角色覆盖、0个临时角色ID残留、2219条详细事件成功匹配和80条可用特点证据。
 
-组合程序 `isolated-player-cognition-composition.js` 仍是隔离程序；过滤后的类型1候选尚未替换正式类型1入口。真实22场形成134条观察关系、107个合并键，其中17个可累计重复证据；22/22条关卡挑战都带站位1到4，以及每名角色当时的矩阵位置、前30%标尺、相对标尺距离、认知等级和证据数，且全部满足“矩阵位置 − 标尺 = 相对距离”。不同队伍分键，同样四人交换站位也分键；整理层不判断历史知识是否仍适用，只把完整事实交给 Agent。地图、掉落和角色解锁改归“玩家进度”，不归因给当时角色。场地3/3、掉落21/21、地图15/15、角色解锁9/9保留，`observe_*`假行为和单句结果均为0。运行 `node test-isolated-player-cognition-composition.js` 和 `node test-received-information-organizer.js` 验证边界。完整中文说明见 `../../design/TYPE1_FILTERED_CAUSAL_KNOWLEDGE_V1.md` 和 `../../design/ISOLATED_PLAYER_COGNITION_COMPOSITION_V1.md`。
+组合程序 `isolated-player-cognition-composition.js` 继续承担独立回归；同一整理器现已正式接入旧 `knowledgeBase` 的 `mergeKnowledgeObservation` 入口，没有创建第二套知识库。真实22场形成134条观察关系、107个合并键，其中17个可累计重复证据；22/22条关卡挑战都带站位1到4，以及每名角色当时的矩阵位置、前30%标尺、相对标尺距离、认知等级和证据数，且全部满足“矩阵位置 − 标尺 = 相对距离”。不同队伍分键，同样四人交换站位也分键；整理层不判断历史知识是否仍适用，只把完整事实交给 Agent。地图、掉落和角色解锁改归“玩家进度”，不归因给当时角色。场地3/3、掉落21/21、地图15/15、角色解锁9/9保留，`observe_*`假行为和单句结果均为0。
+
+正式归因使用公开语义信号ID，不再向 Agent 暴露原始战斗事件ID。正式知识检索会把历史战斗翻译成可读事实，并在完整与压缩请求中保留当时四人的站位、矩阵位置、标尺、相对距离、等级和证据数。受控真实 Agent 对照中，完整信息使 Agent 根据历史 `-2.2` 到当前 `+3.951` 的变化选择重试；删掉历史坐标后，独立 Agent改为换人。运行 `node verify-causal-loop.js` 和 `node validate-formal-cognition-agent-responses.js` 验证正式接线与行为对照。完整中文说明见 `../../design/TYPE1_FILTERED_CAUSAL_KNOWLEDGE_V1.md` 和 `../../design/ISOLATED_PLAYER_COGNITION_COMPOSITION_V1.md`。
 
 ## 纯程序战斗信息解析器
 

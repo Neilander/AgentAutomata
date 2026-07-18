@@ -9,6 +9,11 @@ let session = LOOP.createSession("roster-a-player-loop-integration", 8, {
 });
 session = chooseAndAttribute(session, "challenge:r1_main_1");
 session = chooseAndAttribute(session, "challenge:r1_main_2");
+const formalIdentityAudits = session.history
+  .filter((row) => String(row.action).startsWith("challenge:"))
+  .map((row) => row.entityImpressionUpdate?.stableIdentityAudit);
+assert(formalIdentityAudits.every((audit) => audit?.allTemporaryFriendlyActorsMapped === true));
+assert(formalIdentityAudits.every((audit) => audit?.temporaryIdentityCount === 4));
 
 seedKnownMage(session);
 session.rosterExpectationState = ROSTER_EXPECTATIONS.recordChallenge(session.rosterExpectationState, {

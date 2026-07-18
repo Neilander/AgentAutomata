@@ -10,6 +10,8 @@ const PLAYER_PROFILES = require("./player-profiles");
 const ENTITY_IMPRESSIONS = require("../entity_impression_knowledge_v1/entity-impression-model");
 const ROSTER_EXPECTATIONS = require("./roster-change-expectation");
 const ROSTER_EXPECTATION_A = require("./roster-expectation-a");
+const CHARACTER_EVENT_ADAPTER = require("./stable-character-event-adapter");
+const { INFORMATION_PRESENTATION_CONTRACT } = require("../../game_data/combat-signals");
 
 const SCHEMA = "player_agent_api_loop_v1";
 
@@ -490,7 +492,14 @@ function appendMapUnlockEvent(eventLog, action, event, beforeState, afterState) 
     environment: { region: gameRegion(afterState), node: event.node, phase: "map_progression" },
     behavior: { kind: "clear_level", key: action, target: event.node },
     result: { kind: "map_unlock", occurred: true, clearedNode: event.node, unlockedNodes },
-    presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
+    presentation: {
+      visible: true,
+      hasSource: true,
+      hasTarget: true,
+      hasAnimation: true,
+      informationContract: INFORMATION_PRESENTATION_CONTRACT.schema,
+        informationTier: "prominent",
+    },
   });
 }
 
@@ -653,7 +662,14 @@ function buildEquipEventLog(event, region = "region_1") {
     environment,
     behavior,
     result: { kind: "action_started", occurred: true },
-    presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
+    presentation: {
+      visible: true,
+      hasSource: true,
+      hasTarget: true,
+      hasAnimation: true,
+      informationContract: INFORMATION_PRESENTATION_CONTRACT.schema,
+      informationTier: "background",
+    },
     process: { decisionCount: 0, reactiveCount: 0, mechanicalSeconds: 0 },
     expectation: { phase: "open", key: expectationKey, deadline: "action_end" },
     directResult: false,
@@ -676,7 +692,15 @@ function buildEquipEventLog(event, region = "region_1") {
       after: event.gearAfter,
       amount: event.gearAfter - event.gearBefore,
     },
-    presentation: { visible: true, hasSource: true, hasTarget: true, hasNumber: true, hasAnimation: true },
+    presentation: {
+      visible: true,
+      hasSource: true,
+      hasTarget: true,
+      hasNumber: true,
+      hasAnimation: true,
+        informationContract: INFORMATION_PRESENTATION_CONTRACT.schema,
+        informationTier: "standard_high",
+    },
   }, {
     id: `${expectationKey}:summary`,
     time: 0.08,
@@ -691,7 +715,15 @@ function buildEquipEventLog(event, region = "region_1") {
       observedPower: event.gearAfter,
       components: [{ kind: "item_equipped", amount: event.gearAfter - event.gearBefore }],
     },
-    presentation: { visible: true, hasSource: true, hasTarget: true, hasNumber: true, hasAnimation: false },
+    presentation: {
+      visible: true,
+      hasSource: true,
+      hasTarget: true,
+      hasNumber: true,
+      hasAnimation: false,
+      informationContract: INFORMATION_PRESENTATION_CONTRACT.schema,
+      informationTier: "background",
+    },
     process: { decisionCount: 0, reactiveCount: 0, mechanicalSeconds: 0.08 },
     expectation: { phase: "close", key: expectationKey, deadline: "action_end" },
     directResult: false,
@@ -1451,7 +1483,7 @@ function updateEntityImpressionsFromChallenge(session, record, gameStateBefore) 
     .map((id) => gameStateBefore.roster.find((unit) => unit.id === id))
     .filter(Boolean)
     .map((unit) => ({ id: unit.id, name: unit.name, role: unit.role }));
-  const analysis = ENTITY_IMPRESSIONS.analyzeBattleReport({
+  const normalized = CHARACTER_EVENT_ADAPTER.normalizeCharacterCognitionReport({
     id: `player-session:${session.seed}:cycle:${record.cycle}:${record.action}`,
     environment: {
       id: node,
@@ -1462,7 +1494,11 @@ function updateEntityImpressionsFromChallenge(session, record, gameStateBefore) 
     playerTeam,
     gameEvent: record.gameEvent,
     eventLog: record.eventLog,
-  }, { profile: session.perceptionProfile });
+  });
+  const analysis = ENTITY_IMPRESSIONS.analyzeBattleReport(
+    normalized.report,
+    { profile: session.perceptionProfile },
+  );
   const state = clone(session.entityImpressionState
     || ENTITY_IMPRESSIONS.createImpressionState({ profile: session.perceptionProfile }));
   const trace = ENTITY_IMPRESSIONS.ingestBattleAnalysis(state, analysis);
@@ -1475,6 +1511,7 @@ function updateEntityImpressionsFromChallenge(session, record, gameStateBefore) 
       scale: clone(state.strengthCognitionMatrix?.scale || null),
       movements: trace.changes.find((change) => change.action === "updated_strength_cognition_matrix")?.movements || [],
       currentStrengthCognition: summarizeCharacterImpressions(state),
+      stableIdentityAudit: normalized.audit,
     },
   };
 }

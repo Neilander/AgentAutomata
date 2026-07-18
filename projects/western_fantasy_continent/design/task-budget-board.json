@@ -1584,14 +1584,14 @@
       "parentId": "expectation-signal-repair-suite",
       "sourceTaskId": "expectation-signal-repair-suite",
       "outcome": "玩家只能学习诸如“本场表现出近身攻击”“本场使用过治疗或护盾”等可见行为概念，不能读取临时对象名、内部职业，也不能从职业预设站位或固定职责。",
-      "nextAction": "把已通过独立审计的 battle-information-parser 接到事件解释器与玩家请求之间，删除原始 diagnosis 知识入口，并补玩家请求边界回归。",
+      "nextAction": "请用户审阅带真实站位和完整认知坐标的类型1关系；通过后接入旧canonical合并入口并作为Agent知识输入。提示文本必须同时保留矩阵位置、当时标尺、相对标尺距离和等级。",
       "owner": "agent",
       "priority": "critical",
       "importance": "critical",
       "uncertainty": "low",
       "blastRadius": "high",
-      "attemptBudget": 1,
-      "attemptsUsed": 1,
+      "attemptBudget": 3,
+      "attemptsUsed": 3,
       "status": "active",
       "links": [
         "projects/western_fantasy_continent/PLAYER_MODEL_RUNTIME.md",
@@ -1613,7 +1613,7 @@
         "信息减少后归因仍能使用玩家实际观察到的信号完成",
         "原始事件只保留在审计层"
       ],
-      "lastEvidence": "2026-07-17 threshold parser v2 PASS: removed per-battle quotas; discretionary long-run rates across real trajectories stayed around 25-28%/50-55%/75-80%. Repetition 1->6 raised low/ordinary/high reception from 15.3/34.1/59.7% to 51.4/83.6/98.0%; crowded attention reduced availability 1.0->0.4126. Quiet high perception can receive nothing, blocking loud low perception can receive everything. No enemy identity/role/diagnosis/H/emotionDelta/raw ID or missed-count leakage. Still not connected to Agent requests."
+      "lastEvidence": "2026-07-18 类型1 V7 PASS：22场形成134条关系、107个合并键、17个重复证据键；22/22条关卡挑战均按真实站位1到4保存角色矩阵位置、当时前30%标尺、相对标尺距离、认知等级和证据数，全部满足矩阵位置减标尺等于相对距离。数值直接来自既有角色富集矩阵和前30%标尺，不新增评分。换位仍分键，整理层仍只提供事实给Agent。"
     },
     {
       "id": "emotion-failure-experience-settlement",

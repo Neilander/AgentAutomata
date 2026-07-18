@@ -161,6 +161,20 @@ node enriched-two-chapter-cli.js summary session.json summary.json
 
 Run `node validate-enriched-two-chapter-run.js` for exact drop tables, a 100,000-item Mythic sample, new-character semantic events, bottleneck scaling, paired loot seeds, and cross-chapter persistence. Run `node analyze-enriched-bottlenecks.js <output.json>` for exhaustive four-character combination checks in canonical and reversed formation.
 
+## Frozen Information Presentation Tiers
+
+Battle information no longer derives cognitive visibility from font pixels, color coefficients, or animation duration. Frontend and cognition now share `information_presentation_tier_v2`: a `background=0.25` floor plus the continuous main-interface ladder `ambient=0.40`, `standard_low=0.50`, `standard=0.60`, `standard_high=0.70`, `prominent=0.80`, `highlight=0.90`, and forced `blocking=1.00`. These values are presentation evidence strengths, not direct reception probabilities.
+
+The human-facing rules and frozen calibration evidence are in `../../design/INFORMATION_PRESENTATION_TIER_CONTRACT.md`. Run `node test-information-presentation-tiers.js` for same-signal tier ordering, repetition, attention competition, real-battle calibration, and frontend-emitter checks.
+
+## 三块隔离的玩家认知组合
+
+角色认知、过滤后的类型1因果知识和换人预期现在按三块隔离验证。旧角色认知继续独占详细角色表现、强度矩阵、前30%标尺和特点复核；`received-information-organizer.js` 先筛选玩家实际接收的非角色信号，再按旧合同生成“主体 + 环境 + 行为 → 结构化结果”；换人预期只读取更新后的角色认知、四人阵容、装备与本场结果。
+
+`stable-character-event-adapter.js` 已接入正式角色认知入口。它按每场可见角色名称把 `left-1` 等临时站位映射回永久角色ID，不把站位固定绑定到某个角色。真实22场验证得到88/88角色覆盖、0个临时角色ID残留、2219条详细事件成功匹配和80条可用特点证据。
+
+组合程序 `isolated-player-cognition-composition.js` 仍是隔离程序；过滤后的类型1候选尚未替换正式类型1入口。真实22场形成134条观察关系、107个合并键，其中17个可累计重复证据；22/22条关卡挑战都带站位1到4，以及每名角色当时的矩阵位置、前30%标尺、相对标尺距离、认知等级和证据数，且全部满足“矩阵位置 − 标尺 = 相对距离”。不同队伍分键，同样四人交换站位也分键；整理层不判断历史知识是否仍适用，只把完整事实交给 Agent。地图、掉落和角色解锁改归“玩家进度”，不归因给当时角色。场地3/3、掉落21/21、地图15/15、角色解锁9/9保留，`observe_*`假行为和单句结果均为0。运行 `node test-isolated-player-cognition-composition.js` 和 `node test-received-information-organizer.js` 验证边界。完整中文说明见 `../../design/TYPE1_FILTERED_CAUSAL_KNOWLEDGE_V1.md` 和 `../../design/ISOLATED_PLAYER_COGNITION_COMPOSITION_V1.md`。
+
 ## 纯程序战斗信息解析器
 
 `battle-information-parser.js` 目前是独立模块，尚未接入玩家 Agent。它只使用界面可见事件，把原始战斗日志压缩成玩家语言。三档不再按单场条数硬切；每条合法信号根据自身强度独立决定是否被接收，25%/50%/75%只是大量非强制信号上的长期校准目标。

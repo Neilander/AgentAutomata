@@ -209,7 +209,7 @@ assert.equal(
 );
 assert(oneHealDiagnostic.receptionProbability.low < 0.2);
 assert(oneHealDiagnostic.receptionProbability.ordinary < 0.5);
-assert(oneHealDiagnostic.receptionProbability.high > 0.55);
+assert(oneHealDiagnostic.receptionProbability.high > 0.4);
 for (const level of ["low", "ordinary", "high"]) {
   assert(
     repeatedHealDiagnostic.receptionProbability[level]

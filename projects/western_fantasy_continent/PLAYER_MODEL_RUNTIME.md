@@ -2,6 +2,12 @@
 
 This is the durable entry point for the currently executable AI playtest loop. Future agents must use this document instead of reconstructing the architecture from chat history or old reports.
 
+## Frozen Information Presentation Contract
+
+Battle frontend and player-information parsing share `information_presentation_tier_v2`. It keeps a `background=0.25` floor, then uses a continuous main-interface ladder: `ambient=0.40`, `standard_low=0.50`, `standard=0.60`, `standard_high=0.70`, `prominent=0.80`, `highlight=0.90`, and forced `blocking=1.00`. The values are frozen presentation-evidence strengths, not direct reception probabilities.
+
+This replaces fine-grained cognitive scoring from font pixels, color coefficients, and animation duration. Event salience, relative magnitude, player goal, attention competition, repetition, and perception profile remain separate. Human-facing implementation rules and calibration evidence are in `design/INFORMATION_PRESENTATION_TIER_CONTRACT.md`.
+
 ## What Is Executable
 
 The current source lives in:
@@ -56,6 +62,8 @@ The AI must not directly set emotion, PQRA, Agency, power, drops, knowledge, or 
 
 Character impressions live in the same persistent player session, but remain a separate knowledge family from causal subject-environment-behavior-result rows. After each visible battle, code updates all participating character positions together from pairwise perceived differences, rebuilds the ruler whose zero is the weakest member of the current top 30%, and includes compact current impressions in the next decision request. AI wording never performs or overrides this calculation.
 
+Battle-local ally labels such as `left-2` are positions, not character identities. Before the character-impression model reads a battle, `stable-character-event-adapter.js` maps every visible friendly reference back to that battle roster's permanent character ID. The non-character information filter is a parallel branch and is prohibited from compressing, recalculating, or updating character impressions. The isolated three-branch contract and 22-battle evidence are documented in `design/ISOLATED_PLAYER_COGNITION_COMPOSITION_V1.md`.
+
 Roster expectations also live in the session. A failure is scoped to its encounter, exact team fingerprint, equipped build, and comparable current cognition. A different legal swap first checks exact history for that candidate team; otherwise code re-estimates it from incoming-versus-outgoing character position and context-relevant known traits. Missing character evidence returns unknown rather than inheriting a generic `swaps fail` belief. Material context-relevant trait revision invalidates an old exact-roster interpretation, and equal equipment score with a different build does not reuse the old baseline. The current cognition-to-performance mapping is provisional and exposed in the request audit.
 
 The selected swap prediction has a separate persisted expectation ledger. At selection time code freezes the visible baseline, selected predicted combat score, target encounter, candidate team/build, persistent perception profile, and prediction confidence. On settlement, code converts both expected and actual relative improvement to that profile's semantic level and applies the asymmetric mismatch curve. Confirmation `C` uses a separate self-serving geometric curve over visible actual-versus-expected combat progress: success at or above expectation grows with `ratio^0.5`; a slightly lower result inside the same perceived band decays with `ratio^1.5`; any downward perceived-band crossing is clear disconfirmation and forces `C = 0`; the positive multiplier is capped at `2`. The base constant remains `0.1` and is further scaled by effective confidence, signal clarity, and goal importance. Direct combat result `R` remains separate.
@@ -78,6 +86,8 @@ raw event -> visible feature -> concept -> semantic event -> cognition -> knowle
 ```
 
 Current verified concepts include `近战小怪` and `远程小怪`. Internal identities such as disposable unit IDs and enemy database names are prohibited beyond the raw audit log.
+
+The isolated non-character filter no longer treats received sentences as knowledge. It converts accepted evidence into the existing causal contract: `subject + environment + behavior -> structured result`, with the same key shape expected by the canonical knowledge merger. Persistent interface facts—field rules, actual loot, map unlocks, and character unlocks—bypass stochastic attention loss. Character evidence is diverted before this branch, and probability opportunities remain in their dedicated ledger. The current isolated contract and 22-battle audit are in `design/TYPE1_FILTERED_CAUSAL_KNOWLEDGE_V1.md`.
 
 ## How To Verify
 

@@ -1,5 +1,6 @@
 const V1_ADAPTER = require("./map-cognition-v1-event-adapter");
 const RUNTIME = require("./player-cognition-v2-event-runtime");
+const { INFORMATION_PRESENTATION_CONTRACT } = require("./combat-signals");
 
 function buildMapEventLog(action, resultEvent, options = {}) {
   const rows = V1_ADAPTER.buildMapEventLog(action, resultEvent, options);
@@ -30,7 +31,15 @@ function buildMapEventLog(action, resultEvent, options = {}) {
         after: Number(event.gearAfter),
         amount: growthAmount,
       },
-      presentation: { visible: true, hasSource: true, hasTarget: true, hasNumber: true, hasAnimation: true },
+      presentation: {
+        visible: true,
+        hasSource: true,
+        hasTarget: true,
+        hasNumber: true,
+        hasAnimation: true,
+        informationContract: INFORMATION_PRESENTATION_CONTRACT.schema,
+        informationTier: "standard_high",
+      },
     });
   }
   return rows.sort((a, b) => a.time - b.time || String(a.id).localeCompare(String(b.id)));

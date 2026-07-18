@@ -1,4 +1,7 @@
 const RUNTIME = require("./player-cognition-v1-event-runtime");
+const { INFORMATION_PRESENTATION_CONTRACT } = require("./combat-signals");
+
+const INFORMATION_CONTRACT = INFORMATION_PRESENTATION_CONTRACT.schema;
 
 function buildMapEventLog(action, resultEvent, options = {}) {
   const event = resultEvent || {};
@@ -17,7 +20,14 @@ function buildMapEventLog(action, resultEvent, options = {}) {
     environment,
     behavior,
     result: { kind: "action_started", occurred: true },
-    presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
+    presentation: {
+      visible: true,
+      hasSource: true,
+      hasTarget: true,
+      hasAnimation: true,
+      informationContract: INFORMATION_CONTRACT,
+      informationTier: "background",
+    },
     process: { decisionCount: 0, reactiveCount: 0, mechanicalSeconds: 0 },
     expectation: { phase: "open", key: expectationKey, deadline: "action_end" },
     directResult: false,
@@ -46,7 +56,14 @@ function buildMapEventLog(action, resultEvent, options = {}) {
       resolution: event.resolution || null,
       boundary: event.outcome === "loss" ? "interrupted_by_defeat" : "normal_end",
     },
-    presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
+    presentation: {
+      visible: true,
+      hasSource: true,
+      hasTarget: true,
+      hasAnimation: true,
+      informationContract: INFORMATION_CONTRACT,
+      informationTier: "blocking",
+    },
     settleExpectation: false,
     learn: false,
   });
@@ -65,7 +82,14 @@ function buildMapEventLog(action, resultEvent, options = {}) {
       result: { kind: "probability_outcome", occurred: true, itemCount: rareLootComponents.length, components: rareLootComponents },
       probability: { opportunity: true, success: rareLoot, family: `rare_equipment:${node}` },
       expectation: { phase: "accumulate", key: `probability:rare_equipment:${node}`, deadline: "learned_probability_horizon" },
-      presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: rareLoot },
+      presentation: {
+        visible: true,
+        hasSource: true,
+        hasTarget: true,
+        hasAnimation: rareLoot,
+        informationContract: INFORMATION_CONTRACT,
+        informationTier: rareLoot ? "standard_high" : "ambient",
+      },
       directResult: false,
     });
   }
@@ -89,7 +113,14 @@ function buildMapEventLog(action, resultEvent, options = {}) {
         baseStats: item.baseStats || {},
         affixCount: Array.isArray(item.affixes) ? item.affixes.length : 0,
       },
-      presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
+      presentation: {
+        visible: true,
+        hasSource: true,
+        hasTarget: true,
+        hasAnimation: true,
+        informationContract: INFORMATION_CONTRACT,
+        informationTier: informationTierForRarity(rarity),
+      },
     });
   }
 
@@ -113,7 +144,14 @@ function buildMapEventLog(action, resultEvent, options = {}) {
         heroId: characterUnlock.heroId,
         characterName: characterUnlock.name,
       },
-      presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
+      presentation: {
+        visible: true,
+        hasSource: true,
+        hasTarget: true,
+        hasAnimation: true,
+        informationContract: INFORMATION_CONTRACT,
+        informationTier: "blocking",
+      },
     });
   }
 
@@ -129,7 +167,14 @@ function buildMapEventLog(action, resultEvent, options = {}) {
     environment,
     behavior,
     result: { kind: "action_summary", occurred: true, boundary: event.outcome === "loss" ? "interrupted_by_defeat" : "normal_end", components },
-    presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: false },
+    presentation: {
+      visible: true,
+      hasSource: true,
+      hasTarget: true,
+      hasAnimation: false,
+      informationContract: INFORMATION_CONTRACT,
+      informationTier: "background",
+    },
     process: { decisionCount: 0, reactiveCount: 0, mechanicalSeconds: duration },
     expectation: { phase: "close", key: expectationKey, deadline: "action_end" },
     directResult: false,
@@ -159,6 +204,15 @@ function compactCombatSignals(signals) {
     if (["death", "skill", "movement", "status", "field"].includes(signal.type)) discrete.push(normalizeCombatResult(signal));
   }
   return [...grouped.values().map(normalizeCombatResult), ...discrete].sort((a, b) => a.time - b.time || Number(a.sequence || 0) - Number(b.sequence || 0) || a.id.localeCompare(b.id));
+}
+
+function informationTierForRarity(rarity) {
+  if (rarity === "mythic") return "blocking";
+  if (rarity === "legendary") return "highlight";
+  if (rarity === "epic") return "prominent";
+  if (rarity === "rare") return "standard_high";
+  if (rarity === "uncommon") return "standard_low";
+  return "ambient";
 }
 
 function normalizeCombatResult(signal) {

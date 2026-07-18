@@ -1,4 +1,59 @@
 const GAME_COMBAT_SIGNALS = (() => {
+  const INFORMATION_PRESENTATION_CONTRACT = Object.freeze({
+    schema: "information_presentation_tier_v2",
+    defaultTier: "standard",
+    tiers: Object.freeze({
+      background: Object.freeze({
+        rank: 1,
+        perceptionStrength: 0.25,
+        forcedReception: false,
+        frontendIntent: "incidental_background_feedback",
+      }),
+      ambient: Object.freeze({
+        rank: 2,
+        perceptionStrength: 0.4,
+        forcedReception: false,
+        frontendIntent: "minor_repeated_feedback",
+      }),
+      standard_low: Object.freeze({
+        rank: 3,
+        perceptionStrength: 0.5,
+        forcedReception: false,
+        frontendIntent: "secondary_routine_feedback",
+      }),
+      standard: Object.freeze({
+        rank: 4,
+        perceptionStrength: 0.6,
+        forcedReception: false,
+        frontendIntent: "normal_combat_feedback",
+      }),
+      standard_high: Object.freeze({
+        rank: 5,
+        perceptionStrength: 0.7,
+        forcedReception: false,
+        frontendIntent: "important_routine_feedback",
+      }),
+      prominent: Object.freeze({
+        rank: 6,
+        perceptionStrength: 0.8,
+        forcedReception: false,
+        frontendIntent: "major_nonexclusive_feedback",
+      }),
+      highlight: Object.freeze({
+        rank: 7,
+        perceptionStrength: 0.9,
+        forcedReception: false,
+        frontendIntent: "reserved_focus_feedback",
+      }),
+      blocking: Object.freeze({
+        rank: 8,
+        perceptionStrength: 1,
+        forcedReception: true,
+        frontendIntent: "exclusive_acknowledged_feedback",
+      }),
+    }),
+  });
+
   function createCombatSignalBus(options = {}) {
     const signals = [];
     let lastHealthSnapshot = 0;
@@ -139,6 +194,8 @@ const GAME_COMBAT_SIGNALS = (() => {
       : signal.target?.id || signal.source?.id || "battlefield";
     return {
       contract: "battle_view_unified_signal_v1",
+      informationContract: INFORMATION_PRESENTATION_CONTRACT.schema,
+      informationTier: informationTierForSignal(signal),
       visible: true,
       hasNumber,
       hasText,
@@ -168,7 +225,36 @@ const GAME_COMBAT_SIGNALS = (() => {
     return "none";
   }
 
-  return { createCombatSignalBus, unitRef, unitMeta, describePresentation };
+  function informationTierForSignal(signal) {
+    const kind = signal?.kind || "event";
+    const tags = new Set(signal?.tags || []);
+    if (tags.has("blocking") || tags.has("requires_acknowledgement")) return "blocking";
+    if (tags.has("ultimate") || kind === "field") return "highlight";
+    if (kind === "death") return "prominent";
+    if (kind === "movement" || tags.has("dot")) return "background";
+    if (kind === "skill") return "ambient";
+    if (kind === "damage") return "standard_low";
+    if (kind === "status") return "standard_high";
+    if (kind === "heal" || kind === "shield") return "standard";
+    return INFORMATION_PRESENTATION_CONTRACT.defaultTier;
+  }
+
+  function normalizeInformationTier(value, fallback = INFORMATION_PRESENTATION_CONTRACT.defaultTier) {
+    if (INFORMATION_PRESENTATION_CONTRACT.tiers[value]) return value;
+    return INFORMATION_PRESENTATION_CONTRACT.tiers[fallback]
+      ? fallback
+      : INFORMATION_PRESENTATION_CONTRACT.defaultTier;
+  }
+
+  return {
+    INFORMATION_PRESENTATION_CONTRACT,
+    createCombatSignalBus,
+    unitRef,
+    unitMeta,
+    describePresentation,
+    informationTierForSignal,
+    normalizeInformationTier,
+  };
 })();
 
 if (typeof window !== "undefined") window.GAME_COMBAT_SIGNALS = GAME_COMBAT_SIGNALS;

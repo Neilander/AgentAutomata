@@ -1,3 +1,10 @@
+const {
+  INFORMATION_PRESENTATION_CONTRACT,
+  normalizeInformationTier,
+} = require("./combat-signals");
+
+const SYSTEM_REQUIRED_TYPES = new Set(["action_summary", "team_experiment_result"]);
+
 const DEFAULT_CONFIG = Object.freeze({
   initialEmotion: 38,
   receiveThreshold: 0.08,
@@ -358,38 +365,40 @@ function receiveSignal(event, stateOrConfig) {
     event.presentation.hasNumber || event.presentation.hasHealthDelta || event.presentation.hasAnimation,
   ];
   const channelClarity = 0.4 + channels.filter(Boolean).length / channels.length * 0.6;
-  const renderEvidence = event.presentation.renderEvidence || null;
-  const visualStrength = renderEvidence
-    ? visualStrengthFromRenderEvidence(renderEvidence)
-    : 1;
+  const informationTier = normalizeInformationTier(event.presentation.informationTier);
+  const tierDefinition = INFORMATION_PRESENTATION_CONTRACT.tiers[informationTier];
+  const systemRequired = SYSTEM_REQUIRED_TYPES.has(event.type);
+  const presentationStrength = systemRequired ? 1 : tierDefinition.perceptionStrength;
   const competition = clamp(Number(event.presentation.attentionShare ?? 1), 0.12, 1);
-  const perceptual = channelClarity * (0.55 + 0.45 * visualStrength) * competition;
+  const perceptual = channelClarity * presentationStrength * competition;
   const causal = event.presentation.hasSource && event.behavior.key ? 1 : event.presentation.hasSource ? 0.72 : 0.45;
   const goal = goalRelevance(event, state);
   const H = round(salience * perceptual * causal * goal);
+  const accepted = systemRequired || tierDefinition.forcedReception || H >= config.receiveThreshold;
   return {
-    accepted: H >= config.receiveThreshold,
+    accepted,
     H,
     components: {
       salience: round(salience),
       channelClarity: round(channelClarity),
-      visualStrength: round(visualStrength),
+      informationTier,
+      presentationStrength,
+      forcedReception: tierDefinition.forcedReception,
+      systemRequired,
       competition: round(competition),
       competitorCount: Number(event.presentation.competitorCount || 1),
       perceptual: round(perceptual),
       causal: round(causal),
       goal: round(goal),
-      presentationContract: event.presentation.contract || "adapter_event",
+      presentationContract: event.presentation.informationContract
+        || INFORMATION_PRESENTATION_CONTRACT.schema,
     },
-    reason: H >= config.receiveThreshold ? "received" : "below_threshold",
+    reason: systemRequired
+      ? "required_internal_semantic"
+      : tierDefinition.forcedReception
+        ? "forced_presentation_tier"
+        : accepted ? "received" : "below_threshold",
   };
-}
-
-function visualStrengthFromRenderEvidence(evidence) {
-  const size = clamp(Number(evidence.fontPx || 0) / 16, 0.3, 1);
-  const color = ({ default: 0.68, fire: 0.9, poison: 0.82, heal: 0.8, shield: 0.82, purple: 0.9 })[evidence.colorToken] || 0.68;
-  const motion = evidence.moving ? clamp(Number(evidence.animationSeconds || 0) / 0.9, 0.45, 1) : 0.35;
-  return clamp((size + color + motion) / 3, 0.25, 1);
 }
 
 function goalRelevance(event, state) {
@@ -910,6 +919,9 @@ function normalizeEvent(input) {
     result: input.result || { kind: input.type || "event", occurred: true },
     presentation: {
       visible: input.presentation?.visible !== false,
+      informationContract: input.presentation?.informationContract
+        || INFORMATION_PRESENTATION_CONTRACT.schema,
+      informationTier: normalizeInformationTier(input.presentation?.informationTier),
       hasNumber: Boolean(input.presentation?.hasNumber),
       hasSource: Boolean(input.presentation?.hasSource ?? input.subject),
       hasTarget: Boolean(input.presentation?.hasTarget ?? input.result?.target),

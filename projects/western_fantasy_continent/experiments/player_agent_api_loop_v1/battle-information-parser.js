@@ -1,4 +1,8 @@
 const SCHEMA = "player_battle_information_v2";
+const {
+  INFORMATION_PRESENTATION_CONTRACT,
+  normalizeInformationTier,
+} = require("../../game_data/combat-signals");
 
 const PERCEPTION_LEVELS = Object.freeze({
   low: Object.freeze({ label: "窄幅感知", sensitivityBias: -1.05 }),
@@ -37,18 +41,8 @@ const RANGED_OBSERVATION = /(箭|射击|投射|飞弹|弹丸|弩|标枪|火球|�
 const MELEE_OBSERVATION = /(重击|顺劈|斩|劈|猛击|突刺|拳|爪|撕咬|冲撞)/;
 
 function parseBattleInformation(rawEventsInput, options = {}) {
-  const perceptionLevel = normalizePerceptionLevel(options.perceptionLevel);
-  const config = PERCEPTION_LEVELS[perceptionLevel];
-  const seed = String(options.seed || DEFAULT_SEED);
-  const candidates = buildCandidates(rawEventsInput)
-    .map((candidateRow) => scoreCandidate(candidateRow, options));
-  const selected = candidates.filter((candidateRow) => (
-    candidateRow.forced
-    || candidateRow.sharedDetectionValue <= candidateReceptionProbability(
-      candidateRow,
-      perceptionLevel,
-    )
-  ));
+  const reception = selectReceivedCandidatesForOrganizer(rawEventsInput, options);
+  const { perceptionLevel, config, selected } = reception;
 
   return {
     schema: SCHEMA,
@@ -64,27 +58,43 @@ function parseBattleInformation(rawEventsInput, options = {}) {
       statement: candidate.statement,
     })),
   };
+}
 
-  function scoreCandidate(candidateRow, parseOptions) {
-    const features = candidateFeatures(candidateRow, parseOptions);
-    const strength = clamp(
-      features.salience * 0.32
-      + features.clarity * 0.18
-      + features.magnitude * 0.18
-      + features.goalRelevance * 0.14
-      + features.attentionAvailability * 0.18,
-      0,
-      1,
-    );
-    return {
-      ...candidateRow,
-      features,
-      strength: round(strength),
-      sharedDetectionValue: deterministicUnitInterval(
-        `${seed}|${candidateRow.detectionKey}`,
-      ),
-    };
-  }
+function selectReceivedCandidatesForOrganizer(rawEventsInput, options = {}) {
+  const perceptionLevel = normalizePerceptionLevel(options.perceptionLevel);
+  const config = PERCEPTION_LEVELS[perceptionLevel];
+  const seed = String(options.seed || DEFAULT_SEED);
+  const candidates = buildCandidates(rawEventsInput)
+    .map((candidateRow) => scoreCandidateForReception(candidateRow, options, seed));
+  const selected = candidates.filter((candidateRow) => (
+    candidateRow.forced
+    || candidateRow.sharedDetectionValue <= candidateReceptionProbability(
+      candidateRow,
+      perceptionLevel,
+    )
+  ));
+  return { perceptionLevel, config, candidates, selected };
+}
+
+function scoreCandidateForReception(candidateRow, options, seed) {
+  const features = candidateFeatures(candidateRow, options);
+  const strength = clamp(
+    features.salience * 0.32
+    + features.presentationStrength * 0.18
+    + features.magnitude * 0.18
+    + features.goalRelevance * 0.14
+    + features.attentionAvailability * 0.18,
+    0,
+    1,
+  );
+  return {
+    ...candidateRow,
+    features,
+    strength: round(strength),
+    sharedDetectionValue: deterministicUnitInterval(
+      `${seed}|${candidateRow.detectionKey}`,
+    ),
+  };
 }
 
 function parseAllPerceptionLevels(rawEventsInput, options = {}) {
@@ -169,7 +179,7 @@ function inspectBattleInformation(rawEventsInput, options = {}) {
     const features = candidateFeatures(candidateRow, parseOptions);
     const strength = clamp(
       features.salience * 0.32
-      + features.clarity * 0.18
+      + features.presentationStrength * 0.18
       + features.magnitude * 0.18
       + features.goalRelevance * 0.14
       + features.attentionAvailability * 0.18,
@@ -249,7 +259,7 @@ function buildOutcomeSignals(events) {
     "关键",
     `本场战斗${outcome}${suffix}。`,
     [event],
-    { magnitude: 1, forced: true },
+    { magnitude: 1, forced: true, informationTier: "blocking" },
   )];
 }
 
@@ -265,7 +275,7 @@ function buildFieldSignals(events) {
     "关键",
     `本场出现了界面可见的战场效果${detail}。`,
     rows,
-    { magnitude: 0.9 },
+    { magnitude: 0.9, informationTier: "highlight" },
   )];
 }
 
@@ -286,6 +296,7 @@ function buildDeathSignals(events) {
       allyRows,
       {
         magnitude: 1,
+        informationTier: "highlight",
         minimumReception: { low: 0.95, ordinary: 0.98, high: 0.995 },
       },
     ));
@@ -298,7 +309,7 @@ function buildDeathSignals(events) {
       "一般",
       `我方在本场击倒了${enemyRows.length}个敌方单位。`,
       enemyRows,
-      { magnitude: clamp(enemyRows.length / 3, 0.45, 1) },
+      { magnitude: clamp(enemyRows.length / 3, 0.45, 1), informationTier: "standard_low" },
     ));
   }
   return signals;
@@ -323,7 +334,7 @@ function buildDamageSignals(events) {
       "关键",
       `${enemyAttackSubject(mode)}本场${frequencyText(group.length)}对我方造成伤害${shareText}${targetText}。`,
       group,
-      { magnitude: shareValue(sumVisibleAmounts(group), totalIncoming) },
+      { magnitude: shareValue(sumVisibleAmounts(group), totalIncoming), informationTier: "standard_low" },
     ));
   }
 
@@ -338,7 +349,7 @@ function buildDamageSignals(events) {
       "重要",
       `${name}本场${frequencyText(group.length)}造成伤害${shareText}。`,
       group,
-      { magnitude: shareValue(sumVisibleAmounts(group), totalOutgoing) },
+      { magnitude: shareValue(sumVisibleAmounts(group), totalOutgoing), informationTier: "standard_low" },
     ));
   }
   return signals;
@@ -378,7 +389,7 @@ function buildSupportSignals(events) {
         enemy ? "重要" : "一般",
         `${subject}本场${frequencyText(group.length)}${enemyAction}。`,
         group,
-        { magnitude: supportMagnitude(group, events) },
+        { magnitude: supportMagnitude(group, events), informationTier: "standard" },
       ));
     }
   }
@@ -402,7 +413,10 @@ function buildStatusSignals(events) {
       "重要",
       `${subject}本场施加过界面显示的${effectText}等效果。`,
       group,
-      { magnitude: clamp(unique(group.map(visibleBehaviorName).filter(Boolean)).length / 4, 0.3, 1) },
+      {
+        magnitude: clamp(unique(group.map(visibleBehaviorName).filter(Boolean)).length / 4, 0.3, 1),
+        informationTier: "standard_high",
+      },
     ));
   }
   return signals;
@@ -429,7 +443,10 @@ function buildSkillSignals(events) {
       "一般",
       `${subject}本场还使用过${skillText}等可见技能。`,
       group,
-      { magnitude: clamp(unique(group.map(visibleBehaviorName).filter(Boolean)).length / 4, 0.2, 0.8) },
+      {
+        magnitude: clamp(unique(group.map(visibleBehaviorName).filter(Boolean)).length / 4, 0.2, 0.8),
+        informationTier: "ambient",
+      },
     ));
   }
   return signals;
@@ -437,6 +454,30 @@ function buildSkillSignals(events) {
 
 function buildRewardSignals(events) {
   const signals = [];
+  const probabilityRows = events.filter((event) => (
+    event.type === "loot_outcome"
+    && event.probability?.opportunity === true
+  ));
+  for (const event of probabilityRows.slice(-1)) {
+    const success = event.probability?.success === true;
+    signals.push(candidate(
+      "visible_probability_outcome",
+      success ? 73 : 58,
+      eventOrder(event),
+      success ? "重要" : "一般",
+      success
+        ? "本次战后奖励结算中出现了较稀有的装备。"
+        : "本次战后奖励结算结束，没有出现较稀有的装备。",
+      [event],
+      {
+        magnitude: success ? 0.72 : 0.35,
+        informationTier: success ? "standard_high" : "ambient",
+        minimumReception: success
+          ? { low: 0.8, ordinary: 0.94, high: 0.99 }
+          : { low: 0.55, ordinary: 0.75, high: 0.9 },
+      },
+    ));
+  }
   const lootRows = events.filter((event) => event.type === "loot");
   for (const event of lootRows.slice(0, 3)) {
     const itemName = visibleText(event.result?.itemName || event.result?.name || event.result?.item?.name);
@@ -453,6 +494,7 @@ function buildRewardSignals(events) {
       {
         magnitude: rarityMagnitude(rarity),
         forced: event.presentation?.blocking === true,
+        informationTier: lootInformationTier(rarity),
         minimumReception: lootReceptionFloor(rarity),
       },
     ));
@@ -467,7 +509,11 @@ function buildRewardSignals(events) {
       "一般",
       "战后界面显示有新的地图入口开放。",
       unlockRows,
-      { magnitude: 0.7, forced: unlockRows.some((event) => event.presentation?.blocking === true) },
+      {
+        magnitude: 0.7,
+        forced: unlockRows.some((event) => event.presentation?.blocking === true),
+        informationTier: "prominent",
+      },
     ));
   }
 
@@ -481,7 +527,7 @@ function buildRewardSignals(events) {
       "重要",
       name ? `战后解锁了角色${name}。` : "战后解锁了一名新角色。",
       [event],
-      { magnitude: 1, forced: true },
+      { magnitude: 1, forced: true, informationTier: "blocking" },
     ));
   }
   return signals;
@@ -498,6 +544,7 @@ function coverageAudit(visibleEvents, candidates) {
     ["shieldBreak", ["enemy_shieldBreak", "ally_shieldBreak"]],
     ["status", ["enemy_visible_status", "ally_visible_status"]],
     ["skill", ["enemy_visible_skill", "ally_visible_skill"]],
+    ["loot_outcome", ["visible_probability_outcome"]],
     ["loot", ["visible_loot"]],
     ["map_unlock", ["visible_map_unlock"]],
     ["character_unlock", ["visible_character_unlock"]],
@@ -539,6 +586,13 @@ function nestingAudit(parsedByLevel) {
 }
 
 function candidate(type, priority, order, importance, statement, evidence = [], options = {}) {
+  const explicitTier = options.informationTier
+    ? normalizeInformationTier(options.informationTier)
+    : null;
+  const blockingEvidence = evidence.some((event) => (
+    event.presentation?.blocking === true
+    || event.presentation?.informationTier === "blocking"
+  ));
   return {
     type,
     priority,
@@ -549,7 +603,8 @@ function candidate(type, priority, order, importance, statement, evidence = [], 
     magnitude: Number.isFinite(Number(options.magnitude))
       ? clamp(Number(options.magnitude), 0, 1)
       : null,
-    forced: options.forced === true || evidence.some((event) => event.presentation?.blocking === true),
+    informationTier: explicitTier,
+    forced: options.forced === true || blockingEvidence,
     minimumReception: options.minimumReception || null,
   };
 }
@@ -578,9 +633,14 @@ function assignOpaquePublicId() {
 function candidateFeatures(candidateRow, options = {}) {
   const evidence = candidateRow.evidence || [];
   const repetition = 1 - Math.exp(-evidence.length / 2.8);
+  const informationTier = strongestInformationTier(
+    evidence.map((event) => event.presentation?.informationTier).filter(Boolean),
+    candidateRow.informationTier,
+  );
   return {
     salience: round(clamp((Number(candidateRow.priority || 45) - 40) / 60, 0.15, 1)),
-    clarity: round(average(evidence.map(eventClarity), 0.5)),
+    informationTier,
+    presentationStrength: INFORMATION_PRESENTATION_CONTRACT.tiers[informationTier].perceptionStrength,
     magnitude: round(candidateRow.magnitude == null ? 0.45 : candidateRow.magnitude),
     repetition: round(repetition),
     effectiveOpportunities: round(
@@ -618,38 +678,25 @@ function signalGoalTags(type) {
   if (["ally_damage_contribution", "ally_heal", "ally_shield"].some((prefix) => type.startsWith(prefix))) {
     return ["character_strength", "roster", "team_contribution"];
   }
-  if (type === "visible_loot") return ["loot", "equipment", "growth"];
+  if (type === "visible_loot" || type === "visible_probability_outcome") {
+    return ["loot", "probability", "equipment", "growth"];
+  }
   if (type.includes("unlock")) return ["progress", "discovery"];
   if (type === "visible_field_effect" || type.includes("status")) return ["mechanic", "failure_cause"];
   return ["combat"];
 }
 
-function eventClarity(event) {
-  const presentation = event.presentation || {};
-  const channels = [
-    presentation.hasSource === true,
-    presentation.hasTarget === true,
-    presentation.hasNumber === true
-      || presentation.hasHealthDelta === true
-      || presentation.hasAnimation === true,
-  ];
-  const channelClarity = 0.35 + channels.filter(Boolean).length / channels.length * 0.65;
-  const render = presentation.renderEvidence;
-  if (!render) return channelClarity;
-  const size = clamp(Number(render.fontPx || 0) / 16, 0.3, 1);
-  const motion = render.moving
-    ? clamp(Number(render.animationSeconds || 0) / 0.9, 0.45, 1)
-    : 0.35;
-  const color = ({
-    default: 0.68,
-    fire: 0.9,
-    poison: 0.82,
-    heal: 0.8,
-    shield: 0.82,
-    purple: 0.9,
-  })[render.colorToken] || 0.68;
-  const visualStrength = (size + motion + color) / 3;
-  return clamp(channelClarity * (0.55 + 0.45 * visualStrength), 0, 1);
+function strongestInformationTier(values, fallback) {
+  const explicit = values.map((value) => normalizeInformationTier(value));
+  const candidates = explicit.length
+    ? explicit
+    : [normalizeInformationTier(fallback)];
+  return candidates.reduce((strongest, value) => (
+    INFORMATION_PRESENTATION_CONTRACT.tiers[value].rank
+      > INFORMATION_PRESENTATION_CONTRACT.tiers[strongest].rank
+      ? value
+      : strongest
+  ), "background");
 }
 
 function annotateAttentionAvailability(events) {
@@ -725,6 +772,16 @@ function rarityMagnitude(rarity) {
     传说: 0.9,
     神话: 1,
   })[rarity] || 0.4;
+}
+
+function lootInformationTier(rarity) {
+  const magnitude = rarityMagnitude(rarity);
+  if (magnitude >= 1) return "blocking";
+  if (magnitude >= 0.9) return "highlight";
+  if (magnitude >= 0.75) return "prominent";
+  if (magnitude >= 0.58) return "standard_high";
+  if (magnitude >= 0.42) return "standard_low";
+  return "ambient";
 }
 
 function lootReceptionFloor(rarity) {
@@ -915,8 +972,10 @@ function clone(value) {
 
 module.exports = {
   SCHEMA,
+  INFORMATION_PRESENTATION_CONTRACT,
   PERCEPTION_LEVELS,
   parseBattleInformation,
+  selectReceivedCandidatesForOrganizer,
   parseAllPerceptionLevels,
   inspectBattleInformation,
 };

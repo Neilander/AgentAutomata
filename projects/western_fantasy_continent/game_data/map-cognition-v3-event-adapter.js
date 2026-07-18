@@ -1,5 +1,6 @@
 const V2_ADAPTER = require("./map-cognition-v2-event-adapter");
 const RUNTIME = require("./player-cognition-v3-event-runtime");
+const { INFORMATION_PRESENTATION_CONTRACT } = require("./combat-signals");
 
 function buildMapEventLog(action, resultEvent, options = {}) {
   const rows = V2_ADAPTER.buildMapEventLog(action, resultEvent, options);
@@ -32,7 +33,14 @@ function buildMapEventLog(action, resultEvent, options = {}) {
         teamBefore: event.teamBefore || [],
         teamAfter: event.teamAfter || [],
       },
-      presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: true },
+      presentation: {
+        visible: true,
+        hasSource: true,
+        hasTarget: true,
+        hasAnimation: true,
+        informationContract: INFORMATION_PRESENTATION_CONTRACT.schema,
+        informationTier: "standard_high",
+      },
     });
   } else if (activeExperiment && ["win", "loss"].includes(event.outcome)) {
     const contribution = options.experimentContribution || { observed: false, damage: 0, heal: 0, shield: 0, skillCount: 0 };
@@ -54,7 +62,14 @@ function buildMapEventLog(action, resultEvent, options = {}) {
         contribution,
         components: contribution.observed ? [{ kind: "team_experiment_contribution" }] : [],
       },
-      presentation: { visible: true, hasSource: true, hasTarget: true, hasAnimation: false },
+      presentation: {
+        visible: true,
+        hasSource: true,
+        hasTarget: true,
+        hasAnimation: false,
+        informationContract: INFORMATION_PRESENTATION_CONTRACT.schema,
+        informationTier: "background",
+      },
       directResult: false,
     });
   }

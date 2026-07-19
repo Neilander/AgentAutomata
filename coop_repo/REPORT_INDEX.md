@@ -2,7 +2,21 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-19
+
+- `2026-07-19_0119_capability-mix-equipment-rebase-fix.md`：修复三标尺配比换人后的换装重算，装备倍率改为作用于冻结混合预测；旧综合强度2/8的相同案例均得到0.68，原0.18偏差归零，三个公式级小测试通过。
+
+- `2026-07-19_0029_capability-mix-equipment-rebase-audit.md`：用单一确定性小案例确认初始换人正确使用三标尺配比，但随后25%换装增量仍受旧综合强度影响；相同配比产生0.18预测分偏差，本轮只诊断未改算法。
+
+- `2026-07-19_0016_capability-mix-roster-expectation.md`：正式换人改为Agent给输出/保护/增益粗配比，程序归一化、投影并冻结到A；缺失正权重证据保持未知，A/C曲线未改，专项与全套回归通过。
+
 ## 2026-07-18
+
+- `2026-07-18_2332_independent-character-capability-rulers.md`：把角色认知拆为输出、保护、增益三套独立同步矩阵和前30%标尺；正式Agent按问题取用，不再看到综合分。专项、真实22场、正式两周期和换人A/C全套回归通过。
+
+- `2026-07-18_2101_two-agent-interpretation-correction.md`：纠正双Agent长跑解释：随机结果误导玩家符合模拟目标；换人A/C回归正常，未知角色不建立数值预测是原合同；通用EVerify从未在本轮修改。真实问题仅保留支援/坦克贡献低估与targetCondition字段合同错误，并取代1449报告中的相反判断。
+
+- `2026-07-18_1449_two-agent-cognition-improvement-run.md`：开放新手和惯性玩家用相同paired-alpha种子重跑完整两章；循环49→30/35、知识199/192→112/107，原始威胁泄漏均归零，角色认知真实改变行为。暴露支援/坦克强度低估、随机重试污染、A/C覆盖不足和条件字段合同错误。
 
 - `2026-07-18_1241_formal-filtered-knowledge-agent-ablation.md`：类型1 V7正式复用旧知识合并、检索和归因入口；公开信号ID取代原始事件ID。真实Agent在完整历史坐标下引用-2.2→+3.951并重试，删除坐标后独立Agent改为换人，正式运行时与全部旧回归通过。
 

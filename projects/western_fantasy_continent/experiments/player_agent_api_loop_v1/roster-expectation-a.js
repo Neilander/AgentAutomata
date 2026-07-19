@@ -46,7 +46,17 @@ function freezeSelectedPrediction(stateInput, input = {}) {
   const view = input.rosterChangeExpectations || {};
   const selected = (view.actions || []).find((row) => row.action === action);
   const baselineScore = finiteOrNull(view.baseline?.performanceScore);
-  const predictedScore = finiteOrNull(selected?.predictedPerformanceScore);
+  const capabilityProjection = selected?.evidenceScope === "one_member_counterfactual_from_exact_current_team"
+    ? ROSTER_EXPECTATIONS.projectCapabilityMix(
+      selected,
+      baselineScore,
+      input.capabilityNeedMix,
+    )
+    : null;
+  const predictedScore = finiteOrNull(
+    capabilityProjection?.predictedPerformanceScore
+      ?? selected?.predictedPerformanceScore,
+  );
   if (!selected || baselineScore == null || predictedScore == null || !view.targetNode) {
     return { state, record: null };
   }
@@ -54,6 +64,13 @@ function freezeSelectedPrediction(stateInput, input = {}) {
   const perceptionProfile = normalizeProfile(input.perceptionProfile);
   const expectedImprovement = relativeImprovement(baselineScore, predictedScore);
   const candidateTeamIds = [...(selected.candidateTeamIds || [])];
+  const selectedConfidence = finiteOrNull(selected.confidence);
+  const mixConfidence = finiteOrNull(capabilityProjection?.axisEvidenceConfidence);
+  const predictionConfidence = selectedConfidence == null
+    ? mixConfidence
+    : mixConfidence == null
+      ? selectedConfidence
+      : round(selectedConfidence * mixConfidence);
   const record = {
     schema: "roster_prediction_a_record_v1",
     id: `roster-prediction:${state.nextSequence}`,
@@ -82,8 +99,14 @@ function freezeSelectedPrediction(stateInput, input = {}) {
     expectedImprovementRaw: round(expectedImprovement),
     expectedPerception: perceiveImprovement(expectedImprovement, perceptionProfile),
     predictionEvidenceScope: selected.evidenceScope || "unknown",
-    predictionConfidence: finiteOrNull(selected.confidence),
-    effectivePredictionConfidence: finiteOrNull(selected.confidence),
+    predictionCompositionMode: capabilityProjection?.status || "exact_or_legacy_prediction",
+    capabilityNeedMix: capabilityProjection?.capabilityNeedMix || null,
+    weightedCapabilityDelta: finiteOrNull(capabilityProjection?.weightedCapabilityDelta),
+    contextTraitAdjustment: finiteOrNull(capabilityProjection?.contextTraitAdjustment),
+    effectiveCapabilityLevelDelta: finiteOrNull(capabilityProjection?.effectiveLevelDelta),
+    capabilityAxisEvidenceConfidence: mixConfidence,
+    predictionConfidence,
+    effectivePredictionConfidence: predictionConfidence,
     expectationWeight: 1,
     equipmentAdjustments: [],
   };
@@ -156,6 +179,12 @@ function resolveChallenge(stateInput, input = {}) {
     expectedImprovementRaw: pending.expectedImprovementRaw,
     actualImprovementRaw: round(actualImprovement),
     expectedPerception: pending.expectedPerception,
+    predictionCompositionMode: pending.predictionCompositionMode || null,
+    capabilityNeedMix: pending.capabilityNeedMix || null,
+    weightedCapabilityDelta: pending.weightedCapabilityDelta ?? null,
+    contextTraitAdjustment: pending.contextTraitAdjustment ?? null,
+    effectiveCapabilityLevelDelta: pending.effectiveCapabilityLevelDelta ?? null,
+    capabilityAxisEvidenceConfidence: pending.capabilityAxisEvidenceConfidence ?? null,
     actualPerception,
     mismatchInput,
     confirmed,
@@ -197,7 +226,10 @@ function rebaseEquipmentExpectation(stateInput, input = {}) {
     ?? ROSTER_EXPECTATIONS.equipmentPower(gameStateAfter, teamIds),
   );
   const equipmentMultiplier = equipmentMultiplierFromPower(basePower, currentPower);
-  const baseStrength = finiteOrNull(pending.candidateBaseStrength);
+  const capabilityMixProjection = pending.predictionCompositionMode === "projected_from_agent_capability_mix";
+  const baseStrength = capabilityMixProjection
+    ? null
+    : finiteOrNull(pending.candidateBaseStrength);
   const effectiveExpectedStrength = ROSTER_EXPECTATIONS.effectiveStrength(baseStrength, equipmentMultiplier);
   const baseScore = finiteOrNull(pending.basePredictedCombatScore) ?? pending.predictedCombatScore;
   const baseProgress = (Number(baseScore) + 1) / 2;
@@ -207,6 +239,11 @@ function rebaseEquipmentExpectation(stateInput, input = {}) {
   const adjustedProgress = equipmentMultiplier == null
     ? baseProgress
     : clamp(baseProgress * equipmentMultiplier, 0, 1);
+  const rebaseBasis = capabilityMixProjection
+    ? "frozen_capability_mix_prediction_progress"
+    : strengthScoreDelta == null
+      ? "predicted_progress_fallback"
+      : "legacy_base_strength";
   const predictedCombatScore = clamp(round(
     strengthScoreDelta == null ? adjustedProgress * 2 - 1 : baseScore + strengthScoreDelta,
   ), -1, 1);
@@ -217,8 +254,12 @@ function rebaseEquipmentExpectation(stateInput, input = {}) {
     baseEquipmentPower: basePower,
     currentEquipmentPower: currentPower,
     equipmentMultiplier,
+    rebaseBasis,
+    capabilityNeedMix: capabilityMixProjection ? pending.capabilityNeedMix : null,
     baseExpectedStrength: baseStrength,
     effectiveExpectedStrength,
+    basePredictionProgress: round(baseProgress),
+    adjustedPredictionProgress: round(adjustedProgress),
     predictedCombatScoreBefore: pending.predictedCombatScore,
     predictedCombatScoreAfter: predictedCombatScore,
     status: equipmentMultiplier == null ? "kept_prior_missing_power_baseline" : "recalculated",

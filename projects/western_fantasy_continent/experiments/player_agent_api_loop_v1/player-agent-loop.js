@@ -66,6 +66,7 @@ function applyDecisionResponse(sessionInput, responseInput) {
   if (!(observation.allowedActions || []).includes(response.action)) {
     throw new Error(`decision agent returned unavailable action: ${response.action}`);
   }
+  validateRosterCapabilityMix(response, decisionRequest.playerState.rosterChangeExpectations);
 
   const emotionBeforeDecision = Number(session.cognitionState.emotion.value);
   const gameStateBefore = clone(session.gameState);
@@ -82,6 +83,7 @@ function applyDecisionResponse(sessionInput, responseInput) {
     },
     alternatives: response.alternatives,
     reasoningChain: response.reasoningChain,
+    capabilityNeedMix: response.capabilityNeedMix,
     hypothesis: response.hypothesis,
   };
 
@@ -99,6 +101,7 @@ function applyDecisionResponse(sessionInput, responseInput) {
     gameState: session.gameState,
     perceptionProfile: session.perceptionProfile,
     cycle: session.cycle + 1,
+    capabilityNeedMix: response.capabilityNeedMix?.raw || null,
   });
   const result = runPlayerAction(
     session.gameState,
@@ -242,6 +245,7 @@ function buildDecisionRequest(session) {
     visibleNodeIds: observation.visibleNodes.map((node) => node.id),
     currentPower: gameCore(session.gameState).gearScore(session.gameState),
     entityImpressionState: session.entityImpressionState,
+    requireCapabilityMix: true,
   });
   return {
     type: "decision",
@@ -249,7 +253,7 @@ function buildDecisionRequest(session) {
     cycle: session.cycle + 1,
     agentSession: PERSISTENT_AGENT.requestMetadata(session.agentContext, "decision"),
     playerProfile: clone(session.playerProfile),
-    instruction: "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. Historical encounter facts preserve formation slots and the character-cognition coordinates that existed when the result occurred: matrix position, that moment's top-30-percent scale boundary, and position relative to that boundary. Treat them as historical player evidence, compare them with current characterImpressions, and make your own judgment; the organizer does not decide whether a past result still applies. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. rosterChangeExpectations are fallible code-owned predictions scoped to the shown encounter and team; unknown means there is not enough player evidence. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
+    instruction: "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. characterImpressions contains three independent top-30-percent rulers: output, protection, and buff. First identify the player-observed problem, then use only the capability axis or axes relevant to that need; never average or automatically combine them into one overall strength. For a one-member counterfactual swap, return capabilityNeedMix as three integer need weights from 0 to 10. The weights express the current problem, not emotional intensity; code normalizes them, calculates the prediction, and freezes the same mix for later A settlement. Historical encounter facts preserve formation slots and the character-cognition coordinates that existed when the result occurred. Treat them as historical player evidence, compare them with current characterImpressions, and make your own judgment; the organizer does not decide whether a past result still applies. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. rosterChangeExpectations are fallible code-owned evidence scoped to the shown encounter and team; unknown means there is not enough player evidence. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
     playerState: {
       emotion: round(session.cognitionState.emotion.value),
       activeGoalId,
@@ -284,6 +288,16 @@ function buildDecisionRequest(session) {
         item: { kind: "goal|knowledge|evidence|affordance|comparison|hypothesis", evidence: "short factual evidence" },
       },
       alternatives: "at least one legal alternative when hypothesis is non-null",
+      capabilityNeedMix: {
+        nullable: true,
+        requiredWhen: "selected swap has evidenceScope one_member_counterfactual_from_exact_current_team",
+        scale: "integer weights 0..10; at least one weight must be positive; code normalizes",
+        fields: {
+          output: "need for damage or kill pressure",
+          protection: "need for healing, shielding, or survival",
+          buff: "need to amplify teammates",
+        },
+      },
       hypothesis: {
         nullable: true,
         requiredFields: ["id", "problem", "cause", "resultKind", "target", "verificationScope"],
@@ -760,8 +774,18 @@ function normalizeDecisionResponse(input) {
     goalId: typeof response.goalId === "string" ? response.goalId : "grow_and_progress",
     reasoningChain,
     alternatives: Array.isArray(response.alternatives) ? response.alternatives : [],
+    capabilityNeedMix: ROSTER_EXPECTATIONS.normalizeCapabilityNeedMix(response.capabilityNeedMix),
     hypothesis: normalizeDecisionHypothesis(response.hypothesis),
   };
+}
+
+function validateRosterCapabilityMix(response, view) {
+  if (!String(response.action || "").startsWith("swap:")) return;
+  const selected = (view?.actions || []).find((row) => row.action === response.action);
+  if (selected?.evidenceScope !== "one_member_counterfactual_from_exact_current_team") return;
+  if (!response.capabilityNeedMix) {
+    throw new Error("counterfactual roster swap requires capabilityNeedMix");
+  }
 }
 
 function createChapter2Session(seed = "player-agent-api-loop-chapter2", maxCycles = 24, priorPlayerState = null, options = {}) {
@@ -810,7 +834,9 @@ function createChapter2SessionFromChapter1(chapter1Input, maxCycles = 24, seed =
     toSessionSeed: chapter2Seed,
     inheritedEmotion: round(source.cognitionState.emotion.value),
     inheritedKnowledgeCount: source.knowledgeBase.length,
-    inheritedCharacterImpressionCount: source.entityImpressionState?.strengthCognitionMatrix?.entries?.length || 0,
+    inheritedCharacterImpressionCount: ENTITY_IMPRESSIONS.listCurrentCapabilityCognition(
+      source.entityImpressionState || {},
+    ).length,
     inheritedRosterExpectationCount: source.rosterExpectationState?.observations?.length || 0,
     inheritedConceptCount: source.conceptState.concepts.length,
     inheritedAgentSessionId: source.agentContext.id,
@@ -974,9 +1000,14 @@ function learnFromChallenge(session, record, context) {
     ENTITY_IMPRESSIONS.listCurrentStrengthCognition(session.entityImpressionState)
       .map((row) => [row.subject?.id, row]),
   );
+  const capabilityById = new Map(
+    ENTITY_IMPRESSIONS.listCurrentCapabilityCognition(session.entityImpressionState)
+      .map((row) => [row.subject?.id, row]),
+  );
   const teamMembers = teamIds.map((id, index) => {
     const unit = rosterById.get(id) || { id, name: id };
     const cognition = cognitionById.get(id);
+    const capability = capabilityById.get(id);
     return {
       id,
       name: unit.name,
@@ -990,6 +1021,7 @@ function learnFromChallenge(session, record, context) {
       cognitionLabel: cognition?.label ?? null,
       cognitionInTopThirtyPercent: cognition?.inTopThirtyPercent ?? null,
       cognitionEvidenceCount: cognition?.evidenceCount ?? null,
+      cognitionAxes: clone(capability?.capabilities || {}),
     };
   });
   const routed = RECEIVED_INFORMATION_ORGANIZER.organizeReceivedBattleInformation(
@@ -1606,14 +1638,32 @@ function updateEntityImpressionsFromChallenge(session, record, gameStateBefore) 
       profile: analysis.profile,
       teamUsefulContribution: analysis.teamUsefulContribution,
       scale: clone(state.strengthCognitionMatrix?.scale || null),
+      capabilityScales: clone(Object.fromEntries(
+        Object.entries(state.capabilityCognitionMatrices || {})
+          .map(([axis, matrix]) => [axis, matrix.scale || null]),
+      )),
       movements: trace.changes.find((change) => change.action === "updated_strength_cognition_matrix")?.movements || [],
-      currentStrengthCognition: summarizeCharacterImpressions(state),
+      currentStrengthCognition: summarizeLegacyStrengthImpressions(state),
+      currentCapabilityCognition: summarizeIndependentCapabilityImpressions(state),
       stableIdentityAudit: normalized.audit,
     },
   };
 }
 
 function summarizeCharacterImpressions(state) {
+  return summarizeIndependentCapabilityImpressions(state);
+}
+
+function summarizeIndependentCapabilityImpressions(state) {
+  return ENTITY_IMPRESSIONS.listCurrentCapabilityCognition(state).map((row) => ({
+    subject: row.subject,
+    capabilities: clone(row.capabilities),
+    availableAxes: row.availableAxes,
+    decisionRule: row.decisionRule,
+  }));
+}
+
+function summarizeLegacyStrengthImpressions(state) {
   return ENTITY_IMPRESSIONS.listCurrentStrengthCognition(state).map((row) => ({
     subject: row.subject,
     position: row.position,

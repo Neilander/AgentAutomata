@@ -42,8 +42,16 @@ assert.equal(session.entityImpressionState.strengthCognitionMatrix.entries.lengt
   "the formal player session must persist one current strength position per observed team character");
 assert.equal(session.entityImpressionState.strengthCognitionMatrix.scale.topCount, 2,
   "four observed characters must use a ceil(30%) = two-character ruler boundary");
+assert.equal(session.entityImpressionState.capabilityCognitionMatrices.output.entries.length, 4,
+  "the formal session must update one independent output position per observed character");
+assert.equal(session.entityImpressionState.capabilityCognitionMatrices.protection.entries.length, 4,
+  "visible healing or shielding must update an independent protection ruler");
+assert.equal(session.entityImpressionState.capabilityCognitionMatrices.buff.entries.length, 4,
+  "visible team-buff evidence must update an independent buff ruler for the observed team");
 assert.equal(session.history[0].entityImpressionUpdate.currentStrengthCognition.length, 4,
   "the battle record must retain the deterministic simultaneous matrix update");
+assert.equal(session.history[0].entityImpressionUpdate.currentCapabilityCognition.length, 4,
+  "the battle record must retain independent capability coordinates");
 assert.equal(session.rosterExpectationState.observations.length, 1,
   "the formal session must scope encounter results to the exact observed roster");
 
@@ -92,14 +100,25 @@ session = LOOP.applyAttributionResponse(session, {
 const request = LOOP.getPendingRequest(session);
 assert.equal(request.playerState.characterImpressions.length, 4,
   "the next decision must receive code-owned current character impressions");
-assert(request.playerState.characterImpressions.every((row) => Number.isFinite(row.position)
-  && Number.isFinite(row.scaleBoundaryPosition)
-  && Number.isFinite(row.relativeToTopThirtyBoundary)
-  && Number.isFinite(row.currentLevel)), "character impression summaries must expose complete current cognition coordinates");
+assert(request.playerState.characterImpressions.every((row) => (
+  Number.isFinite(row.capabilities.output.position)
+  && Number.isFinite(row.capabilities.output.scaleBoundaryPosition)
+  && Number.isFinite(row.capabilities.output.relativeToScale)
+  && Number.isFinite(row.capabilities.output.level)
+  && Number.isFinite(row.capabilities.protection.position)
+  && !Object.hasOwn(row, "legacyOverallContext")
+)), "character impression summaries must expose complete independent output/protection coordinates");
+assert(request.instruction.includes("never average or automatically combine"),
+  "the formal Agent contract must require need-based use of independent capability rulers");
 const retrievedEncounter = request.playerState.knowledge.find((row) => row.behavior.kind === "challenge_level");
-assert(retrievedEncounter.playerReadableFact.includes("当时前30%标尺"));
-assert(retrievedEncounter.playerReadableFact.includes("相对标尺"));
+assert(retrievedEncounter.playerReadableFact.includes("当时独立认知"));
+assert(retrievedEncounter.playerReadableFact.includes("输出位置"));
+assert(retrievedEncounter.playerReadableFact.includes("保护位置"));
 assert.equal(retrievedEncounter.result.latestObservation.teamCognitionSnapshot.length, 4);
+assert(retrievedEncounter.result.latestObservation.teamCognitionSnapshot.every((row) => (
+  Number.isFinite(row.cognitionAxes.output.position)
+  && Number.isFinite(row.cognitionAxes.protection.position)
+)), "historical encounter knowledge must preserve the independent capability coordinates");
 assert.equal(request.playerState.rosterChangeExpectations.baseline.evidenceScope,
   "exact_current_team_and_encounter");
 assert(request.playerState.rosterChangeExpectations.actions.length > 0,

@@ -25,7 +25,7 @@ The five preset battles use the live semantic report shape but are controlled fi
 
 ## Ownership Boundary
 
-- Code calculates contribution, relative strength, perception bands, the global character-strength matrix, the top-30-percent ruler, trait magnitude, evidence reliability, contextual retrieval, and finite primacy synthesis.
+- Code calculates contribution, relative strength, perception bands, three independent output/protection/buff character matrices, one top-30-percent ruler per capability, trait magnitude, evidence reliability, contextual retrieval, and finite primacy synthesis.
 - Agent reads compact reports, audits arithmetic, writes evidence-bound descriptions, and may emit causal hypotheses.
 - Agent hypotheses cannot directly become knowledge. Later structured evidence must validate them.
 
@@ -33,6 +33,7 @@ The five preset battles use the live semantic report shape but are controlled fi
 
 - `MODEL_CONTRACT.md`: formulas, knowledge semantics, and known signal boundary.
 - `strength-cognition-matrix.js`: deterministic two-matrix update, global solve, and top-30-percent ruler.
+- `test-independent-capability-cognition.js`: verifies that damage, protection, and team buffs lead separate rulers and that an unobserved axis does not move.
 - `AGENT_REVIEW.md`: independent Agent successes, failures, and accepted limits.
 - `generated/agent-forward-expert-analysis.json`: raw five-battle output from an Agent isolated from source and deterministic answers.
 - `generated/agent-validation.json`: 118 field-level comparisons between that Agent output and executable results.
@@ -47,7 +48,7 @@ The five preset battles use the live semantic report shape but are controlled fi
 - Old semantic reports lack `result.meta.visibleTargetCount`, so same-concept area damage is conservatively under-classified.
 - Preset order effects prove implementation behavior, not the quantitative size of human primacy bias.
 - Strength remains team-relative, so unchanged objective output can look very different beside weak or strong teammates. Each observation now retains encounter, ally-performance band, roster fingerprint, and per-unit contribution basis; prediction must use that context instead of treating strength as unconditional.
-- Current no-context strength is population-relative: valid observed characters rebuild a ruler whose zero is the weakest member of the top 30%. The observation-weighted historical synthesis is retained separately from this current display level.
+- Current Agent-facing cognition is capability-relative: output, protection, and team buff each rebuild a separate ruler whose zero is the weakest member of that capability's top 30%. The Agent selects by current need; code does not synthesize an overall decision score. The legacy composite ruler remains only for compatibility with the already-validated roster-A path.
 - V1 has no time-based stale-character policy yet. Every character with accepted battle evidence remains valid; genuinely weak valid characters intentionally affect the ruler.
 - Every battle retrieves the character's current trait beliefs and revalidates domains that were actually attempted. Strong evidence reinforces, weak attempted evidence corrects, and absent or low-reliability evidence remains inconclusive.
 - The attempt contract is currently report-domain based. It distinguishes an observed weak area-damage attempt from no area-damage attempt, but it does not yet infer an unrecorded tactical opportunity the character declined to take.

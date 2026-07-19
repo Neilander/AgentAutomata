@@ -193,6 +193,11 @@ function summarizePlayerReadableFact(row) {
   const slotLabels = ["前排1", "前排2", "后排1", "后排2"];
   const formation = snapshot.map((member, index) => {
     const slotIndex = Math.max(0, Number(member.formationSlot || index + 1) - 1);
+    const capabilityText = formatCapabilityAxes(member.cognitionAxes);
+    if (capabilityText) {
+      return `${slotLabels[slotIndex] || `站位${slotIndex + 1}`} ${member.name || member.id}`
+        + `（当时独立认知：${capabilityText}）`;
+    }
     const matrix = formatNumber(member.cognitionMatrixPosition);
     const boundary = formatNumber(member.cognitionScaleBoundaryPosition);
     const relative = formatSignedNumber(member.cognitionRelativeToScale);
@@ -202,6 +207,22 @@ function summarizePlayerReadableFact(row) {
   return `历史战斗事实：${row.environment?.node || "未知关卡"}；阵型：${formation.join("；")}；`
     + `结果${observation.outcome || "unknown"}，表现分${formatNumber(observation.performanceScore)}。`
     + "相对标尺=矩阵位置-当时前30%标尺；这是当时认知，不是程序对当前结果的裁决。";
+}
+
+function formatCapabilityAxes(input) {
+  if (!input || typeof input !== "object") return "";
+  const labels = { output: "输出", protection: "保护", buff: "增益" };
+  return ["output", "protection", "buff"]
+    .filter((axis) => input[axis])
+    .map((axis) => {
+      const row = input[axis];
+      return `${labels[axis]}位置${formatNumber(row.position)}`
+        + `/标尺${formatNumber(row.scaleBoundaryPosition)}`
+        + `/相对${formatSignedNumber(row.relativeToScale)}`
+        + `/${row.cognitionLabel || `等级${row.level}`}`
+        + `/证据${row.evidenceCount || 0}场`;
+    })
+    .join("；");
 }
 
 function compactObservation(value) {

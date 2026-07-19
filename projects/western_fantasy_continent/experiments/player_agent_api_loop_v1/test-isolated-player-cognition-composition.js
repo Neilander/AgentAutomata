@@ -190,6 +190,21 @@ assert(causalRelationCounts.attack_player_squad > 0);
 assert([...causalKeyCounts.values()].some((count) => count > 1));
 assert(Object.values(persistentFactCoverage).every((row) => row.required === row.preserved));
 
+const finalCharacterSnapshot = rosterExpectationState.observations.at(-1).characterSnapshot;
+const finalPriestCognition = finalCharacterSnapshot.find((row) => row.id === "hero_priest");
+assert(finalPriestCognition?.capabilities?.output);
+assert(finalPriestCognition?.capabilities?.protection);
+assert(
+  finalPriestCognition.capabilities.protection.position
+    > finalPriestCognition.capabilities.output.position,
+  "the real 22-battle route must recognize the Priest as stronger at protection than output",
+);
+assert(
+  finalPriestCognition.capabilities.protection.relativeToScale
+    > finalPriestCognition.capabilities.output.relativeToScale,
+  "independent rulers must prevent low damage from suppressing the Priest's protection cognition",
+);
+
 const first = outputs[0];
 const last = outputs.at(-1);
 const result = {

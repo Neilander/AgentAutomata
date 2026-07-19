@@ -38,14 +38,26 @@ const mageAction = "swap:2:hero_mage";
 const prediction = beforeSwap.playerState.rosterChangeExpectations.actions
   .find((row) => row.action === mageAction);
 assert.equal(beforeSwap.playerState.rosterChangeExpectations.targetNode, "r1_main_3");
-assert(prediction && Number.isFinite(prediction.predictedPerformanceScore),
-  "the integration fixture needs a code-owned numeric mage prediction");
+assert(prediction && prediction.predictedPerformanceScore === null,
+  "the formal request must defer its numeric prediction until the Agent supplies a capability mix");
+assert(Number.isFinite(prediction.capabilityScenarioPredictions.output.predictedPerformanceScore),
+  "the integration fixture needs a visible pure-output scenario");
+assert.throws(
+  () => LOOP.applyDecisionResponse(session, {
+    ...decisionFor(mageAction),
+    capabilityNeedMix: null,
+  }),
+  /requires capabilityNeedMix/,
+  "a known one-member counterfactual swap must not freeze a prediction without the Agent's capability mix",
+);
 
 session = LOOP.applyDecisionResponse(session, decisionFor(mageAction));
 const selection = session.history.at(-1).rosterPredictionSelection;
 assert(selection, "player loop must freeze the selected prediction on the successful swap");
 assert.equal(selection.source, "roster_prediction");
 assert.equal(selection.targetNode, "r1_main_3");
+assert.equal(selection.predictionCompositionMode, "projected_from_agent_capability_mix");
+assert.deepEqual(selection.capabilityNeedMix.raw, { output: 10, protection: 0, buff: 0 });
 assert.equal(session.rosterPredictionAState.pending.id, selection.id);
 session = attributePending(session);
 
@@ -90,6 +102,19 @@ function seedKnownMage(targetSession) {
     scaleView: null,
   });
   IMPRESSIONS.STRENGTH_MATRIX.refreshStrengthScale(matrix);
+  const outputMatrix = targetSession.entityImpressionState.capabilityCognitionMatrices.output;
+  outputMatrix.entries = outputMatrix.entries.filter((row) => row.subject.id !== "hero_mage");
+  outputMatrix.entries.push({
+    subject: { id: "hero_mage", name: "Mage", role: "mage" },
+    position: 8,
+    stiffness: 4,
+    evidenceCount: 3,
+    firstObservedReportId: "integration-visible-mage-output-evidence",
+    lastObservedReportId: "integration-visible-mage-output-evidence",
+    lastObservedLevel: 8,
+    scaleView: null,
+  });
+  IMPRESSIONS.STRENGTH_MATRIX.refreshStrengthScale(outputMatrix);
 }
 
 function decisionFor(action) {
@@ -98,6 +123,9 @@ function decisionFor(action) {
     goalId: "grow_and_progress",
     reasoningChain: [{ kind: "affordance", evidence: `Exercise visible action ${action}.` }],
     alternatives: [],
+    capabilityNeedMix: action.startsWith("swap:")
+      ? { output: 10, protection: 0, buff: 0 }
+      : null,
     hypothesis: null,
   };
 }

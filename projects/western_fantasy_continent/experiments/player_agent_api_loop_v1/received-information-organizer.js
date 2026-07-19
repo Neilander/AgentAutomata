@@ -471,6 +471,7 @@ function safeTeamMember(row) {
       ? null
       : Boolean(row.cognitionInTopThirtyPercent),
     cognitionEvidenceCount: optionalFiniteNumber(row.cognitionEvidenceCount),
+    cognitionAxes: safeCognitionAxes(row.cognitionAxes),
   });
 }
 
@@ -494,7 +495,31 @@ function encounterCognitionSnapshot(row) {
     cognitionLabel: row.cognitionLabel,
     cognitionInTopThirtyPercent: row.cognitionInTopThirtyPercent,
     cognitionEvidenceCount: optionalFiniteNumber(row.cognitionEvidenceCount),
+    cognitionAxes: safeCognitionAxes(row.cognitionAxes),
   });
+}
+
+function safeCognitionAxes(input) {
+  if (!input || typeof input !== "object") return undefined;
+  const result = {};
+  for (const axis of ["output", "protection", "buff"]) {
+    const row = input[axis];
+    if (!row || typeof row !== "object") continue;
+    result[axis] = compactDefined({
+      axis,
+      label: safeToken(row.label),
+      position: optionalFiniteNumber(row.position),
+      scaleBoundaryPosition: optionalFiniteNumber(row.scaleBoundaryPosition),
+      relativeToScale: optionalFiniteNumber(row.relativeToScale),
+      level: optionalFiniteNumber(row.level),
+      cognitionLabel: safeToken(row.cognitionLabel),
+      evidenceCount: optionalFiniteNumber(row.evidenceCount),
+      inTopThirtyPercent: row.inTopThirtyPercent == null
+        ? null
+        : Boolean(row.inTopThirtyPercent),
+    });
+  }
+  return Object.keys(result).length ? result : undefined;
 }
 
 function teamFingerprintOf(members) {

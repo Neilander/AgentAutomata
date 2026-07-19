@@ -5,6 +5,7 @@ const SCHEMA = "roster_change_expectation_v1";
 const POSITION_LEVEL_TO_PERFORMANCE = 0.12;
 const TRAIT_LEVEL_WEIGHT = 0.35;
 const MAX_HISTORY = 32;
+const CAPABILITY_AXES = ["output", "protection", "buff"];
 
 function createState() {
   return {
@@ -67,6 +68,7 @@ function buildExpectations(input = {}) {
     && comparableCognition(row, currentTeamIds, cognition));
   const baseline = robustRecentObservation(exactCurrentHistory) || null;
   const contextTags = baseline?.contextTags || [];
+  const requireCapabilityMix = Boolean(input.requireCapabilityMix);
 
   const actions = allowedSwapActions.map((action) => {
     const [, slotText, incomingId] = String(action).split(":");
@@ -122,13 +124,21 @@ function buildExpectations(input = {}) {
     }
 
     const strengthDelta = round(incoming.position - outgoing.position);
+    const capabilityDeltas = capabilityDeltaByAxis(incoming, outgoing);
     const trait = traitFitDelta(incoming, outgoing, contextTags);
     const effectiveLevelDelta = round(strengthDelta + TRAIT_LEVEL_WEIGHT * trait.delta);
-    const predictedPerformanceScore = clamp(round(
+    const legacyPredictedPerformanceScore = clamp(round(
       baseline.performanceScore + effectiveLevelDelta * POSITION_LEVEL_TO_PERFORMANCE,
     ), -1, 1);
-    const expectedChange = changeFromLevelDelta(effectiveLevelDelta);
-    const expectedOutcome = outcomeFromScore(predictedPerformanceScore);
+    const expectedChange = requireCapabilityMix
+      ? "awaiting_agent_capability_mix"
+      : changeFromLevelDelta(effectiveLevelDelta);
+    const expectedOutcome = requireCapabilityMix
+      ? "awaiting_agent_capability_mix"
+      : outcomeFromScore(legacyPredictedPerformanceScore);
+    const predictedPerformanceScore = requireCapabilityMix
+      ? null
+      : legacyPredictedPerformanceScore;
     return {
       action,
       outgoingId,
@@ -144,6 +154,13 @@ function buildExpectations(input = {}) {
         performanceScore: baseline.performanceScore,
       },
       strengthDelta,
+      capabilityDeltas,
+      capabilitySelectionRule: "Agent根据当前可见问题独立选择输出、保护或增益差；这些差值不自动平均或相加",
+      capabilityScenarioPredictions: capabilityScenarioPredictions(
+        baseline.performanceScore,
+        capabilityDeltas,
+        trait.delta,
+      ),
       contextRelevantTraitDomains: trait.contextDomains,
       comparedTraitDomains: trait.comparedDomains,
       unknownTraitDomains: trait.unknownDomains,
@@ -153,9 +170,17 @@ function buildExpectations(input = {}) {
       expectedChange,
       expectedOutcome,
       predictedPerformanceScore,
-      priorFailureTransfer: transferFailure(baseline, effectiveLevelDelta, predictedPerformanceScore),
+      priorFailureTransfer: requireCapabilityMix
+        ? "defer_until_agent_capability_mix"
+        : transferFailure(baseline, effectiveLevelDelta, predictedPerformanceScore),
       confidence: counterfactualConfidence(incoming, outgoing, baseline, trait),
       reason: "the prior result remains scoped to its exact team; this action is re-estimated from the incoming-versus-outgoing cognition difference",
+      legacyPredictionAudit: requireCapabilityMix ? {
+        effectiveLevelDelta,
+        predictedPerformanceScore: legacyPredictedPerformanceScore,
+        usedForAgentDecision: false,
+        usedForA: false,
+      } : null,
     };
   });
 
@@ -173,7 +198,7 @@ function buildExpectations(input = {}) {
       contextTags,
     } : null,
     actions,
-    rule: "failure belongs to the observed team and encounter; each different swap is re-estimated from current character strength and context-relevant traits",
+    rule: "failure belongs to the observed team and encounter; independent output/protection/buff cognition is shown for need-based Agent choice, while the existing A prediction remains isolated on its previously validated settlement path",
     calibration: {
       positionLevelToPerformance: POSITION_LEVEL_TO_PERFORMANCE,
       traitLevelWeight: TRAIT_LEVEL_WEIGHT,
@@ -184,6 +209,10 @@ function buildExpectations(input = {}) {
 
 function currentCognition(state) {
   const strength = new Map(ENTITY_IMPRESSIONS.listCurrentStrengthCognition(state || {}).map((row) => [row.subject.id, row]));
+  const capabilities = new Map(
+    ENTITY_IMPRESSIONS.listCurrentCapabilityCognition(state || {})
+      .map((row) => [row.subject.id, row.capabilities]),
+  );
   const result = new Map();
   for (const [id, row] of strength) {
     const traits = ENTITY_IMPRESSIONS.retrieveImpressions(state, id)
@@ -200,9 +229,144 @@ function currentCognition(state) {
       level: Number(row.level || 0),
       evidenceCount: Number(row.evidenceCount || 0),
       traits,
+      capabilities: structuredClone(capabilities.get(id) || {}),
     });
   }
   return result;
+}
+
+function capabilityDeltaByAxis(incoming, outgoing) {
+  return Object.fromEntries(CAPABILITY_AXES.map((axis) => {
+    const incomingAxis = incoming.capabilities?.[axis];
+    const outgoingAxis = outgoing.capabilities?.[axis];
+    if (!incomingAxis || !outgoingAxis) {
+      return [axis, {
+        status: "unknown",
+        delta: null,
+        reason: "incoming or outgoing character lacks accepted evidence on this capability axis",
+      }];
+    }
+    return [axis, {
+      status: "known",
+      delta: round(Number(incomingAxis.position || 0) - Number(outgoingAxis.position || 0)),
+      incomingRelativeToScale: Number(incomingAxis.relativeToScale || 0),
+      outgoingRelativeToScale: Number(outgoingAxis.relativeToScale || 0),
+      minimumEvidenceCount: Math.min(
+        Number(incomingAxis.evidenceCount || 0),
+        Number(outgoingAxis.evidenceCount || 0),
+      ),
+    }];
+  }));
+}
+
+function capabilityScenarioPredictions(baselineScore, capabilityDeltas, traitLevelDelta = 0) {
+  return Object.fromEntries(CAPABILITY_AXES.map((axis) => {
+    const row = capabilityDeltas?.[axis];
+    if (!row || row.status !== "known" || !Number.isFinite(Number(row.delta))) {
+      return [axis, {
+        status: "unknown",
+        predictedPerformanceScore: null,
+        expectedChange: "unknown",
+        expectedOutcome: "unknown",
+      }];
+    }
+    const effectiveLevelDelta = round(Number(row.delta) + TRAIT_LEVEL_WEIGHT * Number(traitLevelDelta || 0));
+    const predictedPerformanceScore = clamp(round(
+      Number(baselineScore || 0) + effectiveLevelDelta * POSITION_LEVEL_TO_PERFORMANCE,
+    ), -1, 1);
+    return [axis, {
+      status: "known",
+      effectiveLevelDelta,
+      predictedPerformanceScore,
+      expectedChange: changeFromLevelDelta(effectiveLevelDelta),
+      expectedOutcome: outcomeFromScore(predictedPerformanceScore),
+    }];
+  }));
+}
+
+function normalizeCapabilityNeedMix(input) {
+  if (input == null) return null;
+  if (typeof input !== "object" || Array.isArray(input)) {
+    throw new Error("capabilityNeedMix must be an object");
+  }
+  const raw = {};
+  for (const axis of CAPABILITY_AXES) {
+    const value = Number(input[axis] ?? 0);
+    if (!Number.isInteger(value) || value < 0 || value > 10) {
+      throw new Error(`capabilityNeedMix.${axis} must be an integer from 0 to 10`);
+    }
+    raw[axis] = value;
+  }
+  const total = CAPABILITY_AXES.reduce((sum, axis) => sum + raw[axis], 0);
+  if (total <= 0) throw new Error("capabilityNeedMix total must be greater than zero");
+  return {
+    raw,
+    normalized: Object.fromEntries(CAPABILITY_AXES.map((axis) => [
+      axis,
+      round(raw[axis] / total, 4),
+    ])),
+    total,
+    granularity: "agent integer weights 0..10 normalized by code",
+  };
+}
+
+function projectCapabilityMix(selected, baselineScore, mixInput) {
+  const mix = normalizeCapabilityNeedMix(mixInput);
+  if (!mix) {
+    return {
+      status: "missing_mix",
+      predictedPerformanceScore: null,
+      missingAxes: [],
+      capabilityNeedMix: null,
+    };
+  }
+  const missingAxes = CAPABILITY_AXES.filter((axis) => (
+    mix.raw[axis] > 0
+    && (
+      selected?.capabilityDeltas?.[axis]?.status !== "known"
+      || !Number.isFinite(Number(selected.capabilityDeltas[axis].delta))
+    )
+  ));
+  if (missingAxes.length) {
+    return {
+      status: "insufficient_axis_evidence",
+      predictedPerformanceScore: null,
+      missingAxes,
+      capabilityNeedMix: mix,
+    };
+  }
+  const weightedCapabilityDelta = round(CAPABILITY_AXES.reduce((sum, axis) => (
+    sum + mix.normalized[axis] * Number(selected.capabilityDeltas[axis].delta || 0)
+  ), 0));
+  const contextTraitAdjustment = round(
+    TRAIT_LEVEL_WEIGHT * Number(selected.traitLevelDelta || 0),
+  );
+  const effectiveLevelDelta = round(weightedCapabilityDelta + contextTraitAdjustment);
+  const predictedPerformanceScore = clamp(round(
+    Number(baselineScore || 0) + effectiveLevelDelta * POSITION_LEVEL_TO_PERFORMANCE,
+  ), -1, 1);
+  const axisEvidenceConfidence = round(CAPABILITY_AXES.reduce((sum, axis) => {
+    if (mix.normalized[axis] <= 0) return sum;
+    const evidence = Number(selected.capabilityDeltas[axis].minimumEvidenceCount || 0);
+    return sum + mix.normalized[axis] * clamp(evidence / 4, 0.2, 1);
+  }, 0));
+  return {
+    status: "projected_from_agent_capability_mix",
+    capabilityNeedMix: mix,
+    weightedCapabilityDelta,
+    contextTraitAdjustment,
+    effectiveLevelDelta,
+    predictedPerformanceScore,
+    expectedChange: changeFromLevelDelta(effectiveLevelDelta),
+    expectedOutcome: outcomeFromScore(predictedPerformanceScore),
+    priorFailureTransfer: transferFailure(
+      { outcome: selected?.baseline?.outcome || "unknown" },
+      effectiveLevelDelta,
+      predictedPerformanceScore,
+    ),
+    axisEvidenceConfidence,
+    missingAxes: [],
+  };
 }
 
 function robustRecentObservation(rows) {
@@ -466,4 +630,8 @@ module.exports = {
   equipmentFingerprint,
   equipmentPower,
   effectiveStrength,
+  normalizeCapabilityNeedMix,
+  projectCapabilityMix,
+  capabilityScenarioPredictions,
+  CAPABILITY_AXES,
 };

@@ -67,6 +67,12 @@ const STRENGTH_LABELS = {
 
 const DOMAIN_EVIDENCE_WEIGHTS = { high: 1, medium: 0.65, low: 0.2 };
 const DOMAIN_EVIDENCE_THRESHOLD = 0.5;
+const CAPABILITY_AXES = ["output", "protection", "buff"];
+const CAPABILITY_AXIS_LABELS = {
+  output: "输出",
+  protection: "保护",
+  buff: "增益",
+};
 const AGENT_INTERPRETATION_POLICY = {
   output: "hypothesis_only",
   directKnowledgePromotion: false,
@@ -91,6 +97,7 @@ function analyzeBattleReport(report, options = {}) {
 
     if (event.type === "damage" && event.result?.target?.side === "right") {
       actor.channels.damage += amount;
+      actor.capabilityContribution.output += amount;
       const castId = event.result?.meta?.castId
         || `${subjectId}:${event.time}:${event.behavior?.key || "damage"}`;
       const cast = casts.get(castId) || {
@@ -108,20 +115,33 @@ function analyzeBattleReport(report, options = {}) {
       casts.set(castId, cast);
     } else if (event.type === "heal" && event.result?.target?.side === "left") {
       actor.channels.healing += amount;
+      actor.capabilityContribution.protection += amount;
       actor.domains.healing += amount;
       addDomainEvidence(actor, "healing", amount, "high");
+    } else if (event.type === "shield" && event.result?.target?.side === "left") {
+      actor.capabilityContribution.protection += amount;
+      actor.domains.shielding += amount;
+      addDomainEvidence(actor, "shielding", amount, "high");
     } else if (["shield_absorb", "shield_block"].includes(event.type)) {
       actor.channels.shieldAbsorbed += amount;
+      actor.capabilityContribution.protection += amount;
       actor.domains.shielding += amount;
       addDomainEvidence(actor, "shielding", amount, "high");
     } else if (event.type === "damage_prevented") {
       actor.channels.damagePrevented += amount;
+      actor.capabilityContribution.protection += amount;
       actor.domains.durability += amount;
       addDomainEvidence(actor, "durability", amount, "high");
     } else if (event.type === "control_prevented_action") {
       actor.channels.controlValue += amount;
       actor.domains.control += amount;
       addDomainEvidence(actor, "control", amount, "high");
+    } else if (event.type === "status") {
+      const target = event.result?.target;
+      const isTeamBuff = tags.has("buff")
+        && target?.side === "left"
+        && target.id !== subjectId;
+      if (isTeamBuff) actor.capabilityContribution.buff += amount;
     }
   }
 
@@ -163,6 +183,7 @@ function analyzeBattleReport(report, options = {}) {
       addDomainEvidence(actor, "single_target_damage", damage, "low");
     }
     actor.channels.damage = damage;
+    actor.capabilityContribution.output = damage;
   }
 
   for (const actor of actors.values()) {
@@ -171,6 +192,17 @@ function analyzeBattleReport(report, options = {}) {
   const teamUsefulContribution = [...actors.values()]
     .reduce((sum, actor) => sum + actor.usefulContribution, 0);
   const expectedUnitContribution = team.length > 0 ? teamUsefulContribution / team.length : 0;
+  const capabilityAxes = Object.fromEntries(CAPABILITY_AXES.map((axis) => {
+    const teamContribution = [...actors.values()]
+      .reduce((total, actor) => total + Number(actor.capabilityContribution[axis] || 0), 0);
+    return [axis, {
+      axis,
+      label: CAPABILITY_AXIS_LABELS[axis],
+      observed: teamContribution > 0,
+      teamContribution: round(teamContribution),
+      expectedUnitContribution: team.length > 0 ? round(teamContribution / team.length) : 0,
+    }];
+  }));
 
   const units = [...actors.values()].map((actor) => {
     const relativeStrength = expectedUnitContribution > 0
@@ -182,6 +214,24 @@ function analyzeBattleReport(report, options = {}) {
       .filter(Boolean)
       .sort((a, b) => b.level - a.level || b.rawMagnitudePercent - a.rawMagnitudePercent);
     const traits = traitObservations.filter((trait) => trait.level >= 3 && trait.eligible);
+    const capabilities = Object.fromEntries(CAPABILITY_AXES.map((axis) => {
+      const axisSummary = capabilityAxes[axis];
+      const contribution = Number(actor.capabilityContribution[axis] || 0);
+      const relativePercent = axisSummary.expectedUnitContribution > 0
+        ? contribution / axisSummary.expectedUnitContribution * 100 - 100
+        : 0;
+      return [axis, {
+        axis,
+        label: CAPABILITY_AXIS_LABELS[axis],
+        observed: axisSummary.observed,
+        contribution: round(contribution),
+        contributionShare: axisSummary.teamContribution > 0
+          ? round(contribution / axisSummary.teamContribution)
+          : 0,
+        relativePercent: round(relativePercent),
+        strength: perceiveSigned(relativePercent, profile),
+      }];
+    }));
     return {
       id: actor.id,
       name: actor.name,
@@ -190,6 +240,7 @@ function analyzeBattleReport(report, options = {}) {
       contributionShare: teamUsefulContribution > 0 ? round(actor.usefulContribution / teamUsefulContribution) : 0,
       relativeStrengthPercent: round(relativeStrength * 100),
       strength,
+      capabilities,
       channels: roundObject(actor.channels),
       domains: roundObject(actor.domains),
       domainEvidence: summarizeDomainEvidence(actor.domainEvidence),
@@ -209,6 +260,7 @@ function analyzeBattleReport(report, options = {}) {
     outcome: report.gameEvent?.outcome || report.outcome || "unknown",
     teamUsefulContribution: round(teamUsefulContribution),
     expectedUnitContribution: round(expectedUnitContribution),
+    capabilityAxes,
     units,
   };
 }
@@ -225,6 +277,7 @@ function createImpressionState(options = {}) {
     traitObservations: [],
     observationTrace: [],
     strengthCognitionMatrix: STRENGTH_MATRIX.createStrengthCognitionMatrix({ profile }),
+    capabilityCognitionMatrices: createCapabilityCognitionMatrices(profile),
   };
 }
 
@@ -240,6 +293,7 @@ function ingestBattleAnalysis(state, analysis) {
   state.battleCount += 1;
   analysis.observationOrder = state.battleCount;
   const changes = [];
+  ensureCapabilityCognitionMatrices(state);
   const matrixUpdate = STRENGTH_MATRIX.updateStrengthCognitionMatrix(
     state.strengthCognitionMatrix,
     analysis,
@@ -252,6 +306,36 @@ function ingestBattleAnalysis(state, analysis) {
       movements: matrixUpdate.trace.after.map((row) => ({ id: row.id, delta: row.delta, position: row.position })),
       scale: clone(matrixUpdate.trace.scale),
     });
+  }
+  for (const axis of CAPABILITY_AXES) {
+    if (!analysis.capabilityAxes?.[axis]?.observed) {
+      changes.push({
+        action: "capability_axis_not_observed",
+        axis,
+        reason: "no accepted visible contribution on this axis in the battle",
+      });
+      continue;
+    }
+    const axisAnalysis = capabilityAxisAnalysis(analysis, axis);
+    const axisUpdate = STRENGTH_MATRIX.updateStrengthCognitionMatrix(
+      state.capabilityCognitionMatrices[axis],
+      axisAnalysis,
+    );
+    axisUpdate.matrix.axis = axis;
+    state.capabilityCognitionMatrices[axis] = axisUpdate.matrix;
+    if (axisUpdate.trace) {
+      changes.push({
+        action: "updated_capability_cognition_matrix",
+        axis,
+        participantIds: axisUpdate.trace.participantIds,
+        movements: axisUpdate.trace.after.map((row) => ({
+          id: row.id,
+          delta: row.delta,
+          position: row.position,
+        })),
+        scale: clone(axisUpdate.trace.scale),
+      });
+    }
   }
   for (const unit of analysis.units) {
     const relatedBefore = state.knowledge.filter((row) => row.subject.id === unit.id);
@@ -559,6 +643,75 @@ function listCurrentStrengthCognition(state) {
     }));
 }
 
+function listCurrentCapabilityCognition(state) {
+  ensureCapabilityCognitionMatrices(state);
+  const bySubject = new Map();
+  for (const axis of CAPABILITY_AXES) {
+    for (const entry of state.capabilityCognitionMatrices[axis].entries || []) {
+      if (!entry.scaleView) continue;
+      const current = bySubject.get(entry.subject.id) || {
+        subject: clone(entry.subject),
+        capabilities: {},
+      };
+      current.capabilities[axis] = {
+        axis,
+        label: CAPABILITY_AXIS_LABELS[axis],
+        position: round(entry.position),
+        evidenceCount: Number(entry.evidenceCount || 0),
+        stiffness: round(entry.stiffness),
+        rank: entry.scaleView.rank,
+        populationSize: entry.scaleView.populationSize,
+        inTopThirtyPercent: Boolean(entry.scaleView.inTopThirtyPercent),
+        scaleBoundaryPosition: round(entry.scaleView.boundaryPosition),
+        relativeToScale: round(entry.scaleView.relativeToScale),
+        level: entry.scaleView.level,
+        cognitionLabel: strengthClaimFromLevel(entry.scaleView.level, 0).label,
+      };
+      bySubject.set(entry.subject.id, current);
+    }
+  }
+  return [...bySubject.values()]
+    .sort((left, right) => String(left.subject.id).localeCompare(String(right.subject.id)))
+    .map((row) => ({
+      ...row,
+      availableAxes: CAPABILITY_AXES.filter((axis) => row.capabilities[axis]),
+      decisionRule: "根据当前问题独立取用输出、保护或增益标尺；不得自动合成为综合强度",
+    }));
+}
+
+function createCapabilityCognitionMatrices(profile) {
+  return Object.fromEntries(CAPABILITY_AXES.map((axis) => {
+    const matrix = STRENGTH_MATRIX.createStrengthCognitionMatrix({ profile });
+    matrix.axis = axis;
+    return [axis, matrix];
+  }));
+}
+
+function ensureCapabilityCognitionMatrices(state) {
+  if (!state.capabilityCognitionMatrices || typeof state.capabilityCognitionMatrices !== "object") {
+    state.capabilityCognitionMatrices = {};
+  }
+  for (const axis of CAPABILITY_AXES) {
+    const matrix = STRENGTH_MATRIX.ensureStrengthCognitionMatrix(
+      state.capabilityCognitionMatrices[axis],
+      { profile: state.profile },
+    );
+    matrix.axis = axis;
+    state.capabilityCognitionMatrices[axis] = matrix;
+  }
+  return state.capabilityCognitionMatrices;
+}
+
+function capabilityAxisAnalysis(analysis, axis) {
+  return {
+    ...analysis,
+    units: analysis.units.map((unit) => ({
+      ...unit,
+      strength: clone(unit.capabilities[axis].strength),
+    })),
+  };
+}
+
 function buildContextStrengthBelief(state, subjectId, contextTags, options = {}) {
   const tagSet = new Set(contextTags);
   const observations = (state.strengthObservations || []).filter((observation) => {
@@ -809,6 +962,7 @@ function createActorRow(unit) {
     name: unit.name,
     role: unit.role,
     channels: { damage: 0, healing: 0, shieldAbsorbed: 0, damagePrevented: 0, controlValue: 0 },
+    capabilityContribution: { output: 0, protection: 0, buff: 0 },
     domains: { area_damage: 0, single_target_damage: 0, sustained_damage: 0, healing: 0, shielding: 0, control: 0, durability: 0 },
     domainEvidence: Object.fromEntries(Object.keys(DOMAIN_LABELS).map((domain) => [domain, { high: 0, medium: 0, low: 0 }])),
     evidenceEventIds: [],
@@ -857,7 +1011,7 @@ function domainEvidenceEligible(evidence = null) {
 
 function derivePlayerTeam(eventLog, gameEvent) {
   const units = new Map();
-  const combatTypes = new Set(["skill", "damage", "heal", "shield", "shield_absorb", "shield_block", "damage_prevented", "control_prevented_action", "death"]);
+  const combatTypes = new Set(["skill", "damage", "heal", "shield", "status", "shield_absorb", "shield_block", "damage_prevented", "control_prevented_action", "death"]);
   for (const event of eventLog) {
     if (!combatTypes.has(event.type)) continue;
     if (event.subject?.side === "left" && event.subject?.id) {
@@ -1007,6 +1161,8 @@ module.exports = {
   NEGATIVE_BANDS,
   DOMAIN_EVIDENCE_WEIGHTS,
   DOMAIN_EVIDENCE_THRESHOLD,
+  CAPABILITY_AXES,
+  CAPABILITY_AXIS_LABELS,
   AGENT_INTERPRETATION_POLICY,
   analyzeBattleReport,
   createImpressionState,
@@ -1017,5 +1173,6 @@ module.exports = {
   scoreDomainEvidence,
   domainEvidenceEligible,
   listCurrentStrengthCognition,
+  listCurrentCapabilityCognition,
   STRENGTH_MATRIX,
 };

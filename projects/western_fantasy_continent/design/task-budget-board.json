@@ -1336,7 +1336,7 @@
       "parentId": "",
       "sourceTaskId": "",
       "outcome": "错误决策在作出时仍可产生合理掌控感，但验证失败后会产生可追溯的预期差反馈、更新知识并改变下一次选择。",
-      "nextAction": "先制作最小成功/失败决策配对：同样的 EDecision 分别得到确认和证伪结果，检查 EVerify、R、A、知识与下一行为是否分化。",
+      "nextAction": "后续单独制作确认/证伪配对，检查EVerify过程感之外的R、A、知识与下一行为是否分化；本项未包含在最近的A修复范围内。",
       "owner": "agent",
       "priority": "critical",
       "importance": "critical",
@@ -1368,7 +1368,7 @@
         "已被证伪的重复行为不再获得完整决策掌控反馈",
         "不使用恐惧或固定负面常量修补结果"
       ],
-      "lastEvidence": "2026-07-15 open: controlled Main 6 run showed twelve full-hypothesis swaps each gained +0.16 before verification; repeated refuted swaps and exhausted options did not reduce Agency or settle a meaningful negative expectation."
+      "lastEvidence": "2026-07-18 对齐：本项是尚未修改的通用假设验证情绪，不是换人A回归。惯性玩家确认2次、证伪2次都得到EVerify=1/+0.06，符合现有“完成验证的过程感”代码；是否还需区分猜对/猜错留待以后。换人A、C、换装重算和新关惯性三组回归全部PASS，未发现A故障。"
     },
     {
       "id": "expectation-signal-repair-suite",
@@ -1613,7 +1613,7 @@
         "信息减少后归因仍能使用玩家实际观察到的信号完成",
         "原始事件只保留在审计层"
       ],
-      "lastEvidence": "2026-07-18 正式接线与真实Agent对照PASS：过滤后的类型1关系已复用旧canonical合并、检索和归因入口；首场正式战斗只生成4条因果知识，角色详细表现仍进入旧角色认知，公开证据ID无原始事件泄漏。完整请求中Agent准确比较历史相对标尺-2.2与当前+3.951并选择重试；删除历史认知坐标、其余条件不变时，独立Agent改为换人且没有编造坐标。"
+      "lastEvidence": "2026-07-18 正式接线与两名真实两章Agent均PASS：开放新手/惯性玩家知识由199/192降至112/107；旧战斗知识中175/177条非公开证据和各13条原始威胁形状，在新版均为0。19/19与22/22个关卡知识完整保存四人认知坐标，Agent分别在19和21次决策中实际引用认知；场地、敌方行为、地图和装备信息仍足够支持通关。"
     },
     {
       "id": "emotion-failure-experience-settlement",
@@ -1700,6 +1700,88 @@
         "可见推进与不可见推进的配对事件产生合理不同体验"
       ],
       "lastEvidence": "2026-07-15 queued: current updateGoalProgress only mutates a scalar after emotion settlement, so its +0.12/-0.02 values never become progression R."
+    },
+    {
+      "id": "character-cognition-support-contribution-calibration",
+      "name": "角色输出、保护与增益三套独立标尺",
+      "detail": "把角色认知拆为输出、保护和团队增益三套完全独立的同步矩阵与前30%相对标尺。Agent先判断当前问题，再为本次换人给出0–10粗配比；程序只在本次预测中归一化组合，不生成永久综合分。",
+      "type": "bug",
+      "category": "bug",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "emotion-decision-expectation-settlement",
+      "sourceTaskId": "emotion-decision-expectation-settlement",
+      "outcome": "每个角色拥有独立输出、保护和增益坐标；牧师可以同时被认成输出弱、保护强。换人时Agent按关卡问题给临时需求配比，程序据此形成并冻结预期，不存在永久自动综合分。",
+      "nextAction": "本项已完成；下一步修复agent-hypothesis-target-condition-contract。若以后需要校准绝对幅度，再用人类记录替换当前可见贡献代理。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "high",
+      "blastRadius": "high",
+      "attemptBudget": 1,
+      "attemptsUsed": 1,
+      "status": "done",
+      "links": [
+        "projects/western_fantasy_continent/experiments/entity_impression_knowledge_v1/entity-impression-model.js",
+        "projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/controlled_runs/2026-07-18_post_cognition_two_agents/COMPARISON_REPORT.md"
+      ],
+      "tags": [
+        "character-cognition",
+        "support",
+        "tank",
+        "strength-matrix"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation",
+        "phenomenon-math-modeling",
+        "comparative-analysis"
+      ],
+      "successCriteria": [
+        "高治疗或高护盾且显著改善存活的角色不会仅因低伤害被评为非常弱",
+        "输出、治疗、护盾和承伤使用可解释的共同贡献口径",
+        "特点确认与整体强度贡献不会重复加分",
+        "前30%标尺在不同职业组合下仍保持相对尺度语义"
+      ],
+      "lastEvidence": "2026-07-19 完成：output/protection/buff三套独立矩阵、独立前30%标尺、历史坐标和正式Agent请求保持不变；真实22场中晨祷牧师输出-3但保护排名1/+1。正式换人链路使用Agent的0–10临时需求配比，代码归一化后计算并冻结预测；缺少任一正权重维度证据时保持未知。换人后换装已改为按装备倍率缩放冻结的混合战斗进度，不再读取旧综合强度；隔离案例中旧强度2与8都从0.344重算为0.68，原0.18偏差归零。纯轴、混合、缺失证据、三感知档、A/C及旧换装兼容回归全部PASS。"
+    },
+    {
+      "id": "agent-hypothesis-target-condition-contract",
+      "name": "下一场假设条件字段不一致",
+      "detail": "正式request合同要求 hypothesis.nextCombatTargetCondition，但normalizeDecisionHypothesis运行时实际只读取 hypothesis.targetCondition。Agent完全按合同作答会被拒绝。",
+      "type": "bug",
+      "category": "bug",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "emotion-decision-expectation-settlement",
+      "sourceTaskId": "emotion-decision-expectation-settlement",
+      "outcome": "请求合同、示例、压缩请求和运行时校验统一使用同一个可测量条件字段。",
+      "nextAction": "选择targetCondition作为唯一正式字段，修改responseContract并增加完全按合同生成的next_combat响应回归。",
+      "owner": "agent",
+      "priority": "high",
+      "importance": "high",
+      "uncertainty": "low",
+      "blastRadius": "medium",
+      "attemptBudget": 1,
+      "attemptsUsed": 0,
+      "status": "queued",
+      "links": [
+        "projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/player-agent-loop.js",
+        "projects/western_fantasy_continent/.local_run_archive/player_agent_api_loop_v1/2026-07-18_post_cognition_two_agents/inertial_player_paired_alpha/response-020-rejected-contract-shape.json"
+      ],
+      "tags": [
+        "agent-contract",
+        "hypothesis",
+        "validation",
+        "bug"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation"
+      ],
+      "successCriteria": [
+        "Agent按request合同填写后不会被运行时拒绝",
+        "next_combat与current_action使用同一字段语义",
+        "完整请求和压缩请求合同一致",
+        "合同回归覆盖确认与证伪两种响应"
+      ],
+      "lastEvidence": "2026-07-18 惯性玩家request-020严格使用nextCombatTargetCondition后被运行时拒绝；改为targetCondition后同一假设通过。开放新手也只能使用运行时字段完成11次假设结算。"
     }
   ]
 }

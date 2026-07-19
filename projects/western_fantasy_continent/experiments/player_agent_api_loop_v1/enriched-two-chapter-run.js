@@ -151,6 +151,7 @@ function summarize(runInput) {
       processTotal: round(finalSession.cognitionState.emotion.processTotal),
       acquiredTotal: round(finalSession.cognitionState.emotion.acquiredTotal),
       expectationTotal: round(finalSession.cognitionState.emotion.expectationTotal),
+      verificationTotal: round(finalSession.cognitionState.emotion.verificationTotal),
     },
     knowledgeCount: finalSession.knowledgeBase.length,
     rawTraceLocation: "chapter1.history + chapter2.history",

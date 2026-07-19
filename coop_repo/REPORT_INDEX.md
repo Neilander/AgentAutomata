@@ -4,6 +4,18 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-19
 
+- `2026-07-19_1517_everify-causal-chain-v2.md`：隔离EVerify重建为完整因果链V2；Agent先写至少3步链，程序用已接收步骤、时间和冻结档位逐边计算support。整链不平均，断链不确认，已成立前缀保留为局部知识；正式Agent合同和事件匹配器尚未接入。
+
+- `2026-07-19_1450_everify-input-boundary-correction.md`：纠正隔离EVerify越界输入；删除自造画面/归因清晰度和连续竞争解释值，只读取现有三档玩家模型已接收事件的冻结informationTier，并拒绝0.63等自定义数值。1349报告相关描述被本报告取代。
+
+- `2026-07-19_1349_isolated-everify-v1.md`：隔离版EVerify只读取玩家可见因果证据，不读取R；7类小案例覆盖同胜负不同归因、输但局部机制成立、画面不清、赢但原因被证伪、无验证机会，正式运行时未接入。
+
+- `2026-07-19_1335_everify-discovery-fields-deferred.md`：novelty和closure暂缓并单独进入任务板；无专门玩家语义证据时两者及发现爽感固定为0，closure删除strength回退，EVerify主线可继续开发。
+
+- `2026-07-19_1305_modular-feedback-and-causal-everify.md`：Process/R/A/EVerify拆为独立反馈模块；EVerify五维证据派生因果知识、支持度×强度策略爽感和发现爽感，因果认知进入下一次Agent决策；专项与正式循环回归通过，真实机制链解析和重复证伪折扣待做。
+
+- `2026-07-19_1134_target-condition-contract-fix.md`：统一正式与压缩请求、运行时和假设验证的唯一字段targetCondition；合同形状的确认、证伪、current_action和旧字段拒绝回归通过，任务板Bug关闭。
+
 - `2026-07-19_0119_capability-mix-equipment-rebase-fix.md`：修复三标尺配比换人后的换装重算，装备倍率改为作用于冻结混合预测；旧综合强度2/8的相同案例均得到0.68，原0.18偏差归零，三个公式级小测试通过。
 
 - `2026-07-19_0029_capability-mix-equipment-rebase-audit.md`：用单一确定性小案例确认初始换人正确使用三标尺配比，但随后25%换装增量仍受旧综合强度影响；相同配比产生0.18预测分偏差，本轮只诊断未改算法。

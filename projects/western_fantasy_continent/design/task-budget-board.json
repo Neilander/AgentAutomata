@@ -1,6 +1,6 @@
 {
   "schema": "agent_automata_task_budget_board_v2",
-  "updatedAt": "2026-07-18",
+  "updatedAt": "2026-07-19",
   "workflow": [
     "先围绕可玩的角色搭配定义本阶段体验目标。",
     "用统一 4v4 战斗验证队伍 combo、克制和强度感。",
@@ -1329,14 +1329,14 @@
     {
       "id": "emotion-decision-expectation-settlement",
       "name": "优化错误决策不扣情绪的问题",
-      "detail": "保留有效 EDecision 带来的小额决策体验与掌控感，同时让每个可验证决策创建待结算预期。后续 EVerify 必须区分确认、证伪和无法判断，并通过 R 与 A 结算；已经被证伪、缺乏因果依据或没有可行路径的重复决策不能继续获得完整掌控反馈。",
+      "detail": "保留有效 EDecision 带来的小额决策体验与掌控感，同时让每个可验证决策创建待结算预期。R只表示结果价值，EVerify独立表示因果确认与学习：第一层保存支持度、证据强度、因果贡献、新颖度和闭环度，第二层派生知识证据、策略爽感和发现爽感。已经被证伪、缺乏因果依据或没有可行路径的重复决策不能继续获得完整掌控反馈。",
       "type": "design",
       "category": "design",
       "lineId": "player-emotion-simulation-optimization",
       "parentId": "",
       "sourceTaskId": "",
-      "outcome": "错误决策在作出时仍可产生合理掌控感，但验证失败后会产生可追溯的预期差反馈、更新知识并改变下一次选择。",
-      "nextAction": "后续单独制作确认/证伪配对，检查EVerify过程感之外的R、A、知识与下一行为是否分化；本项未包含在最近的A修复范围内。",
+      "outcome": "错误决策在作出时仍可产生合理掌控感；验证后R、A和EVerify分别结算，因果证据独立更新可供下一次决策读取的知识。",
+      "nextAction": "用户确认因果链V2后，扩展正式Agent假设合同：决策时必须输出claim、chosenBehavior和至少3步causalChain；再开发已接收语义事件到各链条步骤observed/contradicted的匹配器。两部分通过小case后才接正式EVerify，之后处理重复强证伪行为的EDecision折扣。",
       "owner": "agent",
       "priority": "critical",
       "importance": "critical",
@@ -1347,7 +1347,9 @@
       "status": "active",
       "links": [
         "projects/western_fantasy_continent/skills/player-cognition-simulation/SKILL.md",
-        "projects/western_fantasy_continent/skills/player-cognition-simulation/references/signal-growth-agency-model.md"
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/references/signal-growth-agency-model.md",
+        "projects/western_fantasy_continent/game_data/everify-isolated-v1.js",
+        "projects/western_fantasy_continent/game_data/test-everify-isolated-v1.js"
       ],
       "tags": [
         "emotion",
@@ -1363,12 +1365,56 @@
       ],
       "successCriteria": [
         "每个可验证 EDecision 创建一个明确期限的预期账本",
-        "EVerify 对确认、证伪和无法判断产生不同结算",
-        "确认反馈进入 R，证伪反馈通过 A 结算",
+        "Agent在行动前写出完整因果链，support由程序依据已接收步骤证据逐边计算",
+        "EVerify 对确认、证伪和无法判断产生不同的因果证据与策略反馈",
+        "R只表达结果价值，EVerify独立保存五维证据并派生策略爽感和发现爽感",
+        "EVerify证据更新上下文相关的因果知识，并能被下一次Agent决策读取",
         "已被证伪的重复行为不再获得完整决策掌控反馈",
         "不使用恐惧或固定负面常量修补结果"
       ],
-      "lastEvidence": "2026-07-18 对齐：本项是尚未修改的通用假设验证情绪，不是换人A回归。惯性玩家确认2次、证伪2次都得到EVerify=1/+0.06，符合现有“完成验证的过程感”代码；是否还需区分猜对/猜错留待以后。换人A、C、换装重算和新关惯性三组回归全部PASS，未发现A故障。"
+      "lastEvidence": "2026-07-19 隔离EVerify已重建为完整因果链V2。Agent必须先给claim、chosenBehavior和至少3个有序语义步骤，不能填写support/strength。程序只读已接收步骤的observed/contradicted、时间和冻结informationTier，自行推导相邻因果边：全链成立support=+1；任一边明确反证或时间倒置support=-1；缺步骤时整链support=0，但已成立前缀保留为局部知识。完整链strength取最弱边，不使用35/65或步骤平均。完整链、中央断链、前缀成立、末端反证、时间倒置、非法档位、不完整假设、R独立性小case均PASS；信息档位、解析器、反馈、玩家假设、targetCondition和正式循环回归PASS。尚未接正式Agent合同与事件匹配器。"
+    },
+    {
+      "id": "everify-novelty-closure-discovery",
+      "name": "EVerify新颖度与解释闭环",
+      "detail": "后续为机制发现体验补充novelty和explanatoryClosure。novelty必须来自玩家旧认知与本次新推断的比较；closure必须来自玩家可见事件组成的连续因果路径，不能由证据strength、最终胜负或设计者真值代替。",
+      "type": "design",
+      "category": "design",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "emotion-decision-expectation-settlement",
+      "sourceTaskId": "emotion-decision-expectation-settlement",
+      "outcome": "玩家发现并看懂新机制时产生可追溯的发现反馈；没有可见因果链时不会凭空获得发现爽感。",
+      "nextAction": "暂缓。先完成当前EVerify的支持度、证据可信度、因果贡献和重复证伪行为处理；之后再开发玩家可见因果链解析器。",
+      "owner": "agent",
+      "priority": "medium",
+      "importance": "medium",
+      "uncertainty": "high",
+      "blastRadius": "medium",
+      "attemptBudget": 0,
+      "attemptsUsed": 0,
+      "status": "queued",
+      "links": [
+        "projects/western_fantasy_continent/game_data/player-feedback-model.js",
+        "projects/western_fantasy_continent/skills/player-cognition-simulation/references/signal-concept-interpretation.md"
+      ],
+      "tags": [
+        "EVerify",
+        "novelty",
+        "closure",
+        "discovery"
+      ],
+      "skillFlow": [
+        "player-cognition-simulation",
+        "phenomenon-math-modeling"
+      ],
+      "successCriteria": [
+        "没有显式玩家语义证据时novelty和closure均为0",
+        "closure不再回退到strength或最终胜负",
+        "novelty只比较玩家旧认知与本次可见新推断",
+        "closure只来自连续的玩家可见因果路径",
+        "缺少中间关键连接时不产生完整发现爽感"
+      ],
+      "lastEvidence": "2026-07-19 用户决定暂缓：novelty和closure超出当前主要目标。程序默认值均固定为0，closure已删除strength回退；无专门语义证据时discoverySatisfaction为0。"
     },
     {
       "id": "expectation-signal-repair-suite",
@@ -1753,17 +1799,18 @@
       "parentId": "emotion-decision-expectation-settlement",
       "sourceTaskId": "emotion-decision-expectation-settlement",
       "outcome": "请求合同、示例、压缩请求和运行时校验统一使用同一个可测量条件字段。",
-      "nextAction": "选择targetCondition作为唯一正式字段，修改responseContract并增加完全按合同生成的next_combat响应回归。",
+      "nextAction": "本项已完成；正式与压缩请求统一使用targetCondition。后续新增假设指标时只扩展该字段的metric白名单。",
       "owner": "agent",
       "priority": "high",
       "importance": "high",
       "uncertainty": "low",
       "blastRadius": "medium",
       "attemptBudget": 1,
-      "attemptsUsed": 0,
-      "status": "queued",
+      "attemptsUsed": 1,
+      "status": "done",
       "links": [
         "projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/player-agent-loop.js",
+        "projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/test-target-condition-contract.js",
         "projects/western_fantasy_continent/.local_run_archive/player_agent_api_loop_v1/2026-07-18_post_cognition_two_agents/inertial_player_paired_alpha/response-020-rejected-contract-shape.json"
       ],
       "tags": [
@@ -1781,7 +1828,7 @@
         "完整请求和压缩请求合同一致",
         "合同回归覆盖确认与证伪两种响应"
       ],
-      "lastEvidence": "2026-07-18 惯性玩家request-020严格使用nextCombatTargetCondition后被运行时拒绝；改为targetCondition后同一假设通过。开放新手也只能使用运行时字段完成11次假设结算。"
+      "lastEvidence": "2026-07-19 完成：正式responseContract把误写的nextCombatTargetCondition改为唯一字段targetCondition；next_combat必填，current_action可选但结构相同。compact-request逐字保留同一合同，旧错误字段给出use targetCondition明确错误。完全按合同生成的确认、证伪和current_action三例均正常持久化并结算；底层假设确认/证伪/证据不足、正式两周期入口和换人A接线回归全部PASS。"
     }
   ]
 }

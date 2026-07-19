@@ -29,6 +29,7 @@ function compactDecision(request) {
       rosterChangeExpectations: request.playerState.rosterChangeExpectations,
       failureMemories: request.playerState.failureMemories,
       hypotheses: request.playerState.hypotheses,
+      causalKnowledge: request.playerState.causalKnowledge,
       knowledge: (request.playerState.knowledge || []).map(compactKnowledge),
     },
     knowledgeRetrieval: request.knowledgeRetrieval,

@@ -112,6 +112,7 @@ function summarizeEmotion(runInput) {
       processTotal: round(activeSession(run).cognitionState.emotion.processTotal),
       acquiredTotal: round(activeSession(run).cognitionState.emotion.acquiredTotal),
       expectationTotal: round(activeSession(run).cognitionState.emotion.expectationTotal),
+      verificationTotal: round(activeSession(run).cognitionState.emotion.verificationTotal),
     },
   };
 }
@@ -136,6 +137,7 @@ function summarizeChapter(chapter, session) {
         process: event.processEmotion,
         acquired: event.acquiredEmotion,
         expectation: event.expectationEmotion,
+        verification: event.verificationEmotion,
         delta: event.emotionDelta,
       })),
     })),

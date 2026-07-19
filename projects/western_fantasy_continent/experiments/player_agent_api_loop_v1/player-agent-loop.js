@@ -229,6 +229,7 @@ function buildDecisionRequest(session) {
     ? session.cognitionState.activeGoalId
     : goals[0]?.id || "grow_and_progress";
   const visibleHypotheses = visiblePlayerHypotheses(session.cognitionState.hypotheses);
+  const causalKnowledge = visibleCausalKnowledge(session.cognitionState.causalKnowledge);
   const retrieval = KNOWLEDGE_RETRIEVAL.retrieveKnowledge({
     knowledgeBase: session.knowledgeBase,
     observation,
@@ -253,12 +254,13 @@ function buildDecisionRequest(session) {
     cycle: session.cycle + 1,
     agentSession: PERSISTENT_AGENT.requestMetadata(session.agentContext, "decision"),
     playerProfile: clone(session.playerProfile),
-    instruction: "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. characterImpressions contains three independent top-30-percent rulers: output, protection, and buff. First identify the player-observed problem, then use only the capability axis or axes relevant to that need; never average or automatically combine them into one overall strength. For a one-member counterfactual swap, return capabilityNeedMix as three integer need weights from 0 to 10. The weights express the current problem, not emotional intensity; code normalizes them, calculates the prediction, and freezes the same mix for later A settlement. Historical encounter facts preserve formation slots and the character-cognition coordinates that existed when the result occurred. Treat them as historical player evidence, compare them with current characterImpressions, and make your own judgment; the organizer does not decide whether a past result still applies. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. rosterChangeExpectations are fallible code-owned evidence scoped to the shown encounter and team; unknown means there is not enough player evidence. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
+    instruction: "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. causalKnowledge contains context-scoped causal beliefs learned from hypothesis verification; belief is signed support and confidence is accumulated certainty, not designer truth. characterImpressions contains three independent top-30-percent rulers: output, protection, and buff. First identify the player-observed problem, then use only the capability axis or axes relevant to that need; never average or automatically combine them into one overall strength. For a one-member counterfactual swap, return capabilityNeedMix as three integer need weights from 0 to 10. The weights express the current problem, not emotional intensity; code normalizes them, calculates the prediction, and freezes the same mix for later A settlement. A measurable hypothesis condition is always named targetCondition; it is required for next_combat and uses the same shape when supplied for current_action. Historical encounter facts preserve formation slots and the character-cognition coordinates that existed when the result occurred. Treat them as historical player evidence, compare them with current characterImpressions, and make your own judgment; the organizer does not decide whether a past result still applies. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. rosterChangeExpectations are fallible code-owned evidence scoped to the shown encounter and team; unknown means there is not enough player evidence. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
     playerState: {
       emotion: round(session.cognitionState.emotion.value),
       activeGoalId,
       goals,
       knowledge: retrieval.knowledge,
+      causalKnowledge,
       characterImpressions: summarizeCharacterImpressions(session.entityImpressionState),
       rosterChangeExpectations,
       knowledgeStoreCount: session.knowledgeBase.length,
@@ -303,8 +305,8 @@ function buildDecisionRequest(session) {
         requiredFields: ["id", "problem", "cause", "resultKind", "target", "verificationScope"],
         verificationScope: "current_action|next_combat",
         nextCombatResultKind: "team_experiment_contribution",
-        nextCombatTargetCondition: {
-          requirement: "required when verificationScope is next_combat",
+        targetCondition: {
+          requirement: "required when verificationScope is next_combat; optional for current_action",
           metric: "damage|heal|shield|skillCount|damageShare|damageRank",
           operator: ">|>=|<|<=|==",
           value: "number",
@@ -656,6 +658,17 @@ function visiblePlayerHypotheses(rows) {
   return (rows || []).filter((row) => row.origin === "player" || row.action);
 }
 
+function visibleCausalKnowledge(rows) {
+  return (rows || []).map((row) => ({
+    id: row.id,
+    scope: clone(row.scope),
+    belief: round(row.belief),
+    confidence: round(row.confidence),
+    evidenceCount: Number(row.evidenceCount || 0),
+    lastStatus: row.lastStatus || null,
+  }));
+}
+
 function pendingPlayerCombatHypothesis(state, action) {
   return (state?.hypotheses || []).find((row) => row.origin === "player"
     && row.status === "pending"
@@ -856,6 +869,7 @@ function inheritPriorPlayerState(session, prior) {
   }
   session.cognitionState.failureMemories = clone(prior.failureMemories || []);
   session.cognitionState.hypotheses = clone(prior.hypotheses || []).filter((row) => row.status !== "pending");
+  session.cognitionState.causalKnowledge = clone(prior.causalKnowledge || []);
   session.knowledgeBase = (prior.knowledge || []).map((row, index) => normalizeInheritedKnowledge(row, index));
   if (prior.entityImpressionState) session.entityImpressionState = clone(prior.entityImpressionState);
   if (prior.rosterExpectationState) session.rosterExpectationState = clone(prior.rosterExpectationState);
@@ -887,6 +901,9 @@ function normalizeInheritedKnowledge(row, index) {
 function normalizeDecisionHypothesis(input) {
   if (input === null || input === undefined) return null;
   if (typeof input !== "object" || Array.isArray(input)) throw new Error("decision hypothesis must be an object or null");
+  if (Object.prototype.hasOwnProperty.call(input, "nextCombatTargetCondition")) {
+    throw new Error("unsupported hypothesis field nextCombatTargetCondition; use targetCondition");
+  }
   const requiredText = ["id", "problem", "cause", "resultKind", "target", "verificationScope"];
   for (const field of requiredText) {
     if (typeof input[field] !== "string" || !input[field].trim()) {

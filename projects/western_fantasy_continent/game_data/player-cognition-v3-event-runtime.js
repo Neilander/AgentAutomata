@@ -2,6 +2,18 @@ const {
   INFORMATION_PRESENTATION_CONTRACT,
   normalizeInformationTier,
 } = require("./combat-signals");
+const {
+  DEFAULT_FEEDBACK_CONFIG,
+  produceProcessFeedback,
+  produceResultFeedback,
+  produceExpectationFeedback,
+  calculateMismatchFeedback,
+  calculateConfirmationFeedback,
+  confirmationGeometricMultiplier,
+  produceVerificationFeedback,
+  composeFeedback,
+  applyCausalKnowledgeEvidence,
+} = require("./player-feedback-model");
 
 const SYSTEM_REQUIRED_TYPES = new Set(["action_summary", "team_experiment_result"]);
 
@@ -29,6 +41,7 @@ const DEFAULT_CONFIG = Object.freeze({
     confirmationNegativePower: 1.5,
     confirmationMaxMultiplier: 2,
   },
+  feedback: DEFAULT_FEEDBACK_CONFIG,
   longHorizon: {
     failureWakePowerGrowth: 0.3,
   },
@@ -64,8 +77,10 @@ function createState(seed = "event-player", configInput = {}) {
       processTotal: 0,
       acquiredTotal: 0,
       expectationTotal: 0,
+      verificationTotal: 0,
     },
     knowledge: [],
+    causalKnowledge: [],
     expectationLedger: [],
     goals: [
       { id: "grow_and_progress", objectiveValue: 1, subjectiveValue: 0.35, progress: 0 },
@@ -138,13 +153,38 @@ function ingestEvent(state, rawEvent) {
   const expectedUtility = expectationForEvent(state, event, matched);
   const actualUtility = utilityOf(event);
   const appraisal = appraiseEvent(state, event, matched);
-  const directR = event.directResult === false ? 0 : actualUtility * reception.H * appraisal.goalWeight * appraisal.freshness;
+  const resultFeedback = produceResultFeedback({
+    enabled: event.directResult !== false,
+    actualUtility,
+    H: reception.H,
+    goalWeight: appraisal.goalWeight,
+    freshness: appraisal.freshness,
+  });
   const mismatch = resolveMismatch(state, event, expectedUtility, actualUtility, reception.H, appraisal);
   const hypothesisEvidence = collectHypothesisEvidence(state, event);
-  const processDelta = processEmotionOf(event, state.config) + hypothesisEvidence.verifyCount * state.config.process.verificationEffortValue;
-  const emotionDelta = processDelta + directR + mismatch.value;
+  const processFeedback = produceProcessFeedback({
+    baseValue: processEmotionOf(event, state.config),
+    verificationCount: hypothesisEvidence.verifyCount,
+    verificationEffortValue: state.config.process.verificationEffortValue,
+  });
+  const expectationFeedback = produceExpectationFeedback(mismatch);
+  const verificationFeedback = produceVerificationFeedback({
+    rows: hypothesisEvidence.rows,
+    H: reception.H,
+    config: state.config.feedback,
+  });
+  const feedback = composeFeedback({
+    process: processFeedback,
+    result: resultFeedback,
+    expectation: expectationFeedback,
+    verification: verificationFeedback,
+  });
+  const processDelta = processFeedback.value;
+  const directR = resultFeedback.value;
+  const verificationDelta = verificationFeedback.value;
+  const emotionDelta = feedback.total;
 
-  applyEmotion(state, processDelta, directR, mismatch.value);
+  applyEmotion(state, processDelta, directR, mismatch.value, verificationDelta);
   const goalDelta = updateGoalProgress(state, event);
 
   const trace = {
@@ -169,6 +209,7 @@ function ingestEvent(state, rawEvent) {
     processEmotion: round(processDelta),
     acquiredEmotion: round(directR),
     expectationEmotion: round(mismatch.value),
+    verificationEmotion: round(verificationDelta),
     mismatchStatus: mismatch.status,
     emotionDelta: round(emotionDelta),
     emotionBefore: before,
@@ -176,12 +217,20 @@ function ingestEvent(state, rawEvent) {
     goalDelta,
     hypothesisEvidence: hypothesisEvidence.ids,
     hypothesisVerification: hypothesisEvidence.rows,
+    verificationFeedback,
+    feedback,
     EVerify: hypothesisEvidence.verifyCount,
     learningOrder: "feedback_then_update",
   };
 
   const knowledgeAfter = event.learn === false ? matched : updateKnowledge(state, pattern, event, actualUtility);
   trace.knowledgeAfter = summarizeKnowledge(knowledgeAfter);
+  trace.causalKnowledgeUpdates = applyHypothesisLearning(
+    state,
+    event,
+    hypothesisEvidence.rows,
+    verificationFeedback.rows,
+  );
   if (event.result.kind === "combat_loss") applyFailureLearning(state, event, pattern);
   if (event.result.kind === "combat_win") resolveFailureLearning(state, pattern, event);
   state.trace.push(trace);
@@ -332,6 +381,8 @@ function createDecisionHypothesis(state, decision) {
     resultKind: decision.hypothesis.resultKind || "combat_win",
     target: decision.hypothesis.target || "",
     targetCondition: normalizeTargetCondition(decision.hypothesis.targetCondition),
+    chosenBehavior: decision.action || "",
+    environment: structuredClone(decision.environment || {}),
     verificationScope,
     settleOnEventKind: verificationScope === "next_combat" ? "team_experiment_result" : null,
     evidence: [],
@@ -497,8 +548,13 @@ function resolveMismatch(state, event, expected, actual, H, appraisal) {
     const settlement = expected.details || event.rosterExpectationSettlement;
     const delta = Number(settlement?.mismatchInput || 0);
     const expectationWeight = clamp(settlement?.expectationWeight ?? 1, 0, 1);
-    const mismatch = mismatchFormula(delta, H, appraisal.goalWeight * expectationWeight, state.config.mismatch);
-    const confirmation = confirmationFormula(
+    const mismatch = calculateMismatchFeedback(
+      delta,
+      H,
+      appraisal.goalWeight * expectationWeight,
+      state.config.mismatch,
+    );
+    const confirmation = calculateConfirmationFeedback(
       settlement,
       H,
       appraisal.goalWeight,
@@ -565,98 +621,8 @@ function closeSuppressedActionLedger(state, event) {
 
 function mismatchEmotion(deltaInput, H, goalWeight, config) {
   const delta = Number(deltaInput || 0);
-  const formula = mismatchFormula(delta, H, goalWeight, config);
+  const formula = calculateMismatchFeedback(delta, H, goalWeight, config);
   return round(formula.value);
-}
-
-function mismatchFormula(deltaInput, H, goalWeight, config) {
-  const delta = Number(deltaInput || 0);
-  const positive = Math.max(delta, 0);
-  const negative = Math.max(-delta, 0);
-  const positiveScale = Number(config.positiveScale ?? 0.5);
-  const negativeScale = Number(config.negativeScale ?? 0.8);
-  const positivePower = Number(config.positivePower ?? 1);
-  const negativePower = Number(config.negativePower ?? 1);
-  const perceptualWeight = Number(H || 0) * Number(goalWeight || 0);
-  return {
-    delta: round(delta),
-    positiveScale,
-    negativeScale,
-    positivePower,
-    negativePower,
-    H: round(H),
-    goalWeight: round(goalWeight),
-    value: round((positiveScale * Math.pow(positive, positivePower)
-      - negativeScale * Math.pow(negative, negativePower)) * perceptualWeight),
-  };
-}
-
-function confirmationFormula(settlement, H, goalWeight, config) {
-  const confidence = clamp(
-    settlement?.effectivePredictionConfidence
-    ?? settlement?.predictionConfidence
-    ?? 0.5,
-    0,
-    1,
-  );
-  const constant = Number(config.confirmationConstant ?? 0.1);
-  const expectedProgress = combatProgress(settlement?.predictedCombatScore);
-  const actualProgress = combatProgress(settlement?.actualCombatScore);
-  const resultRatio = expectedProgress == null || actualProgress == null
-    ? 1
-    : actualProgress / Math.max(expectedProgress, 0.1);
-  const geometric = confirmationGeometricMultiplier(resultRatio, config);
-  const expectedLevel = Number(settlement?.expectedPerception?.level);
-  const actualLevel = Number(settlement?.actualPerception?.level);
-  const clearlyDisconfirmed = Number.isFinite(expectedLevel)
-    && Number.isFinite(actualLevel)
-    && actualLevel < expectedLevel;
-  const appliedMultiplier = clearlyDisconfirmed ? 0 : geometric.multiplier;
-  const perceptualWeight = Number(H || 0) * Number(goalWeight || 0);
-  return {
-    applied: confidence > 0 && !clearlyDisconfirmed,
-    samePerceivedBand: settlement?.confirmed === true,
-    clearlyDisconfirmed,
-    constant,
-    confidence: round(confidence),
-    H: round(H),
-    goalWeight: round(goalWeight),
-    expectedProgress: round(expectedProgress),
-    actualProgress: round(actualProgress),
-    resultRatio: round(resultRatio),
-    geometricMultiplier: appliedMultiplier,
-    rawGeometricMultiplier: geometric.multiplier,
-    geometricBranch: clearlyDisconfirmed
-      ? "clear_downward_disconfirmation_zeroes_confirmation"
-      : geometric.branch,
-    positivePower: geometric.positivePower,
-    negativePower: geometric.negativePower,
-    maxMultiplier: geometric.maxMultiplier,
-    value: round(constant * confidence * perceptualWeight * appliedMultiplier),
-  };
-}
-
-function confirmationGeometricMultiplier(ratioInput, config = {}) {
-  const ratio = Math.max(0, Number(ratioInput || 0));
-  const positivePower = Number(config.confirmationPositivePower ?? 0.5);
-  const negativePower = Number(config.confirmationNegativePower ?? 1.5);
-  const maxMultiplier = Number(config.confirmationMaxMultiplier ?? 2);
-  const multiplier = ratio >= 1
-    ? Math.min(maxMultiplier, Math.pow(ratio, positivePower))
-    : Math.pow(ratio, negativePower);
-  return {
-    ratio: round(ratio),
-    multiplier: round(multiplier),
-    branch: ratio >= 1 ? "self_serving_success_amplification" : "failed_confirmation_decay",
-    positivePower,
-    negativePower,
-    maxMultiplier,
-  };
-}
-
-function combatProgress(scoreInput) {
-  const score = Number(scoreInput);
-  return Number.isFinite(score) ? clamp((score + 1) / 2, 0, 1) : null;
 }
 
 function appraiseEvent(state, event, matched) {
@@ -715,11 +681,12 @@ function rarityUtility(rarity) {
   return ({ common: 0.35, rare: 1.1, epic: 2.2, legendary: 3.4, mythic: 4.8 })[rarity] || 0.2;
 }
 
-function applyEmotion(state, process, acquired, expectation) {
+function applyEmotion(state, process, acquired, expectation, verification = 0) {
   state.emotion.processTotal += process;
   state.emotion.acquiredTotal += acquired;
   state.emotion.expectationTotal += expectation;
-  state.emotion.value = clamp(state.emotion.value + process + acquired + expectation, 0, 100);
+  state.emotion.verificationTotal = Number(state.emotion.verificationTotal || 0) + verification;
+  state.emotion.value = clamp(state.emotion.value + process + acquired + expectation + verification, 0, 100);
   state.emotion.minimum = Math.min(state.emotion.minimum, state.emotion.value);
 }
 
@@ -820,6 +787,7 @@ function collectHypothesisEvidence(state, event) {
       && event.result.contribution?.observed === false;
     const comparisonMade = explicitNoContribution || (kindMatched && condition.readable);
     const confirmed = kindMatched && condition.readable && condition.met;
+    const causalEvidence = causalEvidenceForHypothesis(event.result.causalEvidence, row.id);
     row.evidence.push({
       eventId: event.id,
       expected: row.resultKind,
@@ -829,6 +797,7 @@ function collectHypothesisEvidence(state, event) {
       observedValue: condition.value,
       comparisonMade,
       confirmed,
+      causalEvidence,
     });
     row.status = comparisonMade ? (confirmed ? "confirmed" : "refuted") : "inconclusive";
     row.resolvedAt = event.time;
@@ -840,6 +809,7 @@ function collectHypothesisEvidence(state, event) {
       targetCondition: row.targetCondition || null,
       observedValue: condition.value,
       comparisonMade,
+      causalEvidence,
     });
   }
   return {
@@ -847,6 +817,53 @@ function collectHypothesisEvidence(state, event) {
     rows: resolved,
     verifyCount: resolved.filter((row) => row.comparisonMade).length,
   };
+}
+
+function causalEvidenceForHypothesis(input, hypothesisId) {
+  const rows = Array.isArray(input) ? input : input && typeof input === "object" ? [input] : [];
+  const matched = rows.find((row) => !row.hypothesisId || row.hypothesisId === hypothesisId);
+  if (!matched) return null;
+  const allowedContribution = new Set(["primary", "joint", "supporting", "irrelevant"]);
+  return {
+    support: matched.support != null && Number.isFinite(Number(matched.support))
+      ? clamp(matched.support, -1, 1)
+      : null,
+    strength: matched.strength != null && Number.isFinite(Number(matched.strength))
+      ? clamp(matched.strength, 0, 1)
+      : null,
+    contribution: allowedContribution.has(matched.contribution)
+      ? matched.contribution
+      : matched.contribution != null && Number.isFinite(Number(matched.contribution))
+        ? clamp(matched.contribution, 0, 1)
+        : null,
+    novelty: matched.novelty != null && Number.isFinite(Number(matched.novelty))
+      ? clamp(matched.novelty, 0, 1)
+      : 0,
+    closure: matched.closure != null && Number.isFinite(Number(matched.closure))
+      ? clamp(matched.closure, 0, 1)
+      : null,
+    alternativeExplanationStrength: matched.alternativeExplanationStrength != null
+      && Number.isFinite(Number(matched.alternativeExplanationStrength))
+      ? clamp(matched.alternativeExplanationStrength, 0, 1)
+      : 0,
+  };
+}
+
+function applyHypothesisLearning(state, event, verificationRows, feedbackRows) {
+  const updates = [];
+  for (const verification of verificationRows) {
+    const hypothesis = state.hypotheses.find((row) => row.id === verification.id);
+    const feedback = feedbackRows.find((row) => row.id === verification.id);
+    const update = applyCausalKnowledgeEvidence(
+      state.causalKnowledge,
+      hypothesis,
+      feedback,
+      event,
+      state.config.feedback,
+    );
+    if (update) updates.push(update);
+  }
+  return updates;
 }
 
 function normalizeTargetCondition(input) {
@@ -978,6 +995,14 @@ function mergeConfig(input) {
     process: { ...DEFAULT_CONFIG.process, ...(input?.process || {}) },
     learning: { ...DEFAULT_CONFIG.learning, ...(input?.learning || {}) },
     mismatch: { ...DEFAULT_CONFIG.mismatch, ...(input?.mismatch || {}) },
+    feedback: {
+      ...DEFAULT_CONFIG.feedback,
+      ...(input?.feedback || {}),
+      verification: {
+        ...DEFAULT_CONFIG.feedback.verification,
+        ...(input?.feedback?.verification || {}),
+      },
+    },
     longHorizon: { ...DEFAULT_CONFIG.longHorizon, ...(input?.longHorizon || {}) },
     salienceByType: { ...DEFAULT_CONFIG.salienceByType, ...(input?.salienceByType || {}) },
   };

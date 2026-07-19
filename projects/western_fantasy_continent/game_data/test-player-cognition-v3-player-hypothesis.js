@@ -6,16 +6,29 @@ assert.equal(confirmed.afterUnrelated.hypotheses[0].status, "pending");
 assert.equal(confirmed.final.hypotheses[0].status, "confirmed");
 assert.equal(confirmed.verification.EVerify, 1);
 assert.equal(confirmed.verification.hypothesisVerification[0].observedValue, 0.32);
+assert.ok(confirmed.verification.verificationFeedback.derived.strategySatisfaction > 0);
+assert.equal(confirmed.final.causalKnowledge.length, 1);
+assert.ok(confirmed.final.causalKnowledge[0].belief > 0);
 
 const refuted = runScenario("hypothesis-refute", 0.12, 0.25);
 assert.equal(refuted.afterUnrelated.hypotheses[0].status, "pending");
 assert.equal(refuted.final.hypotheses[0].status, "refuted");
 assert.equal(refuted.verification.EVerify, 1);
 assert.equal(refuted.verification.hypothesisVerification[0].observedValue, 0.12);
+assert.equal(refuted.verification.verificationFeedback.derived.strategySatisfaction, 0);
+assert.equal(refuted.verification.verificationEmotion, 0);
+assert.equal(refuted.final.causalKnowledge.length, 1);
+assert.ok(refuted.final.causalKnowledge[0].belief < 0);
+assert.ok(
+  confirmed.verification.emotionDelta > refuted.verification.emotionDelta,
+  "确认和证伪都发生比较，但只有确认产生策略爽感",
+);
 
 const unreadable = runScenario("hypothesis-inconclusive", null, 0.25);
 assert.equal(unreadable.final.hypotheses[0].status, "inconclusive");
 assert.equal(unreadable.verification.EVerify, 0, "unreadable evidence must not grant verification effort");
+assert.equal(unreadable.verification.verificationEmotion, 0);
+assert.equal(unreadable.final.causalKnowledge.length, 0);
 
 let currentAction = RUNTIME.createState("current-action-hypothesis");
 currentAction = RUNTIME.applyDecision(currentAction, decision({

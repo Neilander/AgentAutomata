@@ -71,6 +71,11 @@ function organizeReceivedBattleInformation(rawEventsInput, options = {}) {
   const routedIds = collectRoutedSignalIds(routes);
   const routedCausalTypes = new Set(routes.causalKnowledge.flatMap((row) => row.sourceSignalTypes || []));
   const serialized = JSON.stringify({ receivedObservations, routes });
+  const causalEvidence = reception.selectedCausalEvidence.map((candidate) => ({
+    id: candidate.publicId,
+    ...clone(candidate.semanticEvent),
+    informationTier: candidate.features.informationTier,
+  }));
 
   return {
     schema: SCHEMA,
@@ -79,11 +84,15 @@ function organizeReceivedBattleInformation(rawEventsInput, options = {}) {
     receivedSignalCount: selectedOtherEvents.length,
     excludedSignalCount: reception.candidates.length - selectedOtherEvents.length,
     receivedObservations,
+    causalEvidence,
     routes,
     audit: {
       candidateSignalCount: reception.candidates.length,
       divertedCharacterSignalCount: divertedCharacterSignals.length,
       persistentFactsPromotedCount: persistentFactsPromoted.length,
+      causalEvidenceCandidateCount: reception.causalEvidenceCandidates.length,
+      receivedCausalEvidenceCount: causalEvidence.length,
+      causalEvidenceRoutedToKnowledge: false,
       routeCounts: Object.fromEntries(
         Object.entries(routes).map(([name, rows]) => [name, rows.length]),
       ),

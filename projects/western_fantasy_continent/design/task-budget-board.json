@@ -1336,7 +1336,7 @@
       "parentId": "",
       "sourceTaskId": "",
       "outcome": "错误决策在作出时仍可产生合理掌控感；验证后R、A和EVerify分别结算，因果证据独立更新可供下一次决策读取的知识。",
-      "nextAction": "用户确认因果链V2后，扩展正式Agent假设合同：决策时必须输出claim、chosenBehavior和至少3步causalChain；再开发已接收语义事件到各链条步骤observed/contradicted的匹配器。两部分通过小case后才接正式EVerify，之后处理重复强证伪行为的EDecision折扣。",
+      "nextAction": "结构化玩家可见因果辅助证据层已经完成并通过真实fixture验证，但暂未接正式EVerify。下一步先扩展正式Agent causalChain合同，让战前假设使用同一套公开角色/目标引用；随后只把本场causalEvidence交给匹配器结算，不把它写入普通知识总结。",
       "owner": "agent",
       "priority": "critical",
       "importance": "critical",
@@ -1349,7 +1349,9 @@
         "projects/western_fantasy_continent/skills/player-cognition-simulation/SKILL.md",
         "projects/western_fantasy_continent/skills/player-cognition-simulation/references/signal-growth-agency-model.md",
         "projects/western_fantasy_continent/game_data/everify-isolated-v1.js",
-        "projects/western_fantasy_continent/game_data/test-everify-isolated-v1.js"
+        "projects/western_fantasy_continent/game_data/test-everify-isolated-v1.js",
+        "projects/western_fantasy_continent/game_data/causal-chain-event-matcher.js",
+        "projects/western_fantasy_continent/game_data/test-causal-chain-event-matcher.js"
       ],
       "tags": [
         "emotion",
@@ -1372,7 +1374,7 @@
         "已被证伪的重复行为不再获得完整决策掌控反馈",
         "不使用恐惧或固定负面常量修补结果"
       ],
-      "lastEvidence": "2026-07-19 隔离EVerify已重建为完整因果链V2。Agent必须先给claim、chosenBehavior和至少3个有序语义步骤，不能填写support/strength。程序只读已接收步骤的observed/contradicted、时间和冻结informationTier，自行推导相邻因果边：全链成立support=+1；任一边明确反证或时间倒置support=-1；缺步骤时整链support=0，但已成立前缀保留为局部知识。完整链strength取最弱边，不使用35/65或步骤平均。完整链、中央断链、前缀成立、末端反证、时间倒置、非法档位、不完整假设、R独立性小case均PASS；信息档位、解析器、反馈、玩家假设、targetCondition和正式循环回归PASS。尚未接正式Agent合同与事件匹配器。"
+      "lastEvidence": "2026-07-19 修正原归因：真实原始death事件本来就包含玩家可见source、target、time和skill，细节是在buildDeathSignals聚合摘要时丢失。解析器现并行输出不进入知识的causalEvidence，每条事件独立经过低/普通/高感知筛选，并把left/right内部编号转换为公开哈希引用。真实fixture在固定种子下低/普通/高分别接收8/21/45条辅助证据；11.6秒游侠击杀低感知漏掉、普通和高感知收到；隐藏该事件后三档都不收到。真实游侠伤害→击杀同一目标→胜利三步链确认support=1、strength=0.4。匹配器16例PASS：6确认、3证伪、1前缀确认、5证据不足、1非法输入；辅助证据未进入receivedObservations或causalKnowledge。"
     },
     {
       "id": "everify-novelty-closure-discovery",

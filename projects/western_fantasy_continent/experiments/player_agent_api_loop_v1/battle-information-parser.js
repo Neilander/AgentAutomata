@@ -42,7 +42,12 @@ const MELEE_OBSERVATION = /(重击|顺劈|斩|劈|猛击|突刺|拳|爪|撕咬|�
 
 function parseBattleInformation(rawEventsInput, options = {}) {
   const reception = selectReceivedCandidatesForOrganizer(rawEventsInput, options);
-  const { perceptionLevel, config, selected } = reception;
+  const {
+    perceptionLevel,
+    config,
+    selected,
+    selectedCausalEvidence,
+  } = reception;
 
   return {
     schema: SCHEMA,
@@ -57,6 +62,7 @@ function parseBattleInformation(rawEventsInput, options = {}) {
       importance: candidate.importance,
       statement: candidate.statement,
     })),
+    causalEvidence: selectedCausalEvidence.map(publicCausalEvidence),
   };
 }
 
@@ -66,6 +72,8 @@ function selectReceivedCandidatesForOrganizer(rawEventsInput, options = {}) {
   const seed = String(options.seed || DEFAULT_SEED);
   const candidates = buildCandidates(rawEventsInput)
     .map((candidateRow) => scoreCandidateForReception(candidateRow, options, seed));
+  const causalEvidenceCandidates = buildCausalEvidenceCandidates(rawEventsInput, options)
+    .map((candidateRow) => scoreCandidateForReception(candidateRow, options, seed));
   const selected = candidates.filter((candidateRow) => (
     candidateRow.forced
     || candidateRow.sharedDetectionValue <= candidateReceptionProbability(
@@ -73,7 +81,21 @@ function selectReceivedCandidatesForOrganizer(rawEventsInput, options = {}) {
       perceptionLevel,
     )
   ));
-  return { perceptionLevel, config, candidates, selected };
+  const selectedCausalEvidence = causalEvidenceCandidates.filter((candidateRow) => (
+    candidateRow.forced
+    || candidateRow.sharedDetectionValue <= candidateReceptionProbability(
+      candidateRow,
+      perceptionLevel,
+    )
+  ));
+  return {
+    perceptionLevel,
+    config,
+    candidates,
+    selected,
+    causalEvidenceCandidates,
+    selectedCausalEvidence,
+  };
 }
 
 function scoreCandidateForReception(candidateRow, options, seed) {
@@ -234,6 +256,236 @@ function buildCandidates(rawEventsInput) {
     .sort((a, b) => b.priority - a.priority || a.order - b.order)
     .map((row) => ({ ...row, detectionKey: stableDetectionKey(row) }))
     .map(assignOpaquePublicId());
+}
+
+function buildCausalEvidenceCandidates(rawEventsInput, options = {}) {
+  const events = annotateAttentionAvailability(clone(rawEventsInput || []))
+    .filter(isPlayerVisible)
+    .filter((event) => SUPPORTED_TYPES.has(event.type));
+  const rows = events
+    .map((event) => causalEvidenceCandidate(event, options))
+    .filter(Boolean)
+    .sort((a, b) => a.order - b.order || a.detectionKey.localeCompare(b.detectionKey));
+  return rows.map((row) => ({
+    ...row,
+    publicId: `causal_evidence:${hash32(row.detectionKey).toString(16).padStart(8, "0")}`,
+  }));
+}
+
+function causalEvidenceCandidate(event, options) {
+  const semanticEvent = causalSemanticEvent(event, options);
+  if (!semanticEvent) return null;
+  const informationTier = causalInformationTier(event, semanticEvent.predicate);
+  const priority = causalPriority(semanticEvent.predicate);
+  const detectionKey = [
+    "causal",
+    semanticEvent.predicate,
+    semanticEvent.time,
+    stableRefKey(semanticEvent.subject),
+    stableRefKey(semanticEvent.object),
+    semanticEvent.qualifiers.join(","),
+    semanticEvent.environment.node || "",
+  ].join("|");
+  return {
+    type: `causal_${semanticEvent.predicate}`,
+    priority,
+    order: semanticEvent.time,
+    importance: priority >= 90 ? "关键" : priority >= 65 ? "重要" : "一般",
+    statement: semanticEvent.predicate,
+    evidence: [event],
+    semanticEvent,
+    magnitude: causalMagnitude(event, semanticEvent.predicate),
+    informationTier,
+    forced: semanticEvent.predicate === "combat_won" || semanticEvent.predicate === "combat_lost",
+    detectionKey,
+  };
+}
+
+function publicCausalEvidence(candidateRow) {
+  return {
+    id: candidateRow.publicId,
+    ...clone(candidateRow.semanticEvent),
+    informationTier: candidateRow.features.informationTier,
+  };
+}
+
+function causalSemanticEvent(event, options) {
+  const predicate = causalPredicate(event);
+  if (!predicate) return null;
+  const subject = causalSubject(event, predicate, options);
+  const object = causalObject(event, predicate, options);
+  if (!subject || (causalPredicateRequiresObject(predicate) && !object)) return null;
+  return {
+    time: round(eventOrder(event), 4),
+    predicate,
+    subject,
+    object: object || {},
+    qualifiers: causalQualifiers(event, predicate),
+    environment: causalEnvironment(event, options),
+  };
+}
+
+function causalPredicate(event) {
+  if (event.type === "combat_result") {
+    const result = event.result || {};
+    if (["combat_win", "win", "victory"].includes(result.kind) || result.outcome === "win" || result.won === true) {
+      return "combat_won";
+    }
+    if (["combat_loss", "loss", "defeat"].includes(result.kind) || result.outcome === "loss" || result.won === false) {
+      return "combat_lost";
+    }
+    return null;
+  }
+  if (event.type === "death") {
+    return event.result?.target?.side === "right" || event.result?.kind === "enemy_kill"
+      ? "target_defeated"
+      : "ally_defeated";
+  }
+  if (event.type === "skill") return "skill_cast";
+  if (event.type === "damage") return "damage_dealt";
+  if (event.type === "shield") return "shield_applied";
+  if (event.type === "status") {
+    const tags = causalTagSet(event);
+    if (["slow", "stun", "freeze", "root", "control", "pinning"].some((tag) => tags.has(tag))) {
+      return "control_applied";
+    }
+    if (["damage_up", "damageup", "damage_amp", "damageamp", "power_up", "powerup"].some((tag) => tags.has(tag))) {
+      return "damage_increased";
+    }
+  }
+  return null;
+}
+
+function causalSubject(event, predicate, options) {
+  if (predicate === "ally_defeated") return publicCausalRef(event.result?.target, options);
+  return publicCausalRef(event.subject, options);
+}
+
+function causalObject(event, predicate, options) {
+  if (predicate === "combat_won" || predicate === "combat_lost") return null;
+  if (predicate === "ally_defeated") return publicCausalRef(event.subject, options);
+  return publicCausalRef(event.result?.target, options);
+}
+
+function publicCausalRef(ref, options = {}) {
+  if (!ref || !["left", "right"].includes(ref.side)) return null;
+  const name = visibleText(ref.name);
+  if (!name && ref.id !== "player_squad") return null;
+  if (ref.id === "player_squad") {
+    return { refId: "player_squad", side: "left", kind: "squad" };
+  }
+  if (ref.side === "left") {
+    const member = (options.causalContext?.teamMembers || []).find((row) => (
+      row?.name === name || row?.id === ref.id
+    ));
+    const stableId = member?.id || (
+      /^(?:hero|militia)_[a-z0-9_]+$/i.test(String(ref.id || ""))
+        ? String(ref.id)
+        : `visible_ally:${hash32(name).toString(16).padStart(8, "0")}`
+    );
+    return {
+      refId: `visible_character:${hash32(stableId).toString(16).padStart(8, "0")}`,
+      side: "left",
+      kind: "character",
+    };
+  }
+  const environment = causalEnvironmentFromOptions(options);
+  const visibleConcept = visibleEnemyConcept(name);
+  return {
+    conceptId: `visible_concept:${hash32(visibleConcept).toString(16).padStart(8, "0")}`,
+    publicEntityId: `visible_entity:${hash32(`${environment.node}|${name}`).toString(16).padStart(8, "0")}`,
+    side: "right",
+    kind: "enemy",
+  };
+}
+
+function visibleEnemyConcept(name) {
+  return String(name || "")
+    .replace(/[0-9０-９]+$/u, "")
+    .trim() || "visible_enemy";
+}
+
+function causalEnvironment(event, options = {}) {
+  const source = event.environment || {};
+  const fallback = causalEnvironmentFromOptions(options);
+  const environment = {};
+  const region = visibleText(source.region) || fallback.region;
+  const node = visibleText(source.node) || fallback.node;
+  const fieldEffect = visibleText(source.fieldEffect) || fallback.fieldEffect;
+  if (region) environment.region = region;
+  if (node) environment.node = node;
+  if (fieldEffect) environment.fieldEffect = fieldEffect;
+  return environment;
+}
+
+function causalEnvironmentFromOptions(options = {}) {
+  return {
+    region: visibleText(options.causalContext?.region),
+    node: visibleText(options.causalContext?.node),
+    fieldEffect: visibleText(options.causalContext?.gameEvent?.fieldEffect?.id),
+  };
+}
+
+function causalQualifiers(event, predicate) {
+  const tags = causalTagSet(event);
+  const qualifiers = [];
+  for (const qualifier of ["burn", "damage_up", "fire", "high_health", "protected", "shielded", "slow", "ultimate"]) {
+    if (tags.has(qualifier)) qualifiers.push(qualifier);
+  }
+  if (predicate === "shield_applied" && !qualifiers.includes("shielded")) qualifiers.push("shielded");
+  return qualifiers.sort();
+}
+
+function causalTagSet(event) {
+  return new Set([
+    ...(event.behavior?.tags || []),
+    ...(event.presentation?.visibleTags || []),
+    event.behavior?.key,
+    event.result?.kind,
+  ].filter(Boolean).map((value) => String(value).toLowerCase()));
+}
+
+function causalPredicateRequiresObject(predicate) {
+  return !["combat_won", "combat_lost"].includes(predicate);
+}
+
+function causalInformationTier(event, predicate) {
+  if (event.presentation?.informationTier) {
+    return normalizeInformationTier(event.presentation.informationTier);
+  }
+  if (["combat_won", "combat_lost"].includes(predicate)) return "blocking";
+  if (predicate === "ally_defeated") return "highlight";
+  if (predicate === "target_defeated") return "standard_high";
+  if (["control_applied", "damage_increased", "shield_applied"].includes(predicate)) return "standard_low";
+  return "ambient";
+}
+
+function causalPriority(predicate) {
+  if (["combat_won", "combat_lost"].includes(predicate)) return 100;
+  if (predicate === "ally_defeated") return 92;
+  if (predicate === "target_defeated") return 78;
+  if (["control_applied", "damage_increased", "shield_applied"].includes(predicate)) return 68;
+  if (predicate === "skill_cast") return 58;
+  return 50;
+}
+
+function causalMagnitude(event, predicate) {
+  if (["combat_won", "combat_lost", "ally_defeated", "target_defeated"].includes(predicate)) return 1;
+  if (predicate === "damage_dealt") {
+    const amount = Math.max(0, Number(event.result?.amount || 0));
+    return clamp(0.25 + Math.log1p(amount) / 8, 0.25, 0.9);
+  }
+  return 0.6;
+}
+
+function stableRefKey(ref) {
+  return [
+    ref?.refId || "",
+    ref?.conceptId || "",
+    ref?.publicEntityId || "",
+    ref?.side || "",
+    ref?.kind || "",
+  ].join("~");
 }
 
 function buildOutcomeSignals(events) {

@@ -1064,6 +1064,7 @@ function learnFromChallenge(session, record, context) {
     schema: routed.schema,
     perceptionLevel: routed.perceptionLevel,
     receivedObservations: clone(routed.receivedObservations),
+    causalEvidence: clone(routed.causalEvidence),
     probabilityOpportunities: clone(routed.routes.probabilityLedger),
     audit: clone(routed.audit),
   };

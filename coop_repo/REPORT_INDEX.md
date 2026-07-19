@@ -4,6 +4,8 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-19
 
+- `2026-07-19_1630_structured-causal-chain-matcher.md`：新增不依赖战后Agent自评的结构化因果链匹配器，15个案例覆盖完整链、错误击杀者、同类不同目标、漏信号、时间倒置、护盾/控制链、噪声和主因拒绝；真实fixture证明当前“我方击倒4人”聚合信号不足以确认细游侠链，需先补结构化玩家可见事件层。
+
 - `2026-07-19_1517_everify-causal-chain-v2.md`：隔离EVerify重建为完整因果链V2；Agent先写至少3步链，程序用已接收步骤、时间和冻结档位逐边计算support。整链不平均，断链不确认，已成立前缀保留为局部知识；正式Agent合同和事件匹配器尚未接入。
 
 - `2026-07-19_1450_everify-input-boundary-correction.md`：纠正隔离EVerify越界输入；删除自造画面/归因清晰度和连续竞争解释值，只读取现有三档玩家模型已接收事件的冻结informationTier，并拒绝0.63等自定义数值。1349报告相关描述被本报告取代。
@@ -577,3 +579,7 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 - `2026-06-23_2220_goal-complete-handoff.md`
 - `2026-06-23_2209_skill-assets-and-archetype-validation.md`
+# 2026-07-19 17:45 — 解析器因果辅助证据通道
+
+- Report: [`reports/2026-07-19_1745_causal-evidence-parser-channel.md`](reports/2026-07-19_1745_causal-evidence-parser-channel.md)
+- Summary: 原始战斗事件本来就有玩家可见的击杀者、目标、动作和时间；本次在解析器中增加与知识摘要并行、独立经过三档感知且绝不进入知识库的`causalEvidence`通道。真实fixture中普通感知成功确认游侠伤害→击杀同一目标→胜利三步链。

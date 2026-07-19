@@ -246,7 +246,7 @@ const actualFixture = JSON.parse(fs.readFileSync(
 ));
 const actualParsed = parseBattleInformation(actualFixture.rawEventLog, {
   perceptionLevel: "ordinary",
-  seed: "causal-chain:2",
+  seed: "causal-chain:53",
   causalContext: {
     node: "r2_flag_trial",
     region: "region_2",

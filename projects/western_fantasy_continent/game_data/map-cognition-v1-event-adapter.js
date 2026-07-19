@@ -38,6 +38,10 @@ function buildMapEventLog(action, resultEvent, options = {}) {
     ...signal,
     time: Math.max(0, Number(signal.time) || 0),
   })));
+  rows.push(...buildHealthThresholdSignals(
+    analysis.healthSnapshots || [],
+    { expectationKey, environment },
+  ));
 
   const duration = Math.max(0, Number(event.duration) || 0);
   const outcomeKind = event.outcome === "win" ? "combat_win" : event.outcome === "loss" ? "combat_loss" : "action_changed";
@@ -206,6 +210,85 @@ function compactCombatSignals(signals) {
   return [...grouped.values().map(normalizeCombatResult), ...discrete].sort((a, b) => a.time - b.time || Number(a.sequence || 0) - Number(b.sequence || 0) || a.id.localeCompare(b.id));
 }
 
+const HEALTH_THRESHOLDS = Object.freeze([
+  Object.freeze({ ratio: 0.75, percent: 75, qualifier: "health_75", informationTier: "standard_low" }),
+  Object.freeze({ ratio: 0.5, percent: 50, qualifier: "health_50", informationTier: "standard_high" }),
+  Object.freeze({ ratio: 0.25, percent: 25, qualifier: "health_25", informationTier: "highlight" }),
+]);
+
+function buildHealthThresholdSignals(snapshots, context = {}) {
+  const rows = [];
+  const previousRatioByUnit = new Map();
+  const crossingCountByUnit = new Map();
+  const ordered = [...(snapshots || [])].sort((a, b) => (
+    Number(a.time || 0) - Number(b.time || 0)
+    || Number(a.sequence || 0) - Number(b.sequence || 0)
+  ));
+
+  for (const snapshot of ordered) {
+    const target = snapshot?.target;
+    const maxHp = Number(snapshot?.maxHp);
+    const hp = Number(snapshot?.hp);
+    if (!target?.id || !Number.isFinite(hp) || !Number.isFinite(maxHp) || maxHp <= 0) continue;
+    const unitKey = String(target.id);
+    const ratio = Math.max(0, Math.min(1, hp / maxHp));
+    const previousRatio = previousRatioByUnit.has(unitKey)
+      ? previousRatioByUnit.get(unitKey)
+      : 1;
+
+    for (const threshold of HEALTH_THRESHOLDS) {
+      if (!(previousRatio > threshold.ratio && ratio <= threshold.ratio)) continue;
+      const occurrence = (crossingCountByUnit.get(unitKey) || 0) + 1;
+      crossingCountByUnit.set(unitKey, occurrence);
+      rows.push({
+        id: `${context.expectationKey || "battle"}:health-threshold:${rows.length + 1}`,
+        sequence: Number(snapshot.sequence || 0),
+        time: Math.max(0, Number(snapshot.time) || 0),
+        type: "health_state",
+        subject: structuredClone(target),
+        environment: {
+          ...(context.environment || {}),
+          phase: "combat",
+        },
+        behavior: {
+          kind: "hud_state",
+          key: "health_bar_threshold",
+          name: "health bar threshold",
+          tags: ["health", "hud", "threshold", threshold.qualifier],
+        },
+        result: {
+          kind: "health_dropped_below",
+          target: structuredClone(target),
+          thresholdPercent: threshold.percent,
+          direction: "down",
+          occurred: true,
+        },
+        presentation: {
+          visible: true,
+          hasSource: true,
+          hasTarget: false,
+          hasAnimation: false,
+          attentionZone: `health_bar:${unitKey}`,
+          informationContract: INFORMATION_CONTRACT,
+          informationTier: threshold.informationTier,
+          visibleTags: ["health", "threshold", threshold.qualifier],
+          renderEvidence: {
+            animationSeconds: 0.2,
+            moving: false,
+            frontendIntent: "health_bar_band_crossing",
+          },
+        },
+        directResult: false,
+        learn: false,
+        causalEvidenceOnly: true,
+        thresholdOccurrence: occurrence,
+      });
+    }
+    previousRatioByUnit.set(unitKey, ratio);
+  }
+  return rows;
+}
+
 function informationTierForRarity(rarity) {
   if (rarity === "mythic") return "blocking";
   if (rarity === "legendary") return "highlight";
@@ -235,4 +318,10 @@ function runMapAction(core, state, action, cognitionState, options = {}) {
 
 function round(value, digits = 4) { return Number(Number(value || 0).toFixed(digits)); }
 
-module.exports = { buildMapEventLog, compactCombatSignals, runMapAction };
+module.exports = {
+  HEALTH_THRESHOLDS,
+  buildHealthThresholdSignals,
+  buildMapEventLog,
+  compactCombatSignals,
+  runMapAction,
+};

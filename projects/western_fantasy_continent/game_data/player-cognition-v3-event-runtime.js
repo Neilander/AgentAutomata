@@ -385,6 +385,11 @@ function createDecisionHypothesis(state, decision) {
     environment: structuredClone(decision.environment || {}),
     verificationScope,
     settleOnEventKind: verificationScope === "next_combat" ? "team_experiment_result" : null,
+    claim: decision.hypothesis.claim || decision.hypothesis.cause || "",
+    claimMode: decision.hypothesis.claimMode || null,
+    causalChain: Array.isArray(decision.hypothesis.causalChain)
+      ? structuredClone(decision.hypothesis.causalChain)
+      : null,
     evidence: [],
   };
   state.hypotheses.push(hypothesis);
@@ -773,7 +778,11 @@ function collectHypothesisEvidence(state, event) {
     ...(event.result.components || []).map((component) => component.kind),
   ]);
   const action = event.behavior?.key || "";
-  const rows = state.hypotheses.filter((row) => row.status === "pending" && (!row.action || row.action === action));
+  const rows = state.hypotheses.filter((row) => (
+    row.status === "pending"
+    && !Array.isArray(row.causalChain)
+    && (!row.action || row.action === action)
+  ));
   const resolved = [];
   for (const row of rows) {
     const explicitSettlement = Boolean(row.settleOnEventKind && event.result.kind === row.settleOnEventKind);
@@ -817,6 +826,145 @@ function collectHypothesisEvidence(state, event) {
     rows: resolved,
     verifyCount: resolved.filter((row) => row.comparisonMade).length,
   };
+}
+
+function settleStructuredCausalHypothesis(state, {
+  hypothesisId,
+  matcherResult,
+  event = {},
+} = {}) {
+  const hypothesis = (state.hypotheses || []).find((row) => (
+    row.id === hypothesisId
+    && row.status === "pending"
+    && Array.isArray(row.causalChain)
+  ));
+  if (!hypothesis) {
+    return { settled: false, reason: "pending_structured_hypothesis_not_found" };
+  }
+  if (matcherResult?.status !== "matched" || !matcherResult.everify) {
+    return { settled: false, reason: "valid_matcher_result_required" };
+  }
+
+  const everify = matcherResult.everify;
+  const comparisonMade = Boolean(everify.comparisonMade);
+  const verificationRow = {
+    id: hypothesis.id,
+    status: everify.status,
+    comparisonMade,
+    causalEvidence: {
+      support: everify.dimensions.support,
+      strength: everify.dimensions.strength,
+      contribution: "supporting",
+      novelty: 0,
+      closure: 0,
+      alternativeExplanationStrength: 0,
+    },
+  };
+  const processFeedback = produceProcessFeedback({
+    verificationCount: comparisonMade ? 1 : 0,
+    verificationEffortValue: state.config.process.verificationEffortValue,
+  });
+  const verificationFeedback = produceVerificationFeedback({
+    rows: [verificationRow],
+    H: 1,
+    config: state.config.feedback,
+  });
+  const feedback = composeFeedback({
+    process: processFeedback,
+    result: produceResultFeedback({ enabled: false }),
+    expectation: produceExpectationFeedback({ value: 0 }),
+    verification: verificationFeedback,
+  });
+  const before = round(state.emotion.value);
+  applyEmotion(state, processFeedback.value, 0, 0, verificationFeedback.value);
+
+  hypothesis.status = everify.status;
+  hypothesis.resolvedAt = Number(event.time || 0);
+  hypothesis.evidence.push({
+    eventId: event.id || null,
+    comparisonMade,
+    matcherSchema: matcherResult.schema,
+    everifySchema: everify.schema,
+    semanticEvidenceIds: matcherResult.stepMatches
+      .flatMap((row) => row.semanticEventId ? [row.semanticEventId] : []),
+    status: everify.status,
+    dimensions: structuredClone(everify.dimensions),
+  });
+
+  const feedbackRow = verificationFeedback.rows[0];
+  const causalKnowledgeUpdates = [];
+  const fullUpdate = applyCausalKnowledgeEvidence(
+    state.causalKnowledge,
+    hypothesis,
+    feedbackRow,
+    event,
+    state.config.feedback,
+  );
+  if (fullUpdate) causalKnowledgeUpdates.push(fullUpdate);
+
+  for (const local of everify.derived.localLinkKnowledge || []) {
+    if (Math.abs(Number(local.evidence || 0)) < 0.000001) continue;
+    const fromStep = hypothesis.causalChain.find((row) => row.id === local.fromStepId);
+    const toStep = hypothesis.causalChain.find((row) => row.id === local.toStepId);
+    if (!fromStep || !toStep) continue;
+    const localHypothesis = {
+      id: `${hypothesis.id}:${local.linkId}`,
+      cause: fromStep.statement,
+      chosenBehavior: hypothesis.chosenBehavior,
+      resultKind: toStep.matcher?.predicate || toStep.statement,
+      target: publicMatcherTarget(toStep.matcher),
+      targetCondition: null,
+    };
+    const localUpdate = applyCausalKnowledgeEvidence(
+      state.causalKnowledge,
+      localHypothesis,
+      {
+        status: Number(local.evidence) > 0 ? "confirmed" : "refuted",
+        comparisonMade: true,
+        derived: { knowledgeEvidence: round(Number(local.evidence) * 0.5) },
+      },
+      event,
+      state.config.feedback,
+    );
+    if (localUpdate) causalKnowledgeUpdates.push(localUpdate);
+  }
+
+  const trace = {
+    eventId: event.id || `structured_causal_verification:${hypothesis.id}`,
+    time: Number(event.time || 0),
+    type: "structured_causal_verification",
+    accepted: true,
+    H: 1,
+    processEmotion: round(processFeedback.value),
+    acquiredEmotion: 0,
+    expectationEmotion: 0,
+    verificationEmotion: round(verificationFeedback.value),
+    emotionDelta: round(feedback.total),
+    emotionBefore: before,
+    emotionAfter: round(state.emotion.value),
+    hypothesisEvidence: hypothesis.evidence.at(-1).semanticEvidenceIds,
+    hypothesisVerification: [verificationRow],
+    verificationFeedback,
+    feedback,
+    EVerify: comparisonMade ? 1 : 0,
+    causalKnowledgeUpdates,
+    structuredMatcherAudit: structuredClone(matcherResult.audit || {}),
+    learningOrder: "structured_match_then_feedback_then_update",
+  };
+  state.trace.push(trace);
+  return {
+    settled: true,
+    hypothesisId: hypothesis.id,
+    status: everify.status,
+    feedback: structuredClone(feedback),
+    causalKnowledgeUpdates,
+    trace: structuredClone(trace),
+  };
+}
+
+function publicMatcherTarget(matcher) {
+  const target = matcher?.object || matcher?.subject || {};
+  return target.refId || target.publicEntityId || target.conceptId || target.kind || "";
 }
 
 function causalEvidenceForHypothesis(input, hypothesisId) {
@@ -1023,4 +1171,5 @@ module.exports = {
   receiveSignal,
   utilityOf,
   confirmationGeometricMultiplier,
+  settleStructuredCausalHypothesis,
 };

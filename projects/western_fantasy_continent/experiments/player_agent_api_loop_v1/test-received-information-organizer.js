@@ -52,7 +52,7 @@ assert(byProfile.low.receivedObservations.length < byProfile.ordinary.receivedOb
 assert(byProfile.ordinary.receivedObservations.length <= byProfile.high.receivedObservations.length);
 
 for (const result of Object.values(byProfile)) {
-  assert.equal(result.schema, "other_event_to_type1_router_v7");
+  assert.equal(result.schema, "other_event_to_type1_router_v8");
   assert.deepEqual(Object.keys(result.routes).sort(), [
     "causalKnowledge",
     "probabilityLedger",

@@ -14,7 +14,7 @@ assert.equal(
 );
 assert.equal(
   hypothesisContract.targetCondition.requirement,
-  "required when verificationScope is next_combat; optional for current_action",
+  "required for legacy next_combat hypotheses without causalChain; otherwise optional",
 );
 
 const compactRequest = COMPACT.compactDecision(fullRequest);

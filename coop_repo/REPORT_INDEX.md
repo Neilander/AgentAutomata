@@ -2,7 +2,21 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-20
+
+- `2026-07-20_0113_player-model-integration-audit.md`：系统审计历史玩家模型与当前V27接线。最近的角色认知、信息过滤、换人预期/A/C、结构化EVerify和假设注意均在正式入口；真正未合并的是V4反馈存量/习惯化/概率放弃、V5的P×Q/deadRepetition/incomprehension/kP/Agency，以及被真实Agent决策架构替代的V1–V3代码行动策略。旧代码与测试都仍有效，问题是平行运行时没有合并。
+
 ## 2026-07-19
+
+- `2026-07-19_2346_hypothesis-directed-attention.md`：V27把待验证结构化假设接到战斗信息接收前的限时注意；240种子完整可比较率9.58%→18.75%，无关变化0，旧12链回放2条→3条明确结算且未全量确认。复查同时纠正2328报告：request-024确有敌方施放同名技能，真实漏洞是无来源场地状态默认归我方，现已要求明确left/right来源。
+
+- `2026-07-19_2328_two-player-chapter1-formal-everify.md`：开放新手与惯性玩家并行跑V26第一章；真实Agent共主动提出12条结构化链，1确认/1反驳/10信息不足，开放新手后续4次引用新因果知识；换人失败未泛化。发现普通感知技能链闭合率偏低和我方技能被翻译成敌方状态的明确Bug。
+
+- `2026-07-19_2226_formal-structured-everify-wiring.md`：正式接通战前公开角色/技能标识、Agent三步因果链、战后已接收证据、EVerify反馈和因果知识；确认、反驳、缺证据三种端到端案例及旧合同/信息过滤/血量/跨职业回归均PASS。
+
+- `2026-07-19_1816_health-threshold-causal-evidence.md`：两章战斗把连续血量快照压缩为75%/50%/25%血条向下跨档证据，停留不重复、回血后可重入、跨多档保留；500种子感知顺序、知识隔离、无HP泄漏和狂战完整低血量链均PASS，正式两周期无回归。
+
+- `2026-07-19_1748_causal-evidence-cross-archetype-validation.md`：用7场既有真实模拟存档验证狂战、骑士、牧师、游侠、法师和吟游的结构化因果证据；正例确认、战败与顺序倒置证伪、技能串线和内部名被拦截，三档感知缺链时保持无法判断。正式接入暂缓，先补低血量状态证据和战前公开技能指纹。
 
 - `2026-07-19_1630_structured-causal-chain-matcher.md`：新增不依赖战后Agent自评的结构化因果链匹配器，15个案例覆盖完整链、错误击杀者、同类不同目标、漏信号、时间倒置、护盾/控制链、噪声和主因拒绝；真实fixture证明当前“我方击倒4人”聚合信号不足以确认细游侠链，需先补结构化玩家可见事件层。
 

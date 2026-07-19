@@ -2,7 +2,7 @@ const {
   selectReceivedCandidatesForOrganizer,
 } = require("./battle-information-parser");
 
-const SCHEMA = "other_event_to_type1_router_v7";
+const SCHEMA = "other_event_to_type1_router_v8";
 
 const ROUTE_TARGETS = Object.freeze({
   causalKnowledge: "canonical_causal_knowledge",
@@ -92,6 +92,7 @@ function organizeReceivedBattleInformation(rawEventsInput, options = {}) {
       persistentFactsPromotedCount: persistentFactsPromoted.length,
       causalEvidenceCandidateCount: reception.causalEvidenceCandidates.length,
       receivedCausalEvidenceCount: causalEvidence.length,
+      hypothesisAttention: clone(reception.hypothesisAttentionAudit),
       causalEvidenceRoutedToKnowledge: false,
       routeCounts: Object.fromEntries(
         Object.entries(routes).map(([name, rows]) => [name, rows.length]),

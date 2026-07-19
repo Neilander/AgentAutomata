@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-19_1745_causal-evidence-parser-channel.md`](reports/2026-07-19_1745_causal-evidence-parser-channel.md)
+[`reports/2026-07-20_0113_player-model-integration-audit.md`](reports/2026-07-20_0113_player-model-integration-audit.md)
 
-Last updated: 2026-07-19
+Last updated: 2026-07-20
 
-当前重点：原始战斗事件本来就保存玩家可见的主体、目标、动作和时间，细节是在知识摘要聚合时丢失。解析器现已增加独立`causalEvidence`通道：每条证据单独经过低/普通/高感知，内部ID转换为公开引用，并由整理器明确隔离于普通观察和知识路由。真实fixture中普通感知可用游侠伤害→击杀同一目标→胜利确认三步因果链；匹配器16例PASS。下一步是让正式Agent战前假设使用同一套公开引用，再把该通道接入正式EVerify；novelty/closure仍保持0。
+当前重点：历史接线审计确认最近的角色认知、信息过滤、换人预期/A/C、结构化EVerify和假设注意均已进入正式V27。真正的旧成果孤岛是V4反馈存量/习惯化/概率放弃、V5的P×Q/deadRepetition/incomprehension/kP/Agency，以及被真实Agent选择替代的V1–V3代码行动策略。当前“强反证后原样乱试”不应修改EDecision，而应把旧deadRepetition重新接到正式Q；不要整模块导入，以免重复计算现有R/A/C/EVerify。

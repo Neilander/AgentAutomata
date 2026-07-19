@@ -1,8 +1,13 @@
-const SCHEMA = "player_battle_information_v2";
+const SCHEMA = "player_battle_information_v3";
 const {
   INFORMATION_PRESENTATION_CONTRACT,
   normalizeInformationTier,
 } = require("../../game_data/combat-signals");
+const {
+  hash32,
+  visibleActionId,
+  visibleCharacterRef,
+} = require("../../game_data/public-causal-identifiers");
 
 const PERCEPTION_LEVELS = Object.freeze({
   low: Object.freeze({ label: "窄幅感知", sensitivityBias: -1.05 }),
@@ -14,6 +19,7 @@ const DEFAULT_SEED = "battle-perception";
 const RECEPTION_CENTER = 0.84;
 const RECEPTION_TEMPERATURE = 0.16;
 const SINGLE_EVENT_REPETITION = 1 - Math.exp(-1 / 2.8);
+const HYPOTHESIS_ATTENTION_STRENGTH_BONUS = 0.12;
 
 const SUPPORTED_TYPES = new Set([
   "field",
@@ -22,6 +28,7 @@ const SUPPORTED_TYPES = new Set([
   "shield",
   "shieldBreak",
   "status",
+  "health_state",
   "skill",
   "death",
   "combat_result",
@@ -88,6 +95,8 @@ function selectReceivedCandidatesForOrganizer(rawEventsInput, options = {}) {
       perceptionLevel,
     )
   ));
+  const focusedCandidates = causalEvidenceCandidates.filter((row) => row.hypothesisAttention?.matched);
+  const receivedFocusedCandidates = selectedCausalEvidence.filter((row) => row.hypothesisAttention?.matched);
   return {
     perceptionLevel,
     config,
@@ -95,6 +104,20 @@ function selectReceivedCandidatesForOrganizer(rawEventsInput, options = {}) {
     selected,
     causalEvidenceCandidates,
     selectedCausalEvidence,
+    hypothesisAttentionAudit: {
+      active: options.hypothesisAttention?.active === true,
+      hypothesisIds: unique(options.hypothesisAttention?.hypothesisIds || []),
+      requestedTargetCount: Math.min(
+        6,
+        Number(options.hypothesisAttention?.targets?.length || 0),
+      ),
+      matchedCandidateCount: focusedCandidates.length,
+      focusedCandidateCount: focusedCandidates.length,
+      receivedFocusedCandidateCount: receivedFocusedCandidates.length,
+      strengthBonus: HYPOTHESIS_ATTENTION_STRENGTH_BONUS,
+      changesInformationTier: false,
+      affectsOrdinaryKnowledgeSignals: false,
+    },
   };
 }
 
@@ -105,7 +128,8 @@ function scoreCandidateForReception(candidateRow, options, seed) {
     + features.presentationStrength * 0.18
     + features.magnitude * 0.18
     + features.goalRelevance * 0.14
-    + features.attentionAvailability * 0.18,
+    + features.attentionAvailability * 0.18
+    + features.hypothesisAttention * HYPOTHESIS_ATTENTION_STRENGTH_BONUS,
     0,
     1,
   );
@@ -280,6 +304,7 @@ function causalEvidenceCandidate(event, options) {
   const detectionKey = [
     "causal",
     semanticEvent.predicate,
+    semanticEvent.actionId || "",
     semanticEvent.time,
     stableRefKey(semanticEvent.subject),
     stableRefKey(semanticEvent.object),
@@ -294,6 +319,10 @@ function causalEvidenceCandidate(event, options) {
     statement: semanticEvent.predicate,
     evidence: [event],
     semanticEvent,
+    hypothesisAttention: hypothesisAttentionMatch(
+      semanticEvent,
+      options.hypothesisAttention,
+    ),
     magnitude: causalMagnitude(event, semanticEvent.predicate),
     informationTier,
     forced: semanticEvent.predicate === "combat_won" || semanticEvent.predicate === "combat_lost",
@@ -318,6 +347,7 @@ function causalSemanticEvent(event, options) {
   return {
     time: round(eventOrder(event), 4),
     predicate,
+    ...(causalActionId(event) ? { actionId: causalActionId(event) } : {}),
     subject,
     object: object || {},
     qualifiers: causalQualifiers(event, predicate),
@@ -343,14 +373,21 @@ function causalPredicate(event) {
   }
   if (event.type === "skill") return "skill_cast";
   if (event.type === "damage") return "damage_dealt";
+  if (event.type === "heal") return "heal_applied";
+  if (event.type === "health_state" && event.result?.kind === "health_dropped_below") {
+    return "health_dropped_below";
+  }
   if (event.type === "shield") return "shield_applied";
   if (event.type === "status") {
     const tags = causalTagSet(event);
     if (["slow", "stun", "freeze", "root", "control", "pinning"].some((tag) => tags.has(tag))) {
       return "control_applied";
     }
-    if (["damage_up", "damageup", "damage_amp", "damageamp", "power_up", "powerup"].some((tag) => tags.has(tag))) {
+    if (["damage_up", "damageup", "damage_amp", "damageamp", "power_up", "powerup", "power", "bloodfurytimer"].some((tag) => tags.has(tag))) {
       return "damage_increased";
+    }
+    if (["guardtimer", "taunttimer", "hastetimer", "buff"].some((tag) => tags.has(tag))) {
+      return "buff_applied";
     }
   }
   return null;
@@ -362,7 +399,7 @@ function causalSubject(event, predicate, options) {
 }
 
 function causalObject(event, predicate, options) {
-  if (predicate === "combat_won" || predicate === "combat_lost") return null;
+  if (["combat_won", "combat_lost", "health_dropped_below"].includes(predicate)) return null;
   if (predicate === "ally_defeated") return publicCausalRef(event.subject, options);
   return publicCausalRef(event.result?.target, options);
 }
@@ -383,11 +420,7 @@ function publicCausalRef(ref, options = {}) {
         ? String(ref.id)
         : `visible_ally:${hash32(name).toString(16).padStart(8, "0")}`
     );
-    return {
-      refId: `visible_character:${hash32(stableId).toString(16).padStart(8, "0")}`,
-      side: "left",
-      kind: "character",
-    };
+    return visibleCharacterRef(stableId);
   }
   const environment = causalEnvironmentFromOptions(options);
   const visibleConcept = visibleEnemyConcept(name);
@@ -429,11 +462,30 @@ function causalEnvironmentFromOptions(options = {}) {
 function causalQualifiers(event, predicate) {
   const tags = causalTagSet(event);
   const qualifiers = [];
-  for (const qualifier of ["burn", "damage_up", "fire", "high_health", "protected", "shielded", "slow", "ultimate"]) {
+  for (const qualifier of ["burn", "damage_up", "fire", "haste", "health_25", "health_50", "health_75", "high_health", "power_up", "protected", "shielded", "slow", "taunt", "ultimate"]) {
     if (tags.has(qualifier)) qualifiers.push(qualifier);
   }
+  const healthQualifier = `health_${Number(event.result?.thresholdPercent || 0)}`;
+  if (["health_25", "health_50", "health_75"].includes(healthQualifier)
+    && !qualifiers.includes(healthQualifier)) {
+    qualifiers.push(healthQualifier);
+  }
+  if (tags.has("bloodfurytimer") || tags.has("power")) {
+    if (!qualifiers.includes("damage_up")) qualifiers.push("damage_up");
+    if (!qualifiers.includes("power_up")) qualifiers.push("power_up");
+  }
+  if (tags.has("guardtimer") && !qualifiers.includes("protected")) qualifiers.push("protected");
+  if (tags.has("taunttimer") && !qualifiers.includes("taunt")) qualifiers.push("taunt");
+  if (tags.has("hastetimer") && !qualifiers.includes("haste")) qualifiers.push("haste");
   if (predicate === "shield_applied" && !qualifiers.includes("shielded")) qualifiers.push("shielded");
   return qualifiers.sort();
+}
+
+function causalActionId(event) {
+  if (["combat_result", "death", "health_state"].includes(event?.type)) return null;
+  const key = visibleText(event?.behavior?.key);
+  if (!key || ["damage", "death", "status"].includes(key)) return null;
+  return visibleActionId(key);
 }
 
 function causalTagSet(event) {
@@ -446,7 +498,7 @@ function causalTagSet(event) {
 }
 
 function causalPredicateRequiresObject(predicate) {
-  return !["combat_won", "combat_lost"].includes(predicate);
+  return !["combat_won", "combat_lost", "health_dropped_below"].includes(predicate);
 }
 
 function causalInformationTier(event, predicate) {
@@ -456,7 +508,7 @@ function causalInformationTier(event, predicate) {
   if (["combat_won", "combat_lost"].includes(predicate)) return "blocking";
   if (predicate === "ally_defeated") return "highlight";
   if (predicate === "target_defeated") return "standard_high";
-  if (["control_applied", "damage_increased", "shield_applied"].includes(predicate)) return "standard_low";
+  if (["buff_applied", "control_applied", "damage_increased", "heal_applied", "health_dropped_below", "shield_applied"].includes(predicate)) return "standard_low";
   return "ambient";
 }
 
@@ -464,7 +516,7 @@ function causalPriority(predicate) {
   if (["combat_won", "combat_lost"].includes(predicate)) return 100;
   if (predicate === "ally_defeated") return 92;
   if (predicate === "target_defeated") return 78;
-  if (["control_applied", "damage_increased", "shield_applied"].includes(predicate)) return 68;
+  if (["buff_applied", "control_applied", "damage_increased", "heal_applied", "health_dropped_below", "shield_applied"].includes(predicate)) return 68;
   if (predicate === "skill_cast") return 58;
   return 50;
 }
@@ -474,6 +526,9 @@ function causalMagnitude(event, predicate) {
   if (predicate === "damage_dealt") {
     const amount = Math.max(0, Number(event.result?.amount || 0));
     return clamp(0.25 + Math.log1p(amount) / 8, 0.25, 0.9);
+  }
+  if (predicate === "health_dropped_below") {
+    return ({ 75: 0.35, 50: 0.65, 25: 1 })[Number(event.result?.thresholdPercent)] || 0.35;
   }
   return 0.6;
 }
@@ -649,8 +704,11 @@ function buildSupportSignals(events) {
 }
 
 function buildStatusSignals(events) {
-  const rows = events.filter((event) => event.type === "status");
-  const groups = groupBy(rows, (event) => event.subject?.side === "right" ? "enemy" : "ally");
+  const rows = events.filter((event) => (
+    event.type === "status"
+    && ["left", "right"].includes(event.subject?.side)
+  ));
+  const groups = groupBy(rows, (event) => event.subject.side === "right" ? "enemy" : "ally");
   const signals = [];
   for (const [side, group] of groups) {
     const names = unique(group.map(visibleBehaviorName).filter(Boolean)).slice(0, 4);
@@ -907,7 +965,35 @@ function candidateFeatures(candidateRow, options = {}) {
       evidence.map((event) => Number(event._attentionAvailability ?? event.presentation?.attentionShare ?? 1)),
       1,
     )),
+    hypothesisAttention: candidateRow.hypothesisAttention?.matched ? 1 : 0,
   };
+}
+
+function hypothesisAttentionMatch(semanticEvent, attentionInput) {
+  const targets = Array.isArray(attentionInput?.targets)
+    ? attentionInput.targets.slice(0, 6)
+    : [];
+  const matched = targets.filter((target) => (
+    structuredAttentionMatcherMatches(target?.matcher, semanticEvent)
+  ));
+  return {
+    matched: matched.length > 0,
+    hypothesisIds: unique(matched.map((row) => String(row.hypothesisId || "")).filter(Boolean)),
+    stepIds: unique(matched.map((row) => String(row.stepId || "")).filter(Boolean)),
+  };
+}
+
+function structuredAttentionMatcherMatches(matcher, event) {
+  if (!matcher || !event || matcher.predicate !== event.predicate) return false;
+  return (!matcher.actionId || matcher.actionId === event.actionId)
+    && subsetMatches(matcher.subject, event.subject)
+    && subsetMatches(matcher.object, event.object)
+    && (matcher.qualifiersAll || []).every((value) => (event.qualifiers || []).includes(value))
+    && subsetMatches(matcher.environment, event.environment);
+}
+
+function subsetMatches(required, actual) {
+  return Object.entries(required || {}).every(([key, value]) => actual?.[key] === value);
 }
 
 function goalRelevance(candidateRow, goalFocusInput) {
@@ -1004,15 +1090,6 @@ function candidateReceptionProbability(candidateRow, level) {
 
 function deterministicUnitInterval(text) {
   return round(hash32(text) / 4294967296, 8);
-}
-
-function hash32(text) {
-  let hash = 2166136261;
-  for (let index = 0; index < text.length; index += 1) {
-    hash ^= text.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
 }
 
 function rarityMagnitude(rarity) {

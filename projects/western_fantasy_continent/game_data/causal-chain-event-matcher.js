@@ -16,6 +16,9 @@ const PREDICATES = new Set([
   "enemy_group_defeated",
   "formation_broken",
   "formation_intact",
+  "buff_applied",
+  "heal_applied",
+  "health_dropped_below",
   "shield_applied",
   "skill_cast",
   "survived_checkpoint",
@@ -28,10 +31,16 @@ const QUALIFIERS = new Set([
   "damage_up",
   "fire",
   "formation",
+  "haste",
   "high_health",
+  "health_25",
+  "health_50",
+  "health_75",
+  "power_up",
   "protected",
   "shielded",
   "slow",
+  "taunt",
   "ultimate",
 ]);
 
@@ -50,6 +59,7 @@ const ALLOWED_MATCHER_KEYS = new Set([
   "qualifiersAll",
   "environment",
   "exclusiveSubject",
+  "actionId",
 ]);
 
 const ALLOWED_REF_KEYS = new Set(["refId", "conceptId", "publicEntityId", "side", "kind"]);
@@ -142,6 +152,7 @@ function validateMatcherHypothesis(hypothesis) {
     validateRef(matcher.object, `step_${index}_object`, errors);
     validateQualifiers(matcher.qualifiersAll, `step_${index}`, errors);
     validateEnvironment(matcher.environment, `step_${index}`, errors);
+    validateActionId(matcher.actionId, `step_${index}`, errors);
   }
   return {
     valid: errors.length === 0,
@@ -190,6 +201,7 @@ function normalizeReceivedEvent(row) {
   validateRef(row.object, "event_object", refErrors);
   validateQualifiers(row.qualifiers, "event", refErrors);
   validateEnvironment(row.environment, "event", refErrors);
+  validateActionId(row.actionId, "event", refErrors);
   if (refErrors.length) return { valid: false, reason: refErrors[0] };
 
   return {
@@ -198,6 +210,7 @@ function normalizeReceivedEvent(row) {
       id: row.id,
       time,
       predicate: row.predicate,
+      ...(row.actionId ? { actionId: row.actionId } : {}),
       subject: clone(row.subject || {}),
       object: clone(row.object || {}),
       qualifiers: [...(row.qualifiers || [])],
@@ -259,6 +272,7 @@ function findContradiction(matcher, events) {
   if (matcher.exclusiveSubject) {
     const event = events.find((row) => (
       row.predicate === matcher.predicate
+      && actionMatches(matcher.actionId, row.actionId)
       && !refMatches(matcher.subject, row.subject)
       && refMatches(matcher.object, row.object)
       && qualifiersMatch(matcher.qualifiersAll, row.qualifiers)
@@ -271,10 +285,15 @@ function findContradiction(matcher, events) {
 
 function eventMatches(matcher, event) {
   return matcher.predicate === event.predicate
+    && actionMatches(matcher.actionId, event.actionId)
     && refMatches(matcher.subject, event.subject)
     && refMatches(matcher.object, event.object)
     && qualifiersMatch(matcher.qualifiersAll, event.qualifiers)
     && environmentMatches(matcher.environment, event.environment);
+}
+
+function actionMatches(required, actual) {
+  return !required || required === actual;
 }
 
 function bestOrderedPath(candidateLists) {
@@ -372,6 +391,17 @@ function validateEnvironment(environment, label, errors) {
   for (const [key, value] of Object.entries(environment)) {
     if (!ALLOWED_ENVIRONMENT_KEYS.has(key)) errors.push(`${label}_environment_key_not_allowed:${key}`);
     if (!nonEmptyString(value)) errors.push(`${label}_environment_${key}_must_be_nonempty_string`);
+  }
+}
+
+function validateActionId(actionId, label, errors) {
+  if (actionId == null) return;
+  if (!nonEmptyString(actionId)) {
+    errors.push(`${label}_action_id_must_be_nonempty_string`);
+    return;
+  }
+  if (!/^visible_action:[0-9a-f]{8}$/i.test(actionId) || hasRawIdentity(actionId)) {
+    errors.push(`${label}_action_id_must_be_opaque_public_id`);
   }
 }
 

@@ -12,7 +12,14 @@ const ROSTER_EXPECTATIONS = require("./roster-change-expectation");
 const ROSTER_EXPECTATION_A = require("./roster-expectation-a");
 const CHARACTER_EVENT_ADAPTER = require("./stable-character-event-adapter");
 const RECEIVED_INFORMATION_ORGANIZER = require("./received-information-organizer");
+const HYPOTHESIS_DIRECTED_ATTENTION = require("./hypothesis-directed-attention");
 const { INFORMATION_PRESENTATION_CONTRACT } = require("../../game_data/combat-signals");
+const SKILL_DATA = require("../../game_data/skill-data");
+const CAUSAL_MATCHER = require("../../game_data/causal-chain-event-matcher");
+const {
+  visibleActionId,
+  visibleCharacterRef,
+} = require("../../game_data/public-causal-identifiers");
 
 const SCHEMA = "player_agent_api_loop_v1";
 
@@ -159,6 +166,15 @@ function applyDecisionResponse(sessionInput, responseInput) {
     gameStateBefore,
     gameStateAfter: result.state,
   });
+  const cognitionBeforeStructuredVerification = clone(session.cognitionState);
+  const structuredVerification = settleStructuredCausalHypothesisFromChallenge(session, record);
+  if (structuredVerification) {
+    record.causalHypothesisVerification = structuredVerification;
+    record.eventTrace.push(...summarizeNewTrace(
+      cognitionBeforeStructuredVerification,
+      session.cognitionState,
+    ));
+  }
   compactKnowledgeBase(session.knowledgeBase);
   record.learningDelta = buildLearningDelta({
     knowledgeBefore: knowledgeBeforeAction,
@@ -254,7 +270,7 @@ function buildDecisionRequest(session) {
     cycle: session.cycle + 1,
     agentSession: PERSISTENT_AGENT.requestMetadata(session.agentContext, "decision"),
     playerProfile: clone(session.playerProfile),
-    instruction: "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. causalKnowledge contains context-scoped causal beliefs learned from hypothesis verification; belief is signed support and confidence is accumulated certainty, not designer truth. characterImpressions contains three independent top-30-percent rulers: output, protection, and buff. First identify the player-observed problem, then use only the capability axis or axes relevant to that need; never average or automatically combine them into one overall strength. For a one-member counterfactual swap, return capabilityNeedMix as three integer need weights from 0 to 10. The weights express the current problem, not emotional intensity; code normalizes them, calculates the prediction, and freezes the same mix for later A settlement. A measurable hypothesis condition is always named targetCondition; it is required for next_combat and uses the same shape when supplied for current_action. Historical encounter facts preserve formation slots and the character-cognition coordinates that existed when the result occurred. Treat them as historical player evidence, compare them with current characterImpressions, and make your own judgment; the organizer does not decide whether a past result still applies. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. rosterChangeExpectations are fallible code-owned evidence scoped to the shown encounter and team; unknown means there is not enough player evidence. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
+    instruction: "Choose exactly one allowed action. The code-owned knowledge store has already retrieved the relevant beliefs below. causalKnowledge contains context-scoped causal beliefs learned from hypothesis verification; belief is signed support and confidence is accumulated certainty, not designer truth. observation.roster exposes only public causalRef and visibleSkills identifiers; when proposing a causalChain, copy those exact public identifiers and never invent an internal skill key. A causalChain claims only that an ordered contributing path occurred, not that it was the sole or primary cause. characterImpressions contains three independent top-30-percent rulers: output, protection, and buff. First identify the player-observed problem, then use only the capability axis or axes relevant to that need; never average or automatically combine them into one overall strength. For a one-member counterfactual swap, return capabilityNeedMix as three integer need weights from 0 to 10. The weights express the current problem, not emotional intensity; code normalizes them, calculates the prediction, and freezes the same mix for later A settlement. A measurable hypothesis condition is always named targetCondition; it remains required for legacy next_combat hypotheses without a causalChain. Historical encounter facts preserve formation slots and the character-cognition coordinates that existed when the result occurred. Treat them as historical player evidence, compare them with current characterImpressions, and make your own judgment; the organizer does not decide whether a past result still applies. playerProfile contains fallible starting priors, not designer truth; compare them with learned evidence and revise behavior when contradicted. rosterChangeExpectations are fallible code-owned evidence scoped to the shown encounter and team; unknown means there is not enough player evidence. Use only supplied observations and retrieved knowledge. Do not calculate or set emotion.",
     playerState: {
       emotion: round(session.cognitionState.emotion.value),
       activeGoalId,
@@ -306,10 +322,29 @@ function buildDecisionRequest(session) {
         verificationScope: "current_action|next_combat",
         nextCombatResultKind: "team_experiment_contribution",
         targetCondition: {
-          requirement: "required when verificationScope is next_combat; optional for current_action",
+          requirement: "required for legacy next_combat hypotheses without causalChain; otherwise optional",
           metric: "damage|heal|shield|skillCount|damageShare|damageRank",
           operator: ">|>=|<|<=|==",
           value: "number",
+        },
+        structuredCausalChain: {
+          optional: true,
+          claim: "short player belief being tested",
+          claimMode: "must be contributing_path",
+          minimumSteps: 3,
+          step: {
+            id: "unique step id",
+            statement: "player-readable statement; display only and never used for matching",
+            matcher: {
+              predicate: [...CAUSAL_MATCHER.PREDICATES],
+              subject: "optional exact public causalRef copied from observation.roster",
+              object: "optional exact public causalRef or later observed enemy concept/entity reference",
+              actionId: "optional exact visibleSkills[].actionId",
+              qualifiersAll: [...CAUSAL_MATCHER.QUALIFIERS],
+              environment: "optional visible region/node/fieldEffect",
+              exclusiveSubject: "optional boolean",
+            },
+          },
         },
       },
     },
@@ -359,6 +394,8 @@ function observeGame(rawState) {
       teamSlot,
       slotLabel: teamSlot == null ? null : slotLabels[teamSlot],
       equippedSlots: Object.keys(rosterById.get(hero.id)?.equipment || {}),
+      causalRef: visibleCharacterRef(hero.id),
+      visibleSkills: publicVisibleSkills(rosterById.get(hero.id) || hero),
     };
   });
   const teamSlots = state.teamSlots.map((heroId, slotIndex) => {
@@ -371,6 +408,7 @@ function observeGame(rawState) {
       role: hero?.role || "unknown",
       kind: hero?.kind || "unknown",
       note: hero?.note || "",
+      causalRef: visibleCharacterRef(heroId),
     };
   });
   const equipActions = [];
@@ -402,6 +440,28 @@ function observeGame(rawState) {
     inventory,
     allowedActions: [...equipActions, ...(observation.allowedActions || [])],
   };
+}
+
+function publicVisibleSkills(unit) {
+  const roleKit = SKILL_DATA.roleKits?.[unit.role]?.kit || {};
+  const source = { ...roleKit, ...(unit.override || {}) };
+  return [
+    ["small1", "小技能1"],
+    ["small2", "小技能2"],
+    ["passive", "被动"],
+    ["ultimate", "终极技能"],
+  ].flatMap(([slot, slotLabel]) => {
+    const key = String(source[slot] || "").trim();
+    const skill = SKILL_DATA.skills?.[key];
+    if (!key || !skill || /^enemy(?:Noop|Dormant|NoUltimate)/i.test(key)) return [];
+    return [{
+      slot,
+      slotLabel,
+      name: skill.name || slotLabel,
+      description: skill.desc || "",
+      actionId: visibleActionId(key),
+    }];
+  });
 }
 
 function runPlayerAction(rawState, action, cognitionState, conceptState, evaluatorState, rosterPredictionAState, cycle) {
@@ -913,11 +973,16 @@ function normalizeDecisionHypothesis(input) {
   if (!["current_action", "next_combat"].includes(input.verificationScope)) {
     throw new Error(`unsupported hypothesis verificationScope: ${input.verificationScope}`);
   }
-  if (input.verificationScope === "next_combat" && input.resultKind !== "team_experiment_contribution") {
+  const causalChain = normalizeStructuredCausalChain(input);
+  if (
+    input.verificationScope === "next_combat"
+    && !causalChain
+    && input.resultKind !== "team_experiment_contribution"
+  ) {
     throw new Error("next_combat hypothesis resultKind must be team_experiment_contribution");
   }
   const targetCondition = normalizeHypothesisTargetCondition(input.targetCondition);
-  if (input.verificationScope === "next_combat" && !targetCondition) {
+  if (input.verificationScope === "next_combat" && !causalChain && !targetCondition) {
     throw new Error("next_combat hypothesis requires a measurable targetCondition");
   }
   return {
@@ -928,7 +993,32 @@ function normalizeDecisionHypothesis(input) {
     target: input.target.trim(),
     verificationScope: input.verificationScope,
     targetCondition,
+    ...(causalChain ? {
+      claim: String(input.claim || input.cause).trim(),
+      claimMode: "contributing_path",
+      causalChain,
+    } : {}),
   };
+}
+
+function normalizeStructuredCausalChain(input) {
+  if (input.causalChain === null || input.causalChain === undefined) return null;
+  const candidate = {
+    id: input.id,
+    claim: input.claim || input.cause,
+    claimMode: input.claimMode,
+    chosenBehavior: "selected_player_action",
+    causalChain: clone(input.causalChain),
+  };
+  const validation = CAUSAL_MATCHER.validateMatcherHypothesis(candidate);
+  if (!validation.valid) {
+    throw new Error(`invalid causalChain hypothesis: ${validation.errors.join(",")}`);
+  }
+  return candidate.causalChain.map((step) => ({
+    id: step.id,
+    statement: step.statement,
+    matcher: clone(step.matcher),
+  }));
 }
 
 function normalizeHypothesisTargetCondition(input) {
@@ -1047,6 +1137,10 @@ function learnFromChallenge(session, record, context) {
       seed: `formal:${record.cycle}:${record.action}`,
       episodeId: `formal:${record.cycle}`,
       perceptionLevel: informationPerceptionLevel(session.perceptionProfile),
+      hypothesisAttention: HYPOTHESIS_DIRECTED_ATTENTION.buildHypothesisDirectedAttention(
+        session.cognitionState.hypotheses,
+        { action: record.action },
+      ),
       causalContext: {
         action: record.action,
         node: record.gameEvent?.node,
@@ -1083,6 +1177,58 @@ function learnFromChallenge(session, record, context) {
     if (!ids.includes(row.id)) ids.push(row.id);
   }
   return ids;
+}
+
+function settleStructuredCausalHypothesisFromChallenge(session, record) {
+  if (!record.action.startsWith("challenge:")) return null;
+  const hypotheses = (session.cognitionState.hypotheses || []).filter((row) => (
+    row.status === "pending"
+    && Array.isArray(row.causalChain)
+    && (
+      (row.verificationScope === "current_action" && row.action === record.action)
+      || (row.verificationScope === "next_combat" && row.chosenBehavior !== record.action)
+    )
+  ));
+  if (!hypotheses.length) return null;
+
+  const results = hypotheses.map((hypothesis) => {
+    const matcherHypothesis = {
+      id: hypothesis.id,
+      claim: hypothesis.claim || hypothesis.cause,
+      claimMode: hypothesis.claimMode,
+      chosenBehavior: hypothesis.chosenBehavior,
+      causalChain: clone(hypothesis.causalChain),
+    };
+    const matcherResult = CAUSAL_MATCHER.matchCausalChain({
+      hypothesis: matcherHypothesis,
+      receivedSemanticEvents: record.receivedInformation?.causalEvidence || [],
+    });
+    const settlement = RUNTIME.settleStructuredCausalHypothesis(session.cognitionState, {
+      hypothesisId: hypothesis.id,
+      matcherResult,
+      event: {
+        id: `structured_causal_verification:${record.cycle}:${hypothesis.id}`,
+        time: Number(record.gameEvent?.duration || 0) + 0.09,
+        environment: {
+          region: record.rawEventLog?.find((row) => row.environment?.region)?.environment?.region
+            || "unknown",
+          node: record.gameEvent?.node || null,
+        },
+      },
+    });
+    return {
+      hypothesisId: hypothesis.id,
+      matcherStatus: matcherResult.status,
+      status: matcherResult.everify?.status || null,
+      stepMatches: clone(matcherResult.stepMatches || []),
+      everify: clone(matcherResult.everify || null),
+      settlement,
+    };
+  });
+  return {
+    schema: "formal_structured_causal_verification_v1",
+    results,
+  };
 }
 
 // Kept only as a regression reference. The runtime no longer calls this unfiltered path.

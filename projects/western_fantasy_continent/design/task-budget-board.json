@@ -1336,7 +1336,7 @@
       "parentId": "",
       "sourceTaskId": "",
       "outcome": "错误决策在作出时仍可产生合理掌控感；验证后R、A和EVerify分别结算，因果证据独立更新可供下一次决策读取的知识。",
-      "nextAction": "结构化玩家可见因果辅助证据层已经完成并通过真实fixture验证，但暂未接正式EVerify。下一步先扩展正式Agent causalChain合同，让战前假设使用同一套公开角色/目标引用；随后只把本场causalEvidence交给匹配器结算，不把它写入普通知识总结。",
+      "nextAction": "假设定向注意已完成；下一步补完整合法的causalChain合同示例，并专项测试重复证伪后的决策掌控感折扣。",
       "owner": "agent",
       "priority": "critical",
       "importance": "critical",
@@ -1351,7 +1351,13 @@
         "projects/western_fantasy_continent/game_data/everify-isolated-v1.js",
         "projects/western_fantasy_continent/game_data/test-everify-isolated-v1.js",
         "projects/western_fantasy_continent/game_data/causal-chain-event-matcher.js",
-        "projects/western_fantasy_continent/game_data/test-causal-chain-event-matcher.js"
+        "projects/western_fantasy_continent/game_data/test-causal-chain-event-matcher.js",
+        "projects/western_fantasy_continent/game_data/test-causal-evidence-cross-archetypes.js",
+        "projects/western_fantasy_continent/game_data/test-health-threshold-causal-evidence.js",
+        "projects/western_fantasy_continent/game_data/public-causal-identifiers.js",
+        "projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/test-formal-structured-causal-agent-loop.js",
+        "projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/hypothesis-directed-attention.js",
+        "projects/western_fantasy_continent/experiments/player_agent_api_loop_v1/test-hypothesis-directed-attention.js"
       ],
       "tags": [
         "emotion",
@@ -1374,7 +1380,7 @@
         "已被证伪的重复行为不再获得完整决策掌控反馈",
         "不使用恐惧或固定负面常量修补结果"
       ],
-      "lastEvidence": "2026-07-19 修正原归因：真实原始death事件本来就包含玩家可见source、target、time和skill，细节是在buildDeathSignals聚合摘要时丢失。解析器现并行输出不进入知识的causalEvidence，每条事件独立经过低/普通/高感知筛选，并把left/right内部编号转换为公开哈希引用。真实fixture在固定种子下低/普通/高分别接收8/21/45条辅助证据；11.6秒游侠击杀低感知漏掉、普通和高感知收到；隐藏该事件后三档都不收到。真实游侠伤害→击杀同一目标→胜利三步链确认support=1、strength=0.4。匹配器16例PASS：6确认、3证伪、1前缀确认、5证据不足、1非法输入；辅助证据未进入receivedObservations或causalKnowledge。"
+      "lastEvidence": "2026-07-19 V27完成假设定向注意：仅对当前待验证链中精确匹配的公开因果事件增加0.12接收强度，不改信息档位、不影响普通知识和无关事件，也不强制看见。240种同场种子中完整可比较率从0.0958升至0.1875，无关接收变化0；两位真实Agent的12条旧链原样回放从1确认/1反驳/10不足变为1确认/2反驳/9不足，没有全量确认。正式确认、反驳、缺席技能三例及旧回归均PASS。"
     },
     {
       "id": "everify-novelty-closure-discovery",
@@ -1632,14 +1638,14 @@
       "parentId": "expectation-signal-repair-suite",
       "sourceTaskId": "expectation-signal-repair-suite",
       "outcome": "玩家只能学习诸如“本场表现出近身攻击”“本场使用过治疗或护盾”等可见行为概念，不能读取临时对象名、内部职业，也不能从职业预设站位或固定职责。",
-      "nextAction": "后续在多玩家、跨关卡真实长流程中监测过滤是否遗漏决策关键信号，并用更多历史认知坐标对照校准行为稳定性。",
+      "nextAction": "",
       "owner": "agent",
       "priority": "critical",
       "importance": "critical",
-      "uncertainty": "low",
+      "uncertainty": "medium",
       "blastRadius": "high",
-      "attemptBudget": 3,
-      "attemptsUsed": 3,
+      "attemptBudget": 4,
+      "attemptsUsed": 4,
       "status": "done",
       "links": [
         "projects/western_fantasy_continent/PLAYER_MODEL_RUNTIME.md",
@@ -1661,7 +1667,7 @@
         "信息减少后归因仍能使用玩家实际观察到的信号完成",
         "原始事件只保留在审计层"
       ],
-      "lastEvidence": "2026-07-18 正式接线与两名真实两章Agent均PASS：开放新手/惯性玩家知识由199/192降至112/107；旧战斗知识中175/177条非公开证据和各13条原始威胁形状，在新版均为0。19/19与22/22个关卡知识完整保存四人认知坐标，Agent分别在19和21次决策中实际引用认知；场地、敌方行为、地图和装备信息仍足够支持通关。"
+      "lastEvidence": "2026-07-19 V27复查request-024原始事件：其中猎标箭、余烬火球、烈焰扩散、钉足箭均确有right侧敌方施放者，原结论把同名敌我技能误判成方向Bug；该句敌方归类本身正确。实际漏洞是subject=null的场地状态此前会默认归入ally。现已要求角色状态必须有明确left/right来源，无来源场地状态只走环境规则；旧场景敌我来源、无来源隔离、信息筛选和正式回归均PASS。"
     },
     {
       "id": "emotion-failure-experience-settlement",

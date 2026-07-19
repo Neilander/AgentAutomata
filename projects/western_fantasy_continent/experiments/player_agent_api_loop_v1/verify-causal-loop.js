@@ -188,7 +188,11 @@ onboarding = attributePending(onboarding);
 
 const postMain2Request = LOOP.getPendingRequest(onboarding);
 const visibleMage = postMain2Request.observation.roster.find((unit) => unit.id === "hero_mage");
-assert.deepEqual(visibleMage, {
+assert.deepEqual({
+  ...visibleMage,
+  causalRef: undefined,
+  visibleSkills: undefined,
+}, {
   id: "hero_mage",
   name: "烬火法师",
   role: "mage",
@@ -198,7 +202,14 @@ assert.deepEqual(visibleMage, {
   teamSlot: null,
   slotLabel: null,
   equippedSlots: [],
+  causalRef: undefined,
+  visibleSkills: undefined,
 });
+assert.match(visibleMage.causalRef.refId, /^visible_character:[0-9a-f]{8}$/);
+assert(visibleMage.visibleSkills.some((row) => (
+  row.name === "余烬火球"
+  && /^visible_action:[0-9a-f]{8}$/.test(row.actionId)
+)));
 assert(postMain2Request.observation.allowedActions.includes("swap:2:hero_mage"));
 assert.equal("affordanceExperiments" in postMain2Request.playerState, false);
 assert.equal(postMain2Request.playerState.hypotheses.some((row) => String(row.id).includes("team-experiment")), false);

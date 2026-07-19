@@ -404,6 +404,7 @@
         fieldEffect: fieldEffect(item) || "none",
       },
       combatSignals: cognitionSignalLog(signals, item, attempt),
+      healthSnapshots: cognitionHealthSnapshots(signals),
       settlement: {
         outcome: event.outcome,
         resolution: event.resolution,
@@ -455,6 +456,19 @@
         },
         presentation,
       }));
+  }
+
+  function cognitionHealthSnapshots(signals) {
+    return (signals || [])
+      .filter((signal) => signal.kind === "health")
+      .map((signal, index) => ({
+        sequence: index + 1,
+        time: cognitionRound(signal.time),
+        target: cognitionUnitRef(signal.target),
+        hp: Number.isFinite(signal.hp) ? cognitionRound(signal.hp) : null,
+        maxHp: Number.isFinite(signal.maxHp) ? cognitionRound(signal.maxHp) : null,
+      }))
+      .filter((row) => row.target && row.hp != null && row.maxHp > 0);
   }
 
   function cognitionRound(value, digits = 4) {

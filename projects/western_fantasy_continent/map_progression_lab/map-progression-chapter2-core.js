@@ -465,6 +465,7 @@ function cognitionAnalysis(signals, item, event, attempt) {
     action: event.action,
     node: { id: item.id, type: item.type, attempt: Number(attempt || 0), fieldEffect: item.fieldEffectId || "none" },
     combatSignals: cognitionSignalLog(signals, item, attempt),
+    healthSnapshots: cognitionHealthSnapshots(signals),
     settlement: {
       outcome: event.outcome,
       resolution: event.resolution,
@@ -509,6 +510,19 @@ function cognitionSignalLog(signals, item, attempt) {
       },
       presentation,
     }));
+}
+
+function cognitionHealthSnapshots(signals) {
+  return (signals || [])
+    .filter((signal) => signal.kind === "health")
+    .map((signal, index) => ({
+      sequence: index + 1,
+      time: round(signal.time),
+      target: unitRef(signal.target),
+      hp: Number.isFinite(signal.hp) ? round(signal.hp) : null,
+      maxHp: Number.isFinite(signal.maxHp) ? round(signal.maxHp) : null,
+    }))
+    .filter((row) => row.target && row.hp != null && row.maxHp > 0);
 }
 
 function unitRef(unit) {

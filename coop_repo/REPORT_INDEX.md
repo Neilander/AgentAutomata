@@ -4,6 +4,8 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-20
 
+- `2026-07-20_0142_edecision-process-quality-agency-design.md`：完成EDecision统一方案：EDecision只计有效思考量，QDecision用证据贴合、行为杠杆、可验证度、区分度、修正程度减去无意义重复和无法理解；掌控感Agency独立按Goal×path×ROI保存，并以Stuckness表达“目标重要但没有路”。给出20类隔离case和影子接入顺序，正式运行时尚未修改。
+
 - `2026-07-20_0113_player-model-integration-audit.md`：系统审计历史玩家模型与当前V27接线。最近的角色认知、信息过滤、换人预期/A/C、结构化EVerify和假设注意均在正式入口；真正未合并的是V4反馈存量/习惯化/概率放弃、V5的P×Q/deadRepetition/incomprehension/kP/Agency，以及被真实Agent决策架构替代的V1–V3代码行动策略。旧代码与测试都仍有效，问题是平行运行时没有合并。
 
 ## 2026-07-19

@@ -8,8 +8,8 @@ Read the timestamped report index first:
 
 Most recent current-work report:
 
-[`reports/2026-07-20_0113_player-model-integration-audit.md`](reports/2026-07-20_0113_player-model-integration-audit.md)
+[`reports/2026-07-20_0142_edecision-process-quality-agency-design.md`](reports/2026-07-20_0142_edecision-process-quality-agency-design.md)
 
 Last updated: 2026-07-20
 
-当前重点：历史接线审计确认最近的角色认知、信息过滤、换人预期/A/C、结构化EVerify和假设注意均已进入正式V27。真正的旧成果孤岛是V4反馈存量/习惯化/概率放弃、V5的P×Q/deadRepetition/incomprehension/kP/Agency，以及被真实Agent选择替代的V1–V3代码行动策略。当前“强反证后原样乱试”不应修改EDecision，而应把旧deadRepetition重新接到正式Q；不要整模块导入，以免重复计算现有R/A/C/EVerify。
+当前重点：EDecision完整统一方案已经形成，正式边界为“EDecision计思考量、QDecision评推进或乱试、Agency表达是否看得到可信可执行的路、Stuckness表达目标重要但没有路”。下一步先做隔离计算器与20个确定性case，再在V27旁路影子记录；不要直接改正式情绪，也不要重复计算现有R/A/C/EVerify。

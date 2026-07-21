@@ -2,7 +2,17 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-21
+
+- `2026-07-21_0254_three-round-sealed-emotion-validation.md`：玩家情绪生成模型完成三轮按人物来源组隔离、预测先冻结后揭晓的顺序验证；V1/V2/V3有效事件Top-3分别82%/83%/100%，顺序合计68条有效事件Top-1 56%、Top-3 87%。新增持续威胁、责任内疚和接触性厌恶；正式玩家Agent未改，固定V3大样本独立盲测与强度校准仍待完成。
+
+- `2026-07-21_0218_event-impact-generative-emotion-v1.md`：完成隔离的“客观事件→固定影响公式→生理化学动力学→多情绪”V1；9个真实来源发现并修正7类分流错误，17个来源明确情绪全部进入约定范围；结果不是盲测，正式玩家Agent未修改。
+
+- `2026-07-21_0034_player-emotion-contract-and-blind-corpus.md`：固定包含显式血清素的玩家情绪模型 V1 契约与防答案泄漏协议；整理 7,343 条第一人称案例，按人物隔离为 5,068 训练、1,228 调试、1,047 封存盲测，并把输入与情绪答案彻底分开。正式 V27 未修改，下一步开发隔离动力学模拟器。
+
 ## 2026-07-20
+
+- `2026-07-20_2252_emotion-neurochemical-behavior-model.md`：将玩家情绪建模方向改为“认知评价→九个神经化学生理轴的释放/衰减→注意、学习、动作、规划、社会和疼痛行为偏置→结合认知对象解释情绪”；否定每种情绪一对一分泌物和多巴胺=快乐，整理主要物质、12类情绪组合、R/A/C/EVerify连接与12个隔离case。未修改正式运行时。
 
 - `2026-07-20_1913_player-decision-emotion-latent-space-exploration.md`：整合玩家决策、价值需求与情绪建模探索；区分多方案规划、洞察压缩和自我选择，否定单油箱/二维互斥情绪模型，提出“高维区域由六个工程坐标加认知上下文解码”的最小实验方案，并以34个情绪家族、跨游戏案例、碰撞/消融测试约束后续开发。未修改正式运行时。
 

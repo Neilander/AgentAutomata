@@ -1,0 +1,130 @@
+{
+  "schema": "player_emotion_blind_round_pre_registration_v1",
+  "createdAt": "2026-07-20T18:39:10.423Z",
+  "priorRound": {
+    "round1AnswersAlreadyOpened": true,
+    "round1SelectedGroupsExcluded": true
+  },
+  "selection": {
+    "unit": "sourceGroup",
+    "method": "ascending sha256 of fixed salt and sourceGroup",
+    "salt": "player-emotion-generative-v1|sealed-round2|2026-07-21",
+    "selectedGroupCount": 4,
+    "selectedGroups": [
+      {
+        "sourceGroup": "isear-person-3db5c48561cdfb0e",
+        "selectionHash": "006184fdca197cfc21cb623f312310638e62e9e01c672beb54a3609647a0d117"
+      },
+      {
+        "sourceGroup": "isear-person-b9216c8562256f49",
+        "selectionHash": "0139651508c692db3672d9ccda390b42ebdc0c414df64957d2606ee2d1837cf2"
+      },
+      {
+        "sourceGroup": "isear-person-5ecb858ffe6db9ee",
+        "selectionHash": "03788b253bdda4e3933a8944a5da711c6b7dcbccd2b2d2a882ff15fa6fab3d64"
+      },
+      {
+        "sourceGroup": "isear-person-3cfa7ff3bdffa327",
+        "selectionHash": "0682d9d593b814a528f9b97c670af595ade027a50bd7ff2b8e4e8760c2d218cc"
+      }
+    ]
+  },
+  "source": {
+    "file": "data/blind_rounds/v1/remaining_holdout.inputs.jsonl",
+    "verifiedSha256": "5be1ad490dc4de83c717ec5c2afcfe31c0ecc35f9ecd77b6c08a4664ed08d9ac",
+    "sourceCaseCount": 992,
+    "sourceGroupCount": 147
+  },
+  "round2": {
+    "inputFile": "data/blind_rounds/v2/round2.inputs.jsonl",
+    "inputSha256": "cd88b9e6e5708174376bb7574f4715507dc64d14e40fbb0c60b34b232efacbe4",
+    "caseCount": 25,
+    "strictCaseCount": 22,
+    "caseIds": [
+      "isear-a01bc0ccfb5e646e2a31",
+      "isear-272c0b4c737f13e7103a",
+      "isear-441e0544661d962b1e4e",
+      "isear-2f9b19fc118257919d42",
+      "isear-60fc7fc8096b94843b6f",
+      "isear-6ae191e4f05da03e8a81",
+      "isear-1820e2c684abd64de1a5",
+      "isear-35c5df59915534dca1c7",
+      "isear-e387748d8354447ff408",
+      "isear-b6bb7250cc6e134cd948",
+      "isear-761f663af13ba798b833",
+      "isear-9b79904b066c459e0af3",
+      "isear-a8d76cd948fbb2dcf367",
+      "isear-446ba4f4d4001e4b1c41",
+      "isear-0589b7aed0ef230c897e",
+      "isear-c3c0198111af1912f6fd",
+      "isear-af76f55237f71aa954d2",
+      "isear-d6dcec734cbbffb48edc",
+      "isear-1090568abc285ff694a8",
+      "isear-1eb8c8c330f84c45cce4",
+      "isear-a4d29f1662aa262afacd",
+      "isear-3029c5055a04144cded0",
+      "isear-9fcd98385cfe0533d68b",
+      "isear-efb9b04b0f2533160e81",
+      "isear-8948b1e85a62c7a0bfc5"
+    ]
+  },
+  "untouchedHoldout": {
+    "inputFile": "data/blind_rounds/v2/remaining_final_holdout.inputs.jsonl",
+    "inputSha256": "1bec3db0c0c0a24c0d2dadb41b421b088b37ad8745a5a95efc007eca962ced9c",
+    "caseCount": 967,
+    "sourceGroupCount": 143
+  },
+  "preRegisteredEvaluation": {
+    "primaryTrack": "strictEmotionInference=true",
+    "labelProjection": {
+      "fear": [
+        "fear",
+        "anxiety"
+      ],
+      "anger": [
+        "anger",
+        "frustration"
+      ],
+      "sadness": [
+        "sadness",
+        "disappointment"
+      ],
+      "disgust": [
+        "disgust"
+      ],
+      "joy": [
+        "joy",
+        "excitement",
+        "satisfaction",
+        "relief",
+        "hope",
+        "pride",
+        "attachment",
+        "gratitude"
+      ],
+      "shame": [
+        "shame"
+      ],
+      "guilt": [
+        "guilt",
+        "regret"
+      ]
+    },
+    "projectionAggregation": "maximum member-family intensity; no summing",
+    "ranking": "For each projected ISEAR label use max(onset intensity, settled intensity), descending.",
+    "primaryMetric": "top3 accuracy",
+    "secondaryMetrics": [
+      "top1 accuracy",
+      "onset top3 accuracy",
+      "settled top3 accuracy"
+    ],
+    "noThresholdTuningBeforeReveal": true,
+    "ambiguousAndUnencodableCasesRemainInDenominator": true
+  },
+  "state": {
+    "structuredInputsFrozen": false,
+    "predictionsFrozen": false,
+    "answersOpenedForSelectedRound": false,
+    "remainingHoldoutAnswersOpened": false
+  }
+}

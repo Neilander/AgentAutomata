@@ -1,6 +1,6 @@
 {
   "schema": "agent_automata_task_budget_board_v2",
-  "updatedAt": "2026-07-19",
+  "updatedAt": "2026-07-21",
   "workflow": [
     "先围绕可玩的角色搭配定义本阶段体验目标。",
     "用统一 4v4 战斗验证队伍 combo、克制和强度感。",
@@ -1837,6 +1837,52 @@
         "合同回归覆盖确认与证伪两种响应"
       ],
       "lastEvidence": "2026-07-19 完成：正式responseContract把误写的nextCombatTargetCondition改为唯一字段targetCondition；next_combat必填，current_action可选但结构相同。compact-request逐字保留同一合同，旧错误字段给出use targetCondition明确错误。完全按合同生成的确认、证伪和current_action三例均正常持久化并结算；底层假设确认/证伪/证据不足、正式两周期入口和换人A接线回归全部PASS。"
+    },
+    {
+      "id": "generative-player-emotion-model-validation",
+      "name": "客观事件驱动的玩家情绪生成模型",
+      "detail": "隔离建立客观事件、玩家档案与历史到认知影响、生理化学动力学和多情绪序列的生成模型；禁止把文本情绪分类准确率冒充模型有效，也禁止验收前接入正式玩家Agent。",
+      "type": "research",
+      "category": "modeling",
+      "lineId": "player-emotion-simulation-optimization",
+      "parentId": "",
+      "sourceTaskId": "",
+      "outcome": "固定版本在多来源、独立结构化、答案后开的留出集上稳定解释情绪类别、强度、对象和时间，并能说明错误来自事件编码、个体背景还是生成公式。",
+      "nextAction": "冻结当前V3；由独立整理者制作更大封存输入，补强度校准和玩家档案差异，并扩展文学、影视、新闻纪实。通过前不得接入正式玩家Agent。",
+      "owner": "agent",
+      "priority": "critical",
+      "importance": "critical",
+      "uncertainty": "high",
+      "blastRadius": "high",
+      "attemptBudget": 12,
+      "attemptsUsed": 3,
+      "status": "active",
+      "links": [
+        "projects/western_fantasy_continent/experiments/player_emotion_model_v1/ITERATIVE_SEALED_VALIDATION_REPORT_V1.md",
+        "projects/western_fantasy_continent/experiments/player_emotion_model_v1/EVENT_TO_EMOTION_GENERATIVE_MODEL_V1.md",
+        "projects/western_fantasy_continent/experiments/player_emotion_model_v1/DATASET_PROTOCOL.md"
+      ],
+      "tags": [
+        "emotion",
+        "generative-model",
+        "physiology",
+        "chemistry",
+        "blind-validation"
+      ],
+      "skillFlow": [
+        "phenomenon-math-modeling",
+        "comparative-analysis"
+      ],
+      "successCriteria": [
+        "输入只含客观事件、玩家档案和历史，不读取情绪答案",
+        "血清素在内的化学轴与精神认知状态具有独立、可审计作用",
+        "模型输出可共存且带强度、对象与时间的情绪",
+        "固定版本通过大样本、来源组隔离、答案后开的独立盲测",
+        "强度刻度与真人量表完成校准",
+        "文学、影视、新闻纪实与实验自报分来源报告",
+        "用户验收前不接入正式玩家Agent"
+      ],
+      "lastEvidence": "2026-07-21 完成三轮逐次封存：V1 34条Top-3 82%；V2 18条有事件Top-3 83%；V3 16条有事件Top-1 69%、Top-3 100%。三轮合计68条有事件的顺序预测Top-1 56%、Top-3 87%，但版本之间有迭代，不能冒充单一固定版本成绩。同一开发者仍兼任答案不可见的事件整理者；946条来源组隔离输入保持未用于开发，正式玩家Agent未修改。"
     }
   ]
 }

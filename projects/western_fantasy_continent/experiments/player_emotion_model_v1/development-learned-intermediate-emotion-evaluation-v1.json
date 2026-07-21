@@ -1,0 +1,2034 @@
+{
+  "schema": "isear_development_learned_intermediate_emotion_evaluation_v1",
+  "protocol": {
+    "predictionsFrozenBeforeGoldRead": true,
+    "sealedTestRead": false,
+    "exactMetric": "Exact 24-family model label versus 7 ISEAR labels.",
+    "coarseMetric": "Model subfamilies count under the matching ISEAR umbrella."
+  },
+  "naturalNarrative": {
+    "cases": 1228,
+    "exactTop1": 0.263,
+    "exactTop3": 0.399,
+    "coarseTop1": 0.31,
+    "coarseTop3": 0.485,
+    "coverageByGold": {
+      "joy": {
+        "cases": 174,
+        "exactTop1": 118,
+        "exactTop3": 126,
+        "coarseTop1": 123,
+        "coarseTop3": 130,
+        "exactTop1Rate": 0.678,
+        "exactTop3Rate": 0.724,
+        "coarseTop1Rate": 0.707,
+        "coarseTop3Rate": 0.747
+      },
+      "sadness": {
+        "cases": 171,
+        "exactTop1": 57,
+        "exactTop3": 81,
+        "coarseTop1": 57,
+        "coarseTop3": 116,
+        "exactTop1Rate": 0.333,
+        "exactTop3Rate": 0.474,
+        "coarseTop1Rate": 0.333,
+        "coarseTop3Rate": 0.678
+      },
+      "fear": {
+        "cases": 174,
+        "exactTop1": 77,
+        "exactTop3": 100,
+        "coarseTop1": 77,
+        "coarseTop3": 100,
+        "exactTop1Rate": 0.443,
+        "exactTop3Rate": 0.575,
+        "coarseTop1Rate": 0.443,
+        "coarseTop3Rate": 0.575
+      },
+      "shame": {
+        "cases": 175,
+        "exactTop1": 28,
+        "exactTop3": 88,
+        "coarseTop1": 28,
+        "coarseTop3": 88,
+        "exactTop1Rate": 0.16,
+        "exactTop3Rate": 0.503,
+        "coarseTop1Rate": 0.16,
+        "coarseTop3Rate": 0.503
+      },
+      "disgust": {
+        "cases": 179,
+        "exactTop1": 23,
+        "exactTop3": 62,
+        "coarseTop1": 23,
+        "coarseTop3": 62,
+        "exactTop1Rate": 0.128,
+        "exactTop3Rate": 0.346,
+        "coarseTop1Rate": 0.128,
+        "coarseTop3Rate": 0.346
+      },
+      "anger": {
+        "cases": 177,
+        "exactTop1": 17,
+        "exactTop3": 23,
+        "coarseTop1": 70,
+        "coarseTop3": 89,
+        "exactTop1Rate": 0.096,
+        "exactTop3Rate": 0.13,
+        "coarseTop1Rate": 0.395,
+        "coarseTop3Rate": 0.503
+      },
+      "guilt": {
+        "cases": 178,
+        "exactTop1": 3,
+        "exactTop3": 10,
+        "coarseTop1": 3,
+        "coarseTop3": 10,
+        "exactTop1Rate": 0.017,
+        "exactTop3Rate": 0.056,
+        "coarseTop1Rate": 0.017,
+        "coarseTop3Rate": 0.056
+      }
+    },
+    "top1Confusion": {
+      "joy": {
+        "joy": 118,
+        "shame": 8,
+        "fear": 6,
+        "surprise": 8,
+        "disgust": 4,
+        "frustration": 14,
+        "pride": 5,
+        "confusion": 2,
+        "sadness": 6,
+        "anger": 3
+      },
+      "sadness": {
+        "sadness": 57,
+        "joy": 29,
+        "disgust": 3,
+        "frustration": 42,
+        "surprise": 11,
+        "fear": 11,
+        "shame": 7,
+        "confusion": 4,
+        "anger": 4,
+        "pride": 2,
+        "guilt": 1
+      },
+      "fear": {
+        "frustration": 25,
+        "surprise": 15,
+        "fear": 77,
+        "joy": 20,
+        "shame": 17,
+        "anger": 5,
+        "pride": 1,
+        "disgust": 5,
+        "sadness": 8,
+        "confusion": 1
+      },
+      "shame": {
+        "fear": 29,
+        "anger": 6,
+        "frustration": 67,
+        "shame": 28,
+        "surprise": 8,
+        "pride": 2,
+        "joy": 21,
+        "disgust": 2,
+        "confusion": 3,
+        "guilt": 3,
+        "sadness": 6
+      },
+      "disgust": {
+        "fear": 44,
+        "disgust": 23,
+        "surprise": 25,
+        "shame": 22,
+        "pride": 2,
+        "frustration": 26,
+        "joy": 13,
+        "confusion": 8,
+        "sadness": 6,
+        "anger": 8,
+        "guilt": 2
+      },
+      "anger": {
+        "frustration": 53,
+        "shame": 21,
+        "disgust": 15,
+        "fear": 26,
+        "anger": 17,
+        "surprise": 10,
+        "joy": 14,
+        "sadness": 17,
+        "confusion": 1,
+        "pride": 3
+      },
+      "guilt": {
+        "sadness": 12,
+        "frustration": 68,
+        "guilt": 3,
+        "surprise": 10,
+        "shame": 22,
+        "fear": 19,
+        "joy": 15,
+        "pride": 5,
+        "anger": 18,
+        "disgust": 3,
+        "confusion": 3
+      }
+    },
+    "firstFortyCoarseTop3Errors": [
+      {
+        "caseId": "isear-f77c33b82ff7852cd994",
+        "gold": "fear",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "shame"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-2e99c4f3d12c99460f84",
+        "gold": "shame",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "controllability",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-3df1fc7a0461c251031f",
+        "gold": "sadness",
+        "predicted": [
+          "joy",
+          "shame",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-a95f8e82d887d4d57644",
+        "gold": "fear",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-8618f0473f3f4ba80266",
+        "gold": "anger",
+        "predicted": [
+          "shame",
+          "disgust",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-9e8535128ca19059dedd",
+        "gold": "shame",
+        "predicted": [
+          "anger",
+          "frustration",
+          "disappointment"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-76bdc053cdf13f1d476e",
+        "gold": "guilt",
+        "predicted": [
+          "sadness",
+          "shame",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-3c752eafa830294e6af9",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-f24377248d2ad6fe10df",
+        "gold": "joy",
+        "predicted": [
+          "shame",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-bd6f8b6fca67fc51c084",
+        "gold": "anger",
+        "predicted": [
+          "disgust",
+          "fear"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "escapeAvailability",
+          "threatMagnitude",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-03b19ce30d3a2e6ed896",
+        "gold": "disgust",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-9312353d0d4730426bf4",
+        "gold": "guilt",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "sadness"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-dcab36e39426b77d6975",
+        "gold": "fear",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "shame"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-5259b551b3004f88d931",
+        "gold": "anger",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-ac33cf8139d904a0b426",
+        "gold": "disgust",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "normViolation",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-413fc6d34a409a6de7f4",
+        "gold": "sadness",
+        "predicted": [
+          "disgust",
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-0fb875b52a6ae61b30fc",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "anger"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability"
+        ]
+      },
+      {
+        "caseId": "isear-6d1e14c01cee07afa8fa",
+        "gold": "disgust",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-e68c0b45544940437c4a",
+        "gold": "disgust",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-5cdee55213e023e989f3",
+        "gold": "shame",
+        "predicted": [
+          "fear",
+          "frustration",
+          "disappointment"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-6e6ef23f9de15c238a38",
+        "gold": "fear",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-14589a23be4e551bbe91",
+        "gold": "joy",
+        "predicted": [
+          "fear",
+          "frustration",
+          "disappointment"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-49cf5ba2067b13ad0d77",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-b548d7c0d1db9d715799",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-90c03a1ad86f5cd28c82",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "sadness"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-4a25b3b79a1705ff7b24",
+        "gold": "guilt",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "shame"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-1b4825126fb4b0cc1e48",
+        "gold": "joy",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "escapeAvailability",
+          "threatMagnitude",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-b9243b97d601f105a2e2",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "relationshipValence",
+          "socialSafety",
+          "harmToOther",
+          "repairOpportunity"
+        ]
+      },
+      {
+        "caseId": "isear-b2b648bc1da2bb20432a",
+        "gold": "joy",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-0e106c1a2f6b9c92648a",
+        "gold": "guilt",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-42899533d916c6293810",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "anger"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-0cfd34eb80bdb5f141f1",
+        "gold": "guilt",
+        "predicted": [
+          "frustration",
+          "shame"
+        ],
+        "encodedAxes": [
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-73efa6fe272085f3fca0",
+        "gold": "sadness",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-1fe161ced433123d23bd",
+        "gold": "joy",
+        "predicted": [
+          "disgust",
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-d8ae53f6880a82cd3f3a",
+        "gold": "fear",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "sadness"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-7e4d43b38abffd7faf1f",
+        "gold": "disgust",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-c017b318412a7cb7ac81",
+        "gold": "guilt",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-d775485d0fbeb0006f0a",
+        "gold": "guilt",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "shame"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-c7da86924e4cb2ae0de1",
+        "gold": "disgust",
+        "predicted": [
+          "pride",
+          "fear",
+          "frustration"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "escapeAvailability",
+          "threatMagnitude",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety",
+          "harmToOther",
+          "repairOpportunity"
+        ]
+      },
+      {
+        "caseId": "isear-da04c7f13d6886c93e09",
+        "gold": "shame",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      }
+    ]
+  },
+  "strictInference": {
+    "cases": 937,
+    "exactTop1": 0.27,
+    "exactTop3": 0.394,
+    "coarseTop1": 0.316,
+    "coarseTop3": 0.483,
+    "coverageByGold": {
+      "joy": {
+        "cases": 142,
+        "exactTop1": 92,
+        "exactTop3": 99,
+        "coarseTop1": 96,
+        "coarseTop3": 103,
+        "exactTop1Rate": 0.648,
+        "exactTop3Rate": 0.697,
+        "coarseTop1Rate": 0.676,
+        "coarseTop3Rate": 0.725
+      },
+      "sadness": {
+        "cases": 140,
+        "exactTop1": 51,
+        "exactTop3": 68,
+        "coarseTop1": 51,
+        "coarseTop3": 98,
+        "exactTop1Rate": 0.364,
+        "exactTop3Rate": 0.486,
+        "coarseTop1Rate": 0.364,
+        "coarseTop3Rate": 0.7
+      },
+      "fear": {
+        "cases": 121,
+        "exactTop1": 55,
+        "exactTop3": 70,
+        "coarseTop1": 55,
+        "coarseTop3": 70,
+        "exactTop1Rate": 0.455,
+        "exactTop3Rate": 0.579,
+        "coarseTop1Rate": 0.455,
+        "coarseTop3Rate": 0.579
+      },
+      "shame": {
+        "cases": 128,
+        "exactTop1": 20,
+        "exactTop3": 63,
+        "coarseTop1": 20,
+        "coarseTop3": 63,
+        "exactTop1Rate": 0.156,
+        "exactTop3Rate": 0.492,
+        "coarseTop1Rate": 0.156,
+        "coarseTop3Rate": 0.492
+      },
+      "disgust": {
+        "cases": 129,
+        "exactTop1": 19,
+        "exactTop3": 45,
+        "coarseTop1": 19,
+        "coarseTop3": 45,
+        "exactTop1Rate": 0.147,
+        "exactTop3Rate": 0.349,
+        "coarseTop1Rate": 0.147,
+        "coarseTop3Rate": 0.349
+      },
+      "anger": {
+        "cases": 142,
+        "exactTop1": 15,
+        "exactTop3": 19,
+        "coarseTop1": 54,
+        "coarseTop3": 69,
+        "exactTop1Rate": 0.106,
+        "exactTop3Rate": 0.134,
+        "coarseTop1Rate": 0.38,
+        "coarseTop3Rate": 0.486
+      },
+      "guilt": {
+        "cases": 135,
+        "exactTop1": 1,
+        "exactTop3": 5,
+        "coarseTop1": 1,
+        "coarseTop3": 5,
+        "exactTop1Rate": 0.007,
+        "exactTop3Rate": 0.037,
+        "coarseTop1Rate": 0.007,
+        "coarseTop3Rate": 0.037
+      }
+    },
+    "top1Confusion": {
+      "joy": {
+        "joy": 92,
+        "shame": 8,
+        "surprise": 7,
+        "fear": 5,
+        "disgust": 4,
+        "frustration": 13,
+        "pride": 4,
+        "confusion": 2,
+        "sadness": 4,
+        "anger": 3
+      },
+      "sadness": {
+        "sadness": 51,
+        "joy": 20,
+        "disgust": 3,
+        "frustration": 35,
+        "surprise": 9,
+        "fear": 8,
+        "shame": 6,
+        "anger": 4,
+        "pride": 2,
+        "guilt": 1,
+        "confusion": 1
+      },
+      "fear": {
+        "frustration": 18,
+        "surprise": 13,
+        "fear": 55,
+        "shame": 11,
+        "anger": 4,
+        "disgust": 3,
+        "joy": 13,
+        "sadness": 4
+      },
+      "shame": {
+        "fear": 26,
+        "anger": 3,
+        "frustration": 44,
+        "shame": 20,
+        "surprise": 6,
+        "joy": 18,
+        "confusion": 2,
+        "guilt": 2,
+        "pride": 1,
+        "sadness": 6
+      },
+      "disgust": {
+        "fear": 34,
+        "disgust": 19,
+        "surprise": 18,
+        "shame": 14,
+        "joy": 10,
+        "confusion": 7,
+        "anger": 6,
+        "sadness": 4,
+        "frustration": 15,
+        "guilt": 1,
+        "pride": 1
+      },
+      "anger": {
+        "frustration": 39,
+        "shame": 13,
+        "fear": 24,
+        "anger": 15,
+        "surprise": 10,
+        "joy": 12,
+        "disgust": 13,
+        "sadness": 12,
+        "confusion": 1,
+        "pride": 3
+      },
+      "guilt": {
+        "sadness": 8,
+        "frustration": 51,
+        "surprise": 8,
+        "fear": 16,
+        "joy": 14,
+        "pride": 4,
+        "shame": 14,
+        "anger": 13,
+        "disgust": 3,
+        "confusion": 3,
+        "guilt": 1
+      }
+    },
+    "firstFortyCoarseTop3Errors": [
+      {
+        "caseId": "isear-f77c33b82ff7852cd994",
+        "gold": "fear",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "shame"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-2e99c4f3d12c99460f84",
+        "gold": "shame",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "controllability",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-3df1fc7a0461c251031f",
+        "gold": "sadness",
+        "predicted": [
+          "joy",
+          "shame",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-a95f8e82d887d4d57644",
+        "gold": "fear",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-8618f0473f3f4ba80266",
+        "gold": "anger",
+        "predicted": [
+          "shame",
+          "disgust",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-9e8535128ca19059dedd",
+        "gold": "shame",
+        "predicted": [
+          "anger",
+          "frustration",
+          "disappointment"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-76bdc053cdf13f1d476e",
+        "gold": "guilt",
+        "predicted": [
+          "sadness",
+          "shame",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-3c752eafa830294e6af9",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-f24377248d2ad6fe10df",
+        "gold": "joy",
+        "predicted": [
+          "shame",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-03b19ce30d3a2e6ed896",
+        "gold": "disgust",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-9312353d0d4730426bf4",
+        "gold": "guilt",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "sadness"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-dcab36e39426b77d6975",
+        "gold": "fear",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "shame"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-5259b551b3004f88d931",
+        "gold": "anger",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-ac33cf8139d904a0b426",
+        "gold": "disgust",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "normViolation",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-413fc6d34a409a6de7f4",
+        "gold": "sadness",
+        "predicted": [
+          "disgust",
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-0fb875b52a6ae61b30fc",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "anger"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability"
+        ]
+      },
+      {
+        "caseId": "isear-6d1e14c01cee07afa8fa",
+        "gold": "disgust",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-e68c0b45544940437c4a",
+        "gold": "disgust",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-5cdee55213e023e989f3",
+        "gold": "shame",
+        "predicted": [
+          "fear",
+          "frustration",
+          "disappointment"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-6e6ef23f9de15c238a38",
+        "gold": "fear",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-49cf5ba2067b13ad0d77",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-b548d7c0d1db9d715799",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-90c03a1ad86f5cd28c82",
+        "gold": "shame",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "sadness"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-4a25b3b79a1705ff7b24",
+        "gold": "guilt",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "shame"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-1b4825126fb4b0cc1e48",
+        "gold": "joy",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "escapeAvailability",
+          "threatMagnitude",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-b2b648bc1da2bb20432a",
+        "gold": "joy",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-0e106c1a2f6b9c92648a",
+        "gold": "guilt",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-0cfd34eb80bdb5f141f1",
+        "gold": "guilt",
+        "predicted": [
+          "frustration",
+          "shame"
+        ],
+        "encodedAxes": [
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-73efa6fe272085f3fca0",
+        "gold": "sadness",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-1fe161ced433123d23bd",
+        "gold": "joy",
+        "predicted": [
+          "disgust",
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-d8ae53f6880a82cd3f3a",
+        "gold": "fear",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "sadness"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-7e4d43b38abffd7faf1f",
+        "gold": "disgust",
+        "predicted": [
+          "fear",
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-da04c7f13d6886c93e09",
+        "gold": "shame",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "selfEvaluationValence"
+        ]
+      },
+      {
+        "caseId": "isear-cb628bff22b0e578c063",
+        "gold": "joy",
+        "predicted": [
+          "frustration",
+          "disappointment",
+          "shame"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "escapeAvailability",
+          "threatMagnitude",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-6493abd11c7fe5b0515d",
+        "gold": "sadness",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-fc577953b87afcf4f443",
+        "gold": "fear",
+        "predicted": [
+          "frustration",
+          "joy",
+          "excitement"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "obstruction",
+          "unexpectedChange",
+          "normViolation",
+          "controllability",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-cdafabbc25eaa9c3a417",
+        "gold": "disgust",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-4ccd2ea92c06da0bd306",
+        "gold": "guilt",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "escapeAvailability",
+          "threatMagnitude",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-2dd30fd219169ba2172d",
+        "gold": "anger",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      },
+      {
+        "caseId": "isear-027db272ed8770a85977",
+        "gold": "sadness",
+        "predicted": [
+          "surprise"
+        ],
+        "encodedAxes": [
+          "outcomeValence",
+          "goalCongruence",
+          "goalRelevance",
+          "unexpectedChange",
+          "normViolation",
+          "selfAttribution",
+          "blameCertainty",
+          "controllability",
+          "threatMagnitude",
+          "expectedUncertainty",
+          "selfEvaluationValence",
+          "relationshipValence",
+          "socialSafety"
+        ]
+      }
+    ]
+  }
+}

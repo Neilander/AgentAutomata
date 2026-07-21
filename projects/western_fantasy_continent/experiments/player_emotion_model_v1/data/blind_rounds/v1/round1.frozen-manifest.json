@@ -1,0 +1,69 @@
+{
+  "schema": "player_emotion_blind_round_frozen_v1",
+  "frozenAt": "2026-07-20T18:32:44.415Z",
+  "preRegistrationSha256": "7533cea5551b23f01843b77389a936a3b87a752be833745dbafa58b25ea7a24c",
+  "roundInputSha256": "89bc43dbda9cf2660ceb6075e950db798b634fc337febfd94bb8876baf1d2b18",
+  "structuredInputSha256": "225eb6b0c48507b3dfb6cb5bd63ef876e385a7b9a55104cb4300fe67cebf1d30",
+  "predictionSha256": "56ac51e17f498255e3f3ab63d6c8ea38227f4929585ac6baab2743667ee967d0",
+  "strictCaseCount": 34,
+  "modelHashes": {
+    "emotion-model-contract.js": "7a8389dac1aaae587408e549287e25c4a69a6713bd07f41632eaa9b287bda8fb",
+    "event-impact-engine-v1.js": "1c1c444b5dec49f85e30c5c44524e2f11a38a1594d3f470859f1032063da6e8b",
+    "emotion-simulator-v1.js": "2a6f998794c5988ed356d5627ff6c7f3227b1079e1c2cf17e11d0af6e579e050",
+    "structured-emotion-pipeline-v1.js": "c776746ecc18b53813a2434af4d95141ec3e621c74d673eacedf68c9e321dab3",
+    "sealed-round1-structured-inputs-v1.js": "d269bfb31c4f3f71b3ebe1be3d8281ec36c81035c11799447f57eece393a3965"
+  },
+  "evaluation": {
+    "primaryTrack": "strictEmotionInference=true",
+    "labelProjection": {
+      "fear": [
+        "fear",
+        "anxiety"
+      ],
+      "anger": [
+        "anger",
+        "frustration"
+      ],
+      "sadness": [
+        "sadness",
+        "disappointment"
+      ],
+      "disgust": [
+        "disgust"
+      ],
+      "joy": [
+        "joy",
+        "excitement",
+        "satisfaction",
+        "relief",
+        "hope",
+        "pride",
+        "attachment",
+        "gratitude"
+      ],
+      "shame": [
+        "shame"
+      ],
+      "guilt": [
+        "guilt",
+        "regret"
+      ]
+    },
+    "projectionAggregation": "maximum member-family intensity; no summing",
+    "ranking": "For each projected ISEAR label use max(onset intensity, settled intensity), descending.",
+    "primaryMetric": "top3 accuracy",
+    "secondaryMetrics": [
+      "top1 accuracy",
+      "onset top3 accuracy",
+      "settled top3 accuracy"
+    ],
+    "noThresholdTuningBeforeReveal": true,
+    "ambiguousAndUnencodableCasesRemainInDenominator": true
+  },
+  "state": {
+    "structuredInputsFrozen": true,
+    "predictionsFrozen": true,
+    "answersOpenedForSelectedRound": false,
+    "remainingHoldoutAnswersOpened": false
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "player_emotion_blind_round_frozen_v1",
+  "frozenAt": "2026-07-20T18:49:07.987Z",
+  "preRegistrationSha256": "9533d8cc4dde76fee99ddba91047b53f20a74bb7bf2ab5c4ea7f738db60164a2",
+  "roundInputSha256": "9731c26dc5bee9b1f46ebe6f4035d7e94ed9a315735fef68d9d8de397ac5467c",
+  "structuredInputSha256": "525fceab82d501502b4459da342014f125fdbba83d358e257f63cbaf8059b90a",
+  "predictionSha256": "9c4b984a43496206847e71fd03bcf5d61456cf0b562258670eb346453f14153d",
+  "strictCaseCount": 20,
+  "modelHashes": {
+    "emotion-model-contract.js": "7a8389dac1aaae587408e549287e25c4a69a6713bd07f41632eaa9b287bda8fb",
+    "event-impact-engine-v1.js": "31507c416f6fe35f4c7935b5ceebdfffde0414b853746b0e1d7e3efc9b322e2d",
+    "emotion-simulator-v1.js": "67b6343c1066f40b30ca59ee87cccc5c03c4019566212b40a4f36b52d5971b7c",
+    "structured-emotion-pipeline-v1.js": "c776746ecc18b53813a2434af4d95141ec3e621c74d673eacedf68c9e321dab3",
+    "sealed-round3-structured-inputs-v1.js": "d856c89a4ebd9302570b58e51358e28ba97a3cf1b606f0c21780f2fbf4ca7491"
+  },
+  "evaluation": {
+    "primaryTrack": "strictEmotionInference=true",
+    "labelProjection": {
+      "fear": [
+        "fear",
+        "anxiety"
+      ],
+      "anger": [
+        "anger",
+        "frustration"
+      ],
+      "sadness": [
+        "sadness",
+        "disappointment"
+      ],
+      "disgust": [
+        "disgust"
+      ],
+      "joy": [
+        "joy",
+        "excitement",
+        "satisfaction",
+        "relief",
+        "hope",
+        "pride",
+        "attachment",
+        "gratitude"
+      ],
+      "shame": [
+        "shame"
+      ],
+      "guilt": [
+        "guilt",
+        "regret"
+      ]
+    },
+    "projectionAggregation": "maximum member-family intensity; no summing",
+    "ranking": "For each projected ISEAR label use max(onset intensity, settled intensity), descending.",
+    "primaryMetric": "top3 accuracy",
+    "secondaryMetrics": [
+      "top1 accuracy"
+    ],
+    "noThresholdTuningBeforeReveal": true,
+    "nonEventReportsRemainInPrimaryDenominator": true
+  },
+  "state": {
+    "structuredInputsFrozen": true,
+    "predictionsFrozen": true,
+    "answersOpenedForSelectedRound": false,
+    "remainingHoldoutAnswersOpened": false
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "schema": "player_emotion_blind_round_pre_registration_v1",
+  "createdAt": "2026-07-20T18:46:52.048Z",
+  "priorRounds": {
+    "round1AndRound2AnswersAlreadyOpened": true,
+    "priorSelectedGroupsExcluded": true
+  },
+  "selection": {
+    "unit": "sourceGroup",
+    "method": "ascending sha256 of fixed salt and sourceGroup",
+    "salt": "player-emotion-generative-v1|sealed-round3|2026-07-21",
+    "selectedGroupCount": 3,
+    "selectedGroups": [
+      {
+        "sourceGroup": "isear-person-d620122f699809ef",
+        "selectionHash": "02e81f17a46edf7efa5ebf444e2d7b0a4cda2bb1c8dff9d4d3756ee8e68ac8f4"
+      },
+      {
+        "sourceGroup": "isear-person-a0487b7146ce2f36",
+        "selectionHash": "041ee93b703f474418ee65c5b04876c769001ab1c740c427535f52970b5191a1"
+      },
+      {
+        "sourceGroup": "isear-person-fe17209a662ee361",
+        "selectionHash": "0452b1dd1321c912f80071718747753be5dcb95a6e585f77af300bc481fcbe16"
+      }
+    ]
+  },
+  "source": {
+    "file": "data/blind_rounds/v2/remaining_final_holdout.inputs.jsonl",
+    "verifiedSha256": "1bec3db0c0c0a24c0d2dadb41b421b088b37ad8745a5a95efc007eca962ced9c",
+    "sourceCaseCount": 967,
+    "sourceGroupCount": 143
+  },
+  "round3": {
+    "inputFile": "data/blind_rounds/v3/round3.inputs.jsonl",
+    "inputSha256": "9731c26dc5bee9b1f46ebe6f4035d7e94ed9a315735fef68d9d8de397ac5467c",
+    "caseCount": 21,
+    "strictCaseCount": 20,
+    "caseIds": [
+      "isear-34b2e1e0f6f87b4e7d3e",
+      "isear-ff47a370871fffdd9910",
+      "isear-102d3fd2ff49eb804868",
+      "isear-01355e57b27e0f6856f6",
+      "isear-37398a30abb73b3abc27",
+      "isear-a8edb6d76c5d79b36c6e",
+      "isear-ff6d1fae7e6ce843478f",
+      "isear-f197ccc1cce0da7da224",
+      "isear-12c3475b14e8b21c3918",
+      "isear-3017073e7c04cece4511",
+      "isear-441aac4080b9994cf384",
+      "isear-999222e7770f8eb58c1e",
+      "isear-169d1105e8a5c30877bc",
+      "isear-1e7e38d49d82bebb2677",
+      "isear-b71e7a4f8007c1b3c8ef",
+      "isear-d868df06d63aa056186b",
+      "isear-73102daf996e138bd165",
+      "isear-87bd17edac50b56e49ce",
+      "isear-91f3af0a817c42113ff7",
+      "isear-3ba67929fb1304da7669",
+      "isear-78d6d95528fad7efa289"
+    ]
+  },
+  "untouchedHoldout": {
+    "inputFile": "data/blind_rounds/v3/remaining_final_holdout.inputs.jsonl",
+    "inputSha256": "851c9e544a360ed05a737dfeb4b3fb92a57ae83096f6dbd59c96ddb4006ca386",
+    "caseCount": 946,
+    "sourceGroupCount": 140
+  },
+  "preRegisteredEvaluation": {
+    "primaryTrack": "strictEmotionInference=true",
+    "labelProjection": {
+      "fear": [
+        "fear",
+        "anxiety"
+      ],
+      "anger": [
+        "anger",
+        "frustration"
+      ],
+      "sadness": [
+        "sadness",
+        "disappointment"
+      ],
+      "disgust": [
+        "disgust"
+      ],
+      "joy": [
+        "joy",
+        "excitement",
+        "satisfaction",
+        "relief",
+        "hope",
+        "pride",
+        "attachment",
+        "gratitude"
+      ],
+      "shame": [
+        "shame"
+      ],
+      "guilt": [
+        "guilt",
+        "regret"
+      ]
+    },
+    "projectionAggregation": "maximum member-family intensity; no summing",
+    "ranking": "For each projected ISEAR label use max(onset intensity, settled intensity), descending.",
+    "primaryMetric": "top3 accuracy",
+    "secondaryMetrics": [
+      "top1 accuracy"
+    ],
+    "noThresholdTuningBeforeReveal": true,
+    "nonEventReportsRemainInPrimaryDenominator": true
+  },
+  "state": {
+    "structuredInputsFrozen": false,
+    "predictionsFrozen": false,
+    "answersOpenedForSelectedRound": false,
+    "remainingHoldoutAnswersOpened": false
+  }
+}

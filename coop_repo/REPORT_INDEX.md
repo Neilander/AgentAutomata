@@ -2,6 +2,10 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-22
+
+- `2026-07-22_1026_infinite-loot-stage-event-framework.md`：整理《我的超能力是无限刷装》第一阶段事件框架；固定五天共15行动点、刷怪不耗行动点、总选项量严格大于15，以及锁钥、自我选择、引入、Challenge四类事件的职责与反退化约束。具体事件池、掉率和剧情仍待用户补充。
+
 ## 2026-07-21
 
 - `2026-07-21_0254_three-round-sealed-emotion-validation.md`：玩家情绪生成模型完成三轮按人物来源组隔离、预测先冻结后揭晓的顺序验证；V1/V2/V3有效事件Top-3分别82%/83%/100%，顺序合计68条有效事件Top-1 56%、Top-3 87%。新增持续威胁、责任内疚和接触性厌恶；正式玩家Agent未改，固定V3大样本独立盲测与强度校准仍待完成。

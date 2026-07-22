@@ -2,7 +2,27 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-22
+
+- `2026-07-22_2243_decision-feature-input-audit.md`：只读审计四核心特征与Aha所需证据和现有Agent输出。20轮真实响应已有问题、证据、备选、比较、假设与因果链，真正缺口是未解决问题前后变化、Ordering关系、明确取舍/偏好和跨轮困惑状态。建议仅补事实型before/after合同，不让Agent自评分；正式运行时未修改。
+
+- `2026-07-22_1734_decision-ordering-and-aha-v2.md`：重做Decision隔离结构：核心严格为EDecision、复杂问题解决QDecision、增序Ordering和ChoiceAuthorship；Insight移出核心，Aha改为大量困惑瞬间消解的二层体验。16个核心和6个Aha案例通过，覆盖时间、空间、资源排序以及Boss/Ordering豁然开朗；正式运行时未修改。
+
+- `2026-07-22_1618_decision-four-feature-isolation.md`：复查并隔离实现EDecision、QDecision、Insight和ChoiceAuthorship；13个跨游戏案例通过。修正Q/Insight对同一突破步骤的重复描述，保留高E低Q、低E高Insight、低E高Choice等组合；输赢、奖励、情绪和玩家偏好不能反向污染特征。正式运行时未修改。
+
+- `2026-07-22_1412_player-decision-features-v2.md`：定稿当前 Decision 四特征边界：EDecision 是主观思考投入总量，QDecision 是思考推进质量，Insight 是关键突破，ChoiceAuthorship 是自我选择程度。四者均为特征而非反馈；玩家差异与收益留给二级模型。明确取代旧设计中“EDecision=有效步骤数”和直接 `0.04×E×Q` 的冲突部分，正式运行时未修改。
+
 ## 2026-07-21
+
+- `2026-07-21_2001_isolated-reward-and-roster-confirmation.md`：完成30时刻奖励隔离序列和五种换人C/EVerify测试。奖励现按装备稀有度、角色解锁、地图解锁等类别分别习惯化并随时间恢复；普通奖励六次降至0.4766、空窗后回到0.8313，首次新类别仍为1，30时刻后多巴胺0.741/阿片0.516。换人符合、超出、落空及结果正确但因果不明均正确分流；C负责结果预测，EVerify独立负责因果确认。真实第一章回放无回归。
+
+- `2026-07-21_1747_reward-chemistry-habituation.md`：修正第一章奖励化学轴饱和。确认它不是单纯时间参数问题，而是“正面结果≈超预期”的机制错误与重复奖励无习惯化共同造成；现由奖励预测误差主导强多巴胺脉冲，并对连续常规胜利做有下限的习惯化。真实章末多巴胺0.955→0.706、阿片0.988→0.889，四败后突破宽慰仅0.626→0.619，稀有超预期奖励仍可重新激活强脉冲。
+
+- `2026-07-21_1703_feedback-v2-emotion-chapter1.md`：反馈 V2 已接入隔离的 12 条化学/生理轴与 24 类情绪生成器，并用真实 Agent 第一章轨迹重放；连续失败、未知换人、四败后突破、局部学会机制和 Boss 胜利均出现方向可信的不同情绪。修复掉落落差污染战斗结果和无社交事件催产素上涨；长期奖励化学轴接近饱和、真实轨迹无 C、正式逐帧接入尚待完成。
+
+- `2026-07-21_1639_feedback-v2-chapter1-replay.md`：用惯性玩家、普通感知、paired-alpha 的真实 Agent 响应重放第一章；20轮通关，975条V1/V2反馈全部成对且总量一致，EDecision分布0:11/1:3/4:6。两次换入未知角色均不伪造数值预测，因此整章没有C，仍需已有角色认知的聚焦换人结算。
+
+- `2026-07-21_1622_player-feedback-bundle-v2-shadow-trial.md`：在隔离 worktree 中新增 `player_feedback_bundle_v2` 影子产出；旧 A 被拆成预期偏差 A 与确认感 C，但新旧总量严格相等。EDecision 已进入过程模块，QDecision、Agency 等未实现值保持 null；正式旧情绪和 Agent 行为未改变。
 
 - `2026-07-21_0254_three-round-sealed-emotion-validation.md`：玩家情绪生成模型完成三轮按人物来源组隔离、预测先冻结后揭晓的顺序验证；V1/V2/V3有效事件Top-3分别82%/83%/100%，顺序合计68条有效事件Top-1 56%、Top-3 87%。新增持续威胁、责任内疚和接触性厌恶；正式玩家Agent未改，固定V3大样本独立盲测与强度校准仍待完成。
 

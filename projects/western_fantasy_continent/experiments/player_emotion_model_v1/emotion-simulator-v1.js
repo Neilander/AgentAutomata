@@ -353,8 +353,11 @@ function releaseChemistry(state, appraisal, profile, context) {
     epinephrine: 0.34 * threat * immediate + 0.12 * a("statusChallenge"),
     cortisol: 0.10 * threat * (0.45 + uncertainty)
       + 0.05 * Math.max(negativeRpe, negativeValence),
-    dopamine: 0.18 * Math.max(positiveRpe, positiveValence) + 0.12 * a("positiveOutcomeProspect")
-      + 0.08 * a("rewardConsumption") - 0.08 * Math.max(negativeRpe, negativeValence),
+    // Phasic dopamine is led by prediction error and anticipated value. A good but
+    // fully expected outcome still has a small motivational pulse; it is not treated
+    // as if it were equally surprising every time.
+    dopamine: 0.18 * positiveRpe + 0.05 * positiveValence + 0.10 * a("positiveOutcomeProspect")
+      + 0.04 * a("rewardConsumption") - 0.08 * Math.max(negativeRpe, negativeValence),
     serotonin: 0.018 * a("socialSafety") + 0.010 * a("rewardConsumption")
       - 0.022 * threat * context.chronicStress,
     acetylcholine: 0.22 * a("informationGap") + 0.16 * a("unexpectedChange")

@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-07-21_0254_three-round-sealed-emotion-validation.md`](reports/2026-07-21_0254_three-round-sealed-emotion-validation.md)
+[`reports/2026-07-22_2243_decision-feature-input-audit.md`](reports/2026-07-22_2243_decision-feature-input-audit.md)
 
-Last updated: 2026-07-21
+Last updated: 2026-07-22
 
-当前重点：隔离的玩家情绪生成模型已完成三轮按人物来源组隔离、预测先冻结后揭晓的顺序验证。V3在第三轮16条有事件案例中Top-1 11/16、Top-3 16/16；三轮版本不同，不能合并冒充固定版本成绩。同一开发者仍兼任答案不可见的事件整理者，强度与个体差异未校准。下一步冻结V3，由独立整理者在剩余946条输入和新文学/影视/纪实来源上做大样本验证；正式玩家Agent仍完全未改。
+当前重点：已审计Decision四核心特征需要的最小证据与当前Agent实际输出。Agent已有问题、证据、比较、备选、假设、因果链和战后归因；20轮真实响应中19次有备选、9次有比较、6次有假设、5次有三步因果链。缺口是可比较的认知前后状态：未解决问题如何减少、新增了哪些Ordering关系、具体取舍如何表达偏好，以及跨轮困惑如何瞬时消解。下一步只在隔离合同中补事实型before/after字段，不让Agent自己打心理分。

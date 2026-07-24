@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-07-24_1614_smith-inner-dungeon-unlock-fix.md`](reports/2026-07-24_1614_smith-inner-dungeon-unlock-fix.md)
+[`reports/2026-07-24_1628_smith-inner-browser-regression.md`](reports/2026-07-24_1628_smith-inner-browser-regression.md)
 
 Last updated: 2026-07-24
 
-当前重点：修复铁匠三武器任务与成长链断开的问题；完成试炉后会立即开放第一幕高级副本“灰炉内环”，旧网页存档自动补开且不会提前泄露。下一步用当前存档验证内环掉率和第五日主战之间的战力跃迁。
+当前重点：铁匠三武器→灰炉内环解锁已通过真实浏览器复查；新旧存档、即时反馈、免费刷装、行动后持久化与未完成时封口均通过。内环1000件抽样平均战力与身份词条率均显著高于外环。下一步记录真人自然刷取次数与第五日战果。

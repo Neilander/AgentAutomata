@@ -623,7 +623,7 @@ function settleEvent(state, eventId, optionId) {
   node.resolved = true; node.option = optionId;
   const r = state.resources; const f = state.flags;
   if (eventId === "injured_shield") { if (optionId === "carry") { recruit(state, "shield"); r.townFavor += 1; } else { r.gold += 4; f.shieldAbandoned = true; } }
-  else if (eventId === "smith_intro") { if (optionId === "promise") { f.smithPromise = true; node.resolved = false; addLog(state, "铁匠让你带回三把普通武器，试炉会一直留到第四日。", "clue"); } else { takeUnequipped(state, (i) => i.slot === "weapon" && i.rarity === "普通", 3); state.inventory.push({ id: `smith_${state.day}`, name: "蓝钢长剑", slot: "weapon", slotLabel: "武器", rarity: "稀有", power: 18, identityTags: ["古代锻造"], source: "铁匠试炉" }); f.smithForged = true; f.innerOpen = true; addLog(state, "蓝钢长剑成形时，王炉门的断纹同时亮起。门后的灰炉内环已经可以进入。", "unlock"); } }
+  else if (eventId === "smith_intro") { if (optionId === "promise") { f.smithPromise = true; node.resolved = false; addLog(state, "铁匠让你带回三把普通武器，试炉会一直留到第四日。", "clue"); } else { takeUnequipped(state, (i) => i.slot === "weapon" && i.rarity === "普通", 3); state.inventory.push({ id: `smith_${state.day}`, name: "蓝钢长剑", slot: "weapon", slotLabel: "武器", rarity: "稀有", power: 18, identityTags: ["古代锻造"], source: "铁匠试炉" }); f.smithForged = true; f.innerOpen = true; } }
   else if (eventId === "well_dispute") { if (optionId === "tanner") { r.gold += 3; r.townFavor -= 1; } else if (optionId === "grower") { r.townFavor += 2; r.medicine += 1; } else { r.townFavor += 1; r.evidence += 1; } }
   else if (eventId === "apothecary_debt") { if (optionId === "pay") r.gold -= 5; else r.townFavor += 1; recruit(state, "apothecary"); r.medicine += 2; }
   else if (eventId === "thief_trial") { if (optionId === "thief") { recruit(state, "thief"); r.evidence += 2; } else { r.townFavor += 1; r.evidence += 1; } }
@@ -663,7 +663,8 @@ function settleEvent(state, eventId, optionId) {
   else if (eventId === "traitor_gate") { if (optionId === "follow") { r.evidence += 3; f.traitorNetwork = true; } else r.townFavor += 1; }
   else if (eventId === "ancient_core") { f.forgeSecured = true; for (let i = 0; i < 3; i += 1) state.inventory.push(generateItem(state, "forge")); }
   else if (eventId === "coalition_envoy") { f.coalitionSplit = true; r.influence += 3; }
-  addLog(state, `你处理了“${EVENTS.find((e) => e.id === eventId).title}”。`, "event");
+  if (eventId === "smith_intro" && optionId === "forge") addLog(state, "蓝钢长剑成形时，王炉门的断纹同时亮起。门后的灰炉内环已经可以进入。", "unlock");
+  else addLog(state, `你处理了“${EVENTS.find((e) => e.id === eventId).title}”。`, "event");
   spendAction(state);
 }
 

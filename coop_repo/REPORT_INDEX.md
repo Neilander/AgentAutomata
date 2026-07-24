@@ -4,6 +4,8 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-24
 
+- `2026-07-24_1628_smith-inner-browser-regression.md`：按真实点击路径复查铁匠解锁链；新/旧存档即时解锁、当前场景反馈、免费刷装、行动后持久化、未完成封口和浏览器零报错均通过，并以1000+1000件抽样确认内环掉落层级高于外环。
+
 - `2026-07-24_1614_smith-inner-dungeon-unlock-fix.md`：修复交三把普通武器只得蓝装、门后却没有高级副本的断链；试炉完成后立即开放灰炉内环，提供第一幕第二级掉落，旧网页存档自动补开且玩家观察不提前泄露。
 
 - `2026-07-24_1300_fifteen-day-workbench-entry.md`：删除临时独立启动器，将“无限刷装：十五日围剿”加入既有工作台 Demo 区首位，并由原工作台服务器提供游戏页面、十五日核心与共享战斗资源；测试端口全部返回 HTTP 200。

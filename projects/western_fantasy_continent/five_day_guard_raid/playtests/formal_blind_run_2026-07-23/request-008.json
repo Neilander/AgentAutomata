@@ -1,0 +1,95 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 4,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-fd215d6405ec1d4a",
+    "mode": "continue",
+    "turn": 8,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_n69cy6",
+    "label": "擦去煤灰，仔细检查门锁与周围",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:0e36d3d64d00",
+      "key": "player_party|王炉门|interact:3b9e3eca7654",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "王炉门",
+        "dayFirstSeen": 1
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:3b9e3eca7654",
+        "label": "擦去煤灰，仔细检查门锁与周围"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:4:action-summary",
+            "day": 1,
+            "summary": "你擦掉煤灰：门锁内部像被熔毁，门面有断裂旧纹；附近甲胄胸口的铜线一直通向门框。 地点变化：王炉门(locked)、王炉守卫(present)。 今日剩余行动2→1。",
+            "inventoryDelta": 0,
+            "activePowerBefore": 105,
+            "activePowerAfter": 105,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "王炉门",
+                "status": "locked",
+                "scene": "煤灰下露出熔毁的锁芯、断裂旧纹，以及一条通往附近甲胄的铜线。"
+              },
+              {
+                "title": "王炉守卫",
+                "status": "present",
+                "scene": "一具古代甲胄站在炉门附近。你靠近时，它胸口的铜线亮了一瞬。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:4:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:4:action-summary",
+      "type": "action_summary",
+      "action": "擦去煤灰，仔细检查门锁与周围",
+      "summary": "你擦掉煤灰：门锁内部像被熔毁，门面有断裂旧纹；附近甲胄胸口的铜线一直通向门框。 地点变化：王炉门(locked)、王炉守卫(present)。 今日剩余行动2→1。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:0e36d3d64d00",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

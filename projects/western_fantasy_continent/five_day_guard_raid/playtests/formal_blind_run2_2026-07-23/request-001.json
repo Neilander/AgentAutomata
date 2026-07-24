@@ -1,0 +1,390 @@
+{
+  "type": "decision",
+  "schema": "five_day_guard_raid_player_decision_request_v1",
+  "cycle": 1,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-48c9d51032182691",
+    "mode": "bootstrap",
+    "turn": 1,
+    "phase": "decision",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "你是第一次玩这个章节的玩家。只依据本请求里的当前画面、过去亲自观察到的结果和检索出的记忆，选择一个此刻存在的行动；请求之外的信息一律视为未知。",
+  "playerState": {
+    "activeGoalId": "grow_and_progress",
+    "goals": [
+      {
+        "id": "grow_and_progress",
+        "objectiveValue": 1,
+        "subjectiveValue": 0.35,
+        "progress": 0
+      },
+      {
+        "id": "discover_new_capabilities",
+        "objectiveValue": 0.85,
+        "subjectiveValue": 0.39,
+        "progress": 0
+      }
+    ],
+    "knowledge": [],
+    "failureMemories": [],
+    "hypotheses": [],
+    "knowledgeStoreCount": 0
+  },
+  "knowledgeRetrieval": {
+    "schema": "knowledge_retrieval_audit_v1",
+    "query": {
+      "activeGoal": "在白鹿家的人抵达前自行决定如何准备",
+      "region": "煤灰镇",
+      "challengeNodes": [],
+      "primaryChallengeNodes": [],
+      "activeTeam": [
+        "ally_cdi48w"
+      ],
+      "swapCandidates": [],
+      "equipCandidates": [],
+      "fieldEffects": [],
+      "unresolvedFailureNodes": [],
+      "pendingHypothesisTargets": [],
+      "inventoryCount": 1
+    },
+    "candidateCount": 0,
+    "selectedCount": 0,
+    "selectedBytes": 2,
+    "fullKnowledgeBytes": 2,
+    "byteReductionRatio": 0,
+    "selected": [],
+    "rejectedCount": 0,
+    "topRejected": [],
+    "requiredChecks": [],
+    "missedRequired": []
+  },
+  "observation": {
+    "schema": "five_day_guard_raid_observation_v1",
+    "time": {
+      "day": 1,
+      "actionsRemainingToday": 3,
+      "phase": "planning"
+    },
+    "situation": "你打了在镇上撒泼的白鹿家少爷。他逃走前说第五日会带人回来。",
+    "party": {
+      "active": [
+        {
+          "id": "ally_cdi48w",
+          "name": "你",
+          "role": "均衡近战",
+          "visiblePower": 60,
+          "wornItems": [
+            {
+              "name": "旧猎刀",
+              "slot": "武器",
+              "rarity": "普通",
+              "power": 5,
+              "identityTags": []
+            }
+          ]
+        }
+      ],
+      "reserve": []
+    },
+    "resources": {
+      "gold": 6,
+      "medicine": 0,
+      "townFavor": 0,
+      "evidence": 0
+    },
+    "inventory": {
+      "total": 1,
+      "rarityCounts": {
+        "普通": 1
+      },
+      "identityTagCounts": {},
+      "visibleItems": [
+        {
+          "id": "gear_yhccb8",
+          "name": "旧猎刀",
+          "slot": "武器",
+          "rarity": "普通",
+          "power": 5,
+          "identityTags": [],
+          "currentlyWorn": true
+        }
+      ]
+    },
+    "places": [
+      {
+        "id": "place_grey_furnace_outer",
+        "title": "灰炉外环",
+        "area": "灰炉遗址",
+        "status": "present",
+        "scene": "煤灰覆盖着外围废道，里面不时传来怪物拖动铁器的声音。"
+      },
+      {
+        "id": "place_king_furnace_door",
+        "title": "王炉门",
+        "area": "灰炉遗址",
+        "status": "locked",
+        "scene": "一扇被煤灰覆盖的厚重铁门挡住了更深处。"
+      },
+      {
+        "id": "place_smith",
+        "title": "铁匠的试炉",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "铁匠把几把断刃摊在砧台上，反复比较火色。他愿意看看你从灰炉带回来的东西。"
+      },
+      {
+        "id": "place_injured_shield",
+        "title": "沟渠里的负伤盾手",
+        "area": "西门商道",
+        "status": "present",
+        "scene": "西门沟渠里躺着一个负伤男人，圆盾压在腿下。商队已经走远。"
+      },
+      {
+        "id": "place_apothecary",
+        "title": "药铺的两张欠条",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "药铺里挤满病人，学徒还惦记着城外没收回来的药草。"
+      },
+      {
+        "id": "place_thief_trial",
+        "title": "小偷与粮商",
+        "area": "西门商道",
+        "status": "present",
+        "scene": "粮商揪住一个偷粮少年；少年指着粮仓封条，喊他正在囤粮抬价。"
+      },
+      {
+        "id": "place_guild_feud",
+        "title": "铠匠与客栈老板",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "铠匠要扩炉，客栈老板守着后院的水井，两个人都拒绝让步。"
+      },
+      {
+        "id": "place_caravan",
+        "title": "西门翻覆的货车",
+        "area": "西门商道",
+        "status": "present",
+        "scene": "西门外货车侧翻，河水正在上涨；车夫和被缚在车后的难民同时呼救。"
+      },
+      {
+        "id": "place_rumor",
+        "title": "酒馆里的消息贩子",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "酒馆角落的消息贩子声称见过白鹿家护卫，但他不会免费开口。"
+      }
+    ],
+    "threatSignals": [
+      "白鹿家的人将在第五日黄昏抵达。"
+    ],
+    "recentSignals": [
+      "你打了在镇上撒泼的白鹿家少爷。他逃走前放话：第五日，他家的护卫队会来。"
+    ],
+    "actions": [
+      {
+        "id": "choice_1y20ql0",
+        "label": "刷1次",
+        "kind": "enter_area",
+        "placeId": "place_grey_furnace_outer"
+      },
+      {
+        "id": "choice_7tlang",
+        "label": "刷10次",
+        "kind": "enter_area",
+        "placeId": "place_grey_furnace_outer"
+      },
+      {
+        "id": "choice_xiff56",
+        "label": "亲自把他背回镇里",
+        "kind": "interact",
+        "placeId": "place_injured_shield",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_vns13o",
+        "label": "拿走他的盾，继续备战",
+        "kind": "interact",
+        "placeId": "place_injured_shield",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_v73ixg",
+        "label": "替她照顾病人",
+        "kind": "interact",
+        "placeId": "place_apothecary",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1b5kujm",
+        "label": "陪她去追回药草",
+        "kind": "interact",
+        "placeId": "place_apothecary",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_k41ce",
+        "label": "替她还债",
+        "kind": "interact",
+        "placeId": "place_apothecary",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1ykv4vh",
+        "label": "放走小偷，让他交出账页",
+        "kind": "interact",
+        "placeId": "place_thief_trial",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_p3004r",
+        "label": "把小偷交给粮商",
+        "kind": "interact",
+        "placeId": "place_thief_trial",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1pirsay",
+        "label": "把双方证据一起贴到广场",
+        "kind": "interact",
+        "placeId": "place_thief_trial",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1b4gyxe",
+        "label": "支持铠匠扩炉",
+        "kind": "interact",
+        "placeId": "place_guild_feud",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_qpriqx",
+        "label": "保住水井",
+        "kind": "interact",
+        "placeId": "place_guild_feud",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_hj0d2s",
+        "label": "丈量废巷，给两家另开通道",
+        "kind": "interact",
+        "placeId": "place_guild_feud",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_wgj0jb",
+        "label": "先救人",
+        "kind": "interact",
+        "placeId": "place_caravan",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_zrhmf2",
+        "label": "先抢货箱",
+        "kind": "interact",
+        "placeId": "place_caravan",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_q9w6ep",
+        "label": "买完整名单",
+        "kind": "interact",
+        "placeId": "place_rumor",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_iem4rf",
+        "label": "公开拒绝，让对方以为你毫无准备",
+        "kind": "interact",
+        "placeId": "place_rumor",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1xo5j0",
+        "label": "擦去煤灰，仔细检查门锁与周围",
+        "kind": "interact",
+        "placeId": "place_king_furnace_door",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_ef4rt2",
+        "label": "一键择优穿戴",
+        "kind": "equipment",
+        "placeId": "place_party"
+      },
+      {
+        "id": "choice_z8gbs2",
+        "label": "提前结束本日",
+        "kind": "time",
+        "placeId": "place_time",
+        "endsCurrentDay": true
+      }
+    ],
+    "result": null
+  },
+  "responseContract": {
+    "action": "one exact id from observation.actions",
+    "goalId": "one visible goal id",
+    "reasoningChain": [
+      {
+        "kind": "goal|knowledge|evidence|affordance|comparison",
+        "evidence": "short factual evidence from this request"
+      }
+    ],
+    "alternatives": [
+      "zero or more exact action ids from observation.actions"
+    ]
+  }
+}

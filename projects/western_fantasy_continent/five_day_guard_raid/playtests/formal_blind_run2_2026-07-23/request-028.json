@@ -1,0 +1,127 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 14,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-48c9d51032182691",
+    "mode": "continue",
+    "turn": 28,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_1594gsy",
+    "label": "以剑证明你不是街头暴徒",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:8c6171f0a54b",
+      "key": "player_party|白鹿家的旁支剑士|interact:d878493ba85b",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "白鹿家的旁支剑士",
+        "dayFirstSeen": 3
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:d878493ba85b",
+        "label": "以剑证明你不是街头暴徒"
+      },
+      "result": {
+        "sampleCount": 2,
+        "outcomeDistribution": {
+          "observed": 2
+        },
+        "observations": [
+          {
+            "eventId": "visible:12:action-summary",
+            "day": 3,
+            "summary": "已处理「白鹿家的旁支剑士」：以剑证明你不是街头暴徒 剑士收剑后没有离开，只说：勇气不能证明你说的都是真的。 今日剩余行动3→2。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": []
+          },
+          {
+            "eventId": "visible:14:action-summary",
+            "day": 4,
+            "summary": "第4日开始。护卫队将在第五日黄昏抵达。 已处理「白鹿家的旁支剑士」：以剑证明你不是街头暴徒 剑士收剑后没有离开，只说：勇气不能证明你说的都是真的。 地点变化：少爷的和解使者(present)、第五日前的撤离争执(present)。 日期推进到第4日。 今日剩余行动1→3。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "少爷的和解使者",
+                "status": "present",
+                "scene": "少爷的使者带着一张盖印文书来到广场，要求你在第五日前作出回应。"
+              },
+              {
+                "title": "第五日前的撤离争执",
+                "status": "present",
+                "scene": "镇民争论要不要撤离，店主们则担心空镇会被洗劫。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:12:action-summary",
+        "visible:14:action-summary"
+      ],
+      "attributions": [
+        {
+          "id": "five-day-attribution:12",
+          "cause": "以剑证明只让旁支剑士认可了勇气，但她仍不相信我所说的都是真的；没有出现资源、战力或队伍变化，并消耗1次行动。",
+          "confidence": 0.95,
+          "evidenceEventIds": [
+            "visible:12:action-summary"
+          ],
+          "alternativeCauses": [
+            "她可能还需要能证明事件真相的证据，单纯战斗表现不足。"
+          ],
+          "nextTest": "先从失窃圣物或其他争议事件获得证据，再查看旁支剑士是否出现新的说服选项。",
+          "learnedAfterFeedback": true
+        }
+      ]
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:14:action-summary",
+      "type": "action_summary",
+      "action": "以剑证明你不是街头暴徒",
+      "summary": "第4日开始。护卫队将在第五日黄昏抵达。 已处理「白鹿家的旁支剑士」：以剑证明你不是街头暴徒 剑士收剑后没有离开，只说：勇气不能证明你说的都是真的。 地点变化：少爷的和解使者(present)、第五日前的撤离争执(present)。 日期推进到第4日。 今日剩余行动1→3。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:8c6171f0a54b",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

@@ -1,0 +1,1280 @@
+{
+  "type": "decision",
+  "schema": "five_day_guard_raid_player_decision_request_v1",
+  "cycle": 21,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-48c9d51032182691",
+    "mode": "continue",
+    "turn": 41,
+    "phase": "decision",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "你是第一次玩这个章节的玩家。只依据本请求里的当前画面、过去亲自观察到的结果和检索出的记忆，选择一个此刻存在的行动；请求之外的信息一律视为未知。",
+  "playerState": {
+    "activeGoalId": "grow_and_progress",
+    "goals": [
+      {
+        "id": "grow_and_progress",
+        "objectiveValue": 1,
+        "subjectiveValue": 0.35,
+        "progress": 0
+      },
+      {
+        "id": "discover_new_capabilities",
+        "objectiveValue": 0.85,
+        "subjectiveValue": 0.39,
+        "progress": 0
+      }
+    ],
+    "knowledge": [
+      {
+        "id": "five-day-knowledge:d7b4572b01d7",
+        "key": "player_party|队伍编成|party:51cc335d1286",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "队伍编成",
+          "dayFirstSeen": 5
+        },
+        "behavior": {
+          "kind": "party",
+          "key": "party:51cc335d1286",
+          "label": "流放者弓手·萨芮加入出战"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:20:action-summary",
+            "day": 5,
+            "summary": "流放者弓手·萨芮加入出战队。装备不会自动分配。 当前出战成员显示战力合计172→227。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 172,
+            "activePowerAfter": 227,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": []
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:20:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "让萨芮加入出战队使当前出战成员显示战力合计从172提高到227，说明她贡献55点可见战力；装备没有自动分配。",
+          "confidence": 0.99,
+          "nextTest": "保留萨芮出战并进入新开放的王炉内环，寻找能给未装备成员使用的装备。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:f1e832d88cc1",
+        "key": "player_party|队伍编成|party:654ab87d7051",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "队伍编成",
+          "dayFirstSeen": 5
+        },
+        "behavior": {
+          "kind": "party",
+          "key": "party:654ab87d7051",
+          "label": "药师学徒·米娅回候补"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:19:action-summary",
+            "day": 5,
+            "summary": "药师学徒·米娅回到候补。 当前出战成员显示战力合计210→172。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 210,
+            "activePowerAfter": 172,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": []
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:19:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "让米娅回候补后，当前出战成员显示战力合计从210下降到172，正好减少她原有的38点可见战力。",
+          "confidence": 0.99,
+          "nextTest": "让萨芮加入空出的出战位置，并比较新总战力是否高于210或带来新的行动。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:8c6171f0a54b",
+        "key": "player_party|白鹿家的旁支剑士|interact:d878493ba85b",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "白鹿家的旁支剑士",
+          "dayFirstSeen": 3
+        },
+        "behavior": {
+          "kind": "interact",
+          "key": "interact:d878493ba85b",
+          "label": "以剑证明你不是街头暴徒"
+        },
+        "result": {
+          "sampleCount": 2,
+          "outcomeDistribution": {
+            "observed": 2
+          },
+          "latestObservation": {
+            "eventId": "visible:14:action-summary",
+            "day": 4,
+            "summary": "第4日开始。护卫队将在第五日黄昏抵达。 已处理「白鹿家的旁支剑士」：以剑证明你不是街头暴徒 剑士收剑后没有离开，只说：勇气不能证明你说的都是真的。 地点变化：少爷的和解使者(present)、第五日前的撤离争执(present)。 日期推进到第4日。 今日剩余行动1→3。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "少爷的和解使者",
+                "status": "present",
+                "scene": "少爷的使者带着一张盖印文书来到广场，要求你在第五日前作出回应。"
+              },
+              {
+                "title": "第五日前的撤离争执",
+                "status": "present",
+                "scene": "镇民争论要不要撤离，店主们则担心空镇会被洗劫。"
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "count": 2,
+          "recentEventIds": [
+            "visible:12:action-summary",
+            "visible:14:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "即使持有1点圣物证据，再次以剑证明仍只得到剑士相同的回应，没有资源、战力、队伍或威胁变化；结算后进入第4日。",
+          "confidence": 0.98,
+          "nextTest": "不再重复比剑，改为处理第4日新出现的和解使者，观察是否能获得与白鹿少爷直接相关的证明或选项。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:07b39f0e4561",
+        "key": "player_party|灰炉边的流放者|interact:af5224b3d761",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "灰炉边的流放者",
+          "dayFirstSeen": 5
+        },
+        "behavior": {
+          "kind": "interact",
+          "key": "interact:af5224b3d761",
+          "label": "承诺保护她，并拿出两份证据"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:18:action-summary",
+            "day": 5,
+            "summary": "第5日开始。护卫队将在第五日黄昏抵达。 已处理「灰炉边的流放者」：承诺保护她，并拿出两份证据 流放者译出旧符文：王炉内环开放。 流放者弓手·萨芮加入候补。是否出战由你决定。 新出现的队伍成员：流放者弓手·萨芮。 地点变化：王炉门(open)、灰炉边的流放者(settled)。 日期推进到第5日。 今日剩余行动1→3。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 210,
+            "activePowerAfter": 210,
+            "newAllies": [
+              "流放者弓手·萨芮"
+            ],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "王炉门",
+                "status": "open",
+                "scene": "厚重铁门已经打开，里面的炉火照出更深的通道。"
+              },
+              {
+                "title": "灰炉边的流放者",
+                "status": "settled",
+                "scene": "灰炉边的流放者一直避开礼拜堂的人。她的视线在旧炉墙上停留得比常人更久。"
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:18:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "承诺保护流放者并展示两份证据后，她译出旧符文并开放王炉内环，同时流放者弓手萨芮加入候补；结算后进入第5日。",
+          "confidence": 0.99,
+          "nextTest": "让萨芮加入出战，并查看开放的王炉内环有哪些新行动或装备。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:3eeb9b3729bb",
+        "key": "player_party|队伍编成|party:c328bb0299cd",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "队伍编成",
+          "dayFirstSeen": 4
+        },
+        "behavior": {
+          "kind": "party",
+          "key": "party:c328bb0299cd",
+          "label": "家族剑士·伊兰加入出战"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:17:action-summary",
+            "day": 4,
+            "summary": "家族剑士·伊兰加入出战队。装备不会自动分配。 当前出战成员显示战力合计152→210。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 152,
+            "activePowerAfter": 210,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": []
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:17:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "让伊兰加入出战队使当前出战成员显示战力合计从152提高到210，装备没有自动分配。",
+          "confidence": 0.99,
+          "nextTest": "获得额外装备后给伊兰穿戴，观察她的可见战力是否继续提高。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:53e6b60c45d5",
+        "key": "player_party|白鹿家的旁支剑士|interact:e1b02c9df5d0",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "白鹿家的旁支剑士",
+          "dayFirstSeen": 4
+        },
+        "behavior": {
+          "kind": "interact",
+          "key": "interact:e1b02c9df5d0",
+          "label": "给她看三份少爷违法的证据"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:16:action-summary",
+            "day": 4,
+            "summary": "已处理「白鹿家的旁支剑士」：给她看三份少爷违法的证据 家族剑士·伊兰加入候补。是否出战由你决定。 新出现的队伍成员：家族剑士·伊兰。 地点变化：白鹿家的旁支剑士(settled)。 今日剩余行动2→1。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [
+              "家族剑士·伊兰"
+            ],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "白鹿家的旁支剑士",
+                "status": "settled",
+                "scene": "白鹿家的旁支剑士在西门等你。她谈家族名誉时，语气比谈少爷本人更认真。"
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:16:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "向旁支剑士展示三份少爷违法证据后，家族剑士伊兰加入候补，且证据没有显示被消耗。",
+          "confidence": 0.99,
+          "nextTest": "让伊兰加入出战，观察她带来的可见战力和是否出现新的队伍行动。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:49fde96ac41f",
+        "key": "player_party|少爷的和解使者|interact:360bb59f406f",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "少爷的和解使者",
+          "dayFirstSeen": 4
+        },
+        "behavior": {
+          "kind": "interact",
+          "key": "interact:360bb59f406f",
+          "label": "拖延谈判，骗取盖章条件书"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:15:action-summary",
+            "day": 4,
+            "summary": "已处理「少爷的和解使者」：拖延谈判，骗取盖章条件书 使者留下盖有白鹿家印章的条件书；上面承认少爷先在镇上动手。 资源变化：证据1→3。 态势变化：镇上开始有人公开质疑少爷这次报复是否站得住脚。 地点变化：少爷的和解使者(settled)。 今日剩余行动3→2。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [
+              {
+                "key": "evidence",
+                "before": 1,
+                "after": 3
+              }
+            ],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [
+              "镇上开始有人公开质疑少爷这次报复是否站得住脚。"
+            ],
+            "changedPlaces": [
+              {
+                "title": "少爷的和解使者",
+                "status": "settled",
+                "scene": "少爷的使者带着一张盖印文书来到广场，要求你在第五日前作出回应。"
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:15:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "拖延谈判取得了盖有白鹿家印章、承认少爷先动手的条件书，使证据从1增加到3，并引发镇民公开质疑报复正当性。",
+          "confidence": 0.99,
+          "nextTest": "带着3点且直接涉及少爷的证据再次查看旁支剑士处是否出现新的说服行动。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:b31a0f9d2893",
+        "key": "player_party|礼拜堂的失窃圣物|interact:3794f7afb2bc",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "礼拜堂的失窃圣物",
+          "dayFirstSeen": 3
+        },
+        "behavior": {
+          "kind": "interact",
+          "key": "interact:3794f7afb2bc",
+          "label": "承认它属于流放者家族"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:13:action-summary",
+            "day": 3,
+            "summary": "已处理「礼拜堂的失窃圣物」：承认它属于流放者家族 旧口供上的没收记录与你的判断一致；流放者收起了原本握在手里的刀。 资源变化：证据0→1。 地点变化：礼拜堂的失窃圣物(settled)。 今日剩余行动2→1。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [
+              {
+                "key": "evidence",
+                "before": 0,
+                "after": 1
+              }
+            ],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "礼拜堂的失窃圣物",
+                "status": "settled",
+                "scene": "礼拜堂声称圣物被盗；另一份旧口供却说它曾从一个流放家族手里被没收。"
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:13:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "承认圣物属于流放者家族与旧口供的没收记录一致，使证据从0增加到1，流放者也收起了刀。",
+          "confidence": 0.98,
+          "nextTest": "带着1点证据再与旁支剑士交涉，查看是否出现证明真相的新选项。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:cd544177a045",
+        "key": "player_party|煤灰镇|interact:c2d68a2a3a5f",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "煤灰镇",
+          "dayFirstSeen": 3
+        },
+        "behavior": {
+          "kind": "interact",
+          "key": "interact:c2d68a2a3a5f",
+          "label": "向两名雇工逼近，让他们自己衡量继续参战的风险"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:11:action-summary",
+            "day": 3,
+            "summary": "第3日开始。护卫队将在第五日黄昏抵达。 已处理「两名护卫的欠薪」：穿戴[恐怖]装备威吓他们 一名本地盾手不再参加第五日围攻。 态势变化：营地方向的咒骂和叫嚣比之前更响。；已经确认不会随队出现：一名本地盾手、随队执事。 地点变化：两名护卫的欠薪(settled)、白鹿家的旁支剑士(present)、夜路上的断角兽(present)、营地夜巡(present)。 日期推进到第3日。 今日剩余行动1→3。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [
+              "营地方向的咒骂和叫嚣比之前更响。",
+              "已经确认不会随队出现：一名本地盾手、随队执事。"
+            ],
+            "changedPlaces": [
+              {
+                "title": "两名护卫的欠薪",
+                "status": "settled",
+                "scene": "两名本地雇工抱怨白鹿家拖欠工钱，但更担心被贵族追究逃跑。"
+              },
+              {
+                "title": "白鹿家的旁支剑士",
+                "status": "present",
+                "scene": "白鹿家的旁支剑士在西门等你。她谈家族名誉时，语气比谈少爷本人更认真。"
+              },
+              {
+                "title": "夜路上的断角兽",
+                "status": "present",
+                "scene": "断角兽的脚印绕着营地延伸，一名猎人正蹲在泥边检查血迹。"
+              },
+              {
+                "title": "营地夜巡",
+                "status": "present",
+                "scene": "夜巡队每天沿河换岗。高地能看见路线，但火把之间还有大片黑暗。"
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:11:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "穿戴带有恐怖标签的装备进行威吓，使一名本地盾手不再参加第五日围攻；同时营地方向的咒骂和叫嚣变得更响。",
+          "confidence": 0.98,
+          "nextTest": "查看后续是否出现针对剩余本地盾手的新行动，并观察营地敌意增强是否产生可见后果。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:03970f28ff4f",
+        "key": "player_party|执事的雇佣账本|interact:f1078c333233",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "执事的雇佣账本",
+          "dayFirstSeen": 2
+        },
+        "behavior": {
+          "kind": "interact",
+          "key": "interact:f1078c333233",
+          "label": "替执事偿还秘密债务"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:10:action-summary",
+            "day": 2,
+            "summary": "已处理「执事的雇佣账本」：替执事偿还秘密债务 随队执事不再参加第五日围攻。 资源变化：金币10→2。 态势变化：已经确认不会随队出现：随队执事。 地点变化：执事的雇佣账本(settled)。 今日剩余行动2→1。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [
+              {
+                "key": "gold",
+                "before": 10,
+                "after": 2
+              }
+            ],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [
+              "已经确认不会随队出现：随队执事。"
+            ],
+            "changedPlaces": [
+              {
+                "title": "执事的雇佣账本",
+                "status": "settled",
+                "scene": "随队执事暂住礼拜堂。他随身带着雇佣印章，却不像白鹿家的家臣。"
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:10:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "花费8金币替执事偿还秘密债务，使随队执事被确认不再参加第五日围攻，并消耗1次今日行动。",
+          "confidence": 0.99,
+          "nextTest": "继续查看威胁态势，确认随队执事仍被标记为不会出现，并寻找削弱其余名单成员的办法。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:0d94603ca032",
+        "key": "player_party|酒馆里的消息贩子|interact:e31fa487b2a8",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "酒馆里的消息贩子",
+          "dayFirstSeen": 2
+        },
+        "behavior": {
+          "kind": "interact",
+          "key": "interact:e31fa487b2a8",
+          "label": "用镇民人情换消息"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:9:action-summary",
+            "day": 2,
+            "summary": "已处理「酒馆里的消息贩子」：用镇民人情换消息 完整情报已固定在态势板：六人名单与四条可利用弱点现在持续可见。 资源变化：镇民支持2→0。 态势变化：消息：队长·罗德里克；消息：弩手×2；消息：本地盾手×2；消息：随队执事 地点变化：酒馆里的消息贩子(settled)。 今日剩余行动3→2。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [
+              {
+                "key": "townFavor",
+                "before": 2,
+                "after": 0
+              }
+            ],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [
+              "消息：队长·罗德里克",
+              "消息：弩手×2",
+              "消息：本地盾手×2",
+              "消息：随队执事"
+            ],
+            "changedPlaces": [
+              {
+                "title": "酒馆里的消息贩子",
+                "status": "settled",
+                "scene": "酒馆角落的消息贩子声称见过白鹿家护卫，但他不会免费开口。"
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:9:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "用2点镇民支持换取消息后，六人名单与四条可利用弱点被固定为持续可见情报，并消耗1次今日行动。",
+          "confidence": 0.99,
+          "nextTest": "查看下一次态势与行动列表，确认针对队长、弩手、本地盾手或随队执事的新应对选项是否出现。",
+          "evidenceCount": 1
+        }
+      }
+    ],
+    "failureMemories": [],
+    "hypotheses": [],
+    "knowledgeStoreCount": 19
+  },
+  "knowledgeRetrieval": {
+    "schema": "knowledge_retrieval_audit_v1",
+    "query": {
+      "activeGoal": "在白鹿家的人抵达前自行决定如何准备",
+      "region": "煤灰镇",
+      "challengeNodes": [],
+      "primaryChallengeNodes": [],
+      "activeTeam": [
+        "ally_cdi48w",
+        "ally_e9zs1c",
+        "ally_245kq9",
+        "ally_7wisxk"
+      ],
+      "swapCandidates": [],
+      "equipCandidates": [],
+      "fieldEffects": [],
+      "unresolvedFailureNodes": [],
+      "pendingHypothesisTargets": [],
+      "inventoryCount": 2
+    },
+    "candidateCount": 19,
+    "selectedCount": 11,
+    "selectedBytes": 17386,
+    "fullKnowledgeBytes": 32067,
+    "byteReductionRatio": 0.4578,
+    "selected": [
+      {
+        "id": "five-day-knowledge:d7b4572b01d7",
+        "score": 13.2,
+        "reasons": [
+          "changed_since_last_decision",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1162
+      },
+      {
+        "id": "five-day-knowledge:f1e832d88cc1",
+        "score": 13.188,
+        "reasons": [
+          "changed_since_last_decision",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1102
+      },
+      {
+        "id": "five-day-knowledge:8c6171f0a54b",
+        "score": 3.416,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "repeated_evidence",
+          "recency"
+        ],
+        "bytes": 1802
+      },
+      {
+        "id": "five-day-knowledge:07b39f0e4561",
+        "score": 3.176,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1803
+      },
+      {
+        "id": "five-day-knowledge:3eeb9b3729bb",
+        "score": 3.164,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1106
+      },
+      {
+        "id": "five-day-knowledge:53e6b60c45d5",
+        "score": 3.152,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1502
+      },
+      {
+        "id": "five-day-knowledge:49fde96ac41f",
+        "score": 3.14,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1700
+      },
+      {
+        "id": "five-day-knowledge:b31a0f9d2893",
+        "score": 3.128,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1520
+      },
+      {
+        "id": "five-day-knowledge:cd544177a045",
+        "score": 3.104,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 2336
+      },
+      {
+        "id": "five-day-knowledge:03970f28ff4f",
+        "score": 3.092,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1583
+      },
+      {
+        "id": "five-day-knowledge:0d94603ca032",
+        "score": 3.08,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1768
+      }
+    ],
+    "rejectedCount": 8,
+    "topRejected": [
+      {
+        "id": "five-day-knowledge:86bd4018e61e",
+        "score": 3.068,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ]
+      },
+      {
+        "id": "five-day-knowledge:3c06dbb3e424",
+        "score": 3.056,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ]
+      },
+      {
+        "id": "five-day-knowledge:f852d42c84f2",
+        "score": 3.044,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ]
+      },
+      {
+        "id": "five-day-knowledge:24f0dd1237c6",
+        "score": 3.032,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ]
+      },
+      {
+        "id": "five-day-knowledge:9439ed28cf24",
+        "score": 3.02,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ]
+      },
+      {
+        "id": "five-day-knowledge:b68f8b01d8c3",
+        "score": 3.008,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ]
+      }
+    ],
+    "requiredChecks": [],
+    "missedRequired": []
+  },
+  "observation": {
+    "schema": "five_day_guard_raid_observation_v1",
+    "time": {
+      "day": 5,
+      "actionsRemainingToday": 3,
+      "phase": "planning"
+    },
+    "situation": "白鹿家少爷留下的期限仍在逼近。",
+    "party": {
+      "active": [
+        {
+          "id": "ally_cdi48w",
+          "name": "你",
+          "role": "均衡近战",
+          "visiblePower": 64,
+          "wornItems": [
+            {
+              "name": "灰炉仪式刃",
+              "slot": "武器",
+              "rarity": "普通",
+              "power": 9,
+              "identityTags": [
+                "恐怖"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ally_e9zs1c",
+          "name": "负伤盾手·赫恩",
+          "role": "前排保护",
+          "visiblePower": 50,
+          "wornItems": [
+            {
+              "name": "旧猎刀",
+              "slot": "武器",
+              "rarity": "普通",
+              "power": 5,
+              "identityTags": []
+            }
+          ]
+        },
+        {
+          "id": "ally_245kq9",
+          "name": "家族剑士·伊兰",
+          "role": "决斗爆发",
+          "visiblePower": 58,
+          "wornItems": []
+        },
+        {
+          "id": "ally_7wisxk",
+          "name": "流放者弓手·萨芮",
+          "role": "远程侦察",
+          "visiblePower": 55,
+          "wornItems": []
+        }
+      ],
+      "reserve": [
+        {
+          "id": "ally_1vvhar9",
+          "name": "药师学徒·米娅",
+          "role": "治疗支援"
+        }
+      ]
+    },
+    "resources": {
+      "gold": 2,
+      "medicine": 4,
+      "townFavor": 0,
+      "evidence": 3
+    },
+    "inventory": {
+      "total": 2,
+      "rarityCounts": {
+        "普通": 2
+      },
+      "identityTagCounts": {
+        "恐怖": 1
+      },
+      "visibleItems": [
+        {
+          "id": "gear_1i58wji",
+          "name": "灰炉仪式刃",
+          "slot": "武器",
+          "rarity": "普通",
+          "power": 9,
+          "identityTags": [
+            "恐怖"
+          ],
+          "currentlyWorn": true
+        },
+        {
+          "id": "gear_yhccb8",
+          "name": "旧猎刀",
+          "slot": "武器",
+          "rarity": "普通",
+          "power": 5,
+          "identityTags": [],
+          "currentlyWorn": true
+        }
+      ]
+    },
+    "places": [
+      {
+        "id": "place_grey_furnace_outer",
+        "title": "灰炉外环",
+        "area": "灰炉遗址",
+        "status": "present",
+        "scene": "煤灰覆盖着外围废道，里面不时传来怪物拖动铁器的声音。"
+      },
+      {
+        "id": "place_king_furnace_door",
+        "title": "王炉门",
+        "area": "灰炉遗址",
+        "status": "open",
+        "scene": "厚重铁门已经打开，里面的炉火照出更深的通道。"
+      },
+      {
+        "id": "place_smith",
+        "title": "铁匠的试炉",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "铁匠把几把断刃摊在砧台上，反复比较火色。他愿意看看你从灰炉带回来的东西。"
+      },
+      {
+        "id": "place_injured_shield",
+        "title": "沟渠里的负伤盾手",
+        "area": "西门商道",
+        "status": "settled",
+        "scene": "西门沟渠里躺着一个负伤男人，圆盾压在腿下。商队已经走远。"
+      },
+      {
+        "id": "place_apothecary",
+        "title": "药铺的两张欠条",
+        "area": "镇中心",
+        "status": "settled",
+        "scene": "药铺里挤满病人，学徒还惦记着城外没收回来的药草。"
+      },
+      {
+        "id": "place_caravan",
+        "title": "西门翻覆的货车",
+        "area": "西门商道",
+        "status": "settled",
+        "scene": "西门外货车侧翻，河水正在上涨；车夫和被缚在车后的难民同时呼救。"
+      },
+      {
+        "id": "place_rumor",
+        "title": "酒馆里的消息贩子",
+        "area": "镇中心",
+        "status": "settled",
+        "scene": "酒馆角落的消息贩子声称见过白鹿家护卫，但他不会免费开口。"
+      },
+      {
+        "id": "place_exile",
+        "title": "灰炉边的流放者",
+        "area": "灰炉遗址",
+        "status": "settled",
+        "scene": "灰炉边的流放者一直避开礼拜堂的人。她的视线在旧炉墙上停留得比常人更久。"
+      },
+      {
+        "id": "place_chapel",
+        "title": "礼拜堂的失窃圣物",
+        "area": "旧礼拜堂",
+        "status": "settled",
+        "scene": "礼拜堂声称圣物被盗；另一份旧口供却说它曾从一个流放家族手里被没收。"
+      },
+      {
+        "id": "place_ledger",
+        "title": "执事的雇佣账本",
+        "area": "旧礼拜堂",
+        "status": "settled",
+        "scene": "随队执事暂住礼拜堂。他随身带着雇佣印章，却不像白鹿家的家臣。"
+      },
+      {
+        "id": "place_militia",
+        "title": "两名护卫的欠薪",
+        "area": "镇中心",
+        "status": "settled",
+        "scene": "两名本地雇工抱怨白鹿家拖欠工钱，但更担心被贵族追究逃跑。"
+      },
+      {
+        "id": "place_wall",
+        "title": "旧城墙的三处缺口",
+        "area": "旧城墙",
+        "status": "present",
+        "scene": "旧城墙有三处明显缺口。风从箭孔灌进来，石料和人手都不够。"
+      },
+      {
+        "id": "place_duelist",
+        "title": "白鹿家的旁支剑士",
+        "area": "西门商道",
+        "status": "settled",
+        "scene": "白鹿家的旁支剑士在西门等你。她谈家族名誉时，语气比谈少爷本人更认真。"
+      },
+      {
+        "id": "place_hunter",
+        "title": "夜路上的断角兽",
+        "area": "河畔营地",
+        "status": "present",
+        "scene": "断角兽的脚印绕着营地延伸，一名猎人正蹲在泥边检查血迹。"
+      },
+      {
+        "id": "place_envoy",
+        "title": "少爷的和解使者",
+        "area": "镇中心",
+        "status": "settled",
+        "scene": "少爷的使者带着一张盖印文书来到广场，要求你在第五日前作出回应。"
+      },
+      {
+        "id": "place_evacuation",
+        "title": "第五日前的撤离争执",
+        "area": "旧城墙",
+        "status": "present",
+        "scene": "镇民争论要不要撤离，店主们则担心空镇会被洗劫。"
+      }
+    ],
+    "threatSignals": [
+      "白鹿家的人将在第五日黄昏抵达。",
+      "消息：队长·罗德里克",
+      "消息：弩手×2",
+      "消息：本地盾手×2",
+      "消息：随队执事",
+      "营地方向的咒骂和叫嚣比之前更响。",
+      "镇上开始有人公开质疑少爷这次报复是否站得住脚。",
+      "已经确认不会随队出现：一名本地盾手、随队执事。",
+      "旁支剑士愿意为你本人和护卫队长的一对一决斗作证；其他人不得插手。"
+    ],
+    "recentSignals": [
+      "流放者弓手·萨芮加入出战队。装备不会自动分配。",
+      "药师学徒·米娅回到候补。",
+      "第5日开始。护卫队将在第五日黄昏抵达。",
+      "已处理「灰炉边的流放者」：承诺保护她，并拿出两份证据",
+      "流放者译出旧符文：王炉内环开放。",
+      "流放者弓手·萨芮加入候补。是否出战由你决定。",
+      "家族剑士·伊兰加入出战队。装备不会自动分配。",
+      "已处理「白鹿家的旁支剑士」：给她看三份少爷违法的证据"
+    ],
+    "actions": [
+      {
+        "id": "choice_rmxb7s",
+        "label": "刷1次",
+        "kind": "enter_area",
+        "placeId": "place_grey_furnace_outer"
+      },
+      {
+        "id": "choice_1blmaw",
+        "label": "刷10次",
+        "kind": "enter_area",
+        "placeId": "place_grey_furnace_outer"
+      },
+      {
+        "id": "choice_26jc3",
+        "label": "刷1次",
+        "kind": "enter_area",
+        "placeId": "place_king_furnace_door"
+      },
+      {
+        "id": "choice_1bg8m21",
+        "label": "刷10次",
+        "kind": "enter_area",
+        "placeId": "place_king_furnace_door"
+      },
+      {
+        "id": "choice_1nlr4v5",
+        "label": "与猎人共同狩猎",
+        "kind": "interact",
+        "placeId": "place_hunter",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_8cnwv",
+        "label": "优先护送平民撤离",
+        "kind": "interact",
+        "placeId": "place_evacuation",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_dei1vd",
+        "label": "封存店铺物资作为公用补给",
+        "kind": "interact",
+        "placeId": "place_evacuation",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_5x618a",
+        "label": "一键择优穿戴",
+        "kind": "equipment",
+        "placeId": "place_party"
+      },
+      {
+        "id": "choice_qkxzwr",
+        "label": "负伤盾手·赫恩回候补",
+        "kind": "party",
+        "placeId": "place_party"
+      },
+      {
+        "id": "choice_1p479po",
+        "label": "家族剑士·伊兰回候补",
+        "kind": "party",
+        "placeId": "place_party"
+      },
+      {
+        "id": "choice_1xvzi0p",
+        "label": "流放者弓手·萨芮回候补",
+        "kind": "party",
+        "placeId": "place_party"
+      },
+      {
+        "id": "choice_178oqh2",
+        "label": "提前结束本日",
+        "kind": "time",
+        "placeId": "place_time",
+        "endsCurrentDay": true
+      }
+    ],
+    "result": null
+  },
+  "responseContract": {
+    "action": "one exact id from observation.actions",
+    "goalId": "one visible goal id",
+    "reasoningChain": [
+      {
+        "kind": "goal|knowledge|evidence|affordance|comparison",
+        "evidence": "short factual evidence from this request"
+      }
+    ],
+    "alternatives": [
+      "zero or more exact action ids from observation.actions"
+    ]
+  }
+}

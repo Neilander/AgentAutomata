@@ -1,0 +1,90 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 18,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-fd215d6405ec1d4a",
+    "mode": "continue",
+    "turn": 36,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_p0no22",
+    "label": "优先护送平民撤离",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:fdcc77c0f36f",
+      "key": "player_party|第五日前的撤离争执|interact:6971a31c9557",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "第五日前的撤离争执",
+        "dayFirstSeen": 5
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:6971a31c9557",
+        "label": "优先护送平民撤离"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:18:action-summary",
+            "day": 5,
+            "summary": "已处理「第五日前的撤离争执」：优先护送平民撤离 地点变化：第五日前的撤离争执(settled)。 今日剩余行动3→2。",
+            "inventoryDelta": 0,
+            "activePowerBefore": 121,
+            "activePowerAfter": 121,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "第五日前的撤离争执",
+                "status": "settled",
+                "scene": "镇民争论要不要撤离，店主们则担心空镇会被洗劫。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:18:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:18:action-summary",
+      "type": "action_summary",
+      "action": "优先护送平民撤离",
+      "summary": "已处理「第五日前的撤离争执」：优先护送平民撤离 地点变化：第五日前的撤离争执(settled)。 今日剩余行动3→2。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:fdcc77c0f36f",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

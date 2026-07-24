@@ -1,0 +1,100 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 18,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-48c9d51032182691",
+    "mode": "continue",
+    "turn": 36,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_1rk8zyq",
+    "label": "承诺保护她，并拿出两份证据",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:07b39f0e4561",
+      "key": "player_party|灰炉边的流放者|interact:af5224b3d761",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "灰炉边的流放者",
+        "dayFirstSeen": 5
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:af5224b3d761",
+        "label": "承诺保护她，并拿出两份证据"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:18:action-summary",
+            "day": 5,
+            "summary": "第5日开始。护卫队将在第五日黄昏抵达。 已处理「灰炉边的流放者」：承诺保护她，并拿出两份证据 流放者译出旧符文：王炉内环开放。 流放者弓手·萨芮加入候补。是否出战由你决定。 新出现的队伍成员：流放者弓手·萨芮。 地点变化：王炉门(open)、灰炉边的流放者(settled)。 日期推进到第5日。 今日剩余行动1→3。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 210,
+            "activePowerAfter": 210,
+            "newAllies": [
+              "流放者弓手·萨芮"
+            ],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "王炉门",
+                "status": "open",
+                "scene": "厚重铁门已经打开，里面的炉火照出更深的通道。"
+              },
+              {
+                "title": "灰炉边的流放者",
+                "status": "settled",
+                "scene": "灰炉边的流放者一直避开礼拜堂的人。她的视线在旧炉墙上停留得比常人更久。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:18:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:18:action-summary",
+      "type": "action_summary",
+      "action": "承诺保护她，并拿出两份证据",
+      "summary": "第5日开始。护卫队将在第五日黄昏抵达。 已处理「灰炉边的流放者」：承诺保护她，并拿出两份证据 流放者译出旧符文：王炉内环开放。 流放者弓手·萨芮加入候补。是否出战由你决定。 新出现的队伍成员：流放者弓手·萨芮。 地点变化：王炉门(open)、灰炉边的流放者(settled)。 日期推进到第5日。 今日剩余行动1→3。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:07b39f0e4561",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

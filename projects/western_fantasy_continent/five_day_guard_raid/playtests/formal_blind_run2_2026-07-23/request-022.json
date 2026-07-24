@@ -1,0 +1,111 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 11,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-48c9d51032182691",
+    "mode": "continue",
+    "turn": 22,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_19kro32",
+    "label": "向两名雇工逼近，让他们自己衡量继续参战的风险",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:cd544177a045",
+      "key": "player_party|煤灰镇|interact:c2d68a2a3a5f",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "煤灰镇",
+        "dayFirstSeen": 3
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:c2d68a2a3a5f",
+        "label": "向两名雇工逼近，让他们自己衡量继续参战的风险"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:11:action-summary",
+            "day": 3,
+            "summary": "第3日开始。护卫队将在第五日黄昏抵达。 已处理「两名护卫的欠薪」：穿戴[恐怖]装备威吓他们 一名本地盾手不再参加第五日围攻。 态势变化：营地方向的咒骂和叫嚣比之前更响。；已经确认不会随队出现：一名本地盾手、随队执事。 地点变化：两名护卫的欠薪(settled)、白鹿家的旁支剑士(present)、夜路上的断角兽(present)、营地夜巡(present)。 日期推进到第3日。 今日剩余行动1→3。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [
+              "营地方向的咒骂和叫嚣比之前更响。",
+              "已经确认不会随队出现：一名本地盾手、随队执事。"
+            ],
+            "changedPlaces": [
+              {
+                "title": "两名护卫的欠薪",
+                "status": "settled",
+                "scene": "两名本地雇工抱怨白鹿家拖欠工钱，但更担心被贵族追究逃跑。"
+              },
+              {
+                "title": "白鹿家的旁支剑士",
+                "status": "present",
+                "scene": "白鹿家的旁支剑士在西门等你。她谈家族名誉时，语气比谈少爷本人更认真。"
+              },
+              {
+                "title": "夜路上的断角兽",
+                "status": "present",
+                "scene": "断角兽的脚印绕着营地延伸，一名猎人正蹲在泥边检查血迹。"
+              },
+              {
+                "title": "营地夜巡",
+                "status": "present",
+                "scene": "夜巡队每天沿河换岗。高地能看见路线，但火把之间还有大片黑暗。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:11:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:11:action-summary",
+      "type": "action_summary",
+      "action": "向两名雇工逼近，让他们自己衡量继续参战的风险",
+      "summary": "第3日开始。护卫队将在第五日黄昏抵达。 已处理「两名护卫的欠薪」：穿戴[恐怖]装备威吓他们 一名本地盾手不再参加第五日围攻。 态势变化：营地方向的咒骂和叫嚣比之前更响。；已经确认不会随队出现：一名本地盾手、随队执事。 地点变化：两名护卫的欠薪(settled)、白鹿家的旁支剑士(present)、夜路上的断角兽(present)、营地夜巡(present)。 日期推进到第3日。 今日剩余行动1→3。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:cd544177a045",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

@@ -1,0 +1,519 @@
+{
+  "type": "decision",
+  "schema": "five_day_guard_raid_player_decision_request_v1",
+  "cycle": 3,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-fd215d6405ec1d4a",
+    "mode": "continue",
+    "turn": 5,
+    "phase": "decision",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "你是第一次玩这个章节的玩家。只依据本请求里的当前画面、过去亲自观察到的结果和检索出的记忆，选择一个此刻存在的行动；请求之外的信息一律视为未知。",
+  "playerState": {
+    "activeGoalId": "discover_new_capabilities",
+    "goals": [
+      {
+        "id": "grow_and_progress",
+        "objectiveValue": 1,
+        "subjectiveValue": 0.35,
+        "progress": 0
+      },
+      {
+        "id": "discover_new_capabilities",
+        "objectiveValue": 0.85,
+        "subjectiveValue": 0.39,
+        "progress": 0
+      }
+    ],
+    "knowledge": [
+      {
+        "id": "five-day-knowledge:9439ed28cf24",
+        "key": "player_party|队伍编成|party:86eeab60c02a",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "队伍编成",
+          "dayFirstSeen": 1
+        },
+        "behavior": {
+          "kind": "party",
+          "key": "party:86eeab60c02a",
+          "label": "负伤盾手·赫恩加入出战"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:2:action-summary",
+            "day": 1,
+            "summary": "负伤盾手·赫恩加入出战队。装备不会自动分配。 当前出战成员显示战力合计60→105。",
+            "inventoryDelta": 0,
+            "activePowerBefore": 60,
+            "activePowerAfter": 105,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": []
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:2:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "让负伤盾手加入出战后，出战成员显示总战力从60提升到105；这次编队没有自动分配装备。",
+          "confidence": 0.99,
+          "nextTest": "使用可见的一键择优穿戴行动，观察现有装备是否重新分配以及总战力是否继续变化。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:b68f8b01d8c3",
+        "key": "player_party|沟渠里的负伤盾手|interact:cd42826fe1b5",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "沟渠里的负伤盾手",
+          "dayFirstSeen": 1
+        },
+        "behavior": {
+          "kind": "interact",
+          "key": "interact:cd42826fe1b5",
+          "label": "亲自把他背回镇里"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:1:action-summary",
+            "day": 1,
+            "summary": "已处理「沟渠里的负伤盾手」：亲自把他背回镇里 负伤盾手·赫恩加入候补。是否出战由你决定。 新出现的队伍成员：负伤盾手·赫恩。 地点变化：沟渠里的负伤盾手(settled)。 今日剩余行动3→2。",
+            "inventoryDelta": 0,
+            "activePowerBefore": 60,
+            "activePowerAfter": 60,
+            "newAllies": [
+              "负伤盾手·赫恩"
+            ],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "沟渠里的负伤盾手",
+                "status": "settled",
+                "scene": "西门沟渠里躺着一个负伤男人，圆盾压在腿下。商队已经走远。"
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:1:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "我选择亲自把受伤盾手背回镇里，因此他加入了候补队伍，原地点也变为已处理。",
+          "confidence": 0.96,
+          "nextTest": "之后若出现调整队伍的行动，把这名盾手换上阵，观察队伍战力或可用行动是否变化。",
+          "evidenceCount": 1
+        }
+      }
+    ],
+    "failureMemories": [],
+    "hypotheses": [],
+    "knowledgeStoreCount": 2
+  },
+  "knowledgeRetrieval": {
+    "schema": "knowledge_retrieval_audit_v1",
+    "query": {
+      "activeGoal": "在白鹿家的人抵达前自行决定如何准备",
+      "region": "煤灰镇",
+      "challengeNodes": [],
+      "primaryChallengeNodes": [],
+      "activeTeam": [
+        "ally_cdi48w",
+        "ally_e9zs1c"
+      ],
+      "swapCandidates": [],
+      "equipCandidates": [],
+      "fieldEffects": [],
+      "unresolvedFailureNodes": [],
+      "pendingHypothesisTargets": [],
+      "inventoryCount": 1
+    },
+    "candidateCount": 2,
+    "selectedCount": 2,
+    "selectedBytes": 2503,
+    "fullKnowledgeBytes": 2672,
+    "byteReductionRatio": 0.0632,
+    "selected": [
+      {
+        "id": "five-day-knowledge:9439ed28cf24",
+        "score": 13.2,
+        "reasons": [
+          "changed_since_last_decision",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1085
+      },
+      {
+        "id": "five-day-knowledge:b68f8b01d8c3",
+        "score": 13.188,
+        "reasons": [
+          "changed_since_last_decision",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1416
+      }
+    ],
+    "rejectedCount": 0,
+    "topRejected": [],
+    "requiredChecks": [],
+    "missedRequired": []
+  },
+  "observation": {
+    "schema": "five_day_guard_raid_observation_v1",
+    "time": {
+      "day": 1,
+      "actionsRemainingToday": 2,
+      "phase": "planning"
+    },
+    "situation": "你打了在镇上撒泼的白鹿家少爷。他逃走前说第五日会带人回来。",
+    "party": {
+      "active": [
+        {
+          "id": "ally_cdi48w",
+          "name": "你",
+          "role": "均衡近战",
+          "visiblePower": 60,
+          "wornItems": [
+            {
+              "name": "旧猎刀",
+              "slot": "武器",
+              "rarity": "普通",
+              "power": 5,
+              "identityTags": []
+            }
+          ]
+        },
+        {
+          "id": "ally_e9zs1c",
+          "name": "负伤盾手·赫恩",
+          "role": "前排保护",
+          "visiblePower": 45,
+          "wornItems": []
+        }
+      ],
+      "reserve": []
+    },
+    "resources": {
+      "gold": 6,
+      "medicine": 0,
+      "townFavor": 0,
+      "evidence": 0
+    },
+    "inventory": {
+      "total": 1,
+      "rarityCounts": {
+        "普通": 1
+      },
+      "identityTagCounts": {},
+      "visibleItems": [
+        {
+          "id": "gear_yhccb8",
+          "name": "旧猎刀",
+          "slot": "武器",
+          "rarity": "普通",
+          "power": 5,
+          "identityTags": [],
+          "currentlyWorn": true
+        }
+      ]
+    },
+    "places": [
+      {
+        "id": "place_grey_furnace_outer",
+        "title": "灰炉外环",
+        "area": "灰炉遗址",
+        "status": "present",
+        "scene": "煤灰覆盖着外围废道，里面不时传来怪物拖动铁器的声音。"
+      },
+      {
+        "id": "place_king_furnace_door",
+        "title": "王炉门",
+        "area": "灰炉遗址",
+        "status": "locked",
+        "scene": "一扇被煤灰覆盖的厚重铁门挡住了更深处。"
+      },
+      {
+        "id": "place_smith",
+        "title": "铁匠的试炉",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "铁匠把几把断刃摊在砧台上，反复比较火色。他愿意看看你从灰炉带回来的东西。"
+      },
+      {
+        "id": "place_injured_shield",
+        "title": "沟渠里的负伤盾手",
+        "area": "西门商道",
+        "status": "settled",
+        "scene": "西门沟渠里躺着一个负伤男人，圆盾压在腿下。商队已经走远。"
+      },
+      {
+        "id": "place_apothecary",
+        "title": "药铺的两张欠条",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "药铺里挤满病人，学徒还惦记着城外没收回来的药草。"
+      },
+      {
+        "id": "place_thief_trial",
+        "title": "小偷与粮商",
+        "area": "西门商道",
+        "status": "present",
+        "scene": "粮商揪住一个偷粮少年；少年指着粮仓封条，喊他正在囤粮抬价。"
+      },
+      {
+        "id": "place_guild_feud",
+        "title": "铠匠与客栈老板",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "铠匠要扩炉，客栈老板守着后院的水井，两个人都拒绝让步。"
+      },
+      {
+        "id": "place_caravan",
+        "title": "西门翻覆的货车",
+        "area": "西门商道",
+        "status": "present",
+        "scene": "西门外货车侧翻，河水正在上涨；车夫和被缚在车后的难民同时呼救。"
+      },
+      {
+        "id": "place_rumor",
+        "title": "酒馆里的消息贩子",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "酒馆角落的消息贩子声称见过白鹿家护卫，但他不会免费开口。"
+      }
+    ],
+    "threatSignals": [
+      "白鹿家的人将在第五日黄昏抵达。"
+    ],
+    "recentSignals": [
+      "负伤盾手·赫恩加入出战队。装备不会自动分配。",
+      "已处理「沟渠里的负伤盾手」：亲自把他背回镇里",
+      "负伤盾手·赫恩加入候补。是否出战由你决定。",
+      "你打了在镇上撒泼的白鹿家少爷。他逃走前放话：第五日，他家的护卫队会来。"
+    ],
+    "actions": [
+      {
+        "id": "choice_33zxpy",
+        "label": "刷1次",
+        "kind": "enter_area",
+        "placeId": "place_grey_furnace_outer"
+      },
+      {
+        "id": "choice_1tnkppu",
+        "label": "刷10次",
+        "kind": "enter_area",
+        "placeId": "place_grey_furnace_outer"
+      },
+      {
+        "id": "choice_d7ky2m",
+        "label": "替她照顾病人",
+        "kind": "interact",
+        "placeId": "place_apothecary",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_yoocfg",
+        "label": "陪她去追回药草",
+        "kind": "interact",
+        "placeId": "place_apothecary",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1ph2d5c",
+        "label": "替她还债",
+        "kind": "interact",
+        "placeId": "place_apothecary",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1qait7v",
+        "label": "放走小偷，让他交出账页",
+        "kind": "interact",
+        "placeId": "place_thief_trial",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1ic8799",
+        "label": "把小偷交给粮商",
+        "kind": "interact",
+        "placeId": "place_thief_trial",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_rdj114",
+        "label": "把双方证据一起贴到广场",
+        "kind": "interact",
+        "placeId": "place_thief_trial",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1pfi1rc",
+        "label": "支持铠匠扩炉",
+        "kind": "interact",
+        "placeId": "place_guild_feud",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_mk3vx3",
+        "label": "保住水井",
+        "kind": "interact",
+        "placeId": "place_guild_feud",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_clbuq2",
+        "label": "丈量废巷，给两家另开通道",
+        "kind": "interact",
+        "placeId": "place_guild_feud",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1paus11",
+        "label": "先救人",
+        "kind": "interact",
+        "placeId": "place_caravan",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_egam50",
+        "label": "先抢货箱",
+        "kind": "interact",
+        "placeId": "place_caravan",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_8leecz",
+        "label": "买完整名单",
+        "kind": "interact",
+        "placeId": "place_rumor",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1pzdwo9",
+        "label": "公开拒绝，让对方以为你毫无准备",
+        "kind": "interact",
+        "placeId": "place_rumor",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_n69cy6",
+        "label": "擦去煤灰，仔细检查门锁与周围",
+        "kind": "interact",
+        "placeId": "place_king_furnace_door",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_bgrptc",
+        "label": "一键择优穿戴",
+        "kind": "equipment",
+        "placeId": "place_party"
+      },
+      {
+        "id": "choice_j5k8sx",
+        "label": "负伤盾手·赫恩回候补",
+        "kind": "party",
+        "placeId": "place_party"
+      },
+      {
+        "id": "choice_1l0ecr4",
+        "label": "提前结束本日",
+        "kind": "time",
+        "placeId": "place_time",
+        "endsCurrentDay": true
+      }
+    ],
+    "result": null
+  },
+  "responseContract": {
+    "action": "one exact id from observation.actions",
+    "goalId": "one visible goal id",
+    "reasoningChain": [
+      {
+        "kind": "goal|knowledge|evidence|affordance|comparison",
+        "evidence": "short factual evidence from this request"
+      }
+    ],
+    "alternatives": [
+      "zero or more exact action ids from observation.actions"
+    ]
+  }
+}

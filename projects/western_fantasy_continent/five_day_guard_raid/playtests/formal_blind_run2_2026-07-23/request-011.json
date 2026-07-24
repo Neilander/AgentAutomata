@@ -1,0 +1,741 @@
+{
+  "type": "decision",
+  "schema": "five_day_guard_raid_player_decision_request_v1",
+  "cycle": 6,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-48c9d51032182691",
+    "mode": "continue",
+    "turn": 11,
+    "phase": "decision",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "open_novice",
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "visible_experiments",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "trying_a_newly_visible_option",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "may_reveal_a_useful_strategy",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:open_novice:1"
+      }
+    ]
+  },
+  "instruction": "你是第一次玩这个章节的玩家。只依据本请求里的当前画面、过去亲自观察到的结果和检索出的记忆，选择一个此刻存在的行动；请求之外的信息一律视为未知。",
+  "playerState": {
+    "activeGoalId": "grow_and_progress",
+    "goals": [
+      {
+        "id": "grow_and_progress",
+        "objectiveValue": 1,
+        "subjectiveValue": 0.35,
+        "progress": 0
+      },
+      {
+        "id": "discover_new_capabilities",
+        "objectiveValue": 0.85,
+        "subjectiveValue": 0.39,
+        "progress": 0
+      }
+    ],
+    "knowledge": [
+      {
+        "id": "five-day-knowledge:24f0dd1237c6",
+        "key": "player_party|队伍装备|equipment:ed9c94709c61",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "队伍装备",
+          "dayFirstSeen": 1
+        },
+        "behavior": {
+          "kind": "equipment",
+          "key": "equipment:ed9c94709c61",
+          "label": "负伤盾手·赫恩穿戴普通旧猎刀"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:5:action-summary",
+            "day": 1,
+            "summary": "负伤盾手·赫恩装备了普通旧猎刀，小队战力现在是126。 当前出战成员显示战力合计109→114。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 109,
+            "activePowerAfter": 114,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": []
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:5:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "给赫恩装备力量5的旧猎刀后，当前出战成员显示战力合计从109提高到114；事件同时显示小队战力为126。",
+          "confidence": 0.95,
+          "nextTest": "在下一次画面中同时核对每名成员的可见战力与小队战力显示，确认两种数值的关系。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:9439ed28cf24",
+        "key": "player_party|队伍编成|party:86eeab60c02a",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "队伍编成",
+          "dayFirstSeen": 1
+        },
+        "behavior": {
+          "kind": "party",
+          "key": "party:86eeab60c02a",
+          "label": "负伤盾手·赫恩加入出战"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:4:action-summary",
+            "day": 1,
+            "summary": "负伤盾手·赫恩加入出战队。装备不会自动分配。 当前出战成员显示战力合计64→109。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 64,
+            "activePowerAfter": 109,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": []
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:4:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "让赫恩加入出战队使当前出战成员总战力从64提高到109，但没有自动分配装备。",
+          "confidence": 0.99,
+          "nextTest": "使用一键择优穿戴，观察是否会给赫恩分配空闲装备并进一步提高战力。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:b68f8b01d8c3",
+        "key": "player_party|沟渠里的负伤盾手|interact:cd42826fe1b5",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "沟渠里的负伤盾手",
+          "dayFirstSeen": 1
+        },
+        "behavior": {
+          "kind": "interact",
+          "key": "interact:cd42826fe1b5",
+          "label": "亲自把他背回镇里"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:3:action-summary",
+            "day": 1,
+            "summary": "已处理「沟渠里的负伤盾手」：亲自把他背回镇里 负伤盾手·赫恩加入候补。是否出战由你决定。 新出现的队伍成员：负伤盾手·赫恩。 地点变化：沟渠里的负伤盾手(settled)。 今日剩余行动3→2。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 64,
+            "activePowerAfter": 64,
+            "newAllies": [
+              "负伤盾手·赫恩"
+            ],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "沟渠里的负伤盾手",
+                "status": "settled",
+                "scene": "西门沟渠里躺着一个负伤男人，圆盾压在腿下。商队已经走远。"
+              }
+            ]
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:3:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "亲自救助负伤盾手使赫恩加入候补，并消耗了1次今日行动。",
+          "confidence": 0.99,
+          "nextTest": "下一步查看队伍行动中是否能让候补赫恩出战，以及出战后战力是否变化。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:932985a7752c",
+        "key": "player_party|灰炉外环|equipment:714025730732",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "灰炉外环",
+          "dayFirstSeen": 1
+        },
+        "behavior": {
+          "kind": "equipment",
+          "key": "equipment:714025730732",
+          "label": "你穿戴普通灰炉仪式刃[恐怖]"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:2:action-summary",
+            "day": 1,
+            "summary": "你装备了普通灰炉仪式刃，小队战力现在是64。 当前出战成员显示战力合计60→64。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 60,
+            "activePowerAfter": 64,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": []
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:2:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "穿戴力量9的灰炉仪式刀替换了原武器，使当前出战战力从60提高到64。",
+          "confidence": 0.98,
+          "nextTest": "若之后可以换回旧猎刀，观察战力是否从64下降回60。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "id": "five-day-knowledge:c1d57e6b9a49",
+        "key": "player_party|灰炉外环|enter_area:dacfef4974d6",
+        "subject": {
+          "id": "player_party",
+          "label": "你的队伍"
+        },
+        "environment": {
+          "region": "煤灰镇",
+          "node": "灰炉外环",
+          "dayFirstSeen": 1
+        },
+        "behavior": {
+          "kind": "enter_area",
+          "key": "enter_area:dacfef4974d6",
+          "label": "刷1次"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "eventId": "visible:1:action-summary",
+            "day": 1,
+            "summary": "灰炉外环带回1件装备，其中稀有及以上0件，最高普通。 背包新增：普通灰炉仪式刃。",
+            "inventoryDelta": 1,
+            "addedItems": [
+              {
+                "name": "灰炉仪式刃",
+                "rarity": "普通",
+                "slot": "武器",
+                "power": 9,
+                "identityTags": [
+                  "恐怖"
+                ]
+              }
+            ],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 60,
+            "activePowerAfter": 60,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": []
+          }
+        },
+        "evidence": {
+          "count": 1,
+          "recentEventIds": [
+            "visible:1:action-summary"
+          ]
+        },
+        "latestAttribution": {
+          "cause": "进入灰炉外环的这次行动带回了1件普通武器灰炉仪式刀。",
+          "confidence": 0.92,
+          "nextTest": "再次选择进入灰炉外环，观察是否仍会获得1件装备以及装备是否变化。",
+          "evidenceCount": 1
+        }
+      }
+    ],
+    "failureMemories": [],
+    "hypotheses": [],
+    "knowledgeStoreCount": 5
+  },
+  "knowledgeRetrieval": {
+    "schema": "knowledge_retrieval_audit_v1",
+    "query": {
+      "activeGoal": "在白鹿家的人抵达前自行决定如何准备",
+      "region": "煤灰镇",
+      "challengeNodes": [],
+      "primaryChallengeNodes": [],
+      "activeTeam": [
+        "ally_cdi48w",
+        "ally_e9zs1c"
+      ],
+      "swapCandidates": [],
+      "equipCandidates": [],
+      "fieldEffects": [],
+      "unresolvedFailureNodes": [],
+      "pendingHypothesisTargets": [],
+      "inventoryCount": 2
+    },
+    "candidateCount": 5,
+    "selectedCount": 5,
+    "selectedBytes": 5970,
+    "fullKnowledgeBytes": 6566,
+    "byteReductionRatio": 0.0908,
+    "selected": [
+      {
+        "id": "five-day-knowledge:24f0dd1237c6",
+        "score": 13.2,
+        "reasons": [
+          "changed_since_last_decision",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1189
+      },
+      {
+        "id": "five-day-knowledge:9439ed28cf24",
+        "score": 13.188,
+        "reasons": [
+          "changed_since_last_decision",
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1107
+      },
+      {
+        "id": "five-day-knowledge:b68f8b01d8c3",
+        "score": 3.176,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1427
+      },
+      {
+        "id": "five-day-knowledge:932985a7752c",
+        "score": 3.164,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1082
+      },
+      {
+        "id": "five-day-knowledge:c1d57e6b9a49",
+        "score": 3.152,
+        "reasons": [
+          "same_region",
+          "has_causal_attribution",
+          "recency"
+        ],
+        "bytes": 1163
+      }
+    ],
+    "rejectedCount": 0,
+    "topRejected": [],
+    "requiredChecks": [],
+    "missedRequired": []
+  },
+  "observation": {
+    "schema": "five_day_guard_raid_observation_v1",
+    "time": {
+      "day": 1,
+      "actionsRemainingToday": 2,
+      "phase": "planning"
+    },
+    "situation": "你打了在镇上撒泼的白鹿家少爷。他逃走前说第五日会带人回来。",
+    "party": {
+      "active": [
+        {
+          "id": "ally_cdi48w",
+          "name": "你",
+          "role": "均衡近战",
+          "visiblePower": 64,
+          "wornItems": [
+            {
+              "name": "灰炉仪式刃",
+              "slot": "武器",
+              "rarity": "普通",
+              "power": 9,
+              "identityTags": [
+                "恐怖"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "ally_e9zs1c",
+          "name": "负伤盾手·赫恩",
+          "role": "前排保护",
+          "visiblePower": 50,
+          "wornItems": [
+            {
+              "name": "旧猎刀",
+              "slot": "武器",
+              "rarity": "普通",
+              "power": 5,
+              "identityTags": []
+            }
+          ]
+        }
+      ],
+      "reserve": []
+    },
+    "resources": {
+      "gold": 6,
+      "medicine": 0,
+      "townFavor": 0,
+      "evidence": 0
+    },
+    "inventory": {
+      "total": 2,
+      "rarityCounts": {
+        "普通": 2
+      },
+      "identityTagCounts": {
+        "恐怖": 1
+      },
+      "visibleItems": [
+        {
+          "id": "gear_1i58wji",
+          "name": "灰炉仪式刃",
+          "slot": "武器",
+          "rarity": "普通",
+          "power": 9,
+          "identityTags": [
+            "恐怖"
+          ],
+          "currentlyWorn": true
+        },
+        {
+          "id": "gear_yhccb8",
+          "name": "旧猎刀",
+          "slot": "武器",
+          "rarity": "普通",
+          "power": 5,
+          "identityTags": [],
+          "currentlyWorn": true
+        }
+      ]
+    },
+    "places": [
+      {
+        "id": "place_grey_furnace_outer",
+        "title": "灰炉外环",
+        "area": "灰炉遗址",
+        "status": "present",
+        "scene": "煤灰覆盖着外围废道，里面不时传来怪物拖动铁器的声音。"
+      },
+      {
+        "id": "place_king_furnace_door",
+        "title": "王炉门",
+        "area": "灰炉遗址",
+        "status": "locked",
+        "scene": "一扇被煤灰覆盖的厚重铁门挡住了更深处。"
+      },
+      {
+        "id": "place_smith",
+        "title": "铁匠的试炉",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "铁匠把几把断刃摊在砧台上，反复比较火色。他愿意看看你从灰炉带回来的东西。"
+      },
+      {
+        "id": "place_injured_shield",
+        "title": "沟渠里的负伤盾手",
+        "area": "西门商道",
+        "status": "settled",
+        "scene": "西门沟渠里躺着一个负伤男人，圆盾压在腿下。商队已经走远。"
+      },
+      {
+        "id": "place_apothecary",
+        "title": "药铺的两张欠条",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "药铺里挤满病人，学徒还惦记着城外没收回来的药草。"
+      },
+      {
+        "id": "place_thief_trial",
+        "title": "小偷与粮商",
+        "area": "西门商道",
+        "status": "present",
+        "scene": "粮商揪住一个偷粮少年；少年指着粮仓封条，喊他正在囤粮抬价。"
+      },
+      {
+        "id": "place_guild_feud",
+        "title": "铠匠与客栈老板",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "铠匠要扩炉，客栈老板守着后院的水井，两个人都拒绝让步。"
+      },
+      {
+        "id": "place_caravan",
+        "title": "西门翻覆的货车",
+        "area": "西门商道",
+        "status": "present",
+        "scene": "西门外货车侧翻，河水正在上涨；车夫和被缚在车后的难民同时呼救。"
+      },
+      {
+        "id": "place_rumor",
+        "title": "酒馆里的消息贩子",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "酒馆角落的消息贩子声称见过白鹿家护卫，但他不会免费开口。"
+      }
+    ],
+    "threatSignals": [
+      "白鹿家的人将在第五日黄昏抵达。"
+    ],
+    "recentSignals": [
+      "负伤盾手·赫恩装备了普通旧猎刀，小队战力现在是126。",
+      "负伤盾手·赫恩加入出战队。装备不会自动分配。",
+      "已处理「沟渠里的负伤盾手」：亲自把他背回镇里",
+      "负伤盾手·赫恩加入候补。是否出战由你决定。",
+      "你装备了普通灰炉仪式刃，小队战力现在是64。",
+      "灰炉外环带回1件装备，其中稀有及以上0件，最高普通。",
+      "你打了在镇上撒泼的白鹿家少爷。他逃走前放话：第五日，他家的护卫队会来。"
+    ],
+    "actions": [
+      {
+        "id": "choice_f5tedq",
+        "label": "刷1次",
+        "kind": "enter_area",
+        "placeId": "place_grey_furnace_outer"
+      },
+      {
+        "id": "choice_inqie2",
+        "label": "刷10次",
+        "kind": "enter_area",
+        "placeId": "place_grey_furnace_outer"
+      },
+      {
+        "id": "choice_1rh4292",
+        "label": "替她照顾病人",
+        "kind": "interact",
+        "placeId": "place_apothecary",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1s36hsk",
+        "label": "陪她去追回药草",
+        "kind": "interact",
+        "placeId": "place_apothecary",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1y4o654",
+        "label": "替她还债",
+        "kind": "interact",
+        "placeId": "place_apothecary",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1ij3o4z",
+        "label": "放走小偷，让他交出账页",
+        "kind": "interact",
+        "placeId": "place_thief_trial",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_eneex1",
+        "label": "把小偷交给粮商",
+        "kind": "interact",
+        "placeId": "place_thief_trial",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1pkwipc",
+        "label": "把双方证据一起贴到广场",
+        "kind": "interact",
+        "placeId": "place_thief_trial",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1bxzyzk",
+        "label": "支持铠匠扩炉",
+        "kind": "interact",
+        "placeId": "place_guild_feud",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_561rvj",
+        "label": "保住水井",
+        "kind": "interact",
+        "placeId": "place_guild_feud",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_npnfdu",
+        "label": "丈量废巷，给两家另开通道",
+        "kind": "interact",
+        "placeId": "place_guild_feud",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_pq9kql",
+        "label": "先救人",
+        "kind": "interact",
+        "placeId": "place_caravan",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_vc5xj0",
+        "label": "先抢货箱",
+        "kind": "interact",
+        "placeId": "place_caravan",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_11a2gl7",
+        "label": "买完整名单",
+        "kind": "interact",
+        "placeId": "place_rumor",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_193oorl",
+        "label": "公开拒绝，让对方以为你毫无准备",
+        "kind": "interact",
+        "placeId": "place_rumor",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_15utwh2",
+        "label": "擦去煤灰，仔细检查门锁与周围",
+        "kind": "interact",
+        "placeId": "place_king_furnace_door",
+        "actionPointMark": 1
+      },
+      {
+        "id": "choice_1cp846w",
+        "label": "一键择优穿戴",
+        "kind": "equipment",
+        "placeId": "place_party"
+      },
+      {
+        "id": "choice_189oiqh",
+        "label": "负伤盾手·赫恩回候补",
+        "kind": "party",
+        "placeId": "place_party"
+      },
+      {
+        "id": "choice_1smoc4o",
+        "label": "提前结束本日",
+        "kind": "time",
+        "placeId": "place_time",
+        "endsCurrentDay": true
+      }
+    ],
+    "result": null
+  },
+  "responseContract": {
+    "action": "one exact id from observation.actions",
+    "goalId": "one visible goal id",
+    "reasoningChain": [
+      {
+        "kind": "goal|knowledge|evidence|affordance|comparison",
+        "evidence": "short factual evidence from this request"
+      }
+    ],
+    "alternatives": [
+      "zero or more exact action ids from observation.actions"
+    ]
+  }
+}

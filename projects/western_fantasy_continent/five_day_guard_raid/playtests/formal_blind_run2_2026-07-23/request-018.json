@@ -1,0 +1,104 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 9,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-48c9d51032182691",
+    "mode": "continue",
+    "turn": 18,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_jx6foy",
+    "label": "用镇民人情换消息",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:0d94603ca032",
+      "key": "player_party|酒馆里的消息贩子|interact:e31fa487b2a8",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "酒馆里的消息贩子",
+        "dayFirstSeen": 2
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:e31fa487b2a8",
+        "label": "用镇民人情换消息"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:9:action-summary",
+            "day": 2,
+            "summary": "已处理「酒馆里的消息贩子」：用镇民人情换消息 完整情报已固定在态势板：六人名单与四条可利用弱点现在持续可见。 资源变化：镇民支持2→0。 态势变化：消息：队长·罗德里克；消息：弩手×2；消息：本地盾手×2；消息：随队执事 地点变化：酒馆里的消息贩子(settled)。 今日剩余行动3→2。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [
+              {
+                "key": "townFavor",
+                "before": 2,
+                "after": 0
+              }
+            ],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [
+              "消息：队长·罗德里克",
+              "消息：弩手×2",
+              "消息：本地盾手×2",
+              "消息：随队执事"
+            ],
+            "changedPlaces": [
+              {
+                "title": "酒馆里的消息贩子",
+                "status": "settled",
+                "scene": "酒馆角落的消息贩子声称见过白鹿家护卫，但他不会免费开口。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:9:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:9:action-summary",
+      "type": "action_summary",
+      "action": "用镇民人情换消息",
+      "summary": "已处理「酒馆里的消息贩子」：用镇民人情换消息 完整情报已固定在态势板：六人名单与四条可利用弱点现在持续可见。 资源变化：镇民支持2→0。 态势变化：消息：队长·罗德里克；消息：弩手×2；消息：本地盾手×2；消息：随队执事 地点变化：酒馆里的消息贩子(settled)。 今日剩余行动3→2。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:0d94603ca032",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

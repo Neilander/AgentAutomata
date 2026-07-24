@@ -1,0 +1,95 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 9,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-fd215d6405ec1d4a",
+    "mode": "continue",
+    "turn": 18,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_113ob5k",
+    "label": "接受她提出的符文交易",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:6974080e99bb",
+      "key": "player_party|灰炉边的流放者|interact:c022a6fa16e9",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "灰炉边的流放者",
+        "dayFirstSeen": 3
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:c022a6fa16e9",
+        "label": "接受她提出的符文交易"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:9:action-summary",
+            "day": 3,
+            "summary": "已处理「灰炉边的流放者」：接受她提出的符文交易 流放者译出旧符文：王炉内环开放。 地点变化：王炉门(open)、灰炉边的流放者(settled)。 今日剩余行动3→2。",
+            "inventoryDelta": 0,
+            "activePowerBefore": 105,
+            "activePowerAfter": 105,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "王炉门",
+                "status": "open",
+                "scene": "厚重铁门已经打开，里面的炉火照出更深的通道。"
+              },
+              {
+                "title": "灰炉边的流放者",
+                "status": "settled",
+                "scene": "灰炉边的流放者一直避开礼拜堂的人。她的视线在旧炉墙上停留得比常人更久。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:9:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:9:action-summary",
+      "type": "action_summary",
+      "action": "接受她提出的符文交易",
+      "summary": "已处理「灰炉边的流放者」：接受她提出的符文交易 流放者译出旧符文：王炉内环开放。 地点变化：王炉门(open)、灰炉边的流放者(settled)。 今日剩余行动3→2。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:6974080e99bb",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

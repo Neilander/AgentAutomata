@@ -1,0 +1,99 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 13,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-48c9d51032182691",
+    "mode": "continue",
+    "turn": 26,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_lbe0u8",
+    "label": "承认它属于流放者家族",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:b31a0f9d2893",
+      "key": "player_party|礼拜堂的失窃圣物|interact:3794f7afb2bc",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "礼拜堂的失窃圣物",
+        "dayFirstSeen": 3
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:3794f7afb2bc",
+        "label": "承认它属于流放者家族"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:13:action-summary",
+            "day": 3,
+            "summary": "已处理「礼拜堂的失窃圣物」：承认它属于流放者家族 旧口供上的没收记录与你的判断一致；流放者收起了原本握在手里的刀。 资源变化：证据0→1。 地点变化：礼拜堂的失窃圣物(settled)。 今日剩余行动2→1。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [
+              {
+                "key": "evidence",
+                "before": 0,
+                "after": 1
+              }
+            ],
+            "activePowerBefore": 152,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "礼拜堂的失窃圣物",
+                "status": "settled",
+                "scene": "礼拜堂声称圣物被盗；另一份旧口供却说它曾从一个流放家族手里被没收。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:13:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:13:action-summary",
+      "type": "action_summary",
+      "action": "承认它属于流放者家族",
+      "summary": "已处理「礼拜堂的失窃圣物」：承认它属于流放者家族 旧口供上的没收记录与你的判断一致；流放者收起了原本握在手里的刀。 资源变化：证据0→1。 地点变化：礼拜堂的失窃圣物(settled)。 今日剩余行动2→1。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:b31a0f9d2893",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

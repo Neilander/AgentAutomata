@@ -1,0 +1,323 @@
+{
+  "type": "decision",
+  "schema": "fifteen_day_demo_player_decision_request_v1",
+  "cycle": 1,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-0c65d403e7198a3c",
+    "mode": "bootstrap",
+    "turn": 1,
+    "phase": "decision",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "playerProfile": {
+    "schema": "player_profile_state_v1",
+    "profileId": "damage_absolutist",
+    "label": "Damage absolutist",
+    "summary": "Believes direct damage solves most combat problems and initially discounts sustain.",
+    "decisionBias": {
+      "riskTolerance": 0.75,
+      "exploration": 0.35,
+      "changeAversion": 0.35,
+      "evidenceThreshold": 0.62,
+      "preferences": {
+        "damage": 1,
+        "survival": 0.15,
+        "novelty": 0.3,
+        "rarity": 0.35,
+        "simplicity": 0.7
+      }
+    },
+    "priorBeliefs": [
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "maximizing_direct_damage",
+          "label": "maximizing direct damage"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "raises_win_probability",
+          "label": "raises win probability"
+        },
+        "confidence": 0.84,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:damage_absolutist:1"
+      },
+      {
+        "schema": "player_causal_prior_v1",
+        "subject": {
+          "kind": "concept",
+          "id": "player_team",
+          "label": "player team"
+        },
+        "environment": {
+          "kind": "context",
+          "id": "general_gameplay",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "id": "using_healing_or_defensive_slots",
+          "label": "using healing or defensive slots"
+        },
+        "result": {
+          "kind": "expected_result",
+          "id": "reduces_combat_tempo",
+          "label": "reduces combat tempo"
+        },
+        "confidence": 0.72,
+        "source": "prior_game_habit",
+        "status": "unverified_prior",
+        "id": "prior:damage_absolutist:2"
+      }
+    ]
+  },
+  "instruction": "你是第一次玩这个游戏的玩家。只依据本请求里的当前画面、自己此前看到的结果和检索出的记忆选择行动；不要猜测或读取请求之外的规则。刷怪不消耗行动点，但其他行动是否消耗以画面标记为准。",
+  "playerState": {
+    "activeGoalId": "grow_and_progress",
+    "goals": [
+      {
+        "id": "grow_and_progress",
+        "objectiveValue": 1,
+        "subjectiveValue": 0.35,
+        "progress": 0
+      }
+    ],
+    "knowledge": [],
+    "failureMemories": [],
+    "hypotheses": [],
+    "knowledgeStoreCount": 0
+  },
+  "observation": {
+    "schema": "fifteen_day_demo_player_observation_v1",
+    "time": {
+      "day": 1,
+      "actionsRemainingToday": 3,
+      "phase": "planning",
+      "act": 1,
+      "nextKnownDeadline": 5
+    },
+    "situation": "白鹿家少爷说第五日会带家兵回来。",
+    "party": {
+      "maxActive": 4,
+      "active": [
+        {
+          "id": "player",
+          "name": "你",
+          "role": "均衡近战",
+          "visiblePower": 61,
+          "formation": "前排一号",
+          "visibleSkills": [
+            {
+              "name": "重击",
+              "type": "小技能",
+              "description": "稳定单体物理伤害。"
+            },
+            {
+              "name": "顺劈",
+              "type": "小技能",
+              "description": "打前排附近两人。"
+            },
+            {
+              "name": "破阵步",
+              "type": "被动",
+              "description": "攻击前排时小幅增伤。"
+            },
+            {
+              "name": "战旗冲锋",
+              "type": "大招",
+              "description": "全队前排输出窗口。"
+            }
+          ]
+        }
+      ],
+      "reserve": []
+    },
+    "resources": {
+      "gold": 6,
+      "medicine": 0,
+      "townFavor": 0,
+      "evidence": 0,
+      "influence": 0
+    },
+    "inventory": {
+      "total": 1,
+      "rarityCounts": {
+        "普通": 1
+      },
+      "identityTagCounts": {},
+      "visibleItems": [
+        {
+          "id": "starter_knife",
+          "name": "缺口短刀",
+          "slot": "weapon",
+          "slotLabel": "武器",
+          "rarity": "普通",
+          "power": 6,
+          "identityTags": [],
+          "source": "随身物品"
+        }
+      ]
+    },
+    "places": [
+      {
+        "id": "place_zone_ash",
+        "title": "灰炉外环",
+        "area": "灰炉遗址",
+        "status": "open",
+        "scene": "煤灰覆盖着外围废道，怪物拖着废铁在断墙间游荡。",
+        "actionCount": 2
+      },
+      {
+        "id": "place_gate",
+        "title": "王炉门",
+        "area": "灰炉遗址",
+        "status": "locked",
+        "scene": "一扇煤灰覆盖的铁门挡住了通往内环的路。",
+        "actionCount": 1
+      },
+      {
+        "id": "place_event_injured_shield",
+        "title": "倒在商道边的盾手",
+        "area": "西门商道",
+        "status": "present",
+        "scene": "一名受伤盾手靠在翻倒的货车旁，钱袋压在断木下面。",
+        "actionCount": 2
+      },
+      {
+        "id": "place_event_well_dispute",
+        "title": "水井边的争执",
+        "area": "镇中心",
+        "status": "present",
+        "scene": "染匠说上游截水是旧约，菜农说今年再断水全家都会饿死。",
+        "actionCount": 2
+      },
+      {
+        "id": "place_party",
+        "title": "队伍与装备",
+        "area": "营地",
+        "status": "present",
+        "scene": "当前可以安排最多4名出战成员。",
+        "actionCount": 1
+      },
+      {
+        "id": "place_calendar",
+        "title": "今日日程",
+        "area": "营地",
+        "status": "present",
+        "scene": "今天还有3次行动。",
+        "actionCount": 1
+      }
+    ],
+    "threatSignals": [
+      "你在镇上打了撒泼的白鹿家少爷。他离开前说，第五日会带人回来。"
+    ],
+    "recentSignals": [
+      "你在镇上打了撒泼的白鹿家少爷。他离开前说，第五日会带人回来。"
+    ],
+    "lastCombat": null,
+    "actions": [
+      {
+        "id": "choice_1mxturr",
+        "label": "在灰炉外环战斗1次",
+        "kind": "grind",
+        "placeId": "place_zone_ash",
+        "actionPointMark": 0,
+        "endsCurrentDay": false
+      },
+      {
+        "id": "choice_17mz7v9",
+        "label": "在灰炉外环连续战斗10次",
+        "kind": "grind",
+        "placeId": "place_zone_ash",
+        "actionPointMark": 0,
+        "endsCurrentDay": false
+      },
+      {
+        "id": "choice_14fudpa",
+        "label": "检查王炉门与锁芯",
+        "kind": "inspect",
+        "placeId": "place_gate",
+        "actionPointMark": 1,
+        "endsCurrentDay": false
+      },
+      {
+        "id": "choice_16v7zuq",
+        "label": "亲自把他背回镇里",
+        "kind": "event",
+        "placeId": "place_event_injured_shield",
+        "actionPointMark": 1,
+        "endsCurrentDay": false
+      },
+      {
+        "id": "choice_1o465zq",
+        "label": "取走无人看守的钱袋",
+        "kind": "event",
+        "placeId": "place_event_injured_shield",
+        "actionPointMark": 1,
+        "endsCurrentDay": false
+      },
+      {
+        "id": "choice_1e8y2cb",
+        "label": "支持染匠执行旧约",
+        "kind": "event",
+        "placeId": "place_event_well_dispute",
+        "actionPointMark": 1,
+        "endsCurrentDay": false
+      },
+      {
+        "id": "choice_1rifkgb",
+        "label": "支持菜农先保住收成",
+        "kind": "event",
+        "placeId": "place_event_well_dispute",
+        "actionPointMark": 1,
+        "endsCurrentDay": false
+      },
+      {
+        "id": "choice_1f1935q",
+        "label": "让当前出战成员择优穿戴",
+        "kind": "equipment",
+        "placeId": "place_party",
+        "actionPointMark": 0,
+        "endsCurrentDay": false
+      },
+      {
+        "id": "choice_z0i2iy",
+        "label": "结束本日",
+        "kind": "time",
+        "placeId": "place_calendar",
+        "actionPointMark": 0,
+        "endsCurrentDay": true
+      }
+    ],
+    "result": null
+  },
+  "responseContract": {
+    "action": "one exact id from observation.actions",
+    "goalId": "one exact id from playerState.goals",
+    "reasoningChain": [
+      {
+        "kind": "intent|evidence|comparison",
+        "evidence": "short factual evidence from this request"
+      }
+    ],
+    "alternatives": [
+      "zero or more exact action ids from observation.actions"
+    ]
+  }
+}

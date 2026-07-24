@@ -1,0 +1,95 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 14,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-fd215d6405ec1d4a",
+    "mode": "continue",
+    "turn": 28,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_qwfmkr",
+    "label": "与猎人共同狩猎",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:c9003c63b0f3",
+      "key": "player_party|夜路上的断角兽|interact:5c9bf4057f1d",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "夜路上的断角兽",
+        "dayFirstSeen": 4
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:5c9bf4057f1d",
+        "label": "与猎人共同狩猎"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:14:action-summary",
+            "day": 4,
+            "summary": "第4日开始。护卫队将在第五日黄昏抵达。 已处理「夜路上的断角兽」：与猎人共同狩猎 怪兽撞开灌木逃走，泥地上留下连贯蹄印。猎人蹲下来量了量脚印间距。 地点变化：少爷的和解使者(present)、第五日前的撤离争执(present)。 日期推进到第4日。 今日剩余行动1→3。",
+            "inventoryDelta": 0,
+            "activePowerBefore": 121,
+            "activePowerAfter": 121,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "少爷的和解使者",
+                "status": "present",
+                "scene": "少爷的使者带着一张盖印文书来到广场，要求你在第五日前作出回应。"
+              },
+              {
+                "title": "第五日前的撤离争执",
+                "status": "present",
+                "scene": "镇民争论要不要撤离，店主们则担心空镇会被洗劫。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:14:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:14:action-summary",
+      "type": "action_summary",
+      "action": "与猎人共同狩猎",
+      "summary": "第4日开始。护卫队将在第五日黄昏抵达。 已处理「夜路上的断角兽」：与猎人共同狩猎 怪兽撞开灌木逃走，泥地上留下连贯蹄印。猎人蹲下来量了量脚印间距。 地点变化：少爷的和解使者(present)、第五日前的撤离争执(present)。 日期推进到第4日。 今日剩余行动1→3。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:c9003c63b0f3",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

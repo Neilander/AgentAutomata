@@ -1,0 +1,105 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 8,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-fd215d6405ec1d4a",
+    "mode": "continue",
+    "turn": 16,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_zcgm50",
+    "label": "把门上纹路的拓印拿给流放者看",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:8f01567886c1",
+      "key": "player_party|煤灰镇|interact:9f2a552f0423",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "煤灰镇",
+        "dayFirstSeen": 3
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:9f2a552f0423",
+        "label": "把门上纹路的拓印拿给流放者看"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:8:action-summary",
+            "day": 3,
+            "summary": "第3日开始。护卫队将在第五日黄昏抵达。 已处理「灰炉边的流放者」：把门上纹路的拓印拿给她看 流放者认出拓印不是装饰：几处缺口组成了旧王炉的开门短句。她愿意谈一笔只涉及符文的交易。 地点变化：灰炉边的流放者(present)、白鹿家的旁支剑士(present)、夜路上的断角兽(present)、营地夜巡(present)。 日期推进到第3日。 今日剩余行动1→3。",
+            "inventoryDelta": 0,
+            "activePowerBefore": 105,
+            "activePowerAfter": 105,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "灰炉边的流放者",
+                "status": "present",
+                "scene": "灰炉边的流放者一直避开礼拜堂的人。她的视线在旧炉墙上停留得比常人更久。 她已经认出拓印中的短句，并开价四枚金币。"
+              },
+              {
+                "title": "白鹿家的旁支剑士",
+                "status": "present",
+                "scene": "白鹿家的旁支剑士在西门等你。她谈家族名誉时，语气比谈少爷本人更认真。"
+              },
+              {
+                "title": "夜路上的断角兽",
+                "status": "present",
+                "scene": "断角兽的脚印绕着营地延伸，一名猎人正蹲在泥边检查血迹。"
+              },
+              {
+                "title": "营地夜巡",
+                "status": "present",
+                "scene": "夜巡队每天沿河换岗。高地能看见路线，但火把之间还有大片黑暗。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:8:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:8:action-summary",
+      "type": "action_summary",
+      "action": "把门上纹路的拓印拿给流放者看",
+      "summary": "第3日开始。护卫队将在第五日黄昏抵达。 已处理「灰炉边的流放者」：把门上纹路的拓印拿给她看 流放者认出拓印不是装饰：几处缺口组成了旧王炉的开门短句。她愿意谈一笔只涉及符文的交易。 地点变化：灰炉边的流放者(present)、白鹿家的旁支剑士(present)、夜路上的断角兽(present)、营地夜巡(present)。 日期推进到第3日。 今日剩余行动1→3。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:8f01567886c1",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

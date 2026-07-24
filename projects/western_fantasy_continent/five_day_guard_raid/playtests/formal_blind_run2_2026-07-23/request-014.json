@@ -1,0 +1,87 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 7,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-48c9d51032182691",
+    "mode": "continue",
+    "turn": 14,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_bftklq",
+    "label": "药师学徒·米娅加入出战",
+    "kind": "party"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:3c06dbb3e424",
+      "key": "player_party|队伍编成|party:2e4453dec7f1",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "队伍编成",
+        "dayFirstSeen": 1
+      },
+      "behavior": {
+        "kind": "party",
+        "key": "party:2e4453dec7f1",
+        "label": "药师学徒·米娅加入出战"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:7:action-summary",
+            "day": 1,
+            "summary": "药师学徒·米娅加入出战队。装备不会自动分配。 当前出战成员显示战力合计114→152。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 114,
+            "activePowerAfter": 152,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": []
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:7:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:7:action-summary",
+      "type": "action_summary",
+      "action": "药师学徒·米娅加入出战",
+      "summary": "药师学徒·米娅加入出战队。装备不会自动分配。 当前出战成员显示战力合计114→152。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:3c06dbb3e424",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

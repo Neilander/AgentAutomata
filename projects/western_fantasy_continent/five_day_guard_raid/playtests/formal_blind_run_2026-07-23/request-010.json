@@ -1,0 +1,125 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 5,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-fd215d6405ec1d4a",
+    "mode": "continue",
+    "turn": 10,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_xgiea2",
+    "label": "挑战守炉甲胄",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:e587020c7358",
+      "key": "player_party|王炉守卫|interact:3cdc29017671",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "王炉守卫",
+        "dayFirstSeen": 2
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:3cdc29017671",
+        "label": "挑战守炉甲胄"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:5:action-summary",
+            "day": 2,
+            "summary": "第2日开始。护卫队将在第五日黄昏抵达。 已处理「王炉守卫」：挑战守炉甲胄 守炉战失败。你发现蒸汽回流进冷却井；当前战力117，尚不足以压倒它。 地点变化：灰炉边的流放者(present)、守炉甲胄的冷却井(present)、礼拜堂的失窃圣物(present)、河畔营地的军需车(present)、执事的雇佣账本(present)、两名护卫的欠薪(present)、倒塌擂台上的冠军(present)、旧城墙的三处缺口(present)。 日期推进到第2日。 今日剩余行动1→3。",
+            "inventoryDelta": 0,
+            "activePowerBefore": 105,
+            "activePowerAfter": 105,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "灰炉边的流放者",
+                "status": "present",
+                "scene": "灰炉边的流放者一直避开礼拜堂的人。她的视线在旧炉墙上停留得比常人更久。"
+              },
+              {
+                "title": "守炉甲胄的冷却井",
+                "status": "present",
+                "scene": "上次交手时喷出的蒸汽掀开了碎石，露出一口与甲胄相连的冷却井。"
+              },
+              {
+                "title": "礼拜堂的失窃圣物",
+                "status": "present",
+                "scene": "礼拜堂声称圣物被盗；另一份旧口供却说它曾从一个流放家族手里被没收。"
+              },
+              {
+                "title": "河畔营地的军需车",
+                "status": "present",
+                "scene": "河畔营地的军需车停在木栅后，门卫盘问每个靠近的人，后坡有一道积水沟。"
+              },
+              {
+                "title": "执事的雇佣账本",
+                "status": "present",
+                "scene": "随队执事暂住礼拜堂。他随身带着雇佣印章，却不像白鹿家的家臣。"
+              },
+              {
+                "title": "两名护卫的欠薪",
+                "status": "present",
+                "scene": "两名本地雇工抱怨白鹿家拖欠工钱，但更担心被贵族追究逃跑。"
+              },
+              {
+                "title": "倒塌擂台上的冠军",
+                "status": "present",
+                "scene": "倒塌擂台上，一个壮汉独自练拳。围观者称他从不跟没本事的人同行。"
+              },
+              {
+                "title": "旧城墙的三处缺口",
+                "status": "present",
+                "scene": "旧城墙有三处明显缺口。风从箭孔灌进来，石料和人手都不够。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:5:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:5:action-summary",
+      "type": "action_summary",
+      "action": "挑战守炉甲胄",
+      "summary": "第2日开始。护卫队将在第五日黄昏抵达。 已处理「王炉守卫」：挑战守炉甲胄 守炉战失败。你发现蒸汽回流进冷却井；当前战力117，尚不足以压倒它。 地点变化：灰炉边的流放者(present)、守炉甲胄的冷却井(present)、礼拜堂的失窃圣物(present)、河畔营地的军需车(present)、执事的雇佣账本(present)、两名护卫的欠薪(present)、倒塌擂台上的冠军(present)、旧城墙的三处缺口(present)。 日期推进到第2日。 今日剩余行动1→3。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:e587020c7358",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

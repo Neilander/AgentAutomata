@@ -1,0 +1,101 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 6,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-48c9d51032182691",
+    "mode": "continue",
+    "turn": 12,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_1s36hsk",
+    "label": "陪她去追回药草",
+    "kind": "interact"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:f852d42c84f2",
+      "key": "player_party|药铺的两张欠条|interact:008af92009b7",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "药铺的两张欠条",
+        "dayFirstSeen": 1
+      },
+      "behavior": {
+        "kind": "interact",
+        "key": "interact:008af92009b7",
+        "label": "陪她去追回药草"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:6:action-summary",
+            "day": 1,
+            "summary": "已处理「药铺的两张欠条」：陪她去追回药草 药师学徒·米娅加入候补。是否出战由你决定。 资源变化：药品0→3。 新出现的队伍成员：药师学徒·米娅。 地点变化：药铺的两张欠条(settled)。 今日剩余行动2→1。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [
+              {
+                "key": "medicine",
+                "before": 0,
+                "after": 3
+              }
+            ],
+            "activePowerBefore": 114,
+            "activePowerAfter": 114,
+            "newAllies": [
+              "药师学徒·米娅"
+            ],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "药铺的两张欠条",
+                "status": "settled",
+                "scene": "药铺里挤满病人，学徒还惦记着城外没收回来的药草。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:6:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:6:action-summary",
+      "type": "action_summary",
+      "action": "陪她去追回药草",
+      "summary": "已处理「药铺的两张欠条」：陪她去追回药草 药师学徒·米娅加入候补。是否出战由你决定。 资源变化：药品0→3。 新出现的队伍成员：药师学徒·米娅。 地点变化：药铺的两张欠条(settled)。 今日剩余行动2→1。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:f852d42c84f2",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

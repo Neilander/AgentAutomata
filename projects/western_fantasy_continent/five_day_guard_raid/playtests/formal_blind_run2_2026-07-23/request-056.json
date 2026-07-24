@@ -1,0 +1,103 @@
+{
+  "type": "attribution",
+  "schema": "five_day_guard_raid_player_attribution_request_v1",
+  "cycle": 28,
+  "agentSession": {
+    "schema": "persistent_player_agent_turn_v1",
+    "id": "player-agent-48c9d51032182691",
+    "mode": "continue",
+    "turn": 56,
+    "phase": "attribution",
+    "bootstrapVersion": "player-agent-contract-2026-07-15",
+    "reuseRequired": true,
+    "authority": "The repository session is authoritative. Agent conversation memory may help continuity but cannot replace supplied observations, retrieved knowledge, or legal actions."
+  },
+  "instruction": "只根据下面列出的可见现象解释刚才发生了什么。不要补写隐藏规则；不确定时降低置信度并提出可检验的下一步。",
+  "action": {
+    "id": "choice_11t7r93",
+    "label": "提前结束本日",
+    "kind": "time"
+  },
+  "existingKnowledge": [
+    {
+      "id": "five-day-knowledge:331cedd347f9",
+      "key": "player_party|日程|time:0ae4bd9af1ce",
+      "subject": {
+        "id": "player_party",
+        "label": "你的队伍"
+      },
+      "environment": {
+        "region": "煤灰镇",
+        "node": "日程",
+        "dayFirstSeen": 5
+      },
+      "behavior": {
+        "kind": "time",
+        "key": "time:0ae4bd9af1ce",
+        "label": "提前结束本日"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "eventId": "visible:28:action-summary",
+            "day": 5,
+            "summary": "第五日黄昏：白鹿家护卫队抵达镇外。准备已经结束。 地点变化：灰炉外环(closed)、铁匠的试炉(closed)、旧城墙的三处缺口(closed)。 今日剩余行动1→0。",
+            "inventoryDelta": 0,
+            "addedItems": [],
+            "removedItems": [],
+            "resourceChanges": [],
+            "activePowerBefore": 349,
+            "activePowerAfter": 349,
+            "newAllies": [],
+            "newThreatSignals": [],
+            "changedPlaces": [
+              {
+                "title": "灰炉外环",
+                "status": "closed",
+                "scene": "煤灰覆盖着外围废道，里面不时传来怪物拖动铁器的声音。"
+              },
+              {
+                "title": "铁匠的试炉",
+                "status": "closed",
+                "scene": "铁匠把几把断刃摊在砧台上，反复比较火色。他愿意看看你从灰炉带回来的东西。"
+              },
+              {
+                "title": "旧城墙的三处缺口",
+                "status": "closed",
+                "scene": "旧城墙有三处明显缺口。风从箭孔灌进来，石料和人手都不够。"
+              }
+            ]
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:28:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "visible:28:action-summary",
+      "type": "action_summary",
+      "action": "提前结束本日",
+      "summary": "第五日黄昏：白鹿家护卫队抵达镇外。准备已经结束。 地点变化：灰炉外环(closed)、铁匠的试炉(closed)、旧城墙的三处缺口(closed)。 今日剩余行动1→0。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "five-day-knowledge:331cedd347f9",
+    "primaryCause": "short inference grounded in the visible events",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

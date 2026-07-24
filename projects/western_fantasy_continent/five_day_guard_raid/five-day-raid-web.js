@@ -32,7 +32,7 @@
     try {
       const raw = localStorage.getItem(SAVE_KEY);
       const parsed = raw ? JSON.parse(raw) : null;
-      if (parsed?.version === GAME.VERSION) return parsed;
+      if (parsed?.version === GAME.VERSION) return GAME.migrateState ? GAME.migrateState(parsed) : parsed;
     } catch (_) { /* local storage is optional */ }
     return GAME.createInitialState("browser-fifteen-day");
   }

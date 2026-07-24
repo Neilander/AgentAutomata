@@ -33,6 +33,24 @@ function verifyFreeGrindAndEquipment() {
   assert(GAME.getPlayerObservation(state).party.active[0].visiblePower >= beforePower);
 }
 
+function verifySmithUnlocksInnerRing() {
+  let state = GAME.createInitialState("smith-inner-ring");
+  state.day = 2;
+  state.flags.smithPromise = true;
+  state.nodes.smith_intro = { resolved: false, option: "promise" };
+  for (let index = 0; index < 3; index += 1) state.inventory.push({ id: `plain_weapon_${index}`, name: `普通武器${index + 1}`, slot: "weapon", slotLabel: "武器", rarity: "普通", power: 5, identityTags: [], source: "测试" });
+  state = GAME.applyPlayerAction(state, actionByLabel(state, "把三把普通武器交给铁匠").id);
+  const observation = GAME.getPlayerObservation(state);
+  assert(state.flags.innerOpen, "铁匠试炉完成后没有打开灰炉内环");
+  assert(observation.places.some((place) => place.title === "灰炉内环"), "开门后玩家地图没有出现高级副本");
+  assert(observation.actions.some((action) => action.label.includes("在灰炉内环战斗")), "灰炉内环没有可刷行动");
+
+  const oldSave = GAME.createInitialState("smith-old-save");
+  oldSave.flags.smithForged = true;
+  const migrated = GAME.migrateState(oldSave);
+  assert(migrated.flags.innerOpen && GAME.getPlayerObservation(migrated).places.some((place) => place.title === "灰炉内环"), "旧存档没有补开高级副本");
+}
+
 function verifyActsAndMassCombat() {
   const state = GAME.createInitialState("mass-combat");
   state.roster = ["player", "shield", "apothecary", "thief", "duelist", "exile", "champion", "priest", "engineer", "mage"];
@@ -118,6 +136,7 @@ function verifyNoFutureEventsInOpening() {
 
 verifyObservationCounts();
 verifyFreeGrindAndEquipment();
+verifySmithUnlocksInnerRing();
 verifyActsAndMassCombat();
 verifyFallbackIsOncePerDay();
 verifyLearnableFirstShowdown();

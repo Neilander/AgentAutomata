@@ -4,6 +4,8 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-07-24
 
+- `2026-07-24_1614_smith-inner-dungeon-unlock-fix.md`：修复交三把普通武器只得蓝装、门后却没有高级副本的断链；试炉完成后立即开放灰炉内环，提供第一幕第二级掉落，旧网页存档自动补开且玩家观察不提前泄露。
+
 - `2026-07-24_1300_fifteen-day-workbench-entry.md`：删除临时独立启动器，将“无限刷装：十五日围剿”加入既有工作台 Demo 区首位，并由原工作台服务器提供游戏页面、十五日核心与共享战斗资源；测试端口全部返回 HTTP 200。
 
 - `2026-07-24_1125_fifteen-day-playable-web.md`：将十五日三幕程序接回离线网页版，补齐15日时间轴、地点事项数、动态4/10人队伍、真实战斗结果和浏览器回归；修复结束本日重复绑定及共享战场大于4人时的出生位重叠，实测河畔战斗与20v10三十单位无卡片重叠。

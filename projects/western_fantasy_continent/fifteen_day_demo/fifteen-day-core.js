@@ -49,6 +49,7 @@ const HEROES = {
 
 const ZONES = {
   ash: { title: "灰炉外环", area: "灰炉遗址", start: 1, scene: "煤灰覆盖着外围废道，怪物拖着废铁在断墙间游荡。" },
+  inner: { title: "灰炉内环", area: "灰炉遗址", start: 1, flag: "innerOpen", scene: "炉门后的环形甬道仍有余火，守炉残骸携带着更完整的旧式装备。" },
   quarry: { title: "黑石采坑", area: "北部矿区", start: 6, scene: "废弃矿道里残留着雇佣军的木箱与被惊动的穴居怪。" },
   forge: { title: "古王炉心", area: "王炉地底", start: 11, scene: "炉心深处仍有古老锻造机关运转，守炉造物在火光中巡行。" },
 };
@@ -211,6 +212,10 @@ function rand(state) { let x = state.rngState >>> 0; x ^= x << 13; x ^= x >>> 17
 function pick(state, rows) { let roll = rand(state) * rows.reduce((sum, row) => sum + row[1], 0); for (const row of rows) { roll -= row[1]; if (roll <= 0) return row[0]; } return rows.at(-1)[0]; }
 function rarityIndex(rarity) { return RARITIES.indexOf(rarity); }
 function itemPower(item) { return Number(item?.power || 0); }
+function zoneAvailable(state, zoneId) {
+  const zone = ZONES[zoneId];
+  return Boolean(zone && state.day >= zone.start && (!zone.flag || state.flags[zone.flag]));
+}
 
 function createInitialState(seed = "fifteen-day-demo") {
   const state = {
@@ -287,13 +292,15 @@ function generateItem(state, zoneId) {
     ? [["史诗", 0.60], ["传说", 0.35], ["神话", 0.049], ["永恒", 0.001]]
     : zoneId === "quarry"
       ? [["稀有", 0.60], ["史诗", 0.34], ["传说", 0.058], ["神话", 0.002]]
+      : zoneId === "inner"
+        ? [["普通", 0.42], ["稀有", 0.47], ["史诗", 0.105], ["传说", 0.005]]
       : [["普通", 0.70], ["稀有", 0.25], ["史诗", 0.049], ["传说", 0.001]];
   const rarity = pick(state, rarityTable);
   const slot = pick(state, [["weapon", 0.38], ["armor", 0.38], ["charm", 0.24]]);
   const base = RARITY_POWER[rarity];
   const power = Math.max(4, Math.round(base * (0.82 + rand(state) * 0.36)));
   const tags = [];
-  const tagChance = zoneId === "forge" ? 0.78 : zoneId === "quarry" ? 0.58 : 0.34;
+  const tagChance = zoneId === "forge" ? 0.78 : zoneId === "quarry" ? 0.58 : zoneId === "inner" ? 0.48 : 0.34;
   if (rand(state) < tagChance) tags.push(pick(state, IDENTITY_TAGS.map((tag) => [tag, 1])));
   const names = {
     weapon: ["短剑", "战斧", "长弓", "符文杖"], armor: ["锁甲", "旅衣", "鳞甲", "炉纹袍"], charm: ["骨哨", "火漆戒", "旧圣徽", "矿晶坠"],
@@ -305,7 +312,7 @@ function generateItem(state, zoneId) {
 function grind(state, zoneId, count) {
   if (state.phase !== "planning") throw new Error("大战已经开始，当前无法刷取装备。");
   const zone = ZONES[zoneId];
-  if (!zone || state.day < zone.start) throw new Error("这个区域尚未被发现。");
+  if (!zoneAvailable(state, zoneId)) throw new Error("这个区域尚未被发现。");
   const items = [];
   for (let i = 0; i < count; i += 1) items.push(generateItem(state, zoneId));
   state.inventory.push(...items);
@@ -516,7 +523,7 @@ function internalActions(state) {
   }
   const rows = [];
   for (const [zoneId, zone] of Object.entries(ZONES)) {
-    if (state.day >= zone.start) {
+    if (zoneAvailable(state, zoneId)) {
       rows.push({ id: `grind:${zoneId}:1`, label: `在${zone.title}战斗1次`, kind: "grind", placeId: `place_zone_${zoneId}` });
       rows.push({ id: `grind:${zoneId}:10`, label: `在${zone.title}连续战斗10次`, kind: "grind", placeId: `place_zone_${zoneId}` });
     }
@@ -616,7 +623,7 @@ function settleEvent(state, eventId, optionId) {
   node.resolved = true; node.option = optionId;
   const r = state.resources; const f = state.flags;
   if (eventId === "injured_shield") { if (optionId === "carry") { recruit(state, "shield"); r.townFavor += 1; } else { r.gold += 4; f.shieldAbandoned = true; } }
-  else if (eventId === "smith_intro") { if (optionId === "promise") { f.smithPromise = true; node.resolved = false; addLog(state, "铁匠让你带回三把普通武器，试炉会一直留到第四日。", "clue"); } else { takeUnequipped(state, (i) => i.slot === "weapon" && i.rarity === "普通", 3); state.inventory.push({ id: `smith_${state.day}`, name: "蓝钢长剑", slot: "weapon", slotLabel: "武器", rarity: "稀有", power: 18, identityTags: ["古代锻造"], source: "铁匠试炉" }); f.smithForged = true; } }
+  else if (eventId === "smith_intro") { if (optionId === "promise") { f.smithPromise = true; node.resolved = false; addLog(state, "铁匠让你带回三把普通武器，试炉会一直留到第四日。", "clue"); } else { takeUnequipped(state, (i) => i.slot === "weapon" && i.rarity === "普通", 3); state.inventory.push({ id: `smith_${state.day}`, name: "蓝钢长剑", slot: "weapon", slotLabel: "武器", rarity: "稀有", power: 18, identityTags: ["古代锻造"], source: "铁匠试炉" }); f.smithForged = true; f.innerOpen = true; addLog(state, "蓝钢长剑成形时，王炉门的断纹同时亮起。门后的灰炉内环已经可以进入。", "unlock"); } }
   else if (eventId === "well_dispute") { if (optionId === "tanner") { r.gold += 3; r.townFavor -= 1; } else if (optionId === "grower") { r.townFavor += 2; r.medicine += 1; } else { r.townFavor += 1; r.evidence += 1; } }
   else if (eventId === "apothecary_debt") { if (optionId === "pay") r.gold -= 5; else r.townFavor += 1; recruit(state, "apothecary"); r.medicine += 2; }
   else if (eventId === "thief_trial") { if (optionId === "thief") { recruit(state, "thief"); r.evidence += 2; } else { r.townFavor += 1; r.evidence += 1; } }
@@ -771,7 +778,7 @@ function visiblePlaces(state, catalog) {
     const assembly = reinforcements > 0 ? `你的${state.activeParty.length}名出战成员之外，还有${reinforcements}名盟友响应；来源包括${sources.length ? sources.join("、") : "临时志愿者"}。对面有${plan.rightTeam.length}名核心敌人。` : `你的${state.activeParty.length}名出战成员已经集结，对面有${plan.rightTeam.length}名核心敌人。`;
     return [{ id: "place_showdown", title: state.showdownAct === 1 ? "镇外家兵" : state.showdownAct === 2 ? "北桥联军" : "围剿联盟", area: "煤灰镇", status: "present", scene: `${publicSituation(state)} ${assembly}`, actionCount: catalog.length }];
   }
-  for (const [zoneId, zone] of Object.entries(ZONES)) if (state.day >= zone.start) rows.push({ id: `place_zone_${zoneId}`, title: zone.title, area: zone.area, status: "open", scene: zone.scene, actionCount: catalog.filter((a) => a.placeId === `place_zone_${zoneId}`).length });
+  for (const [zoneId, zone] of Object.entries(ZONES)) if (zoneAvailable(state, zoneId)) rows.push({ id: `place_zone_${zoneId}`, title: zone.title, area: zone.area, status: "open", scene: zone.scene, actionCount: catalog.filter((a) => a.placeId === `place_zone_${zoneId}`).length });
   if (state.day <= 5) rows.push({ id: "place_gate", title: "王炉门", area: "灰炉遗址", status: state.flags.innerOpen ? "open" : "locked", scene: state.flags.gateInspected ? "煤灰下露出熔毁锁芯、三段断纹和一条通往守门甲胄的铜线。" : "一扇煤灰覆盖的铁门挡住了通往内环的路。", actionCount: catalog.filter((a) => a.placeId === "place_gate").length });
   for (const event of EVENTS) if (eventIsVisible(state, event)) rows.push({ id: `place_event_${event.id}`, title: event.title, area: event.area, status: "present", scene: event.scene, actionCount: catalog.filter((a) => a.placeId === `place_event_${event.id}`).length });
   if (catalog.some((action) => action.placeId === "place_patrol")) rows.push({ id: "place_patrol", title: "尚未撤离的街巷", area: "煤灰镇", status: "present", scene: "眼下没有迫在眉睫的事件，但仍有镇民在收拾店铺和讨论局势。", actionCount: 1 });
@@ -808,9 +815,21 @@ function getPlayerObservation(state) {
   };
 }
 
+function migrateState(stateInput) {
+  const state = clone(stateInput);
+  if (state.flags?.smithForged && !state.flags.innerOpen) {
+    state.flags.innerOpen = true;
+    if (!state.flags.smithInnerMigrationNoted) {
+      state.flags.smithInnerMigrationNoted = true;
+      addLog(state, "铁匠试炉留下的蓝钢断纹与王炉门发生共鸣，灰炉内环已经开放。", "unlock");
+    }
+  }
+  return state;
+}
+
 return {
   VERSION, AP_PER_DAY, FINAL_DAY, HEROES, EVENTS, ZONES,
-  createInitialState, getPlayerObservation, applyPlayerAction, preparePlayerCombat, applyPlayerCombatResult,
+  createInitialState, migrateState, getPlayerObservation, applyPlayerAction, preparePlayerCombat, applyPlayerCombatResult,
   applyAction, internalActions, simulatePlan, showdownPlan, eventCombatPlan, heroPower, actForDay,
 };
 });

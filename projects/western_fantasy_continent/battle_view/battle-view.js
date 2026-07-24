@@ -45,6 +45,18 @@
     enemy_bone_ogre: "👁️", enemy_ember_idol: "🔥", enemy_plague_totem: "☠️",
     enemy_stone_golem: "🪨", enemy_mirror_executioner: "🗡️", enemy_frost_pylon: "❄️",
   };
+
+  function formationSlot(side, index, teamSize) {
+    const compact = side === "ally"
+      ? [{ x: 18, y: 36, line: "前排" }, { x: 18, y: 64, line: "前排" }, { x: 2, y: 32, line: "后排" }, { x: 2, y: 68, line: "后排" }]
+      : [{ x: 82, y: 36, line: "前排" }, { x: 82, y: 64, line: "前排" }, { x: 98, y: 32, line: "后排" }, { x: 98, y: 68, line: "后排" }];
+    if (teamSize <= 4) return compact[index % 4];
+    const row = index % 5;
+    const column = Math.floor(index / 5);
+    const columnCount = Math.ceil(teamSize / 5);
+    const x = side === "ally" ? 32 - column * 10 : 68 + column * 10;
+    return { x, y: 18 + row * 16, line: column < Math.ceil(columnCount / 2) ? "前排" : "后排" };
+  }
   const BERSERKER_MODEL = SKILLS.berserkerModel || {};
   const BERSERKER_RATIOS = BERSERKER_MODEL.ratios || {};
   const BERSERKER_DURATIONS = BERSERKER_MODEL.durations || {};
@@ -719,13 +731,10 @@
     }
 
     makeUnits(side, specs) {
-      const form = side === "ally"
-        ? [{ x: 18, y: 36, line: "前排" }, { x: 18, y: 64, line: "前排" }, { x: 2, y: 32, line: "后排" }, { x: 2, y: 68, line: "后排" }, { x: 10, y: 50, line: "后排" }, { x: 28, y: 50, line: "前排" }]
-        : [{ x: 82, y: 36, line: "前排" }, { x: 82, y: 64, line: "前排" }, { x: 98, y: 32, line: "后排" }, { x: 98, y: 68, line: "后排" }, { x: 90, y: 50, line: "后排" }, { x: 72, y: 50, line: "前排" }];
       return specs.map((spec, index) => {
         const hero = this.normalizeSpec(spec, side, index);
         const slotIndex = Number.isFinite(spec.slotIndex) ? spec.slotIndex : index;
-        const defaultSlot = form[slotIndex % form.length];
+        const defaultSlot = formationSlot(side, slotIndex, specs.length);
         const slot = {
           x: Number.isFinite(spec.homeX) ? spec.homeX : Number.isFinite(spec.x) ? spec.x : defaultSlot.x,
           y: Number.isFinite(spec.homeY) ? spec.homeY : Number.isFinite(spec.y) ? spec.y : defaultSlot.y,

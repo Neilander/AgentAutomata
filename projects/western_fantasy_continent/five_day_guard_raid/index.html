@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>我的超能力是无限刷装｜十五日围剿</title>
+  <link rel="stylesheet" href="../battle_view/battle-view.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="game-shell">
+    <header class="topbar">
+      <div class="title-lockup">
+        <span class="chapter-mark">煤灰镇 · 十五日生存</span>
+        <h1>我的超能力是无限刷装</h1>
+      </div>
+      <div id="day-rail" class="day-rail" aria-label="十五日时间轴"></div>
+      <div class="resource-strip" aria-label="资源">
+        <span>行动 <strong id="ap-value">3</strong></span>
+        <span>金币 <strong id="gold-value">0</strong></span>
+        <span>药品 <strong id="medicine-value">0</strong></span>
+        <span>支持 <strong id="favor-value">0</strong></span>
+        <span>证据 <strong id="evidence-value">0</strong></span>
+        <span>影响 <strong id="influence-value">0</strong></span>
+      </div>
+      <div class="top-actions">
+        <button id="end-day-button" class="button quiet">结束本日</button>
+        <button id="restart-open" class="icon-button" aria-label="重新开始" title="重新开始">↻</button>
+      </div>
+    </header>
+
+    <main id="campaign-grid" class="campaign-grid">
+      <aside class="world-panel panel">
+        <div class="section-heading">
+          <span>已知区域</span>
+          <strong id="known-place-count">0</strong>
+        </div>
+        <div class="map-wrap">
+          <svg class="town-map" viewBox="0 0 420 390" aria-label="煤灰镇及周边地图">
+            <path class="map-land" d="M32 77C74 15 171 22 221 48c69-35 155 3 162 69 37 42 20 121-25 145-11 65-86 107-147 79-62 33-145-2-151-62-49-40-49-143-28-202Z"/>
+            <path class="map-river" d="M-12 60c83 47 157 46 232 10 78-38 143-31 220 18"/>
+            <path class="map-road" d="M55 191c84 1 110 13 157 7 60-8 89-49 145-54M211 198c-12 54-44 91-94 126m95-126c41 49 68 86 94 129m-94-130c31-66 34-91 41-142"/>
+            <g class="map-landmarks">
+              <path d="M187 172h50v40h-50zM195 160h34l8 12h-50z"/>
+              <path d="M319 119h38v31h-38zM328 94h20v25h-20z"/>
+              <path d="M242 40h38v24h-38zM234 64h54"/>
+              <path d="M53 168h32v34H53zM85 180h27"/>
+              <path d="M292 293h38v32h-38zM311 273v20M300 283h22"/>
+              <path d="M89 306h70v14H89zM95 290v16M153 290v16"/>
+            </g>
+          </svg>
+          <div id="area-markers" class="area-markers"></div>
+        </div>
+        <div id="place-list" class="place-list"></div>
+      </aside>
+
+      <section class="stage-panel panel">
+        <div id="scene-view" class="scene-view">
+          <div class="scene-art" id="scene-art">
+            <span id="scene-area" class="scene-area"></span>
+            <div class="scene-vignette"></div>
+          </div>
+          <div class="scene-copy">
+            <div class="scene-title-row">
+              <span id="scene-status" class="status-chip"></span>
+              <h2 id="scene-title">灰炉外环</h2>
+            </div>
+            <p id="scene-description"></p>
+            <div id="scene-change" class="scene-change"></div>
+          </div>
+        </div>
+
+        <div id="combat-view" class="combat-view" hidden>
+          <div class="combat-heading">
+            <div>
+              <span>正在交战</span>
+              <h2 id="combat-title">战斗</h2>
+            </div>
+            <div id="combat-preparation" class="combat-preparation"></div>
+          </div>
+          <div id="battle-mount" class="battle-mount"></div>
+          <div id="combat-result" class="combat-result" hidden></div>
+        </div>
+      </section>
+
+      <aside class="action-panel panel">
+        <div class="section-heading">
+          <span id="action-heading">现在能做什么</span>
+          <strong id="action-count">0</strong>
+        </div>
+        <div id="action-list" class="action-list"></div>
+        <section class="threat-glimpse">
+          <h3>镇外迹象</h3>
+          <div id="threat-list"></div>
+        </section>
+      </aside>
+    </main>
+
+    <section class="command-dock panel">
+      <div class="dock-tabs" role="tablist">
+        <button class="dock-tab active" data-tab="party">队伍</button>
+        <button class="dock-tab" data-tab="inventory">背包 <span id="inventory-count">0</span></button>
+        <button class="dock-tab" data-tab="journal">记录</button>
+      </div>
+      <div id="dock-content" class="dock-content"></div>
+    </section>
+  </div>
+
+  <dialog id="restart-dialog" class="restart-dialog">
+    <form method="dialog">
+      <span class="chapter-mark">重新开始</span>
+      <h2>放弃当前十五日进度？</h2>
+      <p>这只会重置本章的本地存档。</p>
+      <label>世界种子<input id="restart-seed" value="browser-campaign"></label>
+      <div class="dialog-actions">
+        <button value="cancel" class="button quiet">取消</button>
+        <button id="restart-confirm" value="default" class="button danger">确认重开</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="../game_data/skill-assets.js"></script>
+  <script src="../game_data/skill-data.js"></script>
+  <script src="../game_data/combat-signals.js"></script>
+  <script src="../game_data/runtime-field-effects.js"></script>
+  <script src="../game_data/combat-sim.js"></script>
+  <script src="../battle_view/battle-view.js"></script>
+  <script src="../fifteen_day_demo/fifteen-day-core.js"></script>
+  <script src="five-day-raid-web.js"></script>
+</body>
+</html>

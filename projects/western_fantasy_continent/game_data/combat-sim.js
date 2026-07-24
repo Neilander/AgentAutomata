@@ -9,7 +9,6 @@ const RUNTIME_FIELDS = typeof window !== "undefined"
   ? window.GAME_RUNTIME_FIELD_EFFECTS
   : require("./runtime-field-effects");
 
-const TEAM_SIZE = 4;
 const MAX_TIME = 75;
 const ICON_BASE = "https://game-icons.net/icons/000000/ffffff/1x1/lorc";
 
@@ -21,6 +20,15 @@ const FORMATION = {
   left: [{ x: 18, y: 36, line: "前排" }, { x: 18, y: 64, line: "前排" }, { x: 2, y: 32, line: "后排" }, { x: 2, y: 68, line: "后排" }],
   right: [{ x: 82, y: 36, line: "前排" }, { x: 82, y: 64, line: "前排" }, { x: 98, y: 32, line: "后排" }, { x: 98, y: 68, line: "后排" }],
 };
+
+function formationSlot(side, index, teamSize) {
+  if (teamSize <= 4) return FORMATION[side][index % 4];
+  const row = index % 5;
+  const column = Math.floor(index / 5);
+  const columnCount = Math.ceil(teamSize / 5);
+  const x = side === "left" ? 32 - column * 10 : 68 + column * 10;
+  return { x, y: 18 + row * 16, line: column < Math.ceil(columnCount / 2) ? "前排" : "后排" };
+}
 
 function simulatePresetMatchup(leftKey, rightKey, options = {}) {
   const leftTeam = clonePreset(leftKey);
@@ -239,7 +247,7 @@ class CombatSimulation {
     return specs.map((spec, index) => {
       const role = this.unitProfile(spec);
       const slotIndex = Number.isFinite(spec.slotIndex) ? spec.slotIndex : index;
-      const defaultSlot = FORMATION[side][slotIndex % TEAM_SIZE];
+      const defaultSlot = formationSlot(side, slotIndex, specs.length);
       const slot = {
         x: Number.isFinite(spec.homeX) ? spec.homeX : Number.isFinite(spec.x) ? spec.x : defaultSlot.x,
         y: Number.isFinite(spec.homeY) ? spec.homeY : Number.isFinite(spec.y) ? spec.y : defaultSlot.y,

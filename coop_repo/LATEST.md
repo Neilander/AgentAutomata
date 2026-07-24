@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-07-22_1729_equipment-identity-tags.md`](reports/2026-07-22_1729_equipment-identity-tags.md)
+[`reports/2026-07-24_1300_fifteen-day-workbench-entry.md`](reports/2026-07-24_1300_fifteen-day-workbench-entry.md)
 
-Last updated: 2026-07-22
+Last updated: 2026-07-24
 
-当前重点：《我的超能力是无限刷装》新增独立于战斗效果词条的装备身份词条层。贵族、古代锻造、赃物、流放者、宗教、具体阵营和恐怖等词条描述装备的来历、归属与社会意义，由人物需求、势力、地点、任务、准入和证据规则按场景读取；正式词表及生成、隐藏、移除和伪造规则仍待设计。
+当前重点：15 日三幕 Demo 已接入项目既有工作台，不再使用独立启动器。启动 `app/launcher/start_local.bat` 后，可在工作台 Demo 区第一项进入“无限刷装：十五日围剿”；页面、十五日核心与共享战斗资源均由同一 3777 服务提供。下一步优先真人从第 1 日玩到第 5 日确认节奏与信息负担。

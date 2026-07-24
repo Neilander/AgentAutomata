@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-07-21_0254_three-round-sealed-emotion-validation.md`](reports/2026-07-21_0254_three-round-sealed-emotion-validation.md)
+[`reports/2026-07-24_1300_fifteen-day-workbench-entry.md`](reports/2026-07-24_1300_fifteen-day-workbench-entry.md)
 
-Last updated: 2026-07-21
+Last updated: 2026-07-24
 
-当前重点：隔离的玩家情绪生成模型已完成三轮按人物来源组隔离、预测先冻结后揭晓的顺序验证。V3在第三轮16条有事件案例中Top-1 11/16、Top-3 16/16；三轮版本不同，不能合并冒充固定版本成绩。同一开发者仍兼任答案不可见的事件整理者，强度与个体差异未校准。下一步冻结V3，由独立整理者在剩余946条输入和新文学/影视/纪实来源上做大样本验证；正式玩家Agent仍完全未改。
+当前重点：15 日三幕 Demo 已接入项目既有工作台，不再使用独立启动器。启动 `app/launcher/start_local.bat` 后，可在工作台 Demo 区第一项进入“无限刷装：十五日围剿”；页面、十五日核心与共享战斗资源均由同一 3777 服务提供。下一步优先真人从第 1 日玩到第 5 日确认节奏与信息负担。

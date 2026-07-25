@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-07-22_2243_decision-feature-input-audit.md`](reports/2026-07-22_2243_decision-feature-input-audit.md)
+[`reports/2026-07-24_1711_mind-toy-graded-map-blur.md`](reports/2026-07-24_1711_mind-toy-graded-map-blur.md)
 
-Last updated: 2026-07-22
+Last updated: 2026-07-24
 
-当前重点：已审计Decision四核心特征需要的最小证据与当前Agent实际输出。Agent已有问题、证据、比较、备选、假设、因果链和战后归因；20轮真实响应中19次有备选、9次有比较、6次有假设、5次有三步因果链。缺口是可比较的认知前后状态：未解决问题如何减少、新增了哪些Ordering关系、具体取舍如何表达偏好，以及跨轮困惑如何瞬时消解。下一步只在隔离合同中补事实型before/after字段，不让Agent自己打心理分。
+当前重点：地图有限注意不能实现为随机遮挡。研究支持四种并存机制：未注意信息完全不进入模型、相似单位压成群体统计、负荷增加使个体精度连续下降、类型与位置可能绑定错误。第一版建议只做instance/group/gist三层和高负荷下的小概率绑定错误；下一步用固定3区域、8~12敌人的小地图，只改变目标与焦点，检查真实Agent输出如何渐进模糊。

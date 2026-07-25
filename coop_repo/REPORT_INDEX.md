@@ -2,6 +2,20 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-24
+
+- `2026-07-24_1711_mind-toy-graded-map-blur.md`：研究地图中人类注意与记忆的渐进模糊。结论不是随机遮掉固定比例，而是未注意遗漏、群体统计概括、负荷导致精度下降和类型/位置绑定错误并存；提出instance/group/gist三层最小模型和固定小地图验证方案。
+
+- `2026-07-24_1341_mind-toy-basic-game-suite.md`：调研并选定MindToy首批基础游戏Guess、Light Up、Sokoban和Flood，分别隔离假设切分、约束压缩、空间Ordering和连续状态策略；定义三档小关卡、第二批压力游戏以及先保存真实AI逐个idea/estimate原始输出、后运行裁判器的测试协议。
+
+- `2026-07-24_0104_mind-toy-closed-world-food-planning.md`：新增闭卷有限知识模式和20种食物的一日三餐因子化状态转移案例。卡路里、GI/GL和糖分必须逐字段绑定知识卡，口味由有限知识推导；缺卡保持unknown。新增6项测试通过，并加入玩家搜索预算和主观等价方案压缩。
+
+## 2026-07-23
+
+- `2026-07-23_2356_mind-toy-four-model-runtime.md`：隔离实现AI构建/估算两阶段合同，以及单值排行榜、多价值排行榜、地图、状态转移四种MindToy运行器。8项测试通过；限时两日备战案例正确比较削弱敌方7.9与强化己方6.5。当前AI响应是冻结样本，真实Agent盲测和跨轮认知更新尚未完成。
+
+- `2026-07-23_1129_mind-structure-toy-feasibility.md`：调研并收敛玩家主观思维结构模块。确认 `buildMindStructure → MindToy → attempt()` 与心理模型、认知地图、世界模型、部分可观察决策和资源理性规划相符；第一版限定为三种共底层图视图和统一预算化预测器，暂不接正式 Agent 或情绪收益。
+
 ## 2026-07-22
 
 - `2026-07-22_2243_decision-feature-input-audit.md`：只读审计四核心特征与Aha所需证据和现有Agent输出。20轮真实响应已有问题、证据、备选、比较、假设与因果链，真正缺口是未解决问题前后变化、Ordering关系、明确取舍/偏好和跨轮困惑状态。建议仅补事实型before/after合同，不让Agent自评分；正式运行时未修改。

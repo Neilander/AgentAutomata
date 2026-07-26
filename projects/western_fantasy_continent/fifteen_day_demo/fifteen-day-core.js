@@ -11,6 +11,7 @@ const SKILLS = typeof module !== "undefined" && module.exports ? require("../gam
 const VERSION = "fifteen_day_demo_v2";
 const AP_PER_DAY = 3;
 const FINAL_DAY = 15;
+const INVENTORY_LIMIT = 200;
 const MAX_ACTIVE_BY_ACT = { 1: 4, 2: 10, 3: 10 };
 const FORMATION_LABELS = [
   "前排一号", "前排二号", "前排三号", "前排四号", "前排五号",
@@ -61,12 +62,12 @@ const EVENTS = [
   ] },
   { id: "smith_intro", title: "铁匠的试炉", area: "镇中心", start: 2, end: 4, scene: "铁匠把三把普通武器摆在砧台旁，试炉只够再烧一次。", options: [
     { id: "promise", label: "答应替她收集三把普通武器", visible: (s) => !s.flags.smithPromise },
-    { id: "forge", label: "把三把普通武器交给铁匠", visible: (s) => Boolean(s.flags.smithPromise), req: (s) => countUnequipped(s, (i) => i.slot === "weapon" && i.rarity === "普通") >= 3 },
+    { id: "forge", label: "把三把普通武器交给铁匠", visible: (s) => Boolean(s.flags.smithPromise), req: (s) => countUnequipped(s, (i) => i.slot === "weapon" && i.rarity === "普通") >= 3, callback: "你此前答应了铁匠，并已经带回三把普通武器" },
   ] },
   { id: "well_dispute", title: "水井边的争执", area: "镇中心", start: 1, end: 2, scene: "染匠说上游截水是旧约，菜农说今年再断水全家都会饿死。", options: [
     { id: "tanner", label: "支持染匠执行旧约" },
     { id: "grower", label: "支持菜农先保住收成" },
-    { id: "measure", label: "查水尺与旧账后再分水", req: (s) => s.flags.smithPromise },
+    { id: "measure", label: "查水尺与旧账后再分水", req: (s) => s.flags.smithPromise, callback: "铁匠愿意借出你此前答应试炉后见过的量尺" },
   ] },
   { id: "apothecary_debt", title: "被堵在药铺里的学徒", area: "镇中心", start: 3, end: 4, scene: "债主堵住药铺门口，学徒仍在给两个发热的孩子换湿布。", options: [
     { id: "pay", label: "替她还清五枚金币", req: (s) => s.resources.gold >= 5 },
@@ -76,125 +77,221 @@ const EVENTS = [
     { id: "thief", label: "替孩子作保并追问账页来历" },
     { id: "warden", label: "把孩子和账页都交给守仓人" },
   ] },
-  { id: "caravan", title: "燃烧的驮车", area: "西门商道", start: 3, end: 3, scene: "一辆驮车起火，车夫被压住，货箱上的锁已经烧红。", options: [
+  { id: "caravan", title: "燃烧的驮车", area: "西门商道", start: 1, end: 5, scene: "一辆驮车起火，车夫被压住，货箱上的锁已经烧红。", options: [
     { id: "rescue", label: "先救被压住的车夫" },
     { id: "cargo", label: "先拖走即将烧毁的货箱" },
   ] },
   { id: "furnace_clue", title: "王炉门上的断纹", area: "灰炉遗址", start: 2, end: 5, visible: (s) => s.flags.gateInspected && !s.flags.innerOpen, scene: "熔毁锁芯旁有三段断纹，铜线一直连向守门甲胄。", options: [
-    { id: "smith", label: "把断纹拓印交给铁匠", visible: (s) => !s.flags.smithDoorTheory, req: (s) => s.flags.smithPromise },
-    { id: "key", label: "把三件[古代锻造]装备交给铁匠", visible: (s) => Boolean(s.flags.smithDoorTheory), req: (s) => countUnequipped(s, (i) => i.identityTags.includes("古代锻造")) >= 3 },
+    { id: "smith", label: "把断纹拓印交给铁匠", visible: (s) => !s.flags.smithDoorTheory, req: (s) => s.flags.smithPromise, callback: "你此前答应了铁匠的试炉" },
+    { id: "key", label: "把三件[古代锻造]装备交给铁匠", visible: (s) => Boolean(s.flags.smithDoorTheory), req: (s) => countUnequipped(s, (i) => i.identityTags.includes("古代锻造")) >= 3, callback: "铁匠已经辨认出炉门断纹" },
     { id: "force", label: "挑战守门甲胄" },
   ] },
   { id: "cooling_well", title: "冒蒸汽的冷却井", area: "灰炉遗址", start: 2, end: 5, visible: (s) => s.flags.guardianFailed && !s.flags.innerOpen, scene: "甲胄退回炉门后，冷却井仍沿铜管向它输送蒸汽。", options: [
-    { id: "jam", label: "用废铁卡死冷却阀" },
+    { id: "jam", label: "用废铁卡死冷却阀", callback: "此前与守门甲胄交手时发现了供汽铜管" },
   ] },
   { id: "quartermaster", title: "河畔营地的军需车", area: "河畔营地", start: 3, end: 5, scene: "军需车停在木栅后，后坡的排水沟通向营地内侧。", options: [
-    { id: "thief", label: "让小偷从排水沟潜入", req: (s) => s.roster.includes("thief") },
+    { id: "thief", label: "让小偷从排水沟潜入", req: (s) => s.roster.includes("thief"), callback: "鸦指此前加入了你的队伍" },
     { id: "fight", label: "正面袭击军需守卫" },
   ] },
   { id: "duelist", title: "白鹿家的旁支剑士", area: "西门商道", start: 4, end: 5, scene: "旁支剑士没有跟护卫队同行。她反复查看少爷留下的书面命令。", options: [
-    { id: "evidence", label: "把收集到的账页与证词交给她", req: (s) => s.resources.evidence >= 3 },
+    { id: "evidence", label: "把收集到的账页与证词交给她", req: (s) => s.resources.evidence >= 3, callback: "此前取得的账页与证词在这里有了用处" },
     { id: "challenge", label: "以剑证明你不是街头暴徒" },
   ] },
   { id: "night_raid", title: "营地夜巡", area: "河畔营地", start: 4, end: 5, scene: "巡逻火把沿河移动，高地能看见他们换岗时留下的空档。", options: [
     { id: "ambush", label: "伏击夜巡队" },
-    { id: "scout", label: "只记录换岗路线", req: (s) => s.roster.includes("thief") },
+    { id: "scout", label: "只记录换岗路线", req: (s) => s.roster.includes("thief"), callback: "鸦指能够避开巡逻视线" },
+  ] },
+  { id: "market_toll", title: "集市上的私设路税", area: "镇中心", start: 1, end: 5, scene: "两名白鹿家仆役堵住集市出口，说少爷受伤后每辆货车都要补交安宁钱。", options: [
+    { id: "protect", label: "替摊贩交三枚金币", req: (s) => s.resources.gold >= 3 },
+    { id: "names", label: "记下收钱人的姓名与印章" },
+    { id: "table", label: "当众掀翻收费桌" },
+  ] },
+  { id: "watch_bell", title: "裂开的警钟", area: "旧城墙", start: 2, end: 5, scene: "城墙警钟裂了一道口，修钟匠说剩下的铜链只能修钟或加固西门，不能两边都用。", options: [
+    { id: "bell", label: "把铜链留给警钟" },
+    { id: "gate", label: "把铜链拖去加固西门" },
+  ] },
+  { id: "missing_scribe", title: "躲进草棚的书记员", area: "西门商道", start: 2, end: 5, scene: "少爷家的书记员抱着一册货运账躲在草棚里。他说回去会挨打，却也不敢公开作证。", options: [
+    { id: "shelter", label: "藏起书记员并抄下货运账" },
+    { id: "return", label: "把他送回白鹿家换赏钱" },
+  ] },
+  { id: "grain_prices", title: "突然涨价的粮铺", area: "镇中心", start: 3, end: 5, scene: "粮铺老板听说家兵将至，把最后几袋麦子锁进后仓，只肯按三倍价格出售。", options: [
+    { id: "ration", label: "逼粮铺按户限量平价出售" },
+    { id: "auction", label: "替粮铺维持高价并收取分成" },
+  ] },
+  { id: "ford_deserter", title: "浅滩边的逃兵", area: "河畔营地", start: 3, end: 5, scene: "一名家兵把制服埋进浅滩。他知道队长的口令，只求一条不被追回去的路。", options: [
+    { id: "hide", label: "藏起逃兵并记下口令" },
+    { id: "return", label: "把逃兵交给营地领赏" },
+  ] },
+  { id: "road_barricade", title: "商道上的最后一车木料", area: "西门商道", start: 4, end: 5, scene: "木匠只剩一车梁木。镇民想拿它封路，车队老板则愿意出钱买走。", options: [
+    { id: "build", label: "把木料留下修筑路障" },
+    { id: "sell", label: "让车队带走木料" },
+  ] },
+  { id: "widow_claim", title: "拿着马鞍的寡妇", area: "镇中心", start: 4, end: 5, scene: "寡妇说少爷纵马撞死了她丈夫，家仆却拿出一张已经按过手印的和解书。", options: [
+    { id: "hearing", label: "召集见证人重新核对和解书" },
+    { id: "settle", label: "劝她收下补偿不要再追究" },
   ] },
 
   { id: "exile_scout", title: "被驱逐的灰炉向导", area: "黑石采坑", start: 6, end: 8, scene: "一名流放者在矿道口画守卫换岗图，她想取回家族被扣下的骨匣。", options: [
     { id: "return", label: "答应替她取回骨匣" },
-    { id: "rune", label: "用一件[流放者]装备证明来意", req: (s) => heroHasTag(s, "player", "流放者") },
+    { id: "rune", label: "用一件[流放者]装备证明来意", req: (s) => heroHasTag(s, "player", "流放者"), callback: "你此前选择穿戴了带有流放者印记的装备" },
   ] },
-  { id: "mine_strike", title: "拒绝下井的矿工", area: "北部矿区", start: 6, end: 7, scene: "矿主扣住粮票逼人下井，矿工则堵住运煤轨道。", options: [
+  { id: "mine_strike", title: "拒绝下井的矿工", area: "北部矿区", start: 6, end: 10, scene: "矿主扣住粮票逼人下井，矿工则堵住运煤轨道。", options: [
     { id: "miners", label: "站在矿工一边扣下运煤车" },
     { id: "owner", label: "护送运煤车通过人群" },
-    { id: "audit", label: "查清粮票和欠薪账", req: (s) => s.resources.evidence >= 2 },
+    { id: "audit", label: "查清粮票和欠薪账", req: (s) => s.resources.evidence >= 2, callback: "此前收集的记录可以与欠薪账互相核对" },
   ] },
-  { id: "chapel_guard", title: "封闭礼拜堂的灰袍司祭", area: "旧礼拜堂", start: 6, end: 7, scene: "司祭把避难者锁在礼拜堂里，门外的人说他私藏了教会药品。", options: [
+  { id: "chapel_guard", title: "封闭礼拜堂的灰袍司祭", area: "旧礼拜堂", start: 6, end: 10, scene: "司祭把避难者锁在礼拜堂里，门外的人说他私藏了教会药品。", options: [
     { id: "medicine", label: "送去三份药品", req: (s) => s.resources.medicine >= 3 },
     { id: "search", label: "要求当众检查地下储藏室" },
   ] },
-  { id: "bridge_engineer", title: "被拆毁的北桥", area: "北部矿区", start: 7, end: 8, scene: "桥梁师守着半截绞盘，她说缺两件古代锻造零件，也可以冒险从激流里拖出旧梁。", options: [
-    { id: "parts", label: "交出两件[古代锻造]装备", req: (s) => countUnequipped(s, (i) => i.identityTags.includes("古代锻造")) >= 2 },
+  { id: "bridge_engineer", title: "被拆毁的北桥", area: "北部矿区", start: 7, end: 10, scene: "桥梁师守着半截绞盘，她说缺两件古代锻造零件，也可以冒险从激流里拖出旧梁。", options: [
+    { id: "parts", label: "交出两件[古代锻造]装备", req: (s) => countUnequipped(s, (i) => i.identityTags.includes("古代锻造")) >= 2, callback: "此前带出的古代锻造物能替代耐火轴承" },
     { id: "river", label: "带队下水抢修旧梁" },
   ] },
   { id: "arena", title: "矿区的倒塌擂台", area: "北部矿区", start: 7, end: 10, scene: "冠军答应加入能把他逼出白线的人。围观者已经在废石上下注。", options: [
     { id: "fight", label: "公开挑战擂台冠军" },
-    { id: "rematch", label: "接受双方卸甲重赛", visible: (s) => s.flags.arenaFailed },
+    { id: "rematch", label: "接受双方卸甲重赛", visible: (s) => s.flags.arenaFailed, callback: "此前的败战让你看清了冠军接受的重赛规则" },
   ] },
-  { id: "deserter_mage", title: "躲在盐仓里的逃亡术士", area: "河畔营地", start: 7, end: 8, scene: "术士烧掉了雇佣军征召书。他需要一条离开封锁线的路。", options: [
-    { id: "route", label: "把夜巡换岗图交给他", req: (s) => s.flags.campScouted },
+  { id: "deserter_mage", title: "躲在盐仓里的逃亡术士", area: "河畔营地", start: 7, end: 10, scene: "术士烧掉了雇佣军征召书。他需要一条离开封锁线的路。", options: [
+    { id: "route", label: "把夜巡换岗图交给他", req: (s) => s.flags.campScouted, callback: "你此前掌握了营地的换岗路线" },
     { id: "bribe", label: "花八枚金币买通河船", req: (s) => s.resources.gold >= 8 },
   ] },
-  { id: "tax_archive", title: "临时税务所", area: "镇中心", start: 8, end: 9, scene: "执法官把镇民欠税册与少爷的赔偿要求钉在同一块木板上。", options: [
-    { id: "steal", label: "趁换岗时偷走盖章底册", req: (s) => s.roster.includes("thief") || s.roster.includes("exile") },
+  { id: "tax_archive", title: "临时税务所", area: "镇中心", start: 8, end: 10, scene: "执法官把镇民欠税册与少爷的赔偿要求钉在同一块木板上。", options: [
+    { id: "steal", label: "趁换岗时偷走盖章底册", req: (s) => s.roster.includes("thief") || s.roster.includes("exile"), callback: "队伍里有人熟悉潜入与换岗" },
     { id: "petition", label: "召集欠税人逐条核对" },
   ] },
-  { id: "grain_seizure", title: "被扣押的冬粮", area: "西门商道", start: 8, end: 9, scene: "执法队扣下冬粮作为赔偿，车夫只认盖章放行条。", options: [
-    { id: "papers", label: "拿税务底册逼车夫放粮", req: (s) => s.flags.taxLedger },
+  { id: "grain_seizure", title: "被扣押的冬粮", area: "西门商道", start: 8, end: 10, scene: "执法队扣下冬粮作为赔偿，车夫只认盖章放行条。", options: [
+    { id: "papers", label: "拿税务底册逼车夫放粮", req: (s) => s.flags.taxLedger, callback: "此前取得的盖章底册能推翻扣粮手续" },
     { id: "raid", label: "截停押粮队" },
   ] },
-  { id: "signal_tower", title: "山脊上的信号塔", area: "北部矿区", start: 8, end: 9, scene: "信号塔每晚向南方点三次火，守塔人从不离开平台。", options: [
-    { id: "false", label: "换掉今晚的灯油与旗语", req: (s) => s.roster.includes("exile") || s.roster.includes("engineer") },
+  { id: "signal_tower", title: "山脊上的信号塔", area: "北部矿区", start: 8, end: 10, scene: "信号塔每晚向南方点三次火，守塔人从不离开平台。", options: [
+    { id: "false", label: "换掉今晚的灯油与旗语", req: (s) => s.roster.includes("exile") || s.roster.includes("engineer"), callback: "此前结识的向导或桥梁师看得懂旗语机关" },
     { id: "storm", label: "趁雷雨强攻塔楼" },
   ] },
   { id: "paymaster", title: "雇佣军发饷日", area: "河畔营地", start: 9, end: 10, scene: "六名押运兵围着钱箱，营帐里不断有人来问欠饷。", options: [
     { id: "fight", label: "夺下发饷钱箱" },
-    { id: "rumor", label: "把欠饷名单贴到营门", req: (s) => s.flags.taxLedger || s.resources.evidence >= 4 },
+    { id: "rumor", label: "把欠饷名单贴到营门", req: (s) => s.flags.taxLedger || s.resources.evidence >= 4, callback: "此前掌握的账目能证明军饷被截留" },
   ] },
   { id: "noble_banquet", title: "执法官的宴会", area: "镇中心", start: 9, end: 10, scene: "执法官邀请镇上有头脸的人赴宴，桌上摆着尚未宣读的判决书。", options: [
-    { id: "noble", label: "穿戴[贵族]装备入席", req: (s) => heroHasTag(s, "player", "贵族") },
-    { id: "servants", label: "让学徒混进后厨", req: (s) => s.roster.includes("apothecary") || s.roster.includes("thief") },
+    { id: "noble", label: "穿戴[贵族]装备入席", req: (s) => heroHasTag(s, "player", "贵族"), callback: "你此前穿上的贵族印记改变了守门人的态度" },
+    { id: "servants", label: "让学徒混进后厨", req: (s) => s.roster.includes("apothecary") || s.roster.includes("thief"), callback: "此前加入的同伴能从仆役通道进入" },
   ] },
   { id: "hunter", title: "矿道里的食铁兽", area: "黑石采坑", start: 9, end: 10, scene: "巨兽咬断矿轨后躲进黑暗，猎人用粉笔标出它反复经过的岔路。", options: [
     { id: "hunt", label: "跟猎人进入矿道" },
-    { id: "trap", label: "在标出的岔路布置陷阱", visible: (s) => s.flags.huntFailed },
+    { id: "trap", label: "在标出的岔路布置陷阱", visible: (s) => s.flags.huntFailed, callback: "此前追猎失败后，你记住了食铁兽反复经过的岔路" },
+  ] },
+  { id: "quarry_collapse", title: "塌方后的求救声", area: "黑石采坑", start: 6, end: 10, scene: "塌方堵住采坑支道，石缝里还能听见敲击声；另一侧散落着没人看守的矿晶箱。", options: [
+    { id: "rescue", label: "组织人手挖开求救方向" },
+    { id: "crystals", label: "趁乱拖走矿晶箱" },
+  ] },
+  { id: "river_customs", title: "河面上的临时关卡", area: "河畔营地", start: 6, end: 10, scene: "执法队在河面拉起铁索，每条船都要交钱并登记乘客。岸边旧纤道仍通向下游。", options: [
+    { id: "route", label: "利用掌握的换岗路线走旧纤道", req: (s) => s.flags.campScouted, callback: "第一幕记下的营地换岗路线延伸到了河岸" },
+    { id: "bribe", label: "交四枚金币让一条船放行", req: (s) => s.resources.gold >= 4 },
+    { id: "papers", label: "偷记关卡登记册上的名字" },
+  ] },
+  { id: "chapel_inquest", title: "礼拜堂外的审问席", area: "旧礼拜堂", start: 7, end: 10, scene: "教会巡查员要求司祭交出避难者名册，门外已经摆好审问桌。", options: [
+    { id: "priest", label: "让伊文当众质疑审问程序", req: (s) => s.roster.includes("priest"), callback: "此前加入的伊文熟悉教会审问规则" },
+    { id: "letters", label: "交出地下室发现的教会来信", req: (s) => s.nodes.chapel_guard?.option === "search", callback: "此前搜查地下室时发现了未登记来信" },
+    { id: "list", label: "交出名册换取礼拜堂平安" },
+  ] },
+  { id: "mercenary_contract", title: "钉在酒馆门上的佣兵契约", area: "镇中心", start: 7, end: 10, scene: "契约承诺围剿后按人头分钱，末尾却写着伤亡与欠饷都由执法官另行解释。", options: [
+    { id: "buyout", label: "支付十枚金币买断一队佣兵", req: (s) => s.resources.gold >= 10 },
+    { id: "clause", label: "用税务底册证明契约无法兑现", req: (s) => s.flags.taxLedger, callback: "此前取得的税务底册能核对执法官的支付能力" },
+    { id: "copy", label: "抄下契约留作证据" },
+  ] },
+  { id: "mine_prisoners", title: "运煤车里的囚工", area: "北部矿区", start: 8, end: 10, scene: "一辆封闭运煤车里关着拒绝签契约的矿工，押车守卫正在等下一班换岗。", options: [
+    { id: "free", label: "撬开车门放走囚工" },
+    { id: "pay", label: "付五枚金币让守卫丢下钥匙", req: (s) => s.resources.gold >= 5 },
+  ] },
+  { id: "north_hostages", title: "北门下的扣押名单", area: "北部矿区", start: 9, end: 10, scene: "执法队扣住六名镇民，声称只要煤灰镇交药或交出证人就放人。", options: [
+    { id: "medicine", label: "交出两份药换回镇民", req: (s) => s.resources.medicine >= 2 },
+    { id: "question", label: "追查名单上被反复涂改的名字" },
   ] },
 
-  { id: "banner_company", title: "失去军籍的断旗队", area: "西门商道", start: 11, end: 13, scene: "二十名旧王国兵护送难民抵达。他们没有粮，也不愿再替贵族卖命。", options: [
-    { id: "grain", label: "把夺回的冬粮分给他们", req: (s) => s.flags.grainRecovered },
+  { id: "banner_company", title: "失去军籍的断旗队", area: "西门商道", start: 11, end: 15, scene: "二十名旧王国兵护送难民抵达。他们没有粮，也不愿再替贵族卖命。", options: [
+    { id: "grain", label: "把夺回的冬粮分给他们", req: (s) => s.flags.grainRecovered, callback: "此前夺回的冬粮现在能安置难民与旧兵" },
     { id: "pay", label: "支付十二枚金币作为军饷", req: (s) => s.resources.gold >= 12 },
-    { id: "oath", label: "出示执法官伪造判决的证据", req: (s) => s.resources.evidence >= 6 },
+    { id: "oath", label: "出示执法官伪造判决的证据", req: (s) => s.resources.evidence >= 6, callback: "此前累积的证据能动摇旧兵对命令的服从" },
   ] },
-  { id: "swamp_witch", title: "沼泽边的盐枝女巫", area: "南部沼泽", start: 11, end: 13, scene: "女巫能让攻城兽拒绝进食，但礼拜堂的人要求先烧掉她的药圃。", options: [
+  { id: "swamp_witch", title: "沼泽边的盐枝女巫", area: "南部沼泽", start: 11, end: 15, scene: "女巫能让攻城兽拒绝进食，但礼拜堂的人要求先烧掉她的药圃。", options: [
     { id: "protect", label: "承诺保护她的药圃" },
     { id: "church", label: "支持礼拜堂封禁药圃" },
     { id: "herbs", label: "交出五份药品换取兽群药剂", req: (s) => s.resources.medicine >= 5 },
   ] },
-  { id: "war_council", title: "三方争吵的战前会议", area: "镇中心", start: 11, end: 12, scene: "矿工要守矿道，商人要守粮仓，司祭坚持先撤走伤员。能调动的人手只够先答应一方。", options: [
+  { id: "war_council", title: "三方争吵的战前会议", area: "镇中心", start: 11, end: 15, scene: "矿工要守矿道，商人要守粮仓，司祭坚持先撤走伤员。能调动的人手只够先答应一方。", options: [
     { id: "miners", label: "先把人手交给矿工" },
     { id: "merchants", label: "先把人手交给商人" },
     { id: "chapel", label: "先把人手交给礼拜堂" },
   ] },
-  { id: "sky_ferry", title: "山顶的旧式飞艇塔", area: "北部矿区", start: 11, end: 14, scene: "升降塔仍能转动，但主轴缺一枚耐火炉心，塔下还有雇佣军巡逻。", options: [
-    { id: "core", label: "安装一件[古代锻造]史诗装备", req: (s) => countUnequipped(s, (i) => i.identityTags.includes("古代锻造") && rarityIndex(i.rarity) >= rarityIndex("史诗")) >= 1 },
+  { id: "sky_ferry", title: "山顶的旧式飞艇塔", area: "北部矿区", start: 11, end: 15, scene: "升降塔仍能转动，但主轴缺一枚耐火炉心，塔下还有雇佣军巡逻。", options: [
+    { id: "core", label: "安装一件[古代锻造]史诗装备", req: (s) => countUnequipped(s, (i) => i.identityTags.includes("古代锻造") && rarityIndex(i.rarity) >= rarityIndex("史诗")) >= 1, callback: "此前刷到的高阶古代锻造物可以充当炉心" },
     { id: "seize", label: "清除塔下巡逻队" },
   ] },
-  { id: "plague_camp", title: "围城前的热病营", area: "旧礼拜堂", start: 12, end: 14, scene: "难民营出现热病，药品不够同时救治病人和维持前线。", options: [
+  { id: "plague_camp", title: "围城前的热病营", area: "旧礼拜堂", start: 12, end: 15, scene: "难民营出现热病，药品不够同时救治病人和维持前线。", options: [
     { id: "sick", label: "把药优先留给病人", req: (s) => s.resources.medicine >= 3 },
     { id: "front", label: "把药优先送往前线", req: (s) => s.resources.medicine >= 3 },
-    { id: "witch", label: "请盐枝女巫辨认病源", req: (s) => s.roster.includes("witch") },
+    { id: "witch", label: "请盐枝女巫辨认病源", req: (s) => s.roster.includes("witch"), callback: "你此前保护或帮助了盐枝女巫" },
   ] },
-  { id: "siege_engines", title: "正在组装的攻城器", area: "河畔营地", start: 12, end: 14, scene: "八名工兵在河滩组装投石机，零件分散在三处火堆旁。", options: [
+  { id: "siege_engines", title: "正在组装的攻城器", area: "河畔营地", start: 12, end: 15, scene: "八名工兵在河滩组装投石机，零件分散在三处火堆旁。", options: [
     { id: "fight", label: "强袭攻城器工地" },
-    { id: "sabotage", label: "让桥梁师混入工匠队", req: (s) => s.roster.includes("engineer") },
+    { id: "sabotage", label: "让桥梁师混入工匠队", req: (s) => s.roster.includes("engineer"), callback: "此前加入的桥梁师熟悉承重机关" },
   ] },
-  { id: "beast_pens", title: "围剿军的战兽栏", area: "南部沼泽", start: 12, end: 14, scene: "五头披甲战兽被铁链拴在木桩旁，饲养员用同一只桶投食。", options: [
+  { id: "beast_pens", title: "围剿军的战兽栏", area: "南部沼泽", start: 12, end: 15, scene: "五头披甲战兽被铁链拴在木桩旁，饲养员用同一只桶投食。", options: [
     { id: "fight", label: "在战兽出栏前解决它们" },
-    { id: "dose", label: "把女巫药剂倒进食桶", req: (s) => s.flags.beastDrug },
+    { id: "dose", label: "把女巫药剂倒进食桶", req: (s) => s.flags.beastDrug, callback: "盐枝此前交给你的兽群药剂在这里有了目标" },
   ] },
-  { id: "traitor_gate", title: "半夜打开的旧城门", area: "旧城墙", start: 13, end: 14, scene: "守门人说风吹开了门，但门闩上有新鲜锉痕，旁边还掉着贵族火漆。", options: [
+  { id: "traitor_gate", title: "半夜打开的旧城门", area: "旧城墙", start: 13, end: 15, scene: "守门人说风吹开了门，但门闩上有新鲜锉痕，旁边还掉着贵族火漆。", options: [
     { id: "arrest", label: "立刻扣下守门人" },
     { id: "follow", label: "假装没有发现并跟踪他" },
   ] },
+  { id: "evacuation_route", title: "挤满伤员的撤离路", area: "旧城墙", start: 11, end: 15, scene: "南门道路已经被难民车堵住。飞艇塔、矿道和商队都能带走一部分人，但没有一条路容得下所有人。", options: [
+    { id: "ferry", label: "优先用飞艇运走伤员", req: (s) => s.flags.skyFerry, callback: "此前重新启动的飞艇塔现在可以运人" },
+    { id: "mine", label: "让矿工从矿道疏散家属", req: (s) => s.flags.minersSupport, callback: "此前支持的矿工愿意开放秘密矿道" },
+    { id: "carts", label: "征用商队车辆分批撤离" },
+  ] },
+  { id: "merchant_council", title: "关门议价的商人议会", area: "镇中心", start: 11, end: 15, scene: "商人们愿意提供车马和仓库，但要求战后优先偿还损失。", options: [
+    { id: "grain", label: "用夺回的冬粮换取车马", req: (s) => s.flags.grainRecovered, callback: "此前夺回的冬粮成为商人愿意接受的筹码" },
+    { id: "fund", label: "支付八枚金币雇佣车队", req: (s) => s.resources.gold >= 8 },
+    { id: "refuse", label: "拒绝战后优先偿还的条件" },
+  ] },
+  { id: "chapel_sanctuary", title: "礼拜堂里的最后空位", area: "旧礼拜堂", start: 11, end: 15, scene: "礼拜堂只剩一片能铺床的空地。司祭要留给伤员，女巫则说发热的难民必须先隔离。", options: [
+    { id: "priest", label: "让伊文安排伤员床位", req: (s) => s.roster.includes("priest"), callback: "此前加入的伊文能调动礼拜堂人员" },
+    { id: "witch", label: "听从盐枝划出隔离区", req: (s) => s.roster.includes("witch"), callback: "此前加入的盐枝辨认得出传染迹象" },
+    { id: "families", label: "把空位留给带孩子的家庭" },
+  ] },
+  { id: "enemy_letters", title: "从城墙缝里塞进的密信", area: "旧城墙", start: 12, end: 15, scene: "三封密信分别许诺赦免、金币和职位，落款来自围剿联盟中不同的军队。", options: [
+    { id: "trace", label: "沿贵族联络点追查送信人", req: (s) => s.flags.traitorNetwork, callback: "此前跟踪守门人找到了仍在使用的联络点" },
+    { id: "publish", label: "把三封互相矛盾的密信贴满镇口" },
+    { id: "answer", label: "挑一封回信试探对方底线" },
+  ] },
+  { id: "deserter_wave", title: "城外放下武器的人", area: "西门商道", start: 12, end: 15, scene: "十几名围剿军士兵把武器堆在路边，声称只想进镇躲过下一轮冲锋。", options: [
+    { id: "asylum", label: "收下武器并准许他们进镇" },
+    { id: "question", label: "先分开审问各营部署" },
+    { id: "refuse", label: "拒绝开门但留下食物" },
+  ] },
+  { id: "powder_store", title: "旧仓库里的火药桶", area: "河畔营地", start: 13, end: 15, scene: "旧仓库地下还存着一批受潮火药。罗莎说能改成陷阱，维尔则想把它们做成火墙。", options: [
+    { id: "engineer", label: "让罗莎改装承重陷阱", req: (s) => s.roster.includes("engineer"), callback: "此前加入的罗莎能判断火药与承重结构" },
+    { id: "mage", label: "让维尔布置引燃火墙", req: (s) => s.roster.includes("mage"), callback: "此前加入的维尔能够远程引燃受潮火药" },
+    { id: "move", label: "把火药搬离居民区" },
+  ] },
+  { id: "noble_hostages", title: "被镇民扣住的贵族亲眷", area: "镇中心", start: 13, end: 15, scene: "几名贵族亲眷被堵在旅店。镇民想拿他们换停战，也有人要求立刻清算。", options: [
+    { id: "bargain", label: "用证据和人质共同提出交换", req: (s) => s.resources.evidence >= 6, callback: "此前积累的证据让交换不只是空口威胁" },
+    { id: "release", label: "保证安全并放他们离开" },
+    { id: "hold", label: "继续扣住他们等待围剿军回应" },
+  ] },
+  { id: "last_supply", title: "只能送往一处的补给车", area: "西门商道", start: 14, end: 15, scene: "最后一辆补给车停在岔路口：前线缺药，难民缺粮，城墙也缺修补材料。", options: [
+    { id: "front", label: "把补给送往前线" },
+    { id: "refugees", label: "把补给送往难民营" },
+    { id: "walls", label: "把补给送往旧城墙" },
+  ] },
   { id: "ancient_core", title: "古王炉心的第二道门", area: "王炉地底", start: 13, end: 15, visible: (s) => s.flags.innerOpen, scene: "第二道门后传来整齐锤击声，地上有一排不属于人类的脚印。", options: [
     { id: "fight", label: "进入炉心清除守炉造物" },
-    { id: "seal", label: "让铁匠与桥梁师重接封印", req: (s) => s.roster.includes("engineer") && s.flags.smithPromise },
+    { id: "seal", label: "让铁匠与桥梁师重接封印", req: (s) => s.roster.includes("engineer") && s.flags.smithPromise, callback: "此前结识的铁匠与桥梁师能共同理解封印结构" },
   ] },
   { id: "coalition_envoy", title: "围剿联盟的无旗使者", area: "镇中心", start: 14, end: 15, scene: "使者承认三支军队并不互相信任。他只问你准备把谁的秘密先公开。", options: [
-    { id: "pay", label: "交出发饷钱箱里的欠条", req: (s) => s.flags.payChest },
-    { id: "law", label: "公开执法官伪造判决", req: (s) => s.flags.falseJudgment },
-    { id: "fear", label: "展示[恐怖]装备要求他们退军", req: (s) => heroHasTag(s, "player", "恐怖") },
+    { id: "pay", label: "交出发饷钱箱里的欠条", req: (s) => s.flags.payChest, callback: "此前夺下的钱箱里留着各营欠饷凭据" },
+    { id: "law", label: "公开执法官伪造判决", req: (s) => s.flags.falseJudgment, callback: "此前取得的伪造判决能让联盟互相追责" },
+    { id: "fear", label: "展示[恐怖]装备要求他们退军", req: (s) => heroHasTag(s, "player", "恐怖"), callback: "你此前选择穿戴的恐怖印记已经传进敌营" },
   ] },
 ];
 
@@ -204,6 +301,143 @@ const COMBAT_OPTIONS = new Set([
   "paymaster:fight", "hunter:hunt", "hunter:trap", "sky_ferry:seize", "siege_engines:fight",
   "beast_pens:fight", "ancient_core:fight",
 ]);
+
+const EVENT_OUTCOMES = {
+  "injured_shield:carry": "你把伤员背回镇里。赫恩包扎好伤口后，带着盾牌加入了队伍。",
+  "injured_shield:purse": "你带走了断木下的钱袋。伤员留在商道边，镇里没人知道他后来去了哪里。",
+  "smith_intro:promise": "铁匠把试炉留到第四日：带回三把普通武器，她就替你重锻一次。",
+  "smith_intro:forge": "蓝钢长剑成形时，王炉门的断纹同时亮起。门后的灰炉内环已经可以进入。",
+  "well_dispute:tanner": "染坊按旧约拿到了水，也付了你报酬；菜农们沉默地拆走了引水槽。",
+  "well_dispute:grower": "水先流进了菜地。菜农送来药草答谢，染坊则记住了这次损失。",
+  "well_dispute:measure": "旧账和水尺证明两边都多报了用水量。新的分水刻度被当众钉在井栏上。",
+  "apothecary_debt:pay": "债主拿钱离开。米娅收起剩下的药，带着药箱加入了队伍。",
+  "apothecary_debt:patients": "你陪米娅照看病人直到债主散去。她带着省下的药和你一同离开。",
+  "thief_trial:thief": "孩子交出白鹿家的账页，也说出了偷运粮食的暗门。鸦指随后加入了队伍。",
+  "thief_trial:warden": "守仓人收下孩子与账页，答应把两者一起交给镇议事人核对。",
+  "caravan:rescue": "车夫被从燃烧的横梁下拖出。他把随车药包留给了救他的人。",
+  "caravan:cargo": "货箱保住了，车夫却没能及时脱身。烧黑的箱里留下金币和一件装备。",
+  "furnace_clue:smith": "铁匠认出断纹来自旧式炉门：普通钥匙无用，同源旧物或许能重铸锁芯。",
+  "furnace_clue:key": "三件旧物被熔成带断纹的钥胚。炉门在低沉的摩擦声中打开。",
+  "cooling_well:jam": "废铁卡死了冷却阀。铜管里的蒸汽声减弱，守门甲胄的动作也慢了下来。",
+  "quartermaster:thief": "鸦指从排水沟打开车闩。军需车侧翻，营地里的人开始抢救箭箱和粮袋。",
+  "duelist:evidence": "艾妲逐页核对账页与证词，确认少爷隐瞒了命令。她收剑加入了队伍。",
+  "night_raid:scout": "鸦指记下三轮换岗的空档，没有惊动巡逻队。营地的夜间路线已经清楚。",
+  "market_toll:protect": "金币替摊贩交到家仆手里，集市重新开门；摊贩们把欠下的人情记在你名下。",
+  "market_toll:names": "收钱人的姓名、印章和数目被逐笔记下。家仆察觉不对时，那页记录已经传过半条街。",
+  "market_toll:table": "收费桌被当街掀翻，堵路的家仆暂时退开；围观者叫好，白鹿家的人也记住了你。",
+  "watch_bell:bell": "旧警钟重新挂上钟架。镇民约好钟响三次便携武器到西门集合。",
+  "watch_bell:gate": "木料被钉在西门内侧，最松的一段栅门撑住了；钟楼仍旧沉默。",
+  "missing_scribe:shelter": "抄写员被藏进空酒窖。他交出少爷强征马匹时留下的命令抄本。",
+  "missing_scribe:return": "抄写员被送回账房。管事付清赏钱，随即把他锁进了后院。",
+  "grain_prices:ration": "存粮按户重新登记，几袋药草也从仓底翻了出来；商人没能趁乱抬价。",
+  "grain_prices:auction": "粮袋当场卖给出价最高的人。你的钱袋鼓了起来，队尾的穷户却空手离开。",
+  "ford_deserter:hide": "逃兵换上船工衣服藏进芦苇荡，并把护卫队的人数和口令写了下来。",
+  "ford_deserter:return": "白鹿家收回逃兵，赏钱如数付给你；河对岸很快传来一声枪响。",
+  "road_barricade:build": "翻倒的货车被改成两道错开的路障，镇民也把沙袋拖到了路边。",
+  "road_barricade:sell": "可用的车轴和铁箍被拆走卖掉。商道重新畅通，路口没有留下遮挡。",
+  "widow_claim:hearing": "欠条、收据和证词被摆到同一张桌上。少爷亲随多收的那笔钱再也藏不住了。",
+  "widow_claim:settle": "你逼亲随退还一半田契，寡妇当场按了手印；双方都接受了这笔不完整的和解。",
+  "exile_scout:return": "你答应取回骨匣。萨芮把换岗图卷起，先与你一同行动。",
+  "exile_scout:rune": "萨芮认出你身上的流放者印记，把换岗图和骨匣的去向都告诉了你。",
+  "mine_strike:miners": "运煤车被扣下，矿工把粮食分给家人，并答应在围攻时守住矿道。",
+  "mine_strike:owner": "运煤车穿过人群，矿主付清了护送费；矿工没有让开第二条轨道。",
+  "mine_strike:audit": "欠薪账被摊在轨道上逐项核对。矿主无法否认，矿工也答应恢复一条矿道。",
+  "chapel_guard:medicine": "药品送进礼拜堂，伊文让避难者打开侧门，也带着余下药箱加入队伍。",
+  "chapel_guard:search": "地下室被当众打开：药品确实短缺，但里面还藏着未登记的教会来信。",
+  "bridge_engineer:parts": "两件旧物被拆成耐火轴承。北桥绞盘重新转动，罗莎加入了队伍。",
+  "deserter_mage:route": "维尔记下夜巡空档，烧掉最后一张征召书，沿你给的路线加入队伍。",
+  "deserter_mage:bribe": "河船收下金币，维尔有了退路，也愿意暂时留在队伍里。",
+  "tax_archive:steal": "盖章底册从税务所消失。你现在握有赔偿命令被改写过的原始记录。",
+  "tax_archive:petition": "欠税人逐条核对底册，几处后添墨迹在众人面前暴露出来。",
+  "grain_seizure:papers": "车夫看见盖章底册后拒绝继续押粮，冬粮被送回镇里。",
+  "signal_tower:false": "假灯油和旗语按时升起。南方回信照旧，但内容已经被你误导。",
+  "paymaster:rumor": "欠饷名单贴满营门。士兵围住军需官，钱箱暂时没人再替他看守。",
+  "noble_banquet:noble": "贵族印记让你坐进宴席。尚未宣读的判决书上，几处印章日期互相矛盾。",
+  "noble_banquet:servants": "后厨把判决书送错了桌。米娅记下内容，鸦指则带回了盖章残页。",
+  "quarry_collapse:rescue": "被压住的矿工一个个从石缝里拖出来。活下来的人答应替你守住矿道。",
+  "quarry_collapse:crystals": "支撑木被撬开后，矿工来不及撤离；你从新裂开的矿脉里带走了晶石和一件旧物。",
+  "river_customs:route": "你沿此前记下的巡逻空档绕过税卡，一条不经官道的运货路线被走通了。",
+  "river_customs:bribe": "税吏收钱后抬起栏杆，没有在货单上留下这支队伍的名字。",
+  "river_customs:papers": "三份互相矛盾的税单被你扣下。税吏不敢再拦，但拒绝盖放行章。",
+  "chapel_inquest:priest": "伊文站到礼拜堂门前，公开质问搜查令的印章。审讯官没有闯门，只留下了威胁。",
+  "chapel_inquest:letters": "教会来信被摊在众人面前。搜查队的命令与信上日期对不上，审讯被迫中止。",
+  "chapel_inquest:list": "避难者名单被交出去，礼拜堂免于搜查；几户人家连夜搬离了镇子。",
+  "mercenary_contract:buyout": "欠饷被填上后，一小队佣兵撕掉旧徽记，转而接受你的指挥。",
+  "mercenary_contract:clause": "原始合同证明雇主先违约。佣兵拒绝继续冲锋，并把违约条款交给你。",
+  "mercenary_contract:copy": "你抄走合同和签名。佣兵仍留在原营，但雇主拖欠军饷的事实有了凭据。",
+  "mine_prisoners:free": "囚笼被砸开，矿工沿废弃支洞撤走；留下的人开始搬石头封堵追兵。",
+  "mine_prisoners:pay": "守卫收下赎金放人。矿工毫发无伤地离开，囚笼和守卫都还留在原处。",
+  "north_hostages:medicine": "药品换回了全部人质。伤者被抬进镇里，押送队拿药后向北撤走。",
+  "north_hostages:question": "你只赎回能说出营地布置的人。名单和岗哨位置到手，其余人质仍被押往北方。",
+  "banner_company:grain": "冬粮分到难民手里。断旗队重新列队，决定替送粮的人守住道路。",
+  "banner_company:pay": "军饷分发完毕，旧王国兵重新竖起断旗，加入了守镇队伍。",
+  "banner_company:oath": "伪造判决被旧兵逐页传看。他们拒绝再替贵族命令驱赶难民。",
+  "swamp_witch:protect": "盐枝接受保护药圃的承诺，带着让战兽拒食的药剂加入队伍。",
+  "swamp_witch:church": "药圃被封，礼拜堂的人公开支持你；盐枝收起药剂，独自退回沼泽。",
+  "swamp_witch:herbs": "药品换来了整桶兽群药剂。盐枝也带着剩余配方加入队伍。",
+  "war_council:miners": "有限的人手先被派往矿道。矿工开始加固北侧入口。",
+  "war_council:merchants": "有限的人手先被派往粮仓。商人开始转移冬粮和车队。",
+  "war_council:chapel": "有限的人手先被派往礼拜堂。伤员与难民沿侧门撤离。",
+  "sky_ferry:core": "史诗旧物嵌入主轴，飞艇塔重新转动。高处的道路从此不再遥不可及。",
+  "plague_camp:sick": "药先留给病人，热病营的高烧开始下降，前线只能重新分配存药。",
+  "plague_camp:front": "药被送往前线，守军得到补给；难民营仍有人整夜发热。",
+  "plague_camp:witch": "盐枝从水桶里辨出病源，隔离了污染的井水，没有消耗前线药品。",
+  "siege_engines:sabotage": "罗莎混入工匠队，把承重销换成了软铁。投石机仍立着，却经不起第一次发射。",
+  "beast_pens:dose": "药剂倒进同一只食桶。五头战兽闻过饲料后开始撕扯缰绳，拒绝出栏。",
+  "traitor_gate:arrest": "守门人被当场扣下，旧城门重新上闩；城里的人暂时不知道他在等谁。",
+  "traitor_gate:follow": "你假装没看见锉痕，跟着守门人找到了一处仍在使用的贵族联络点。",
+  "evacuation_route:ferry": "重新运转的飞艇把伤员分批送过城墙，镇中心腾出了一条撤离通道。",
+  "evacuation_route:mine": "矿工拆开旧通风井，难民沿矿道撤到北坡；入口随后被重新伪装。",
+  "evacuation_route:carts": "商人的车队被征作撤离车，老人和孩子先被送走；前线少了几辆运货车。",
+  "merchant_council:grain": "商人承认你保住过粮价，交出车队和仓库钥匙支持守城。",
+  "merchant_council:fund": "金币填上了商队可能蒙受的损失，几辆满载物资的车驶向前线。",
+  "merchant_council:refuse": "你拒绝替商人兜底。部分镇民拍手叫好，商队则关门自行撤货。",
+  "chapel_sanctuary:priest": "伊文敲响礼拜堂小钟，侧门向平民开放；守堂人开始登记伤员。",
+  "chapel_sanctuary:witch": "盐枝用药雾隔开病人与难民，礼拜堂腾出足够位置接纳更多家庭。",
+  "chapel_sanctuary:families": "你亲自把几户人家带进地下室。避难处挤满了人，但没人被留在门外。",
+  "enemy_letters:trace": "信使按原路返回时被跟上了。联络点的位置和沿途暗号都被记下。",
+  "enemy_letters:publish": "敌军互相指责的书信贴满街口，围剿联盟的共同命令开始失去分量。",
+  "enemy_letters:answer": "一封盖着假印章的回信被送回敌营。对方接受了联络，却还没有亮出底牌。",
+  "deserter_wave:asylum": "放下武器的逃兵被安置在外圈营地，他们提供了口令，也答应守住自己的营门。",
+  "deserter_wave:question": "逃兵逐个画出营地路线后被放走。你得到情报，却没有留下这批人。",
+  "deserter_wave:refuse": "镇门没有为逃兵打开。镇民免去安置负担，也看见他们重新走回敌军方向。",
+  "powder_store:engineer": "罗莎拆掉引信并换了仓门锁，敌军留下的火药再也无法按原计划引爆。",
+  "powder_store:mage": "维尔把火线接进敌军器械场。远处很快升起一团黑烟，仓库也彻底报废。",
+  "powder_store:move": "火药被连夜搬出居民区，最近的几条街免于殉爆；这批火药没能用于反击。",
+  "noble_hostages:bargain": "贵族联络点收到交换条件。人质暂时留在你手里，一条谈判渠道已经打开。",
+  "noble_hostages:release": "人质被无条件放走，几户贵族公开称赞这次克制；你也失去了手里的筹码。",
+  "noble_hostages:hold": "人质被转移到更牢固的地窖。敌方不敢立刻强攻，镇里却有人对此不安。",
+  "last_supply:front": "最后一车药驶向前线，伤兵重新拿起武器；难民与城墙只能继续等待。",
+  "last_supply:refugees": "粮食和药品送进避难处，饥饿的人群安静下来；前线没有等到这辆车。",
+  "last_supply:walls": "木料与铁件被卸在城墙下，缺口连夜补上；车上没有剩下可分给伤员的物资。",
+  "ancient_core:seal": "铁匠与罗莎重接封印。锤击声停下，炉心里留下三件尚未冷却的装备。",
+  "coalition_envoy:pay": "使者带走欠饷钱箱里的欠条。围剿军营地当夜就传出争吵。",
+  "coalition_envoy:law": "使者带走伪造判决的抄本。三支军队开始互相追问谁有权下令。",
+  "coalition_envoy:fear": "使者看见那件令人不安的战利品后，没有再重复总攻的威胁。",
+};
+
+const GRIND_ENCOUNTERS = {
+  ash: [
+    { level: 1, title: "煤灰废道", enemies: [["assassin", "炉灰鼠"], ["assassin", "炉灰鼠"], ["warrior", "捡铁小鬼"]], tier: 1, hp: 0.34, power: 0.31, armor: 0.72 },
+    { level: 2, title: "炉渣回廊", enemies: [["warrior", "炉渣猎犬"], ["warrior", "炉渣猎犬"], ["ranger", "余烬投手"], ["knight", "护炉残兵"]], tier: 1, hp: 0.52, power: 0.46, armor: 0.86 },
+    { level: 3, title: "熔壳工棚", enemies: [["knight", "熔壳监工"], ["warrior", "焦骨斗士"], ["warrior", "焦骨斗士"], ["mage", "灰烬术士"], ["berserker", "拖链兽"]], tier: 2, hp: 0.67, power: 0.59, armor: 0.96 },
+  ],
+  inner: [
+    { level: 1, title: "余火甬道", enemies: [["warrior", "炉膛爬虫"], ["ranger", "铜钉射手"], ["knight", "守炉残骸"]], tier: 2, hp: 0.56, power: 0.50, armor: 0.92 },
+    { level: 2, title: "铸模长廊", enemies: [["knight", "铸模卫"], ["warrior", "铸模卫"], ["mage", "余焰灯灵"], ["priest", "补炉傀儡"]], tier: 2, hp: 0.68, power: 0.61, armor: 1.0 },
+    { level: 3, title: "封火室", enemies: [["knight", "封火甲"], ["knight", "封火甲"], ["berserker", "赤铁兽"], ["mage", "炉心残响"], ["priest", "修补傀儡"]], tier: 3, hp: 0.78, power: 0.70, armor: 1.08 },
+  ],
+  quarry: [
+    { level: 1, title: "弃置矿道", enemies: [["assassin", "穴鼠"], ["warrior", "穴居怪"], ["ranger", "拾荒弩手"]], tier: 3, hp: 0.58, power: 0.53, armor: 0.94 },
+    { level: 2, title: "黑石装卸场", enemies: [["knight", "矿场监工"], ["warrior", "矿场打手"], ["ranger", "高架弩手"], ["alchemist", "火药工"]], tier: 3, hp: 0.70, power: 0.64, armor: 1.02 },
+    { level: 3, title: "食铁兽巢", enemies: [["berserker", "食铁幼兽"], ["berserker", "食铁幼兽"], ["knight", "矿甲守卫"], ["mage", "晶尘术士"], ["priest", "矿井祭司"]], tier: 4, hp: 0.82, power: 0.74, armor: 1.10 },
+  ],
+  forge: [
+    { level: 1, title: "铜壳铸台", enemies: [["knight", "铜壳造物"], ["warrior", "锻锤造物"], ["mage", "火纹造物"]], tier: 4, hp: 0.68, power: 0.62, armor: 1.06 },
+    { level: 2, title: "王炉传送带", enemies: [["knight", "王炉卫"], ["warrior", "锻锤卫"], ["ranger", "飞钉机关"], ["alchemist", "熔液机关"]], tier: 5, hp: 0.78, power: 0.70, armor: 1.14 },
+    { level: 3, title: "不熄炉室", enemies: [["knight", "古王重甲"], ["knight", "古王重甲"], ["berserker", "熔铁巨像"], ["mage", "炉火记录者"], ["priest", "王炉修复者"]], tier: 6, hp: 0.90, power: 0.80, armor: 1.22 },
+  ],
+};
 
 function actForDay(day) { return day <= 5 ? 1 : day <= 10 ? 2 : 3; }
 function clone(value) { return structuredClone(value); }
@@ -238,7 +472,7 @@ function createInitialState(seed = "fifteen-day-demo") {
     recent: [],
     lastCombat: null,
     result: null,
-    stats: { spentActions: 0, grinds: 0, combats: 0, failedCombats: 0 },
+    stats: { spentActions: 0, grinds: 0, grindAttempts: 0, combats: 0, failedCombats: 0, salvaged: 0 },
   };
   for (const heroId of Object.keys(HEROES)) state.equipment[heroId] = { weapon: null, armor: null, charm: null };
   state.inventory.push({ id: "starter_knife", name: "缺口短刀", slot: "weapon", slotLabel: "武器", rarity: "普通", power: 6, identityTags: [], source: "随身物品" });
@@ -287,26 +521,70 @@ function firstFreeSlot(state, cap = 10) {
   return Math.max(0, cap - 1);
 }
 
-function generateItem(state, zoneId) {
-  const rarityTable = zoneId === "forge"
-    ? [["史诗", 0.60], ["传说", 0.35], ["神话", 0.049], ["永恒", 0.001]]
-    : zoneId === "quarry"
-      ? [["稀有", 0.60], ["史诗", 0.34], ["传说", 0.058], ["神话", 0.002]]
-      : zoneId === "inner"
-        ? [["普通", 0.42], ["稀有", 0.47], ["史诗", 0.105], ["传说", 0.005]]
-      : [["普通", 0.70], ["稀有", 0.25], ["史诗", 0.049], ["传说", 0.001]];
+function grindRarityTable(zoneId, level = 1) {
+  const tables = {
+    ash: [
+      [["普通", .74], ["稀有", .22], ["史诗", .039], ["传说", .001]],
+      [["普通", .70], ["稀有", .25], ["史诗", .049], ["传说", .001]],
+      [["普通", .66], ["稀有", .28], ["史诗", .059], ["传说", .001]],
+    ],
+    inner: [
+      [["普通", .42], ["稀有", .47], ["史诗", .105], ["传说", .005]],
+      [["普通", .38], ["稀有", .49], ["史诗", .124], ["传说", .006]],
+      [["普通", .34], ["稀有", .50], ["史诗", .153], ["传说", .007]],
+    ],
+    quarry: [
+      [["稀有", .60], ["史诗", .34], ["传说", .058], ["神话", .002]],
+      [["稀有", .56], ["史诗", .37], ["传说", .067], ["神话", .003]],
+      [["稀有", .52], ["史诗", .40], ["传说", .076], ["神话", .004]],
+    ],
+    forge: [
+      [["史诗", .60], ["传说", .35], ["神话", .049], ["永恒", .001]],
+      [["史诗", .56], ["传说", .38], ["神话", .059], ["永恒", .001]],
+      [["史诗", .52], ["传说", .41], ["神话", .069], ["永恒", .001]],
+    ],
+  };
+  return (tables[zoneId] || tables.ash)[Math.max(0, Math.min(2, Number(level || 1) - 1))];
+}
+
+function generateItem(state, zoneId, level = 1) {
+  const rarityTable = grindRarityTable(zoneId, level);
   const rarity = pick(state, rarityTable);
   const slot = pick(state, [["weapon", 0.38], ["armor", 0.38], ["charm", 0.24]]);
   const base = RARITY_POWER[rarity];
-  const power = Math.max(4, Math.round(base * (0.82 + rand(state) * 0.36)));
+  const power = Math.max(4, Math.round(base * (0.82 + rand(state) * 0.36) * (1 + (Math.max(1, level) - 1) * .035)));
   const tags = [];
-  const tagChance = zoneId === "forge" ? 0.78 : zoneId === "quarry" ? 0.58 : zoneId === "inner" ? 0.48 : 0.34;
+  const tagChance = (zoneId === "forge" ? 0.78 : zoneId === "quarry" ? 0.58 : zoneId === "inner" ? 0.48 : 0.34) + (Math.max(1, level) - 1) * .025;
   if (rand(state) < tagChance) tags.push(pick(state, IDENTITY_TAGS.map((tag) => [tag, 1])));
   const names = {
     weapon: ["短剑", "战斧", "长弓", "符文杖"], armor: ["锁甲", "旅衣", "鳞甲", "炉纹袍"], charm: ["骨哨", "火漆戒", "旧圣徽", "矿晶坠"],
   };
   const name = `${tags[0] ? `${tags[0]}·` : ""}${pick(state, names[slot].map((row) => [row, 1]))}`;
-  return { id: `item_${state.day}_${state.stats.grinds}_${state.inventory.length}_${hash(`${state.rngState}|${name}`)}`, name, slot, slotLabel: SLOT_LABELS[slot], rarity, power, identityTags: tags, source: ZONES[zoneId].title };
+  return { id: `item_${state.day}_${state.stats.grinds}_${state.inventory.length}_${hash(`${state.rngState}|${name}`)}`, name, slot, slotLabel: SLOT_LABELS[slot], rarity, power, identityTags: tags, source: `${ZONES[zoneId].title} · LV${level}` };
+}
+
+function equippedItemIds(state) {
+  return new Set(Object.values(state.equipment).flatMap((slots) => Object.values(slots).filter(Boolean)));
+}
+
+function enforceInventoryLimit(state) {
+  const excess = Math.max(0, state.inventory.length - INVENTORY_LIMIT);
+  if (!excess) return [];
+  const equipped = equippedItemIds(state);
+  const removable = state.inventory.filter((item) => !equipped.has(item.id)).sort((a, b) => {
+    const tagDifference = Number(Boolean(a.identityTags?.length)) - Number(Boolean(b.identityTags?.length));
+    if (tagDifference) return tagDifference;
+    const rarityDifference = rarityIndex(a.rarity) - rarityIndex(b.rarity);
+    if (rarityDifference) return rarityDifference;
+    const powerDifference = itemPower(a) - itemPower(b);
+    if (powerDifference) return powerDifference;
+    return String(a.id).localeCompare(String(b.id));
+  });
+  const removed = removable.slice(0, excess);
+  const removedIds = new Set(removed.map((item) => item.id));
+  state.inventory = state.inventory.filter((item) => !removedIds.has(item.id));
+  state.stats.salvaged = Number(state.stats.salvaged || 0) + removed.length;
+  return removed;
 }
 
 function grind(state, zoneId, count) {
@@ -317,8 +595,9 @@ function grind(state, zoneId, count) {
   for (let i = 0; i < count; i += 1) items.push(generateItem(state, zoneId));
   state.inventory.push(...items);
   state.stats.grinds += count;
+  const salvaged = enforceInventoryLimit(state);
   const counts = Object.fromEntries(RARITIES.map((rarity) => [rarity, items.filter((item) => item.rarity === rarity).length]).filter((row) => row[1]));
-  addLog(state, `你在${zone.title}连续战斗${count}次，带回${count}件装备：${Object.entries(counts).map(([r, n]) => `${r}${n}`).join("、")}。`, "loot");
+  addLog(state, `你在${zone.title}连续战斗${count}次，带回${count}件装备：${Object.entries(counts).map(([r, n]) => `${r}${n}`).join("、")}。${salvaged.length ? `背包达到${INVENTORY_LIMIT}件上限，自动分解了最差的${salvaged.length}件。` : ""}`, "loot");
 }
 
 function autoEquip(state) {
@@ -388,7 +667,25 @@ function militiaSpec(index, tier = 1, kind = "militia") {
 }
 
 function enemySpec(role, name, index, tier = 1, scales = {}) {
-  return roleSpec(role, name, index, { hp: (0.88 + tier * 0.10) * (scales.hp || 1), power: (0.84 + tier * 0.10) * (scales.power || 1), armor: scales.armor || 1, unitKind: "enemy", ...scales });
+  return roleSpec(role, name, index, { ...scales, hp: (0.88 + tier * 0.10) * (scales.hp || 1), power: (0.84 + tier * 0.10) * (scales.power || 1), armor: scales.armor || 1, unitKind: "enemy" });
+}
+
+function grindCombatPlan(state, zoneId, level) {
+  const zone = ZONES[zoneId];
+  const encounter = GRIND_ENCOUNTERS[zoneId]?.find((row) => row.level === Number(level));
+  if (!zone || !encounter || !zoneAvailable(state, zoneId) || state.phase !== "planning") return null;
+  const leftTeam = state.activeParty.map((heroId, index) => heroCombatSpec(state, heroId, index));
+  const rightTeam = encounter.enemies.map(([role, name], index) => enemySpec(role, `${name}${encounter.enemies.filter((row) => row[1] === name).length > 1 ? index + 1 : ""}`, index, encounter.tier, { hp: encounter.hp, power: encounter.power, armor: encounter.armor }));
+  return {
+    kind: "grind",
+    zoneId,
+    level: encounter.level,
+    title: `${zone.title} LV${encounter.level} · ${encounter.title}`,
+    seed: `${state.seed}|grind|${zoneId}|${encounter.level}|${state.stats.grindAttempts || 0}|${state.stats.grinds}`,
+    leftTeam,
+    rightTeam,
+    maxTime: 80,
+  };
 }
 
 function eventCombatPlan(state, eventId, optionId) {
@@ -400,7 +697,7 @@ function eventCombatPlan(state, eventId, optionId) {
   if (key === "furnace_clue:force") {
     title = "守门甲胄";
     const jammed = Boolean(state.flags.coolingJammed);
-    rightTeam = [enemySpec("knight", "守门甲胄", 0, 2, { hp: jammed ? 2.2 : 4.2, power: jammed ? 1.35 : 2.25, armor: jammed ? 1.15 : 1.65, small1: "enemyHeavySmash", small2: "enemyNoop", passive: "enemyStoneGuard", ultimate: "enemyNoUltimate" })];
+    rightTeam = [enemySpec("knight", "守门甲胄", 0, 2, { hp: jammed ? 5.5 : 10.5, power: jammed ? 2.35 : 3.8, armor: jammed ? 1.30 : 2.0, small1: "enemyStoneGuard", small2: "enemySweepingClaw", passive: "enemyNoop", ultimate: "enemyNoUltimate" })];
   } else if (key === "quartermaster:fight") {
     title = "军需车守卫";
     rightTeam = [enemySpec("knight", "军需盾卫", 0, 1), enemySpec("ranger", "营地弩手", 1, 1), enemySpec("warrior", "押运兵", 2, 1)];
@@ -413,10 +710,10 @@ function eventCombatPlan(state, eventId, optionId) {
     rightTeam = ["knight", "warrior", "ranger", "priest"].map((role, i) => enemySpec(role, `夜巡兵${i + 1}`, i, 2));
   } else if (key === "bridge_engineer:river") {
     title = "激流抢修";
-    rightTeam = [enemySpec("berserker", "激流中的穴兽", 0, 2, { hp: 2.4, power: 1.3 })];
+    rightTeam = [enemySpec("berserker", "激流中的穴兽", 0, 2, { hp: 16, power: 3.4, armor: 1.7 })];
   } else if (key.startsWith("arena:")) {
     title = key.endsWith("rematch") ? "卸甲重赛" : "矿区擂台";
-    rightTeam = [enemySpec("berserker", "擂台冠军", 0, 3, { hp: key.endsWith("rematch") ? 1.3 : 2.1, power: key.endsWith("rematch") ? 1.05 : 1.35 })];
+    rightTeam = [enemySpec("berserker", "擂台冠军", 0, 3, { hp: key.endsWith("rematch") ? 10 : 18, power: key.endsWith("rematch") ? 2.3 : 3.4, armor: key.endsWith("rematch") ? 1.15 : 1.65 })];
   } else if (key === "grain_seizure:raid") {
     title = "截停押粮队";
     rightTeam = ["knight", "knight", "ranger", "ranger", "warrior"].map((r, i) => enemySpec(r, `押粮兵${i + 1}`, i, 2));
@@ -429,7 +726,7 @@ function eventCombatPlan(state, eventId, optionId) {
   } else if (key.startsWith("hunter:")) {
     title = "矿道猎兽";
     const trapped = key.endsWith("trap");
-    rightTeam = [enemySpec("berserker", "食铁兽", 0, 3, { hp: trapped ? 1.6 : 2.8, power: trapped ? 1.1 : 1.45, armor: trapped ? 0.9 : 1.15 })];
+    rightTeam = [enemySpec("berserker", "食铁兽", 0, 3, { hp: trapped ? 10 : 20, power: trapped ? 2.4 : 3.8, armor: trapped ? 1.2 : 1.85 })];
   } else if (key === "sky_ferry:seize") {
     title = "夺取飞艇塔";
     rightTeam = ["knight", "warrior", "ranger", "ranger", "mage", "priest"].map((r, i) => enemySpec(r, `塔下巡逻兵${i + 1}`, i, 3));
@@ -455,8 +752,8 @@ function showdownPlan(state, strategy) {
   if (act === 1) {
     title = "白鹿家兵抵达煤灰镇";
     rightTeam = ["warrior", "knight", "knight", "ranger", "ranger", "priest"].map((role, i) => enemySpec(role, `白鹿家兵${i + 1}`, i, 2, {
-      hp: 0.85,
-      power: strategy === "ambush" && state.flags.campScouted ? 0.714 : 0.85,
+      hp: 1.15,
+      power: strategy === "ambush" && state.flags.campScouted ? 0.93 : 1.15,
     }));
   } else if (act === 2) {
     title = "执法队与雇佣军会战";
@@ -524,14 +821,21 @@ function internalActions(state) {
   const rows = [];
   for (const [zoneId, zone] of Object.entries(ZONES)) {
     if (zoneAvailable(state, zoneId)) {
-      rows.push({ id: `grind:${zoneId}:1`, label: `在${zone.title}战斗1次`, kind: "grind", placeId: `place_zone_${zoneId}` });
-      rows.push({ id: `grind:${zoneId}:10`, label: `在${zone.title}连续战斗10次`, kind: "grind", placeId: `place_zone_${zoneId}` });
+      for (const encounter of GRIND_ENCOUNTERS[zoneId]) rows.push({
+        id: `grindbattle:${zoneId}:${encounter.level}`,
+        label: `LV${encounter.level} · ${encounter.title}（${encounter.enemies.length}名敌人）`,
+        kind: "grind",
+        placeId: `place_zone_${zoneId}`,
+        grindZoneId: zoneId,
+        grindLevel: encounter.level,
+        enemyCount: encounter.enemies.length,
+      });
     }
   }
   if (!state.flags.gateInspected && state.day <= 5 && state.ap > 0) rows.push({ id: "investigate:gate", label: "检查王炉门与锁芯", kind: "inspect", placeId: "place_gate" });
   for (const event of EVENTS) {
     if (!eventIsVisible(state, event)) continue;
-    for (const option of event.options) if (optionIsAvailable(state, event, option)) rows.push({ id: `event:${event.id}:${option.id}`, label: option.label, kind: COMBAT_OPTIONS.has(`${event.id}:${option.id}`) ? "combat" : "event", placeId: `place_event_${event.id}` });
+    for (const option of event.options) if (optionIsAvailable(state, event, option)) rows.push({ id: `event:${event.id}:${option.id}`, label: option.label, kind: COMBAT_OPTIONS.has(`${event.id}:${option.id}`) ? "combat" : "event", placeId: `place_event_${event.id}`, callback: typeof option.callback === "function" ? option.callback(state) : option.callback || "" });
   }
   if (state.ap > 0 && state.flags.lastPatrolDay !== state.day && !rows.some((row) => ["event", "combat", "inspect"].includes(row.kind))) rows.push({ id: "patrol", label: "利用剩余时间走访镇民", kind: "event", placeId: "place_patrol" });
   rows.push({ id: "auto_equip", label: "让当前出战成员择优穿戴", kind: "equipment", placeId: "place_party" });
@@ -623,7 +927,7 @@ function settleEvent(state, eventId, optionId) {
   node.resolved = true; node.option = optionId;
   const r = state.resources; const f = state.flags;
   if (eventId === "injured_shield") { if (optionId === "carry") { recruit(state, "shield"); r.townFavor += 1; } else { r.gold += 4; f.shieldAbandoned = true; } }
-  else if (eventId === "smith_intro") { if (optionId === "promise") { f.smithPromise = true; node.resolved = false; addLog(state, "铁匠让你带回三把普通武器，试炉会一直留到第四日。", "clue"); } else { takeUnequipped(state, (i) => i.slot === "weapon" && i.rarity === "普通", 3); state.inventory.push({ id: `smith_${state.day}`, name: "蓝钢长剑", slot: "weapon", slotLabel: "武器", rarity: "稀有", power: 18, identityTags: ["古代锻造"], source: "铁匠试炉" }); f.smithForged = true; f.innerOpen = true; } }
+  else if (eventId === "smith_intro") { if (optionId === "promise") { f.smithPromise = true; node.resolved = false; } else { takeUnequipped(state, (i) => i.slot === "weapon" && i.rarity === "普通", 3); state.inventory.push({ id: `smith_${state.day}`, name: "蓝钢长剑", slot: "weapon", slotLabel: "武器", rarity: "稀有", power: 18, identityTags: ["古代锻造"], source: "铁匠试炉" }); f.smithForged = true; f.innerOpen = true; } }
   else if (eventId === "well_dispute") { if (optionId === "tanner") { r.gold += 3; r.townFavor -= 1; } else if (optionId === "grower") { r.townFavor += 2; r.medicine += 1; } else { r.townFavor += 1; r.evidence += 1; } }
   else if (eventId === "apothecary_debt") { if (optionId === "pay") r.gold -= 5; else r.townFavor += 1; recruit(state, "apothecary"); r.medicine += 2; }
   else if (eventId === "thief_trial") { if (optionId === "thief") { recruit(state, "thief"); r.evidence += 2; } else { r.townFavor += 1; r.evidence += 1; } }
@@ -632,15 +936,13 @@ function settleEvent(state, eventId, optionId) {
     if (optionId === "smith") {
       f.smithDoorTheory = true;
       node.resolved = false;
-      addLog(state, "铁匠认出断纹来自旧式炉门，但普通钥匙插不进去。", "clue");
     } else {
       takeUnequipped(state, (i) => i.identityTags.includes("古代锻造"), 3);
       f.innerOpen = true;
-      addLog(state, "铁匠把三件旧物熔成带断纹的钥胚，炉门在低沉的摩擦声中打开。", "unlock");
     }
   }
-  else if (eventId === "cooling_well") { f.coolingJammed = true; addLog(state, "冷却阀被废铁卡住，铜管里的蒸汽声逐渐变弱。", "clue"); }
-  else if (eventId === "quartermaster") { f.campScouted = true; r.evidence += 1; addLog(state, "军需车侧翻，营地里的人开始抢救箭箱和粮袋。", "threat"); }
+  else if (eventId === "cooling_well") { f.coolingJammed = true; }
+  else if (eventId === "quartermaster") { f.campScouted = true; r.evidence += 1; }
   else if (eventId === "duelist") { f.duelistSupport = true; if (optionId === "evidence") r.evidence += 1; recruit(state, "duelist"); }
   else if (eventId === "night_raid") { f.campScouted = true; r.influence += 1; }
   else if (eventId === "exile_scout") { recruit(state, "exile"); f.boneCasket = true; }
@@ -661,10 +963,40 @@ function settleEvent(state, eventId, optionId) {
   else if (eventId === "siege_engines") { f.siegeSabotaged = true; r.influence += 1; }
   else if (eventId === "beast_pens") { f.beastsNeutralized = true; }
   else if (eventId === "traitor_gate") { if (optionId === "follow") { r.evidence += 3; f.traitorNetwork = true; } else r.townFavor += 1; }
+  else if (eventId === "market_toll") {
+    if (optionId === "protect") { r.gold -= 3; r.townFavor += 2; f.merchantsProtected = true; }
+    else if (optionId === "names") { r.evidence += 2; f.tollNames = true; }
+    else { r.townFavor += 1; r.influence += 1; f.marketDefied = true; }
+  }
+  else if (eventId === "watch_bell") { if (optionId === "bell") { r.influence += 2; f.watchBell = true; } else { r.townFavor += 1; f.westGateReinforced = true; } }
+  else if (eventId === "missing_scribe") { if (optionId === "shelter") { r.evidence += 2; r.townFavor += 1; f.scribeWitness = true; } else { r.gold += 5; f.scribeReturned = true; } }
+  else if (eventId === "grain_prices") { if (optionId === "ration") { r.townFavor += 2; r.medicine += 1; f.grainRationed = true; } else { r.gold += 6; r.townFavor -= 1; } }
+  else if (eventId === "ford_deserter") { if (optionId === "hide") { r.evidence += 2; r.influence += 1; f.deserterWitness = true; } else r.gold += 5; }
+  else if (eventId === "road_barricade") { if (optionId === "build") { r.townFavor += 2; f.roadBarricade = true; } else r.gold += 4; }
+  else if (eventId === "widow_claim") { if (optionId === "hearing") { r.evidence += 2; r.townFavor += 1; f.widowTestimony = true; } else { r.influence += 1; f.widowSettled = true; } }
+  else if (eventId === "quarry_collapse") { if (optionId === "rescue") { r.townFavor += 2; f.minersSupport = true; } else { r.gold += 7; state.inventory.push(generateItem(state, "quarry")); } }
+  else if (eventId === "river_customs") { if (optionId === "route") { r.influence += 2; f.smugglingRoute = true; } else if (optionId === "bribe") { r.gold -= 4; r.influence += 1; } else r.evidence += 2; }
+  else if (eventId === "chapel_inquest") { if (optionId === "priest") { r.influence += 2; f.inquestDefied = true; } else if (optionId === "letters") { r.evidence += 3; f.churchLetters = true; } else { r.townFavor -= 1; f.refugeeListGiven = true; } }
+  else if (eventId === "mercenary_contract") { if (optionId === "buyout") { r.gold -= 10; r.influence += 3; f.hiredDefectors = true; } else if (optionId === "clause") { r.evidence += 2; r.influence += 2; f.contractBroken = true; } else r.evidence += 2; }
+  else if (eventId === "mine_prisoners") { if (optionId === "free") { r.townFavor += 2; f.minersSupport = true; f.freedWorkers = true; } else { r.gold -= 5; r.influence += 2; f.freedWorkers = true; } }
+  else if (eventId === "north_hostages") { if (optionId === "medicine") { r.medicine -= 2; r.townFavor += 3; f.hostagesFreed = true; } else { r.evidence += 3; f.hostageList = true; } }
+  else if (eventId === "evacuation_route") { if (optionId === "ferry") { r.townFavor += 3; f.civiliansSafe = true; } else if (optionId === "mine") { r.townFavor += 2; f.mineEvacuation = true; } else { r.influence += 1; f.evacuationCarts = true; } }
+  else if (eventId === "merchant_council") { if (optionId === "grain") { r.influence += 3; f.merchantCarts = true; } else if (optionId === "fund") { r.gold -= 8; r.influence += 2; f.merchantCarts = true; } else { r.townFavor += 1; f.merchantsRefused = true; } }
+  else if (eventId === "chapel_sanctuary") { if (optionId === "priest") { r.townFavor += 2; f.civiliansSafe = true; } else if (optionId === "witch") { r.medicine += 2; f.civiliansSafe = true; } else r.townFavor += 3; }
+  else if (eventId === "enemy_letters") { if (optionId === "trace") { r.evidence += 3; r.influence += 2; f.letterCourier = true; } else if (optionId === "publish") { r.evidence += 1; r.influence += 3; f.enemyLettersPublished = true; } else { r.influence += 1; f.enemyContact = true; } }
+  else if (eventId === "deserter_wave") { if (optionId === "asylum") { r.townFavor += 2; r.influence += 2; f.enemyDeserters = true; } else if (optionId === "question") { r.evidence += 2; r.influence += 1; } else r.townFavor += 1; }
+  else if (eventId === "powder_store") { if (optionId === "engineer") { f.siegeSabotaged = true; r.influence += 2; } else if (optionId === "mage") { f.powderFire = true; r.influence += 2; } else { r.townFavor += 2; f.civiliansSafe = true; } }
+  else if (eventId === "noble_hostages") { if (optionId === "bargain") { r.influence += 3; f.hostageBargain = true; } else if (optionId === "release") { r.townFavor += 3; f.noblesReleased = true; } else { r.influence += 2; r.townFavor -= 1; f.noblesHeld = true; } }
+  else if (eventId === "last_supply") { if (optionId === "front") { f.frontMedicine = true; r.influence += 2; } else if (optionId === "refugees") { r.townFavor += 3; f.civiliansSafe = true; } else { r.influence += 1; f.wallsRepaired = true; } }
   else if (eventId === "ancient_core") { f.forgeSecured = true; for (let i = 0; i < 3; i += 1) state.inventory.push(generateItem(state, "forge")); }
   else if (eventId === "coalition_envoy") { f.coalitionSplit = true; r.influence += 3; }
-  if (eventId === "smith_intro" && optionId === "forge") addLog(state, "蓝钢长剑成形时，王炉门的断纹同时亮起。门后的灰炉内环已经可以进入。", "unlock");
-  else addLog(state, `你处理了“${EVENTS.find((e) => e.id === eventId).title}”。`, "event");
+  const salvaged = enforceInventoryLimit(state);
+  if (salvaged.length) addLog(state, `背包达到${INVENTORY_LIMIT}件上限，自动分解了最差的${salvaged.length}件装备。`, "equipment");
+  const outcome = EVENT_OUTCOMES[`${eventId}:${optionId}`];
+  const isUnlock = (eventId === "smith_intro" && optionId === "forge") || (eventId === "furnace_clue" && optionId === "key");
+  const isClue = (eventId === "smith_intro" && optionId === "promise") || (eventId === "furnace_clue" && optionId === "smith") || eventId === "cooling_well";
+  const outcomeKind = isUnlock ? "unlock" : isClue ? "clue" : eventId === "quartermaster" ? "threat" : "event";
+  addLog(state, outcome || `你处理了“${EVENTS.find((e) => e.id === eventId).title}”。`, outcomeKind);
   spendAction(state);
 }
 
@@ -701,6 +1033,8 @@ function settleCombat(state, internalId, result) {
     if (eventId === "arena") state.flags.arenaFailed = true;
     if (eventId === "hunter") state.flags.huntFailed = true;
   }
+  const salvaged = enforceInventoryLimit(state);
+  if (salvaged.length) addLog(state, `背包达到${INVENTORY_LIMIT}件上限，自动分解了最差的${salvaged.length}件装备。`, "equipment");
   spendAction(state);
 }
 
@@ -741,7 +1075,45 @@ function actionCatalog(state) { return internalActions(state).map((row) => ({ ..
 function applyPlayerAction(state, publicId) {
   const match = actionCatalog(state).find((row) => row.publicId === publicId);
   if (!match) throw new Error("这个行动已经不在当前场景中。");
+  if (match.kind === "grind") throw new Error("刷装必须先完成实际战斗。");
   return applyAction(state, match.id);
+}
+
+function preparePlayerGrindCombat(state, publicId) {
+  const match = actionCatalog(state).find((row) => row.publicId === publicId);
+  if (!match || match.kind !== "grind") return null;
+  const plan = grindCombatPlan(state, match.grindZoneId, match.grindLevel);
+  return plan ? { ...clone(plan), publicActionId: publicId } : null;
+}
+
+function applyPlayerGrindCombatResult(stateInput, publicId, result) {
+  const match = actionCatalog(stateInput).find((row) => row.publicId === publicId);
+  if (!match || match.kind !== "grind") throw new Error("这个刷装战斗已经不在当前场景中。");
+  const state = clone(stateInput);
+  const win = combatWon(result);
+  state.stats.grindAttempts = Number(state.stats.grindAttempts || 0) + 1;
+  state.stats.combats += 1;
+  state.lastCombat = publicCombatSummary(result, `${ZONES[match.grindZoneId].title} LV${match.grindLevel}`);
+  if (!win) {
+    state.stats.failedCombats += 1;
+    addLog(state, `${ZONES[match.grindZoneId].title} LV${match.grindLevel}战败，没有带回装备。`, "combat");
+    return { state, outcome: { win: false, loot: [], salvaged: [], summary: clone(state.lastCombat) } };
+  }
+  const item = generateItem(state, match.grindZoneId, match.grindLevel);
+  state.inventory.push(item);
+  state.stats.grinds += 1;
+  const salvaged = enforceInventoryLimit(state);
+  if (salvaged.length) addLog(state, `背包达到${INVENTORY_LIMIT}件上限，已自动分解最差的${salvaged.length}件装备。`, "equipment");
+  if (rarityIndex(item.rarity) >= rarityIndex("史诗")) addLog(state, `${ZONES[match.grindZoneId].title} LV${match.grindLevel}掉落了${item.rarity}装备：${item.name}。`, "loot");
+  return {
+    state,
+    outcome: {
+      win: true,
+      loot: [clone(item)],
+      salvaged: salvaged.map((row) => clone(row)),
+      summary: clone(state.lastCombat),
+    },
+  };
 }
 
 function preparePlayerCombat(state, publicId) {
@@ -807,17 +1179,20 @@ function getPlayerObservation(state) {
     },
     resources: clone(state.resources),
     inventory: state.inventory.map((item) => clone(item)),
+    inventoryLimit: INVENTORY_LIMIT,
+    salvagedCount: Number(state.stats.salvaged || 0),
     places: visiblePlaces(state, catalog),
     threatSignals: state.recent.filter((row) => ["threat", "chapter"].includes(row.kind)).slice(0, 8).map((row) => row.text),
     recentSignals: state.recent.slice(0, 8).map((row) => row.text),
     lastCombat: clone(state.lastCombat),
-    actions: catalog.map((row) => ({ id: row.publicId, label: row.label, kind: row.kind, placeId: row.placeId, actionPointMark: ["event", "combat", "inspect"].includes(row.kind) ? 1 : 0, endsCurrentDay: row.kind === "time" })),
+    actions: catalog.map((row) => ({ id: row.publicId, label: row.label, kind: row.kind, placeId: row.placeId, callback: row.callback || "", grindLevel: row.grindLevel || 0, enemyCount: row.enemyCount || 0, actionPointMark: ["event", "combat", "inspect"].includes(row.kind) ? 1 : 0, endsCurrentDay: row.kind === "time" })),
     result: clone(state.result),
   };
 }
 
 function migrateState(stateInput) {
   const state = clone(stateInput);
+  state.stats = { spentActions: 0, grinds: 0, grindAttempts: 0, combats: 0, failedCombats: 0, salvaged: 0, ...(state.stats || {}) };
   if (state.flags?.smithForged && !state.flags.innerOpen) {
     state.flags.innerOpen = true;
     if (!state.flags.smithInnerMigrationNoted) {
@@ -825,12 +1200,14 @@ function migrateState(stateInput) {
       addLog(state, "铁匠试炉留下的蓝钢断纹与王炉门发生共鸣，灰炉内环已经开放。", "unlock");
     }
   }
+  const salvaged = enforceInventoryLimit(state);
+  if (salvaged.length) addLog(state, `旧背包超过${INVENTORY_LIMIT}件，已自动分解最差的${salvaged.length}件装备。`, "equipment");
   return state;
 }
 
 return {
-  VERSION, AP_PER_DAY, FINAL_DAY, HEROES, EVENTS, ZONES,
-  createInitialState, migrateState, getPlayerObservation, applyPlayerAction, preparePlayerCombat, applyPlayerCombatResult,
-  applyAction, internalActions, simulatePlan, showdownPlan, eventCombatPlan, heroPower, actForDay,
+  VERSION, AP_PER_DAY, FINAL_DAY, INVENTORY_LIMIT, HEROES, EVENTS, ZONES, GRIND_ENCOUNTERS, EVENT_OUTCOMES, COMBAT_OPTIONS,
+  createInitialState, migrateState, getPlayerObservation, applyPlayerAction, preparePlayerCombat, preparePlayerGrindCombat, applyPlayerCombatResult, applyPlayerGrindCombatResult,
+  applyAction, internalActions, simulatePlan, showdownPlan, eventCombatPlan, grindCombatPlan, heroPower, actForDay,
 };
 });

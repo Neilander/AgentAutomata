@@ -31,22 +31,25 @@ async function run() {
       localStorage.setItem(key, JSON.stringify(state));
     }, SAVE_KEY);
     await page.reload({ waitUntil: "load" });
-    await page.locator('[data-area="镇中心"]').click();
-    await page.getByRole("button", { name: /铁匠的试炉/ }).click();
-    const apBefore = await page.locator("#ap-value").textContent();
+    await page.locator(".map-node", { hasText: "铁匠的试炉" }).click();
+    const apBefore = await page.locator("#ap-outside-value").textContent();
     await page.getByRole("button", { name: /把三把普通武器交给铁匠/ }).click();
 
-    assert.equal(Number(apBefore) - Number(await page.locator("#ap-value").textContent()), 1, "铁匠事件没有正确消耗一个行动点");
-    assert((await page.locator("#scene-change").textContent()).includes("灰炉内环已经可以进入"), "解锁反馈没有出现在当前场景首要位置");
+    await page.locator("#result-dialog").waitFor({ state: "visible" });
+    assert((await page.locator("#result-body").textContent()).includes("灰炉内环已经可以进入"), "铁匠结果弹窗没有显示实际解锁结果");
+    assert.equal(Number(apBefore) - Number(await page.locator("#ap-outside-value").textContent()), 1, "铁匠事件没有正确消耗一个行动点");
     assert.equal(await page.getByText("灰炉内环", { exact: true }).count(), 1, "完成试炉后地图没有立即出现灰炉内环");
+    await page.locator("#result-confirm").click();
+    await page.locator("#result-dialog").waitFor({ state: "hidden" });
     await page.getByRole("button", { name: /灰炉内环/ }).click();
-    assert.equal(await page.getByRole("button", { name: /在灰炉内环战斗1次/ }).count(), 1, "内环单次刷装行动缺失");
-    assert.equal(await page.getByRole("button", { name: /在灰炉内环连续战斗10次/ }).count(), 1, "内环十连刷装行动缺失");
-    const apBeforeGrind = await page.locator("#ap-value").textContent();
-    const inventoryBefore = Number(await page.locator("#inventory-count").textContent());
-    await page.getByRole("button", { name: /在灰炉内环战斗1次/ }).click();
-    assert.equal(await page.locator("#ap-value").textContent(), apBeforeGrind, "内环刷装错误消耗了行动点");
-    assert.equal(Number(await page.locator("#inventory-count").textContent()), inventoryBefore + 1, "内环掉落没有进入背包");
+    assert.equal(await page.locator(".action-button.grind-action").count(), 3, "内环没有提供三档真实刷装战斗");
+    const apBeforeGrind = await page.locator("#ap-outside-value").textContent();
+    await page.getByRole("button", { name: /LV1 · 余火甬道/ }).click();
+    await page.locator("#grind-battle-mount .battle-view-field").waitFor({ state: "visible", timeout: 10000 });
+    await page.locator("#stop-grind").click();
+    await page.locator("[data-grind-leave]").waitFor({ state: "visible", timeout: 45000 });
+    await page.locator("[data-grind-leave]").click();
+    assert.equal(await page.locator("#ap-outside-value").textContent(), apBeforeGrind, "内环刷装错误消耗了行动点");
     await page.reload({ waitUntil: "load" });
     assert.equal(await page.getByText("灰炉内环", { exact: true }).count(), 1, "保存并刷新后内环解锁消失");
 
@@ -58,10 +61,11 @@ async function run() {
     }, SAVE_KEY);
     await page.reload({ waitUntil: "load" });
     assert.equal(await page.getByText("灰炉内环", { exact: true }).count(), 1, "旧存档迁移后没有补开灰炉内环");
-    assert((await page.locator("#scene-change").textContent()).includes("灰炉内环已经开放"), "旧存档迁移没有给玩家可见反馈");
+    await page.getByRole("button", { name: "记录" }).click();
+    assert((await page.locator("#dock-content").textContent()).includes("灰炉内环已经开放"), "旧存档迁移没有给玩家可见反馈");
     assert.deepEqual(pageErrors, [], `浏览器页面错误：${pageErrors.join(" | ")}`);
 
-    console.log(JSON.stringify({ result: "PASS", freshUnlock: true, immediateFeedback: true, freeInnerGrind: true, persistedAfterAction: true, oldSaveMigrated: true, initialLeak: false, pageErrors }, null, 2));
+    console.log(JSON.stringify({ result: "PASS", freshUnlock: true, immediateFeedback: true, realInnerCombat: true, freeInnerGrind: true, persistedAfterAction: true, oldSaveMigrated: true, initialLeak: false, pageErrors }, null, 2));
   } finally {
     await browser.close();
   }

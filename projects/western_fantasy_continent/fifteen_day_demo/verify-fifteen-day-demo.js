@@ -14,8 +14,9 @@ function verifyObservationCounts() {
   const state = GAME.createInitialState("counts");
   const observation = GAME.getPlayerObservation(state);
   assert.equal(observation.time.day, 1);
-  assert.equal(observation.places.filter((place) => place.id.startsWith("place_event_")).length, 2, "day one should open with two events");
-  assert(observation.actions.length <= 9, "opening should stay compact");
+  assert.equal(observation.places.filter((place) => place.id.startsWith("place_event_")).length, 4, "day one should expose four events in addition to the locked gate");
+  assert(new Set(observation.actions.filter((action) => action.actionPointMark).map((action) => action.placeId)).size > 3, "opening needs more actionable nodes than available action points");
+  assert(observation.actions.length <= 15, "opening should stay readable despite adding real tradeoffs");
   for (const place of observation.places) assert.equal(place.actionCount, observation.actions.filter((action) => action.placeId === place.id).length, `actionCount mismatch at ${place.title}`);
   assert(!observation.places.some((place) => place.title.includes("铁匠")), "smith event should not crowd day one");
 }
@@ -24,13 +25,72 @@ function verifyFreeGrindAndEquipment() {
   let state = GAME.createInitialState("grind");
   const day = state.day;
   const ap = state.ap;
-  state = GAME.applyPlayerAction(state, actionByLabel(state, "连续战斗10次").id);
+  const action = actionByLabel(state, "LV1 · 煤灰废道");
+  const plan = GAME.preparePlayerGrindCombat(state, action.id);
+  assert(plan, "visible grind action should prepare a real combat");
+  const result = GAME.simulatePlan(plan);
+  const resolved = GAME.applyPlayerGrindCombatResult(state, action.id, result);
+  assert(resolved.outcome.win, "灰炉LV1 should be a reliable solo opening encounter");
+  state = resolved.state;
   assert.equal(state.day, day);
   assert.equal(state.ap, ap);
-  assert.equal(state.inventory.length, 11);
+  assert.equal(state.inventory.length, 2);
   const beforePower = GAME.getPlayerObservation(state).party.active[0].visiblePower;
   state = GAME.applyPlayerAction(state, actionByLabel(state, "择优穿戴").id);
   assert(GAME.getPlayerObservation(state).party.active[0].visiblePower >= beforePower);
+}
+
+function verifyActEventCapacity() {
+  for (let act = 1; act <= 3; act += 1) {
+    const events = GAME.EVENTS.filter((event) => Math.floor((event.start - 1) / 5) + 1 === act);
+    assert(events.length > GAME.AP_PER_DAY * 5, `act ${act} needs more event nodes than its fifteen action points`);
+    assert.equal(events.length, 18, `act ${act} event pool changed unexpectedly`);
+  }
+
+  for (let day = 1; day <= GAME.FINAL_DAY; day += 1) {
+    const state = GAME.createInitialState(`daily-choice-${day}`);
+    state.day = day;
+    state.ap = GAME.AP_PER_DAY;
+    const observation = GAME.getPlayerObservation(state);
+    const actionPointNodes = new Set(observation.actions.filter((action) => action.actionPointMark).map((action) => action.placeId));
+    assert(actionPointNodes.size > GAME.AP_PER_DAY, `day ${day} does not offer more current nodes than the player can clear`);
+  }
+
+  for (const event of GAME.EVENTS) {
+    for (const option of event.options) {
+      const key = `${event.id}:${option.id}`;
+      if (!GAME.COMBAT_OPTIONS.has(key)) assert(GAME.EVENT_OUTCOMES[key], `noncombat option lacks specific result feedback: ${key}`);
+    }
+  }
+}
+
+function verifyChoiceSurplusDuringPlayedCampaign() {
+  let state = GAME.createInitialState("played-choice-surplus");
+  let guard = 0;
+  while (!state.result && guard < 200) {
+    guard += 1;
+    const observation = GAME.getPlayerObservation(state);
+    if (state.phase === "showdown") {
+      const fight = observation.actions.find((action) => action.kind === "combat");
+      assert(fight, `showdown on day ${state.day} lacks a playable combat action`);
+      state = GAME.applyPlayerAction(state, fight.id);
+      continue;
+    }
+    if (state.ap === GAME.AP_PER_DAY) {
+      const actionPointNodes = new Set(observation.actions.filter((action) => action.actionPointMark).map((action) => action.placeId));
+      assert(actionPointNodes.size > GAME.AP_PER_DAY, `played campaign starts day ${state.day} without a real choice surplus`);
+    }
+    if (state.ap > 0) {
+      const action = observation.actions.find((row) => row.actionPointMark);
+      assert(action, `played campaign cannot spend action point on day ${state.day}`);
+      state = GAME.applyPlayerAction(state, action.id);
+    } else {
+      const endDay = observation.actions.find((action) => action.endsCurrentDay);
+      assert(endDay, `played campaign cannot end day ${state.day}`);
+      state = GAME.applyPlayerAction(state, endDay.id);
+    }
+  }
+  assert(state.result, "played choice-surplus route did not finish the fifteen-day campaign");
 }
 
 function verifySmithUnlocksInnerRing() {
@@ -43,7 +103,7 @@ function verifySmithUnlocksInnerRing() {
   const observation = GAME.getPlayerObservation(state);
   assert(state.flags.innerOpen, "铁匠试炉完成后没有打开灰炉内环");
   assert(observation.places.some((place) => place.title === "灰炉内环"), "开门后玩家地图没有出现高级副本");
-  assert(observation.actions.some((action) => action.label.includes("在灰炉内环战斗")), "灰炉内环没有可刷行动");
+  assert(observation.actions.some((action) => action.kind === "grind" && action.placeId === "place_zone_inner"), "灰炉内环没有可刷行动");
 
   const oldSave = GAME.createInitialState("smith-old-save");
   oldSave.flags.smithForged = true;
@@ -134,7 +194,92 @@ function verifyNoFutureEventsInOpening() {
   for (const forbidden of ["执法官的宴会", "围剿联盟的无旗使者", "三方争吵的战前会议", "失去军籍的断旗队", "20v10", "politicalRouteAvailable", "volunteerCount"]) assert(!text.includes(forbidden), `opening leaked: ${forbidden}`);
 }
 
+function verifySpecificOutcomeFeedback() {
+  let rescued = GAME.createInitialState("feedback-rescue");
+  rescued = GAME.applyPlayerAction(rescued, actionByLabel(rescued, "亲自把他背回镇里").id);
+  assert(rescued.recent[0].text.includes("赫恩") && rescued.recent[0].text.includes("加入了队伍"), "rescue feedback should state the immediate consequence");
+  assert(!rescued.recent[0].text.includes("你处理了"), "specific rescue feedback was covered by a generic event log");
+
+  let smith = GAME.createInitialState("feedback-smith");
+  smith.day = 2;
+  smith = GAME.applyPlayerAction(smith, actionByLabel(smith, "答应替她收集").id);
+  assert(smith.recent[0].text.includes("三把普通武器") && smith.recent[0].text.includes("第四日"), "smith promise should leave the actual task in the newest visible signal");
+  assert(!smith.recent[0].text.includes("你处理了"), "smith task feedback was covered by a generic event log");
+
+  let tanner = GAME.createInitialState("feedback-well-tanner");
+  tanner = GAME.applyPlayerAction(tanner, actionByLabel(tanner, "支持染匠").id);
+  let grower = GAME.createInitialState("feedback-well-grower");
+  grower = GAME.applyPlayerAction(grower, actionByLabel(grower, "支持菜农").id);
+  assert.notEqual(tanner.recent[0].text, grower.recent[0].text, "different choices at the well should not collapse into the same feedback");
+}
+
+function verifyInventoryCapAndSalvage() {
+  let state = GAME.createInitialState("inventory-cap");
+  for (let index = 0; index < 210; index += 1) {
+    const action = actionByLabel(state, "LV1 · 煤灰废道");
+    const plan = GAME.preparePlayerGrindCombat(state, action.id);
+    const resolved = GAME.applyPlayerGrindCombatResult(state, action.id, GAME.simulatePlan(plan));
+    assert(resolved.outcome.win, `灰炉LV1第${index + 1}轮意外战败`);
+    state = resolved.state;
+  }
+  const observation = GAME.getPlayerObservation(state);
+  assert.equal(observation.inventoryLimit, 200);
+  assert.equal(observation.inventory.length, 200, "inventory should never exceed the playable UI cap");
+  assert(observation.salvagedCount > 0, "overflow equipment was not salvaged");
+  assert(state.inventory.some((item) => item.id === "starter_knife"), "equipped starter weapon was incorrectly salvaged");
+  assert(observation.recentSignals[0].includes("自动分解"), "overflow salvage did not produce visible feedback");
+}
+
+function verifyPersistentChoicesAndCallbacks() {
+  const actOne = GAME.createInitialState("persistent-act-one");
+  actOne.day = 5;
+  let observation = GAME.getPlayerObservation(actOne);
+  assert(observation.places.some((place) => place.title === "燃烧的驮车"), "multi-day caravan event disappeared before the first showdown");
+  assert(observation.actions.filter((action) => ["event", "combat", "inspect"].includes(action.kind)).length > 3, "three action points should compete with more than three current choices");
+
+  const callbackState = GAME.createInitialState("callback-route");
+  callbackState.day = 3;
+  callbackState.roster.push("thief");
+  observation = GAME.getPlayerObservation(callbackState);
+  const callback = observation.actions.find((action) => action.label.includes("小偷从排水沟潜入"));
+  assert(callback?.callback.includes("鸦指"), "prior recruitment did not mark the newly opened action as a callback");
+
+  const failureCallback = GAME.createInitialState("callback-after-failure");
+  failureCallback.day = 7;
+  failureCallback.flags.arenaFailed = true;
+  observation = GAME.getPlayerObservation(failureCallback);
+  assert(observation.actions.find((action) => action.label.includes("卸甲重赛"))?.callback.includes("败战"), "failure-created rematch was not marked as a callback");
+
+  const actTwo = GAME.createInitialState("persistent-act-two");
+  actTwo.day = 10;
+  observation = GAME.getPlayerObservation(actTwo);
+  assert(observation.places.some((place) => place.title === "拒绝下井的矿工"), "act-two event did not remain available through its showdown day");
+
+  const actThree = GAME.createInitialState("persistent-act-three");
+  actThree.day = 15;
+  observation = GAME.getPlayerObservation(actThree);
+  assert(observation.places.some((place) => place.title === "三方争吵的战前会议"), "act-three event did not remain available through the final day");
+}
+
+function verifySingleBossPressure() {
+  const guardianState = GAME.createInitialState("guardian-pressure");
+  guardianState.day = 4;
+  guardianState.flags.gateInspected = true;
+  const guardian = GAME.eventCombatPlan(guardianState, "furnace_clue", "force");
+  assert(guardian.rightTeam[0].maxHp > guardian.leftTeam.reduce((sum, unit) => sum + unit.maxHp, 0), "solo guardian lacks whole-party durability");
+
+  const beastState = GAME.createInitialState("beast-pressure");
+  beastState.day = 9;
+  beastState.roster = ["player", "shield", "apothecary", "thief", "duelist", "exile", "champion", "priest", "engineer", "mage"];
+  beastState.activeParty = beastState.roster.slice();
+  beastState.formation = Object.fromEntries(beastState.activeParty.map((id, index) => [id, index]));
+  const beast = GAME.eventCombatPlan(beastState, "hunter", "hunt");
+  assert(beast.rightTeam[0].maxHp > beast.leftTeam.reduce((sum, unit) => sum + unit.maxHp, 0), "solo act-two beast lacks ten-person durability");
+}
+
 verifyObservationCounts();
+verifyActEventCapacity();
+verifyChoiceSurplusDuringPlayedCampaign();
 verifyFreeGrindAndEquipment();
 verifySmithUnlocksInnerRing();
 verifyActsAndMassCombat();
@@ -142,4 +287,8 @@ verifyFallbackIsOncePerDay();
 verifyLearnableFirstShowdown();
 verifyTimeAndDefeatContinuation();
 verifyNoFutureEventsInOpening();
+verifySpecificOutcomeFeedback();
+verifyInventoryCapAndSalvage();
+verifyPersistentChoicesAndCallbacks();
+verifySingleBossPressure();
 console.log("fifteen-day demo verification passed");

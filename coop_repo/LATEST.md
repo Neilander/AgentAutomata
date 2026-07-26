@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-07-24_1628_smith-inner-browser-regression.md`](reports/2026-07-24_1628_smith-inner-browser-regression.md)
+[`reports/2026-07-25_1124_fifteen-day-real-grind-loop.md`](reports/2026-07-25_1124_fifteen-day-real-grind-loop.md)
 
-Last updated: 2026-07-24
+Last updated: 2026-07-25
 
-当前重点：铁匠三武器→灰炉内环解锁已通过真实浏览器复查；新旧存档、即时反馈、免费刷装、行动后持久化与未完成时封口均通过。内环1000件抽样平均战力与身份词条率均显著高于外环。下一步记录真人自然刷取次数与第五日战果。
+当前重点：十五日网页的刷装已经从瞬时十连改为逐轮正式战斗；每个装备区提供 LV1/LV2/LV3 敌阵，整页连续作战并在下方按稀有度陈列掉落，战败或“本轮后停止”可返回地图。下一步真人连续刷 5～10 轮，确认战斗节奏和掉落到达感。

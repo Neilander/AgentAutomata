@@ -16,7 +16,6 @@
       </div>
       <div id="day-rail" class="day-rail" aria-label="十五日时间轴"></div>
       <div class="resource-strip" aria-label="资源">
-        <span>行动 <strong id="ap-value">3</strong></span>
         <span>金币 <strong id="gold-value">0</strong></span>
         <span>药品 <strong id="medicine-value">0</strong></span>
         <span>支持 <strong id="favor-value">0</strong></span>
@@ -24,53 +23,80 @@
         <span>影响 <strong id="influence-value">0</strong></span>
       </div>
       <div class="top-actions">
+        <div class="ap-orb" aria-label="今日剩余行动力"><span>行动力</span><strong><b id="ap-outside-value">3</b>/3</strong></div>
         <button id="end-day-button" class="button quiet">结束本日</button>
         <button id="restart-open" class="icon-button" aria-label="重新开始" title="重新开始">↻</button>
       </div>
     </header>
 
-    <main id="campaign-grid" class="campaign-grid">
-      <aside class="world-panel panel">
-        <div class="section-heading">
-          <span>已知区域</span>
-          <strong id="known-place-count">0</strong>
-        </div>
-        <div class="map-wrap">
-          <svg class="town-map" viewBox="0 0 420 390" aria-label="煤灰镇及周边地图">
-            <path class="map-land" d="M32 77C74 15 171 22 221 48c69-35 155 3 162 69 37 42 20 121-25 145-11 65-86 107-147 79-62 33-145-2-151-62-49-40-49-143-28-202Z"/>
-            <path class="map-river" d="M-12 60c83 47 157 46 232 10 78-38 143-31 220 18"/>
-            <path class="map-road" d="M55 191c84 1 110 13 157 7 60-8 89-49 145-54M211 198c-12 54-44 91-94 126m95-126c41 49 68 86 94 129m-94-130c31-66 34-91 41-142"/>
-            <g class="map-landmarks">
-              <path d="M187 172h50v40h-50zM195 160h34l8 12h-50z"/>
-              <path d="M319 119h38v31h-38zM328 94h20v25h-20z"/>
-              <path d="M242 40h38v24h-38zM234 64h54"/>
-              <path d="M53 168h32v34H53zM85 180h27"/>
-              <path d="M292 293h38v32h-38zM311 273v20M300 283h22"/>
-              <path d="M89 306h70v14H89zM95 290v16M153 290v16"/>
-            </g>
-          </svg>
-          <div id="area-markers" class="area-markers"></div>
-        </div>
-        <div id="place-list" class="place-list"></div>
-      </aside>
-
-      <section class="stage-panel panel">
-        <div id="scene-view" class="scene-view">
-          <div class="scene-art" id="scene-art">
-            <span id="scene-area" class="scene-area"></span>
-            <div class="scene-vignette"></div>
+    <main id="campaign-grid" class="campaign-grid panel">
+      <section id="map-view" class="map-view">
+        <div id="map-viewport" class="map-viewport" aria-label="可拖拽缩放的煤灰镇地图">
+          <div id="map-world" class="map-world" aria-hidden="true">
+            <svg class="town-map" viewBox="0 0 1400 860" preserveAspectRatio="none">
+              <defs>
+                <radialGradient id="landGlow" cx="52%" cy="46%" r="68%">
+                  <stop offset="0" stop-color="#776847"/>
+                  <stop offset="1" stop-color="#3b3529"/>
+                </radialGradient>
+                <pattern id="mapGrain" width="46" height="46" patternUnits="userSpaceOnUse">
+                  <path d="M3 17c11-5 21-5 32 0M13 40c8-4 16-4 25 0" fill="none" stroke="#d8c18b" stroke-opacity=".06" stroke-width="2"/>
+                </pattern>
+              </defs>
+              <path class="map-land" d="M72 178C177 31 430 47 580 107c204-111 496-27 630 105 148 146 91 371-45 469-169 122-353 118-494 67-197 102-466 29-529-126C31 527 13 320 72 178Z"/>
+              <path class="map-texture" d="M72 178C177 31 430 47 580 107c204-111 496-27 630 105 148 146 91 371-45 469-169 122-353 118-494 67-197 102-466 29-529-126C31 527 13 320 72 178Z"/>
+              <path class="map-river" d="M-40 145C210 297 405 240 608 121c226-131 486-73 840 77"/>
+              <path class="map-road" d="M105 438c234-24 365 34 559-3 176-34 290-188 515-203M674 431C596 562 470 684 298 764m376-333c132 112 209 218 290 360M672 432c96-182 107-266 134-364"/>
+              <g class="map-landmarks">
+                <path d="M608 375h142v112H608zM632 332h94l24 43H608zM650 407h24v80m42-80h22v80"/>
+                <path d="M1060 228h104v82h-104zM1087 151h50v77h-50zM1073 181h78"/>
+                <path d="M754 72h104v59H754zM732 132h146"/>
+                <path d="M142 374h92v91h-92zM234 407h91"/>
+                <path d="M937 686h112v83H937zM994 632v54M962 656h66"/>
+                <path d="M302 708h206v35H302zM320 665v43M486 665v43"/>
+              </g>
+            </svg>
+            <div id="map-region-layer" class="map-region-layer"></div>
           </div>
-          <div class="scene-copy">
-            <div class="scene-title-row">
-              <span id="scene-status" class="status-chip"></span>
-              <h2 id="scene-title">灰炉外环</h2>
+          <div id="map-node-layer" class="map-node-layer"></div>
+
+          <div class="map-overview">
+            <span>已知地点</span>
+            <strong id="known-place-count">0</strong>
+            <small>拖动地图 · 滚轮缩放 · 点击地点</small>
+          </div>
+
+          <details class="map-threat">
+            <summary>镇外迹象</summary>
+            <div id="threat-list"></div>
+          </details>
+
+          <div class="map-camera-controls" aria-label="地图镜头控制">
+            <button id="map-zoom-out" class="map-control" title="缩小">−</button>
+            <button id="map-reset-camera" class="map-control wide" title="显示全图">全图</button>
+            <button id="map-zoom-in" class="map-control" title="放大">＋</button>
+          </div>
+
+          <aside id="event-popover" class="event-popover" hidden>
+            <button id="event-popover-close" class="popover-close" aria-label="关闭事件">×</button>
+            <div class="event-heading">
+              <div>
+                <span id="scene-area" class="scene-area"></span>
+                <span id="scene-status" class="status-chip"></span>
+              </div>
+              <h2 id="scene-title">地点</h2>
             </div>
             <p id="scene-description"></p>
             <div id="scene-change" class="scene-change"></div>
-          </div>
-        </div>
+            <div class="event-options-head"><span id="action-heading">可选行动</span><strong id="action-count">0</strong></div>
+            <div id="action-list" class="action-list"></div>
+          </aside>
 
-        <div id="combat-view" class="combat-view" hidden>
+          <section id="campaign-ending" class="campaign-ending" hidden></section>
+        </div>
+      </section>
+
+      <section id="combat-view" class="combat-view" hidden>
           <div class="combat-heading">
             <div>
               <span>正在交战</span>
@@ -80,20 +106,33 @@
           </div>
           <div id="battle-mount" class="battle-mount"></div>
           <div id="combat-result" class="combat-result" hidden></div>
-        </div>
       </section>
 
-      <aside class="action-panel panel">
-        <div class="section-heading">
-          <span id="action-heading">现在能做什么</span>
-          <strong id="action-count">0</strong>
+      <section id="grind-view" class="grind-view" hidden>
+        <div class="grind-heading">
+          <div>
+            <span>连续刷装 · 不消耗行动力</span>
+            <h2 id="grind-title">灰炉</h2>
+          </div>
+          <div id="grind-run-stats" class="grind-run-stats"></div>
+          <button id="stop-grind" class="button danger">本轮后停止</button>
         </div>
-        <div id="action-list" class="action-list"></div>
-        <section class="threat-glimpse">
-          <h3>镇外迹象</h3>
-          <div id="threat-list"></div>
+        <div id="grind-battle-mount" class="battle-mount grind-battle-mount"></div>
+        <section class="grind-loot-panel" aria-label="本次刷装掉落">
+          <div class="grind-loot-summary">
+            <div>
+              <span class="chapter-mark">战利品</span>
+              <strong id="grind-status">准备进入战斗</strong>
+            </div>
+            <div id="grind-latest-loot" class="grind-latest-loot"></div>
+            <div id="grind-session-actions" class="grind-session-actions"></div>
+          </div>
+          <div class="grind-loot-shelf-wrap">
+            <div class="grind-loot-shelf-head"><span>本次获得 · 稀有度优先</span><small id="grind-loot-count">0件</small></div>
+            <div id="grind-loot-shelf" class="grind-loot-shelf"></div>
+          </div>
         </section>
-      </aside>
+      </section>
     </main>
 
     <section class="command-dock panel">
@@ -105,6 +144,17 @@
       <div id="dock-content" class="dock-content"></div>
     </section>
   </div>
+
+  <dialog id="result-dialog" class="result-dialog" aria-labelledby="result-title">
+    <form method="dialog">
+      <span class="chapter-mark">行动结果</span>
+      <h2 id="result-title">事情有了结果</h2>
+      <p id="result-body" class="result-copy"></p>
+      <div class="dialog-actions">
+        <button id="result-confirm" value="default" class="button primary" autofocus>继续</button>
+      </div>
+    </form>
+  </dialog>
 
   <dialog id="restart-dialog" class="restart-dialog">
     <form method="dialog">
@@ -127,6 +177,7 @@
   <script src="../game_data/runtime-field-effects.js"></script>
   <script src="../game_data/combat-sim.js"></script>
   <script src="../battle_view/battle-view.js"></script>
+  <script src="../../../shared/game_camera_2d/camera-core.js"></script>
   <script src="../fifteen_day_demo/fifteen-day-core.js"></script>
   <script src="five-day-raid-web.js"></script>
 </body>

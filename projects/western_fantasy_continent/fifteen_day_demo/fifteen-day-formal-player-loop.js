@@ -56,7 +56,14 @@ function applyDecisionResponse(input, responseInput) {
     reasoningChain: response.reasoningChain,
     hypothesis: null,
   });
-  const afterState = GAME.applyPlayerAction(session.gameState, response.action);
+  let afterState;
+  if (selected.kind === "grind") {
+    const plan = GAME.preparePlayerGrindCombat(session.gameState, response.action);
+    if (!plan) throw new Error("visible grind action did not produce a combat plan");
+    afterState = GAME.applyPlayerGrindCombatResult(session.gameState, response.action, GAME.simulatePlan(plan)).state;
+  } else {
+    afterState = GAME.applyPlayerAction(session.gameState, response.action);
+  }
   const after = GAME.getPlayerObservation(afterState);
   const rawEvents = buildVisibleEvents(session.cycle + 1, selected, before, after);
   const interpreted = INTERPRETER.interpretEventLog(rawEvents, session.conceptState, {

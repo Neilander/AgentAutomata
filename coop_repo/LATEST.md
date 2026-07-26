@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-07-24_1711_mind-toy-graded-map-blur.md`](reports/2026-07-24_1711_mind-toy-graded-map-blur.md)
+[`reports/2026-07-25_1220_cognitive-gameplay-lab-v0.md`](reports/2026-07-25_1220_cognitive-gameplay-lab-v0.md)
 
-Last updated: 2026-07-24
+Last updated: 2026-07-25
 
-当前重点：地图有限注意不能实现为随机遮挡。研究支持四种并存机制：未注意信息完全不进入模型、相似单位压成群体统计、负荷增加使个体精度连续下降、类型与位置可能绑定错误。第一版建议只做instance/group/gist三层和高负荷下的小概率绑定错误；下一步用固定3区域、8~12敌人的小地图，只改变目标与焦点，检查真实Agent输出如何渐进模糊。
+当前重点：隔离认知试玩实验室 V0 已把玩家可见边界、有限注意、游戏RAG、ActiveCognition、AI MindToy、有来源Estimate、逐个Idea、局部推演、ThoughtController和ThoughtTrace接成可运行闭环；Guess的8个隐藏目标全部在4步内完成。下一步优先用Light Up或小型扫雷做第二游戏并保存多次真实AI原始输出，暂不接正式玩家Agent或Decision情绪特征。

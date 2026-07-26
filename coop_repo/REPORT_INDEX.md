@@ -2,6 +2,10 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-25
+
+- `2026-07-25_1220_cognitive-gameplay-lab-v0.md`：隔离实现十一段可运行认知试玩链：玩家可见边界、有限注意、游戏RAG、ActiveCognition、AI MindToy、有来源Estimate、单Idea局部推演、控制器和ThoughtTrace。Guess遍历8个隐藏目标均在4步内完成；专项26项、旧MindToy 14项和正式因果循环回归通过，尚未接Decision特征、情绪或正式玩家Agent。
+
 ## 2026-07-24
 
 - `2026-07-24_1711_mind-toy-graded-map-blur.md`：研究地图中人类注意与记忆的渐进模糊。结论不是随机遮掉固定比例，而是未注意遗漏、群体统计概括、负荷导致精度下降和类型/位置绑定错误并存；提出instance/group/gist三层最小模型和固定小地图验证方案。

@@ -141,11 +141,25 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--gold-bright
 .map-node.locked .node-sigil { border-style: dashed; color: #9a9283; background: #27241e; }
 .map-node.dormant { opacity: .55; }
 
-.map-overview, .map-threat, .map-camera-controls, .campaign-ending { position: absolute; z-index: 8; }
+.map-overview, .quest-rail, .map-threat, .map-camera-controls, .campaign-ending { position: absolute; z-index: 8; }
 .map-overview { left: 14px; top: 14px; padding: 9px 12px; display: grid; grid-template-columns: auto auto; align-items: baseline; gap: 0 8px; border: 1px solid rgba(190, 161, 103, .4); background: rgba(18, 16, 13, .9); box-shadow: 0 6px 18px rgba(0,0,0,.3); pointer-events: none; }
 .map-overview span { color: var(--muted); font-size: 10px; letter-spacing: .12em; }
 .map-overview strong { color: var(--gold-bright); font-size: 17px; }
 .map-overview small { grid-column: 1 / -1; color: var(--dim); font-size: 9px; }
+.quest-rail { left: 14px; top: 76px; width: 232px; display: grid; gap: 5px; pointer-events: auto; }
+.quest-entry { position: relative; width: 100%; padding: 8px 48px 8px 10px; display: grid; gap: 2px; border: 1px solid rgba(190, 161, 103, .36); border-left: 3px solid #a47b37; background: rgba(20, 18, 14, .92); color: var(--ink); box-shadow: 0 5px 16px rgba(0,0,0,.32); cursor: pointer; text-align: left; }
+.quest-entry.side { border-left-color: #7389a3; }
+.quest-entry:hover, .quest-entry.selected { border-color: var(--gold); background: rgba(52, 40, 23, .96); }
+.quest-entry > span { color: var(--gold); font-size: 8px; letter-spacing: .12em; }
+.quest-entry.side > span { color: #9ab2ce; }
+.quest-entry strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 11px; }
+.quest-entry small { color: var(--muted); font-size: 9px; }
+.quest-entry em { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); color: var(--dim); font-size: 8px; font-style: normal; }
+.quest-entry.complete { opacity: .64; }
+.map-node.quest-muted { opacity: .17; filter: grayscale(.8); }
+.map-node.quest-related { opacity: 1; z-index: 2; }
+.map-node.quest-related .node-sigil { box-shadow: 0 0 0 4px rgba(24,20,13,.72), 0 0 22px rgba(240,207,123,.76); }
+.map-node.quest-related .node-copy { border-color: #d0a95a; }
 .map-threat { right: 14px; top: 14px; width: min(310px, calc(100% - 28px)); border: 1px solid rgba(137, 77, 68, .55); background: rgba(24, 17, 15, .92); }
 .map-threat summary { padding: 9px 12px; color: #d68a7e; cursor: pointer; font-size: 11px; letter-spacing: .1em; }
 .map-threat > div { max-height: 150px; padding: 0 12px 9px; overflow-y: auto; }
@@ -165,6 +179,13 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--gold-bright
 .status-chip { padding: 2px 6px; border: 1px solid var(--line); color: var(--muted); font-size: 9px; white-space: nowrap; }
 .event-heading h2 { margin: 6px 30px 0 0; color: #f1e5cf; font: 600 24px/1.15 Georgia, "Songti SC", serif; }
 .event-popover > p { margin: 11px 0 13px; color: #d3c7b2; font-size: 13px; line-height: 1.65; }
+.scene-quest-links { display: grid; gap: 5px; margin: -4px 0 11px; }
+.scene-quest-links:empty { display: none; }
+.scene-quest-links button { padding: 6px 8px; display: grid; grid-template-columns: auto 1fr; gap: 1px 7px; border: 1px solid #4f493e; border-left: 2px solid #9c793e; background: #1b1915; color: inherit; cursor: pointer; text-align: left; }
+.scene-quest-links button:hover { border-color: var(--gold); }
+.scene-quest-links span { grid-row: 1 / 3; align-self: center; color: var(--gold); font-size: 8px; letter-spacing: .1em; }
+.scene-quest-links strong { font-size: 10px; }
+.scene-quest-links small { color: var(--muted); font-size: 9px; }
 .scene-change { margin-bottom: 9px; padding: 7px 9px; border-left: 2px solid #806330; background: #1b1915; color: var(--muted); font-size: 11px; line-height: 1.45; }
 .event-options-head { padding-top: 10px; display: flex; justify-content: space-between; border-top: 1px solid var(--line-soft); color: var(--muted); font-size: 10px; letter-spacing: .08em; }
 .event-options-head strong { color: var(--gold); }
@@ -179,6 +200,11 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--gold-bright
 .action-copy { min-width: 0; display: grid; justify-items: start; gap: 4px; }
 .callback-mark { padding: 2px 6px; border: 1px solid #a47b37; color: #f2cc77; background: #3b2b16; font-size: 9px; font-style: normal; letter-spacing: .1em; }
 .callback-reason { color: #bda77c; font-size: 10px; line-height: 1.35; }
+.known-impact { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.known-impact i { padding: 2px 5px; border: 1px solid #51493d; background: #171612; color: var(--muted); font-size: 9px; font-style: normal; }
+.known-impact i.positive { color: #83c39f; border-color: #416d54; }
+.known-impact i.negative { color: #d38b80; border-color: #75473f; }
+.future-impact { color: #bda77c; font-size: 9px; }
 .empty-action { padding: 16px 8px 6px; display: grid; gap: 7px; text-align: center; color: var(--muted); }
 .empty-action strong { color: var(--ink); }
 .empty-action span { font-size: 12px; line-height: 1.5; }
@@ -226,6 +252,13 @@ button.formation-slot { cursor: pointer; }
 .mini-button { min-height: 27px; padding: 3px 8px; white-space: nowrap; font-size: 10px; }
 .mini-button.danger { color: #dd9389; }
 .auto-equip { align-self: stretch; }
+.party-tools { min-width: 0; display: grid; grid-template-rows: auto 1fr 1fr; gap: 6px; }
+.party-title { padding: 7px 8px; display: grid; gap: 2px; border: 1px solid #685536; background: #211c14; }
+.party-title span { color: var(--gold); font-size: 8px; letter-spacing: .08em; }
+.party-title strong { color: var(--gold-bright); font: 600 14px Georgia, "Songti SC", serif; }
+.party-title small, .max-title { color: var(--dim); font-size: 8px; }
+.party-tools .button { min-height: 0; height: 100%; padding: 5px 8px; font-size: 10px; line-height: 1.25; white-space: normal; }
+.max-title { display: grid; place-items: center; border: 1px solid var(--line-soft); }
 
 .inventory-dock { height: 100%; padding: 9px; display: grid; grid-template-columns: minmax(480px, 1.5fr) minmax(320px, 1fr); gap: 12px; }
 .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, 54px); grid-auto-rows: 54px; gap: 6px; align-content: start; overflow-y: auto; }
@@ -314,11 +347,12 @@ button.formation-slot { cursor: pointer; }
 .grind-loot-empty { grid-column: 1 / -1; height: 100%; display: grid; place-items: center; color: var(--dim); font-size: 11px; }
 @keyframes loot-arrive { from { opacity: 0; transform: translateY(-10px) scale(.88); } to { opacity: 1; transform: none; } }
 
-.restart-dialog, .result-dialog { padding: 0; border: 1px solid var(--line); background: #1e1b17; color: var(--ink); box-shadow: 0 24px 70px #000; }
+.restart-dialog, .result-dialog, .combat-preview-dialog { padding: 0; border: 1px solid var(--line); background: #1e1b17; color: var(--ink); box-shadow: 0 24px 70px #000; }
 .restart-dialog { width: min(430px, calc(100vw - 32px)); }
 .result-dialog { width: min(560px, calc(100vw - 32px)); border-color: #8c713d; background: linear-gradient(145deg, #282219, #171613 72%); }
-.restart-dialog::backdrop, .result-dialog::backdrop { background: rgba(0, 0, 0, .72); backdrop-filter: blur(2px); }
-.restart-dialog form, .result-dialog form { padding: 22px; }
+.combat-preview-dialog { width: min(720px, calc(100vw - 32px)); max-height: calc(100vh - 32px); border-color: #8c713d; background: linear-gradient(145deg, #282219, #171613 72%); }
+.restart-dialog::backdrop, .result-dialog::backdrop, .combat-preview-dialog::backdrop { background: rgba(0, 0, 0, .72); backdrop-filter: blur(2px); }
+.restart-dialog form, .result-dialog form, .combat-preview-dialog form { padding: 22px; }
 .restart-dialog h2, .result-dialog h2 { margin: 5px 0; }
 .restart-dialog p { color: var(--muted); }
 .result-dialog h2 { color: var(--gold-bright); font: 600 26px Georgia, "Songti SC", serif; }
@@ -326,6 +360,30 @@ button.formation-slot { cursor: pointer; }
 .restart-dialog label { display: grid; gap: 5px; color: var(--muted); font-size: 11px; }
 .restart-dialog input { height: 38px; padding: 0 10px; border: 1px solid var(--line); background: #12110f; color: var(--ink); }
 .dialog-actions { margin-top: 17px; display: flex; justify-content: flex-end; gap: 7px; }
+.combat-preview-dialog h2 { margin: 5px 0 14px; color: var(--gold-bright); font: 600 26px Georgia, "Songti SC", serif; }
+.combat-preview-ranks { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+.combat-preview-ranks > div { padding: 12px; display: grid; gap: 3px; border: 1px solid #5a503f; background: #1a1814; }
+.combat-preview-ranks > div.enemy { border-color: #74483f; background: #241714; text-align: right; }
+.combat-preview-ranks span { color: var(--muted); font-size: 9px; letter-spacing: .1em; }
+.combat-preview-ranks strong { color: var(--gold-bright); font-size: 17px; }
+.combat-preview-ranks b { color: var(--muted); font-size: 10px; }
+.combat-preview-ranks > i { color: #a65e52; font-style: normal; font-weight: 800; }
+.combat-preview-teams { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.combat-preview-teams section { min-width: 0; padding: 10px; border: 1px solid var(--line-soft); background: rgba(9,9,8,.28); }
+.combat-preview-teams h3 { margin: 0 0 7px; color: var(--muted); font-size: 11px; }
+.combat-preview-teams ul { max-height: 210px; margin: 0; padding: 0; overflow-y: auto; display: grid; gap: 3px; list-style: none; }
+.combat-preview-teams li { padding: 4px 6px; display: flex; justify-content: space-between; gap: 10px; background: #1b1915; font-size: 10px; }
+.combat-preview-teams small { color: var(--dim); }
+.preview-note { margin: 10px 0 0; color: var(--muted); font-size: 10px; }
+.recruit-overlay { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(92, 92, 92, .78); backdrop-filter: blur(3px); }
+.recruit-card { width: min(560px, calc(100vw - 32px)); padding: 30px; border: 1px solid #e0ba68; background: linear-gradient(145deg, #33291c, #171512 72%); box-shadow: 0 30px 90px rgba(0,0,0,.8); text-align: center; }
+.recruit-card h2 { margin: 6px 0 3px; color: var(--gold-bright); font: 600 30px Georgia, "Songti SC", serif; }
+.recruit-role { margin: 0 0 15px; color: #d2c3a7; }
+.recruit-specialties { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.recruit-specialties span { min-width: 0; padding: 9px; display: grid; gap: 4px; border: 1px solid #584b37; background: #1b1813; }
+.recruit-specialties b { color: #e9d5a9; font-size: 11px; }
+.recruit-specialties small { color: var(--muted); font-size: 9px; line-height: 1.45; }
+.recruit-result { min-height: 38px; margin: 15px 0; color: var(--muted); line-height: 1.55; }
 
 .toast { position: fixed; z-index: 50; left: 50%; bottom: 266px; transform: translate(-50%, 12px); max-width: min(620px, calc(100vw - 30px)); padding: 10px 14px; border: 1px solid var(--gold); background: #272116; color: #f1dfb7; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .16s ease, transform .16s ease; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
@@ -340,7 +398,8 @@ button.formation-slot { cursor: pointer; }
   .command-dock { min-height: 320px; }
   .party-dock { grid-template-columns: minmax(430px, 1fr) 230px; grid-template-rows: auto 1fr; }
   .hero-detail { grid-column: 1; }
-  .auto-equip { grid-column: 2; }
+  .party-tools { grid-column: 2; }
+  .party-tools .auto-equip { grid-column: auto; }
 }
 
 @media (max-width: 760px) {
@@ -350,6 +409,7 @@ button.formation-slot { cursor: pointer; }
   .resource-strip { grid-column: 1 / -1; }
   .campaign-grid { min-height: 620px; }
   .map-threat { width: 220px; }
+  .quest-rail { width: 196px; }
   .event-popover { position: absolute; left: 8px !important; right: 8px; top: auto !important; bottom: 8px; width: auto; max-height: 62%; }
   .event-popover::before { display: none; }
   .node-copy { max-width: 126px; }
@@ -359,7 +419,8 @@ button.formation-slot { cursor: pointer; }
   .day-rail { overflow-x: auto; grid-template-columns: repeat(15, 34px); justify-content: start; padding-bottom: 4px; }
   .formation-board { min-height: 120px; grid-template-columns: repeat(2, minmax(120px, 1fr)) !important; }
   .reserve-strip, .hero-detail, .item-detail { margin-top: 10px; border-left: 0; border-top: 1px solid var(--line-soft); }
-  .auto-equip { width: 100%; margin-top: 10px; }
+  .party-tools { width: 100%; margin-top: 10px; }
+  .auto-equip { width: 100%; }
   .inventory-grid { max-height: 280px; }
   .toast { bottom: 20px; }
   .combat-result { grid-template-columns: 1fr; }
@@ -368,4 +429,5 @@ button.formation-slot { cursor: pointer; }
   .grind-heading { grid-template-columns: 1fr auto; }
   .grind-run-stats { grid-column: 1 / -1; grid-row: 2; }
   .grind-loot-panel { grid-template-columns: 1fr; grid-template-rows: 120px minmax(140px, 1fr); }
+  .combat-preview-teams, .recruit-specialties { grid-template-columns: 1fr; }
 }

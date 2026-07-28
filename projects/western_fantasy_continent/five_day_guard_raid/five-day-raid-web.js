@@ -21,6 +21,7 @@
 
   let state = loadState();
   let selectedPlaceId = null;
+  let selectedQuestId = null;
   let selectedArea = "灰炉遗址";
   let selectedHeroId = null;
   let selectedGearId = null;
@@ -28,6 +29,7 @@
   let toastTimer = null;
   let mode = "campaign";
   let pendingCombat = null;
+  let pendingPreview = null;
   let pendingCombatResult = null;
   let battleView = null;
   let grindSession = null;
@@ -80,23 +82,57 @@
     dialog.showModal();
   }
 
+  function partyIds(view) {
+    return [...view.party.active, ...view.party.reserve].map((hero) => hero.id);
+  }
+
+  function newRecruit(before, after) {
+    const oldIds = new Set(partyIds(before));
+    return [...after.party.active, ...after.party.reserve].find((hero) => !oldIds.has(hero.id)) || null;
+  }
+
+  function showRecruitOverlay(hero, resultText) {
+    if (!hero) return;
+    document.querySelector("#recruit-name").textContent = `${hero.name}加入了队伍`;
+    document.querySelector("#recruit-role").textContent = `定位：${hero.role}`;
+    document.querySelector("#recruit-specialties").innerHTML = (hero.visibleSkills || []).slice(0, 3).map((skill) => `<span><b>${esc(skill.name)}</b><small>${esc(skill.description || skill.type)}</small></span>`).join("");
+    document.querySelector("#recruit-result").textContent = resultText || "这名同伴现在可以加入出战编组。";
+    document.querySelector("#recruit-overlay").hidden = false;
+  }
+
+  function openCombatPreview(plan, launchKind) {
+    pendingPreview = { plan, launchKind };
+    const view = currentView();
+    const ownTitle = view.party.title;
+    const enemyTitle = plan.enemyTitle || { level: "?", name: "尚未评定" };
+    document.querySelector("#combat-preview-title").textContent = plan.title;
+    document.querySelector("#combat-preview-ranks").innerHTML = `<div><span>我方评定</span><strong>${esc(ownTitle.name)}</strong><b>第${ownTitle.level}级</b></div><i>对阵</i><div class="enemy"><span>敌方评定</span><strong>${esc(enemyTitle.name)}</strong><b>第${esc(enemyTitle.level)}级</b></div>`;
+    const team = (rows) => rows.map((unit) => `<li><span>${esc(unit.name)}</span><small>${esc(unit.role || unit.unitKind || "战斗成员")}</small></li>`).join("");
+    document.querySelector("#combat-preview-teams").innerHTML = `<section><h3>我方 · ${plan.leftTeam.length}人</h3><ul>${team(plan.leftTeam)}</ul></section><section><h3>敌方 · ${plan.rightTeam.length}人</h3><ul>${team(plan.rightTeam)}</ul></section>`;
+    const dialog = document.querySelector("#combat-preview-dialog");
+    if (dialog.open) dialog.close();
+    dialog.showModal();
+  }
+
   function runAction(publicActionId) {
     try {
       const grindCombat = GAME.preparePlayerGrindCombat?.(state, publicActionId);
-      if (grindCombat) return startGrindSession(grindCombat);
+      if (grindCombat) return openCombatPreview(grindCombat, "grind");
       const combat = GAME.preparePlayerCombat(state, publicActionId);
-      if (combat) return startCombat(combat);
+      if (combat) return openCombatPreview(combat, "combat");
       const before = currentView();
       const chosenAction = before.actions.find((action) => action.id === publicActionId);
       const chosenPlace = before.places.find((place) => place.id === chosenAction?.placeId);
       state = GAME.applyPlayerAction(state, publicActionId);
       saveState();
       const after = currentView();
+      const recruited = newRecruit(before, after);
       const newest = after.recentSignals.find((row) => !before.recentSignals.includes(row));
       if (chosenAction?.kind === "time") selectedPlaceId = null;
       ensureSelection(after);
       render();
-      if (newest && ["event", "inspect"].includes(chosenAction?.kind)) showActionResult(chosenPlace?.title || chosenAction.label, newest);
+      if (recruited) showRecruitOverlay(recruited, newest);
+      else if (newest && ["event", "inspect"].includes(chosenAction?.kind)) showActionResult(chosenPlace?.title || chosenAction.label, newest);
       else showToast(newest || "行动完成");
     } catch (error) {
       showToast(error.message || String(error));
@@ -160,6 +196,8 @@
   function commitCombat() {
     if (!pendingCombat || !pendingCombatResult) return;
     try {
+      const before = currentView();
+      const completedPlan = pendingCombat;
       state = GAME.applyPlayerCombatResult(state, pendingCombat.publicActionId, pendingCombatResult);
       saveState();
       battleView?.destroy?.();
@@ -167,8 +205,13 @@
       pendingCombat = null;
       pendingCombatResult = null;
       mode = "campaign";
-      ensureSelection(currentView());
+      const after = currentView();
+      const recruited = newRecruit(before, after);
+      const newest = after.recentSignals.find((row) => !before.recentSignals.includes(row));
+      ensureSelection(after);
       render();
+      if (recruited) showRecruitOverlay(recruited, newest);
+      else if (completedPlan.kind === "titleTrial" && newest) showActionResult("称号评定", newest);
     } catch (error) {
       showToast(error.message || String(error));
     }
@@ -176,6 +219,7 @@
 
   function ensureSelection(view) {
     if (!view.places.some((place) => place.id === selectedPlaceId)) selectedPlaceId = null;
+    if (!view.quests?.some((quest) => quest.id === selectedQuestId)) selectedQuestId = null;
     const heroes = [...view.party.active, ...view.party.reserve];
     if (!heroes.some((hero) => hero.id === selectedHeroId)) selectedHeroId = view.party.active[0]?.id || heroes[0]?.id || null;
     if (!view.inventory.some((item) => item.id === selectedGearId)) selectedGearId = view.inventory[0]?.id || null;
@@ -453,7 +497,7 @@
     if (!mapInputBound) {
       mapInputBound = true;
       viewport.addEventListener("pointerdown", (event) => {
-        if (event.target.closest(".map-node, .event-popover, .map-camera-controls, .map-threat, .map-overview")) return;
+        if (event.target.closest(".map-node, .event-popover, .map-camera-controls, .map-threat, .map-overview, .quest-rail")) return;
         mapFocus = null;
         mapDrag = { id: event.pointerId, x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY, moved: false };
         viewport.classList.add("dragging");
@@ -518,8 +562,18 @@
     button.textContent = view.time.phase === "showdown" ? "大战已经开始" : endAction?.label || "结束本日";
   }
 
+  function renderTasks(view) {
+    const quests = view.quests || [];
+    document.querySelector("#quest-rail").innerHTML = quests.map((quest) => {
+      const active = quest.id === selectedQuestId;
+      return `<button class="quest-entry ${quest.type} ${quest.status} ${active ? "selected" : ""}" data-quest="${esc(quest.id)}"><span>${quest.type === "main" ? "主线" : "支线"}${quest.status === "complete" ? " · 已完成" : ""}</span><strong>${esc(quest.title)}</strong><small>${esc(quest.progressLabel)}${quest.deadline ? ` · 截止第${quest.deadline}日` : ""}</small><em>${quest.relatedPlaces.length}处关联</em></button>`;
+    }).join("");
+  }
+
   function renderWorld(view) {
     const places = mapPlaces(view);
+    const selectedQuest = (view.quests || []).find((quest) => quest.id === selectedQuestId);
+    const questPlaces = new Map((selectedQuest?.relatedPlaces || []).map((link) => [link.placeId, link.hint]));
     updatePlacePositions(view);
     document.querySelector("#known-place-count").textContent = `${places.length}处`;
     const areas = [...new Set(places.map((place) => place.area))];
@@ -531,9 +585,10 @@
       const actions = view.actions.filter((action) => action.placeId === place.id && !["equipment", "party", "time"].includes(action.kind));
       const hasCombat = actions.some((action) => ["combat", "grind"].includes(action.kind));
       const hasCallback = actions.some((action) => action.callback);
+      const questHint = questPlaces.get(place.id);
       const sigil = hasCombat ? "⚔" : AREA_SIGILS[place.area] || place.area.slice(0, 1);
-      const classes = [place.id === selectedPlaceId ? "selected" : "", place.status === "locked" ? "locked" : "", hasCombat ? "danger" : "", hasCallback ? "callback" : "", actions.length ? "actionable" : "dormant"].filter(Boolean).join(" ");
-      return `<button type="button" class="map-node ${classes}" data-place="${esc(place.id)}" data-map-place="${esc(place.id)}"><span class="node-sigil">${esc(sigil)}</span><span class="node-copy"><strong>${esc(place.title)}</strong><small>${esc(place.area)}</small></span>${actions.length ? `<em>${actions.length}</em>` : ""}</button>`;
+      const classes = [place.id === selectedPlaceId ? "selected" : "", place.status === "locked" ? "locked" : "", hasCombat ? "danger" : "", hasCallback ? "callback" : "", actions.length ? "actionable" : "dormant", selectedQuest ? (questHint ? "quest-related" : "quest-muted") : ""].filter(Boolean).join(" ");
+      return `<button type="button" class="map-node ${classes}" data-place="${esc(place.id)}" data-map-place="${esc(place.id)}"><span class="node-sigil">${esc(sigil)}</span><span class="node-copy"><strong>${esc(place.title)}</strong><small>${esc(questHint || place.area)}</small></span>${actions.length ? `<em>${actions.length}</em>` : ""}</button>`;
     }).join("");
     document.querySelector("#threat-list").innerHTML = view.threatSignals.slice(0, 5).map((row) => `<p>${esc(row)}</p>`).join("") || `<p>镇外暂时没有新的明确迹象。</p>`;
     requestAnimationFrame(renderMapCamera);
@@ -594,6 +649,7 @@
     document.querySelector("#scene-title").textContent = place.title;
     document.querySelector("#scene-status").textContent = view.time.phase === "showdown" ? "决战" : STATUS_LABEL[place.status] || place.status;
     document.querySelector("#scene-description").textContent = place.scene;
+    document.querySelector("#scene-quest-links").innerHTML = (place.questLinks || []).map((link) => `<button data-quest="${esc(link.questId)}"><span>${link.questType === "main" ? "主线" : "支线"}</span><strong>${esc(link.questTitle)}</strong><small>${esc(link.hint)}</small></button>`).join("");
     document.querySelector("#scene-change").hidden = true;
     requestAnimationFrame(positionEventPopover);
   }
@@ -609,7 +665,9 @@
     document.querySelector("#action-list").innerHTML = actions.map((action) => {
       const cost = action.kind === "combat" ? `真实战斗${action.actionPointMark ? " · 1行动" : ""}` : action.actionPointMark ? "消耗1行动" : action.kind === "grind" ? "连续真实战斗 · 不耗行动" : "";
       const callback = action.callback ? `<em class="callback-mark">旧事回响</em><small class="callback-reason">${esc(action.callback)}</small>` : "";
-      return `<button class="action-button ${["combat", "grind"].includes(action.kind) ? "combat-action" : ""} ${action.kind === "grind" ? "grind-action" : ""} ${action.callback ? "callback-action" : ""}" data-action="${action.id}"><span class="action-copy">${callback}<span>${esc(action.label)}</span></span><b>${esc(cost)}</b></button>`;
+      const effects = (action.knownEffects || []).map((effect) => `<i class="${effect.delta > 0 ? "positive" : "negative"}">${esc(effect.label)} ${effect.delta > 0 ? "+" : ""}${effect.delta}</i>`).join("");
+      const future = action.futureImpacts?.length ? `<small class="future-impact">会改变：${action.futureImpacts.map(esc).join("、")}</small>` : "";
+      return `<button class="action-button ${["combat", "grind"].includes(action.kind) ? "combat-action" : ""} ${action.kind === "grind" ? "grind-action" : ""} ${action.callback ? "callback-action" : ""}" data-action="${action.id}"><span class="action-copy">${callback}<span>${esc(action.label)}</span>${effects || future ? `<span class="known-impact">${effects}${future}</span>` : ""}</span><b>${esc(cost)}</b></button>`;
     }).join("") || `<div class="empty-action"><strong>这里暂时没有可做的事</strong><span>可以看别的地点、整理队伍或结束本日。</span></div>`;
   }
 
@@ -637,12 +695,13 @@
     }).join("") || `<span class="empty-note">暂无候补</span>`;
     const remove = selected && view.party.active.some((hero) => hero.id === selected.id) ? partyAction(view, selected, false) : null;
     const auto = view.actions.find((action) => action.kind === "equipment" && action.label.includes("择优穿戴"));
+    const titleTrial = view.actions.find((action) => action.kind === "combat" && action.label.includes("晋级试炼"));
     const worn = selected ? equipmentForHero(selected.id) : [];
     return `<div class="party-dock">
       <div class="formation-board" style="--slot-columns:${columns}">${slotMarkup}</div>
       <div class="reserve-strip"><span class="dock-label">候补 ${view.party.reserve.length}</span>${reserve}</div>
       <div class="hero-detail">${selected ? `<div><span class="dock-label">${esc(selected.formation || "候补")}</span><h3>${esc(selected.name)} <b>${selected.visiblePower}</b></h3><p>${esc(selected.role)}</p></div><div class="worn-strip">${worn.map((item) => `<span class="rarity-${esc(item.rarity)}">${esc(item.slotLabel)} · ${esc(item.name)}</span>`).join("") || "<small>没有装备</small>"}</div><div class="skill-strip">${(selected.visibleSkills || []).map((skill) => `<span title="${esc(skill.description)}"><b>${esc(skill.name)}</b><small>${esc(skill.type)}</small></span>`).join("")}</div>${remove ? `<button class="mini-button danger" data-action="${remove.id}">回到候补</button>` : ""}` : ""}</div>
-      <button class="button primary auto-equip" data-action="${auto?.id || ""}" ${auto ? "" : "disabled"} title="${auto ? "为当前出战成员分配背包中的高战力装备" : "背包中暂无可用于整理的装备"}">出战成员择优穿戴</button>
+      <div class="party-tools"><div class="party-title"><span>队伍称号 · 第${view.party.title.level}级</span><strong>${esc(view.party.title.name)}</strong><small>由实战试炼评定</small></div>${titleTrial ? `<button class="button danger" data-action="${titleTrial.id}">${esc(titleTrial.label)}</button>` : `<span class="max-title">已达到最高评定</span>`}<button class="button primary auto-equip" data-action="${auto?.id || ""}" ${auto ? "" : "disabled"} title="${auto ? "为当前出战成员分配背包中的高战力装备" : "背包中暂无可用于整理的装备"}">出战成员择优穿戴</button></div>
     </div>`;
   }
 
@@ -687,6 +746,11 @@
       render();
       focusMapOnPlace(selectedPlaceId);
     }));
+    document.querySelectorAll("[data-quest]").forEach((node) => node.addEventListener("click", (event) => {
+      event.stopPropagation();
+      selectedQuestId = selectedQuestId === node.dataset.quest ? null : node.dataset.quest;
+      render();
+    }));
     document.querySelectorAll("[data-hero]").forEach((node) => node.addEventListener("click", () => { selectedHeroId = node.dataset.hero; render(); }));
     document.querySelectorAll("[data-gear]").forEach((node) => node.addEventListener("click", () => { selectedGearId = node.dataset.gear; render(); }));
     document.querySelectorAll("[data-restart-open]").forEach((node) => node.addEventListener("click", openRestart));
@@ -698,6 +762,7 @@
     ensureSelection(view);
     setupMapCamera();
     renderHeader(view);
+    renderTasks(view);
     renderWorld(view);
     renderScene(view);
     renderActions(view);
@@ -713,6 +778,18 @@
     if (actionId) runAction(actionId);
   });
   document.querySelector("#restart-open").addEventListener("click", openRestart);
+  document.querySelector("#combat-preview-confirm").addEventListener("click", (event) => {
+    event.preventDefault();
+    const preview = pendingPreview;
+    pendingPreview = null;
+    document.querySelector("#combat-preview-dialog").close();
+    if (!preview) return;
+    if (preview.launchKind === "grind") startGrindSession(preview.plan);
+    else startCombat(preview.plan);
+  });
+  document.querySelector("#combat-preview-cancel").addEventListener("click", () => { pendingPreview = null; });
+  document.querySelector("#combat-preview-dialog").addEventListener("cancel", () => { pendingPreview = null; });
+  document.querySelector("#recruit-confirm").addEventListener("click", () => { document.querySelector("#recruit-overlay").hidden = true; });
   document.querySelector("#restart-confirm").addEventListener("click", () => {
     const seed = document.querySelector("#restart-seed").value.trim() || "browser-fifteen-day";
     battleView?.destroy?.();
@@ -721,6 +798,7 @@
     grindSession = null;
     state = GAME.createInitialState(seed);
     selectedPlaceId = null;
+    selectedQuestId = null;
     selectedArea = "灰炉遗址";
     selectedHeroId = null;
     selectedGearId = null;
@@ -728,6 +806,8 @@
     mode = "campaign";
     pendingCombat = null;
     pendingCombatResult = null;
+    pendingPreview = null;
+    document.querySelector("#recruit-overlay").hidden = true;
     mapFocus = null;
     saveState();
     render();

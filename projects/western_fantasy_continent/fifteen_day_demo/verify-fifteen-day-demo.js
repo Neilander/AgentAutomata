@@ -16,7 +16,7 @@ function verifyObservationCounts() {
   assert.equal(observation.time.day, 1);
   assert.equal(observation.places.filter((place) => place.id.startsWith("place_event_")).length, 4, "day one should expose four events in addition to the locked gate");
   assert(new Set(observation.actions.filter((action) => action.actionPointMark).map((action) => action.placeId)).size > 3, "opening needs more actionable nodes than available action points");
-  assert(observation.actions.length <= 15, "opening should stay readable despite adding real tradeoffs");
+  assert(observation.actions.length <= 16, "opening should stay readable despite adding real tradeoffs and one camp-only title trial");
   for (const place of observation.places) assert.equal(place.actionCount, observation.actions.filter((action) => action.placeId === place.id).length, `actionCount mismatch at ${place.title}`);
   assert(!observation.places.some((place) => place.title.includes("铁匠")), "smith event should not crowd day one");
 }
@@ -38,6 +38,26 @@ function verifyFreeGrindAndEquipment() {
   const beforePower = GAME.getPlayerObservation(state).party.active[0].visiblePower;
   state = GAME.applyPlayerAction(state, actionByLabel(state, "择优穿戴").id);
   assert(GAME.getPlayerObservation(state).party.active[0].visiblePower >= beforePower);
+}
+
+function verifyQuestLinksAndTitles() {
+  let state = GAME.createInitialState("quest-title");
+  let observation = GAME.getPlayerObservation(state);
+  assert.equal(observation.party.title.level, 1);
+  const trial = observation.actions.find((action) => action.kind === "combat" && action.placeId === "place_party");
+  const plan = GAME.preparePlayerCombat(state, trial.id);
+  assert.equal(plan.enemyTitle.level, 2);
+  state = GAME.applyPlayerCombatResult(state, trial.id, GAME.simulatePlan(plan));
+  assert.equal(GAME.getPlayerObservation(state).party.title.level, 2, "winning the authored combat trial should promote the party");
+
+  observation = GAME.getPlayerObservation(state);
+  const evidenceAction = observation.actions.find((action) => action.placeId === "place_event_market_toll" && action.knownEffects.some((effect) => effect.resource === "evidence"));
+  state = GAME.applyPlayerAction(state, evidenceAction.id);
+  observation = GAME.getPlayerObservation(state);
+  state = GAME.applyPlayerAction(state, observation.actions.find((action) => action.endsCurrentDay).id);
+  observation = GAME.getPlayerObservation(state);
+  assert(observation.quests.some((quest) => quest.id === "three_witnesses"), "the witness task should appear after the player finds the first lead");
+  assert(observation.places.some((place) => place.questLinks.length >= 2), "one visible event should be able to affect multiple active quest lines");
 }
 
 function verifyActEventCapacity() {
@@ -278,6 +298,7 @@ function verifySingleBossPressure() {
 }
 
 verifyObservationCounts();
+verifyQuestLinksAndTitles();
 verifyActEventCapacity();
 verifyChoiceSurplusDuringPlayedCampaign();
 verifyFreeGrindAndEquipment();

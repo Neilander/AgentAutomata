@@ -14,10 +14,13 @@ for (const forbidden of [
 ]) assert(!text.includes(forbidden), `formal request leaked forbidden token: ${forbidden}`);
 
 assert.equal(request.type, "decision");
+assert.equal(request.observation.party.title.level, 1);
+assert.deepEqual(request.observation.quests.map((quest) => quest.title), ["白鹿家的报复"], "formal player should only receive currently known quest lines");
 assert(request.observation.actions.every((action) => /^choice_[a-z0-9]+$/.test(action.id)));
 assert(request.observation.places.every((place) => Number.isInteger(place.actionCount) && place.actionCount >= 0));
 assert(!request.observation.actions.some((action) => "outcome" in action || "requirements" in action || "successChance" in action));
 assert(!request.observation.places.some((place) => "future" in place || "solution" in place));
+assert(request.observation.places.every((place) => (place.questLinks || []).every((link) => link.questTitle === "白鹿家的报复")), "opening quest links must not preannounce inactive side lines");
 
 const selected = request.observation.actions.find((action) => action.kind === "grind");
 let advanced = LOOP.applyDecisionResponse(session, {

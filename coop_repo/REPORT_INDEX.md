@@ -2,6 +2,14 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-27
+
+- `2026-07-27_0121_fifteen-day-quests-titles-preview.md`：十五日版本加入取得线索后出现的任务条、跨任务事件关联、确定资源/受影响线路提示、七级真实称号试炼、战前敌方称号与阵容预览，以及角色入队全屏提示；程序、静态合同、输入封口和真实战斗回归通过。
+
+## 2026-07-26
+
+- `2026-07-26_2246_start-local-launcher-fix.md`：修复 Start Local 因 Windows `Path`/`PATH` 重复而无法创建 Node 子进程；BAT 统一委托稳健 PowerShell 启动器，增加健康检查、失败可见反馈和无浏览器诊断，完整 BAT 入口及工作台/游戏页面均验证为 200。
+
 ## 2026-07-25
 
 - `2026-07-25_1124_fifteen-day-real-grind-loop.md`：将瞬时十连刷装改为逐轮正式战斗；四个装备区均有 LV1/LV2/LV3 独立敌阵，整页自动连战、胜利逐件掉落、稀有度排序陈列、本轮后停止与战败恢复均完成浏览器实测。

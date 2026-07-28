@@ -218,10 +218,11 @@ function compactObservation(observation) {
   return {
     time: observation.time,
     situation: observation.situation,
-    party: { maxActive: observation.party.maxActive, active: observation.party.active.map(publicHero), reserve: observation.party.reserve.map(publicHero) },
+    party: { title: observation.party.title, nextTrial: observation.party.nextTrial, maxActive: observation.party.maxActive, active: observation.party.active.map(publicHero), reserve: observation.party.reserve.map(publicHero) },
     resources: observation.resources,
     inventory: { total: observation.inventory.length, rarityCounts, identityTagCounts, visibleItems: visibleItems.map(publicItem) },
     places: observation.places.map(({ id, ...place }) => place),
+    quests: observation.quests,
     threatSignals: observation.threatSignals,
     recentSignals: observation.recentSignals,
     lastCombat: observation.lastCombat,

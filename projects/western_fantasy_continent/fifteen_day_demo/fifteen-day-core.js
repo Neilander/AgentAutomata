@@ -21,6 +21,15 @@ const SLOT_LABELS = { weapon: "武器", armor: "护甲", charm: "饰品" };
 const RARITIES = ["普通", "稀有", "史诗", "传说", "神话", "永恒"];
 const RARITY_POWER = { "普通": 7, "稀有": 13, "史诗": 23, "传说": 38, "神话": 62, "永恒": 100 };
 const IDENTITY_TAGS = ["古代锻造", "赃物", "流放者", "宗教", "白鹿家", "恐怖", "贵族", "矿工", "王国军", "异端"];
+const ADVENTURER_TITLES = [
+  { level: 1, name: "见习冒险家", shortName: "见习" },
+  { level: 2, name: "黑铁冒险家", shortName: "黑铁" },
+  { level: 3, name: "青铜冒险家", shortName: "青铜" },
+  { level: 4, name: "白银冒险家", shortName: "白银" },
+  { level: 5, name: "黄金冒险家", shortName: "黄金" },
+  { level: 6, name: "秘银冒险家", shortName: "秘银" },
+  { level: 7, name: "传奇冒险家", shortName: "传奇" },
+];
 const PUBLIC_SKILL_DESCRIPTIONS = {
   shadowCut: "跳向低生命目标；目标生命越低，伤害越高。",
   shadowHarvest: "攻击低生命目标；低于处决线时直接击败。",
@@ -439,6 +448,115 @@ const GRIND_ENCOUNTERS = {
   ],
 };
 
+const QUEST_DEFINITIONS = [
+  {
+    id: "white_deer", type: "main", title: "白鹿家的报复", objective: "在第五日前决定如何应对白鹿家的家兵。", deadline: 5,
+    visible: (s) => s.day <= 5 || (s.phase === "showdown" && s.showdownAct === 1),
+    complete: (s) => Boolean(s.flags.youngMasterRepelled),
+    progress: (s) => `第${Math.min(s.day, 5)}/5日`,
+    links: {
+      place_event_injured_shield: "受伤的盾手也许愿意共同守镇",
+      place_event_thief_trial: "白鹿家印记的账页可能成为筹码",
+      place_event_market_toll: "家仆正在借少爷之名扩大冲突",
+      place_event_missing_scribe: "书记员见过家兵收到的命令",
+      place_event_ford_deserter: "逃兵知道家兵口令与部署",
+      place_event_widow_claim: "少爷留下的旧案正在发酵",
+      place_event_duelist: "旁支剑士能影响家兵的服从",
+      place_event_quartermaster: "军需车直接支撑第五日来袭",
+      place_event_night_raid: "夜巡路线通向家兵营地",
+      place_event_watch_bell: "警钟会改变镇口的迎战准备",
+      place_event_road_barricade: "木料可以改变第五日的防线",
+      place_showdown: "报复已经抵达镇外",
+    },
+  },
+  {
+    id: "three_witnesses", type: "side", title: "三个能开口的人", objective: "找到三份能够互相印证的证词或记录。", deadline: 5,
+    visible: (s) => witnessCount(s) > 0 && (s.day <= 5 || witnessCount(s) >= 3),
+    complete: (s) => witnessCount(s) >= 3,
+    progress: (s) => `${Math.min(3, witnessCount(s))}/3份证词`,
+    links: {
+      place_event_thief_trial: "屋顶上的账页能补足命令来源",
+      place_event_market_toll: "姓名与印章能确定具体执行人",
+      place_event_missing_scribe: "书记员能够证明命令如何下达",
+      place_event_ford_deserter: "逃兵能证明家兵如何集结",
+      place_event_widow_claim: "旧案证词能说明报复并非偶发",
+      place_event_duelist: "她愿意听一组能够互证的材料",
+    },
+  },
+  {
+    id: "furnace_gate", type: "side", title: "王炉门", objective: "找出打开灰炉内环的办法。",
+    visible: (s) => Boolean(s.flags.gateInspected || s.flags.smithDoorTheory || s.flags.guardianFailed || s.flags.innerOpen),
+    complete: (s) => Boolean(s.flags.innerOpen), progress: (s) => s.flags.innerOpen ? "内环已开放" : "仍被封锁",
+    links: {
+      place_gate: "门上的断纹与守门甲胄仍待处理",
+      place_event_smith_intro: "铁匠正在试验古代锻造方法",
+      place_event_furnace_clue: "断纹、旧装备与甲胄彼此有关",
+      place_event_cooling_well: "冷却井连着守门甲胄的铜管",
+      place_zone_ash: "外环装备可能带有古代锻造印记",
+    },
+  },
+  {
+    id: "north_blockade", type: "main", title: "北桥封锁", objective: "在第十日前处理执法官与雇佣军的封锁。", deadline: 10,
+    visible: (s) => (s.day >= 6 && s.day <= 10) || (s.phase === "showdown" && s.showdownAct === 2),
+    complete: (s) => Boolean(s.flags.bailiffRepelled), progress: (s) => `第${Math.min(Math.max(s.day, 6), 10) - 5}/5日`,
+    links: {
+      place_event_mine_strike: "煤与欠薪决定矿工站在哪一边",
+      place_event_chapel_guard: "礼拜堂正在承受封锁压力",
+      place_event_bridge_engineer: "北桥是封锁线的关键通路",
+      place_event_tax_archive: "执法官用税册为封锁找依据",
+      place_event_grain_seizure: "冬粮正被当成赔偿物扣押",
+      place_event_signal_tower: "信号塔维持着封锁线的联络",
+      place_event_paymaster: "欠饷会影响雇佣军是否继续作战",
+      place_event_mercenary_contract: "契约把执法官与雇佣军绑在一起",
+      place_event_north_hostages: "封锁已经开始扣押镇民",
+      place_showdown: "北桥联军已经列阵",
+    },
+  },
+  {
+    id: "false_judgment", type: "side", title: "一纸假判决", objective: "找到能推翻执法官判决的三类记录。", deadline: 10,
+    visible: (s) => falseJudgmentCount(s) > 0 && (s.day <= 10 || falseJudgmentCount(s) >= 3),
+    complete: (s) => falseJudgmentCount(s) >= 3,
+    progress: (s) => `${Math.min(3, falseJudgmentCount(s))}/3类记录`,
+    links: {
+      place_event_tax_archive: "税务底册能核对判决中的数字",
+      place_event_chapel_inquest: "教会来信能核对审问程序",
+      place_event_mercenary_contract: "佣兵契约暴露判决的受益人",
+      place_event_noble_banquet: "尚未宣读的判决书就在宴席上",
+      place_event_grain_seizure: "扣粮手续留下了可核对的印章",
+      place_event_north_hostages: "扣押名单能证明判决如何执行",
+    },
+  },
+  {
+    id: "final_siege", type: "main", title: "围剿联盟", objective: "在第十五日前应对三支互不信任的围剿军。", deadline: 15,
+    visible: (s) => s.day >= 11 || (s.phase === "showdown" && s.showdownAct === 3),
+    complete: (s) => s.phase === "complete" && Boolean(s.result?.win), progress: (s) => `第${Math.min(Math.max(s.day, 11), 15) - 10}/5日`,
+    links: {
+      place_event_enemy_letters: "敌军书信暴露了联盟内部矛盾",
+      place_event_deserter_wave: "逃兵知道各营的口令与怨气",
+      place_event_powder_store: "火药库关系到总攻器械与居民区",
+      place_event_noble_hostages: "人质同时牵动地方贵族与镇民",
+      place_event_siege_engines: "攻城器械会直接参与总攻",
+      place_event_beast_pens: "战兽是围剿军的突阵力量",
+      place_event_coalition_envoy: "无旗使者在寻找能拆散联盟的筹码",
+      place_showdown: "三支军队已经发动总攻",
+    },
+  },
+  {
+    id: "civilian_safety", type: "side", title: "把人留在战火之外", objective: "为平民准备三种能够互相补位的保障。", deadline: 15,
+    visible: (s) => civilianSafetyCount(s) > 0 && (s.day <= 15 || civilianSafetyCount(s) >= 3),
+    complete: (s) => civilianSafetyCount(s) >= 3,
+    progress: (s) => `${Math.min(3, civilianSafetyCount(s))}/3项保障`,
+    links: {
+      place_event_evacuation_route: "撤离路线决定平民往哪里走",
+      place_event_chapel_sanctuary: "礼拜堂可以成为固定避难处",
+      place_event_plague_camp: "病人与难民正在争夺有限药品",
+      place_event_powder_store: "火药库一旦殉爆会波及居民区",
+      place_event_last_supply: "最后一车物资只能优先保障一处",
+      place_event_merchant_council: "商队的车辆与仓库能支撑撤离",
+    },
+  },
+];
+
 function actForDay(day) { return day <= 5 ? 1 : day <= 10 ? 2 : 3; }
 function clone(value) { return structuredClone(value); }
 function hash(text) { let h = 2166136261; for (const ch of String(text)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
@@ -449,6 +567,50 @@ function itemPower(item) { return Number(item?.power || 0); }
 function zoneAvailable(state, zoneId) {
   const zone = ZONES[zoneId];
   return Boolean(zone && state.day >= zone.start && (!zone.flag || state.flags[zone.flag]));
+}
+
+function titleForLevel(level) {
+  const safeLevel = Math.max(1, Math.min(ADVENTURER_TITLES.length, Number(level) || 1));
+  return clone(ADVENTURER_TITLES[safeLevel - 1]);
+}
+
+function witnessCount(state) {
+  return [state.nodes.thief_trial?.resolved, state.flags.tollNames, state.flags.scribeWitness, state.flags.deserterWitness, state.flags.widowTestimony].filter(Boolean).length;
+}
+
+function falseJudgmentCount(state) {
+  return [state.flags.taxLedger, state.flags.churchLetters, state.flags.contractBroken, state.flags.falseJudgment, state.flags.hostageList].filter(Boolean).length;
+}
+
+function civilianSafetyCount(state) {
+  return [state.flags.civiliansSafe, state.flags.mineEvacuation, state.flags.evacuationCarts, state.flags.merchantCarts, state.flags.frontMedicine, state.flags.wallsRepaired].filter(Boolean).length;
+}
+
+function publicQuests(state, places) {
+  const placeIds = new Set(places.map((place) => place.id));
+  return QUEST_DEFINITIONS.filter((quest) => quest.visible(state)).map((quest) => ({
+    id: quest.id,
+    type: quest.type,
+    title: quest.title,
+    objective: quest.objective,
+    deadline: quest.deadline || null,
+    status: quest.complete(state) ? "complete" : "active",
+    progressLabel: quest.progress(state),
+    relatedPlaces: Object.entries(quest.links)
+      .filter(([placeId]) => placeIds.has(placeId))
+      .map(([placeId, hint]) => ({ placeId, hint })),
+  }));
+}
+
+function addQuestLinksToPlaces(places, quests) {
+  const linksByPlace = new Map();
+  for (const quest of quests) {
+    for (const link of quest.relatedPlaces) {
+      if (!linksByPlace.has(link.placeId)) linksByPlace.set(link.placeId, []);
+      linksByPlace.get(link.placeId).push({ questId: quest.id, questTitle: quest.title, questType: quest.type, hint: link.hint });
+    }
+  }
+  return places.map((place) => ({ ...place, questLinks: linksByPlace.get(place.id) || [] }));
 }
 
 function createInitialState(seed = "fifteen-day-demo") {
@@ -466,6 +628,7 @@ function createInitialState(seed = "fifteen-day-demo") {
     equipment: {},
     inventory: [],
     resources: { gold: 6, medicine: 0, townFavor: 0, evidence: 0, influence: 0 },
+    adventurerTitleLevel: 1,
     flags: {},
     nodes: {},
     chapterResults: [],
@@ -670,6 +833,54 @@ function enemySpec(role, name, index, tier = 1, scales = {}) {
   return roleSpec(role, name, index, { ...scales, hp: (0.88 + tier * 0.10) * (scales.hp || 1), power: (0.84 + tier * 0.10) * (scales.power || 1), armor: scales.armor || 1, unitKind: "enemy" });
 }
 
+function grindEnemyTitleLevel(zoneId, level) {
+  const base = { ash: 1, inner: 2, quarry: 3, forge: 4 }[zoneId] || 1;
+  return Math.min(7, base + Math.max(0, Number(level) - 1));
+}
+
+function eventEnemyTitleLevel(key, state) {
+  if (key === "furnace_clue:force") return state.flags.coolingJammed ? 5 : 6;
+  if (key === "quartermaster:fight") return 2;
+  if (key === "duelist:challenge") return 3;
+  if (key === "night_raid:ambush") return 3;
+  if (key === "bridge_engineer:river") return 5;
+  if (key.startsWith("arena:")) return key.endsWith("rematch") ? 4 : 5;
+  if (["grain_seizure:raid", "signal_tower:storm"].includes(key)) return 4;
+  if (key === "paymaster:fight") return 5;
+  if (key.startsWith("hunter:")) return key.endsWith("trap") ? 5 : 6;
+  if (key === "sky_ferry:seize") return 5;
+  if (key === "siege_engines:fight") return 6;
+  if (["beast_pens:fight", "ancient_core:fight"].includes(key)) return 7;
+  return 2;
+}
+
+function titleTrialPlan(state, targetLevel) {
+  const target = Number(targetLevel);
+  if (state.phase !== "planning" || target !== Number(state.adventurerTitleLevel || 1) + 1 || target > ADVENTURER_TITLES.length) return null;
+  const configs = {
+    2: { tier: 1, enemies: [["warrior", "黑铁考官"]], scales: { hp: 0.92, power: 0.88 } },
+    3: { tier: 2, enemies: [["knight", "青铜守关人"], ["ranger", "青铜观察员"]], scales: { hp: 0.90, power: 0.88 } },
+    4: { tier: 3, enemies: [["knight", "白银盾手"], ["warrior", "白银剑士"], ["priest", "白银医官"]], scales: { hp: 0.94, power: 0.93 } },
+    5: { tier: 4, enemies: [["knight", "黄金盾手"], ["warrior", "黄金剑士"], ["ranger", "黄金射手"], ["mage", "黄金术士"]], scales: { hp: 0.98, power: 0.97 } },
+    6: { tier: 5, enemies: [["knight", "秘银盾手"], ["warrior", "秘银剑士"], ["ranger", "秘银射手"], ["mage", "秘银术士"], ["priest", "秘银医官"]], scales: { hp: 1.02, power: 1.00 } },
+    7: { tier: 6, enemies: [["knight", "传奇守门人"], ["knight", "传奇守门人"], ["warrior", "传奇斗士"], ["berserker", "传奇斗士"], ["ranger", "传奇射手"], ["mage", "传奇术士"], ["priest", "传奇医官"]], scales: { hp: 1.05, power: 1.04 } },
+  };
+  const config = configs[target];
+  if (!config) return null;
+  const leftTeam = state.activeParty.map((heroId, index) => heroCombatSpec(state, heroId, index));
+  const rightTeam = config.enemies.map(([role, name], index) => enemySpec(role, `${name}${config.enemies.filter((row) => row[1] === name).length > 1 ? index + 1 : ""}`, index, config.tier, config.scales));
+  return {
+    kind: "titleTrial",
+    targetLevel: target,
+    title: `${titleForLevel(target).name}晋级试炼`,
+    enemyTitle: titleForLevel(target),
+    seed: `${state.seed}|title-trial|${target}|${state.stats.combats}`,
+    leftTeam,
+    rightTeam,
+    maxTime: 100,
+  };
+}
+
 function grindCombatPlan(state, zoneId, level) {
   const zone = ZONES[zoneId];
   const encounter = GRIND_ENCOUNTERS[zoneId]?.find((row) => row.level === Number(level));
@@ -681,6 +892,7 @@ function grindCombatPlan(state, zoneId, level) {
     zoneId,
     level: encounter.level,
     title: `${zone.title} LV${encounter.level} · ${encounter.title}`,
+    enemyTitle: titleForLevel(grindEnemyTitleLevel(zoneId, encounter.level)),
     seed: `${state.seed}|grind|${zoneId}|${encounter.level}|${state.stats.grindAttempts || 0}|${state.stats.grinds}`,
     leftTeam,
     rightTeam,
@@ -740,7 +952,7 @@ function eventCombatPlan(state, eventId, optionId) {
     title = "炉心守卫战";
     rightTeam = Array.from({ length: 8 }, (_, i) => enemySpec(i < 3 ? "knight" : i < 6 ? "warrior" : "mage", `守炉造物${i + 1}`, i, 5));
   }
-  return { kind: "combat", title, internalAction: `event:${eventId}:${optionId}`, seed: `${state.seed}|${state.day}|${key}|${state.stats.combats}`, leftTeam, rightTeam, maxTime: 90 };
+  return { kind: "combat", title, enemyTitle: titleForLevel(eventEnemyTitleLevel(key, state)), internalAction: `event:${eventId}:${optionId}`, seed: `${state.seed}|${state.day}|${key}|${state.stats.combats}`, leftTeam, rightTeam, maxTime: 90 };
 }
 
 function showdownPlan(state, strategy) {
@@ -765,7 +977,7 @@ function showdownPlan(state, strategy) {
     while (leftTeam.length < reinforcementTarget) leftTeam.push(militiaSpec(leftTeam.length, 3, leftTeam.length >= 10 ? "reinforcement" : "militia"));
     rightTeam = ["knight", "knight", "berserker", "berserker", "ranger", "ranger", "mage", "mage", "priest", "alchemist"].map((role, i) => enemySpec(role, `围剿精锐${i + 1}`, i, 6, { hp: state.flags.siegeSabotaged ? 0.86 : 1, power: state.flags.beastsNeutralized ? 0.88 : 1 }));
   }
-  return { kind: "combat", title, internalAction: `showdown:${strategy}`, seed: `${state.seed}|showdown${act}|${strategy}|${state.stats.combats}`, leftTeam, rightTeam, maxTime: 120 };
+  return { kind: "combat", title, enemyTitle: titleForLevel(act === 1 ? 3 : act === 2 ? 5 : 7), internalAction: `showdown:${strategy}`, seed: `${state.seed}|showdown${act}|${strategy}|${state.stats.combats}`, leftTeam, rightTeam, maxTime: 120 };
 }
 
 function volunteerCount(state, act) {
@@ -809,11 +1021,11 @@ function internalActions(state) {
   if (state.phase === "showdown") {
     const rows = ["hold", "field"].map((id) => {
       const plan = showdownPlan(state, id);
-      return { id: `showdown:${id}`, label: `${id === "hold" ? "依托现有防线迎战" : "主动出城迎战"}（${plan.leftTeam.length}对${plan.rightTeam.length}）`, kind: "combat", placeId: "place_showdown" };
+      return { id: `showdown:${id}`, label: `${id === "hold" ? "依托现有防线迎战" : "主动出城迎战"}（${plan.leftTeam.length}对${plan.rightTeam.length}）`, kind: "combat", placeId: "place_showdown", actionPointCost: 0 };
     });
     if (state.showdownAct === 1 && state.flags.campScouted) {
       const plan = showdownPlan(state, "ambush");
-      rows.push({ id: "showdown:ambush", label: `利用掌握的夜巡路线伏击家兵（${plan.leftTeam.length}对${plan.rightTeam.length}）`, kind: "combat", placeId: "place_showdown" });
+      rows.push({ id: "showdown:ambush", label: `利用掌握的夜巡路线伏击家兵（${plan.leftTeam.length}对${plan.rightTeam.length}）`, kind: "combat", placeId: "place_showdown", actionPointCost: 0 });
     }
     if (politicalRouteAvailable(state)) rows.push({ id: "showdown:political", label: "在众人面前迫使对方撤军", kind: "decision", placeId: "place_showdown" });
     return rows;
@@ -839,6 +1051,14 @@ function internalActions(state) {
   }
   if (state.ap > 0 && state.flags.lastPatrolDay !== state.day && !rows.some((row) => ["event", "combat", "inspect"].includes(row.kind))) rows.push({ id: "patrol", label: "利用剩余时间走访镇民", kind: "event", placeId: "place_patrol" });
   rows.push({ id: "auto_equip", label: "让当前出战成员择优穿戴", kind: "equipment", placeId: "place_party" });
+  const nextTitleLevel = Number(state.adventurerTitleLevel || 1) + 1;
+  if (nextTitleLevel <= ADVENTURER_TITLES.length) rows.push({
+    id: `titletrial:${nextTitleLevel}`,
+    label: `参加${titleForLevel(nextTitleLevel).name}晋级试炼`,
+    kind: "combat",
+    placeId: "place_party",
+    actionPointCost: 0,
+  });
   const ownedTags = [...new Set(state.inventory.flatMap((item) => item.identityTags))];
   for (const tag of ownedTags.filter((row) => !heroHasTag(state, "player", row))) rows.push({ id: `equip:tag:${tag}`, label: `让你换上一件[${tag}]装备`, kind: "equipment", placeId: "place_party" });
   const cap = MAX_ACTIVE_BY_ACT[actForDay(state.day)];
@@ -884,6 +1104,13 @@ function applyAction(stateInput, internalId) {
   if (internalId.startsWith("party:")) { applyParty(state, internalId); return state; }
   if (internalId === "investigate:gate") { state.flags.gateInspected = true; addLog(state, "煤灰下露出熔毁锁芯、三段断纹和一条通往守门甲胄的铜线。", "clue"); spendAction(state); return state; }
   if (internalId === "end_day") { endDay(state); return state; }
+  if (internalId.startsWith("titletrial:")) {
+    const targetLevel = Number(internalId.split(":")[1]);
+    const plan = titleTrialPlan(state, targetLevel);
+    if (!plan) throw new Error("当前不能参加这场晋级试炼。");
+    settleCombat(state, internalId, simulatePlan(plan));
+    return state;
+  }
   if (internalId.startsWith("showdown:")) {
     const strategy = internalId.split(":")[1];
     if (strategy === "political") settleShowdown(state, strategy, null); else settleCombat(state, internalId, simulatePlan(showdownPlan(state, strategy)));
@@ -1001,13 +1228,27 @@ function settleEvent(state, eventId, optionId) {
 }
 
 function settleCombat(state, internalId, result) {
-  const plan = internalId.startsWith("showdown:") ? showdownPlan(state, internalId.split(":")[1]) : eventCombatPlan(state, internalId.split(":")[1], internalId.split(":")[2]);
+  const plan = internalId.startsWith("showdown:")
+    ? showdownPlan(state, internalId.split(":")[1])
+    : internalId.startsWith("titletrial:")
+      ? titleTrialPlan(state, Number(internalId.split(":")[1]))
+      : eventCombatPlan(state, internalId.split(":")[1], internalId.split(":")[2]);
   const summary = publicCombatSummary(result, plan.title);
   state.lastCombat = summary;
   state.stats.combats += 1;
   if (!summary.win) state.stats.failedCombats += 1;
   addLog(state, `在“${summary.title}”中我方${summary.win ? "获胜" : "失利"}：我方${summary.alliesAlive}/${summary.alliesStarted}人仍能战斗，敌方${summary.enemiesAlive}/${summary.enemiesStarted}人仍能战斗，用时${summary.duration}秒；我方造成${summary.alliesDamage}伤害、治疗${summary.alliesHealing}、获得${summary.alliesShield}护盾。`, summary.win ? "combat_win" : "combat_loss");
   if (internalId.startsWith("showdown:")) { settleShowdown(state, internalId.split(":")[1], summary); return; }
+  if (internalId.startsWith("titletrial:")) {
+    const targetLevel = Number(internalId.split(":")[1]);
+    if (summary.win) {
+      state.adventurerTitleLevel = targetLevel;
+      addLog(state, `晋级评定通过。你的队伍获得了“${titleForLevel(targetLevel).name}”称号。`, "title");
+    } else {
+      addLog(state, `晋级评定没有通过。你仍是“${titleForLevel(state.adventurerTitleLevel).name}”，可以调整队伍后再次挑战。`, "title");
+    }
+    return;
+  }
   const [, eventId, optionId] = internalId.split(":");
   if (summary.win) {
     if (eventId === "furnace_clue") { state.flags.innerOpen = true; state.nodes[eventId] = { resolved: true, option: optionId }; }
@@ -1119,7 +1360,11 @@ function applyPlayerGrindCombatResult(stateInput, publicId, result) {
 function preparePlayerCombat(state, publicId) {
   const match = actionCatalog(state).find((row) => row.publicId === publicId);
   if (!match || match.kind !== "combat") return null;
-  const plan = match.id.startsWith("showdown:") ? showdownPlan(state, match.id.split(":")[1]) : eventCombatPlan(state, match.id.split(":")[1], match.id.split(":")[2]);
+  const plan = match.id.startsWith("showdown:")
+    ? showdownPlan(state, match.id.split(":")[1])
+    : match.id.startsWith("titletrial:")
+      ? titleTrialPlan(state, Number(match.id.split(":")[1]))
+      : eventCombatPlan(state, match.id.split(":")[1], match.id.split(":")[2]);
   return plan ? { ...clone(plan), publicActionId: publicId } : null;
 }
 
@@ -1165,14 +1410,35 @@ function visibleSkills(heroId) {
   return [kit.small1, kit.small2, kit.passive, kit.ultimate].filter(Boolean).map((key) => ({ name: SKILLS.skills[key]?.name || key, type: SKILLS.skills[key]?.type || "技能", description: PUBLIC_SKILL_DESCRIPTIONS[key] || SKILLS.skills[key]?.desc || SKILLS.skills[key]?.description || "" }));
 }
 
+function knownEffectsForAction(state, row) {
+  if (!row || !["event", "inspect"].includes(row.kind)) return [];
+  try {
+    const next = applyAction(state, row.id);
+    const labels = { gold: "金币", medicine: "药品", townFavor: "镇民支持", evidence: "证据", influence: "影响力" };
+    return Object.entries(labels).map(([resource, label]) => ({
+      resource,
+      label,
+      delta: Number(next.resources?.[resource] || 0) - Number(state.resources?.[resource] || 0),
+    })).filter((effect) => effect.delta !== 0);
+  } catch {
+    return [];
+  }
+}
+
 function getPlayerObservation(state) {
   const catalog = actionCatalog(state);
   const act = actForDay(state.day);
+  const rawPlaces = visiblePlaces(state, catalog);
+  const quests = publicQuests(state, rawPlaces);
+  const places = addQuestLinksToPlaces(rawPlaces, quests);
+  const placeById = new Map(places.map((place) => [place.id, place]));
   return {
     schema: "fifteen_day_demo_player_observation_v1",
     time: { day: state.day, actionsRemainingToday: state.ap, phase: state.phase, act, nextKnownDeadline: state.day <= 5 ? 5 : state.day <= 10 ? 10 : 15 },
     situation: publicSituation(state),
     party: {
+      title: titleForLevel(state.adventurerTitleLevel),
+      nextTrial: Number(state.adventurerTitleLevel || 1) < ADVENTURER_TITLES.length ? titleForLevel(Number(state.adventurerTitleLevel || 1) + 1) : null,
       maxActive: MAX_ACTIVE_BY_ACT[act],
       active: state.activeParty.map((id) => ({ id, name: HEROES[id].name, role: HEROES[id].role, visiblePower: heroPower(state, id), formation: FORMATION_LABELS[state.formation[id]] || `队列${state.formation[id] + 1}`, visibleSkills: visibleSkills(id) })),
       reserve: state.roster.filter((id) => !state.activeParty.includes(id)).map((id) => ({ id, name: HEROES[id].name, role: HEROES[id].role, visiblePower: heroPower(state, id), visibleSkills: visibleSkills(id) })),
@@ -1181,17 +1447,31 @@ function getPlayerObservation(state) {
     inventory: state.inventory.map((item) => clone(item)),
     inventoryLimit: INVENTORY_LIMIT,
     salvagedCount: Number(state.stats.salvaged || 0),
-    places: visiblePlaces(state, catalog),
+    quests,
+    places,
     threatSignals: state.recent.filter((row) => ["threat", "chapter"].includes(row.kind)).slice(0, 8).map((row) => row.text),
     recentSignals: state.recent.slice(0, 8).map((row) => row.text),
     lastCombat: clone(state.lastCombat),
-    actions: catalog.map((row) => ({ id: row.publicId, label: row.label, kind: row.kind, placeId: row.placeId, callback: row.callback || "", grindLevel: row.grindLevel || 0, enemyCount: row.enemyCount || 0, actionPointMark: ["event", "combat", "inspect"].includes(row.kind) ? 1 : 0, endsCurrentDay: row.kind === "time" })),
+    actions: catalog.map((row) => ({
+      id: row.publicId,
+      label: row.label,
+      kind: row.kind,
+      placeId: row.placeId,
+      callback: row.callback || "",
+      grindLevel: row.grindLevel || 0,
+      enemyCount: row.enemyCount || 0,
+      actionPointMark: row.actionPointCost ?? (["event", "combat", "inspect"].includes(row.kind) ? 1 : 0),
+      endsCurrentDay: row.kind === "time",
+      knownEffects: knownEffectsForAction(state, row),
+      futureImpacts: [...new Set((placeById.get(row.placeId)?.questLinks || []).map((link) => link.questTitle))],
+    })),
     result: clone(state.result),
   };
 }
 
 function migrateState(stateInput) {
   const state = clone(stateInput);
+  state.adventurerTitleLevel = Math.max(1, Math.min(ADVENTURER_TITLES.length, Number(state.adventurerTitleLevel) || 1));
   state.stats = { spentActions: 0, grinds: 0, grindAttempts: 0, combats: 0, failedCombats: 0, salvaged: 0, ...(state.stats || {}) };
   if (state.flags?.smithForged && !state.flags.innerOpen) {
     state.flags.innerOpen = true;
@@ -1206,8 +1486,8 @@ function migrateState(stateInput) {
 }
 
 return {
-  VERSION, AP_PER_DAY, FINAL_DAY, INVENTORY_LIMIT, HEROES, EVENTS, ZONES, GRIND_ENCOUNTERS, EVENT_OUTCOMES, COMBAT_OPTIONS,
+  VERSION, AP_PER_DAY, FINAL_DAY, INVENTORY_LIMIT, HEROES, EVENTS, ZONES, GRIND_ENCOUNTERS, ADVENTURER_TITLES, QUEST_DEFINITIONS, EVENT_OUTCOMES, COMBAT_OPTIONS,
   createInitialState, migrateState, getPlayerObservation, applyPlayerAction, preparePlayerCombat, preparePlayerGrindCombat, applyPlayerCombatResult, applyPlayerGrindCombatResult,
-  applyAction, internalActions, simulatePlan, showdownPlan, eventCombatPlan, grindCombatPlan, heroPower, actForDay,
+  applyAction, internalActions, simulatePlan, showdownPlan, eventCombatPlan, grindCombatPlan, titleTrialPlan, heroPower, actForDay,
 };
 });

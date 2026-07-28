@@ -14,6 +14,8 @@ for (const ref of [
   "styles.css",
   "../battle_view/battle-view.css",
   "../game_data/combat-sim.js",
+  "../game_data/mechanic-curves.js",
+  "../game_data/build-layers.js",
   "../battle_view/battle-view.js",
   "../fifteen_day_demo/fifteen-day-core.js",
   "five-day-raid-web.js",
@@ -23,7 +25,7 @@ for (const ref of [
 }
 assert(html.includes('../../../shared/game_camera_2d/camera-core.js'), "地图没有加载共享 camera 模块");
 assert(fs.existsSync(path.resolve(root, "../../../shared/game_camera_2d/camera-core.js")), "共享 camera 模块不存在");
-for (const id of ["day-rail", "ap-outside-value", "map-view", "map-viewport", "map-world", "map-node-layer", "quest-rail", "scene-quest-links", "event-popover", "event-popover-close", "combat-view", "battle-mount", "grind-view", "grind-battle-mount", "grind-loot-shelf", "stop-grind", "action-list", "dock-content", "result-dialog", "result-title", "result-body", "combat-preview-dialog", "combat-preview-ranks", "combat-preview-teams", "recruit-overlay", "recruit-name", "recruit-specialties"]) {
+for (const id of ["day-rail", "ap-outside-value", "map-view", "map-viewport", "map-world", "map-node-layer", "quest-rail", "scene-quest-links", "event-popover", "event-popover-close", "combat-view", "battle-mount", "grind-view", "grind-battle-mount", "grind-loot-shelf", "stop-grind", "action-list", "dock-content", "result-dialog", "result-title", "result-body", "combat-preview-dialog", "combat-preview-ranks", "combat-preview-teams", "guild-party-dialog", "guild-party-title", "guild-own-candidates", "guild-guest-candidates", "guild-party-confirm", "recruit-overlay", "recruit-name", "recruit-specialties"]) {
   assert(html.includes(`id="${id}"`), `缺少关键界面挂点：${id}`);
   assert(web.includes(`#${id}`), `网页逻辑未使用关键挂点：${id}`);
 }
@@ -55,7 +57,9 @@ assert(web.includes("callback-action") && web.includes("旧事回响"), "此前�
 assert(web.includes("selectedQuestId") && web.includes("quest-related") && web.includes("quest-muted"), "任务条目没有接入地图关联视图");
 assert(web.includes("knownEffects") && web.includes("futureImpacts"), "行动选项没有显示确定资源影响与受影响任务线");
 assert(web.includes("showRecruitOverlay") && css.includes(".recruit-overlay"), "角色加入没有全屏覆盖提示");
-assert(web.includes("view.party.title") && web.includes("晋级试炼"), "队伍称号与晋级战入口未显示");
+assert(web.includes("preparePlayerGuildCombat") && web.includes("guildGuestSelection"), "协会委托没有接入自有/临时成员组队流程");
+assert(web.includes("equipPlayerItem") && web.includes("unequipPlayerSlot"), "八部位装备没有接入手动穿脱流程");
+assert(!web.includes("择优穿戴") && !web.includes("晋级试炼"), "旧的一键配装或称号试炼仍在界面中");
 assert(web.includes("view.inventoryLimit || 200"), "背包页没有显示200件容量上限");
 assert(!web.includes("跳过战斗") && !web.includes("skipCombat"), "正式战斗不应提供跳过入口");
 assert(web.includes("Array.from({ length: 15 }") && web.includes("view.party.maxActive"), "网页没有接入十五日或动态编队");
@@ -64,11 +68,13 @@ for (const forbidden of ["执法官的宴会", "围剿联盟的无旗使者", "�
   assert(!JSON.stringify(view).includes(forbidden), `首屏玩家观察泄露未来事件：${forbidden}`);
 }
 
-assert.equal(view.party.title.level, 1);
+assert.equal(view.equipmentSlots.length, 8, "角色不是八个装备部位");
+assert.deepEqual(GAME.RARITY_DATA.map((row) => row.affixes), [1, 2, 4, 7, 12], "词条数量没有继承佣兵小镇规则");
 assert.deepEqual(view.quests.map((quest) => quest.title), ["白鹿家的报复"], "首屏只能出现玩家已经知道的主线");
-const titleAction = view.actions.find((action) => action.kind === "combat" && action.placeId === "place_party");
-const titlePlan = GAME.preparePlayerCombat(state, titleAction.id);
-assert.equal(titlePlan.enemyTitle.level, 2, "晋级战必须提供可见敌方称号评定");
+const guildActions = view.actions.filter((action) => action.kind === "guild");
+assert.equal(guildActions.length, 2, "协会必须同时提供简单和困难委托");
+const guildPlan = GAME.preparePlayerGuildCombat(state, guildActions[0].id, ["player"], ["guild_guard"]);
+assert(guildPlan && guildPlan.leftTeam.length === 2, "协会委托没有使用玩家选定的队伍");
 const linkedState = GAME.createInitialState("static-linked-quests");
 linkedState.day = 2;
 linkedState.flags.tollNames = true;

@@ -16,7 +16,7 @@ function verifyObservationCounts() {
   assert.equal(observation.time.day, 1);
   assert.equal(observation.places.filter((place) => place.id.startsWith("place_event_")).length, 4, "day one should expose four events in addition to the locked gate");
   assert(new Set(observation.actions.filter((action) => action.actionPointMark).map((action) => action.placeId)).size > 3, "opening needs more actionable nodes than available action points");
-  assert(observation.actions.length <= 16, "opening should stay readable despite adding real tradeoffs and one camp-only title trial");
+  assert(observation.actions.length <= 17, "opening should stay readable despite adding real tradeoffs and two guild quests");
   for (const place of observation.places) assert.equal(place.actionCount, observation.actions.filter((action) => action.placeId === place.id).length, `actionCount mismatch at ${place.title}`);
   assert(!observation.places.some((place) => place.title.includes("铁匠")), "smith event should not crowd day one");
 }
@@ -35,20 +35,24 @@ function verifyFreeGrindAndEquipment() {
   assert.equal(state.day, day);
   assert.equal(state.ap, ap);
   assert.equal(state.inventory.length, 2);
-  const beforePower = GAME.getPlayerObservation(state).party.active[0].visiblePower;
-  state = GAME.applyPlayerAction(state, actionByLabel(state, "择优穿戴").id);
-  assert(GAME.getPlayerObservation(state).party.active[0].visiblePower >= beforePower);
+  const item = resolved.outcome.loot[0];
+  state = GAME.equipPlayerItem(state, "player", item.id);
+  assert.equal(state.equipment.player[item.slot], item.id, "manual equipment should place the selected item in its exact slot");
+  assert.equal(Object.keys(state.equipment.player).length, 8, "every hero should expose eight equipment slots");
 }
 
-function verifyQuestLinksAndTitles() {
-  let state = GAME.createInitialState("quest-title");
+function verifyQuestLinksAndGuild() {
+  let state = GAME.createInitialState("quest-guild");
   let observation = GAME.getPlayerObservation(state);
-  assert.equal(observation.party.title.level, 1);
-  const trial = observation.actions.find((action) => action.kind === "combat" && action.placeId === "place_party");
-  const plan = GAME.preparePlayerCombat(state, trial.id);
-  assert.equal(plan.enemyTitle.level, 2);
-  state = GAME.applyPlayerCombatResult(state, trial.id, GAME.simulatePlan(plan));
-  assert.equal(GAME.getPlayerObservation(state).party.title.level, 2, "winning the authored combat trial should promote the party");
+  assert.equal(observation.guild.quests.length, 2, "the guild should expose both easy and hard quests");
+  assert(observation.guild.quests.some((quest) => quest.difficulty === "简单委托"));
+  assert(observation.guild.quests.some((quest) => quest.difficulty === "困难委托"));
+  const easy = observation.actions.find((action) => action.kind === "guild" && action.label.includes("旧路鼠患"));
+  const plan = GAME.preparePlayerGuildCombat(state, easy.id, ["player"], ["guild_guard", "guild_medic"]);
+  assert.equal(plan.leftTeam.length, 3);
+  assert.equal(plan.rightTeam.length, 3);
+  assert.throws(() => GAME.preparePlayerGuildCombat(state, easy.id, ["player"], ["guild_guard", "guild_medic", "guild_scout"]), /最多借用|最多出战/);
+  assert(!observation.actions.some((action) => action.label.includes("晋级试炼") || action.label.includes("择优穿戴")), "title trials and auto-equip must be removed");
 
   observation = GAME.getPlayerObservation(state);
   const evidenceAction = observation.actions.find((action) => action.placeId === "place_event_market_toll" && action.knownEffects.some((effect) => effect.resource === "evidence"));
@@ -184,12 +188,15 @@ function verifyLearnableFirstShowdown() {
   state.activeParty = state.roster.slice();
   state.formation = { player: 0, shield: 1, thief: 2, apothecary: 3 };
   state.flags.campScouted = true;
-  for (let index = 0; index < 12; index += 1) {
-    const slot = ["weapon", "armor", "charm"][index % 3];
-    const hero = state.activeParty[Math.floor(index / 3)];
-    const item = { id: `prepared_${index}`, name: `准备装备${index}`, slot, slotLabel: slot, rarity: "史诗", power: 22, identityTags: [], source: "测试" };
-    state.inventory.push(item);
-    state.equipment[hero][slot] = item.id;
+  const slots = Object.keys(GAME.SLOT_DATA);
+  for (const [heroIndex, hero] of state.activeParty.entries()) {
+    for (const [slotIndex, slot] of slots.entries()) {
+      const index = heroIndex * slots.length + slotIndex;
+      const defensive = ["helm", "chest", "legs", "boots"].includes(slot);
+      const item = { id: `prepared_${index}`, name: `准备装备${index}`, slot, slotLabel: GAME.SLOT_DATA[slot].label, rarity: "史诗", power: 22, equipmentLevel: 50, baseStats: defensive ? { maxHp: 120, armor: 5 } : { physicalPower: 28 }, affixes: [{ stat: defensive ? "fortitude" : "might", value: 4, level: 3, category: "major" }], identityTags: [], source: "测试" };
+      state.inventory.push(item);
+      state.equipment[hero][slot] = item.id;
+    }
   }
   const result = GAME.simulatePlan(GAME.showdownPlan(state, "ambush"));
   assert(result.metrics.leftAlive > 0 && result.metrics.rightAlive === 0, "a prepared four-person ambush should clear the main first showdown");
@@ -298,7 +305,7 @@ function verifySingleBossPressure() {
 }
 
 verifyObservationCounts();
-verifyQuestLinksAndTitles();
+verifyQuestLinksAndGuild();
 verifyActEventCapacity();
 verifyChoiceSurplusDuringPlayedCampaign();
 verifyFreeGrindAndEquipment();

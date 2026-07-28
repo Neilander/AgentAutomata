@@ -16,8 +16,8 @@
     "旧城墙": "墙", "北部矿区": "矿", "黑石采坑": "坑", "南部沼泽": "沼", "王炉地底": "心", "煤灰镇": "战", "营地": "队",
   };
   const PLACE_OFFSETS = [[-110, -72], [110, -72], [-110, 8], [110, 8], [-110, 88], [110, 88], [0, -148], [0, 164]];
-  const SLOT_ICONS = { "武器": "⚔", "护甲": "⬡", "饰品": "◇" };
-  const RARITY_ORDER = { "永恒": 6, "神话": 5, "传说": 4, "史诗": 3, "稀有": 2, "普通": 1 };
+  const SLOT_ICONS = { "武器": "⚔", "头盔": "⌃", "胸甲": "⬡", "护手": "✦", "腿甲": "▥", "靴子": "⌄", "戒指": "○", "护符": "◇" };
+  const RARITY_ORDER = { "神话": 5, "传说": 4, "史诗": 3, "稀有": 2, "普通": 1 };
 
   let state = loadState();
   let selectedPlaceId = null;
@@ -31,6 +31,10 @@
   let pendingCombat = null;
   let pendingPreview = null;
   let pendingCombatResult = null;
+  let pendingGuildActionId = null;
+  let pendingGuildQuestId = null;
+  let guildOwnSelection = new Set(["player"]);
+  let guildGuestSelection = new Set();
   let battleView = null;
   let grindSession = null;
   let mapCamera = null;
@@ -102,11 +106,9 @@
 
   function openCombatPreview(plan, launchKind) {
     pendingPreview = { plan, launchKind };
-    const view = currentView();
-    const ownTitle = view.party.title;
     const enemyTitle = plan.enemyTitle || { level: "?", name: "尚未评定" };
     document.querySelector("#combat-preview-title").textContent = plan.title;
-    document.querySelector("#combat-preview-ranks").innerHTML = `<div><span>我方评定</span><strong>${esc(ownTitle.name)}</strong><b>第${ownTitle.level}级</b></div><i>对阵</i><div class="enemy"><span>敌方评定</span><strong>${esc(enemyTitle.name)}</strong><b>第${esc(enemyTitle.level)}级</b></div>`;
+    document.querySelector("#combat-preview-ranks").innerHTML = `<div><span>出战规模</span><strong>${plan.leftTeam.length}人</strong><b>已经选定</b></div><i>对阵</i><div class="enemy"><span>敌方威胁</span><strong>${esc(enemyTitle.name)}</strong><b>${plan.rightTeam.length}名敌人</b></div>`;
     const team = (rows) => rows.map((unit) => `<li><span>${esc(unit.name)}</span><small>${esc(unit.role || unit.unitKind || "战斗成员")}</small></li>`).join("");
     document.querySelector("#combat-preview-teams").innerHTML = `<section><h3>我方 · ${plan.leftTeam.length}人</h3><ul>${team(plan.leftTeam)}</ul></section><section><h3>敌方 · ${plan.rightTeam.length}人</h3><ul>${team(plan.rightTeam)}</ul></section>`;
     const dialog = document.querySelector("#combat-preview-dialog");
@@ -114,8 +116,66 @@
     dialog.showModal();
   }
 
+  function openGuildPartyDialog(action) {
+    const view = currentView();
+    const quest = view.guild.quests.find((row) => action.label.includes(row.title));
+    if (!quest) return showToast("这份协会委托已经被撤下。");
+    pendingGuildActionId = action.id;
+    pendingGuildQuestId = quest.id;
+    guildOwnSelection = new Set(["player"]);
+    guildGuestSelection = new Set();
+    document.querySelector("#guild-party-title").textContent = `${quest.difficulty} · ${quest.title}`;
+    document.querySelector("#guild-party-description").textContent = quest.description;
+    renderGuildPartySelection();
+    const dialog = document.querySelector("#guild-party-dialog");
+    if (dialog.open) dialog.close();
+    dialog.showModal();
+  }
+
+  function renderGuildPartySelection() {
+    const view = currentView();
+    const quest = view.guild.quests.find((row) => row.id === pendingGuildQuestId);
+    if (!quest) return;
+    const allOwn = [...view.party.active, ...view.party.reserve];
+    const guests = view.guild.guests.filter((guest) => quest.guests.includes(guest.id));
+    const card = (row, type, selected, locked = false) => `<button type="button" class="guild-candidate ${selected ? "selected" : ""}" data-guild-${type}="${esc(row.id)}" ${locked ? "disabled" : ""}><span>${type === "own" ? "自有" : "借用"}</span><strong>${esc(row.name)}</strong><small>${esc(row.role)}</small>${locked ? "<em>委托发起人</em>" : ""}</button>`;
+    document.querySelector("#guild-own-candidates").innerHTML = allOwn.map((hero) => card(hero, "own", guildOwnSelection.has(hero.id), hero.id === "player")).join("");
+    document.querySelector("#guild-guest-candidates").innerHTML = guests.map((guest) => card(guest, "guest", guildGuestSelection.has(guest.id))).join("");
+    const count = guildOwnSelection.size + guildGuestSelection.size;
+    document.querySelector("#guild-party-count").textContent = `${count}/${quest.partyCap}人 · 协会同行者 ${guildGuestSelection.size}/${quest.guestCap}`;
+    document.querySelector("#guild-party-confirm").disabled = count < 1 || count > quest.partyCap || guildGuestSelection.size > quest.guestCap;
+    document.querySelectorAll("[data-guild-own]").forEach((node) => node.addEventListener("click", () => {
+      const id = node.dataset.guildOwn;
+      if (id === "player") return;
+      if (guildOwnSelection.has(id)) guildOwnSelection.delete(id);
+      else if (guildOwnSelection.size + guildGuestSelection.size >= quest.partyCap) {
+        document.querySelector("#guild-party-count").textContent = `本次最多${quest.partyCap}人`;
+        window.setTimeout(renderGuildPartySelection, 900);
+        return;
+      } else guildOwnSelection.add(id);
+      renderGuildPartySelection();
+    }));
+    document.querySelectorAll("[data-guild-guest]").forEach((node) => node.addEventListener("click", () => {
+      const id = node.dataset.guildGuest;
+      if (guildGuestSelection.has(id)) guildGuestSelection.delete(id);
+      else if (guildGuestSelection.size >= quest.guestCap) {
+        document.querySelector("#guild-party-count").textContent = `最多借用${quest.guestCap}名同行者`;
+        window.setTimeout(renderGuildPartySelection, 900);
+        return;
+      } else if (guildOwnSelection.size + guildGuestSelection.size >= quest.partyCap) {
+        document.querySelector("#guild-party-count").textContent = `本次最多${quest.partyCap}人`;
+        window.setTimeout(renderGuildPartySelection, 900);
+        return;
+      } else guildGuestSelection.add(id);
+      renderGuildPartySelection();
+    }));
+  }
+
   function runAction(publicActionId) {
     try {
+      const view = currentView();
+      const guildAction = view.actions.find((action) => action.id === publicActionId && action.kind === "guild");
+      if (guildAction) return openGuildPartyDialog(guildAction);
       const grindCombat = GAME.preparePlayerGrindCombat?.(state, publicActionId);
       if (grindCombat) return openCombatPreview(grindCombat, "grind");
       const combat = GAME.preparePlayerCombat(state, publicActionId);
@@ -211,7 +271,7 @@
       ensureSelection(after);
       render();
       if (recruited) showRecruitOverlay(recruited, newest);
-      else if (completedPlan.kind === "titleTrial" && newest) showActionResult("称号评定", newest);
+      else if (completedPlan.kind === "guildQuest" && newest) showActionResult("协会委托", newest);
     } catch (error) {
       showToast(error.message || String(error));
     }
@@ -677,7 +737,7 @@
 
   function equipmentForHero(heroId) {
     const slots = state.equipment?.[heroId] || {};
-    return Object.values(slots).map((itemId) => state.inventory.find((item) => item.id === itemId)).filter(Boolean);
+    return Object.fromEntries(Object.entries(slots).map(([slot, itemId]) => [slot, state.inventory.find((item) => item.id === itemId) || null]));
   }
 
   function renderPartyDock(view) {
@@ -694,14 +754,18 @@
       return `<button class="reserve-hero ${hero.id === selected?.id ? "selected" : ""}" data-hero="${hero.id}"><span><strong>${esc(hero.name)}</strong><small>${esc(hero.role)} · ${hero.visiblePower}</small></span>${join}</button>`;
     }).join("") || `<span class="empty-note">暂无候补</span>`;
     const remove = selected && view.party.active.some((hero) => hero.id === selected.id) ? partyAction(view, selected, false) : null;
-    const auto = view.actions.find((action) => action.kind === "equipment" && action.label.includes("择优穿戴"));
-    const titleTrial = view.actions.find((action) => action.kind === "combat" && action.label.includes("晋级试炼"));
-    const worn = selected ? equipmentForHero(selected.id) : [];
+    const worn = selected ? equipmentForHero(selected.id) : {};
+    const wornSlots = (view.equipmentSlots || []).map((slot) => {
+      const item = worn[slot.id];
+      return `<button class="worn-slot ${item ? `rarity-${esc(item.rarity)}` : "empty"}" ${item ? `data-gear="${esc(item.id)}" data-open-inventory="1"` : "disabled"}><i>${SLOT_ICONS[slot.label] || "◆"}</i><span>${esc(slot.label)}</span><strong>${item ? esc(item.name) : "空"}</strong></button>`;
+    }).join("");
+    const easyClears = Number(view.guild.record?.road_pests || 0);
+    const hardClears = Number(view.guild.record?.black_iron_warrant || 0);
     return `<div class="party-dock">
       <div class="formation-board" style="--slot-columns:${columns}">${slotMarkup}</div>
       <div class="reserve-strip"><span class="dock-label">候补 ${view.party.reserve.length}</span>${reserve}</div>
-      <div class="hero-detail">${selected ? `<div><span class="dock-label">${esc(selected.formation || "候补")}</span><h3>${esc(selected.name)} <b>${selected.visiblePower}</b></h3><p>${esc(selected.role)}</p></div><div class="worn-strip">${worn.map((item) => `<span class="rarity-${esc(item.rarity)}">${esc(item.slotLabel)} · ${esc(item.name)}</span>`).join("") || "<small>没有装备</small>"}</div><div class="skill-strip">${(selected.visibleSkills || []).map((skill) => `<span title="${esc(skill.description)}"><b>${esc(skill.name)}</b><small>${esc(skill.type)}</small></span>`).join("")}</div>${remove ? `<button class="mini-button danger" data-action="${remove.id}">回到候补</button>` : ""}` : ""}</div>
-      <div class="party-tools"><div class="party-title"><span>队伍称号 · 第${view.party.title.level}级</span><strong>${esc(view.party.title.name)}</strong><small>由实战试炼评定</small></div>${titleTrial ? `<button class="button danger" data-action="${titleTrial.id}">${esc(titleTrial.label)}</button>` : `<span class="max-title">已达到最高评定</span>`}<button class="button primary auto-equip" data-action="${auto?.id || ""}" ${auto ? "" : "disabled"} title="${auto ? "为当前出战成员分配背包中的高战力装备" : "背包中暂无可用于整理的装备"}">出战成员择优穿戴</button></div>
+      <div class="hero-detail">${selected ? `<div><span class="dock-label">${esc(selected.formation || "候补")}</span><h3>${esc(selected.name)} <b>${selected.visiblePower}</b></h3><p>${esc(selected.role)}</p></div><div class="worn-grid">${wornSlots}</div><div class="skill-strip">${(selected.visibleSkills || []).map((skill) => `<span title="${esc(skill.description)}"><b>${esc(skill.name)}</b><small>${esc(skill.type)}</small></span>`).join("")}</div>${remove ? `<button class="mini-button danger" data-action="${remove.id}">回到候补</button>` : ""}` : ""}</div>
+      <div class="party-tools"><div class="party-title"><span>冒险者协会记录</span><strong>简单 ${easyClears} · 困难 ${hardClears}</strong><small>在镇中心的协会节点承接委托；临时同行者不会永久加入。</small></div><button class="button quiet" data-focus-place="place_guild">在地图上查看协会</button><small class="manual-equip-note">装备需要在背包中逐件交给角色，本版没有一键配装。</small></div>
     </div>`;
   }
 
@@ -719,9 +783,16 @@
       const wearer = itemWearer(item);
       return `<button class="inventory-cell rarity-${esc(item.rarity)} ${item.id === selected?.id ? "selected" : ""}" data-gear="${item.id}" title="${esc(item.name)}"><i>${SLOT_ICONS[item.slotLabel] || "◆"}</i><b>+${item.power}</b>${wearer ? `<em>${esc(wearer === "你" ? "主角" : "已穿")}</em>` : ""}</button>`;
     }).join("");
-    const tagActions = selected ? view.actions.filter((action) => action.kind === "equipment" && selected.identityTags.some((tag) => action.label.includes(`[${tag}]`))) : [];
     const wearer = selected ? itemWearer(selected) : "";
-    return `<div class="inventory-dock"><div class="inventory-grid">${grid}</div><div class="item-detail">${selected ? `<span class="rarity-text rarity-${esc(selected.rarity)}">${esc(selected.rarity)} · ${esc(selected.slotLabel)}</span><h3>${esc(selected.name)} <b>+${selected.power}</b></h3><p>${wearer ? `${esc(wearer)}正在使用` : `来自${esc(selected.source)}`}</p><div class="identity-tags">${selected.identityTags.map((tag) => `<span>${esc(tag)}</span>`).join("") || "<small>没有可辨认的身份印记</small>"}</div><div class="equip-targets">${tagActions.map((action) => `<button class="mini-button" data-action="${action.id}">${esc(action.label)}</button>`).join("") || "<span class=\"empty-note\">可用上方择优穿戴整理战力</span>"}</div>` : ""}</div></div>`;
+    const heroes = [...view.party.active, ...view.party.reserve];
+    const target = heroes.find((hero) => hero.id === selectedHeroId) || heroes[0];
+    const targetWornId = selected && target ? state.equipment?.[target.id]?.[selected.slot] : null;
+    const targetWorn = view.inventory.find((item) => item.id === targetWornId);
+    const baseRows = selected ? Object.entries(selected.baseStats || {}).map(([stat, value]) => `<span><b>${esc(GAME.AFFIX_DEFS?.[stat]?.label || stat)}</b><em>+${esc(value)}</em></span>`).join("") : "";
+    const affixRows = selected ? (selected.affixes || []).map((affix) => `<span><b>${esc(affix.label || GAME.AFFIX_DEFS?.[affix.stat]?.label || affix.stat)}</b><em>+${esc(affix.value)}${affix.percent ? "%" : ""}</em><small>Lv.${esc(affix.level || 1)}</small></span>`).join("") : "";
+    const equippedByTarget = selected && targetWornId === selected.id;
+    const targetButtons = heroes.map((hero) => `<button class="mini-button ${hero.id === target?.id ? "selected" : ""}" data-equip-target="${esc(hero.id)}">${esc(hero.name)}</button>`).join("");
+    return `<div class="inventory-dock"><div class="inventory-grid">${grid}</div><div class="item-detail">${selected ? `<span class="rarity-text rarity-${esc(selected.rarity)}">${esc(selected.rarity)} · ${esc(selected.slotLabel)} · ${selected.affixes?.length || 0}词条</span><h3>${esc(selected.name)} <b>${selected.power}</b></h3><p>${wearer ? `${esc(wearer)}正在使用` : `来自${esc(selected.source)}`}</p><div class="item-stat-block"><label>基础属性</label>${baseRows || "<small>无</small>"}</div><div class="item-stat-block affixes"><label>装备词条</label>${affixRows || "<small>无</small>"}</div><div class="identity-tags">${selected.identityTags.map((tag) => `<span>${esc(tag)}</span>`).join("") || "<small>没有可辨认的身份印记</small>"}</div><div class="equip-target-list"><span>选择角色</span>${targetButtons}</div><div class="equip-targets"><div><span>交给</span><strong>${esc(target?.name || "未选择角色")}</strong><small>${targetWorn ? `将替换：${esc(targetWorn.name)}` : `${esc(selected.slotLabel)}为空`}</small></div><button class="button primary" data-equip-item="${esc(selected.id)}" ${equippedByTarget ? "disabled" : ""}>${equippedByTarget ? "已经装备" : "手动装备"}</button>${equippedByTarget ? `<button class="mini-button danger" data-unequip-slot="${esc(selected.slot)}">卸下</button>` : ""}</div>` : ""}</div></div>`;
   }
 
   function renderJournalDock(view) {
@@ -752,7 +823,31 @@
       render();
     }));
     document.querySelectorAll("[data-hero]").forEach((node) => node.addEventListener("click", () => { selectedHeroId = node.dataset.hero; render(); }));
-    document.querySelectorAll("[data-gear]").forEach((node) => node.addEventListener("click", () => { selectedGearId = node.dataset.gear; render(); }));
+    document.querySelectorAll("[data-gear]").forEach((node) => node.addEventListener("click", () => { selectedGearId = node.dataset.gear; if (node.dataset.openInventory) activeTab = "inventory"; render(); }));
+    document.querySelectorAll("[data-equip-item]").forEach((node) => node.addEventListener("click", () => {
+      try {
+        state = GAME.equipPlayerItem(state, selectedHeroId, node.dataset.equipItem);
+        saveState();
+        render();
+        showToast("装备已经交给当前角色");
+      } catch (error) { showToast(error.message || String(error)); }
+    }));
+    document.querySelectorAll("[data-equip-target]").forEach((node) => node.addEventListener("click", () => { selectedHeroId = node.dataset.equipTarget; render(); }));
+    document.querySelectorAll("[data-unequip-slot]").forEach((node) => node.addEventListener("click", () => {
+      try {
+        state = GAME.unequipPlayerSlot(state, selectedHeroId, node.dataset.unequipSlot);
+        saveState();
+        render();
+        showToast("装备已卸下");
+      } catch (error) { showToast(error.message || String(error)); }
+    }));
+    document.querySelectorAll("[data-focus-place]").forEach((node) => node.addEventListener("click", () => {
+      selectedPlaceId = node.dataset.focusPlace;
+      const place = currentView().places.find((row) => row.id === selectedPlaceId);
+      if (place) selectedArea = place.area;
+      render();
+      focusMapOnPlace(selectedPlaceId);
+    }));
     document.querySelectorAll("[data-restart-open]").forEach((node) => node.addEventListener("click", openRestart));
   }
 
@@ -789,6 +884,19 @@
   });
   document.querySelector("#combat-preview-cancel").addEventListener("click", () => { pendingPreview = null; });
   document.querySelector("#combat-preview-dialog").addEventListener("cancel", () => { pendingPreview = null; });
+  document.querySelector("#guild-party-confirm").addEventListener("click", (event) => {
+    event.preventDefault();
+    try {
+      const plan = GAME.preparePlayerGuildCombat(state, pendingGuildActionId, [...guildOwnSelection], [...guildGuestSelection]);
+      if (!plan) throw new Error("这份协会委托已经不在公告板上。");
+      document.querySelector("#guild-party-dialog").close();
+      pendingGuildActionId = null;
+      pendingGuildQuestId = null;
+      openCombatPreview(plan, "combat");
+    } catch (error) { showToast(error.message || String(error)); }
+  });
+  document.querySelector("#guild-party-cancel").addEventListener("click", () => { pendingGuildActionId = null; pendingGuildQuestId = null; });
+  document.querySelector("#guild-party-dialog").addEventListener("cancel", () => { pendingGuildActionId = null; pendingGuildQuestId = null; });
   document.querySelector("#recruit-confirm").addEventListener("click", () => { document.querySelector("#recruit-overlay").hidden = true; });
   document.querySelector("#restart-confirm").addEventListener("click", () => {
     const seed = document.querySelector("#restart-seed").value.trim() || "browser-fifteen-day";
@@ -807,6 +915,8 @@
     pendingCombat = null;
     pendingCombatResult = null;
     pendingPreview = null;
+    pendingGuildActionId = null;
+    pendingGuildQuestId = null;
     document.querySelector("#recruit-overlay").hidden = true;
     mapFocus = null;
     saveState();

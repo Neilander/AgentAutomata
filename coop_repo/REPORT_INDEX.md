@@ -2,6 +2,10 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-07-28
+
+- `2026-07-28_1652_eight-slot-guild-quests.md`：十五日版本改为八部位手动配装，继承佣兵小镇普通至神话的 1/2/4/7/12 词条规则；以可混编自有/临时角色的简单与困难协会委托替换称号试炼。城镇与事件仅给方案，程序与静态验证通过。
+
 ## 2026-07-27
 
 - `2026-07-27_0121_fifteen-day-quests-titles-preview.md`：十五日版本加入取得线索后出现的任务条、跨任务事件关联、确定资源/受影响线路提示、七级真实称号试炼、战前敌方称号与阵容预览，以及角色入队全屏提示；程序、静态合同、输入封口和真实战斗回归通过。

@@ -164,10 +164,28 @@
       <h2 id="combat-preview-title">确认交战</h2>
       <div id="combat-preview-ranks" class="combat-preview-ranks"></div>
       <div id="combat-preview-teams" class="combat-preview-teams"></div>
-      <p class="preview-note">称号代表冒险家协会对整支队伍的实战评定，不保证人数相同时一定获胜。</p>
+      <p class="preview-note">这里仅展示已经侦察到的敌方规模与威胁，不提供胜率或推荐阵容。</p>
       <div class="dialog-actions">
         <button id="combat-preview-cancel" value="cancel" class="button quiet">暂不交战</button>
         <button id="combat-preview-confirm" value="default" class="button danger">进入战斗</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="guild-party-dialog" class="guild-party-dialog" aria-labelledby="guild-party-title">
+    <form method="dialog">
+      <div class="guild-party-head">
+        <div><span class="chapter-mark">冒险者协会</span><h2 id="guild-party-title">选择委托队伍</h2></div>
+        <strong id="guild-party-count">1/3人</strong>
+      </div>
+      <p id="guild-party-description" class="guild-party-description"></p>
+      <div class="guild-party-columns">
+        <section><h3>自己的队伍</h3><small>主角必须出队，其他同伴自行选择。</small><div id="guild-own-candidates" class="guild-candidates"></div></section>
+        <section><h3>协会临时同行者</h3><small>仅在本次委托中出战，不会永久加入。</small><div id="guild-guest-candidates" class="guild-candidates"></div></section>
+      </div>
+      <div class="dialog-actions">
+        <button id="guild-party-cancel" value="cancel" class="button quiet">暂不承接</button>
+        <button id="guild-party-confirm" value="default" class="button primary">确认队伍并侦察敌人</button>
       </div>
     </form>
   </dialog>
@@ -200,6 +218,8 @@
 
   <script src="../game_data/skill-assets.js"></script>
   <script src="../game_data/skill-data.js"></script>
+  <script src="../game_data/mechanic-curves.js"></script>
+  <script src="../game_data/build-layers.js"></script>
   <script src="../game_data/combat-signals.js"></script>
   <script src="../game_data/runtime-field-effects.js"></script>
   <script src="../game_data/combat-sim.js"></script>

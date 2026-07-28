@@ -7,8 +7,9 @@
 
 const COMBAT = typeof module !== "undefined" && module.exports ? require("../game_data/combat-sim") : root.GAME_COMBAT_SIM;
 const SKILLS = typeof module !== "undefined" && module.exports ? require("../game_data/skill-data") : root.GAME_SKILL_DATA;
+const BUILD_LAYERS = typeof module !== "undefined" && module.exports ? require("../game_data/build-layers") : root.GAME_BUILD_LAYERS;
 
-const VERSION = "fifteen_day_demo_v2";
+const VERSION = "fifteen_day_demo_v3";
 const AP_PER_DAY = 3;
 const FINAL_DAY = 15;
 const INVENTORY_LIMIT = 200;
@@ -17,18 +18,45 @@ const FORMATION_LABELS = [
   "前排一号", "前排二号", "前排三号", "前排四号", "前排五号",
   "后排一号", "后排二号", "后排三号", "后排四号", "后排五号",
 ];
-const SLOT_LABELS = { weapon: "武器", armor: "护甲", charm: "饰品" };
-const RARITIES = ["普通", "稀有", "史诗", "传说", "神话", "永恒"];
-const RARITY_POWER = { "普通": 7, "稀有": 13, "史诗": 23, "传说": 38, "神话": 62, "永恒": 100 };
+const AFFIX_DEFS = {
+  might: { label: "武力", category: "major" }, fortitude: { label: "坚韧", category: "major" }, agility: { label: "敏捷", category: "major" },
+  arcana: { label: "奥术", category: "major" }, rhythm: { label: "节律", category: "major" }, resilience: { label: "韧性", category: "major" },
+  maxHp: { label: "生命", category: "basic" }, physicalPower: { label: "物攻", category: "basic" }, magicPower: { label: "法强", category: "basic" }, armor: { label: "护甲", category: "basic" },
+  attackSpeed: { label: "攻速", category: "basic", percent: true }, skillHaste: { label: "技能急速", category: "basic", percent: true }, effectPower: { label: "效果强度", category: "specialist", percent: true },
+  effectResist: { label: "效果抗性", category: "basic", percent: true }, receivedHealing: { label: "受治愈增幅", category: "specialist", percent: true }, healPower: { label: "治疗强度", category: "specialist" },
+  shieldPower: { label: "护盾强度", category: "specialist" }, dotAmp: { label: "DOT 增幅", category: "specialist" }, controlPower: { label: "控制强度", category: "specialist" },
+  critChance: { label: "暴击率", category: "specialist" }, critDamage: { label: "暴击伤害", category: "specialist" }, lifeSteal: { label: "吸血", category: "specialist" },
+  shieldBreak: { label: "破盾", category: "specialist" }, armorBreak: { label: "破甲", category: "specialist" }, initiative: { label: "先手", category: "specialist" },
+  fireAmp: { label: "火焰增幅", category: "archetype" }, poisonAmp: { label: "剧毒增幅", category: "archetype" }, shadowAmp: { label: "暗影增幅", category: "archetype" },
+  arcaneAmp: { label: "奥术增幅", category: "archetype" }, markPower: { label: "标记强度", category: "archetype" }, stealthDuration: { label: "隐身持续", category: "archetype" },
+  executeDamage: { label: "处决伤害", category: "archetype" }, lowHpDamage: { label: "低血伤害", category: "archetype" }, lowHpHealingReceived: { label: "低血受治愈", category: "archetype" },
+  counterDamage: { label: "反击伤害", category: "archetype" }, cleanseEfficiency: { label: "净化效率", category: "archetype" }, auraPower: { label: "光环强度", category: "archetype" },
+};
+const SLOT_DATA = {
+  weapon: { label: "武器", baseOptions: [["physicalPower"], ["magicPower"]], affixPool: ["might", "agility", "arcana", "attackSpeed", "critChance", "critDamage", "lifeSteal", "shieldBreak", "armorBreak", "fireAmp", "poisonAmp", "shadowAmp", "arcaneAmp", "executeDamage", "lowHpDamage", "markPower"] },
+  helm: { label: "头盔", baseStats: ["maxHp", "armor"], affixPool: ["arcana", "rhythm", "resilience", "skillHaste", "effectPower", "effectResist", "healPower", "controlPower", "critChance", "fireAmp", "poisonAmp", "arcaneAmp", "markPower", "stealthDuration", "cleanseEfficiency", "auraPower"] },
+  chest: { label: "胸甲", baseStats: ["maxHp", "armor"], affixPool: ["fortitude", "resilience", "effectResist", "receivedHealing", "shieldPower", "lowHpHealingReceived", "counterDamage", "cleanseEfficiency"] },
+  gloves: { label: "护手", baseStats: ["physicalPower", "armor"], affixPool: ["might", "agility", "attackSpeed", "critChance", "critDamage", "lifeSteal", "shieldBreak", "armorBreak", "markPower", "executeDamage", "lowHpDamage", "counterDamage"] },
+  legs: { label: "腿甲", baseStats: ["maxHp", "armor"], affixPool: ["fortitude", "resilience", "agility", "effectResist", "receivedHealing", "skillHaste", "lowHpHealingReceived", "cleanseEfficiency", "counterDamage"] },
+  boots: { label: "靴子", baseStats: ["maxHp", "armor"], affixPool: ["agility", "rhythm", "resilience", "attackSpeed", "skillHaste", "effectResist", "initiative", "controlPower", "stealthDuration", "auraPower"] },
+  ring: { label: "戒指", baseOptions: [["physicalPower"], ["magicPower"]], affixPool: ["might", "fortitude", "agility", "arcana", "rhythm", "resilience", "skillHaste", "effectPower", "effectResist", "dotAmp", "controlPower", "healPower", "shieldPower", "fireAmp", "poisonAmp", "shadowAmp", "markPower", "executeDamage", "lowHpDamage", "lowHpHealingReceived", "auraPower"] },
+  charm: { label: "护符", baseOptions: [["maxHp"], ["magicPower"]], affixPool: ["might", "fortitude", "agility", "arcana", "rhythm", "resilience", "effectPower", "receivedHealing", "dotAmp", "healPower", "shieldPower", "controlPower", "fireAmp", "poisonAmp", "shadowAmp", "arcaneAmp", "stealthDuration", "cleanseEfficiency", "auraPower", "counterDamage"] },
+};
+const SLOT_LABELS = Object.fromEntries(Object.entries(SLOT_DATA).map(([id, slot]) => [id, slot.label]));
+const RARITY_DATA = [
+  { id: "common", label: "普通", affixes: 1, value: 1 },
+  { id: "rare", label: "稀有", affixes: 2, value: 1.3 },
+  { id: "epic", label: "史诗", affixes: 4, value: 1.9 },
+  { id: "legendary", label: "传说", affixes: 7, value: 2.8 },
+  { id: "mythic", label: "神话", affixes: 12, value: 4.2 },
+];
+const RARITIES = RARITY_DATA.map((row) => row.label);
+const RARITY_BY_LABEL = Object.fromEntries(RARITY_DATA.map((row) => [row.label, row]));
+const BLOCKED_DIRECT_AFFIXES = new Set(["physicalPower", "magicPower", "maxHp", "armor", "attackSpeed", "skillHaste"]);
 const IDENTITY_TAGS = ["古代锻造", "赃物", "流放者", "宗教", "白鹿家", "恐怖", "贵族", "矿工", "王国军", "异端"];
-const ADVENTURER_TITLES = [
-  { level: 1, name: "见习冒险家", shortName: "见习" },
-  { level: 2, name: "黑铁冒险家", shortName: "黑铁" },
-  { level: 3, name: "青铜冒险家", shortName: "青铜" },
-  { level: 4, name: "白银冒险家", shortName: "白银" },
-  { level: 5, name: "黄金冒险家", shortName: "黄金" },
-  { level: 6, name: "秘银冒险家", shortName: "秘银" },
-  { level: 7, name: "传奇冒险家", shortName: "传奇" },
+const THREAT_LEVELS = [
+  { level: 1, name: "明显低威胁" }, { level: 2, name: "低威胁" }, { level: 3, name: "势均力敌" },
+  { level: 4, name: "需要警戒" }, { level: 5, name: "高威胁" }, { level: 6, name: "极高威胁" }, { level: 7, name: "致命威胁" },
 ];
 const PUBLIC_SKILL_DESCRIPTIONS = {
   shadowCut: "跳向低生命目标；目标生命越低，伤害越高。",
@@ -55,6 +83,27 @@ const HEROES = {
   hunter: { name: "兽猎人·苔牙", role: "恐惧控制", combatRole: "warlock", base: 54 },
   banner: { name: "断旗队长·阿黛尔", role: "阵线指挥", combatRole: "knight", base: 64 },
   witch: { name: "沼泽女巫·盐枝", role: "持续削弱", combatRole: "warlock", base: 59 },
+};
+
+const GUILD_GUESTS = {
+  guild_guard: { name: "协会盾卫·奥伦", role: "前排保护", combatRole: "knight", base: 46 },
+  guild_scout: { name: "协会斥候·雀尾", role: "远程输出", combatRole: "ranger", base: 44 },
+  guild_medic: { name: "协会医师·苏拉", role: "治疗支援", combatRole: "priest", base: 42 },
+  guild_breaker: { name: "协会破阵手·岩拳", role: "近战爆发", combatRole: "berserker", base: 55 },
+  guild_mage: { name: "协会术士·蓝烛", role: "范围法术", combatRole: "mage", base: 53 },
+};
+
+const GUILD_QUESTS = {
+  road_pests: {
+    id: "road_pests", title: "旧路鼠患", difficulty: "简单委托", description: "商队旧路被一群穴鼠占住，协会允许你从三名驻站成员中借人。",
+    partyCap: 3, guestCap: 2, guests: ["guild_guard", "guild_scout", "guild_medic"], zoneId: "ash", rewardLevel: 1, lootCount: 2,
+    enemies: [["warrior", "铁齿穴鼠"], ["assassin", "钻袋穴鼠"], ["warrior", "老穴鼠"]], tier: 1, scales: { hp: .76, power: .74 },
+  },
+  black_iron_warrant: {
+    id: "black_iron_warrant", title: "黑铁悬赏", difficulty: "困难委托", description: "一支披甲盗匪夺走协会信物。任务没有前置门槛，但阵容错误会迅速崩溃。",
+    partyCap: 4, guestCap: 2, guests: ["guild_guard", "guild_medic", "guild_breaker", "guild_mage"], zoneId: "inner", rewardLevel: 3, lootCount: 4,
+    enemies: [["knight", "黑铁盾首"], ["warrior", "黑铁刀手"], ["ranger", "黑铁弩手"], ["priest", "黑铁随军医"]], tier: 3, scales: { hp: 1.24, power: 1.20, armor: 1.16 },
+  },
 };
 
 const ZONES = {
@@ -569,9 +618,9 @@ function zoneAvailable(state, zoneId) {
   return Boolean(zone && state.day >= zone.start && (!zone.flag || state.flags[zone.flag]));
 }
 
-function titleForLevel(level) {
-  const safeLevel = Math.max(1, Math.min(ADVENTURER_TITLES.length, Number(level) || 1));
-  return clone(ADVENTURER_TITLES[safeLevel - 1]);
+function threatForLevel(level) {
+  const safeLevel = Math.max(1, Math.min(THREAT_LEVELS.length, Number(level) || 1));
+  return clone(THREAT_LEVELS[safeLevel - 1]);
 }
 
 function witnessCount(state) {
@@ -613,6 +662,10 @@ function addQuestLinksToPlaces(places, quests) {
   return places.map((place) => ({ ...place, questLinks: linksByPlace.get(place.id) || [] }));
 }
 
+function emptyEquipmentSlots() {
+  return Object.fromEntries(Object.keys(SLOT_DATA).map((slot) => [slot, null]));
+}
+
 function createInitialState(seed = "fifteen-day-demo") {
   const state = {
     version: VERSION,
@@ -628,7 +681,7 @@ function createInitialState(seed = "fifteen-day-demo") {
     equipment: {},
     inventory: [],
     resources: { gold: 6, medicine: 0, townFavor: 0, evidence: 0, influence: 0 },
-    adventurerTitleLevel: 1,
+    guildRecord: { road_pests: 0, black_iron_warrant: 0 },
     flags: {},
     nodes: {},
     chapterResults: [],
@@ -637,8 +690,11 @@ function createInitialState(seed = "fifteen-day-demo") {
     result: null,
     stats: { spentActions: 0, grinds: 0, grindAttempts: 0, combats: 0, failedCombats: 0, salvaged: 0 },
   };
-  for (const heroId of Object.keys(HEROES)) state.equipment[heroId] = { weapon: null, armor: null, charm: null };
-  state.inventory.push({ id: "starter_knife", name: "缺口短刀", slot: "weapon", slotLabel: "武器", rarity: "普通", power: 6, identityTags: [], source: "随身物品" });
+  for (const heroId of Object.keys(HEROES)) state.equipment[heroId] = emptyEquipmentSlots();
+  state.inventory.push({
+    id: "starter_knife", name: "普通武器 Lv.12", slot: "weapon", slotLabel: "武器", rarity: "普通", rarityId: "common", equipmentLevel: 12,
+    power: 6, baseStats: { physicalPower: 6 }, affixes: [{ stat: "might", label: "武力", value: 1, level: 1, category: "major" }], identityTags: [], source: "随身物品",
+  });
   state.equipment.player.weapon = "starter_knife";
   addLog(state, "你在镇上打了撒泼的白鹿家少爷。他离开前说，第五日会带人回来。", "threat");
   return state;
@@ -702,28 +758,73 @@ function grindRarityTable(zoneId, level = 1) {
       [["稀有", .52], ["史诗", .40], ["传说", .076], ["神话", .004]],
     ],
     forge: [
-      [["史诗", .60], ["传说", .35], ["神话", .049], ["永恒", .001]],
-      [["史诗", .56], ["传说", .38], ["神话", .059], ["永恒", .001]],
-      [["史诗", .52], ["传说", .41], ["神话", .069], ["永恒", .001]],
+      [["史诗", .60], ["传说", .35], ["神话", .05]],
+      [["史诗", .56], ["传说", .38], ["神话", .06]],
+      [["史诗", .52], ["传说", .41], ["神话", .07]],
     ],
   };
   return (tables[zoneId] || tables.ash)[Math.max(0, Math.min(2, Number(level || 1) - 1))];
 }
 
+function rollEquipmentLevel(state, zoneId, level) {
+  const zoneBase = { ash: 18, inner: 32, quarry: 52, forge: 82 }[zoneId] || 18;
+  return Math.max(1, Math.round((zoneBase + (Math.max(1, level) - 1) * 8) * (.88 + rand(state) * .24)));
+}
+
+function rollDirectStatValue(state, stat, equipmentLevel) {
+  const variance = .92 + rand(state) * .16;
+  const scales = { physicalPower: .5, magicPower: .5, maxHp: 2.8, armor: .08 };
+  return Math.max(1, Math.round(equipmentLevel * (scales[stat] || .12) * variance));
+}
+
+function rollAffixValue(state, stat, equipmentLevel) {
+  const def = AFFIX_DEFS[stat] || {};
+  const variance = .88 + rand(state) * .24;
+  if (def.category === "major") return Math.max(1, Math.round((1.1 + equipmentLevel / 45) * variance));
+  if (def.percent) return Math.max(1, Math.round((2.5 + equipmentLevel / 7.5) * variance));
+  return Math.max(1, Math.round((2 + equipmentLevel / 9) * variance));
+}
+
+function rollAffixLevel(equipmentLevel) {
+  if (equipmentLevel >= 120) return 5;
+  if (equipmentLevel >= 80) return 4;
+  if (equipmentLevel >= 50) return 3;
+  if (equipmentLevel >= 30) return 2;
+  return 1;
+}
+
+function rollAffixes(state, slot, rarity, equipmentLevel) {
+  const pool = slot.affixPool.filter((stat) => !BLOCKED_DIRECT_AFFIXES.has(stat));
+  const focus = [pick(state, pool.map((stat) => [stat, 1])), pick(state, pool.map((stat) => [stat, 1]))];
+  const focusSlots = Math.floor(rarity.affixes * .5);
+  return Array.from({ length: rarity.affixes }, (_, index) => {
+    const stat = index < focusSlots ? focus[index % focus.length] : pick(state, pool.map((row) => [row, 1]));
+    return { stat, label: AFFIX_DEFS[stat]?.label || stat, value: rollAffixValue(state, stat, equipmentLevel), level: rollAffixLevel(equipmentLevel), category: AFFIX_DEFS[stat]?.category || "mechanic", percent: Boolean(AFFIX_DEFS[stat]?.percent) };
+  });
+}
+
+function itemScore(baseStats, affixes, rarity) {
+  const base = Object.entries(baseStats).reduce((sum, [stat, value]) => sum + value * ({ maxHp: .08, armor: 1.8, physicalPower: .7, magicPower: .7 }[stat] || .2), 0);
+  const affix = affixes.reduce((sum, row) => sum + row.value * (row.category === "major" ? 2.4 : row.percent ? .8 : 1), 0);
+  return Math.max(1, Math.round((base + affix) * rarity.value));
+}
+
 function generateItem(state, zoneId, level = 1) {
   const rarityTable = grindRarityTable(zoneId, level);
-  const rarity = pick(state, rarityTable);
-  const slot = pick(state, [["weapon", 0.38], ["armor", 0.38], ["charm", 0.24]]);
-  const base = RARITY_POWER[rarity];
-  const power = Math.max(4, Math.round(base * (0.82 + rand(state) * 0.36) * (1 + (Math.max(1, level) - 1) * .035)));
+  const rarityLabel = pick(state, rarityTable);
+  const rarity = RARITY_BY_LABEL[rarityLabel] || RARITY_DATA[0];
+  const slotKey = pick(state, Object.keys(SLOT_DATA).map((slot) => [slot, 1]));
+  const slot = SLOT_DATA[slotKey];
+  const equipmentLevel = rollEquipmentLevel(state, zoneId, level);
+  const baseStatsList = slot.baseOptions ? pick(state, slot.baseOptions.map((row) => [row, 1])) : slot.baseStats;
+  const baseStats = Object.fromEntries(baseStatsList.map((stat) => [stat, rollDirectStatValue(state, stat, equipmentLevel)]));
+  const affixes = rollAffixes(state, slot, rarity, equipmentLevel);
+  const power = itemScore(baseStats, affixes, rarity);
   const tags = [];
   const tagChance = (zoneId === "forge" ? 0.78 : zoneId === "quarry" ? 0.58 : zoneId === "inner" ? 0.48 : 0.34) + (Math.max(1, level) - 1) * .025;
   if (rand(state) < tagChance) tags.push(pick(state, IDENTITY_TAGS.map((tag) => [tag, 1])));
-  const names = {
-    weapon: ["短剑", "战斧", "长弓", "符文杖"], armor: ["锁甲", "旅衣", "鳞甲", "炉纹袍"], charm: ["骨哨", "火漆戒", "旧圣徽", "矿晶坠"],
-  };
-  const name = `${tags[0] ? `${tags[0]}·` : ""}${pick(state, names[slot].map((row) => [row, 1]))}`;
-  return { id: `item_${state.day}_${state.stats.grinds}_${state.inventory.length}_${hash(`${state.rngState}|${name}`)}`, name, slot, slotLabel: SLOT_LABELS[slot], rarity, power, identityTags: tags, source: `${ZONES[zoneId].title} · LV${level}` };
+  const name = `${tags[0] ? `${tags[0]}·` : ""}${rarity.label}${slot.label} Lv.${equipmentLevel}`;
+  return { id: `item_${state.day}_${state.stats.grinds}_${state.inventory.length}_${hash(`${state.rngState}|${name}`)}`, name, slot: slotKey, slotLabel: slot.label, rarity: rarity.label, rarityId: rarity.id, equipmentLevel, power, baseStats, affixes, identityTags: tags, source: `${ZONES[zoneId].title} · LV${level}` };
 }
 
 function equippedItemIds(state) {
@@ -763,23 +864,6 @@ function grind(state, zoneId, count) {
   addLog(state, `你在${zone.title}连续战斗${count}次，带回${count}件装备：${Object.entries(counts).map(([r, n]) => `${r}${n}`).join("、")}。${salvaged.length ? `背包达到${INVENTORY_LIMIT}件上限，自动分解了最差的${salvaged.length}件。` : ""}`, "loot");
 }
 
-function autoEquip(state) {
-  const available = new Set(state.inventory.map((item) => item.id));
-  for (const heroId of state.activeParty) {
-    for (const slot of Object.keys(SLOT_LABELS)) {
-      const best = state.inventory.filter((item) => item.slot === slot && available.has(item.id)).sort((a, b) => itemPower(b) - itemPower(a))[0];
-      const currentId = state.equipment[heroId][slot];
-      const current = state.inventory.find((item) => item.id === currentId);
-      if (best && (!current || best.power > current.power)) {
-        if (currentId) available.add(currentId);
-        state.equipment[heroId][slot] = best.id;
-        available.delete(best.id);
-      } else if (currentId) available.delete(currentId);
-    }
-  }
-  addLog(state, "队伍重新比较了背包里的装备并完成穿戴。", "equipment");
-}
-
 function heroPower(state, heroId) {
   return HEROES[heroId].base + Object.values(state.equipment[heroId]).reduce((sum, itemId) => sum + itemPower(state.inventory.find((item) => item.id === itemId)), 0);
 }
@@ -810,18 +894,48 @@ function roleSpec(role, name, slotIndex, scales = {}) {
 function heroCombatSpec(state, heroId, slotIndex) {
   const hero = HEROES[heroId];
   const spec = roleSpec(hero.combatRole, hero.name, slotIndex, { hp: 0.88 + hero.base / 460, power: 0.82 + hero.base / 360, armor: 0.92 });
-  const slots = state.equipment[heroId];
-  const weapon = state.inventory.find((i) => i.id === slots.weapon);
-  const armor = state.inventory.find((i) => i.id === slots.armor);
-  const charm = state.inventory.find((i) => i.id === slots.charm);
-  const main = ["mage", "priest", "warlock", "alchemist"].includes(hero.combatRole) ? "magicPower" : "physicalPower";
-  spec[main] += Math.round(itemPower(weapon) * 2.2 + itemPower(charm) * 0.9);
+  const equipped = Object.values(state.equipment[heroId] || {}).map((itemId) => state.inventory.find((item) => item.id === itemId)).filter(Boolean);
+  const bundle = BUILD_LAYERS.buildEquipmentModifierBundle(equipped);
+  spec.physicalPower += Math.round(bundle.physicalPowerAdd || 0);
+  spec.magicPower += Math.round(bundle.magicPowerAdd || 0);
   spec.power = Math.max(spec.physicalPower, spec.magicPower);
-  spec.maxHp += Math.round(itemPower(armor) * 15 + itemPower(charm) * 4);
+  spec.maxHp += Math.round(bundle.maxHpAdd || 0);
   spec.hp = spec.maxHp;
-  spec.armor += Math.round(itemPower(armor) * 0.5);
-  spec.effectPowerMult = 1 + itemPower(charm) * 0.008;
+  spec.armor += Math.round(bundle.armorAdd || 0);
+  spec.attackSpeedMult = bundle.attackSpeedMult || 1;
+  spec.skillHasteMult = bundle.skillHasteMult || 1;
+  spec.effectPowerMult = bundle.effectPowerMult || 1;
+  spec.effectResistPct = Math.min(.65, bundle.effectResistPct || 0);
+  spec.receivedHealingMult = bundle.receivedHealingMult || 1;
+  spec.mechanicModifiers = clone(bundle.mechanicModifiers || {});
   return spec;
+}
+
+function guildGuestCombatSpec(guestId, slotIndex) {
+  const guest = GUILD_GUESTS[guestId];
+  if (!guest) throw new Error(`未知的协会同行者：${guestId}`);
+  return roleSpec(guest.combatRole, guest.name, slotIndex, { hp: .90 + guest.base / 500, power: .86 + guest.base / 420, armor: .94, unitKind: "guild_guest" });
+}
+
+function guildQuestPlan(state, questId, ownHeroIds, guestIds) {
+  const quest = GUILD_QUESTS[questId];
+  if (!quest || state.phase !== "planning") return null;
+  const own = [...new Set(ownHeroIds || [])];
+  const guests = [...new Set(guestIds || [])];
+  if (!own.includes("player")) throw new Error("协会要求委托发起人本人出队。");
+  if (own.some((heroId) => !state.roster.includes(heroId))) throw new Error("选择中含有尚未加入的角色。");
+  if (guests.some((guestId) => !quest.guests.includes(guestId))) throw new Error("选择中含有本次委托未提供的同行者。");
+  if (guests.length > quest.guestCap) throw new Error(`本次最多借用${quest.guestCap}名协会同行者。`);
+  if (own.length + guests.length > quest.partyCap) throw new Error(`本次委托最多出战${quest.partyCap}人。`);
+  const leftTeam = own.map((heroId, index) => heroCombatSpec(state, heroId, index));
+  for (const guestId of guests) leftTeam.push(guildGuestCombatSpec(guestId, leftTeam.length));
+  const rightTeam = quest.enemies.map(([role, name], index) => enemySpec(role, name, index, quest.tier, quest.scales));
+  return {
+    kind: "guildQuest", questId, title: `${quest.difficulty} · ${quest.title}`, difficulty: quest.difficulty, description: quest.description,
+    enemyTitle: { level: questId === "road_pests" ? 2 : 5, name: questId === "road_pests" ? "低威胁" : "高威胁" },
+    seed: `${state.seed}|guild|${questId}|${state.stats.combats}|${state.guildRecord?.[questId] || 0}`,
+    leftTeam, rightTeam, maxTime: questId === "road_pests" ? 70 : 100,
+  };
 }
 
 function militiaSpec(index, tier = 1, kind = "militia") {
@@ -854,33 +968,6 @@ function eventEnemyTitleLevel(key, state) {
   return 2;
 }
 
-function titleTrialPlan(state, targetLevel) {
-  const target = Number(targetLevel);
-  if (state.phase !== "planning" || target !== Number(state.adventurerTitleLevel || 1) + 1 || target > ADVENTURER_TITLES.length) return null;
-  const configs = {
-    2: { tier: 1, enemies: [["warrior", "黑铁考官"]], scales: { hp: 0.92, power: 0.88 } },
-    3: { tier: 2, enemies: [["knight", "青铜守关人"], ["ranger", "青铜观察员"]], scales: { hp: 0.90, power: 0.88 } },
-    4: { tier: 3, enemies: [["knight", "白银盾手"], ["warrior", "白银剑士"], ["priest", "白银医官"]], scales: { hp: 0.94, power: 0.93 } },
-    5: { tier: 4, enemies: [["knight", "黄金盾手"], ["warrior", "黄金剑士"], ["ranger", "黄金射手"], ["mage", "黄金术士"]], scales: { hp: 0.98, power: 0.97 } },
-    6: { tier: 5, enemies: [["knight", "秘银盾手"], ["warrior", "秘银剑士"], ["ranger", "秘银射手"], ["mage", "秘银术士"], ["priest", "秘银医官"]], scales: { hp: 1.02, power: 1.00 } },
-    7: { tier: 6, enemies: [["knight", "传奇守门人"], ["knight", "传奇守门人"], ["warrior", "传奇斗士"], ["berserker", "传奇斗士"], ["ranger", "传奇射手"], ["mage", "传奇术士"], ["priest", "传奇医官"]], scales: { hp: 1.05, power: 1.04 } },
-  };
-  const config = configs[target];
-  if (!config) return null;
-  const leftTeam = state.activeParty.map((heroId, index) => heroCombatSpec(state, heroId, index));
-  const rightTeam = config.enemies.map(([role, name], index) => enemySpec(role, `${name}${config.enemies.filter((row) => row[1] === name).length > 1 ? index + 1 : ""}`, index, config.tier, config.scales));
-  return {
-    kind: "titleTrial",
-    targetLevel: target,
-    title: `${titleForLevel(target).name}晋级试炼`,
-    enemyTitle: titleForLevel(target),
-    seed: `${state.seed}|title-trial|${target}|${state.stats.combats}`,
-    leftTeam,
-    rightTeam,
-    maxTime: 100,
-  };
-}
-
 function grindCombatPlan(state, zoneId, level) {
   const zone = ZONES[zoneId];
   const encounter = GRIND_ENCOUNTERS[zoneId]?.find((row) => row.level === Number(level));
@@ -892,7 +979,7 @@ function grindCombatPlan(state, zoneId, level) {
     zoneId,
     level: encounter.level,
     title: `${zone.title} LV${encounter.level} · ${encounter.title}`,
-    enemyTitle: titleForLevel(grindEnemyTitleLevel(zoneId, encounter.level)),
+    enemyTitle: threatForLevel(grindEnemyTitleLevel(zoneId, encounter.level)),
     seed: `${state.seed}|grind|${zoneId}|${encounter.level}|${state.stats.grindAttempts || 0}|${state.stats.grinds}`,
     leftTeam,
     rightTeam,
@@ -952,7 +1039,7 @@ function eventCombatPlan(state, eventId, optionId) {
     title = "炉心守卫战";
     rightTeam = Array.from({ length: 8 }, (_, i) => enemySpec(i < 3 ? "knight" : i < 6 ? "warrior" : "mage", `守炉造物${i + 1}`, i, 5));
   }
-  return { kind: "combat", title, enemyTitle: titleForLevel(eventEnemyTitleLevel(key, state)), internalAction: `event:${eventId}:${optionId}`, seed: `${state.seed}|${state.day}|${key}|${state.stats.combats}`, leftTeam, rightTeam, maxTime: 90 };
+  return { kind: "combat", title, enemyTitle: threatForLevel(eventEnemyTitleLevel(key, state)), internalAction: `event:${eventId}:${optionId}`, seed: `${state.seed}|${state.day}|${key}|${state.stats.combats}`, leftTeam, rightTeam, maxTime: 90 };
 }
 
 function showdownPlan(state, strategy) {
@@ -977,7 +1064,7 @@ function showdownPlan(state, strategy) {
     while (leftTeam.length < reinforcementTarget) leftTeam.push(militiaSpec(leftTeam.length, 3, leftTeam.length >= 10 ? "reinforcement" : "militia"));
     rightTeam = ["knight", "knight", "berserker", "berserker", "ranger", "ranger", "mage", "mage", "priest", "alchemist"].map((role, i) => enemySpec(role, `围剿精锐${i + 1}`, i, 6, { hp: state.flags.siegeSabotaged ? 0.86 : 1, power: state.flags.beastsNeutralized ? 0.88 : 1 }));
   }
-  return { kind: "combat", title, enemyTitle: titleForLevel(act === 1 ? 3 : act === 2 ? 5 : 7), internalAction: `showdown:${strategy}`, seed: `${state.seed}|showdown${act}|${strategy}|${state.stats.combats}`, leftTeam, rightTeam, maxTime: 120 };
+  return { kind: "combat", title, enemyTitle: threatForLevel(act === 1 ? 3 : act === 2 ? 5 : 7), internalAction: `showdown:${strategy}`, seed: `${state.seed}|showdown${act}|${strategy}|${state.stats.combats}`, leftTeam, rightTeam, maxTime: 120 };
 }
 
 function volunteerCount(state, act) {
@@ -1050,17 +1137,16 @@ function internalActions(state) {
     for (const option of event.options) if (optionIsAvailable(state, event, option)) rows.push({ id: `event:${event.id}:${option.id}`, label: option.label, kind: COMBAT_OPTIONS.has(`${event.id}:${option.id}`) ? "combat" : "event", placeId: `place_event_${event.id}`, callback: typeof option.callback === "function" ? option.callback(state) : option.callback || "" });
   }
   if (state.ap > 0 && state.flags.lastPatrolDay !== state.day && !rows.some((row) => ["event", "combat", "inspect"].includes(row.kind))) rows.push({ id: "patrol", label: "利用剩余时间走访镇民", kind: "event", placeId: "place_patrol" });
-  rows.push({ id: "auto_equip", label: "让当前出战成员择优穿戴", kind: "equipment", placeId: "place_party" });
-  const nextTitleLevel = Number(state.adventurerTitleLevel || 1) + 1;
-  if (nextTitleLevel <= ADVENTURER_TITLES.length) rows.push({
-    id: `titletrial:${nextTitleLevel}`,
-    label: `参加${titleForLevel(nextTitleLevel).name}晋级试炼`,
-    kind: "combat",
-    placeId: "place_party",
+  for (const quest of Object.values(GUILD_QUESTS)) rows.push({
+    id: `guildquest:${quest.id}`,
+    label: `${quest.difficulty} · ${quest.title}`,
+    kind: "guild",
+    placeId: "place_guild",
     actionPointCost: 0,
+    difficulty: quest.difficulty,
+    partyCap: quest.partyCap,
+    guestCap: quest.guestCap,
   });
-  const ownedTags = [...new Set(state.inventory.flatMap((item) => item.identityTags))];
-  for (const tag of ownedTags.filter((row) => !heroHasTag(state, "player", row))) rows.push({ id: `equip:tag:${tag}`, label: `让你换上一件[${tag}]装备`, kind: "equipment", placeId: "place_party" });
   const cap = MAX_ACTIVE_BY_ACT[actForDay(state.day)];
   for (const heroId of state.roster) {
     const active = state.activeParty.includes(heroId);
@@ -1084,7 +1170,6 @@ function applyAction(stateInput, internalId) {
   if (internalId.startsWith("grind:")) {
     const [, zone, count] = internalId.split(":"); grind(state, zone, Number(count)); return state;
   }
-  if (internalId === "auto_equip") { autoEquip(state); return state; }
   if (internalId === "patrol") {
     state.resources.townFavor += 1;
     state.flags.lastPatrolDay = state.day;
@@ -1092,22 +1177,13 @@ function applyAction(stateInput, internalId) {
     spendAction(state);
     return state;
   }
-  if (internalId.startsWith("equip:tag:")) {
-    const tag = internalId.slice("equip:tag:".length);
-    const item = state.inventory.filter((row) => row.identityTags.includes(tag)).sort((a, b) => itemPower(b) - itemPower(a))[0];
-    if (!item) throw new Error("这件装备已经不在背包里。");
-    for (const slots of Object.values(state.equipment)) for (const slot of Object.keys(slots)) if (slots[slot] === item.id) slots[slot] = null;
-    state.equipment.player[item.slot] = item.id;
-    addLog(state, `你穿上了${item.name}。`, "equipment");
-    return state;
-  }
   if (internalId.startsWith("party:")) { applyParty(state, internalId); return state; }
   if (internalId === "investigate:gate") { state.flags.gateInspected = true; addLog(state, "煤灰下露出熔毁锁芯、三段断纹和一条通往守门甲胄的铜线。", "clue"); spendAction(state); return state; }
   if (internalId === "end_day") { endDay(state); return state; }
-  if (internalId.startsWith("titletrial:")) {
-    const targetLevel = Number(internalId.split(":")[1]);
-    const plan = titleTrialPlan(state, targetLevel);
-    if (!plan) throw new Error("当前不能参加这场晋级试炼。");
+  if (internalId.startsWith("guildquest:")) {
+    const questId = internalId.split(":")[1];
+    const plan = guildQuestPlan(state, questId, ["player"], []);
+    if (!plan) throw new Error("当前不能承接这份协会委托。");
     settleCombat(state, internalId, simulatePlan(plan));
     return state;
   }
@@ -1230,8 +1306,8 @@ function settleEvent(state, eventId, optionId) {
 function settleCombat(state, internalId, result) {
   const plan = internalId.startsWith("showdown:")
     ? showdownPlan(state, internalId.split(":")[1])
-    : internalId.startsWith("titletrial:")
-      ? titleTrialPlan(state, Number(internalId.split(":")[1]))
+    : internalId.startsWith("guildquest:")
+      ? { title: `${GUILD_QUESTS[internalId.split(":")[1]].difficulty} · ${GUILD_QUESTS[internalId.split(":")[1]].title}` }
       : eventCombatPlan(state, internalId.split(":")[1], internalId.split(":")[2]);
   const summary = publicCombatSummary(result, plan.title);
   state.lastCombat = summary;
@@ -1239,14 +1315,21 @@ function settleCombat(state, internalId, result) {
   if (!summary.win) state.stats.failedCombats += 1;
   addLog(state, `在“${summary.title}”中我方${summary.win ? "获胜" : "失利"}：我方${summary.alliesAlive}/${summary.alliesStarted}人仍能战斗，敌方${summary.enemiesAlive}/${summary.enemiesStarted}人仍能战斗，用时${summary.duration}秒；我方造成${summary.alliesDamage}伤害、治疗${summary.alliesHealing}、获得${summary.alliesShield}护盾。`, summary.win ? "combat_win" : "combat_loss");
   if (internalId.startsWith("showdown:")) { settleShowdown(state, internalId.split(":")[1], summary); return; }
-  if (internalId.startsWith("titletrial:")) {
-    const targetLevel = Number(internalId.split(":")[1]);
+  if (internalId.startsWith("guildquest:")) {
+    const questId = internalId.split(":")[1];
+    const quest = GUILD_QUESTS[questId];
+    state.guildRecord = { road_pests: 0, black_iron_warrant: 0, ...(state.guildRecord || {}) };
     if (summary.win) {
-      state.adventurerTitleLevel = targetLevel;
-      addLog(state, `晋级评定通过。你的队伍获得了“${titleForLevel(targetLevel).name}”称号。`, "title");
+      state.guildRecord[questId] += 1;
+      const loot = Array.from({ length: quest.lootCount }, () => generateItem(state, quest.zoneId, quest.rewardLevel));
+      state.inventory.push(...loot);
+      const best = loot.slice().sort((a, b) => rarityIndex(b.rarity) - rarityIndex(a.rarity) || itemPower(b) - itemPower(a))[0];
+      addLog(state, `${quest.title}完成。协会交付了${loot.length}件战利品，其中最好的是${best.rarity}${best.slotLabel}。`, "loot");
     } else {
-      addLog(state, `晋级评定没有通过。你仍是“${titleForLevel(state.adventurerTitleLevel).name}”，可以调整队伍后再次挑战。`, "title");
+      addLog(state, `${quest.title}失败。协会没有扣除行动力，你可以更换自有成员与临时同行者后重试。`, "combat_loss");
     }
+    const salvaged = enforceInventoryLimit(state);
+    if (salvaged.length) addLog(state, `背包达到${INVENTORY_LIMIT}件上限，自动分解了最差的${salvaged.length}件装备。`, "equipment");
     return;
   }
   const [, eventId, optionId] = internalId.split(":");
@@ -1317,7 +1400,15 @@ function applyPlayerAction(state, publicId) {
   const match = actionCatalog(state).find((row) => row.publicId === publicId);
   if (!match) throw new Error("这个行动已经不在当前场景中。");
   if (match.kind === "grind") throw new Error("刷装必须先完成实际战斗。");
+  if (match.kind === "guild") throw new Error("协会委托必须先选择出战成员。");
   return applyAction(state, match.id);
+}
+
+function preparePlayerGuildCombat(state, publicId, ownHeroIds, guestIds) {
+  const match = actionCatalog(state).find((row) => row.publicId === publicId);
+  if (!match || match.kind !== "guild") return null;
+  const plan = guildQuestPlan(state, match.id.split(":")[1], ownHeroIds, guestIds);
+  return plan ? { ...clone(plan), publicActionId: publicId } : null;
 }
 
 function preparePlayerGrindCombat(state, publicId) {
@@ -1362,17 +1453,37 @@ function preparePlayerCombat(state, publicId) {
   if (!match || match.kind !== "combat") return null;
   const plan = match.id.startsWith("showdown:")
     ? showdownPlan(state, match.id.split(":")[1])
-    : match.id.startsWith("titletrial:")
-      ? titleTrialPlan(state, Number(match.id.split(":")[1]))
-      : eventCombatPlan(state, match.id.split(":")[1], match.id.split(":")[2]);
+    : eventCombatPlan(state, match.id.split(":")[1], match.id.split(":")[2]);
   return plan ? { ...clone(plan), publicActionId: publicId } : null;
 }
 
 function applyPlayerCombatResult(stateInput, publicId, result) {
   const match = actionCatalog(stateInput).find((row) => row.publicId === publicId);
-  if (!match || match.kind !== "combat") throw new Error("这个战斗已经不在当前场景中。");
+  if (!match || !["combat", "guild"].includes(match.kind)) throw new Error("这个战斗已经不在当前场景中。");
   const state = clone(stateInput);
   settleCombat(state, match.id, result);
+  return state;
+}
+
+function equipPlayerItem(stateInput, heroId, itemId) {
+  const state = clone(stateInput);
+  if (!state.roster.includes(heroId)) throw new Error("这个角色尚未加入队伍。");
+  const item = state.inventory.find((row) => row.id === itemId);
+  if (!item || !SLOT_DATA[item.slot]) throw new Error("这件装备已经不在背包里。");
+  for (const slots of Object.values(state.equipment)) for (const slot of Object.keys(slots)) if (slots[slot] === itemId) slots[slot] = null;
+  state.equipment[heroId] = { ...emptyEquipmentSlots(), ...(state.equipment[heroId] || {}) };
+  state.equipment[heroId][item.slot] = item.id;
+  addLog(state, `${HEROES[heroId].name}换上了${item.name}。`, "equipment");
+  return state;
+}
+
+function unequipPlayerSlot(stateInput, heroId, slot) {
+  const state = clone(stateInput);
+  if (!state.roster.includes(heroId) || !SLOT_DATA[slot]) throw new Error("无法卸下这个部位的装备。");
+  state.equipment[heroId] = { ...emptyEquipmentSlots(), ...(state.equipment[heroId] || {}) };
+  const item = state.inventory.find((row) => row.id === state.equipment[heroId][slot]);
+  state.equipment[heroId][slot] = null;
+  if (item) addLog(state, `${HEROES[heroId].name}卸下了${item.name}。`, "equipment");
   return state;
 }
 
@@ -1400,6 +1511,7 @@ function visiblePlaces(state, catalog) {
   if (state.day <= 5) rows.push({ id: "place_gate", title: "王炉门", area: "灰炉遗址", status: state.flags.innerOpen ? "open" : "locked", scene: state.flags.gateInspected ? "煤灰下露出熔毁锁芯、三段断纹和一条通往守门甲胄的铜线。" : "一扇煤灰覆盖的铁门挡住了通往内环的路。", actionCount: catalog.filter((a) => a.placeId === "place_gate").length });
   for (const event of EVENTS) if (eventIsVisible(state, event)) rows.push({ id: `place_event_${event.id}`, title: event.title, area: event.area, status: "present", scene: event.scene, actionCount: catalog.filter((a) => a.placeId === `place_event_${event.id}`).length });
   if (catalog.some((action) => action.placeId === "place_patrol")) rows.push({ id: "place_patrol", title: "尚未撤离的街巷", area: "煤灰镇", status: "present", scene: "眼下没有迫在眉睫的事件，但仍有镇民在收拾店铺和讨论局势。", actionCount: 1 });
+  rows.push({ id: "place_guild", title: "冒险者协会", area: "镇中心", status: "open", scene: "公告板上同时挂着无需门槛的简单委托和高风险悬赏。每份委托都允许你带自己的队友，并借用有限的协会成员。", actionCount: catalog.filter((a) => a.placeId === "place_guild").length });
   rows.push({ id: "place_party", title: "队伍与装备", area: "营地", status: "present", scene: `当前可以安排最多${MAX_ACTIVE_BY_ACT[actForDay(state.day)]}名出战成员。`, actionCount: catalog.filter((a) => a.placeId === "place_party").length });
   rows.push({ id: "place_calendar", title: "今日日程", area: "营地", status: "present", scene: `今天还有${state.ap}次行动。`, actionCount: catalog.filter((action) => action.placeId === "place_calendar").length });
   return rows;
@@ -1437,8 +1549,6 @@ function getPlayerObservation(state) {
     time: { day: state.day, actionsRemainingToday: state.ap, phase: state.phase, act, nextKnownDeadline: state.day <= 5 ? 5 : state.day <= 10 ? 10 : 15 },
     situation: publicSituation(state),
     party: {
-      title: titleForLevel(state.adventurerTitleLevel),
-      nextTrial: Number(state.adventurerTitleLevel || 1) < ADVENTURER_TITLES.length ? titleForLevel(Number(state.adventurerTitleLevel || 1) + 1) : null,
       maxActive: MAX_ACTIVE_BY_ACT[act],
       active: state.activeParty.map((id) => ({ id, name: HEROES[id].name, role: HEROES[id].role, visiblePower: heroPower(state, id), formation: FORMATION_LABELS[state.formation[id]] || `队列${state.formation[id] + 1}`, visibleSkills: visibleSkills(id) })),
       reserve: state.roster.filter((id) => !state.activeParty.includes(id)).map((id) => ({ id, name: HEROES[id].name, role: HEROES[id].role, visiblePower: heroPower(state, id), visibleSkills: visibleSkills(id) })),
@@ -1446,6 +1556,12 @@ function getPlayerObservation(state) {
     resources: clone(state.resources),
     inventory: state.inventory.map((item) => clone(item)),
     inventoryLimit: INVENTORY_LIMIT,
+    equipmentSlots: Object.entries(SLOT_DATA).map(([id, row]) => ({ id, label: row.label })),
+    guild: {
+      record: clone(state.guildRecord || {}),
+      guests: Object.entries(GUILD_GUESTS).map(([id, row]) => ({ id, name: row.name, role: row.role })),
+      quests: Object.values(GUILD_QUESTS).map((quest) => ({ id: quest.id, title: quest.title, difficulty: quest.difficulty, description: quest.description, partyCap: quest.partyCap, guestCap: quest.guestCap, guests: [...quest.guests], clears: Number(state.guildRecord?.[quest.id] || 0) })),
+    },
     salvagedCount: Number(state.stats.salvaged || 0),
     quests,
     places,
@@ -1460,6 +1576,9 @@ function getPlayerObservation(state) {
       callback: row.callback || "",
       grindLevel: row.grindLevel || 0,
       enemyCount: row.enemyCount || 0,
+      difficulty: row.difficulty || "",
+      partyCap: row.partyCap || 0,
+      guestCap: row.guestCap || 0,
       actionPointMark: row.actionPointCost ?? (["event", "combat", "inspect"].includes(row.kind) ? 1 : 0),
       endsCurrentDay: row.kind === "time",
       knownEffects: knownEffectsForAction(state, row),
@@ -1471,7 +1590,19 @@ function getPlayerObservation(state) {
 
 function migrateState(stateInput) {
   const state = clone(stateInput);
-  state.adventurerTitleLevel = Math.max(1, Math.min(ADVENTURER_TITLES.length, Number(state.adventurerTitleLevel) || 1));
+  state.guildRecord = { road_pests: 0, black_iron_warrant: 0, ...(state.guildRecord || {}) };
+  for (const heroId of Object.keys(HEROES)) {
+    const old = state.equipment?.[heroId] || {};
+    state.equipment[heroId] = { ...emptyEquipmentSlots(), ...old, chest: old.chest || old.armor || null };
+    delete state.equipment[heroId].armor;
+  }
+  for (const item of state.inventory || []) {
+    if (item.slot === "armor") item.slot = "chest";
+    item.slotLabel = SLOT_LABELS[item.slot] || item.slotLabel;
+    item.identityTags = item.identityTags || [];
+    item.baseStats = item.baseStats || {};
+    item.affixes = item.affixes || [];
+  }
   state.stats = { spentActions: 0, grinds: 0, grindAttempts: 0, combats: 0, failedCombats: 0, salvaged: 0, ...(state.stats || {}) };
   if (state.flags?.smithForged && !state.flags.innerOpen) {
     state.flags.innerOpen = true;
@@ -1486,8 +1617,8 @@ function migrateState(stateInput) {
 }
 
 return {
-  VERSION, AP_PER_DAY, FINAL_DAY, INVENTORY_LIMIT, HEROES, EVENTS, ZONES, GRIND_ENCOUNTERS, ADVENTURER_TITLES, QUEST_DEFINITIONS, EVENT_OUTCOMES, COMBAT_OPTIONS,
-  createInitialState, migrateState, getPlayerObservation, applyPlayerAction, preparePlayerCombat, preparePlayerGrindCombat, applyPlayerCombatResult, applyPlayerGrindCombatResult,
-  applyAction, internalActions, simulatePlan, showdownPlan, eventCombatPlan, grindCombatPlan, titleTrialPlan, heroPower, actForDay,
+  VERSION, AP_PER_DAY, FINAL_DAY, INVENTORY_LIMIT, HEROES, EVENTS, ZONES, GRIND_ENCOUNTERS, SLOT_DATA, RARITY_DATA, AFFIX_DEFS, GUILD_GUESTS, GUILD_QUESTS, THREAT_LEVELS, QUEST_DEFINITIONS, EVENT_OUTCOMES, COMBAT_OPTIONS,
+  createInitialState, migrateState, getPlayerObservation, applyPlayerAction, preparePlayerCombat, preparePlayerGuildCombat, preparePlayerGrindCombat, applyPlayerCombatResult, applyPlayerGrindCombatResult,
+  equipPlayerItem, unequipPlayerSlot, applyAction, internalActions, simulatePlan, showdownPlan, eventCombatPlan, grindCombatPlan, guildQuestPlan, heroPower, actForDay,
 };
 });

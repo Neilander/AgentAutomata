@@ -404,6 +404,8 @@ function routeStatic(req, res, url) {
     "equipment_grind_v3",
     "five_day_guard_raid",
     "fifteen_day_demo",
+    "border_village_war",
+    "border_village_war_web",
     "town_loop",
     "team_simulator",
     "tutorial_guide",

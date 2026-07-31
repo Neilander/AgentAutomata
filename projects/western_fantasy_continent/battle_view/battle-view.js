@@ -657,20 +657,9 @@
       this.state.running = false;
       if (this.state.raf) clearInterval(this.state.raf);
       this.state.raf = 0;
-      const leftHp = sim.sideHpScore("left");
-      const rightHp = sim.sideHpScore("right");
-      const winner = leftHp >= rightHp ? "left" : "right";
-      this.state.result = {
-        passed: winner === "left",
-        winner,
-        duration: sim.time,
-        leftHp,
-        rightHp,
-        units: this.state.units,
-        signals: sim.signalBus.signals,
-        summary: sim.signalBus.summary(),
-        metrics: sim.metrics(),
-      };
+      const authoritativeResult = sim.buildResult();
+      const winner = authoritativeResult.winner;
+      this.state.result = { ...authoritativeResult, passed: winner === "left" };
       this.state.logs.unshift(`${winner === "left" ? "\u80dc\u5229" : "\u5931\u8d25"} 路 ${sim.time.toFixed(1)}s`);
       this.onFinish(this.state.result);
     }

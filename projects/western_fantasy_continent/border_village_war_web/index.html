@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>我的超能力是无限刷装｜灰谷村魔物战争</title>
+  <link rel="stylesheet" href="../battle_view/battle-view.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="game-shell">
+    <header class="topbar">
+      <div class="title-lockup">
+        <span class="eyebrow">边陲领 · 灰谷村</span>
+        <h1>我的超能力是无限刷装</h1>
+      </div>
+      <div id="day-rail" class="day-rail" aria-label="七日时间轴"></div>
+      <div class="resource-strip" aria-label="村庄资源">
+        <span><i>◈</i> 金币 <strong id="gold-value">0</strong></span>
+        <span><i>♨</i> 粮食 <strong id="food-value">0</strong></span>
+        <span><i>◆</i> 铁料 <strong id="iron-value">0</strong></span>
+        <span><i>✦</i> 精钢 <strong id="steel-value">0</strong></span>
+        <span><i>♟</i> 人口 <strong id="population-value">0/0</strong></span>
+      </div>
+      <div class="top-actions">
+        <div class="ap-orb"><span>今日行动</span><strong><b id="ap-value">0</b>/<em id="ap-capacity">0</em></strong></div>
+        <button id="end-day-button" class="button quiet">结束本日</button>
+        <button id="restart-open" class="icon-button" aria-label="重新开始" title="重新开始">↻</button>
+      </div>
+    </header>
+
+    <main id="campaign-panel" class="campaign-panel">
+      <section id="map-view" class="map-view">
+        <div id="map-viewport" class="map-viewport" aria-label="可拖动缩放的灰谷村地图">
+          <div id="map-world" class="map-world">
+            <svg class="village-map" viewBox="0 0 1400 860" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <radialGradient id="ground" cx="48%" cy="48%" r="66%">
+                  <stop offset="0" stop-color="#73684c"/>
+                  <stop offset=".62" stop-color="#514b38"/>
+                  <stop offset="1" stop-color="#302f28"/>
+                </radialGradient>
+                <pattern id="grain" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M2 14c13-7 23-7 36 0M8 34c10-5 18-5 29 0" fill="none" stroke="#e7d49e" stroke-opacity=".045" stroke-width="2"/>
+                </pattern>
+                <filter id="softGlow"><feGaussianBlur stdDeviation="7"/></filter>
+              </defs>
+              <path class="land" d="M52 214C148 58 363 49 540 104c149-87 387-82 563 21 190 111 275 348 187 511-74 138-257 203-438 170-174 72-404 56-563-40C114 660-22 420 52 214Z"/>
+              <path class="grain" d="M52 214C148 58 363 49 540 104c149-87 387-82 563 21 190 111 275 348 187 511-74 138-257 203-438 170-174 72-404 56-563-40C114 660-22 420 52 214Z"/>
+              <path class="river" d="M-55 145C185 244 355 231 551 153c221-89 434-89 892 64"/>
+              <path class="road" d="M700 104C667 238 691 312 696 402M695 402c-172 32-287 72-415 165m417-165c174 19 292 76 442 149M695 401c-35 147-18 243 1 385"/>
+              <path class="palisade" d="M418 322c58-92 185-150 304-143 129 8 260 77 298 183 36 101-8 225-106 294-106 74-271 93-389 26-116-65-174-234-107-360Z"/>
+              <g class="map-sketches">
+                <path d="M626 335h146v118H626zM650 293h96l26 42H626zM653 377h35v76m47-76h28v76"/>
+                <path d="M185 580h118v81H185zM206 546h76l21 34H185z"/>
+                <path d="M1042 506h126v92h-126zM1063 470h83l22 36h-126z"/>
+                <path d="M524 696h334M555 674v44m66-44v44m66-44v44m66-44v44m66-44v44"/>
+              </g>
+            </svg>
+            <div id="map-node-layer" class="map-node-layer"></div>
+          </div>
+
+          <aside class="war-board">
+            <span class="eyebrow">第7日 · 魔物总攻</span>
+            <div class="war-numbers">
+              <span>军团<strong id="enemy-units">20</strong></span>
+              <span>主将<strong id="enemy-bosses">3</strong></span>
+              <span class="friendly">民兵<strong id="militia-units">3</strong></span>
+            </div>
+            <p id="war-rule"></p>
+            <details><summary>决战日规则</summary><p id="final-rules"></p></details>
+          </aside>
+
+          <div class="map-camera-controls" aria-label="地图镜头控制">
+            <button id="map-zoom-out" class="map-control">−</button>
+            <button id="map-reset-camera" class="map-control wide">全图</button>
+            <button id="map-zoom-in" class="map-control">＋</button>
+          </div>
+
+          <aside id="node-popover" class="node-popover" hidden>
+            <button id="node-popover-close" class="popover-close" aria-label="关闭">×</button>
+            <span id="node-kicker" class="eyebrow"></span>
+            <h2 id="node-title">地点</h2>
+            <p id="node-description"></p>
+            <div id="node-status" class="node-status"></div>
+            <div class="action-heading"><span>在这里做什么</span><strong id="node-action-count">0</strong></div>
+            <div id="node-actions" class="node-actions"></div>
+          </aside>
+
+          <section id="ending-card" class="ending-card" hidden></section>
+        </div>
+      </section>
+
+      <section id="combat-view" class="combat-view" hidden>
+        <header class="combat-heading">
+          <div><span class="eyebrow">真实战斗进行中</span><h2 id="combat-title">战斗</h2></div>
+          <div id="combat-supply" class="combat-supply"></div>
+        </header>
+        <div id="battle-mount" class="battle-mount"></div>
+        <div id="combat-result" class="combat-result" hidden></div>
+      </section>
+
+      <section id="grind-view" class="grind-view" hidden>
+        <header class="combat-heading">
+          <div><span class="eyebrow">无限讨伐 · 不耗行动与粮食</span><h2 id="grind-title">边林讨伐</h2></div>
+          <div id="grind-stats" class="grind-stats"></div>
+          <button id="stop-grind" class="button danger">本轮后停止</button>
+        </header>
+        <div id="grind-battle-mount" class="battle-mount"></div>
+        <section class="loot-shelf-panel">
+          <div class="loot-shelf-head"><div><span class="eyebrow">本次连续讨伐</span><strong id="grind-status">准备进入战斗</strong></div><small id="grind-loot-count">0件</small></div>
+          <div id="grind-loot-shelf" class="loot-shelf"></div>
+          <div id="grind-actions" class="grind-actions"></div>
+        </section>
+      </section>
+    </main>
+
+    <section id="command-dock" class="command-dock">
+      <button id="dock-toggle" class="dock-toggle" type="button" aria-expanded="false">
+        <span>队伍与装备</span><small>▲ 展开</small>
+      </button>
+      <div id="dock-drawer" class="dock-drawer">
+        <div class="dock-tabs" role="tablist">
+          <button class="dock-tab active" data-tab="party">队伍</button>
+          <button class="dock-tab" data-tab="inventory">背包 <span id="inventory-count">0</span></button>
+          <button class="dock-tab" data-tab="journal">记录</button>
+        </div>
+        <div id="dock-content" class="dock-content"></div>
+      </div>
+    </section>
+  </div>
+
+  <dialog id="combat-preview-dialog" class="combat-preview-dialog">
+    <form method="dialog">
+      <span class="eyebrow">战前侦察</span>
+      <h2 id="preview-title">确认交战</h2>
+      <div id="preview-supply" class="preview-supply"></div>
+      <div id="preview-teams" class="preview-teams"></div>
+      <p class="dialog-note">只显示已知成员与补给发挥，不提供胜率、敌方倍率或推荐答案。</p>
+      <div class="dialog-actions">
+        <button value="cancel" class="button quiet">暂不交战</button>
+        <button id="preview-confirm" value="default" class="button danger">进入战斗</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="result-dialog" class="result-dialog">
+    <form method="dialog">
+      <span class="eyebrow">行动结果</span>
+      <h2 id="result-title">事情有了结果</h2>
+      <div id="result-body" class="result-body"></div>
+      <div class="dialog-actions"><button value="default" class="button primary">继续</button></div>
+    </form>
+  </dialog>
+
+  <section id="recruit-overlay" class="recruit-overlay" hidden aria-live="polite">
+    <div class="recruit-card">
+      <span class="eyebrow">新的战友</span>
+      <h2 id="recruit-name">有人加入</h2>
+      <p id="recruit-role"></p>
+      <div id="recruit-affixes" class="recruit-affixes"></div>
+      <p id="recruit-result"></p>
+      <button id="recruit-confirm" class="button primary">欢迎加入灰谷村</button>
+    </div>
+  </section>
+
+  <dialog id="restart-dialog" class="restart-dialog">
+    <form method="dialog">
+      <span class="eyebrow">重新开始</span>
+      <h2>放弃当前七日进度？</h2>
+      <label>世界种子<input id="restart-seed" value="browser-border-village"></label>
+      <div class="dialog-actions">
+        <button value="cancel" class="button quiet">取消</button>
+        <button id="restart-confirm" value="default" class="button danger">确认重开</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="../game_data/skill-assets.js"></script>
+  <script src="../game_data/skill-data.js"></script>
+  <script src="../game_data/mechanic-curves.js"></script>
+  <script src="../game_data/build-layers.js"></script>
+  <script src="../game_data/combat-signals.js"></script>
+  <script src="../game_data/runtime-field-effects.js"></script>
+  <script src="../game_data/combat-sim.js"></script>
+  <script src="../battle_view/battle-view.js"></script>
+  <script src="../../../shared/game_camera_2d/camera-core.js"></script>
+  <script src="../fifteen_day_demo/fifteen-day-core.js"></script>
+  <script src="../border_village_war/border-village-core.js"></script>
+  <script src="border-village-web.js"></script>
+</body>
+</html>

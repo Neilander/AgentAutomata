@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-07-24_1300_fifteen-day-workbench-entry.md`](reports/2026-07-24_1300_fifteen-day-workbench-entry.md)
+[`reports/2026-07-29_0302_border-village-final-balance-replay.md`](reports/2026-07-29_0302_border-village-final-balance-replay.md)
 
-Last updated: 2026-07-24
+Last updated: 2026-07-29
 
-当前重点：15 日三幕 Demo 已接入项目既有工作台，不再使用独立启动器。启动 `app/launcher/start_local.bat` 后，可在工作台 Demo 区第一项进入“无限刷装：十五日围剿”；页面、十五日核心与共享战斗资源均由同一 3777 服务提供。下一步优先真人从第 1 日玩到第 5 日确认节奏与信息负担。
+当前重点：《边陲村魔物战争》小幅平衡调整后的同状态决战回归已从“我方全灭、敌方余1”翻转为“我方余2、敌方全灭”。满额军粮下已能险胜，但9/11我方单位倒下，压力仍高；下一步应以匹配种子重复验证胜率与幸存人数的稳定性。

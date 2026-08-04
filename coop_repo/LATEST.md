@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-07-31_0108_border-village-visible-disabled-actions.md`](reports/2026-07-31_0108_border-village-visible-disabled-actions.md)
+[`reports/2026-08-02_1746_border-village-global-grind-wins.md`](reports/2026-08-02_1746_border-village-global-grind-wins.md)
 
-Last updated: 2026-07-31
+Last updated: 2026-08-02
 
-当前重点：灰谷村所有已解锁但暂时不可用的操作不再消失；修建、升级、征召、铁匠、已发现突袭、当日事件、集市和编队会以红色禁用状态直接列出缺少的行动力、资源、等级、容量或购买力。核心拒绝绕过执行，未来事件和未侦察据点仍隐藏；五类回归通过，未启动服务器或浏览器。
+当前重点：边林所有难度共享总胜场，累计5/10/30/50胜依次解锁难度2—5；一直刷难度1也能解锁难度5。各档胜场仅作统计，失败不计数，解锁不自动切换。真实50场难度1流程与核心/静态前端回归通过，未启动服务器或浏览器。

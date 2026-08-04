@@ -1,0 +1,2423 @@
+{
+  "type": "decision",
+  "schema": "border_village_war_player_decision_request_v1",
+  "cycle": 20,
+  "agentSession": {
+    "reuseRequired": true
+  },
+  "playerProfile": {
+    "label": "Open novice",
+    "summary": "Weak priors; explores visible options and updates quickly from clear evidence.",
+    "decisionBias": {
+      "riskTolerance": 0.5,
+      "exploration": 0.8,
+      "changeAversion": 0.2,
+      "evidenceThreshold": 0.35,
+      "preferences": {
+        "damage": 0.45,
+        "survival": 0.45,
+        "novelty": 0.75,
+        "rarity": 0.35,
+        "simplicity": 0.5
+      }
+    },
+    "priorBeliefs": [
+      {
+        "subject": {
+          "kind": "concept",
+          "label": "visible experiments"
+        },
+        "environment": {
+          "kind": "context",
+          "label": "general gameplay"
+        },
+        "behavior": {
+          "kind": "causal_behavior",
+          "label": "trying a newly visible option"
+        },
+        "result": {
+          "kind": "expected_result",
+          "label": "may reveal a useful strategy"
+        },
+        "confidence": 0.42,
+        "status": "unverified_prior"
+      }
+    ]
+  },
+  "instruction": "你是第一次玩这个游戏的玩家。只依据本请求里的当前画面、自己此前看到的结果和检索出的记忆选择一个available为true的行动；available为false的行动仍显示，是为了让你看见缺少的条件。不要读取或猜测请求之外的规则。",
+  "playerState": {
+    "activeGoalId": "grow_and_progress",
+    "goals": [
+      {
+        "id": "grow_and_progress",
+        "objectiveValue": 1,
+        "subjectiveValue": 0.35,
+        "progress": 0
+      }
+    ],
+    "knowledge": [
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "战场",
+          "dayFirstSeen": 5
+        },
+        "behavior": {
+          "kind": "combat",
+          "label": "突袭披甲战兽栏（消耗13粮，占领后解锁1个建设位）"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 5,
+            "summary": "披甲战兽栏已被占领：最终敌军减少3个军团单位，原地解锁1个建设位。 突袭支付13粮；据点缴获金币+12；带回3件装备，并使铁匠铺追加收入3金币。 铁匠铺根据今日3件新装备完成订单，收入3金币；今日累计3金币。 背包新增：稀有胸甲 Lv.63、稀有胸甲 Lv.55、稀有戒指 Lv.58。 资源变化：金币2→17、粮食30→17。 建筑变化：9号地尚未发现→空建设位。 战局变化：敌军单位17→14。 “披甲战兽栏”获胜：我方5/7、敌方0/4仍能战斗；我方倒下：流民佣兵·赤犬、灰谷战士第1队，用时18.6秒；我方造成2898伤害、治疗219、获得614护盾；固定消耗粮食13，3/3支军队实际出战。 今日剩余行动2→1。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "战兽栏结果清楚拆账：支付13粮、缴获12金币、3件装备产生3金币，故金币2升到17；胜利让敌军17降到14并解锁建设位。",
+          "confidence": 0.99,
+          "nextTest": "赤犬和1支战士在本战倒下，先用全队配装提高新装备覆盖，再观察后续是否仍可参战。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "当日事件",
+          "dayFirstSeen": 5
+        },
+        "behavior": {
+          "kind": "event",
+          "label": "花八金币修复他的猎具"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 5,
+            "summary": "支付8金币修好猎具；苔牙加入队伍，同时标出披甲战兽栏。 山地猎人·苔牙加入队伍。 资源变化：金币10→2。 新队员：山地猎人·苔牙（猎杀大型敌人）。 今日剩余行动3→2。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "事件按结构化成本和标题一致扣8金币、花1行动，让苔牙加入并公开披甲战兽栏。",
+          "confidence": 0.99,
+          "nextTest": "查看战兽栏粮食成本与削弱效果并尝试突袭。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "队伍与装备",
+          "dayFirstSeen": 3
+        },
+        "behavior": {
+          "kind": "equipment",
+          "label": "一键按显示评分为全队分配装备"
+        },
+        "result": {
+          "sampleCount": 4,
+          "outcomeDistribution": {
+            "observed": 4
+          },
+          "latestObservation": {
+            "day": 4,
+            "summary": "已按显示评分把现有装备分给全队：3/5名英雄穿有装备，共占用9个部位（原5个）。"
+          }
+        },
+        "evidence": {
+          "count": 4
+        },
+        "latestAttribution": {
+          "cause": "全队配装把新增4件高稀有装备分散使用，装备覆盖由2/4英雄、5部位提升到3/5英雄、9部位；提示仍有2名英雄全裸。",
+          "confidence": 0.99,
+          "nextTest": "继续取得装备，争取在决战前让更多英雄穿有装备。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "日程",
+          "dayFirstSeen": 4
+        },
+        "behavior": {
+          "kind": "time",
+          "label": "结束本日"
+        },
+        "result": {
+          "sampleCount": 2,
+          "outcomeDistribution": {
+            "observed": 2
+          },
+          "latestObservation": {
+            "day": 5,
+            "summary": "第5日开始：实际人口35，今日可用3次行动。 2块农田今日共收获20粮食（12+8）。 资源变化：粮食10→30。 日期推进到第5日，行动力刷新为3。"
+          }
+        },
+        "evidence": {
+          "count": 2
+        },
+        "latestAttribution": {
+          "cause": "结束本日恢复3行动；两块农田分别产12和8粮，粮食由10升到30。",
+          "confidence": 0.99,
+          "nextTest": "第5日优先发现并攻占新的敌方据点。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "集市",
+          "dayFirstSeen": 5
+        },
+        "behavior": {
+          "kind": "market",
+          "label": "购买史诗头盔 Lv.63（评分+152）（18金币，余1份）"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 5,
+            "summary": "从集市购买了史诗头盔 Lv.63（评分+152）。 背包新增：史诗头盔 Lv.63。 资源变化：金币28→10。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "集市按18金币标价提供确定的评分152史诗头盔，结果扣款与新增物品一致。",
+          "confidence": 0.99,
+          "nextTest": "先招募苔牙发现战兽栏，再用全队配装分配头盔与后续掉落。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "战场",
+          "dayFirstSeen": 4
+        },
+        "behavior": {
+          "kind": "combat",
+          "label": "突袭血鼓萨满祭坛（消耗17粮，占领后解锁1个建设位）"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 4,
+            "summary": "血鼓萨满祭坛已被占领：最终敌军减少1个军团单位和1名主将，原地解锁1个建设位。 突袭支付17粮；据点缴获金币+18；带回4件装备，并使铁匠铺追加收入4金币。 铁匠铺根据今日4件新装备完成订单，收入4金币；今日累计4金币。 背包新增：史诗头盔 Lv.71、神话武器 Lv.68、史诗靴子 Lv.78、史诗腿甲 Lv.69。 资源变化：金币6→28、粮食27→10。 建筑变化：10号地尚未发现→空建设位。 战局变化：敌军单位18→17、敌方主将3→2。 “血鼓萨满祭坛”获胜：我方7/7、敌方0/4仍能战斗，用时16.3秒；我方造成1912伤害、治疗95、获得667护盾；固定消耗粮食17，3/3支军队实际出战。 今日剩余行动1→0。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "祭坛结果完整拆账：支付17粮；缴获18金币；4件装备让铁匠铺收入4金币，所以金币6升到28。胜利还减少1敌军单位和1主将并解锁建设位。",
+          "confidence": 0.99,
+          "nextTest": "用全队配装分配4件高稀有装备，并检查覆盖人数变化。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "战场",
+          "dayFirstSeen": 4
+        },
+        "behavior": {
+          "kind": "combat",
+          "label": "投入6粮进行民兵实战训练（胜利后1队晋升战士）"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 4,
+            "summary": "实战训练获胜，1支民兵晋升为战士。现有1支战士；战士每次出战消耗3粮。 资源变化：粮食33→27。 “民兵实战训练”获胜：我方5/5、敌方0/3仍能战斗，用时11秒；我方造成752伤害、治疗12、获得131护盾；固定消耗粮食6。 今日剩余行动2→1。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "训练胜利固定花6粮和1行动，并把1支民兵永久变为战士；结果明确提醒战士以后每次出战耗3粮。",
+          "confidence": 0.99,
+          "nextTest": "重新查看祭坛实际成本，验证高质量部队是否增加出征粮耗。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "当日事件",
+          "dayFirstSeen": 4
+        },
+        "behavior": {
+          "kind": "event",
+          "label": "让盐枝进入村庄"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 4,
+            "summary": "盐枝加入队伍，并在地图上标出血鼓萨满祭坛。伊莎贝拉没有阻止，但此后不再主动与你谈论圣殿戒律。 边林女巫·盐枝加入队伍。 新队员：边林女巫·盐枝（持续削弱）。 今日剩余行动3→2。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "接纳盐枝花1行动，让持续削弱角色加入、公开祭坛位置，并可见地改变伊莎贝拉的后续态度。",
+          "confidence": 0.99,
+          "nextTest": "查看祭坛粮食成本与战局收益，决定是否先训练再突袭。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "集市",
+          "dayFirstSeen": 4
+        },
+        "behavior": {
+          "kind": "market",
+          "label": "购买稀有胸甲 Lv.46（评分+65）（10金币，余1份）"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 4,
+            "summary": "从集市购买了稀有胸甲 Lv.46（评分+65）。 背包新增：稀有胸甲 Lv.46。 资源变化：金币16→6。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "再次购买按标价扣10金币并新增评分65胸甲；集市提供了可预见的定向装备补充。",
+          "confidence": 0.99,
+          "nextTest": "用全队配装确认新增胸甲提高装备覆盖。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "当日事件",
+          "dayFirstSeen": 3
+        },
+        "behavior": {
+          "kind": "event",
+          "label": "优先留下佣兵和他的五名家人"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 3,
+            "summary": "赤犬和5名家人留在村庄。 流民佣兵·赤犬加入队伍。 资源变化：实际人口30→35。 新队员：流民佣兵·赤犬（近战爆发）。 今日剩余行动1→0。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "该事件花1行动让近战爆发角色赤犬加入，同时实际人口由30增至35。",
+          "confidence": 0.99,
+          "nextTest": "行动力耗尽后检查受限行动是否仍显示原因，再结束本日。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "领地建设",
+          "dayFirstSeen": 3
+        },
+        "behavior": {
+          "kind": "build",
+          "label": "在兽人粮秣营建设位修建农田"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 3,
+            "summary": "兽人粮秣营的农田立即建成。粮食约 +8—12/日。 建筑变化：8号地空建设位→农田（等级1，立即生效）。 今日剩余行动2→1。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "占领地的空建设位花1行动立即变为1级农田，结果明确写出每日约8至12粮和立即生效。",
+          "confidence": 0.99,
+          "nextTest": "推进到下一日，查看两块农田是否分别结算产量。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "集市",
+          "dayFirstSeen": 3
+        },
+        "behavior": {
+          "kind": "market",
+          "label": "购买稀有胸甲 Lv.46（评分+58）（10金币，余1份）"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 3,
+            "summary": "从集市购买了稀有胸甲 Lv.46（评分+58）。 背包新增：稀有胸甲 Lv.46。 资源变化：金币24→14。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "集市按标价扣10金币并把评分58的稀有胸甲加入背包；结果只列真正发生的资源与物品变化。",
+          "confidence": 0.99,
+          "nextTest": "使用一键配装，确认胸甲能否转化为当前角色装备评分。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "灰谷村",
+          "dayFirstSeen": 3
+        },
+        "behavior": {
+          "kind": "decision",
+          "label": "先救掌握敌情的圣殿斥候莱恩"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 3,
+            "summary": "第3日开始：实际人口30，今日可用3次行动。 1块农田今日共收获9粮食（9）。 圣殿斥候·莱恩活了下来。伊莎贝拉把敌军规模写在村口木板上：400名兽人，折算20个军团单位，另有3名主将，第7日抵达。 圣殿斥候·莱恩加入队伍。 资源变化：粮食0→9。 新队员：圣殿斥候·莱恩（远程侦察）。 日期推进到第3日，行动力刷新为3。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "救莱恩让他存活并加入；日期推进到第3日时农田另行结算9粮并恢复3行动。",
+          "confidence": 0.97,
+          "nextTest": "查看第3日地图是否出现莱恩承诺的粮秣营。",
+          "evidenceCount": 1
+        }
+      },
+      {
+        "subject": {
+          "label": "你的村庄与队伍"
+        },
+        "environment": {
+          "region": "灰谷村",
+          "node": "灰谷村",
+          "dayFirstSeen": 2
+        },
+        "behavior": {
+          "kind": "story",
+          "label": "陪伊莎贝拉巡视这座安静的边陲村"
+        },
+        "result": {
+          "sampleCount": 1,
+          "outcomeDistribution": {
+            "observed": 1
+          },
+          "latestObservation": {
+            "day": 2,
+            "summary": "夜里没有发生袭击。第二天黄昏，巡逻队的两名幸存者跌进村口：山后不是零星魔物，而是二十支兽人军团和三名主将。药物只够优先稳定一人。 圣殿骑士队长·伊莎贝拉加入队伍。 新队员：圣殿骑士队长·伊莎贝拉（守护与号令）。 日期推进到第2日，行动力刷新为0。"
+          }
+        },
+        "evidence": {
+          "count": 1
+        },
+        "latestAttribution": {
+          "cause": "巡视推进到第2日，公开了20个兽人军团单位与3名主将的威胁，并让伊莎贝拉加入。",
+          "confidence": 0.98,
+          "nextTest": "处理幸存者救援选择，观察谁加入以及带来什么情报。",
+          "evidenceCount": 1
+        }
+      }
+    ],
+    "failureMemories": [],
+    "hypotheses": [],
+    "knowledgeStoreCount": 15
+  },
+  "observation": {
+    "time": {
+      "day": 5,
+      "finalDay": 7,
+      "phase": "management",
+      "actionsRemaining": 1,
+      "actionCapacity": 3
+    },
+    "story": null,
+    "war": {
+      "knownEnemyUnits": 14,
+      "knownBosses": 2,
+      "militiaUnits": 3,
+      "trainedUnits": 1,
+      "untrainedUnits": 2,
+      "finalBattleDay": 7,
+      "publicRule": "每10名实际人口形成1支部队；民兵出战消耗1粮，训练后的战士消耗3粮。缺粮部队不会出战。",
+      "finalMorningRule": "第7日决战前仍会收获一次农田，但不再获得经营行动力。"
+    },
+    "resources": {
+      "gold": 17,
+      "food": 17,
+      "population": 35,
+      "populationCap": 50
+    },
+    "buildings": [
+      {
+        "slot": 0,
+        "site": "village",
+        "siteTitle": "灰谷村",
+        "type": "house",
+        "name": "房屋",
+        "level": 1,
+        "complete": true,
+        "yieldType": "人口",
+        "yieldLabel": "人口上限 +25",
+        "yieldStatus": "当前人口35/50",
+        "description": "立即增加25人口上限；不会凭空增加实际人口。"
+      },
+      {
+        "slot": 1,
+        "site": "village",
+        "siteTitle": "灰谷村",
+        "type": "farm",
+        "name": "农田",
+        "level": 1,
+        "complete": true,
+        "yieldType": "粮食",
+        "yieldLabel": "粮食约 +8—12/日",
+        "yieldStatus": "明晨预计收获8—12粮食",
+        "description": "每天早晨随机收获8—12粮食。"
+      },
+      {
+        "slot": 2,
+        "site": "village",
+        "siteTitle": "灰谷村",
+        "type": "smithy",
+        "name": "铁匠铺",
+        "level": 1,
+        "complete": true,
+        "yieldType": "金币",
+        "yieldLabel": "金币约 +0—24/日",
+        "yieldStatus": "今日新装备3/20件（15%产能）；全部铁匠铺已收入3金币",
+        "description": "今日刷到的装备越多，铁匠铺收入越高；20件达到标准满产，之后只有少量加成。"
+      },
+      {
+        "slot": 3,
+        "site": "village",
+        "siteTitle": "灰谷村",
+        "type": "market",
+        "name": "集市",
+        "level": 1,
+        "complete": true,
+        "yieldType": "装备",
+        "yieldLabel": "每日3件装备",
+        "yieldStatus": "今日还能出售5件；剩余商品2件",
+        "description": "每天刷新三件属性完整可见的装备，并最多收购5件未穿戴装备。"
+      },
+      {
+        "slot": 4,
+        "site": "village",
+        "siteTitle": "灰谷村",
+        "type": "conscription",
+        "name": "征召所",
+        "level": 1,
+        "complete": true,
+        "yieldType": "人口",
+        "yieldLabel": "人口 +6—20/行动",
+        "yieldStatus": "每次消耗1行动；可追加10金币提高人数",
+        "description": "花行动力接纳流民；追加金币可以一次带回更多人。"
+      },
+      {
+        "slot": 5,
+        "site": "village",
+        "siteTitle": "灰谷村",
+        "type": null,
+        "name": "空建设位",
+        "level": 0,
+        "complete": false,
+        "yieldType": "建设",
+        "yieldLabel": "可建农田 / 铁匠铺 / 房屋",
+        "yieldStatus": "建设后立即生效",
+        "description": "选择一种持久收益；建造消耗1行动力并立即完成。"
+      },
+      {
+        "slot": 6,
+        "site": "village",
+        "siteTitle": "灰谷村",
+        "type": null,
+        "name": "空建设位",
+        "level": 0,
+        "complete": false,
+        "yieldType": "建设",
+        "yieldLabel": "可建农田 / 铁匠铺 / 房屋",
+        "yieldStatus": "建设后立即生效",
+        "description": "选择一种持久收益；建造消耗1行动力并立即完成。"
+      },
+      {
+        "slot": 7,
+        "site": "foragers",
+        "siteTitle": "兽人粮秣营",
+        "type": "farm",
+        "name": "农田",
+        "level": 1,
+        "complete": true,
+        "yieldType": "粮食",
+        "yieldLabel": "粮食约 +8—12/日",
+        "yieldStatus": "明晨预计收获8—12粮食",
+        "description": "每天早晨随机收获8—12粮食。"
+      },
+      {
+        "slot": 8,
+        "site": "beastPen",
+        "siteTitle": "披甲战兽栏",
+        "type": null,
+        "name": "空建设位",
+        "level": 0,
+        "complete": false,
+        "yieldType": "建设",
+        "yieldLabel": "可建农田 / 铁匠铺 / 房屋",
+        "yieldStatus": "建设后立即生效",
+        "description": "选择一种持久收益；建造消耗1行动力并立即完成。"
+      },
+      {
+        "slot": 9,
+        "site": "shaman",
+        "siteTitle": "血鼓萨满祭坛",
+        "type": null,
+        "name": "空建设位",
+        "level": 0,
+        "complete": false,
+        "yieldType": "建设",
+        "yieldLabel": "可建农田 / 铁匠铺 / 房屋",
+        "yieldStatus": "建设后立即生效",
+        "description": "选择一种持久收益；建造消耗1行动力并立即完成。"
+      }
+    ],
+    "productionForecasts": [
+      {
+        "slot": 1,
+        "level": 1,
+        "nextYieldRange": [
+          8,
+          12
+        ]
+      },
+      {
+        "slot": 7,
+        "level": 1,
+        "nextYieldRange": [
+          8,
+          12
+        ]
+      }
+    ],
+    "economy": {
+      "dailyGearDrops": 3,
+      "smithGoldPaid": 3,
+      "smithyCount": 1,
+      "smithyUtilization": 0.15
+    },
+    "market": {
+      "sellRemaining": 5,
+      "priceRule": "每天刷新3件装备；每天最多出售5件未穿戴装备",
+      "stock": [
+        {
+          "label": "稀有腿甲 Lv.53（评分+72）",
+          "type": "gear",
+          "price": 10,
+          "count": 1,
+          "item": {
+            "name": "稀有腿甲 Lv.53",
+            "rarity": "稀有",
+            "slot": "腿甲",
+            "power": 72,
+            "baseStats": {
+              "maxHp": 141,
+              "armor": 4
+            },
+            "affixes": [
+              {
+                "label": "受治愈增幅",
+                "value": 10,
+                "percent": true
+              },
+              {
+                "label": "受治愈增幅",
+                "value": 9,
+                "percent": true
+              }
+            ]
+          }
+        },
+        {
+          "label": "史诗腿甲 Lv.55（评分+124）",
+          "type": "gear",
+          "price": 18,
+          "count": 1,
+          "item": {
+            "name": "史诗腿甲 Lv.55",
+            "rarity": "史诗",
+            "slot": "腿甲",
+            "power": 124,
+            "baseStats": {
+              "maxHp": 144,
+              "armor": 4
+            },
+            "affixes": [
+              {
+                "label": "净化效率",
+                "value": 8,
+                "percent": false
+              },
+              {
+                "label": "敏捷",
+                "value": 2,
+                "percent": false
+              },
+              {
+                "label": "低血受治愈",
+                "value": 8,
+                "percent": false
+              },
+              {
+                "label": "效果抗性",
+                "value": 10,
+                "percent": true
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "party": {
+      "activeLimit": 4,
+      "finalBattleRule": "第7日决战会自动集结全部已招募英雄，最多10人。",
+      "selectedHero": "你",
+      "heroes": [
+        {
+          "name": "你",
+          "role": "近战指挥",
+          "preferredAffixes": [
+            "武力",
+            "坚韧"
+          ],
+          "active": true,
+          "equipment": [
+            {
+              "slot": "武器",
+              "item": {
+                "name": "神话武器 Lv.68",
+                "rarity": "神话",
+                "slot": "武器",
+                "power": 456,
+                "baseStats": {
+                  "magicPower": 34
+                },
+                "affixes": [
+                  {
+                    "label": "暴击伤害",
+                    "value": 9,
+                    "percent": false
+                  },
+                  {
+                    "label": "奥术增幅",
+                    "value": 8,
+                    "percent": false
+                  },
+                  {
+                    "label": "暴击伤害",
+                    "value": 10,
+                    "percent": false
+                  },
+                  {
+                    "label": "奥术增幅",
+                    "value": 10,
+                    "percent": false
+                  },
+                  {
+                    "label": "暴击伤害",
+                    "value": 11,
+                    "percent": false
+                  },
+                  {
+                    "label": "奥术增幅",
+                    "value": 9,
+                    "percent": false
+                  },
+                  {
+                    "label": "火焰增幅",
+                    "value": 9,
+                    "percent": false
+                  },
+                  {
+                    "label": "处决伤害",
+                    "value": 9,
+                    "percent": false
+                  },
+                  {
+                    "label": "破甲",
+                    "value": 10,
+                    "percent": false
+                  },
+                  {
+                    "label": "敏捷",
+                    "value": 3,
+                    "percent": false
+                  },
+                  {
+                    "label": "低血伤害",
+                    "value": 9,
+                    "percent": false
+                  },
+                  {
+                    "label": "奥术",
+                    "value": 3,
+                    "percent": false
+                  }
+                ]
+              }
+            },
+            {
+              "slot": "头盔",
+              "item": {
+                "name": "史诗头盔 Lv.71",
+                "rarity": "史诗",
+                "slot": "头盔",
+                "power": 168,
+                "baseStats": {
+                  "maxHp": 204,
+                  "armor": 6
+                },
+                "affixes": [
+                  {
+                    "label": "控制强度",
+                    "value": 11,
+                    "percent": false
+                  },
+                  {
+                    "label": "火焰增幅",
+                    "value": 11,
+                    "percent": false
+                  },
+                  {
+                    "label": "节律",
+                    "value": 3,
+                    "percent": false
+                  },
+                  {
+                    "label": "效果抗性",
+                    "value": 11,
+                    "percent": true
+                  }
+                ]
+              }
+            },
+            {
+              "slot": "胸甲",
+              "item": {
+                "name": "稀有胸甲 Lv.46",
+                "rarity": "稀有",
+                "slot": "胸甲",
+                "power": 65,
+                "baseStats": {
+                  "maxHp": 137,
+                  "armor": 4
+                },
+                "affixes": [
+                  {
+                    "label": "净化效率",
+                    "value": 7,
+                    "percent": false
+                  },
+                  {
+                    "label": "反击伤害",
+                    "value": 8,
+                    "percent": false
+                  }
+                ]
+              }
+            },
+            {
+              "slot": "护手",
+              "item": null
+            },
+            {
+              "slot": "腿甲",
+              "item": {
+                "name": "史诗腿甲 Lv.69",
+                "rarity": "史诗",
+                "slot": "腿甲",
+                "power": 133,
+                "baseStats": {
+                  "maxHp": 194,
+                  "armor": 6
+                },
+                "affixes": [
+                  {
+                    "label": "敏捷",
+                    "value": 3,
+                    "percent": false
+                  },
+                  {
+                    "label": "坚韧",
+                    "value": 3,
+                    "percent": false
+                  },
+                  {
+                    "label": "效果抗性",
+                    "value": 12,
+                    "percent": true
+                  },
+                  {
+                    "label": "坚韧",
+                    "value": 2,
+                    "percent": false
+                  }
+                ]
+              }
+            },
+            {
+              "slot": "靴子",
+              "item": {
+                "name": "史诗靴子 Lv.78",
+                "rarity": "史诗",
+                "slot": "靴子",
+                "power": 183,
+                "baseStats": {
+                  "maxHp": 208,
+                  "armor": 6
+                },
+                "affixes": [
+                  {
+                    "label": "光环强度",
+                    "value": 12,
+                    "percent": false
+                  },
+                  {
+                    "label": "隐身持续",
+                    "value": 11,
+                    "percent": false
+                  },
+                  {
+                    "label": "先手",
+                    "value": 10,
+                    "percent": false
+                  },
+                  {
+                    "label": "隐身持续",
+                    "value": 10,
+                    "percent": false
+                  }
+                ]
+              }
+            },
+            {
+              "slot": "戒指",
+              "item": null
+            },
+            {
+              "slot": "护符",
+              "item": null
+            }
+          ]
+        },
+        {
+          "name": "圣殿骑士队长·伊莎贝拉",
+          "role": "守护与号令",
+          "preferredAffixes": [
+            "坚韧",
+            "韧性"
+          ],
+          "active": true,
+          "equipment": [
+            {
+              "slot": "武器",
+              "item": {
+                "name": "普通武器 Lv.40",
+                "rarity": "普通",
+                "slot": "武器",
+                "power": 12,
+                "baseStats": {
+                  "physicalPower": 21
+                },
+                "affixes": [
+                  {
+                    "label": "剧毒增幅",
+                    "value": 7,
+                    "percent": false
+                  }
+                ]
+              }
+            },
+            {
+              "slot": "头盔",
+              "item": null
+            },
+            {
+              "slot": "胸甲",
+              "item": {
+                "name": "稀有胸甲 Lv.46",
+                "rarity": "稀有",
+                "slot": "胸甲",
+                "power": 58,
+                "baseStats": {
+                  "maxHp": 138,
+                  "armor": 4
+                },
+                "affixes": [
+                  {
+                    "label": "韧性",
+                    "value": 2,
+                    "percent": false
+                  },
+                  {
+                    "label": "净化效率",
+                    "value": 7,
+                    "percent": false
+                  }
+                ]
+              }
+            },
+            {
+              "slot": "护手",
+              "item": null
+            },
+            {
+              "slot": "腿甲",
+              "item": null
+            },
+            {
+              "slot": "靴子",
+              "item": {
+                "name": "稀有靴子 Lv.41",
+                "rarity": "稀有",
+                "slot": "靴子",
+                "power": 59,
+                "baseStats": {
+                  "maxHp": 118,
+                  "armor": 3
+                },
+                "affixes": [
+                  {
+                    "label": "控制强度",
+                    "value": 7,
+                    "percent": false
+                  },
+                  {
+                    "label": "效果抗性",
+                    "value": 8,
+                    "percent": true
+                  }
+                ]
+              }
+            },
+            {
+              "slot": "戒指",
+              "item": null
+            },
+            {
+              "slot": "护符",
+              "item": null
+            }
+          ]
+        },
+        {
+          "name": "圣殿斥候·莱恩",
+          "role": "远程侦察",
+          "preferredAffixes": [
+            "敏捷",
+            "暴击率"
+          ],
+          "active": true,
+          "equipment": [
+            {
+              "slot": "武器",
+              "item": {
+                "name": "旧民兵剑",
+                "rarity": "普通",
+                "slot": "武器",
+                "power": 7,
+                "baseStats": {
+                  "physicalPower": 6
+                },
+                "affixes": [
+                  {
+                    "label": "武力",
+                    "value": 1,
+                    "percent": false
+                  }
+                ]
+              }
+            },
+            {
+              "slot": "头盔",
+              "item": null
+            },
+            {
+              "slot": "胸甲",
+              "item": null
+            },
+            {
+              "slot": "护手",
+              "item": null
+            },
+            {
+              "slot": "腿甲",
+              "item": null
+            },
+            {
+              "slot": "靴子",
+              "item": null
+            },
+            {
+              "slot": "戒指",
+              "item": null
+            },
+            {
+              "slot": "护符",
+              "item": null
+            }
+          ]
+        },
+        {
+          "name": "流民佣兵·赤犬",
+          "role": "近战爆发",
+          "preferredAffixes": [
+            "武力",
+            "暴击伤害"
+          ],
+          "active": true,
+          "equipment": [
+            {
+              "slot": "武器",
+              "item": null
+            },
+            {
+              "slot": "头盔",
+              "item": null
+            },
+            {
+              "slot": "胸甲",
+              "item": null
+            },
+            {
+              "slot": "护手",
+              "item": null
+            },
+            {
+              "slot": "腿甲",
+              "item": null
+            },
+            {
+              "slot": "靴子",
+              "item": null
+            },
+            {
+              "slot": "戒指",
+              "item": null
+            },
+            {
+              "slot": "护符",
+              "item": null
+            }
+          ]
+        },
+        {
+          "name": "边林女巫·盐枝",
+          "role": "持续削弱",
+          "preferredAffixes": [
+            "奥术",
+            "效果强度"
+          ],
+          "active": false,
+          "equipment": [
+            {
+              "slot": "武器",
+              "item": null
+            },
+            {
+              "slot": "头盔",
+              "item": null
+            },
+            {
+              "slot": "胸甲",
+              "item": null
+            },
+            {
+              "slot": "护手",
+              "item": null
+            },
+            {
+              "slot": "腿甲",
+              "item": null
+            },
+            {
+              "slot": "靴子",
+              "item": null
+            },
+            {
+              "slot": "戒指",
+              "item": null
+            },
+            {
+              "slot": "护符",
+              "item": null
+            }
+          ]
+        },
+        {
+          "name": "山地猎人·苔牙",
+          "role": "猎杀大型敌人",
+          "preferredAffixes": [
+            "敏捷",
+            "暴击率"
+          ],
+          "active": false,
+          "equipment": [
+            {
+              "slot": "武器",
+              "item": null
+            },
+            {
+              "slot": "头盔",
+              "item": null
+            },
+            {
+              "slot": "胸甲",
+              "item": null
+            },
+            {
+              "slot": "护手",
+              "item": null
+            },
+            {
+              "slot": "腿甲",
+              "item": null
+            },
+            {
+              "slot": "靴子",
+              "item": null
+            },
+            {
+              "slot": "戒指",
+              "item": null
+            },
+            {
+              "slot": "护符",
+              "item": null
+            }
+          ]
+        }
+      ]
+    },
+    "inventory": {
+      "total": 13,
+      "limit": 200,
+      "rarityCounts": {
+        "普通": 2,
+        "稀有": 6,
+        "史诗": 4,
+        "神话": 1
+      },
+      "visibleItems": [
+        {
+          "name": "神话武器 Lv.68",
+          "rarity": "神话",
+          "slot": "武器",
+          "power": 456,
+          "baseStats": {
+            "magicPower": 34
+          },
+          "affixes": [
+            {
+              "label": "暴击伤害",
+              "value": 9,
+              "percent": false
+            },
+            {
+              "label": "奥术增幅",
+              "value": 8,
+              "percent": false
+            },
+            {
+              "label": "暴击伤害",
+              "value": 10,
+              "percent": false
+            },
+            {
+              "label": "奥术增幅",
+              "value": 10,
+              "percent": false
+            },
+            {
+              "label": "暴击伤害",
+              "value": 11,
+              "percent": false
+            },
+            {
+              "label": "奥术增幅",
+              "value": 9,
+              "percent": false
+            },
+            {
+              "label": "火焰增幅",
+              "value": 9,
+              "percent": false
+            },
+            {
+              "label": "处决伤害",
+              "value": 9,
+              "percent": false
+            },
+            {
+              "label": "破甲",
+              "value": 10,
+              "percent": false
+            },
+            {
+              "label": "敏捷",
+              "value": 3,
+              "percent": false
+            },
+            {
+              "label": "低血伤害",
+              "value": 9,
+              "percent": false
+            },
+            {
+              "label": "奥术",
+              "value": 3,
+              "percent": false
+            }
+          ]
+        },
+        {
+          "name": "史诗靴子 Lv.78",
+          "rarity": "史诗",
+          "slot": "靴子",
+          "power": 183,
+          "baseStats": {
+            "maxHp": 208,
+            "armor": 6
+          },
+          "affixes": [
+            {
+              "label": "光环强度",
+              "value": 12,
+              "percent": false
+            },
+            {
+              "label": "隐身持续",
+              "value": 11,
+              "percent": false
+            },
+            {
+              "label": "先手",
+              "value": 10,
+              "percent": false
+            },
+            {
+              "label": "隐身持续",
+              "value": 10,
+              "percent": false
+            }
+          ]
+        },
+        {
+          "name": "史诗头盔 Lv.71",
+          "rarity": "史诗",
+          "slot": "头盔",
+          "power": 168,
+          "baseStats": {
+            "maxHp": 204,
+            "armor": 6
+          },
+          "affixes": [
+            {
+              "label": "控制强度",
+              "value": 11,
+              "percent": false
+            },
+            {
+              "label": "火焰增幅",
+              "value": 11,
+              "percent": false
+            },
+            {
+              "label": "节律",
+              "value": 3,
+              "percent": false
+            },
+            {
+              "label": "效果抗性",
+              "value": 11,
+              "percent": true
+            }
+          ]
+        },
+        {
+          "name": "史诗腿甲 Lv.69",
+          "rarity": "史诗",
+          "slot": "腿甲",
+          "power": 133,
+          "baseStats": {
+            "maxHp": 194,
+            "armor": 6
+          },
+          "affixes": [
+            {
+              "label": "敏捷",
+              "value": 3,
+              "percent": false
+            },
+            {
+              "label": "坚韧",
+              "value": 3,
+              "percent": false
+            },
+            {
+              "label": "效果抗性",
+              "value": 12,
+              "percent": true
+            },
+            {
+              "label": "坚韧",
+              "value": 2,
+              "percent": false
+            }
+          ]
+        },
+        {
+          "name": "稀有胸甲 Lv.46",
+          "rarity": "稀有",
+          "slot": "胸甲",
+          "power": 65,
+          "baseStats": {
+            "maxHp": 137,
+            "armor": 4
+          },
+          "affixes": [
+            {
+              "label": "净化效率",
+              "value": 7,
+              "percent": false
+            },
+            {
+              "label": "反击伤害",
+              "value": 8,
+              "percent": false
+            }
+          ]
+        },
+        {
+          "name": "稀有靴子 Lv.41",
+          "rarity": "稀有",
+          "slot": "靴子",
+          "power": 59,
+          "baseStats": {
+            "maxHp": 118,
+            "armor": 3
+          },
+          "affixes": [
+            {
+              "label": "控制强度",
+              "value": 7,
+              "percent": false
+            },
+            {
+              "label": "效果抗性",
+              "value": 8,
+              "percent": true
+            }
+          ]
+        },
+        {
+          "name": "稀有胸甲 Lv.46",
+          "rarity": "稀有",
+          "slot": "胸甲",
+          "power": 58,
+          "baseStats": {
+            "maxHp": 138,
+            "armor": 4
+          },
+          "affixes": [
+            {
+              "label": "韧性",
+              "value": 2,
+              "percent": false
+            },
+            {
+              "label": "净化效率",
+              "value": 7,
+              "percent": false
+            }
+          ]
+        },
+        {
+          "name": "普通武器 Lv.40",
+          "rarity": "普通",
+          "slot": "武器",
+          "power": 12,
+          "baseStats": {
+            "physicalPower": 21
+          },
+          "affixes": [
+            {
+              "label": "剧毒增幅",
+              "value": 7,
+              "percent": false
+            }
+          ]
+        },
+        {
+          "name": "旧民兵剑",
+          "rarity": "普通",
+          "slot": "武器",
+          "power": 7,
+          "baseStats": {
+            "physicalPower": 6
+          },
+          "affixes": [
+            {
+              "label": "武力",
+              "value": 1,
+              "percent": false
+            }
+          ]
+        },
+        {
+          "name": "史诗头盔 Lv.63",
+          "rarity": "史诗",
+          "slot": "头盔",
+          "power": 152,
+          "baseStats": {
+            "maxHp": 188,
+            "armor": 5
+          },
+          "affixes": [
+            {
+              "label": "暴击率",
+              "value": 8,
+              "percent": false
+            },
+            {
+              "label": "效果强度",
+              "value": 12,
+              "percent": true
+            },
+            {
+              "label": "韧性",
+              "value": 2,
+              "percent": false
+            },
+            {
+              "label": "治疗强度",
+              "value": 10,
+              "percent": false
+            }
+          ]
+        },
+        {
+          "name": "稀有胸甲 Lv.63",
+          "rarity": "稀有",
+          "slot": "胸甲",
+          "power": 76,
+          "baseStats": {
+            "maxHp": 173,
+            "armor": 5
+          },
+          "affixes": [
+            {
+              "label": "坚韧",
+              "value": 2,
+              "percent": false
+            },
+            {
+              "label": "受治愈增幅",
+              "value": 12,
+              "percent": true
+            }
+          ]
+        },
+        {
+          "name": "稀有胸甲 Lv.55",
+          "rarity": "稀有",
+          "slot": "胸甲",
+          "power": 72,
+          "baseStats": {
+            "maxHp": 145,
+            "armor": 4
+          },
+          "affixes": [
+            {
+              "label": "净化效率",
+              "value": 8,
+              "percent": false
+            },
+            {
+              "label": "效果抗性",
+              "value": 10,
+              "percent": true
+            }
+          ]
+        },
+        {
+          "name": "稀有戒指 Lv.58",
+          "rarity": "稀有",
+          "slot": "戒指",
+          "power": 31,
+          "baseStats": {
+            "magicPower": 31
+          },
+          "affixes": [
+            {
+              "label": "控制强度",
+              "value": 8,
+              "percent": false
+            },
+            {
+              "label": "火焰增幅",
+              "value": 8,
+              "percent": false
+            }
+          ]
+        }
+      ]
+    },
+    "raids": [],
+    "outposts": [
+      {
+        "title": "兽人粮秣营",
+        "description": "已经控制的前哨；可以在原地建立持久产能。",
+        "plotSlot": 7
+      },
+      {
+        "title": "披甲战兽栏",
+        "description": "已经控制的前哨；可以在原地建立持久产能。",
+        "plotSlot": 8
+      },
+      {
+        "title": "血鼓萨满祭坛",
+        "description": "已经控制的前哨；可以在原地建立持久产能。",
+        "plotSlot": 9
+      }
+    ],
+    "event": null,
+    "recentSignals": [
+      {
+        "day": 5,
+        "kind": "raid_win",
+        "text": "披甲战兽栏已被占领：最终敌军减少3个军团单位，原地解锁1个建设位。"
+      },
+      {
+        "day": 5,
+        "kind": "loot",
+        "text": "突袭支付13粮；据点缴获金币+12；带回3件装备，并使铁匠铺追加收入3金币。"
+      },
+      {
+        "day": 5,
+        "kind": "production",
+        "text": "铁匠铺根据今日3件新装备完成订单，收入3金币；今日累计3金币。"
+      },
+      {
+        "day": 5,
+        "kind": "recruit",
+        "text": "支付8金币修好猎具；苔牙加入队伍，同时标出披甲战兽栏。"
+      },
+      {
+        "day": 5,
+        "kind": "recruit",
+        "text": "山地猎人·苔牙加入队伍。"
+      },
+      {
+        "day": 5,
+        "kind": "market",
+        "text": "从集市购买了史诗头盔 Lv.63（评分+152）。"
+      },
+      {
+        "day": 5,
+        "kind": "day",
+        "text": "第5日开始：实际人口35，今日可用3次行动。"
+      },
+      {
+        "day": 5,
+        "kind": "production",
+        "text": "2块农田今日共收获20粮食（12+8）。"
+      },
+      {
+        "day": 4,
+        "kind": "equipment",
+        "text": "已按显示评分把现有装备分给全队：3/5名英雄穿有装备，共占用9个部位（原5个）。"
+      },
+      {
+        "day": 4,
+        "kind": "raid_win",
+        "text": "血鼓萨满祭坛已被占领：最终敌军减少1个军团单位和1名主将，原地解锁1个建设位。"
+      }
+    ],
+    "lastCombat": {
+      "title": "披甲战兽栏",
+      "win": true,
+      "duration": 18.6,
+      "alliesStarted": 7,
+      "alliesAlive": 5,
+      "enemiesStarted": 4,
+      "enemiesAlive": 0,
+      "fallenAllies": [
+        "流民佣兵·赤犬",
+        "灰谷战士第1队"
+      ],
+      "alliesDamage": 2898,
+      "alliesHealing": 219,
+      "alliesShield": 614,
+      "topAllies": [
+        {
+          "name": "流民佣兵·赤犬",
+          "damage": 1253,
+          "healing": 0,
+          "shield": 0
+        },
+        {
+          "name": "圣殿斥候·莱恩",
+          "damage": 676,
+          "healing": 0,
+          "shield": 0
+        },
+        {
+          "name": "你",
+          "damage": 504,
+          "healing": 0,
+          "shield": 0
+        },
+        {
+          "name": "灰谷村民兵第1队",
+          "damage": 264,
+          "healing": 0,
+          "shield": 0
+        },
+        {
+          "name": "圣殿骑士队长·伊莎贝拉",
+          "damage": 118,
+          "healing": 0,
+          "shield": 0
+        }
+      ],
+      "foodCommitted": 13,
+      "fullFood": 13,
+      "deployedArmy": 3,
+      "totalArmy": 3
+    },
+    "actions": [
+      {
+        "id": "choice_i28p63",
+        "label": "前往边林免费讨伐魔物",
+        "kind": "grind",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_xnq5yz",
+        "label": "在6号空地修建房屋",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {
+          "populationCap": 25
+        },
+        "description": "人口上限 +25",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1ydke8p",
+        "label": "在6号空地修建农田",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "粮食约 +8—12/日",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1p10cdn",
+        "label": "在6号空地修建铁匠铺",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "金币约 +0—24/日",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1r48it6",
+        "label": "在7号空地修建房屋",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {
+          "populationCap": 25
+        },
+        "description": "人口上限 +25",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_l02mim",
+        "label": "在7号空地修建农田",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "粮食约 +8—12/日",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1eumar8",
+        "label": "在7号空地修建铁匠铺",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "金币约 +0—24/日",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_910pe0",
+        "label": "在披甲战兽栏建设位修建房屋",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {
+          "populationCap": 25
+        },
+        "description": "人口上限 +25",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1ov9cmw",
+        "label": "在披甲战兽栏建设位修建农田",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "粮食约 +8—12/日",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_regjay",
+        "label": "在披甲战兽栏建设位修建铁匠铺",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "金币约 +0—24/日",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_117hqbz",
+        "label": "在血鼓萨满祭坛建设位修建房屋",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {
+          "populationCap": 25
+        },
+        "description": "人口上限 +25",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_gumjst",
+        "label": "在血鼓萨满祭坛建设位修建农田",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "粮食约 +8—12/日",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_t7own3",
+        "label": "在血鼓萨满祭坛建设位修建铁匠铺",
+        "kind": "build",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "金币约 +0—24/日",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1g0tn1a",
+        "label": "派人接纳流民（预计6—10人）",
+        "kind": "recruit",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_y2zjja",
+        "label": "投入10金币扩大征召（预计14—20人）",
+        "kind": "recruit",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {
+          "gold": 10
+        },
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_54vcqw",
+        "label": "投入6粮进行民兵实战训练（胜利后1队晋升战士）",
+        "kind": "combat",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 1,
+        "knownCost": {
+          "food": 6
+        },
+        "knownGain": {},
+        "description": "",
+        "foodCost": 6,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1gvo098",
+        "label": "购买稀有腿甲 Lv.53（评分+72）（10金币，余1份）",
+        "kind": "market",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {
+          "gold": 10
+        },
+        "knownGain": {},
+        "description": "稀有腿甲，评分+72；生命+141、护甲+4、受治愈增幅+10%、受治愈增幅+9%",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1h5nly7",
+        "label": "购买史诗腿甲 Lv.55（评分+124）（18金币，余1份）",
+        "kind": "market",
+        "available": false,
+        "disabledReason": "资源不足：还缺1金币。",
+        "actionPointCost": 0,
+        "knownCost": {
+          "gold": 18
+        },
+        "knownGain": {},
+        "description": "史诗腿甲，评分+124；生命+144、护甲+4、净化效率+8、敏捷+2、低血受治愈+8、效果抗性+10%",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_u7pb1a",
+        "label": "向集市出售史诗头盔 Lv.63（获得8金币）",
+        "kind": "market",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {
+          "gold": 8
+        },
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1rzi2z0",
+        "label": "向集市出售稀有胸甲 Lv.63（获得4金币）",
+        "kind": "market",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {
+          "gold": 4
+        },
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1ymkuyh",
+        "label": "向集市出售稀有胸甲 Lv.55（获得4金币）",
+        "kind": "market",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {
+          "gold": 4
+        },
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_wc2l57",
+        "label": "向集市出售稀有戒指 Lv.58（获得4金币）",
+        "kind": "market",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {
+          "gold": 4
+        },
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1t20nnx",
+        "label": "一键按显示评分为全队分配装备",
+        "kind": "equipment",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "重新分配现有装备，不消耗行动力；不会生成新装备。",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_t1sh0q",
+        "label": "查看并为圣殿骑士队长·伊莎贝拉配装",
+        "kind": "selection",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_t8c010",
+        "label": "查看并为圣殿斥候·莱恩配装",
+        "kind": "selection",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1bwgblr",
+        "label": "查看并为流民佣兵·赤犬配装",
+        "kind": "selection",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1lp0rtd",
+        "label": "查看并为边林女巫·盐枝配装",
+        "kind": "selection",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_83jp6g",
+        "label": "查看并为山地猎人·苔牙配装",
+        "kind": "selection",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_8kvim0",
+        "label": "一键为你换上最高评分装备",
+        "kind": "equipment",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "只使用无人穿戴的装备，不会抢走其他角色身上的物品。",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1lnz6aj",
+        "label": "让你装备史诗头盔 Lv.63",
+        "kind": "equipment",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_5yibyv",
+        "label": "让你装备稀有胸甲 Lv.63",
+        "kind": "equipment",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_pqjjik",
+        "label": "让你装备稀有胸甲 Lv.55",
+        "kind": "equipment",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_3iyfzq",
+        "label": "让你装备稀有戒指 Lv.58",
+        "kind": "equipment",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1udlm1u",
+        "label": "卸下你的神话武器 Lv.68",
+        "kind": "equipment",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_itudm6",
+        "label": "卸下你的史诗头盔 Lv.71",
+        "kind": "equipment",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_152a16j",
+        "label": "卸下你的稀有胸甲 Lv.46",
+        "kind": "equipment",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1jgvh53",
+        "label": "卸下你的史诗腿甲 Lv.69",
+        "kind": "equipment",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_11c0ccv",
+        "label": "卸下你的史诗靴子 Lv.78",
+        "kind": "equipment",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_140ecql",
+        "label": "你回到候补",
+        "kind": "party",
+        "available": false,
+        "disabledReason": "主角不能离开出战队伍。",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_b3k0y4",
+        "label": "圣殿骑士队长·伊莎贝拉回到候补",
+        "kind": "party",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_1g7m9u2",
+        "label": "圣殿斥候·莱恩回到候补",
+        "kind": "party",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_5w8xd9",
+        "label": "流民佣兵·赤犬回到候补",
+        "kind": "party",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_4vy7uw",
+        "label": "边林女巫·盐枝加入出战队伍",
+        "kind": "party",
+        "available": false,
+        "disabledReason": "当前出战队伍已满（4/4）。",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_c3smej",
+        "label": "山地猎人·苔牙加入出战队伍",
+        "kind": "party",
+        "available": false,
+        "disabledReason": "当前出战队伍已满（4/4）。",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      },
+      {
+        "id": "choice_fp2kxu",
+        "label": "结束本日",
+        "kind": "time",
+        "available": true,
+        "disabledReason": "",
+        "actionPointCost": 0,
+        "knownCost": {},
+        "knownGain": {},
+        "description": "",
+        "foodCost": 0,
+        "fullFood": 0
+      }
+    ],
+    "result": null
+  },
+  "responseContract": {
+    "action": "one exact id with available=true from observation.actions",
+    "goalId": "one exact id from playerState.goals",
+    "reasoningChain": [
+      {
+        "kind": "intent|evidence|comparison",
+        "evidence": "short factual evidence from this request"
+      }
+    ],
+    "alternatives": [
+      "zero or more exact action ids from observation.actions"
+    ]
+  }
+}

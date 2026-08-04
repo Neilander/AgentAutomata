@@ -15,13 +15,16 @@ for (const forbidden of [
 ]) assert(!text.includes(forbidden), `formal request leaked forbidden token: ${forbidden}`);
 
 assert.equal(request.type, "decision");
-assert.deepEqual(request.observation.actions.map((action) => action.kind), ["story"]);
+assert.deepEqual(request.observation.actions.map((action) => action.kind), ["story", "grind"]);
+const visibleLockedGrind = request.observation.actions.find((action) => action.kind === "grind");
+assert.equal(visibleLockedGrind.available, false);
+assert(visibleLockedGrind.disabledReason.includes("先完成当前开场剧情"));
 assert(request.observation.actions.every((action) => /^choice_[a-z0-9]+$/.test(action.id)));
 assert(!request.observation.actions.some((action) => "successChance" in action || "outcome" in action || "internalId" in action));
 assert(!request.observation.buildings.some((building) => "future" in building || "solution" in building));
 
 session = LOOP.applyDecisionResponse(session, {
-  action: request.observation.actions[0].id,
+  action: request.observation.actions.find((action) => action.kind === "story").id,
   goalId: request.playerState.goals[0].id,
   reasoningChain: [{ kind: "evidence", evidence: "当前只显示这一项可执行行动" }],
   alternatives: [],
@@ -45,7 +48,7 @@ assert(!text.includes("女巫") && !text.includes("炼金师"), "Day two must no
 
 const trace = LOOP.exportVisibleTrace(session);
 const traceText = JSON.stringify(trace);
-assert(trace.cycles[0].decisionInput.observation.actions.length === 1);
+assert(trace.cycles[0].decisionInput.observation.actions.length === 2);
 assert(trace.cycles[0].cognitionEvidence.length >= 2);
 assert(!traceText.includes("gameState") && !traceText.includes("rngState") && !traceText.includes("fingerprint"));
 console.log("border village formal input boundary passed");

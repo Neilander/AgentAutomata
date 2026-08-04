@@ -61,14 +61,18 @@ choose((action) => action.kind === "time");
 let finalRequest = request();
 assert.equal(finalRequest.observation.time.day, 7);
 assert(finalRequest.observation.actions.some((action) => action.kind === "combat"), "Final surface must expose the real battle");
-assert(finalRequest.observation.actions.every((action) => ["combat", "selection", "equipment"].includes(action.kind)), "Final surface may only add pre-battle roster and equipment preparation");
+assert(finalRequest.observation.actions.every((action) => ["combat", "selection", "equipment"].includes(action.kind) || (action.kind === "grind" && action.available === false && action.disabledReason.includes("当前只能组织决战"))), "Final surface may only add pre-battle preparation plus the visibly locked known grind location");
 assert(finalRequest.observation.actions.some((action) => action.label.includes("一键") && action.kind === "equipment"), "Final surface should allow one-click equipment before committing to battle");
 choose((action) => action.kind === "combat");
-assert.equal(LOOP.getPendingRequest(session).type, "complete");
+const retryRequest = LOOP.getPendingRequest(session);
+assert.equal(retryRequest.type, "decision");
+assert.equal(retryRequest.observation.time.phase, "final");
+assert.equal(retryRequest.observation.result, null);
+assert(retryRequest.observation.actions.some((action) => action.kind === "combat" && action.available), "Failed final battle did not remain visibly retryable");
 
 const trace = LOOP.exportVisibleTrace(session);
 auditRequest(trace);
 assert(trace.cycles.filter((cycle) => cycle.combatProcess?.ran).length === 2, "Hunt and final battle must both record actual combat timelines");
 assert(trace.cycles.filter((cycle) => cycle.combatProcess?.ran).every((cycle) => cycle.combatProcess.signalCount > 0));
 
-console.log(JSON.stringify({ status: "PASS", auditedRequests: requests.length, daysReached: 7, realCombats: 2, finalResult: trace.finalObservation.result.title }, null, 2));
+console.log(JSON.stringify({ status: "PASS", auditedRequests: requests.length, daysReached: 7, realCombats: 2, finalRetryVisible: true }, null, 2));

@@ -169,7 +169,7 @@ function buildDecisionRequest(session) {
       region: "灰谷村",
       currentGoal: fullObservation.story?.text || `第${fullObservation.time.day}日，准备抵抗第${fullObservation.time.finalDay}日的进攻`,
       allowedActions: observation.actions.map((action) => action.id),
-      visibleNodes: observation.buildings.map((row) => ({ id: `plot_${row.slot + 1}`, title: row.name, status: row.complete ? `等级${row.level}` : row.readyDay ? `第${row.readyDay}日完工` : "空地", actionCount: 0 })),
+      visibleNodes: observation.buildings.map((row) => ({ id: `plot_${row.slot + 1}`, title: row.siteTitle === "灰谷村" ? row.name : `${row.siteTitle}·${row.name}`, status: row.yieldStatus, actionCount: fullObservation.actions.filter((action) => action.targetSlot === row.slot).length })),
       inventory: observation.inventory.visibleItems,
       teamSlots: observation.party.heroes.filter((hero) => hero.active).map((hero) => hero.name),
     },
@@ -189,7 +189,7 @@ function buildDecisionRequest(session) {
       decisionBias: clone(session.playerProfile.decisionBias),
       priorBeliefs: stripTechnical(session.playerProfile.priorBeliefs),
     },
-    instruction: "你是第一次玩这个游戏的玩家。只依据本请求里的当前画面、自己此前看到的结果和检索出的记忆选择一个行动；不要读取或猜测请求之外的规则。",
+    instruction: "你是第一次玩这个游戏的玩家。只依据本请求里的当前画面、自己此前看到的结果和检索出的记忆选择一个available为true的行动；available为false的行动仍显示，是为了让你看见缺少的条件。不要读取或猜测请求之外的规则。",
     playerState: {
       activeGoalId,
       goals: clone(goals),
@@ -200,7 +200,7 @@ function buildDecisionRequest(session) {
     },
     observation,
     responseContract: {
-      action: "one exact id from observation.actions",
+      action: "one exact id with available=true from observation.actions",
       goalId: "one exact id from playerState.goals",
       reasoningChain: [{ kind: "intent|evidence|comparison", evidence: "short factual evidence from this request" }],
       alternatives: ["zero or more exact action ids from observation.actions"],
@@ -245,7 +245,8 @@ function compactObservation(view) {
     resources: clone(view.resources),
     buildings: clone(view.buildings),
     productionForecasts: clone(view.productionForecasts),
-    market: { liquidity: view.market.liquidity, priceRule: view.market.priceRule, stock: view.market.stock.map(({ id, ...row }) => row) },
+    economy: clone(view.economy),
+    market: { sellRemaining: view.market.sellRemaining, priceRule: view.market.priceRule, stock: view.market.stock.map(({ id, item, ...row }) => ({ ...row, item: item ? publicItem(item) : null })) },
     party: {
       activeLimit: view.party.activeLimit,
       finalBattleRule: view.party.finalBattleRule,
@@ -254,6 +255,7 @@ function compactObservation(view) {
     },
     inventory: { total: view.inventory.length, limit: view.inventoryLimit, rarityCounts, visibleItems: visibleItems.map(publicItem) },
     raids: view.raids.map(({ id, ...row }) => row),
+    outposts: view.outposts.map(({ id, ...row }) => row),
     event: view.event ? { title: view.event.title, scene: view.event.scene } : null,
     recentSignals: clone(view.recentSignals),
     lastCombat: clone(view.lastCombat),
@@ -271,19 +273,20 @@ function buildVisibleEvents(cycle, selected, before, after) {
   const beforeHeroes = new Set(before.party.heroes.map((hero) => hero.name));
   const newAllies = after.party.heroes.filter((hero) => !beforeHeroes.has(hero.name)).map((hero) => ({ name: hero.name, role: hero.role }));
   const resourceChanges = Object.keys(after.resources).map((key) => ({ key, label: resourceLabel(key), before: before.resources[key], after: after.resources[key] })).filter((row) => row.before !== row.after);
-  const buildingChanges = after.buildings.map((row) => ({ before: before.buildings.find((old) => old.slot === row.slot), after: row })).filter((pair) => JSON.stringify(pair.before) !== JSON.stringify(pair.after)).map((pair) => ({ slot: pair.after.slot + 1, before: pair.before?.name || "空地", after: pair.after.name, level: pair.after.level, complete: pair.after.complete, readyDay: pair.after.readyDay }));
+  const structuralBuilding = (row) => row ? { slot: row.slot, site: row.site, type: row.type || null, name: row.name, level: row.level, complete: row.complete } : null;
+  const buildingChanges = after.buildings.map((row) => ({ before: before.buildings.find((old) => old.slot === row.slot), after: row })).filter((pair) => JSON.stringify(structuralBuilding(pair.before)) !== JSON.stringify(structuralBuilding(pair.after))).map((pair) => ({ slot: pair.after.slot + 1, before: pair.before?.name || "尚未发现", after: pair.after.name, level: pair.after.level, complete: pair.after.complete }));
   const combatChanged = JSON.stringify(before.lastCombat) !== JSON.stringify(after.lastCombat) ? after.lastCombat : null;
   const warChanges = ["knownEnemyUnits", "knownBosses", "militiaUnits"].map((key) => ({ key, before: before.war[key], after: after.war[key] })).filter((row) => row.before !== row.after);
   const parts = [];
   if (newSignals.length) parts.push(newSignals.slice(0, 6).map((row) => row.text).join(" "));
   else parts.push(`完成了“${selected.label}”。`);
-  if (addedItems.length) parts.push(`背包新增：${addedItems.slice(0, 8).map((item) => `${item.rarity}${item.name}`).join("、")}。`);
+  if (addedItems.length) parts.push(`背包新增：${addedItems.slice(0, 8).map((item) => item.name).join("、")}。`);
   if (removedItems.length) parts.push(`背包减少：${removedItems.slice(0, 6).map((item) => item.name).join("、")}。`);
   if (resourceChanges.length) parts.push(`资源变化：${resourceChanges.map((row) => `${row.label}${row.before}→${row.after}`).join("、")}。`);
-  if (buildingChanges.length) parts.push(`建筑变化：${buildingChanges.map((row) => `${row.slot}号地${row.after}${row.complete ? `等级${row.level}` : `第${row.readyDay}日完工`}`).join("、")}。`);
+  if (buildingChanges.length) parts.push(`建筑变化：${buildingChanges.map((row) => `${row.slot}号地${row.before}→${row.after}${row.complete ? `（等级${row.level}，立即生效）` : ""}`).join("、")}。`);
   if (newAllies.length) parts.push(`新队员：${newAllies.map((hero) => `${hero.name}（${hero.role}）`).join("、")}。`);
   if (warChanges.length) parts.push(`战局变化：${warChanges.map((row) => `${warLabel(row.key)}${row.before}→${row.after}`).join("、")}。`);
-  if (combatChanged) parts.push(`“${combatChanged.title}”${combatChanged.win ? "获胜" : "失利"}：我方${combatChanged.alliesAlive}/${combatChanged.alliesStarted}、敌方${combatChanged.enemiesAlive}/${combatChanged.enemiesStarted}仍能战斗${combatChanged.fallenAllies?.length ? `；我方倒下：${combatChanged.fallenAllies.join("、")}` : ""}，用时${combatChanged.duration}秒；我方造成${combatChanged.alliesDamage}伤害、治疗${combatChanged.alliesHealing}、获得${combatChanged.alliesShield}护盾；投入粮食${combatChanged.foodCommitted}/${combatChanged.fullFood || 0}，发挥${Math.round(combatChanged.supplyEffectiveness * 100)}%。`);
+  if (combatChanged) parts.push(`“${combatChanged.title}”${combatChanged.win ? "获胜" : "失利"}：我方${combatChanged.alliesAlive}/${combatChanged.alliesStarted}、敌方${combatChanged.enemiesAlive}/${combatChanged.enemiesStarted}仍能战斗${combatChanged.fallenAllies?.length ? `；我方倒下：${combatChanged.fallenAllies.join("、")}` : ""}，用时${combatChanged.duration}秒；我方造成${combatChanged.alliesDamage}伤害、治疗${combatChanged.alliesHealing}、获得${combatChanged.alliesShield}护盾；固定消耗粮食${combatChanged.foodCommitted}${combatChanged.totalArmy ? `，${combatChanged.deployedArmy}/${combatChanged.totalArmy}支军队实际出战` : ""}。`);
   if (after.time.day !== before.time.day) parts.push(`日期推进到第${after.time.day}日，行动力刷新为${after.time.actionsRemaining}。`);
   else if (after.time.actionsRemaining !== before.time.actionsRemaining) parts.push(`今日剩余行动${before.time.actionsRemaining}→${after.time.actionsRemaining}。`);
   return [{
@@ -407,9 +410,9 @@ function stripTechnical(value) {
   }
   return output;
 }
-function resourceLabel(key) { return ({ gold: "金币", food: "粮食", iron: "铁料", steel: "精钢", population: "实际人口", populationCap: "人口上限" })[key] || key; }
+function resourceLabel(key) { return ({ gold: "金币", food: "粮食", population: "实际人口", populationCap: "人口上限" })[key] || key; }
 function warLabel(key) { return ({ knownEnemyUnits: "敌军单位", knownBosses: "敌方主将", militiaUnits: "民兵单位" })[key] || key; }
-function inferNode(selected) { return selected.kind === "grind" ? "边林讨伐" : selected.kind === "combat" ? "战场" : selected.kind === "build" || selected.kind === "upgrade" ? "村庄建设" : selected.kind === "recruit" ? "征召所" : selected.kind === "smith" ? "铁匠铺" : selected.kind === "market" ? "集市" : selected.kind === "equipment" || selected.kind === "selection" || selected.kind === "party" ? "队伍与装备" : selected.kind === "event" ? "当日事件" : selected.kind === "time" ? "日程" : "灰谷村"; }
+function inferNode(selected) { return selected.kind === "grind" ? "边林讨伐" : selected.kind === "combat" ? "战场" : selected.kind === "build" ? "领地建设" : selected.kind === "recruit" ? "征召所" : selected.kind === "market" ? "集市" : selected.kind === "equipment" || selected.kind === "selection" || selected.kind === "party" ? "队伍与装备" : selected.kind === "event" ? "当日事件" : selected.kind === "time" ? "日程" : "灰谷村"; }
 function shortHash(value) { return crypto.createHash("sha256").update(String(value)).digest("hex").slice(0, 12); }
 function validate(input) { const session = clone(input); if (!session || session.schema !== SCHEMA) throw new Error(`expected ${SCHEMA}`); return session; }
 function clone(value) { return structuredClone(value); }

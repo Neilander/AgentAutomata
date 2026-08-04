@@ -1,0 +1,67 @@
+{
+  "type": "attribution",
+  "schema": "border_village_war_player_attribution_request_v1",
+  "cycle": 22,
+  "agentSession": {
+    "reuseRequired": true
+  },
+  "instruction": "只根据这里列出的可见现象解释刚才发生了什么。不要补写隐藏规则；证据不足时降低置信度，并提出可验证的下一步。",
+  "action": {
+    "id": "choice_1eox2w4",
+    "label": "投入8粮食组织决战（4/4支部队可以出战）",
+    "kind": "combat"
+  },
+  "existingKnowledge": [
+    {
+      "knowledgeId": "knowledge_current",
+      "subject": {
+        "label": "你的村庄与队伍"
+      },
+      "environment": {
+        "region": "灰谷村",
+        "node": "战场",
+        "dayFirstSeen": 7
+      },
+      "behavior": {
+        "kind": "combat",
+        "label": "投入8粮食组织决战（4/4支部队可以出战）"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "day": 7,
+            "summary": "兽人大军突破了村庄阵线，但幸存者记住了这次备战留下的教训。 资源变化：粮食53→45。 “灰谷村决战”失利：我方0/11、敌方11/16仍能战斗；我方倒下：你、圣殿骑士队长·伊莎贝拉、圣殿斥候·莱恩、流民佣兵·赤犬、边林女巫·盐枝、山地猎人·苔牙、旅行炼金师·罗莎、灰谷战士第1队、灰谷战士第2队、灰谷村民兵第1队、灰谷村民兵第2队，用时19.2秒；我方造成5326伤害、治疗11、获得364护盾；固定消耗粮食8，4/4支军队实际出战。"
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:22:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "evidence_1",
+      "type": "action_summary",
+      "action": "投入8粮食组织决战（4/4支部队可以出战）",
+      "summary": "兽人大军突破了村庄阵线，但幸存者记住了这次备战留下的教训。 资源变化：粮食53→45。 “灰谷村决战”失利：我方0/11、敌方11/16仍能战斗；我方倒下：你、圣殿骑士队长·伊莎贝拉、圣殿斥候·莱恩、流民佣兵·赤犬、边林女巫·盐枝、山地猎人·苔牙、旅行炼金师·罗莎、灰谷战士第1队、灰谷战士第2队、灰谷村民兵第1队、灰谷村民兵第2队，用时19.2秒；我方造成5326伤害、治疗11、获得364护盾；固定消耗粮食8，4/4支军队实际出战。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "knowledge_current",
+    "primaryCause": "short inference grounded in visibleEvents",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

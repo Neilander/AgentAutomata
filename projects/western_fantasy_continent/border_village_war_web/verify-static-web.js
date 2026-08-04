@@ -34,12 +34,20 @@ assert(web.includes("GAME.preparePlayerCombat") && web.includes("GAME_BATTLE_VIE
 assert(web.includes("GAME.applyPlayerCombatResult") && web.includes("commitCombat"), "Battle result is not committed through the game core");
 assert(battleViewSource.includes("const authoritativeResult = sim.buildResult()") && !battleViewSource.includes("units: this.state.units,\n        signals: sim.signalBus.signals"), "Battle view still submits display-only units instead of the authoritative simulation result");
 assert(!html.includes("跳过战斗") && !web.includes("skipCombat"), "Frontend must not offer combat skipping");
-assert(web.includes("一键最高战力") && web.includes('operation === "auto_equip"') && web.includes("autoEquipAction"), "Frontend one-click equipment path is missing");
+assert(web.includes("一键整队配装") && web.includes('operation === "auto_equip_all"') && web.includes("autoEquipAllAction"), "Frontend whole-party one-click equipment path is missing");
+assert(web.includes("只配当前角色") && web.includes('operation === "auto_equip"') && web.includes("autoEquipAction"), "Frontend single-hero equipment fallback is missing");
 assert(!html.includes("胜率") || html.includes("不提供胜率"), "Frontend must not expose a win probability");
 assert(!web.includes("successChance") && !web.includes("intendedLesson"), "Frontend contains hidden-solution vocabulary");
-assert(web.includes("targetSlot") && web.includes("forge-select"), "Building-local actions and compressed forge controls are missing");
-assert(web.includes("action.available === false") && web.includes("disabledReason") && web.includes("forge-disabled-reason"), "Frontend hides or fails to explain unavailable actions");
+assert(web.includes("targetSlot") && web.includes("current.outposts") && web.includes("outpost.plotSlot"), "Building-local actions or captured-outpost construction nodes are missing");
+assert(web.includes("action.available === false") && web.includes("disabledReason"), "Frontend hides or fails to explain unavailable actions");
 assert(css.includes(".action-card.unavailable") && css.includes(".disabled-reason") && css.includes("#ef8e7e"), "Unavailable actions lack a persistent red visual treatment");
+assert(web.includes("yield-badge") && css.includes(".map-node .yield-badge"), "Resource buildings lack compact on-map yield signals");
+assert(web.includes("visibleGrind") && web.includes("ui:grind-unavailable") && web.includes("地点已知 · 暂时不能出发"), "Known grind location can disappear when its action is temporarily unavailable");
+assert(web.includes("renderGrindDifficultyPanel") && web.includes("select_grind_difficulty") && web.includes("全部难度已解锁"), "Grind node lacks the visible manual five-difficulty progression panel");
+assert(web.includes("lootCountLabel") && web.includes("rarityLabel") && web.includes("grind.nextUnlockAt") && web.includes("任意难度胜利都计入解锁"), "Grind panel does not expose exact drop odds and shared total-win unlock progress");
+assert(css.includes(".grind-level.locked") && css.includes(".grind-progress") && css.includes("#78463e"), "Locked grind difficulties or their progress bar lack persistent visual treatment");
+assert(web.includes("今日装备") && web.includes("铁匠收入") && web.includes("current.economy.dailyGearDrops"), "Continuous equipment combat does not show its smithy gold loop nearby");
+assert(!html.includes('id="iron-value"') && !html.includes('id="steel-value"'), "Removed material resources remain in the top-level UI");
 assert(web.includes("targetItemId") && web.includes("data-unequip-action"), "Manual equip/unequip recovery path is missing");
 assert(css.includes(".game-shell.combat-mode") && css.includes(".battle-mount .battle-view-field"), "Combat state does not reclaim the screen for the battlefield");
 assert(web.includes("INVENTORY_PAGE_SIZE = 24") && web.includes("inventory-prev") && web.includes("inventory-next"), "Inventory pagination is missing");
@@ -77,11 +85,15 @@ state = GAME.applyPlayerAction(state, story.id);
 observation = GAME.getPlayerObservation(state);
 state = GAME.applyPlayerAction(state, observation.actions.find((action) => action.kind === "decision").id);
 observation = GAME.getPlayerObservation(state);
-assert.equal(observation.buildings.length, 6);
-assert.equal(observation.buildings.filter((building) => building.complete).length, 4);
+assert.equal(observation.buildings.length, 7);
+assert.equal(observation.buildings.filter((building) => building.complete).length, 5);
 assert.equal(observation.buildings.filter((building) => !building.type).length, 2);
 assert(observation.actions.some((action) => action.kind === "build" && Number.isInteger(action.targetSlot)), "Build action lacks safe plot metadata");
+assert(observation.buildings.filter((building) => ["house", "farm", "smithy"].includes(building.type)).every((building) => building.yieldLabel), "Base resource building lacks a visible yield label");
 assert(observation.actions.some((action) => action.kind === "grind"));
+assert.equal(observation.grind.levels.length, 5);
+assert.equal(observation.actions.filter((action) => action.kind === "grind_setting").length, 5);
+assert(observation.actions.some((action) => action.kind === "grind_setting" && action.available === false && action.disabledReason), "Locked difficulty controls are hidden or unexplained");
 assert(observation.actions.some((action) => action.kind === "combat"));
 assert(observation.actions.some((action) => action.kind === "event"));
 
@@ -111,14 +123,23 @@ while (steppedSim.time < plan.maxTime) {
 const steppedResult = steppedSim.buildResult();
 assert.equal(GAME.combatResultFingerprint(steppedResult), GAME.combatResultFingerprint(result), "Frame-stepped battle playback diverges from authoritative settlement");
 state = GAME.applyPlayerCombatResult(state, combatAction.id, result);
-assert(state.stats.combats === 1 && state.inventory.length >= 2, "Real battle result did not reach persistent game state");
+let retryRounds = 0;
+while (state.inventory.length < 2 && retryRounds < 30) {
+  const retryAction = GAME.getPlayerObservation(state).actions.find((action) => action.kind === "grind" && action.available);
+  const retryPlan = GAME.preparePlayerCombat(state, retryAction.id);
+  state = GAME.applyPlayerCombatResult(state, retryAction.id, GAME.simulatePlan(retryPlan));
+  retryRounds += 1;
+}
+assert(state.stats.combats >= 1 && state.inventory.length >= 2, "Real battle result did not reach persistent game state through retryable combat");
+assert(web.includes("返回地图并重试") && web.includes("失败不消耗行动力或粮食"), "Loss UI does not explain the retry path");
+assert(web.includes("if (grindSession.auto) grindSession.timer"), "Continuous grind still stops automatically after a defeat");
 
 console.log(JSON.stringify({
   status: "PASS",
   files: ["index.html", "styles.css", "border-village-web.js"],
   map: "shared camera + node-local actions",
   combat: "shared battle view + verified result settlement",
-  equipment: "eight slots + one-click highest-power loadout + manual override",
+  equipment: "eight slots + whole-party one-click loadout + manual override",
   layout: "full-height map + bottom overlay drawer + paged inventory",
   serverStarted: false,
 }, null, 2));

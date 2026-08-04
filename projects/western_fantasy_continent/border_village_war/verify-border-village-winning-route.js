@@ -3,91 +3,86 @@
 const assert = require("node:assert/strict");
 const GAME = require("./border-village-core");
 
-let state = GAME.createInitialState("verified-winning-route");
+let state = GAME.createInitialState("verified-winning-route-v3");
 let combatCount = 0;
-const rarityRank = Object.fromEntries(GAME.RARITY_DATA.map((row, index) => [row.label, index]));
-
 function view() { return GAME.getPlayerObservation(state); }
-function actions(kind) { return view().actions.filter((action) => action.kind === kind && action.available !== false); }
-function take(action) {
-  assert(action, "Missing scripted action");
-  if (["combat", "grind"].includes(action.kind)) {
-    const plan = GAME.preparePlayerCombat(state, action.id);
+function available(kind) { return view().actions.filter((row) => row.kind === kind && row.available !== false); }
+function take(row) {
+  assert(row, "Missing scripted action");
+  if (["combat", "grind"].includes(row.kind)) {
+    const plan = GAME.preparePlayerCombat(state, row.id);
     const result = GAME.simulatePlan(plan);
     assert(result.signals.length > 0, "Scripted battle skipped its timeline");
-    state = GAME.applyPlayerCombatResult(state, action.id, result);
+    state = GAME.applyPlayerCombatResult(state, row.id, result);
     combatCount += 1;
     return;
   }
-  state = GAME.applyPlayerAction(state, action.id);
+  state = GAME.applyPlayerAction(state, row.id);
 }
-function takeKind(kind, index = 0) { take(actions(kind)[index]); }
-function grind(count) { for (let index = 0; index < count; index += 1) takeKind("grind"); }
-function endDay() { takeKind("time"); }
-function fullSupplyCombat() { take(actions("combat").sort((a, b) => b.foodCost - a.foodCost)[0]); }
-
-function selectHero(heroId) {
-  if (state.selectedHeroId === heroId) return;
-  const candidates = state.roster.filter((id) => id !== state.selectedHeroId);
-  take(actions("selection")[candidates.indexOf(heroId)]);
-}
-
-function equipBestAvailable() {
+function grind(count) { for (let index = 0; index < count; index += 1) take(available("grind")[0]); }
+function endDay() { take(available("time")[0]); }
+function equipEveryone() {
   for (const heroId of state.roster) {
-    selectHero(heroId);
-    for (const slot of Object.keys(GAME.SLOT_DATA)) {
-      const equipped = new Set(Object.values(state.equipment).flatMap((slots) => Object.values(slots).filter(Boolean)));
-      const available = state.inventory.filter((item) => !equipped.has(item.id));
-      const best = available.filter((item) => item.slot === slot).sort((a, b) => rarityRank[b.rarity] - rarityRank[a.rarity] || b.power - a.power)[0];
-      if (best) take(actions("equipment")[available.findIndex((item) => item.id === best.id)]);
-    }
+    if (state.selectedHeroId !== heroId) take(available("selection").find((row) => row.targetHeroId === heroId));
+    take(view().actions.find((row) => row.available && row.operation === "auto_equip" && row.targetHeroId === heroId));
   }
 }
+function nextRaid() { return available("combat").filter((row) => row.foodCost > 6).sort((a, b) => a.foodCost - b.foodCost)[0]; }
+function training() { return available("combat").find((row) => row.foodCost === 6); }
 
-takeKind("story");
-takeKind("decision");
+take(available("story")[0]);
+take(available("decision")[0]);
 
-grind(12);
-equipBestAvailable();
-takeKind("event", 1);
-take(actions("build").find((action) => action.knownCost.gold === 10 && action.knownCost.iron === 5));
-fullSupplyCombat();
-endDay();
-
-grind(8);
-equipBestAvailable();
-takeKind("event", 0);
-if (actions("recruit").length) takeKind("recruit", Math.min(1, actions("recruit").length - 1));
-if (actions("upgrade").length) takeKind("upgrade", 1);
+grind(15);
+equipEveryone();
+take(available("event")[0]);
+take(available("build").find((row) => row.targetSlot === 5 && row.knownGain.populationCap === 25));
+take(available("build").filter((row) => row.targetSlot === 6)[1]);
 endDay();
 
 grind(15);
-equipBestAvailable();
-takeKind("event", 0);
-fullSupplyCombat();
+equipEveryone();
+take(available("event")[0]);
+take(available("recruit").at(-1));
+take(nextRaid());
+take(available("build").find((row) => row.targetSlot === 7 && row.knownGain.populationCap === 25));
+endDay();
+
+grind(15);
+equipEveryone();
+take(available("event")[1]);
+if (available("recruit").length) take(available("recruit").at(-1));
+take(nextRaid());
+if (training()) take(training());
+if (state.ap > 0) take(available("build").find((row) => row.targetSlot === 8 && row.description.includes("粮食")) || available("build")[0]);
 endDay();
 
 grind(20);
-equipBestAvailable();
-const foodPurchase = actions("market").find((action) => action.knownCost.gold === 5);
-if (foodPurchase) take(foodPurchase);
-if (actions("event").length) takeKind("event", Math.min(1, actions("event").length - 1));
-while (actions("recruit").length) takeKind("recruit");
+equipEveryone();
+if (available("event").length) take(available("event").at(-1));
+while (nextRaid() && state.ap > 0) take(nextRaid());
+while (training() && state.ap > 0) take(training());
+while (available("recruit").length && state.ap > 0) take(available("recruit").at(-1));
 endDay();
 
-fullSupplyCombat();
+equipEveryone();
+const finalAction = available("combat")[0];
+assert(finalAction.label.includes("支部队可以出战"), "Final action does not explain actual food-covered deployment");
+take(finalAction);
+
 const final = view();
-assert(final.result, "Scripted route did not reach a final result");
-assert.equal(final.result.win, true, "A deliberate grind/build/recruit route should be able to win");
-assert(final.result.combat.enemiesStarted >= 15, "Final battle must remain a large battle after partial raids");
-assert(combatCount >= 50, "Route should exercise repeated real equipment-grind battles");
+assert(final.result?.win, "Deliberate economy, territory, training and equipment route did not win");
+assert.equal(final.outposts.length, 3, "Winning route did not control all three known sites");
+assert(final.result.trainedUnits >= 1, "Winning route never converted food into troop quality");
+assert.equal(final.result.deployedArmy, final.result.totalArmy, "Winning route failed to provision its whole army");
+assert(combatCount >= 60, "Winning route did not exercise the unlimited equipment loop");
 
 console.log(JSON.stringify({
   status: "PASS",
   result: final.result.title,
   combatsRun: combatCount,
+  capturedOutposts: final.outposts.length,
   finalBattle: `${final.result.combat.alliesStarted}v${final.result.combat.enemiesStarted}`,
-  survivors: final.result.combat.alliesAlive,
   population: final.result.population,
-  militiaUnits: final.result.militiaUnits,
+  soldiers: `${final.result.trainedUnits} trained / ${final.result.militiaUnits - final.result.trainedUnits} militia`,
 }, null, 2));

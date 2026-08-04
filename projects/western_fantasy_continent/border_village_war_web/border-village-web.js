@@ -2,7 +2,7 @@
   "use strict";
 
   const GAME = window.BORDER_VILLAGE_WAR;
-  const SAVE_KEY = "infinite_loot_border_village_war_v2";
+  const SAVE_KEY = "infinite_loot_border_village_war_v3";
   const MAP_WIDTH = 1400;
   const MAP_HEIGHT = 860;
   const MAP_PAN_MARGIN_X = 520;
@@ -10,10 +10,10 @@
   const INVENTORY_PAGE_SIZE = 24;
   const RARITY_ORDER = { "神话": 5, "传说": 4, "史诗": 3, "稀有": 2, "普通": 1 };
   const SLOT_ICONS = { "武器": "⚔", "头盔": "⌃", "胸甲": "⬡", "护手": "✦", "腿甲": "▥", "靴子": "⌄", "戒指": "○", "护符": "◇" };
-  const RESOURCE_LABELS = { gold: "金币", food: "粮食", iron: "铁料", steel: "精钢", population: "实际人口", populationCap: "人口上限" };
+  const RESOURCE_LABELS = { gold: "金币", food: "粮食", population: "实际人口", populationCap: "人口上限" };
   const STAT_LABELS = { physicalPower: "物理威力", magicPower: "魔法威力", maxHp: "生命", armor: "护甲" };
-  const PLOT_POSITIONS = [[420, 510], [270, 645], [585, 680], [820, 650], [1015, 610], [1105, 445]];
-  const RAID_POSITIONS = [[245, 240], [620, 125], [1050, 225]];
+  const PLOT_POSITIONS = [[430, 520], [295, 650], [570, 690], [835, 680], [1060, 560], [1020, 405], [865, 300]];
+  const RAID_POSITIONS = { foragers: [245, 240], beastPen: [620, 125], shaman: [1100, 225] };
   const BUILDING_SIGILS = { house: "舍", farm: "田", conscription: "征", smithy: "锻", market: "市" };
 
   let state = loadState();
@@ -91,7 +91,7 @@
     const costs = Object.entries(action.knownCost || {}).filter(([, amount]) => amount).map(([key, amount]) => `${RESOURCE_LABELS[key] || key}-${amount}`);
     const gains = Object.entries(action.knownGain || {}).filter(([, amount]) => amount).map(([key, amount]) => `${RESOURCE_LABELS[key] || key}+${amount}`);
     if (action.actionPointCost) costs.unshift(`行动-${action.actionPointCost}`);
-    if (action.foodCost) costs.push(`粮食-${action.foodCost}`);
+    if (action.foodCost && !Number(action.knownCost?.food || 0)) costs.push(`粮食-${action.foodCost}`);
     return [...costs, ...gains].join(" · ") || "不消耗行动";
   }
 
@@ -107,7 +107,7 @@
       const recruited = newHero(before, after);
       const signals = recentAdded(before, after);
       const unlocked = after.raids.filter((raid) => !beforeRaids.has(raid.title));
-      for (const raid of unlocked) newlyUnlocked.add(`raid:${raid.title}`);
+      for (const raid of unlocked) newlyUnlocked.add(`raid:${raid.id}`);
       if (action.kind === "selection") selectedHeroId = action.targetHeroId;
       if (action.kind === "equipment") selectedItemId = action.targetItemId;
       if (action.kind === "time") selectedNodeId = null;
@@ -116,7 +116,7 @@
       const resultLines = signals.slice(0, 5).map((row) => row.text);
       if (unlocked.length) resultLines.push(`新情报：${unlocked.map((raid) => raid.title).join("、")}已经标在地图上。`);
       if (recruited) showRecruit(recruited, resultLines.join(" "));
-      else if ((["build", "upgrade", "recruit", "smith", "event", "time"].includes(action.kind) || action.operation === "auto_equip") && !options.quiet) showResult(action.label, resultLines);
+      else if ((["build", "recruit", "event", "time"].includes(action.kind) || action.operation === "auto_equip") && !options.quiet) showResult(action.label, resultLines);
       else showToast(resultLines[0] || `${action.label}完成`);
     } catch (error) {
       showToast(error.message || String(error));
@@ -139,7 +139,7 @@
     document.querySelector("#preview-title").textContent = plan.title;
     document.querySelector("#preview-supply").innerHTML = plan.kind === "hunt"
       ? `<span>行动 <b>0</b></span><span>粮食 <b>0</b></span><span>当前队伍 <b>${plan.leftTeam.length}人</b></span>`
-      : `<span>投入粮食 <b>${plan.foodCommitted}/${plan.fullFood}</b></span><span>预计发挥 <b>${Math.round(plan.supplyEffectiveness * 100)}%</b></span><span>规模 <b>${plan.leftTeam.length} 对 ${plan.rightTeam.length}</b></span>`;
+      : `<span>固定耗粮 <b>${plan.foodCommitted}</b></span>${plan.totalArmy != null ? `<span>军队出战 <b>${plan.deployedArmy}/${plan.totalArmy}</b></span>` : ""}<span>规模 <b>${plan.leftTeam.length} 对 ${plan.rightTeam.length}</b></span>`;
     const team = (rows) => rows.map((unit) => `<li><span>${esc(unit.name)}</span><small>${esc(unit.roleName || unit.role || unit.unitKind || "战斗成员")}</small></li>`).join("");
     document.querySelector("#preview-teams").innerHTML = `<section><h3>我方 · ${plan.leftTeam.length}</h3><ul>${team(plan.leftTeam)}</ul></section><section><h3>敌方 · ${plan.rightTeam.length}</h3><ul>${team(plan.rightTeam)}</ul></section>`;
     const dialog = document.querySelector("#combat-preview-dialog");
@@ -174,7 +174,7 @@
     const box = document.querySelector("#combat-result");
     box.hidden = false;
     box.classList.toggle("loss", !win);
-    box.innerHTML = `<h3>${win ? "我方获胜" : "我方失利"}</h3><div class="combat-result-metrics"><span>我方存活<b>${result.metrics.leftAlive}/${pendingCombat.leftTeam.length}</b></span><span>敌方存活<b>${result.metrics.rightAlive}/${pendingCombat.rightTeam.length}</b></span><span>伤害<b>${Math.round(result.metrics.leftDamage || 0)}</b></span><span>用时<b>${Number(result.duration || 0).toFixed(1)}s</b></span></div><p>${fallen.length ? `倒下：${esc(fallen.join("、"))}<br>` : ""}主要输出：${top.map((unit) => `${esc(unit.name)} ${Math.round(unit.damageDone || 0)}`).join(" · ") || "暂无"}</p><button id="commit-combat" class="button ${win ? "primary" : "danger"}">查看战后变化</button>`;
+    box.innerHTML = `<h3>${win ? "我方获胜" : "我方失利"}</h3><div class="combat-result-metrics"><span>我方存活<b>${result.metrics.leftAlive}/${pendingCombat.leftTeam.length}</b></span><span>敌方存活<b>${result.metrics.rightAlive}/${pendingCombat.rightTeam.length}</b></span><span>伤害<b>${Math.round(result.metrics.leftDamage || 0)}</b></span><span>用时<b>${Number(result.duration || 0).toFixed(1)}s</b></span></div><p>${fallen.length ? `倒下：${esc(fallen.join("、"))}<br>` : ""}主要输出：${top.map((unit) => `${esc(unit.name)} ${Math.round(unit.damageDone || 0)}`).join(" · ") || "暂无"}${win ? "" : "<br><strong>失败不消耗行动力或粮食，可以立即重试。</strong>"}</p><button id="commit-combat" class="button ${win ? "primary" : "danger"}">${win ? "查看战后变化" : "返回地图并重试"}</button>`;
     document.querySelector("#commit-combat").addEventListener("click", commitCombat);
   }
 
@@ -183,15 +183,19 @@
     try {
       const before = view();
       const beforeRaids = new Set(before.raids.map((raid) => raid.title));
+      const beforeOutposts = new Set(before.outposts.map((outpost) => outpost.id));
       const plan = pendingCombat;
       state = GAME.applyPlayerCombatResult(state, plan.publicActionId, pendingCombatResult);
       saveState();
       battleView?.destroy?.(); battleView = null; pendingCombat = null; pendingCombatResult = null; mode = "campaign";
       const after = view();
       const unlocked = after.raids.filter((raid) => !beforeRaids.has(raid.title));
-      for (const raid of unlocked) newlyUnlocked.add(`raid:${raid.title}`);
+      const captured = after.outposts.filter((outpost) => !beforeOutposts.has(outpost.id));
+      for (const raid of unlocked) newlyUnlocked.add(`raid:${raid.id}`);
+      for (const outpost of captured) newlyUnlocked.add(`outpost:${outpost.id}`);
       const lines = recentAdded(before, after).slice(0, 5).map((row) => row.text);
       if (unlocked.length) lines.push(`新情报：${unlocked.map((raid) => raid.title).join("、")}已经标在地图上。`);
+      if (captured.length) lines.push(`新领地：${captured.map((outpost) => outpost.title).join("、")}已经变成可建设前哨。`);
       ensureSelections(after);
       render();
       showResult(plan.title, lines);
@@ -245,8 +249,7 @@
       saveState();
       renderHeader(view());
       renderGrindHud();
-      if (grindSession.auto && grindSession.lastWin) grindSession.timer = setTimeout(() => startGrindRound(), 800);
-      else grindSession.auto = false;
+      if (grindSession.auto) grindSession.timer = setTimeout(() => startGrindRound(), 800);
     } catch (error) {
       grindSession.fighting = false; grindSession.auto = false; renderGrindHud(); showToast(error.message || String(error));
     }
@@ -266,9 +269,13 @@
 
   function renderGrindHud() {
     if (!grindSession || mode !== "grind") return;
+    const current = view();
+    const level = current.grind.levels.find((row) => row.difficulty === current.grind.selectedDifficulty);
     document.querySelector("#grind-title").textContent = grindSession.plan?.title || "边林讨伐";
-    document.querySelector("#grind-stats").innerHTML = `<span>轮次 <b>${grindSession.rounds + (grindSession.fighting ? 1 : 0)}</b></span><span>胜利 <b>${grindSession.wins}</b></span><span>掉落 <b>${grindSession.loot.length}</b></span>`;
-    document.querySelector("#grind-status").textContent = grindSession.fighting ? "当前轮战斗中" : grindSession.lastWin === false ? "本轮战败，没有掉落" : grindSession.auto ? "下一批敌人正在接近" : "连续讨伐已经停止";
+    const totalProgress = current.grind.nextUnlockAt ? `${current.grind.totalWins}/${current.grind.nextUnlockAt}` : `${current.grind.totalWins}`;
+    document.querySelector("#grind-stats").innerHTML = `<span>难度 <b>${current.grind.selectedDifficulty}</b></span><span>总胜场 <b>${totalProgress}</b></span><span>轮次 <b>${grindSession.rounds + (grindSession.fighting ? 1 : 0)}</b></span><span>本次掉落 <b>${grindSession.loot.length}</b></span><span>今日装备 <b>${current.economy.dailyGearDrops}/20</b></span><span>铁匠收入 <b>${current.economy.smithGoldPaid}</b></span>`;
+    const unlockText = current.grind.nextUnlockAt ? ` · 任意难度累计${current.grind.totalWins}/${current.grind.nextUnlockAt}胜解锁难度${current.grind.nextUnlockDifficulty}` : " · 已解锁全部难度";
+    document.querySelector("#grind-status").textContent = (grindSession.fighting ? "当前轮战斗中" : grindSession.lastWin === false ? (grindSession.auto ? "本轮战败，没有掉落；下一批敌人正在接近" : "本轮战败，没有掉落") : grindSession.auto ? "下一批敌人正在接近" : "连续讨伐已经停止") + unlockText;
     document.querySelector("#grind-loot-count").textContent = `${grindSession.loot.length}件`;
     document.querySelector("#grind-loot-shelf").innerHTML = grindSession.loot.length ? grindSession.loot.map((item) => `<div class="loot-cell rarity-${esc(item.rarity)}"><i>${SLOT_ICONS[item.slotLabel] || "◆"}</i><b>+${item.power}</b><small>${esc(item.rarity)}${esc(item.slotLabel)}</small></div>`).join("") : `<div class="empty-actions">战胜敌人后，掉落会陈列在这里。</div>`;
     const stop = document.querySelector("#stop-grind");
@@ -283,25 +290,35 @@
     const storyActions = current.actions.filter((action) => ["story", "decision", "event"].includes(action.kind));
     rows.push({ id: "command", title: current.story?.title || current.event?.title || "伊莎贝拉的议事帐", kicker: current.story ? "当前剧情" : current.event ? "今日事件" : "村庄中枢", description: current.story?.text || current.event?.scene || "女骑士伊莎贝拉在这里整理敌情与村庄名册。", status: current.event ? "一个需要当日决定的问题" : `第${current.time.day}日 · 距总攻还有${Math.max(0, current.time.finalDay - current.time.day)}日`, actions: storyActions, x: 700, y: 400, sigil: current.story ? "章" : current.event ? "!" : "帐", type: storyActions.length ? "event" : "command" });
 
-    for (const building of current.buildings) {
+    for (const building of current.buildings.filter((row) => row.site === "village")) {
       const local = current.actions.filter((action) => action.targetSlot === building.slot);
       if (building.type === "conscription") local.push(...current.actions.filter((action) => action.kind === "recruit"));
-      if (building.type === "smithy") local.push(...current.actions.filter((action) => action.kind === "smith"));
       if (building.type === "market") local.push(...current.actions.filter((action) => action.kind === "market" && action.targetStockId));
-      const forecast = current.productionForecasts.find((row) => row.slot === building.slot);
-      const extra = forecast ? `明晨预计收获 ${forecast.nextYieldRange[0]}—${forecast.nextYieldRange[1]} 粮食。` : building.type === "market" ? `今日购买力 ${current.market.liquidity}。` : building.type === "house" ? `当前实际人口 ${current.resources.population}/${current.resources.populationCap}。` : building.type === "conscription" ? "可用行动接纳流民，投入金币会提高效率。" : "";
-      rows.push({ id: `plot:${building.slot}`, title: building.name, kicker: building.type ? `${building.level || 0}级建筑` : `${building.slot + 1}号建设用地`, description: building.description, status: building.complete ? extra : building.readyDay ? `正在修建，第${building.readyDay}日清晨完工。` : "选择一种建筑；修建后次日清晨完工。", actions: [...new Map(local.map((action) => [action.id, action])).values()], x: PLOT_POSITIONS[building.slot][0], y: PLOT_POSITIONS[building.slot][1], sigil: building.type ? BUILDING_SIGILS[building.type] || "筑" : "+", type: building.type ? "building" : "empty" });
+      rows.push({ id: `plot:${building.slot}`, title: building.name, kicker: building.type ? "灰谷村基础设施" : "村庄空建设位", description: building.description, status: building.yieldStatus, yieldLabel: building.yieldLabel, emptyText: building.type && !["market", "conscription"].includes(building.type) ? "这是自动产生持久收益的建筑，无需额外操作。" : "这里暂时没有可执行行动。", actions: [...new Map(local.map((action) => [action.id, action])).values()], x: PLOT_POSITIONS[building.slot][0], y: PLOT_POSITIONS[building.slot][1], sigil: building.type ? BUILDING_SIGILS[building.type] || "筑" : "+", type: building.type ? "building" : "empty" });
     }
 
-    const grind = current.actions.filter((action) => action.kind === "grind");
-    if (grind.length) rows.push({ id: "grind", title: "边林讨伐", kicker: "无限刷装", description: "魔物会不断从边林深处涌出。每一轮都运行完整战斗；获胜后掉落一件装备。", status: `不消耗行动力与粮食 · 当前第${current.time.day >= 6 ? 3 : current.time.day >= 5 ? 2 : 1}层`, actions: grind, x: 1190, y: 275, sigil: "猎", type: "grind" });
+    const grindBattles = current.actions.filter((action) => action.kind === "grind");
+    const grindSettings = current.actions.filter((action) => action.kind === "grind_setting");
+    const visibleGrind = grindBattles.length ? [...grindSettings, ...grindBattles] : [{ id: "ui:grind-unavailable", label: "前往边林免费讨伐魔物", kind: "grind", available: false, disabledReason: current.result ? "本轮战争已经结束；重开后可以再次刷装。" : "当前阶段暂时无法离开这里刷装。", actionPointCost: 0, knownCost: {}, description: "刷怪地点始终保留在地图上。" }];
+    const grindLocked = grindBattles.length === 0 || grindBattles.every((action) => action.available === false);
+    const selectedGrind = current.grind.levels.find((row) => row.selected);
+    rows.push({ id: "grind", title: "边林讨伐", kicker: "五档无限刷装", description: "任意难度获胜都会增加总胜场，并在5/10/30/50胜时解锁新难度。解锁后不会自动切换。", status: grindLocked ? "地点已知 · 暂时不能出发" : `总胜场${current.grind.totalWins} · 当前难度${selectedGrind.difficulty}「${selectedGrind.name}」`, actions: visibleGrind, grind: current.grind, x: 1190, y: 275, sigil: "猎", type: grindLocked ? "grind locked" : "grind" });
 
-    current.raids.forEach((raid, index) => {
+    current.raids.forEach((raid) => {
       const raidActions = current.actions.filter((action) => action.kind === "combat" && action.label.includes(raid.title));
-      rows.push({ id: `raid:${raid.title}`, title: raid.title, kicker: "已侦察敌方据点", description: raid.description, status: raid.visibleEffectOnVictory, actions: raidActions, x: RAID_POSITIONS[index % RAID_POSITIONS.length][0], y: RAID_POSITIONS[index % RAID_POSITIONS.length][1], sigil: "敌", type: "raid" });
+      const position = RAID_POSITIONS[raid.id];
+      rows.push({ id: `raid:${raid.id}`, title: raid.title, kicker: "已侦察敌方据点", description: raid.description, status: raid.visibleEffectOnVictory, yieldLabel: "占领：+1建设位", actions: raidActions, x: position[0], y: position[1], sigil: "敌", type: "raid" });
     });
 
-    if (current.time.phase === "final") rows.push({ id: "final", title: "灰谷村北门", kicker: "最终决战", description: `${current.war.knownEnemyUnits}支兽人军团与${current.war.knownBosses}名主将已经抵达。`, status: `${current.party.heroes.length}名英雄与${current.war.militiaUnits}支民兵已自动集结。`, actions: current.actions.filter((action) => action.kind === "combat"), x: 700, y: 115, sigil: "战", type: "final" });
+    current.outposts.forEach((outpost) => {
+      const building = current.buildings.find((row) => row.slot === outpost.plotSlot);
+      if (!building) return;
+      const position = RAID_POSITIONS[outpost.id];
+      const local = current.actions.filter((action) => action.targetSlot === building.slot);
+      rows.push({ id: `outpost:${outpost.id}`, title: building.type ? `${outpost.title} · ${building.name}` : outpost.title, kicker: "已控制前哨", description: building.type ? building.description : outpost.description, status: building.yieldStatus, yieldLabel: building.yieldLabel, emptyText: building.type ? "这是自动产生持久收益的建筑，无需额外操作。" : "选择一种建筑，把占领转化为长期产能。", actions: local, x: position[0], y: position[1], sigil: building.type ? BUILDING_SIGILS[building.type] || "旗" : "+", type: building.type ? "outpost building" : "outpost empty" });
+    });
+
+    if (current.time.phase === "final") rows.push({ id: "final", title: "灰谷村北门", kicker: "最终决战", description: `${current.war.knownEnemyUnits}支兽人军团与${current.war.knownBosses}名主将已经抵达。`, status: `${current.party.heroes.length}名英雄、${current.war.trainedUnits}支战士与${current.war.untrainedUnits}支民兵等待军粮。`, actions: current.actions.filter((action) => action.kind === "combat" || action.operation === "auto_equip_all"), x: 700, y: 115, sigil: "战", type: "final" });
     return rows;
   }
 
@@ -309,14 +326,13 @@
     document.querySelector("#day-rail").innerHTML = Array.from({ length: 7 }, (_, index) => { const day = index + 1; const cls = day < current.time.day || current.result ? "past" : day === current.time.day ? "current" : ""; return `<span class="day-tick ${cls} ${day === 7 ? "final" : ""}"><b>${day}</b>${day === 7 ? "总攻" : "日"}</span>`; }).join("");
     document.querySelector("#gold-value").textContent = current.resources.gold;
     document.querySelector("#food-value").textContent = current.resources.food;
-    document.querySelector("#iron-value").textContent = current.resources.iron;
-    document.querySelector("#steel-value").textContent = current.resources.steel;
     document.querySelector("#population-value").textContent = `${current.resources.population}/${current.resources.populationCap}`;
     document.querySelector("#ap-value").textContent = current.time.actionsRemaining;
     document.querySelector("#ap-capacity").textContent = current.time.actionCapacity;
     document.querySelector("#enemy-units").textContent = current.war.knownEnemyUnits;
     document.querySelector("#enemy-bosses").textContent = current.war.knownBosses;
-    document.querySelector("#militia-units").textContent = current.war.militiaUnits;
+    document.querySelector("#militia-units").textContent = current.war.untrainedUnits;
+    document.querySelector("#trained-units").textContent = current.war.trainedUnits;
     document.querySelector("#war-rule").textContent = current.war.publicRule;
     document.querySelector("#final-rules").textContent = `${current.war.finalMorningRule} ${current.party.finalBattleRule}`;
     const end = current.actions.find((action) => action.kind === "time");
@@ -330,7 +346,7 @@
   function renderMap(current) {
     locations = buildLocations(current);
     const layer = document.querySelector("#map-node-layer");
-    layer.innerHTML = locations.map((location) => `<button class="map-node ${esc(location.type)} ${selectedNodeId === location.id ? "selected" : ""} ${newlyUnlocked.has(location.id) ? "newly-unlocked" : ""}" data-node-id="${esc(location.id)}" style="left:${location.x}px;top:${location.y}px"><span class="sigil">${esc(location.sigil)}</span><strong>${esc(location.title)}</strong><small>${esc(location.kicker)}</small>${location.actions.length ? `<b class="count">${location.actions.length}</b>` : ""}</button>`).join("");
+    layer.innerHTML = locations.map((location) => `<button class="map-node ${esc(location.type)} ${selectedNodeId === location.id ? "selected" : ""} ${newlyUnlocked.has(location.id) ? "newly-unlocked" : ""}" data-node-id="${esc(location.id)}" style="left:${location.x}px;top:${location.y}px">${location.yieldLabel ? `<span class="yield-badge">${esc(location.yieldLabel)}</span>` : ""}<span class="sigil">${esc(location.sigil)}</span><strong>${esc(location.title)}</strong><small>${esc(location.kicker)}</small>${location.actions.length ? `<b class="count">${location.actions.length}</b>` : ""}</button>`).join("");
     layer.querySelectorAll("[data-node-id]").forEach((node) => node.addEventListener("click", (event) => { event.stopPropagation(); selectedNodeId = node.dataset.nodeId; newlyUnlocked.delete(selectedNodeId); renderMap(view()); }));
     renderPopover();
     renderCamera();
@@ -348,25 +364,29 @@
     document.querySelector("#node-title").textContent = location.title;
     document.querySelector("#node-description").textContent = location.description;
     document.querySelector("#node-status").textContent = location.status;
-    document.querySelector("#node-action-count").textContent = `${location.actions.filter((action) => action.available !== false).length}/${location.actions.length}`;
-    const forge = location.actions.filter((action) => action.kind === "smith" && action.label.startsWith("打造"));
-    const regular = location.actions.filter((action) => !forge.includes(action));
-    const actionHtml = regular.map((action) => `<button class="action-card ${action.available === false ? "unavailable" : ""}" data-action-id="${esc(action.id)}" ${action.available === false ? "disabled" : ""}><strong>${esc(action.label)}</strong><em>${esc(costText(action))}</em>${action.description ? `<small>${esc(action.description)}</small>` : ""}${action.disabledReason ? `<small class="disabled-reason">${esc(action.disabledReason)}</small>` : ""}</button>`).join("");
-    const forgeHtml = forge.length ? `<div class="forge-control"><label>定向打造史诗装备</label><select id="forge-select">${forge.map((action) => `<option value="${esc(action.id)}">${esc(action.label)}${action.available === false ? "（不可用）" : ""}</option>`).join("")}</select><button id="forge-confirm" class="mini-button">打造</button><small id="forge-disabled-reason" class="disabled-reason"></small></div>` : "";
-    document.querySelector("#node-actions").innerHTML = actionHtml + forgeHtml || `<div class="empty-actions">这里暂时没有可执行行动。</div>`;
+    const normalActions = location.actions.filter((action) => action.kind !== "grind_setting");
+    document.querySelector("#node-action-count").textContent = `${normalActions.filter((action) => action.available !== false).length}/${normalActions.length}`;
+    const grindHtml = location.grind ? renderGrindDifficultyPanel(location) : "";
+    const actionHtml = normalActions.map((action) => `<button class="action-card ${action.available === false ? "unavailable" : ""}" data-action-id="${esc(action.id)}" ${action.available === false ? "disabled" : ""}><strong>${esc(action.label)}</strong><em>${esc(costText(action))}</em>${action.description ? `<small>${esc(action.description)}</small>` : ""}${action.disabledReason ? `<small class="disabled-reason">${esc(action.disabledReason)}</small>` : ""}</button>`).join("");
+    document.querySelector("#node-actions").innerHTML = grindHtml + (actionHtml || `<div class="empty-actions">${esc(location.emptyText || "这里暂时没有可执行行动。")}</div>`);
     document.querySelectorAll("#node-actions [data-action-id]").forEach((button) => button.addEventListener("click", () => runAction(view().actions.find((action) => action.id === button.dataset.actionId))));
-    const syncForge = () => {
-      const id = document.querySelector("#forge-select")?.value;
-      const action = view().actions.find((row) => row.id === id);
-      const confirm = document.querySelector("#forge-confirm");
-      const reason = document.querySelector("#forge-disabled-reason");
-      if (confirm) { confirm.disabled = !action || action.available === false; confirm.classList.toggle("unavailable", action?.available === false); }
-      if (reason) reason.textContent = action?.disabledReason || "";
-    };
-    document.querySelector("#forge-select")?.addEventListener("change", syncForge);
-    document.querySelector("#forge-confirm")?.addEventListener("click", () => { const id = document.querySelector("#forge-select").value; runAction(view().actions.find((action) => action.id === id)); });
-    syncForge();
     requestAnimationFrame(positionPopover);
+  }
+
+  function renderGrindDifficultyPanel(location) {
+    const grind = location.grind;
+    const selected = grind.levels.find((row) => row.selected) || grind.levels[0];
+    const selector = grind.levels.map((level) => {
+      const action = location.actions.find((row) => row.operation === "select_grind_difficulty" && row.targetDifficulty === level.difficulty);
+      const cls = level.selected ? "selected" : level.unlocked ? "" : "locked";
+      const interactive = Boolean(action && action.available !== false);
+      return `<button class="grind-level ${cls}" ${interactive ? `data-action-id="${esc(action.id)}"` : "disabled"} title="${esc(action?.disabledReason || `${level.threat} · ${level.lootCountLabel} · ${level.rarityLabel}`)}"><b>${level.difficulty}</b><span>${level.unlocked ? level.name : "未解锁"}</span></button>`;
+    }).join("");
+    const pct = grind.nextUnlockAt ? Math.min(100, Math.round(grind.totalWins / grind.nextUnlockAt * 100)) : 100;
+    const nextText = grind.nextUnlockAt ? `再胜${Math.max(0, grind.nextUnlockAt - grind.totalWins)}场解锁难度${grind.nextUnlockDifficulty}` : "全部难度已解锁";
+    const progressLabel = grind.nextUnlockAt ? `总讨伐胜利 ${grind.totalWins}/${grind.nextUnlockAt}` : `总讨伐胜利 ${grind.totalWins}`;
+    const progressBar = grind.nextUnlockAt ? `<div class="grind-progress"><i style="width:${pct}%"></i></div>` : "";
+    return `<section class="grind-difficulty-panel"><div class="grind-levels">${selector}</div><div class="grind-progress-copy"><strong>${progressLabel}</strong><span>${esc(nextText)}</span></div>${progressBar}<small>任意难度胜利都计入解锁<br>当前难度：${esc(selected.threat)} · ${esc(selected.lootCountLabel)}<br>${esc(selected.rarityLabel)}</small></section>`;
   }
 
   function ensureSelections(current) {
@@ -399,7 +419,7 @@
     const hero = current.party.heroes.find((row) => row.id === selectedHeroId) || current.party.heroes[0];
     if (!hero) { dock.innerHTML = `<div class="empty-actions">还没有可查看的角色。</div>`; return; }
     const equipmentPower = hero.equipment.reduce((sum, slot) => sum + Number(slot.item?.power || 0), 0);
-    dock.innerHTML = `<div class="party-layout"><div class="hero-roster">${current.party.heroes.map((row) => `<button class="hero-card ${row.id === hero.id ? "selected" : ""} ${row.active ? "" : "inactive"}" data-hero-id="${esc(row.id)}"><strong>${esc(row.name)}</strong><small>${esc(row.role)}</small>${row.active ? "<em>出战</em>" : ""}</button>`).join("")}</div><div class="hero-detail"><section class="hero-summary"><span class="eyebrow">当前角色</span><h3>${esc(hero.name)}</h3><p>${esc(hero.role)} · 装备战力${equipmentPower}</p><p>擅长词条</p><div class="affix-tags">${hero.preferredAffixes.map((tag) => `<span>${esc(tag)}</span>`).join("")}</div><p>${esc(current.party.finalBattleRule)}</p><div class="hero-quick-actions"><button id="auto-equip" class="button primary">一键最高战力</button><div id="party-toggle"></div></div></section><section class="equipment-slots">${hero.equipment.map((slot) => `<div class="equipment-slot"><span>${SLOT_ICONS[slot.slotLabel] || "◆"} ${esc(slot.slotLabel)}</span><strong class="${slot.item ? `rarity-${esc(slot.item.rarity)}` : ""}">${slot.item ? esc(slot.item.name) : "空"}</strong><small>${slot.item ? `${esc(slot.item.rarity)} · +${slot.item.power}` : "从背包手动装备"}</small></div>`).join("")}</section></div></div>`;
+    dock.innerHTML = `<div class="party-layout"><div class="hero-roster">${current.party.heroes.map((row) => `<button class="hero-card ${row.id === hero.id ? "selected" : ""} ${row.active ? "" : "inactive"}" data-hero-id="${esc(row.id)}"><strong>${esc(row.name)}</strong><small>${esc(row.role)}</small>${row.active ? "<em>出战</em>" : ""}</button>`).join("")}</div><div class="hero-detail"><section class="hero-summary"><span class="eyebrow">当前角色</span><h3>${esc(hero.name)}</h3><p>${esc(hero.role)} · 装备评分${equipmentPower}</p><p>擅长词条</p><div class="affix-tags">${hero.preferredAffixes.map((tag) => `<span>${esc(tag)}</span>`).join("")}</div><p>${esc(current.party.finalBattleRule)}</p><div class="hero-quick-actions"><button id="auto-equip-all" class="button primary">一键整队配装</button><button id="auto-equip" class="button quiet">只配当前角色</button><div id="party-toggle"></div></div></section><section class="equipment-slots">${hero.equipment.map((slot) => `<div class="equipment-slot"><span>${SLOT_ICONS[slot.slotLabel] || "◆"} ${esc(slot.slotLabel)}</span><strong class="${slot.item ? `rarity-${esc(slot.item.rarity)}` : ""}">${slot.item ? esc(slot.item.name) : "空"}</strong><small>${slot.item ? `${esc(slot.item.rarity)} · 评分+${slot.item.power}` : "从背包手动装备"}</small></div>`).join("")}</section></div></div>`;
     dock.querySelectorAll("[data-hero-id]").forEach((button) => button.addEventListener("click", () => selectHero(button.dataset.heroId)));
     const partyAction = current.actions.find((action) => action.kind === "party" && action.targetHeroId === hero.id);
     const autoEquipAction = current.actions.find((action) => action.operation === "auto_equip" && action.targetHeroId === hero.id);
@@ -407,6 +427,11 @@
     autoEquipButton.disabled = !autoEquipAction || autoEquipAction.available === false;
     autoEquipButton.title = autoEquipAction?.disabledReason || autoEquipAction?.description || "当前阶段不能整理装备";
     autoEquipButton.addEventListener("click", () => applyVisibleAction(view().actions.find((action) => action.id === autoEquipAction?.id)));
+    const autoEquipAllAction = current.actions.find((action) => action.operation === "auto_equip_all");
+    const autoEquipAllButton = document.querySelector("#auto-equip-all");
+    autoEquipAllButton.disabled = !autoEquipAllAction || autoEquipAllAction.available === false;
+    autoEquipAllButton.title = autoEquipAllAction?.disabledReason || autoEquipAllAction?.description || "当前阶段不能整理装备";
+    autoEquipAllButton.addEventListener("click", () => applyVisibleAction(view().actions.find((action) => action.id === autoEquipAllAction?.id)));
     document.querySelector("#party-toggle").innerHTML = partyAction ? `<button class="mini-button ${partyAction.available === false ? "unavailable" : ""}" data-party-action="${esc(partyAction.id)}" ${partyAction.available === false ? "disabled" : ""}>${esc(partyAction.label)}</button>${partyAction.disabledReason ? `<small class="disabled-reason">${esc(partyAction.disabledReason)}</small>` : ""}` : `<small>${hero.active ? "当前在经营期出战队伍中" : "当前为候补；第7日仍会自动集结"}</small>`;
     document.querySelector("[data-party-action]")?.addEventListener("click", () => applyVisibleAction(view().actions.find((action) => action.id === document.querySelector("[data-party-action]").dataset.partyAction), { quiet: true }));
   }
@@ -428,7 +453,7 @@
     const pageCount = Math.max(1, Math.ceil(items.length / INVENTORY_PAGE_SIZE));
     inventoryPage = Math.min(Math.max(0, inventoryPage), pageCount - 1);
     const pageItems = items.slice(inventoryPage * INVENTORY_PAGE_SIZE, (inventoryPage + 1) * INVENTORY_PAGE_SIZE);
-    dock.innerHTML = `<div class="inventory-layout"><section class="inventory-browser"><div class="inventory-toolbar"><span>背包 ${items.length}/200 · 按稀有度与战力排序</span><div class="inventory-pager"><button class="mini-button" id="inventory-prev" ${inventoryPage === 0 ? "disabled" : ""}>上一页</button><span>${inventoryPage + 1}/${pageCount}</span><button class="mini-button" id="inventory-next" ${inventoryPage >= pageCount - 1 ? "disabled" : ""}>下一页</button></div></div><div class="inventory-grid">${pageItems.map((row) => `<button class="item-cell ${row.id === item?.id ? "selected" : ""} rarity-${esc(row.rarity)}" data-item-id="${esc(row.id)}"><i>${SLOT_ICONS[row.slotLabel] || "◆"}</i><strong>${esc(row.name)}</strong><small>${esc(row.rarity)} · +${row.power}</small></button>`).join("") || `<div class="empty-actions">背包是空的。</div>`}</div></section><aside id="item-detail" class="item-detail"></aside></div>`;
+    dock.innerHTML = `<div class="inventory-layout"><section class="inventory-browser"><div class="inventory-toolbar"><span>背包 ${items.length}/200 · 按稀有度与评分排序</span><div class="inventory-pager"><button class="mini-button" id="inventory-prev" ${inventoryPage === 0 ? "disabled" : ""}>上一页</button><span>${inventoryPage + 1}/${pageCount}</span><button class="mini-button" id="inventory-next" ${inventoryPage >= pageCount - 1 ? "disabled" : ""}>下一页</button></div></div><div class="inventory-grid">${pageItems.map((row) => `<button class="item-cell ${row.id === item?.id ? "selected" : ""} rarity-${esc(row.rarity)}" data-item-id="${esc(row.id)}"><i>${SLOT_ICONS[row.slotLabel] || "◆"}</i><strong>${esc(row.name)}</strong><small>${esc(row.rarity)} · 评分+${row.power}</small></button>`).join("") || `<div class="empty-actions">背包是空的。</div>`}</div></section><aside id="item-detail" class="item-detail"></aside></div>`;
     document.querySelector("#inventory-prev")?.addEventListener("click", () => { inventoryPage -= 1; selectedItemId = items[inventoryPage * INVENTORY_PAGE_SIZE]?.id || selectedItemId; renderDock(view()); });
     document.querySelector("#inventory-next")?.addEventListener("click", () => { inventoryPage += 1; selectedItemId = items[inventoryPage * INVENTORY_PAGE_SIZE]?.id || selectedItemId; renderDock(view()); });
     dock.querySelectorAll("[data-item-id]").forEach((button) => button.addEventListener("click", () => { selectedItemId = button.dataset.itemId; renderDock(view()); }));
@@ -439,9 +464,9 @@
     const sellAction = current.actions.find((action) => action.kind === "market" && action.targetItemId === item.id);
     const stats = Object.entries(item.baseStats || {}).map(([key, value]) => `<div class="stat-row"><span>${esc(STAT_LABELS[key] || key)}</span><b>+${value}</b></div>`).join("");
     const affixes = item.affixes.map((affix) => `<div class="stat-row"><span>${esc(affix.label)}</span><b>+${affix.value}${affix.percent ? "%" : ""}</b></div>`).join("");
-    const marketReason = equippedBy ? "已装备物品不能直接出售；先由使用者卸下。" : sellAction?.disabledReason || (!sellAction && current.market.liquidity <= 0 ? "集市今日已经没有购买力。" : !sellAction ? "集市剩余购买力不足以买下这件装备。" : "");
+    const marketReason = equippedBy ? "已装备物品不能直接出售；先由使用者卸下。" : sellAction?.disabledReason || (!sellAction ? "这件装备当前不能出售。" : "");
     const transferReason = equippedBy && equippedBy.id !== selectedHero?.id ? `要转交装备，请先选择${equippedBy.name}并卸下。` : "";
-    document.querySelector("#item-detail").innerHTML = `<span class="eyebrow">${esc(item.slotLabel)} · 装备等级${item.equipmentLevel}</span><h3 class="rarity-${esc(item.rarity)}">${esc(item.name)}</h3><p>${esc(item.rarity)} · 显示战力 +${item.power}</p><div class="base-stats">${stats || `<div class="stat-row"><span>无基础属性</span></div>`}</div><div class="affixes">${affixes}</div><p>${equippedBy ? `当前由${esc(equippedBy.name)}使用` : `未装备 · 当前配装角色：${esc(selectedHero?.name || "无")}`}</p>${transferReason ? `<p>${esc(transferReason)}</p>` : ""}${marketReason ? `<p class="disabled-reason">${esc(marketReason)}</p>` : ""}<div class="item-actions">${equipAction ? `<button class="button primary" data-equip-action="${esc(equipAction.id)}">装备给${esc(selectedHero.name)}</button>` : ""}${unequipAction ? `<button class="button quiet" data-unequip-action="${esc(unequipAction.id)}">从${esc(selectedHero.name)}身上卸下</button>` : ""}${sellAction ? `<button class="button quiet ${sellAction.available === false ? "unavailable" : ""}" data-sell-action="${esc(sellAction.id)}" ${sellAction.available === false ? "disabled" : ""}>${esc(sellAction.label)}</button>` : ""}</div>`;
+    document.querySelector("#item-detail").innerHTML = `<span class="eyebrow">${esc(item.slotLabel)} · 装备等级${item.equipmentLevel}</span><h3 class="rarity-${esc(item.rarity)}">${esc(item.name)}</h3><p>${esc(item.rarity)} · 显示评分 +${item.power}</p><div class="base-stats">${stats || `<div class="stat-row"><span>无基础属性</span></div>`}</div><div class="affixes">${affixes}</div><p>${equippedBy ? `当前由${esc(equippedBy.name)}使用` : `未装备 · 当前配装角色：${esc(selectedHero?.name || "无")}`}</p>${transferReason ? `<p>${esc(transferReason)}</p>` : ""}${marketReason ? `<p class="disabled-reason">${esc(marketReason)}</p>` : ""}<div class="item-actions">${equipAction ? `<button class="button primary" data-equip-action="${esc(equipAction.id)}">装备给${esc(selectedHero.name)}</button>` : ""}${unequipAction ? `<button class="button quiet" data-unequip-action="${esc(unequipAction.id)}">从${esc(selectedHero.name)}身上卸下</button>` : ""}${sellAction ? `<button class="button quiet ${sellAction.available === false ? "unavailable" : ""}" data-sell-action="${esc(sellAction.id)}" ${sellAction.available === false ? "disabled" : ""}>${esc(sellAction.label)}</button>` : ""}</div>`;
     document.querySelector("[data-equip-action]")?.addEventListener("click", () => applyVisibleAction(view().actions.find((action) => action.id === document.querySelector("[data-equip-action]").dataset.equipAction), { quiet: true }));
     document.querySelector("[data-unequip-action]")?.addEventListener("click", () => applyVisibleAction(view().actions.find((action) => action.id === document.querySelector("[data-unequip-action]").dataset.unequipAction), { quiet: true }));
     document.querySelector("[data-sell-action]")?.addEventListener("click", () => applyVisibleAction(view().actions.find((action) => action.id === document.querySelector("[data-sell-action]").dataset.sellAction), { quiet: true }));
@@ -449,7 +474,8 @@
 
   function renderJournal(current, dock) {
     const last = current.lastCombat;
-    dock.innerHTML = `<div class="journal"><section class="journal-summary"><span class="eyebrow">当前备战</span><p>敌军：${current.war.knownEnemyUnits}支军团 + ${current.war.knownBosses}名主将</p><p>我方：${current.party.heroes.length}名英雄 + ${current.war.militiaUnits}支民兵</p><p>粮食：${current.resources.food} · 决战全员约需${Math.max(12, (current.party.heroes.length + current.war.militiaUnits) * 3)}粮</p>${last ? `<p>上一战：${esc(last.title)} · ${last.win ? "胜" : "败"} · 我方${last.alliesAlive}/${last.alliesStarted}</p>` : ""}</section><section class="journal-log">${current.recentSignals.slice(0, 6).map((row) => `<div class="log-row"><b>第${row.day}日</b><span>${esc(row.kind)}</span><p>${esc(row.text)}</p></div>`).join("")}</section></div>`;
+    const finalFood = current.war.trainedUnits * 3 + current.war.untrainedUnits;
+    dock.innerHTML = `<div class="journal"><section class="journal-summary"><span class="eyebrow">当前备战</span><p>敌军：${current.war.knownEnemyUnits}支军团 + ${current.war.knownBosses}名主将</p><p>我方：${current.party.heroes.length}名英雄 + ${current.war.trainedUnits}支战士 + ${current.war.untrainedUnits}支民兵</p><p>粮食：${current.resources.food} · 全部军队出战需要${finalFood}粮</p><p>今日刷装：${current.economy.dailyGearDrops}/20 · 铁匠铺收入${current.economy.smithGoldPaid}金币</p>${last ? `<p>上一战：${esc(last.title)} · ${last.win ? "胜" : "败"} · 我方${last.alliesAlive}/${last.alliesStarted}</p>` : ""}</section><section class="journal-log">${current.recentSignals.slice(0, 6).map((row) => `<div class="log-row"><b>第${row.day}日</b><span>${esc(row.kind)}</span><p>${esc(row.text)}</p></div>`).join("")}</section></div>`;
   }
 
   function render() {
@@ -465,7 +491,7 @@
     if (mode === "campaign") renderMap(current);
     if (mode === "combat") {
       document.querySelector("#combat-title").textContent = pendingCombat?.title || "战斗";
-      document.querySelector("#combat-supply").innerHTML = pendingCombat ? `<span>粮食 <b>${pendingCombat.foodCommitted}/${pendingCombat.fullFood}</b></span><span>发挥 <b>${Math.round(pendingCombat.supplyEffectiveness * 100)}%</b></span>` : "";
+      document.querySelector("#combat-supply").innerHTML = pendingCombat ? `<span>粮食消耗 <b>${pendingCombat.foodCommitted || 0}</b></span>${pendingCombat.totalArmy != null ? `<span>军队出战 <b>${pendingCombat.deployedArmy}/${pendingCombat.totalArmy}</b></span>` : ""}` : "";
       document.querySelector("#combat-result").hidden = !pendingCombatResult;
     }
     if (mode === "grind") renderGrindHud();

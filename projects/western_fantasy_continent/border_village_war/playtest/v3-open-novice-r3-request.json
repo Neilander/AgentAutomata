@@ -1,0 +1,67 @@
+{
+  "type": "attribution",
+  "schema": "border_village_war_player_attribution_request_v1",
+  "cycle": 29,
+  "agentSession": {
+    "reuseRequired": true
+  },
+  "instruction": "只根据这里列出的可见现象解释刚才发生了什么。不要补写隐藏规则；证据不足时降低置信度，并提出可验证的下一步。",
+  "action": {
+    "id": "choice_1eyniwo",
+    "label": "投入13粮食组织决战（5/5支部队可以出战）",
+    "kind": "combat"
+  },
+  "existingKnowledge": [
+    {
+      "knowledgeId": "knowledge_current",
+      "subject": {
+        "label": "你的村庄与队伍"
+      },
+      "environment": {
+        "region": "灰谷村",
+        "node": "战场",
+        "dayFirstSeen": 7
+      },
+      "behavior": {
+        "kind": "combat",
+        "label": "投入13粮食组织决战（5/5支部队可以出战）"
+      },
+      "result": {
+        "sampleCount": 1,
+        "outcomeDistribution": {
+          "observed": 1
+        },
+        "observations": [
+          {
+            "day": 7,
+            "summary": "灰谷村守住了。伊莎贝拉把染血的圣殿旗交给你保管。 资源变化：粮食41→28。 “灰谷村决战”获胜：我方10/12、敌方0/16仍能战斗；我方倒下：流民佣兵·赤犬、灰谷战士第4队，用时17.5秒；我方造成7910伤害、治疗196、获得738护盾；固定消耗粮食13，5/5支军队实际出战。"
+          }
+        ]
+      },
+      "evidenceEventIds": [
+        "visible:29:action-summary"
+      ],
+      "attributions": []
+    }
+  ],
+  "visibleEvents": [
+    {
+      "id": "evidence_1",
+      "type": "action_summary",
+      "action": "投入13粮食组织决战（5/5支部队可以出战）",
+      "summary": "灰谷村守住了。伊莎贝拉把染血的圣殿旗交给你保管。 资源变化：粮食41→28。 “灰谷村决战”获胜：我方10/12、敌方0/16仍能战斗；我方倒下：流民佣兵·赤犬、灰谷战士第4队，用时17.5秒；我方造成7910伤害、治疗196、获得738护盾；固定消耗粮食13，5/5支军队实际出战。"
+    }
+  ],
+  "responseContract": {
+    "knowledgeId": "knowledge_current",
+    "primaryCause": "short inference grounded in visibleEvents",
+    "confidence": "number from 0 to 1",
+    "evidenceEventIds": [
+      "one or more exact ids from visibleEvents"
+    ],
+    "alternativeCauses": [
+      "optional alternatives"
+    ],
+    "nextTest": "one falsifiable follow-up or empty string"
+  }
+}

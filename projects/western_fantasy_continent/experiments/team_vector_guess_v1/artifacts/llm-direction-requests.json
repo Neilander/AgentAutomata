@@ -1,0 +1,1412 @@
+{
+  "schema": "llm_team_need_direction_request_set_v1",
+  "generatedAt": "2026-08-01T10:00:48.393Z",
+  "blindBoundary": {
+    "candidateTeamVectorsIncluded": false,
+    "validationBattlesIncluded": false,
+    "opponentPresetIdIncluded": false,
+    "designerTagsIncluded": false
+  },
+  "requests": [
+    {
+      "schema": "llm_team_need_direction_request_v2",
+      "scenarioId": "survive_fire_burst",
+      "task": "根据玩家刚刚看到的失败和已有队伍认知，判断下一次应当优先寻找哪些能力。只输出需求方向，不选择具体队伍。",
+      "rules": [
+        "只能使用本请求中的玩家知识，不得假设隐藏敌人数值或设计标签。",
+        "你只有100点有限注意力预算，必须把它分配给九个方向；九项权重之和必须恰好为100。",
+        "权重表达相对优先级而不是能力是否有益。不要因为所有能力都有用就全部打高分。",
+        "最高的三个方向合计必须至少60点，确保输出形成可用于点积的明确方向。",
+        "不得输出候选队伍、角色名称、队伍ID或最终选择。",
+        "evidenceStatementIndices只能引用observedBattle.statements中的序号。"
+      ],
+      "goal": "下一次挑战同一种敌方阵容时，提高获胜机会。可以更换整支四人队。",
+      "currentTeamKnowledge": {
+        "formation": "骑士 / 牧师 / 法师 / 游侠",
+        "learnedSummary": "相对突出：控制、启动、保护；相对薄弱：增益、持续伤害",
+        "axes": {
+          "damage": {
+            "label": "伤害",
+            "relativeCoordinate": -0.4252,
+            "confidence": 0.8647
+          },
+          "protection": {
+            "label": "保护",
+            "relativeCoordinate": 0.1714,
+            "confidence": 0.8647
+          },
+          "buff": {
+            "label": "增益",
+            "relativeCoordinate": -0.7507,
+            "confidence": 0.8647
+          },
+          "tempo": {
+            "label": "启动",
+            "relativeCoordinate": 0.5536,
+            "confidence": 0.8647
+          },
+          "burst": {
+            "label": "爆发",
+            "relativeCoordinate": -0.2577,
+            "confidence": 0.8647
+          },
+          "sustained_damage": {
+            "label": "持续伤害",
+            "relativeCoordinate": -0.4675,
+            "confidence": 0.8647
+          },
+          "area_damage": {
+            "label": "群体伤害",
+            "relativeCoordinate": -0.1686,
+            "confidence": 0.8647
+          },
+          "control": {
+            "label": "控制",
+            "relativeCoordinate": 0.7856,
+            "confidence": 0.8647
+          },
+          "execution": {
+            "label": "单点处决",
+            "relativeCoordinate": 0.1066,
+            "confidence": 0.8647
+          }
+        }
+      },
+      "observedBattle": {
+        "outcome": "loss",
+        "ownAlive": 0,
+        "enemyAlive": 3,
+        "ownHp": 0,
+        "enemyHp": 2.017,
+        "statements": [
+          {
+            "index": 1,
+            "text": "本场战斗失败，我方无人存活。"
+          },
+          {
+            "index": 2,
+            "text": "铁壁骑士1、烬火法师3、银誓牧师2、月弦游侠4在本场战斗中倒下。"
+          },
+          {
+            "index": 3,
+            "text": "攻击方式不明显的敌方单位本场多次对我方造成伤害，占可见总量的大部分，主要打向银誓牧师2。"
+          },
+          {
+            "index": 4,
+            "text": "表现出远程攻击的敌方单位本场多次对我方造成伤害，占可见总量的一小部分，主要打向烬火法师3、银誓牧师2。"
+          },
+          {
+            "index": 5,
+            "text": "使用过护盾的敌方单位本场几次提供了护盾。"
+          },
+          {
+            "index": 6,
+            "text": "烬火法师3本场多次造成伤害，占可见总量的较大一部分。"
+          },
+          {
+            "index": 7,
+            "text": "银誓牧师2本场几次造成伤害，占可见总量的一小部分。"
+          }
+        ]
+      },
+      "availableDirections": [
+        {
+          "id": "damage",
+          "label": "伤害",
+          "meaning": "持续对敌人造成总体战斗伤害并压低敌方生命"
+        },
+        {
+          "id": "protection",
+          "label": "保护",
+          "meaning": "通过治疗和护盾保护队友并让队伍存活"
+        },
+        {
+          "id": "buff",
+          "label": "增益",
+          "meaning": "强化队友并放大全队能力"
+        },
+        {
+          "id": "tempo",
+          "label": "启动",
+          "meaning": "快速启动并在战斗前期形成有效压力"
+        },
+        {
+          "id": "burst",
+          "label": "爆发",
+          "meaning": "在很短时间内集中造成大量爆发伤害"
+        },
+        {
+          "id": "sustained_damage",
+          "label": "持续伤害",
+          "meaning": "依靠毒、灼烧或稳定输出长时间磨掉敌人生命"
+        },
+        {
+          "id": "area_damage",
+          "label": "群体伤害",
+          "meaning": "同时攻击多个敌人并快速清理成群目标"
+        },
+        {
+          "id": "control",
+          "label": "控制",
+          "meaning": "减速、冻结或限制敌人行动，为队伍争取时间"
+        },
+        {
+          "id": "execution",
+          "label": "单点处决",
+          "meaning": "集中攻击危险目标并快速完成单点击杀"
+        }
+      ],
+      "requiredOutput": {
+        "scenarioId": "原样返回",
+        "weights": {
+          "damage": "0..100 number; all nine sum to exactly 100",
+          "protection": "0..100 number; all nine sum to exactly 100",
+          "buff": "0..100 number; all nine sum to exactly 100",
+          "tempo": "0..100 number; all nine sum to exactly 100",
+          "burst": "0..100 number; all nine sum to exactly 100",
+          "sustained_damage": "0..100 number; all nine sum to exactly 100",
+          "area_damage": "0..100 number; all nine sum to exactly 100",
+          "control": "0..100 number; all nine sum to exactly 100",
+          "execution": "0..100 number; all nine sum to exactly 100"
+        },
+        "confidence": "0..1 number",
+        "evidenceStatementIndices": "integer[]",
+        "reasoning": "简短说明为什么这些能力是本次需求，而不是描述具体队伍",
+        "uncertainty": "目前证据无法判断的部分"
+      }
+    },
+    {
+      "schema": "llm_team_need_direction_request_v2",
+      "scenarioId": "break_frost_control",
+      "task": "根据玩家刚刚看到的失败和已有队伍认知，判断下一次应当优先寻找哪些能力。只输出需求方向，不选择具体队伍。",
+      "rules": [
+        "只能使用本请求中的玩家知识，不得假设隐藏敌人数值或设计标签。",
+        "你只有100点有限注意力预算，必须把它分配给九个方向；九项权重之和必须恰好为100。",
+        "权重表达相对优先级而不是能力是否有益。不要因为所有能力都有用就全部打高分。",
+        "最高的三个方向合计必须至少60点，确保输出形成可用于点积的明确方向。",
+        "不得输出候选队伍、角色名称、队伍ID或最终选择。",
+        "evidenceStatementIndices只能引用observedBattle.statements中的序号。"
+      ],
+      "goal": "下一次挑战同一种敌方阵容时，提高获胜机会。可以更换整支四人队。",
+      "currentTeamKnowledge": {
+        "formation": "骑士 / 牧师 / 法师 / 游侠",
+        "learnedSummary": "相对突出：控制、启动、保护；相对薄弱：增益、持续伤害",
+        "axes": {
+          "damage": {
+            "label": "伤害",
+            "relativeCoordinate": -0.4252,
+            "confidence": 0.8647
+          },
+          "protection": {
+            "label": "保护",
+            "relativeCoordinate": 0.1714,
+            "confidence": 0.8647
+          },
+          "buff": {
+            "label": "增益",
+            "relativeCoordinate": -0.7507,
+            "confidence": 0.8647
+          },
+          "tempo": {
+            "label": "启动",
+            "relativeCoordinate": 0.5536,
+            "confidence": 0.8647
+          },
+          "burst": {
+            "label": "爆发",
+            "relativeCoordinate": -0.2577,
+            "confidence": 0.8647
+          },
+          "sustained_damage": {
+            "label": "持续伤害",
+            "relativeCoordinate": -0.4675,
+            "confidence": 0.8647
+          },
+          "area_damage": {
+            "label": "群体伤害",
+            "relativeCoordinate": -0.1686,
+            "confidence": 0.8647
+          },
+          "control": {
+            "label": "控制",
+            "relativeCoordinate": 0.7856,
+            "confidence": 0.8647
+          },
+          "execution": {
+            "label": "单点处决",
+            "relativeCoordinate": 0.1066,
+            "confidence": 0.8647
+          }
+        }
+      },
+      "observedBattle": {
+        "outcome": "loss",
+        "ownAlive": 0,
+        "enemyAlive": 2,
+        "ownHp": 0,
+        "enemyHp": 1.113,
+        "statements": [
+          {
+            "index": 1,
+            "text": "本场战斗失败，我方无人存活。"
+          },
+          {
+            "index": 2,
+            "text": "银誓牧师2、烬火法师3、月弦游侠4、铁壁骑士1在本场战斗中倒下。"
+          },
+          {
+            "index": 3,
+            "text": "攻击方式不明显的敌方单位本场多次对我方造成伤害，占可见总量的大部分，主要打向铁壁骑士1。"
+          },
+          {
+            "index": 4,
+            "text": "表现出远程攻击的敌方单位本场多次对我方造成伤害，占可见总量的一小部分，主要打向烬火法师3。"
+          },
+          {
+            "index": 5,
+            "text": "月弦游侠4本场多次造成伤害，占可见总量的较大一部分。"
+          },
+          {
+            "index": 6,
+            "text": "使用过护盾的敌方单位本场多次提供了护盾。"
+          },
+          {
+            "index": 7,
+            "text": "铁壁骑士1本场多次施加护盾。"
+          },
+          {
+            "index": 8,
+            "text": "铁壁骑士1本场几次造成伤害，占可见总量的一小部分。"
+          },
+          {
+            "index": 9,
+            "text": "敌方单位本场施加过界面显示的“霜环”、“余烬火球”、“沼雾瓶”、“誓卫嘲讽”等效果。"
+          },
+          {
+            "index": 10,
+            "text": "我方角色本场施加过界面显示的“余烬火球”、“烈焰扩散”、“猎标箭”、“钉足箭”等效果。"
+          },
+          {
+            "index": 11,
+            "text": "敌方单位本场还使用过“净血护符”等可见技能。"
+          },
+          {
+            "index": 12,
+            "text": "我方在本场击倒了2个敌方单位。"
+          }
+        ]
+      },
+      "availableDirections": [
+        {
+          "id": "damage",
+          "label": "伤害",
+          "meaning": "持续对敌人造成总体战斗伤害并压低敌方生命"
+        },
+        {
+          "id": "protection",
+          "label": "保护",
+          "meaning": "通过治疗和护盾保护队友并让队伍存活"
+        },
+        {
+          "id": "buff",
+          "label": "增益",
+          "meaning": "强化队友并放大全队能力"
+        },
+        {
+          "id": "tempo",
+          "label": "启动",
+          "meaning": "快速启动并在战斗前期形成有效压力"
+        },
+        {
+          "id": "burst",
+          "label": "爆发",
+          "meaning": "在很短时间内集中造成大量爆发伤害"
+        },
+        {
+          "id": "sustained_damage",
+          "label": "持续伤害",
+          "meaning": "依靠毒、灼烧或稳定输出长时间磨掉敌人生命"
+        },
+        {
+          "id": "area_damage",
+          "label": "群体伤害",
+          "meaning": "同时攻击多个敌人并快速清理成群目标"
+        },
+        {
+          "id": "control",
+          "label": "控制",
+          "meaning": "减速、冻结或限制敌人行动，为队伍争取时间"
+        },
+        {
+          "id": "execution",
+          "label": "单点处决",
+          "meaning": "集中攻击危险目标并快速完成单点击杀"
+        }
+      ],
+      "requiredOutput": {
+        "scenarioId": "原样返回",
+        "weights": {
+          "damage": "0..100 number; all nine sum to exactly 100",
+          "protection": "0..100 number; all nine sum to exactly 100",
+          "buff": "0..100 number; all nine sum to exactly 100",
+          "tempo": "0..100 number; all nine sum to exactly 100",
+          "burst": "0..100 number; all nine sum to exactly 100",
+          "sustained_damage": "0..100 number; all nine sum to exactly 100",
+          "area_damage": "0..100 number; all nine sum to exactly 100",
+          "control": "0..100 number; all nine sum to exactly 100",
+          "execution": "0..100 number; all nine sum to exactly 100"
+        },
+        "confidence": "0..1 number",
+        "evidenceStatementIndices": "integer[]",
+        "reasoning": "简短说明为什么这些能力是本次需求，而不是描述具体队伍",
+        "uncertainty": "目前证据无法判断的部分"
+      }
+    },
+    {
+      "schema": "llm_team_need_direction_request_v2",
+      "scenarioId": "break_holy_sustain",
+      "task": "根据玩家刚刚看到的失败和已有队伍认知，判断下一次应当优先寻找哪些能力。只输出需求方向，不选择具体队伍。",
+      "rules": [
+        "只能使用本请求中的玩家知识，不得假设隐藏敌人数值或设计标签。",
+        "你只有100点有限注意力预算，必须把它分配给九个方向；九项权重之和必须恰好为100。",
+        "权重表达相对优先级而不是能力是否有益。不要因为所有能力都有用就全部打高分。",
+        "最高的三个方向合计必须至少60点，确保输出形成可用于点积的明确方向。",
+        "不得输出候选队伍、角色名称、队伍ID或最终选择。",
+        "evidenceStatementIndices只能引用observedBattle.statements中的序号。"
+      ],
+      "goal": "下一次挑战同一种敌方阵容时，提高获胜机会。可以更换整支四人队。",
+      "currentTeamKnowledge": {
+        "formation": "游侠 / 炼金师 / 术士 / 刺客",
+        "learnedSummary": "相对突出：启动、单点处决、控制；相对薄弱：保护、群体伤害",
+        "axes": {
+          "damage": {
+            "label": "伤害",
+            "relativeCoordinate": -0.0161,
+            "confidence": 0.8647
+          },
+          "protection": {
+            "label": "保护",
+            "relativeCoordinate": -1,
+            "confidence": 0.8647
+          },
+          "buff": {
+            "label": "增益",
+            "relativeCoordinate": -0.7037,
+            "confidence": 0.8647
+          },
+          "tempo": {
+            "label": "启动",
+            "relativeCoordinate": 0.9715,
+            "confidence": 0.8647
+          },
+          "burst": {
+            "label": "爆发",
+            "relativeCoordinate": -0.1394,
+            "confidence": 0.8647
+          },
+          "sustained_damage": {
+            "label": "持续伤害",
+            "relativeCoordinate": 0.0276,
+            "confidence": 0.8647
+          },
+          "area_damage": {
+            "label": "群体伤害",
+            "relativeCoordinate": -0.8468,
+            "confidence": 0.8647
+          },
+          "control": {
+            "label": "控制",
+            "relativeCoordinate": 0.8201,
+            "confidence": 0.8647
+          },
+          "execution": {
+            "label": "单点处决",
+            "relativeCoordinate": 0.8414,
+            "confidence": 0.8647
+          }
+        }
+      },
+      "observedBattle": {
+        "outcome": "loss",
+        "ownAlive": 0,
+        "enemyAlive": 3,
+        "ownHp": 0,
+        "enemyHp": 2.113,
+        "statements": [
+          {
+            "index": 1,
+            "text": "本场战斗失败，我方无人存活。"
+          },
+          {
+            "index": 2,
+            "text": "沼雾炼金师2、毒刃刺客4、月弦游侠1、灰契术士3在本场战斗中倒下。"
+          },
+          {
+            "index": 3,
+            "text": "攻击方式不明显的敌方单位本场多次对我方造成伤害，占可见总量的较大一部分，主要打向毒刃刺客4。"
+          },
+          {
+            "index": 4,
+            "text": "表现出近身攻击的敌方单位本场多次对我方造成伤害，占可见总量的较大一部分，主要打向沼雾炼金师2。"
+          },
+          {
+            "index": 5,
+            "text": "使用过治疗的敌方单位本场多次进行了治疗。"
+          },
+          {
+            "index": 6,
+            "text": "使用过护盾的敌方单位本场多次提供了护盾。"
+          },
+          {
+            "index": 7,
+            "text": "沼雾炼金师2本场多次造成伤害，占可见总量的一小部分。"
+          },
+          {
+            "index": 8,
+            "text": "我方角色本场施加过界面显示的“猎标箭”、“沼雾瓶”、“钉足箭”、“腐毒烙印”等效果。"
+          }
+        ]
+      },
+      "availableDirections": [
+        {
+          "id": "damage",
+          "label": "伤害",
+          "meaning": "持续对敌人造成总体战斗伤害并压低敌方生命"
+        },
+        {
+          "id": "protection",
+          "label": "保护",
+          "meaning": "通过治疗和护盾保护队友并让队伍存活"
+        },
+        {
+          "id": "buff",
+          "label": "增益",
+          "meaning": "强化队友并放大全队能力"
+        },
+        {
+          "id": "tempo",
+          "label": "启动",
+          "meaning": "快速启动并在战斗前期形成有效压力"
+        },
+        {
+          "id": "burst",
+          "label": "爆发",
+          "meaning": "在很短时间内集中造成大量爆发伤害"
+        },
+        {
+          "id": "sustained_damage",
+          "label": "持续伤害",
+          "meaning": "依靠毒、灼烧或稳定输出长时间磨掉敌人生命"
+        },
+        {
+          "id": "area_damage",
+          "label": "群体伤害",
+          "meaning": "同时攻击多个敌人并快速清理成群目标"
+        },
+        {
+          "id": "control",
+          "label": "控制",
+          "meaning": "减速、冻结或限制敌人行动，为队伍争取时间"
+        },
+        {
+          "id": "execution",
+          "label": "单点处决",
+          "meaning": "集中攻击危险目标并快速完成单点击杀"
+        }
+      ],
+      "requiredOutput": {
+        "scenarioId": "原样返回",
+        "weights": {
+          "damage": "0..100 number; all nine sum to exactly 100",
+          "protection": "0..100 number; all nine sum to exactly 100",
+          "buff": "0..100 number; all nine sum to exactly 100",
+          "tempo": "0..100 number; all nine sum to exactly 100",
+          "burst": "0..100 number; all nine sum to exactly 100",
+          "sustained_damage": "0..100 number; all nine sum to exactly 100",
+          "area_damage": "0..100 number; all nine sum to exactly 100",
+          "control": "0..100 number; all nine sum to exactly 100",
+          "execution": "0..100 number; all nine sum to exactly 100"
+        },
+        "confidence": "0..1 number",
+        "evidenceStatementIndices": "integer[]",
+        "reasoning": "简短说明为什么这些能力是本次需求，而不是描述具体队伍",
+        "uncertainty": "目前证据无法判断的部分"
+      }
+    },
+    {
+      "schema": "llm_team_need_direction_request_v2",
+      "scenarioId": "survive_fast_pressure",
+      "task": "根据玩家刚刚看到的失败和已有队伍认知，判断下一次应当优先寻找哪些能力。只输出需求方向，不选择具体队伍。",
+      "rules": [
+        "只能使用本请求中的玩家知识，不得假设隐藏敌人数值或设计标签。",
+        "你只有100点有限注意力预算，必须把它分配给九个方向；九项权重之和必须恰好为100。",
+        "权重表达相对优先级而不是能力是否有益。不要因为所有能力都有用就全部打高分。",
+        "最高的三个方向合计必须至少60点，确保输出形成可用于点积的明确方向。",
+        "不得输出候选队伍、角色名称、队伍ID或最终选择。",
+        "evidenceStatementIndices只能引用observedBattle.statements中的序号。"
+      ],
+      "goal": "下一次挑战同一种敌方阵容时，提高获胜机会。可以更换整支四人队。",
+      "currentTeamKnowledge": {
+        "formation": "牧师 / 吟游诗人 / 骑士 / 术士",
+        "learnedSummary": "相对突出：保护、增益；相对薄弱：群体伤害、伤害",
+        "axes": {
+          "damage": {
+            "label": "伤害",
+            "relativeCoordinate": -0.8197,
+            "confidence": 0.8647
+          },
+          "protection": {
+            "label": "保护",
+            "relativeCoordinate": 0.7287,
+            "confidence": 0.8647
+          },
+          "buff": {
+            "label": "增益",
+            "relativeCoordinate": 0.3136,
+            "confidence": 0.8647
+          },
+          "tempo": {
+            "label": "启动",
+            "relativeCoordinate": -0.34,
+            "confidence": 0.8647
+          },
+          "burst": {
+            "label": "爆发",
+            "relativeCoordinate": -0.7418,
+            "confidence": 0.8647
+          },
+          "sustained_damage": {
+            "label": "持续伤害",
+            "relativeCoordinate": -0.6516,
+            "confidence": 0.8647
+          },
+          "area_damage": {
+            "label": "群体伤害",
+            "relativeCoordinate": -0.8928,
+            "confidence": 0.8647
+          },
+          "control": {
+            "label": "控制",
+            "relativeCoordinate": 0,
+            "confidence": 0.8647
+          },
+          "execution": {
+            "label": "单点处决",
+            "relativeCoordinate": -0.2664,
+            "confidence": 0.8647
+          }
+        }
+      },
+      "observedBattle": {
+        "outcome": "loss",
+        "ownAlive": 0,
+        "enemyAlive": 3,
+        "ownHp": 0,
+        "enemyHp": 1.732,
+        "statements": [
+          {
+            "index": 1,
+            "text": "本场战斗失败，我方无人存活。"
+          },
+          {
+            "index": 2,
+            "text": "灰契术士4、晨歌诗人2、铁壁骑士3、银誓牧师1在本场战斗中倒下。"
+          },
+          {
+            "index": 3,
+            "text": "攻击方式不明显的敌方单位本场多次对我方造成伤害，占可见总量的较大一部分，主要打向铁壁骑士3。"
+          },
+          {
+            "index": 4,
+            "text": "表现出远程攻击的敌方单位本场多次对我方造成伤害，占可见总量的较大一部分，主要打向铁壁骑士3。"
+          },
+          {
+            "index": 5,
+            "text": "灰契术士4本场多次造成伤害，占可见总量的较大一部分。"
+          },
+          {
+            "index": 6,
+            "text": "银誓牧师1本场多次造成伤害，占可见总量的一小部分。"
+          },
+          {
+            "index": 7,
+            "text": "银誓牧师1本场多次施加护盾。"
+          },
+          {
+            "index": 8,
+            "text": "铁壁骑士3本场多次施加护盾。"
+          },
+          {
+            "index": 9,
+            "text": "敌方单位本场施加过界面显示的“猎标箭”、“钉足箭”、“急板战歌”、“勇气和弦”等效果。"
+          }
+        ]
+      },
+      "availableDirections": [
+        {
+          "id": "damage",
+          "label": "伤害",
+          "meaning": "持续对敌人造成总体战斗伤害并压低敌方生命"
+        },
+        {
+          "id": "protection",
+          "label": "保护",
+          "meaning": "通过治疗和护盾保护队友并让队伍存活"
+        },
+        {
+          "id": "buff",
+          "label": "增益",
+          "meaning": "强化队友并放大全队能力"
+        },
+        {
+          "id": "tempo",
+          "label": "启动",
+          "meaning": "快速启动并在战斗前期形成有效压力"
+        },
+        {
+          "id": "burst",
+          "label": "爆发",
+          "meaning": "在很短时间内集中造成大量爆发伤害"
+        },
+        {
+          "id": "sustained_damage",
+          "label": "持续伤害",
+          "meaning": "依靠毒、灼烧或稳定输出长时间磨掉敌人生命"
+        },
+        {
+          "id": "area_damage",
+          "label": "群体伤害",
+          "meaning": "同时攻击多个敌人并快速清理成群目标"
+        },
+        {
+          "id": "control",
+          "label": "控制",
+          "meaning": "减速、冻结或限制敌人行动，为队伍争取时间"
+        },
+        {
+          "id": "execution",
+          "label": "单点处决",
+          "meaning": "集中攻击危险目标并快速完成单点击杀"
+        }
+      ],
+      "requiredOutput": {
+        "scenarioId": "原样返回",
+        "weights": {
+          "damage": "0..100 number; all nine sum to exactly 100",
+          "protection": "0..100 number; all nine sum to exactly 100",
+          "buff": "0..100 number; all nine sum to exactly 100",
+          "tempo": "0..100 number; all nine sum to exactly 100",
+          "burst": "0..100 number; all nine sum to exactly 100",
+          "sustained_damage": "0..100 number; all nine sum to exactly 100",
+          "area_damage": "0..100 number; all nine sum to exactly 100",
+          "control": "0..100 number; all nine sum to exactly 100",
+          "execution": "0..100 number; all nine sum to exactly 100"
+        },
+        "confidence": "0..1 number",
+        "evidenceStatementIndices": "integer[]",
+        "reasoning": "简短说明为什么这些能力是本次需求，而不是描述具体队伍",
+        "uncertainty": "目前证据无法判断的部分"
+      }
+    },
+    {
+      "schema": "llm_team_need_direction_request_v2",
+      "scenarioId": "counter_poison_snowball",
+      "task": "根据玩家刚刚看到的失败和已有队伍认知，判断下一次应当优先寻找哪些能力。只输出需求方向，不选择具体队伍。",
+      "rules": [
+        "只能使用本请求中的玩家知识，不得假设隐藏敌人数值或设计标签。",
+        "你只有100点有限注意力预算，必须把它分配给九个方向；九项权重之和必须恰好为100。",
+        "权重表达相对优先级而不是能力是否有益。不要因为所有能力都有用就全部打高分。",
+        "最高的三个方向合计必须至少60点，确保输出形成可用于点积的明确方向。",
+        "不得输出候选队伍、角色名称、队伍ID或最终选择。",
+        "evidenceStatementIndices只能引用observedBattle.statements中的序号。"
+      ],
+      "goal": "下一次挑战同一种敌方阵容时，提高获胜机会。可以更换整支四人队。",
+      "currentTeamKnowledge": {
+        "formation": "牧师 / 吟游诗人 / 骑士 / 术士",
+        "learnedSummary": "相对突出：保护、增益；相对薄弱：群体伤害、伤害",
+        "axes": {
+          "damage": {
+            "label": "伤害",
+            "relativeCoordinate": -0.8197,
+            "confidence": 0.8647
+          },
+          "protection": {
+            "label": "保护",
+            "relativeCoordinate": 0.7287,
+            "confidence": 0.8647
+          },
+          "buff": {
+            "label": "增益",
+            "relativeCoordinate": 0.3136,
+            "confidence": 0.8647
+          },
+          "tempo": {
+            "label": "启动",
+            "relativeCoordinate": -0.34,
+            "confidence": 0.8647
+          },
+          "burst": {
+            "label": "爆发",
+            "relativeCoordinate": -0.7418,
+            "confidence": 0.8647
+          },
+          "sustained_damage": {
+            "label": "持续伤害",
+            "relativeCoordinate": -0.6516,
+            "confidence": 0.8647
+          },
+          "area_damage": {
+            "label": "群体伤害",
+            "relativeCoordinate": -0.8928,
+            "confidence": 0.8647
+          },
+          "control": {
+            "label": "控制",
+            "relativeCoordinate": 0,
+            "confidence": 0.8647
+          },
+          "execution": {
+            "label": "单点处决",
+            "relativeCoordinate": -0.2664,
+            "confidence": 0.8647
+          }
+        }
+      },
+      "observedBattle": {
+        "outcome": "loss",
+        "ownAlive": 0,
+        "enemyAlive": 3,
+        "ownHp": 0,
+        "enemyHp": 2.078,
+        "statements": [
+          {
+            "index": 1,
+            "text": "本场战斗失败，我方无人存活。"
+          },
+          {
+            "index": 2,
+            "text": "铁壁骑士3、银誓牧师1、晨歌诗人2、灰契术士4在本场战斗中倒下。"
+          },
+          {
+            "index": 3,
+            "text": "攻击方式不明显的敌方单位本场多次对我方造成伤害，占可见总量的大部分，主要打向晨歌诗人2。"
+          },
+          {
+            "index": 4,
+            "text": "灰契术士4本场多次造成伤害，占可见总量的大部分。"
+          },
+          {
+            "index": 5,
+            "text": "使用过护盾的敌方单位本场多次提供了护盾。"
+          },
+          {
+            "index": 6,
+            "text": "银誓牧师1本场多次治疗。"
+          },
+          {
+            "index": 7,
+            "text": "银誓牧师1本场多次施加护盾。"
+          },
+          {
+            "index": 8,
+            "text": "铁壁骑士3本场多次施加护盾。"
+          },
+          {
+            "index": 9,
+            "text": "敌方单位本场施加过界面显示的“腐毒烙印”、“沼雾瓶”、“毒刃连刺”、“誓卫嘲讽”等效果。"
+          },
+          {
+            "index": 10,
+            "text": "敌方单位本场还使用过“净血护符”、“暗影收割”、“神圣庇护”等可见技能。"
+          }
+        ]
+      },
+      "availableDirections": [
+        {
+          "id": "damage",
+          "label": "伤害",
+          "meaning": "持续对敌人造成总体战斗伤害并压低敌方生命"
+        },
+        {
+          "id": "protection",
+          "label": "保护",
+          "meaning": "通过治疗和护盾保护队友并让队伍存活"
+        },
+        {
+          "id": "buff",
+          "label": "增益",
+          "meaning": "强化队友并放大全队能力"
+        },
+        {
+          "id": "tempo",
+          "label": "启动",
+          "meaning": "快速启动并在战斗前期形成有效压力"
+        },
+        {
+          "id": "burst",
+          "label": "爆发",
+          "meaning": "在很短时间内集中造成大量爆发伤害"
+        },
+        {
+          "id": "sustained_damage",
+          "label": "持续伤害",
+          "meaning": "依靠毒、灼烧或稳定输出长时间磨掉敌人生命"
+        },
+        {
+          "id": "area_damage",
+          "label": "群体伤害",
+          "meaning": "同时攻击多个敌人并快速清理成群目标"
+        },
+        {
+          "id": "control",
+          "label": "控制",
+          "meaning": "减速、冻结或限制敌人行动，为队伍争取时间"
+        },
+        {
+          "id": "execution",
+          "label": "单点处决",
+          "meaning": "集中攻击危险目标并快速完成单点击杀"
+        }
+      ],
+      "requiredOutput": {
+        "scenarioId": "原样返回",
+        "weights": {
+          "damage": "0..100 number; all nine sum to exactly 100",
+          "protection": "0..100 number; all nine sum to exactly 100",
+          "buff": "0..100 number; all nine sum to exactly 100",
+          "tempo": "0..100 number; all nine sum to exactly 100",
+          "burst": "0..100 number; all nine sum to exactly 100",
+          "sustained_damage": "0..100 number; all nine sum to exactly 100",
+          "area_damage": "0..100 number; all nine sum to exactly 100",
+          "control": "0..100 number; all nine sum to exactly 100",
+          "execution": "0..100 number; all nine sum to exactly 100"
+        },
+        "confidence": "0..1 number",
+        "evidenceStatementIndices": "integer[]",
+        "reasoning": "简短说明为什么这些能力是本次需求，而不是描述具体队伍",
+        "uncertainty": "目前证据无法判断的部分"
+      }
+    },
+    {
+      "schema": "llm_team_need_direction_request_v2",
+      "scenarioId": "survive_fire_without_healer",
+      "task": "根据玩家刚刚看到的失败和已有队伍认知，判断下一次应当优先寻找哪些能力。只输出需求方向，不选择具体队伍。",
+      "rules": [
+        "只能使用本请求中的玩家知识，不得假设隐藏敌人数值或设计标签。",
+        "你只有100点有限注意力预算，必须把它分配给九个方向；九项权重之和必须恰好为100。",
+        "权重表达相对优先级而不是能力是否有益。不要因为所有能力都有用就全部打高分。",
+        "最高的三个方向合计必须至少60点，确保输出形成可用于点积的明确方向。",
+        "不得输出候选队伍、角色名称、队伍ID或最终选择。",
+        "evidenceStatementIndices只能引用observedBattle.statements中的序号。"
+      ],
+      "goal": "下一次挑战同一种敌方阵容时，提高获胜机会。可以更换整支四人队。",
+      "currentTeamKnowledge": {
+        "formation": "术士 / 骑士 / 骑士 / 术士",
+        "learnedSummary": "相对突出：群体伤害、持续伤害；相对薄弱：启动、伤害",
+        "axes": {
+          "damage": {
+            "label": "伤害",
+            "relativeCoordinate": -0.4838,
+            "confidence": 0.8647
+          },
+          "protection": {
+            "label": "保护",
+            "relativeCoordinate": 0,
+            "confidence": 0.8647
+          },
+          "buff": {
+            "label": "增益",
+            "relativeCoordinate": -0.0028,
+            "confidence": 0.8647
+          },
+          "tempo": {
+            "label": "启动",
+            "relativeCoordinate": -0.5561,
+            "confidence": 0.8647
+          },
+          "burst": {
+            "label": "爆发",
+            "relativeCoordinate": -0.1609,
+            "confidence": 0.8647
+          },
+          "sustained_damage": {
+            "label": "持续伤害",
+            "relativeCoordinate": 0.0539,
+            "confidence": 0.8647
+          },
+          "area_damage": {
+            "label": "群体伤害",
+            "relativeCoordinate": 0.3024,
+            "confidence": 0.8647
+          },
+          "control": {
+            "label": "控制",
+            "relativeCoordinate": 0,
+            "confidence": 0.8647
+          },
+          "execution": {
+            "label": "单点处决",
+            "relativeCoordinate": -0.3,
+            "confidence": 0.8647
+          }
+        }
+      },
+      "observedBattle": {
+        "outcome": "loss",
+        "ownAlive": 0,
+        "enemyAlive": 3,
+        "ownHp": 0,
+        "enemyHp": 1.804,
+        "statements": [
+          {
+            "index": 1,
+            "text": "本场战斗失败，我方无人存活。"
+          },
+          {
+            "index": 2,
+            "text": "铁壁骑士3、灰契术士1、铁壁骑士2、灰契术士4在本场战斗中倒下。"
+          },
+          {
+            "index": 3,
+            "text": "表现出远程攻击的敌方单位本场多次对我方造成伤害，占可见总量的一小部分，主要打向铁壁骑士2。"
+          },
+          {
+            "index": 4,
+            "text": "使用过护盾的敌方单位本场几次提供了护盾。"
+          },
+          {
+            "index": 5,
+            "text": "铁壁骑士2本场几次施加护盾。"
+          },
+          {
+            "index": 6,
+            "text": "铁壁骑士3本场几次施加护盾。"
+          },
+          {
+            "index": 7,
+            "text": "敌方单位本场施加过界面显示的“余烬火球”、“烈焰扩散”、“誓卫嘲讽”、“重击”等效果。"
+          },
+          {
+            "index": 8,
+            "text": "我方角色本场施加过界面显示的“腐毒烙印”、“血契供奉”、“誓卫嘲讽”、“Poison Spread”等效果。"
+          }
+        ]
+      },
+      "availableDirections": [
+        {
+          "id": "damage",
+          "label": "伤害",
+          "meaning": "持续对敌人造成总体战斗伤害并压低敌方生命"
+        },
+        {
+          "id": "protection",
+          "label": "保护",
+          "meaning": "通过治疗和护盾保护队友并让队伍存活"
+        },
+        {
+          "id": "buff",
+          "label": "增益",
+          "meaning": "强化队友并放大全队能力"
+        },
+        {
+          "id": "tempo",
+          "label": "启动",
+          "meaning": "快速启动并在战斗前期形成有效压力"
+        },
+        {
+          "id": "burst",
+          "label": "爆发",
+          "meaning": "在很短时间内集中造成大量爆发伤害"
+        },
+        {
+          "id": "sustained_damage",
+          "label": "持续伤害",
+          "meaning": "依靠毒、灼烧或稳定输出长时间磨掉敌人生命"
+        },
+        {
+          "id": "area_damage",
+          "label": "群体伤害",
+          "meaning": "同时攻击多个敌人并快速清理成群目标"
+        },
+        {
+          "id": "control",
+          "label": "控制",
+          "meaning": "减速、冻结或限制敌人行动，为队伍争取时间"
+        },
+        {
+          "id": "execution",
+          "label": "单点处决",
+          "meaning": "集中攻击危险目标并快速完成单点击杀"
+        }
+      ],
+      "requiredOutput": {
+        "scenarioId": "原样返回",
+        "weights": {
+          "damage": "0..100 number; all nine sum to exactly 100",
+          "protection": "0..100 number; all nine sum to exactly 100",
+          "buff": "0..100 number; all nine sum to exactly 100",
+          "tempo": "0..100 number; all nine sum to exactly 100",
+          "burst": "0..100 number; all nine sum to exactly 100",
+          "sustained_damage": "0..100 number; all nine sum to exactly 100",
+          "area_damage": "0..100 number; all nine sum to exactly 100",
+          "control": "0..100 number; all nine sum to exactly 100",
+          "execution": "0..100 number; all nine sum to exactly 100"
+        },
+        "confidence": "0..1 number",
+        "evidenceStatementIndices": "integer[]",
+        "reasoning": "简短说明为什么这些能力是本次需求，而不是描述具体队伍",
+        "uncertainty": "目前证据无法判断的部分"
+      }
+    },
+    {
+      "schema": "llm_team_need_direction_request_v2",
+      "scenarioId": "escape_control_lock",
+      "task": "根据玩家刚刚看到的失败和已有队伍认知，判断下一次应当优先寻找哪些能力。只输出需求方向，不选择具体队伍。",
+      "rules": [
+        "只能使用本请求中的玩家知识，不得假设隐藏敌人数值或设计标签。",
+        "你只有100点有限注意力预算，必须把它分配给九个方向；九项权重之和必须恰好为100。",
+        "权重表达相对优先级而不是能力是否有益。不要因为所有能力都有用就全部打高分。",
+        "最高的三个方向合计必须至少60点，确保输出形成可用于点积的明确方向。",
+        "不得输出候选队伍、角色名称、队伍ID或最终选择。",
+        "evidenceStatementIndices只能引用observedBattle.statements中的序号。"
+      ],
+      "goal": "下一次挑战同一种敌方阵容时，提高获胜机会。可以更换整支四人队。",
+      "currentTeamKnowledge": {
+        "formation": "术士 / 骑士 / 骑士 / 术士",
+        "learnedSummary": "相对突出：群体伤害、持续伤害；相对薄弱：启动、伤害",
+        "axes": {
+          "damage": {
+            "label": "伤害",
+            "relativeCoordinate": -0.4838,
+            "confidence": 0.8647
+          },
+          "protection": {
+            "label": "保护",
+            "relativeCoordinate": 0,
+            "confidence": 0.8647
+          },
+          "buff": {
+            "label": "增益",
+            "relativeCoordinate": -0.0028,
+            "confidence": 0.8647
+          },
+          "tempo": {
+            "label": "启动",
+            "relativeCoordinate": -0.5561,
+            "confidence": 0.8647
+          },
+          "burst": {
+            "label": "爆发",
+            "relativeCoordinate": -0.1609,
+            "confidence": 0.8647
+          },
+          "sustained_damage": {
+            "label": "持续伤害",
+            "relativeCoordinate": 0.0539,
+            "confidence": 0.8647
+          },
+          "area_damage": {
+            "label": "群体伤害",
+            "relativeCoordinate": 0.3024,
+            "confidence": 0.8647
+          },
+          "control": {
+            "label": "控制",
+            "relativeCoordinate": 0,
+            "confidence": 0.8647
+          },
+          "execution": {
+            "label": "单点处决",
+            "relativeCoordinate": -0.3,
+            "confidence": 0.8647
+          }
+        }
+      },
+      "observedBattle": {
+        "outcome": "loss",
+        "ownAlive": 0,
+        "enemyAlive": 3,
+        "ownHp": 0,
+        "enemyHp": 3,
+        "statements": [
+          {
+            "index": 1,
+            "text": "本场战斗失败，我方无人存活。"
+          },
+          {
+            "index": 2,
+            "text": "铁壁骑士2、灰契术士1、灰契术士4、铁壁骑士3在本场战斗中倒下。"
+          },
+          {
+            "index": 3,
+            "text": "攻击方式不明显的敌方单位本场多次对我方造成伤害，占可见总量的大部分，主要打向铁壁骑士2。"
+          },
+          {
+            "index": 4,
+            "text": "表现出远程攻击的敌方单位本场多次对我方造成伤害，占可见总量的一小部分，主要打向铁壁骑士3。"
+          },
+          {
+            "index": 5,
+            "text": "灰契术士4本场多次造成伤害，占可见总量的大部分。"
+          },
+          {
+            "index": 6,
+            "text": "使用过治疗的敌方单位本场几次进行了治疗。"
+          },
+          {
+            "index": 7,
+            "text": "使用过护盾的敌方单位本场多次提供了护盾。"
+          },
+          {
+            "index": 8,
+            "text": "铁壁骑士3本场多次施加护盾。"
+          },
+          {
+            "index": 9,
+            "text": "铁壁骑士2本场几次施加护盾。"
+          },
+          {
+            "index": 10,
+            "text": "敌方单位本场施加过界面显示的“沼雾瓶”、“霜环”、“余烬火球”、“誓卫嘲讽”等效果。"
+          },
+          {
+            "index": 11,
+            "text": "敌方单位本场还使用过“净血护符”、“终极混剂”、“神圣庇护”等可见技能。"
+          }
+        ]
+      },
+      "availableDirections": [
+        {
+          "id": "damage",
+          "label": "伤害",
+          "meaning": "持续对敌人造成总体战斗伤害并压低敌方生命"
+        },
+        {
+          "id": "protection",
+          "label": "保护",
+          "meaning": "通过治疗和护盾保护队友并让队伍存活"
+        },
+        {
+          "id": "buff",
+          "label": "增益",
+          "meaning": "强化队友并放大全队能力"
+        },
+        {
+          "id": "tempo",
+          "label": "启动",
+          "meaning": "快速启动并在战斗前期形成有效压力"
+        },
+        {
+          "id": "burst",
+          "label": "爆发",
+          "meaning": "在很短时间内集中造成大量爆发伤害"
+        },
+        {
+          "id": "sustained_damage",
+          "label": "持续伤害",
+          "meaning": "依靠毒、灼烧或稳定输出长时间磨掉敌人生命"
+        },
+        {
+          "id": "area_damage",
+          "label": "群体伤害",
+          "meaning": "同时攻击多个敌人并快速清理成群目标"
+        },
+        {
+          "id": "control",
+          "label": "控制",
+          "meaning": "减速、冻结或限制敌人行动，为队伍争取时间"
+        },
+        {
+          "id": "execution",
+          "label": "单点处决",
+          "meaning": "集中攻击危险目标并快速完成单点击杀"
+        }
+      ],
+      "requiredOutput": {
+        "scenarioId": "原样返回",
+        "weights": {
+          "damage": "0..100 number; all nine sum to exactly 100",
+          "protection": "0..100 number; all nine sum to exactly 100",
+          "buff": "0..100 number; all nine sum to exactly 100",
+          "tempo": "0..100 number; all nine sum to exactly 100",
+          "burst": "0..100 number; all nine sum to exactly 100",
+          "sustained_damage": "0..100 number; all nine sum to exactly 100",
+          "area_damage": "0..100 number; all nine sum to exactly 100",
+          "control": "0..100 number; all nine sum to exactly 100",
+          "execution": "0..100 number; all nine sum to exactly 100"
+        },
+        "confidence": "0..1 number",
+        "evidenceStatementIndices": "integer[]",
+        "reasoning": "简短说明为什么这些能力是本次需求，而不是描述具体队伍",
+        "uncertainty": "目前证据无法判断的部分"
+      }
+    },
+    {
+      "schema": "llm_team_need_direction_request_v2",
+      "scenarioId": "stabilize_poison_glass_team",
+      "task": "根据玩家刚刚看到的失败和已有队伍认知，判断下一次应当优先寻找哪些能力。只输出需求方向，不选择具体队伍。",
+      "rules": [
+        "只能使用本请求中的玩家知识，不得假设隐藏敌人数值或设计标签。",
+        "你只有100点有限注意力预算，必须把它分配给九个方向；九项权重之和必须恰好为100。",
+        "权重表达相对优先级而不是能力是否有益。不要因为所有能力都有用就全部打高分。",
+        "最高的三个方向合计必须至少60点，确保输出形成可用于点积的明确方向。",
+        "不得输出候选队伍、角色名称、队伍ID或最终选择。",
+        "evidenceStatementIndices只能引用observedBattle.statements中的序号。"
+      ],
+      "goal": "下一次挑战同一种敌方阵容时，提高获胜机会。可以更换整支四人队。",
+      "currentTeamKnowledge": {
+        "formation": "游侠 / 炼金师 / 术士 / 刺客",
+        "learnedSummary": "相对突出：启动、单点处决、控制；相对薄弱：保护、群体伤害",
+        "axes": {
+          "damage": {
+            "label": "伤害",
+            "relativeCoordinate": -0.0161,
+            "confidence": 0.8647
+          },
+          "protection": {
+            "label": "保护",
+            "relativeCoordinate": -1,
+            "confidence": 0.8647
+          },
+          "buff": {
+            "label": "增益",
+            "relativeCoordinate": -0.7037,
+            "confidence": 0.8647
+          },
+          "tempo": {
+            "label": "启动",
+            "relativeCoordinate": 0.9715,
+            "confidence": 0.8647
+          },
+          "burst": {
+            "label": "爆发",
+            "relativeCoordinate": -0.1394,
+            "confidence": 0.8647
+          },
+          "sustained_damage": {
+            "label": "持续伤害",
+            "relativeCoordinate": 0.0276,
+            "confidence": 0.8647
+          },
+          "area_damage": {
+            "label": "群体伤害",
+            "relativeCoordinate": -0.8468,
+            "confidence": 0.8647
+          },
+          "control": {
+            "label": "控制",
+            "relativeCoordinate": 0.8201,
+            "confidence": 0.8647
+          },
+          "execution": {
+            "label": "单点处决",
+            "relativeCoordinate": 0.8414,
+            "confidence": 0.8647
+          }
+        }
+      },
+      "observedBattle": {
+        "outcome": "loss",
+        "ownAlive": 0,
+        "enemyAlive": 2,
+        "ownHp": 0,
+        "enemyHp": 1.36,
+        "statements": [
+          {
+            "index": 1,
+            "text": "本场战斗失败，我方无人存活。"
+          },
+          {
+            "index": 2,
+            "text": "毒刃刺客4、月弦游侠1、沼雾炼金师2、灰契术士3在本场战斗中倒下。"
+          },
+          {
+            "index": 3,
+            "text": "攻击方式不明显的敌方单位本场多次对我方造成伤害，占可见总量的大部分，主要打向月弦游侠1、沼雾炼金师2。"
+          },
+          {
+            "index": 4,
+            "text": "灰契术士3本场多次造成伤害，占可见总量的一小部分。"
+          },
+          {
+            "index": 5,
+            "text": "敌方单位本场施加过界面显示的“腐毒烙印”、“毒刃连刺”、“沼雾瓶”、“Poison Spread”等效果。"
+          },
+          {
+            "index": 6,
+            "text": "我方角色本场施加过界面显示的“猎标箭”、“沼雾瓶”、“钉足箭”、“腐毒烙印”等效果。"
+          },
+          {
+            "index": 7,
+            "text": "敌方单位本场还使用过“净血护符”、“暗影收割”等可见技能。"
+          }
+        ]
+      },
+      "availableDirections": [
+        {
+          "id": "damage",
+          "label": "伤害",
+          "meaning": "持续对敌人造成总体战斗伤害并压低敌方生命"
+        },
+        {
+          "id": "protection",
+          "label": "保护",
+          "meaning": "通过治疗和护盾保护队友并让队伍存活"
+        },
+        {
+          "id": "buff",
+          "label": "增益",
+          "meaning": "强化队友并放大全队能力"
+        },
+        {
+          "id": "tempo",
+          "label": "启动",
+          "meaning": "快速启动并在战斗前期形成有效压力"
+        },
+        {
+          "id": "burst",
+          "label": "爆发",
+          "meaning": "在很短时间内集中造成大量爆发伤害"
+        },
+        {
+          "id": "sustained_damage",
+          "label": "持续伤害",
+          "meaning": "依靠毒、灼烧或稳定输出长时间磨掉敌人生命"
+        },
+        {
+          "id": "area_damage",
+          "label": "群体伤害",
+          "meaning": "同时攻击多个敌人并快速清理成群目标"
+        },
+        {
+          "id": "control",
+          "label": "控制",
+          "meaning": "减速、冻结或限制敌人行动，为队伍争取时间"
+        },
+        {
+          "id": "execution",
+          "label": "单点处决",
+          "meaning": "集中攻击危险目标并快速完成单点击杀"
+        }
+      ],
+      "requiredOutput": {
+        "scenarioId": "原样返回",
+        "weights": {
+          "damage": "0..100 number; all nine sum to exactly 100",
+          "protection": "0..100 number; all nine sum to exactly 100",
+          "buff": "0..100 number; all nine sum to exactly 100",
+          "tempo": "0..100 number; all nine sum to exactly 100",
+          "burst": "0..100 number; all nine sum to exactly 100",
+          "sustained_damage": "0..100 number; all nine sum to exactly 100",
+          "area_damage": "0..100 number; all nine sum to exactly 100",
+          "control": "0..100 number; all nine sum to exactly 100",
+          "execution": "0..100 number; all nine sum to exactly 100"
+        },
+        "confidence": "0..1 number",
+        "evidenceStatementIndices": "integer[]",
+        "reasoning": "简短说明为什么这些能力是本次需求，而不是描述具体队伍",
+        "uncertainty": "目前证据无法判断的部分"
+      }
+    }
+  ]
+}

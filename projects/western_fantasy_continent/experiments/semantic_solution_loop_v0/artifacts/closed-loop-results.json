@@ -1,0 +1,1420 @@
+{
+  "schema": "semantic_solution_closed_loop_v0",
+  "boundary": {
+    "formalPlayerAgentModified": false,
+    "opponentsAbsentFromPriorTraining": true,
+    "hiddenTruthUsedForSelection": false,
+    "startFailureUsesLiveVisibleResultOnly": true,
+    "mindToyModel": "multi_ranking",
+    "mindToyBuiltByAI": false,
+    "mindToyReason": "one-step roster choice has a frozen minimal sufficient structure; experiment tests retrieval and learning rather than AI schema generation",
+    "diagnosisRuleIsCodeOwnedV0": true,
+    "causalVerificationUsesOrdinaryPerceptionAndRealStructuredEventMatcher": true,
+    "fullLoopMemoryPersistsAcrossEpisodesWithinTheSameOpponent": true,
+    "noLearningBaselineResetsAfterEachEpisode": true
+  },
+  "parameters": {
+    "recallLimit": 8,
+    "mindToyLimit": 3,
+    "attemptLimit": 2,
+    "availableTeamLimit": 16,
+    "fitWeight": 0.5,
+    "contextualValueWeight": 0.5,
+    "adaptiveDirectRadius": 0.019907,
+    "conceptRadius": 0.043796,
+    "conceptInfluence": "relative activation squared from the known-team 30th to 90th semantic percentile"
+  },
+  "corpus": {
+    "teamCount": 50,
+    "priorOpponentCount": 6,
+    "unseenOpponents": [
+      "ironWall",
+      "purgeAttrition",
+      "frostTrapField",
+      "cavalryBreak",
+      "martyrFrontline"
+    ],
+    "episodeCount": 124,
+    "candidatePoolRule": "start team plus 15 deterministic player-available teams chosen without hidden outcomes",
+    "needCounts": {
+      "attrition": 26,
+      "survive": 93,
+      "finish": 5
+    }
+  },
+  "methods": {
+    "random": {
+      "episodeCount": 124,
+      "actualSolveRate": 0.7177,
+      "meanAttemptsUsed": 1.5565,
+      "startHiddenWinRate": 0.082,
+      "firstChoiceHiddenWinRate": 0.4402,
+      "selectedAttemptHiddenWinRate": 0.4607,
+      "hiddenImprovementOverStart": 0.3582,
+      "positiveFirstChoiceImprovementRate": 0.5161,
+      "perOpponent": {
+        "ironWall": {
+          "episodes": 21,
+          "actualSolveRate": 0.9524,
+          "firstChoiceHiddenWinRate": 0.7183,
+          "hiddenImprovementOverStart": 0.6111
+        },
+        "purgeAttrition": {
+          "episodes": 18,
+          "actualSolveRate": 0.8889,
+          "firstChoiceHiddenWinRate": 0.4815,
+          "hiddenImprovementOverStart": 0.4167
+        },
+        "frostTrapField": {
+          "episodes": 37,
+          "actualSolveRate": 0.4595,
+          "firstChoiceHiddenWinRate": 0.25,
+          "hiddenImprovementOverStart": 0.1982
+        },
+        "cavalryBreak": {
+          "episodes": 27,
+          "actualSolveRate": 0.8148,
+          "firstChoiceHiddenWinRate": 0.429,
+          "hiddenImprovementOverStart": 0.2685
+        },
+        "martyrFrontline": {
+          "episodes": 21,
+          "actualSolveRate": 0.6667,
+          "firstChoiceHiddenWinRate": 0.4762,
+          "hiddenImprovementOverStart": 0.4524
+        }
+      }
+    },
+    "keyword": {
+      "episodeCount": 124,
+      "actualSolveRate": 0.6532,
+      "meanAttemptsUsed": 1.6613,
+      "startHiddenWinRate": 0.082,
+      "firstChoiceHiddenWinRate": 0.3569,
+      "selectedAttemptHiddenWinRate": 0.4098,
+      "hiddenImprovementOverStart": 0.2749,
+      "positiveFirstChoiceImprovementRate": 0.4758,
+      "perOpponent": {
+        "ironWall": {
+          "episodes": 21,
+          "actualSolveRate": 0.9524,
+          "firstChoiceHiddenWinRate": 0.6667,
+          "hiddenImprovementOverStart": 0.5595
+        },
+        "purgeAttrition": {
+          "episodes": 18,
+          "actualSolveRate": 0.7778,
+          "firstChoiceHiddenWinRate": 0.4722,
+          "hiddenImprovementOverStart": 0.4074
+        },
+        "frostTrapField": {
+          "episodes": 37,
+          "actualSolveRate": 0.4324,
+          "firstChoiceHiddenWinRate": 0.1486,
+          "hiddenImprovementOverStart": 0.0968
+        },
+        "cavalryBreak": {
+          "episodes": 27,
+          "actualSolveRate": 0.5556,
+          "firstChoiceHiddenWinRate": 0.2654,
+          "hiddenImprovementOverStart": 0.1049
+        },
+        "martyrFrontline": {
+          "episodes": 21,
+          "actualSolveRate": 0.7619,
+          "firstChoiceHiddenWinRate": 0.4325,
+          "hiddenImprovementOverStart": 0.4087
+        }
+      }
+    },
+    "semantic_only": {
+      "episodeCount": 124,
+      "actualSolveRate": 0.9435,
+      "meanAttemptsUsed": 1.1371,
+      "startHiddenWinRate": 0.082,
+      "firstChoiceHiddenWinRate": 0.8575,
+      "selectedAttemptHiddenWinRate": 0.8298,
+      "hiddenImprovementOverStart": 0.7755,
+      "positiveFirstChoiceImprovementRate": 0.879,
+      "perOpponent": {
+        "ironWall": {
+          "episodes": 21,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 1,
+          "hiddenImprovementOverStart": 0.8929
+        },
+        "purgeAttrition": {
+          "episodes": 18,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 0.8889,
+          "hiddenImprovementOverStart": 0.8241
+        },
+        "frostTrapField": {
+          "episodes": 37,
+          "actualSolveRate": 0.8919,
+          "firstChoiceHiddenWinRate": 0.7703,
+          "hiddenImprovementOverStart": 0.7185
+        },
+        "cavalryBreak": {
+          "episodes": 27,
+          "actualSolveRate": 0.9259,
+          "firstChoiceHiddenWinRate": 0.858,
+          "hiddenImprovementOverStart": 0.6975
+        },
+        "martyrFrontline": {
+          "episodes": 21,
+          "actualSolveRate": 0.9524,
+          "firstChoiceHiddenWinRate": 0.8413,
+          "hiddenImprovementOverStart": 0.8175
+        }
+      }
+    },
+    "static_fit_value": {
+      "episodeCount": 124,
+      "actualSolveRate": 0.9516,
+      "meanAttemptsUsed": 1.0806,
+      "startHiddenWinRate": 0.082,
+      "firstChoiceHiddenWinRate": 0.9207,
+      "selectedAttemptHiddenWinRate": 0.8955,
+      "hiddenImprovementOverStart": 0.8387,
+      "positiveFirstChoiceImprovementRate": 0.9355,
+      "perOpponent": {
+        "ironWall": {
+          "episodes": 21,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 1,
+          "hiddenImprovementOverStart": 0.8929
+        },
+        "purgeAttrition": {
+          "episodes": 18,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 1,
+          "hiddenImprovementOverStart": 0.9352
+        },
+        "frostTrapField": {
+          "episodes": 37,
+          "actualSolveRate": 0.8919,
+          "firstChoiceHiddenWinRate": 0.8198,
+          "hiddenImprovementOverStart": 0.768
+        },
+        "cavalryBreak": {
+          "episodes": 27,
+          "actualSolveRate": 0.9259,
+          "firstChoiceHiddenWinRate": 0.8827,
+          "hiddenImprovementOverStart": 0.7222
+        },
+        "martyrFrontline": {
+          "episodes": 21,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 1,
+          "hiddenImprovementOverStart": 0.9762
+        }
+      }
+    },
+    "mindtoy_no_learning": {
+      "episodeCount": 124,
+      "actualSolveRate": 0.9839,
+      "meanAttemptsUsed": 1.129,
+      "startHiddenWinRate": 0.082,
+      "firstChoiceHiddenWinRate": 0.8427,
+      "selectedAttemptHiddenWinRate": 0.8405,
+      "hiddenImprovementOverStart": 0.7608,
+      "positiveFirstChoiceImprovementRate": 0.871,
+      "perOpponent": {
+        "ironWall": {
+          "episodes": 21,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 1,
+          "hiddenImprovementOverStart": 0.8929
+        },
+        "purgeAttrition": {
+          "episodes": 18,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 0.8889,
+          "hiddenImprovementOverStart": 0.8241
+        },
+        "frostTrapField": {
+          "episodes": 37,
+          "actualSolveRate": 0.9459,
+          "firstChoiceHiddenWinRate": 0.6937,
+          "hiddenImprovementOverStart": 0.6419
+        },
+        "cavalryBreak": {
+          "episodes": 27,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 0.8086,
+          "hiddenImprovementOverStart": 0.6481
+        },
+        "martyrFrontline": {
+          "episodes": 21,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 0.9524,
+          "hiddenImprovementOverStart": 0.9286
+        }
+      }
+    },
+    "persistent_r_only": {
+      "episodeCount": 124,
+      "actualSolveRate": 0.9919,
+      "meanAttemptsUsed": 1.0726,
+      "startHiddenWinRate": 0.082,
+      "firstChoiceHiddenWinRate": 0.8992,
+      "selectedAttemptHiddenWinRate": 0.896,
+      "hiddenImprovementOverStart": 0.8172,
+      "positiveFirstChoiceImprovementRate": 0.9274,
+      "perOpponent": {
+        "ironWall": {
+          "episodes": 21,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 1,
+          "hiddenImprovementOverStart": 0.8929
+        },
+        "purgeAttrition": {
+          "episodes": 18,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 0.9444,
+          "hiddenImprovementOverStart": 0.8796
+        },
+        "frostTrapField": {
+          "episodes": 37,
+          "actualSolveRate": 0.973,
+          "firstChoiceHiddenWinRate": 0.8333,
+          "hiddenImprovementOverStart": 0.7815
+        },
+        "cavalryBreak": {
+          "episodes": 27,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 0.8765,
+          "hiddenImprovementOverStart": 0.7161
+        },
+        "martyrFrontline": {
+          "episodes": 21,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 0.9048,
+          "hiddenImprovementOverStart": 0.881
+        }
+      }
+    },
+    "full_closed_loop": {
+      "episodeCount": 124,
+      "actualSolveRate": 0.9919,
+      "meanAttemptsUsed": 1.0726,
+      "startHiddenWinRate": 0.082,
+      "firstChoiceHiddenWinRate": 0.8992,
+      "selectedAttemptHiddenWinRate": 0.896,
+      "hiddenImprovementOverStart": 0.8172,
+      "positiveFirstChoiceImprovementRate": 0.9274,
+      "perOpponent": {
+        "ironWall": {
+          "episodes": 21,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 1,
+          "hiddenImprovementOverStart": 0.8929
+        },
+        "purgeAttrition": {
+          "episodes": 18,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 0.9444,
+          "hiddenImprovementOverStart": 0.8796
+        },
+        "frostTrapField": {
+          "episodes": 37,
+          "actualSolveRate": 0.973,
+          "firstChoiceHiddenWinRate": 0.8333,
+          "hiddenImprovementOverStart": 0.7815
+        },
+        "cavalryBreak": {
+          "episodes": 27,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 0.8765,
+          "hiddenImprovementOverStart": 0.7161
+        },
+        "martyrFrontline": {
+          "episodes": 21,
+          "actualSolveRate": 1,
+          "firstChoiceHiddenWinRate": 0.9048,
+          "hiddenImprovementOverStart": 0.881
+        }
+      }
+    }
+  },
+  "learningAudit": {
+    "eVerifyStatuses": {
+      "inconclusive": 112,
+      "confirmed": 15,
+      "refuted": 6
+    },
+    "eVerifyStepStates": {
+      "unknown:no_matching_received_semantic_event": 174,
+      "observed:exact_structured_match": 215,
+      "contradicted:opposite_predicate:combat_lost": 10
+    },
+    "secondAttemptCount": 9,
+    "fallbackHiddenDelta": {
+      "cases": 9,
+      "meanDelta": 0.7963,
+      "positiveRate": 0.8889
+    },
+    "pairedAgainstNoLearning": {
+      "cases": 124,
+      "differentFirstChoiceRate": 0.3145,
+      "meanFirstChoiceHiddenDelta": 0.0565,
+      "fullBetterRate": 0.0726,
+      "noLearningBetterRate": 0.0242
+    },
+    "pairedAgainstROnly": {
+      "cases": 124,
+      "differentFirstChoiceRate": 0.0242,
+      "meanFirstChoiceHiddenDelta": 0,
+      "fullBetterRate": 0,
+      "noLearningBetterRate": 0
+    },
+    "rOnlyAgainstNoLearning": {
+      "cases": 124,
+      "differentFirstChoiceRate": 0.3226,
+      "meanFirstChoiceHiddenDelta": 0.0565,
+      "fullBetterRate": 0.0726,
+      "noLearningBetterRate": 0.0242
+    },
+    "maximumRecallCount": 8,
+    "maximumMindToyOptionCount": 3
+  },
+  "sampleEpisodes": [
+    {
+      "episodeId": "ironWall|team-002",
+      "opponentId": "ironWall",
+      "startTeamId": "team-002",
+      "needId": "attrition",
+      "diagnosis": {
+        "needId": "attrition",
+        "reason": "战斗持续很久后失败，玩家可见问题是持久作战不足"
+      },
+      "attempts": [
+        {
+          "teamId": "team-037",
+          "outcome": "win",
+          "visibleResult": {
+            "outcome": "win",
+            "duration": 19.76,
+            "ownHp": 2.158,
+            "enemyHp": 0,
+            "ownAlive": 3,
+            "enemyAlive": 0
+          },
+          "hypothesis": {
+            "id": "hypothesis:ironWall|team-002:attempt-1",
+            "conceptId": "healing",
+            "claim": "牧师治疗形成一条有助于战斗胜利的路径"
+          },
+          "eVerify": {
+            "status": "inconclusive",
+            "support": 0,
+            "strength": 0
+          },
+          "verificationSteps": [
+            {
+              "stepId": "ironWall|team-002:attempt-1:skill",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-002:attempt-1:effect",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-002:attempt-1:win",
+              "state": "observed",
+              "reason": "exact_structured_match"
+            }
+          ],
+          "causalUpdate": null
+        }
+      ],
+      "selectionTraces": [
+        {
+          "recalled": [
+            {
+              "teamId": "team-037",
+              "fit": 1,
+              "value": 0.5362
+            },
+            {
+              "teamId": "team-034",
+              "fit": 0.9783,
+              "value": 0.4757
+            },
+            {
+              "teamId": "team-014",
+              "fit": 0.9644,
+              "value": 0.4436
+            },
+            {
+              "teamId": "team-023",
+              "fit": 0.9499,
+              "value": 0.3242
+            },
+            {
+              "teamId": "team-042",
+              "fit": 0.8172,
+              "value": 0.4093
+            },
+            {
+              "teamId": "team-035",
+              "fit": 0.8145,
+              "value": 0.3549
+            },
+            {
+              "teamId": "team-029",
+              "fit": 0.7749,
+              "value": 0.3084
+            },
+            {
+              "teamId": "team-043",
+              "fit": 0.7416,
+              "value": 0.3936
+            }
+          ],
+          "mindToyOptions": [
+            "team-037",
+            "team-034",
+            "team-014"
+          ],
+          "ranking": [
+            {
+              "teamId": "team-037",
+              "score": 0.7681,
+              "confidence": 0.837
+            },
+            {
+              "teamId": "team-034",
+              "score": 0.727,
+              "confidence": 0.8641
+            },
+            {
+              "teamId": "team-014",
+              "score": 0.704,
+              "confidence": 0.8839
+            }
+          ],
+          "selectedTeamId": "team-037",
+          "consideredOptions": 3
+        }
+      ],
+      "eVerify": {
+        "status": "inconclusive"
+      },
+      "learning": {
+        "teamResults": true,
+        "verifiedConcepts": true
+      }
+    },
+    {
+      "episodeId": "ironWall|team-008",
+      "opponentId": "ironWall",
+      "startTeamId": "team-008",
+      "needId": "survive",
+      "diagnosis": {
+        "needId": "survive",
+        "reason": "我方快速或彻底倒下，玩家可见问题是生存窗口不足"
+      },
+      "attempts": [
+        {
+          "teamId": "team-020",
+          "outcome": "win",
+          "visibleResult": {
+            "outcome": "win",
+            "duration": 20.48,
+            "ownHp": 0.683,
+            "enemyHp": 0,
+            "ownAlive": 2,
+            "enemyAlive": 0
+          },
+          "hypothesis": {
+            "id": "hypothesis:ironWall|team-008:attempt-1",
+            "conceptId": "burst",
+            "claim": "狂战伤害形成一条有助于战斗胜利的路径"
+          },
+          "eVerify": {
+            "status": "inconclusive",
+            "support": 0,
+            "strength": 0
+          },
+          "verificationSteps": [
+            {
+              "stepId": "ironWall|team-008:attempt-1:skill",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-008:attempt-1:effect",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-008:attempt-1:win",
+              "state": "observed",
+              "reason": "exact_structured_match"
+            }
+          ],
+          "causalUpdate": null
+        }
+      ],
+      "selectionTraces": [
+        {
+          "recalled": [
+            {
+              "teamId": "team-034",
+              "fit": 1,
+              "value": 0.4681
+            },
+            {
+              "teamId": "team-020",
+              "fit": 0.8751,
+              "value": 0.6099
+            },
+            {
+              "teamId": "team-023",
+              "fit": 0.8737,
+              "value": 0.353
+            },
+            {
+              "teamId": "team-009",
+              "fit": 0.8223,
+              "value": 0.6272
+            },
+            {
+              "teamId": "team-031",
+              "fit": 0.7548,
+              "value": 0.4337
+            },
+            {
+              "teamId": "team-049",
+              "fit": 0.7156,
+              "value": 0.362
+            },
+            {
+              "teamId": "team-017",
+              "fit": 0.6734,
+              "value": 0.4681
+            },
+            {
+              "teamId": "team-019",
+              "fit": 0.6572,
+              "value": 0.4232
+            }
+          ],
+          "mindToyOptions": [
+            "team-020",
+            "team-034",
+            "team-009"
+          ],
+          "ranking": [
+            {
+              "teamId": "team-020",
+              "score": 0.7425,
+              "confidence": 0.8567
+            },
+            {
+              "teamId": "team-034",
+              "score": 0.734,
+              "confidence": 0.8963
+            },
+            {
+              "teamId": "team-009",
+              "score": 0.7248,
+              "confidence": 0.8765
+            }
+          ],
+          "selectedTeamId": "team-020",
+          "consideredOptions": 3
+        }
+      ],
+      "eVerify": {
+        "status": "inconclusive"
+      },
+      "learning": {
+        "teamResults": true,
+        "verifiedConcepts": true
+      }
+    },
+    {
+      "episodeId": "ironWall|team-010",
+      "opponentId": "ironWall",
+      "startTeamId": "team-010",
+      "needId": "attrition",
+      "diagnosis": {
+        "needId": "attrition",
+        "reason": "战斗持续很久后失败，玩家可见问题是持久作战不足"
+      },
+      "attempts": [
+        {
+          "teamId": "team-014",
+          "outcome": "win",
+          "visibleResult": {
+            "outcome": "win",
+            "duration": 34,
+            "ownHp": 1.722,
+            "enemyHp": 0,
+            "ownAlive": 2,
+            "enemyAlive": 0
+          },
+          "hypothesis": {
+            "id": "hypothesis:ironWall|team-010:attempt-1",
+            "conceptId": "healing",
+            "claim": "牧师治疗形成一条有助于战斗胜利的路径"
+          },
+          "eVerify": {
+            "status": "inconclusive",
+            "support": 0,
+            "strength": 0
+          },
+          "verificationSteps": [
+            {
+              "stepId": "ironWall|team-010:attempt-1:skill",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-010:attempt-1:effect",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-010:attempt-1:win",
+              "state": "observed",
+              "reason": "exact_structured_match"
+            }
+          ],
+          "causalUpdate": null
+        }
+      ],
+      "selectionTraces": [
+        {
+          "recalled": [
+            {
+              "teamId": "team-014",
+              "fit": 1,
+              "value": 0.5737
+            },
+            {
+              "teamId": "team-023",
+              "fit": 0.9847,
+              "value": 0.3455
+            },
+            {
+              "teamId": "team-009",
+              "fit": 0.9392,
+              "value": 0.6194
+            },
+            {
+              "teamId": "team-035",
+              "fit": 0.8417,
+              "value": 0.416
+            },
+            {
+              "teamId": "team-017",
+              "fit": 0.8115,
+              "value": 0.4925
+            },
+            {
+              "teamId": "team-019",
+              "fit": 0.8101,
+              "value": 0.4336
+            },
+            {
+              "teamId": "team-043",
+              "fit": 0.7648,
+              "value": 0.4103
+            },
+            {
+              "teamId": "team-050",
+              "fit": 0.7357,
+              "value": 0.5718
+            }
+          ],
+          "mindToyOptions": [
+            "team-014",
+            "team-009",
+            "team-023"
+          ],
+          "ranking": [
+            {
+              "teamId": "team-014",
+              "score": 0.7869,
+              "confidence": 0.9286
+            },
+            {
+              "teamId": "team-009",
+              "score": 0.7793,
+              "confidence": 0.8958
+            },
+            {
+              "teamId": "team-023",
+              "score": 0.6651,
+              "confidence": 0.9085
+            }
+          ],
+          "selectedTeamId": "team-014",
+          "consideredOptions": 3
+        }
+      ],
+      "eVerify": {
+        "status": "inconclusive"
+      },
+      "learning": {
+        "teamResults": true,
+        "verifiedConcepts": true
+      }
+    },
+    {
+      "episodeId": "ironWall|team-013",
+      "opponentId": "ironWall",
+      "startTeamId": "team-013",
+      "needId": "survive",
+      "diagnosis": {
+        "needId": "survive",
+        "reason": "我方快速或彻底倒下，玩家可见问题是生存窗口不足"
+      },
+      "attempts": [
+        {
+          "teamId": "team-009",
+          "outcome": "win",
+          "visibleResult": {
+            "outcome": "win",
+            "duration": 18.8,
+            "ownHp": 2.355,
+            "enemyHp": 0,
+            "ownAlive": 4,
+            "enemyAlive": 0
+          },
+          "hypothesis": {
+            "id": "hypothesis:ironWall|team-013:attempt-1",
+            "conceptId": "shield",
+            "claim": "骑士护盾形成一条有助于战斗胜利的路径"
+          },
+          "eVerify": {
+            "status": "inconclusive",
+            "support": 0,
+            "strength": 0
+          },
+          "verificationSteps": [
+            {
+              "stepId": "ironWall|team-013:attempt-1:skill",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-013:attempt-1:effect",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-013:attempt-1:win",
+              "state": "observed",
+              "reason": "exact_structured_match"
+            }
+          ],
+          "causalUpdate": null
+        }
+      ],
+      "selectionTraces": [
+        {
+          "recalled": [
+            {
+              "teamId": "team-034",
+              "fit": 1,
+              "value": 0.5062
+            },
+            {
+              "teamId": "team-023",
+              "fit": 0.8946,
+              "value": 0.4148
+            },
+            {
+              "teamId": "team-009",
+              "fit": 0.8518,
+              "value": 0.6635
+            },
+            {
+              "teamId": "team-031",
+              "fit": 0.7954,
+              "value": 0.4828
+            },
+            {
+              "teamId": "team-049",
+              "fit": 0.7627,
+              "value": 0.4558
+            },
+            {
+              "teamId": "team-019",
+              "fit": 0.714,
+              "value": 0.4736
+            },
+            {
+              "teamId": "team-042",
+              "fit": 0.709,
+              "value": 0.4112
+            },
+            {
+              "teamId": "team-004",
+              "fit": 0.6828,
+              "value": 0.3606
+            }
+          ],
+          "mindToyOptions": [
+            "team-009",
+            "team-034",
+            "team-023"
+          ],
+          "ranking": [
+            {
+              "teamId": "team-009",
+              "score": 0.7577,
+              "confidence": 0.9106
+            },
+            {
+              "teamId": "team-034",
+              "score": 0.7531,
+              "confidence": 0.9167
+            },
+            {
+              "teamId": "team-023",
+              "score": 0.6547,
+              "confidence": 0.9203
+            }
+          ],
+          "selectedTeamId": "team-009",
+          "consideredOptions": 3
+        }
+      ],
+      "eVerify": {
+        "status": "inconclusive"
+      },
+      "learning": {
+        "teamResults": true,
+        "verifiedConcepts": true
+      }
+    },
+    {
+      "episodeId": "ironWall|team-015",
+      "opponentId": "ironWall",
+      "startTeamId": "team-015",
+      "needId": "survive",
+      "diagnosis": {
+        "needId": "survive",
+        "reason": "我方快速或彻底倒下，玩家可见问题是生存窗口不足"
+      },
+      "attempts": [
+        {
+          "teamId": "team-020",
+          "outcome": "win",
+          "visibleResult": {
+            "outcome": "win",
+            "duration": 21.36,
+            "ownHp": 0.614,
+            "enemyHp": 0,
+            "ownAlive": 2,
+            "enemyAlive": 0
+          },
+          "hypothesis": {
+            "id": "hypothesis:ironWall|team-015:attempt-1",
+            "conceptId": "burst",
+            "claim": "狂战伤害形成一条有助于战斗胜利的路径"
+          },
+          "eVerify": {
+            "status": "inconclusive",
+            "support": 0,
+            "strength": 0
+          },
+          "verificationSteps": [
+            {
+              "stepId": "ironWall|team-015:attempt-1:skill",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-015:attempt-1:effect",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-015:attempt-1:win",
+              "state": "observed",
+              "reason": "exact_structured_match"
+            }
+          ],
+          "causalUpdate": null
+        }
+      ],
+      "selectionTraces": [
+        {
+          "recalled": [
+            {
+              "teamId": "team-034",
+              "fit": 1,
+              "value": 0.5176
+            },
+            {
+              "teamId": "team-014",
+              "fit": 0.9494,
+              "value": 0.6808
+            },
+            {
+              "teamId": "team-020",
+              "fit": 0.8833,
+              "value": 0.7787
+            },
+            {
+              "teamId": "team-003",
+              "fit": 0.8495,
+              "value": 0.4309
+            },
+            {
+              "teamId": "team-009",
+              "fit": 0.8339,
+              "value": 0.7492
+            },
+            {
+              "teamId": "team-007",
+              "fit": 0.6785,
+              "value": 0.4277
+            },
+            {
+              "teamId": "team-042",
+              "fit": 0.6739,
+              "value": 0.4267
+            },
+            {
+              "teamId": "team-035",
+              "fit": 0.6445,
+              "value": 0.5084
+            }
+          ],
+          "mindToyOptions": [
+            "team-020",
+            "team-014",
+            "team-009"
+          ],
+          "ranking": [
+            {
+              "teamId": "team-020",
+              "score": 0.831,
+              "confidence": 0.9288
+            },
+            {
+              "teamId": "team-014",
+              "score": 0.8151,
+              "confidence": 0.9496
+            },
+            {
+              "teamId": "team-009",
+              "score": 0.7915,
+              "confidence": 0.9344
+            }
+          ],
+          "selectedTeamId": "team-020",
+          "consideredOptions": 3
+        }
+      ],
+      "eVerify": {
+        "status": "inconclusive"
+      },
+      "learning": {
+        "teamResults": true,
+        "verifiedConcepts": true
+      }
+    },
+    {
+      "episodeId": "ironWall|team-016",
+      "opponentId": "ironWall",
+      "startTeamId": "team-016",
+      "needId": "survive",
+      "diagnosis": {
+        "needId": "survive",
+        "reason": "我方快速或彻底倒下，玩家可见问题是生存窗口不足"
+      },
+      "attempts": [
+        {
+          "teamId": "team-028",
+          "outcome": "win",
+          "visibleResult": {
+            "outcome": "win",
+            "duration": 20.16,
+            "ownHp": 2.237,
+            "enemyHp": 0,
+            "ownAlive": 4,
+            "enemyAlive": 0
+          },
+          "hypothesis": {
+            "id": "hypothesis:ironWall|team-016:attempt-1",
+            "conceptId": "shield",
+            "claim": "骑士护盾形成一条有助于战斗胜利的路径"
+          },
+          "eVerify": {
+            "status": "inconclusive",
+            "support": 0,
+            "strength": 0
+          },
+          "verificationSteps": [
+            {
+              "stepId": "ironWall|team-016:attempt-1:skill",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-016:attempt-1:effect",
+              "state": "observed",
+              "reason": "exact_structured_match"
+            },
+            {
+              "stepId": "ironWall|team-016:attempt-1:win",
+              "state": "observed",
+              "reason": "exact_structured_match"
+            }
+          ],
+          "causalUpdate": null
+        }
+      ],
+      "selectionTraces": [
+        {
+          "recalled": [
+            {
+              "teamId": "team-034",
+              "fit": 1,
+              "value": 0.5293
+            },
+            {
+              "teamId": "team-028",
+              "fit": 0.9017,
+              "value": 0.7473
+            },
+            {
+              "teamId": "team-009",
+              "fit": 0.8518,
+              "value": 0.7606
+            },
+            {
+              "teamId": "team-049",
+              "fit": 0.7627,
+              "value": 0.4824
+            },
+            {
+              "teamId": "team-011",
+              "fit": 0.705,
+              "value": 0.6095
+            },
+            {
+              "teamId": "team-010",
+              "fit": 0.6852,
+              "value": 0.323
+            },
+            {
+              "teamId": "team-035",
+              "fit": 0.6828,
+              "value": 0.5143
+            },
+            {
+              "teamId": "team-030",
+              "fit": 0.4242,
+              "value": 0.273
+            }
+          ],
+          "mindToyOptions": [
+            "team-028",
+            "team-009",
+            "team-034"
+          ],
+          "ranking": [
+            {
+              "teamId": "team-028",
+              "score": 0.8245,
+              "confidence": 0.9482
+            },
+            {
+              "teamId": "team-009",
+              "score": 0.8062,
+              "confidence": 0.9381
+            },
+            {
+              "teamId": "team-034",
+              "score": 0.7647,
+              "confidence": 0.9298
+            }
+          ],
+          "selectedTeamId": "team-028",
+          "consideredOptions": 3
+        }
+      ],
+      "eVerify": {
+        "status": "inconclusive"
+      },
+      "learning": {
+        "teamResults": true,
+        "verifiedConcepts": true
+      }
+    },
+    {
+      "episodeId": "ironWall|team-019",
+      "opponentId": "ironWall",
+      "startTeamId": "team-019",
+      "needId": "survive",
+      "diagnosis": {
+        "needId": "survive",
+        "reason": "我方快速或彻底倒下，玩家可见问题是生存窗口不足"
+      },
+      "attempts": [
+        {
+          "teamId": "team-014",
+          "outcome": "win",
+          "visibleResult": {
+            "outcome": "win",
+            "duration": 33.84,
+            "ownHp": 1.301,
+            "enemyHp": 0,
+            "ownAlive": 2,
+            "enemyAlive": 0
+          },
+          "hypothesis": {
+            "id": "hypothesis:ironWall|team-019:attempt-1",
+            "conceptId": "healing",
+            "claim": "牧师治疗形成一条有助于战斗胜利的路径"
+          },
+          "eVerify": {
+            "status": "confirmed",
+            "support": 1,
+            "strength": 0.4
+          },
+          "verificationSteps": [
+            {
+              "stepId": "ironWall|team-019:attempt-1:skill",
+              "state": "observed",
+              "reason": "exact_structured_match"
+            },
+            {
+              "stepId": "ironWall|team-019:attempt-1:effect",
+              "state": "observed",
+              "reason": "exact_structured_match"
+            },
+            {
+              "stepId": "ironWall|team-019:attempt-1:win",
+              "state": "observed",
+              "reason": "exact_structured_match"
+            }
+          ],
+          "causalUpdate": {
+            "status": "confirmed",
+            "utility": 1,
+            "strength": 0.4
+          }
+        }
+      ],
+      "selectionTraces": [
+        {
+          "recalled": [
+            {
+              "teamId": "team-014",
+              "fit": 1,
+              "value": 0.7134
+            },
+            {
+              "teamId": "team-037",
+              "fit": 0.9246,
+              "value": 0.7858
+            },
+            {
+              "teamId": "team-028",
+              "fit": 0.9203,
+              "value": 0.7714
+            },
+            {
+              "teamId": "team-023",
+              "fit": 0.9096,
+              "value": 0.4601
+            },
+            {
+              "teamId": "team-031",
+              "fit": 0.7608,
+              "value": 0.5408
+            },
+            {
+              "teamId": "team-007",
+              "fit": 0.6373,
+              "value": 0.4473
+            },
+            {
+              "teamId": "team-004",
+              "fit": 0.5919,
+              "value": 0.3591
+            },
+            {
+              "teamId": "team-041",
+              "fit": 0.56,
+              "value": 0.5123
+            }
+          ],
+          "mindToyOptions": [
+            "team-014",
+            "team-037",
+            "team-028"
+          ],
+          "ranking": [
+            {
+              "teamId": "team-014",
+              "score": 0.8567,
+              "confidence": 0.9599
+            },
+            {
+              "teamId": "team-037",
+              "score": 0.8552,
+              "confidence": 0.9503
+            },
+            {
+              "teamId": "team-028",
+              "score": 0.8458,
+              "confidence": 0.9582
+            }
+          ],
+          "selectedTeamId": "team-014",
+          "consideredOptions": 3
+        }
+      ],
+      "eVerify": {
+        "status": "confirmed"
+      },
+      "learning": {
+        "teamResults": true,
+        "verifiedConcepts": true
+      }
+    },
+    {
+      "episodeId": "ironWall|team-022",
+      "opponentId": "ironWall",
+      "startTeamId": "team-022",
+      "needId": "survive",
+      "diagnosis": {
+        "needId": "survive",
+        "reason": "我方快速或彻底倒下，玩家可见问题是生存窗口不足"
+      },
+      "attempts": [
+        {
+          "teamId": "team-034",
+          "outcome": "win",
+          "visibleResult": {
+            "outcome": "win",
+            "duration": 19.76,
+            "ownHp": 2.386,
+            "enemyHp": 0,
+            "ownAlive": 4,
+            "enemyAlive": 0
+          },
+          "hypothesis": {
+            "id": "hypothesis:ironWall|team-022:attempt-1",
+            "conceptId": "shield",
+            "claim": "骑士护盾形成一条有助于战斗胜利的路径"
+          },
+          "eVerify": {
+            "status": "inconclusive",
+            "support": 0,
+            "strength": 0
+          },
+          "verificationSteps": [
+            {
+              "stepId": "ironWall|team-022:attempt-1:skill",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-022:attempt-1:effect",
+              "state": "unknown",
+              "reason": "no_matching_received_semantic_event"
+            },
+            {
+              "stepId": "ironWall|team-022:attempt-1:win",
+              "state": "observed",
+              "reason": "exact_structured_match"
+            }
+          ],
+          "causalUpdate": null
+        }
+      ],
+      "selectionTraces": [
+        {
+          "recalled": [
+            {
+              "teamId": "team-034",
+              "fit": 1,
+              "value": 0.5755
+            },
+            {
+              "teamId": "team-031",
+              "fit": 0.7415,
+              "value": 0.5703
+            },
+            {
+              "teamId": "team-019",
+              "fit": 0.6387,
+              "value": 0.4272
+            },
+            {
+              "teamId": "team-007",
+              "fit": 0.6375,
+              "value": 0.4867
+            },
+            {
+              "teamId": "team-011",
+              "fit": 0.6272,
+              "value": 0.6524
+            },
+            {
+              "teamId": "team-050",
+              "fit": 0.6025,
+              "value": 0.6082
+            },
+            {
+              "teamId": "team-041",
+              "fit": 0.5725,
+              "value": 0.5438
+            },
+            {
+              "teamId": "team-038",
+              "fit": 0.3045,
+              "value": 0.3236
+            }
+          ],
+          "mindToyOptions": [
+            "team-034",
+            "team-031",
+            "team-011"
+          ],
+          "ranking": [
+            {
+              "teamId": "team-034",
+              "score": 0.7877,
+              "confidence": 0.9452
+            },
+            {
+              "teamId": "team-031",
+              "score": 0.6559,
+              "confidence": 0.9522
+            },
+            {
+              "teamId": "team-011",
+              "score": 0.6398,
+              "confidence": 0.9448
+            }
+          ],
+          "selectedTeamId": "team-034",
+          "consideredOptions": 3
+        }
+      ],
+      "eVerify": {
+        "status": "inconclusive"
+      },
+      "learning": {
+        "teamResults": true,
+        "verifiedConcepts": true
+      }
+    }
+  ]
+}

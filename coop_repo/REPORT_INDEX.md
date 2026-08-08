@@ -2,6 +2,13 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-08-08
+
+- `2026-08-08_1659_standard-rules-engine-v1.md`：完成地图驱动的正式规则引擎，覆盖白骰重掷、敌机落点、多格研究、自由结算、挖掘、机器人、母舰和出生规则；13 项单测与 100 局合成地图冒烟测试通过。真实组件数据和规划玩家尚待接入。
+- `2026-08-08_1635_under-falling-skies-standard-rule-research.md`：完整核对官方规则书第 1-11 页，整理正式独立游戏的落点触发、研究格成本、多格房间、自由结算、城市/基地/威胁等级和机器人，并确认规则书不足以数字化全部组件正反面。建议先做 Roswell A+B 正式规则基线。
+
+- `2026-08-08_1603_planning-mindtoy-v0.md`：隔离实现程序版规划 MindToy，复用 768 维空间做局部行动召回，再由规则前瞻比较研究冲刺、防守优先、建设优先三条路线。3 类玩家 × 4 种方法 × 80 种子共 960 局；完整动态规划胜率 87.5%/100%/98.75%，但动态需求仍略差于冻结需求，暂不接正式玩家 Agent。
+
 ## 2026-08-07
 
 - `2026-08-07_0003_semantic-solution-loop-v0.md`：隔离跑通“失败需求→768维召回8队→价值激活3队→MindToy→真实战斗→R/EVerify更新”闭环。124案例中纯语义首选隐藏胜率0.8575，随机0.4402；持续R比不学习提高0.0565。但完整R＋EVerify与R-only严格同分，112/133不可结论；多维找候选通过开发验证，强大概念推广尚未通过。

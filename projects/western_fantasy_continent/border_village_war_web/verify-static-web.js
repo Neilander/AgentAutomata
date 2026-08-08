@@ -20,22 +20,42 @@ for (const source of [...html.matchAll(/<(?:script|link)[^>]+(?:src|href)="([^"]
 }
 
 for (const id of [
-  "day-rail", "ap-value", "end-day-button", "map-view", "map-viewport", "map-world", "map-node-layer",
+  "day-rail", "town-status-open", "town-name", "town-prosperity", "population-value", "ap-value", "ap-capacity", "town-prosperity-fill", "prosperity-dialog", "prosperity-viewport", "prosperity-track", "end-day-button", "map-view", "map-viewport", "map-world", "map-node-layer",
   "node-popover", "node-actions", "combat-view", "battle-mount", "combat-result", "grind-view",
   "grind-battle-mount", "grind-loot-shelf", "stop-grind", "command-dock", "dock-toggle", "dock-drawer", "dock-content", "combat-preview-dialog",
-  "preview-teams", "preview-confirm", "result-dialog", "recruit-overlay", "restart-dialog",
+  "unit-roster-rail", "equipment-dialog", "equipment-character-panel", "equipment-backpack-panel", "equipment-close", "preview-slide-track", "preview-battle-rule", "preview-formations", "preview-teams", "preview-to-supply", "preview-supply-pot", "preview-supply-fraction", "preview-supply-percent", "preview-back", "preview-supply-reset", "preview-confirm", "result-dialog", "recruit-overlay", "restart-dialog",
 ]) assert(html.includes(`id="${id}"`), `Missing required UI element #${id}`);
 
 assert(html.includes("../../../shared/game_camera_2d/camera-core.js"), "Shared camera module is not loaded");
 assert(html.indexOf("../fifteen_day_demo/fifteen-day-core.js") < html.indexOf("../border_village_war/border-village-core.js"), "Gear rule dependency must load before border village core");
 assert(web.includes("AgentAutomataCamera2D.createCamera2D") && web.includes("fitBounds") && web.includes("panByScreen"), "Map does not use the shared camera");
+assert(web.includes("current.town") && web.includes("town.prosperity.level") && web.includes('`${town.population}/${town.populationCap}`'), "Top-right town status does not show current town, population/cap, actions, and prosperity");
+const resourceStripStart = html.indexOf('class="resource-strip"');
+const resourceStripSource = html.slice(resourceStripStart, html.indexOf("</div>", resourceStripStart));
+assert(html.includes('class="town-status-card"') && !resourceStripSource.includes('id="population-value"'), "Population remains mixed into global resources instead of the current-town status card");
+assert(web.includes("renderProsperityDialog") && web.includes("prosperity.milestones.map") && web.includes("prosperity.nextLevel"), "Prosperity modal does not expose current and future population rewards");
+assert(web.includes('prosperityViewport.addEventListener("pointerdown"') && web.includes('prosperityViewport.addEventListener("pointermove"') && web.includes("prosperityViewport.scrollLeft"), "Prosperity timeline cannot be dragged horizontally");
+assert(css.includes(".town-status-card") && /\.prosperity-viewport\s*\{[^}]*overflow-x:\s*auto/.test(css) && css.includes(".prosperity-milestone.current") && css.includes(".prosperity-milestone.beyond-cap"), "Town status or prosperity timeline lacks the required visual states");
 assert(web.includes("MAP_PAN_MARGIN_X = 520") && web.includes("MAP_PAN_MARGIN_Y = 340") && web.includes("event.preventDefault()"), "Map drag bounds or pointer handling are missing");
 assert(web.includes("GAME.preparePlayerCombat") && web.includes("GAME_BATTLE_VIEW.mount") && web.includes("battleView.start"), "Real combat view integration is incomplete");
 assert(web.includes("GAME.applyPlayerCombatResult") && web.includes("commitCombat"), "Battle result is not committed through the game core");
+assert(web.includes("COMBAT_FORMATION_RULES") && web.includes('hunt: { label: "小队讨伐", capacity: 4') && web.includes('raid: { label: "据点突袭", capacity: 8') && web.includes('final: { label: "村庄决战", capacity: 20'), "Combat types do not expose their required formation capacities");
+assert(web.includes("combatFormationEntries") && web.includes("formation.capacity <= rule.capacity") && web.includes("matches && legal ? 0 : matches ? 1 : 2") && web.includes('["容量兼容且合法", "容量兼容但不合法", "超过人数上限"]'), "Combat formations are not downward-compatible or sorted into the three requested eligibility groups");
+assert(web.includes('data-preview-formation') && web.includes("renderCombatFormationPreview") && web.includes("formationDeployment(selected.formation)"), "Combat preview cannot switch between player formations");
+assert(web.includes("selected.status.members.reduce") && web.includes("总战斗力") && web.includes("当前选择") && web.includes("敌方情报"), "Selected formation lacks a persistent information area");
+assert(web.includes("next.disabled = !selectedPlan") && web.includes("当前编队无法出战") && web.includes("当前资源不足，或编队成员已经无法参加这场战斗"), "Illegal, mismatched, or resource-blocked formations do not remain visible with a reason");
+assert(web.includes("plan.deployment") && web.includes("grindSession?.deployment") && web.includes("grindSession.plan.deployment"), "Selected formations do not survive combat settlement or continuous grind rounds");
+assert(/\.preview-formation-workspace\s*\{[^}]*grid-template-columns:\s*246px\s+minmax\(0,\s*1fr\)/.test(css) && css.includes(".preview-formation-row.group-1") && css.includes(".preview-formation-row.group-2"), "Combat preview lacks the formation picker and selected-formation detail hierarchy");
+assert(html.includes('id="preview-slide-track"') && html.includes('id="preview-to-supply"') && /\.preview-slide-track\.supplying\s*\{[^}]*translateX\(-50%\)/.test(css), "Battle confirmation does not slide from formation selection into supply preparation");
+assert(web.includes("openCombatSupplyStage") && web.includes("foodSupplied") && web.includes("performancePct") && web.includes("fullFood"), "Supply preparation is not connected to the authoritative combat plan");
+assert(web.includes('addEventListener("pointerdown"') && web.includes("supplyHoldDelay = setTimeout") && web.includes("supplyHoldInterval = setInterval"), "Supply pot lacks click-and-hold food input");
+assert(css.includes(".supply-pot") && css.includes("--supply-fill") && css.includes(".preview-supply-counter"), "Supply preparation lacks a readable cauldron, fill state, or x/X and percentage counter");
+assert(web.includes("foodCost: unit.kind === \"trained\" ? 3") && web.includes("一战粮耗") && web.includes("粮${rowStatus.foodCost}/战"), "Formation UI does not show per-battle food consumption");
 assert(battleViewSource.includes("const authoritativeResult = sim.buildResult()") && !battleViewSource.includes("units: this.state.units,\n        signals: sim.signalBus.signals"), "Battle view still submits display-only units instead of the authoritative simulation result");
 assert(!html.includes("跳过战斗") && !web.includes("skipCombat"), "Frontend must not offer combat skipping");
-assert(web.includes("一键整队配装") && web.includes('operation === "auto_equip_all"') && web.includes("autoEquipAllAction"), "Frontend whole-party one-click equipment path is missing");
-assert(web.includes("只配当前角色") && web.includes('operation === "auto_equip"') && web.includes("autoEquipAction"), "Frontend single-hero equipment fallback is missing");
+assert(web.includes("一键英雄与战士配装") && web.includes('operation === "auto_equip_all"') && web.includes("autoEquipAllAction"), "Frontend whole-party one-click equipment path is missing");
+assert(web.includes("只配当前单位") && web.includes('operation === "auto_equip"') && web.includes("autoEquipAction"), "Frontend single-unit equipment fallback is missing");
+assert(web.includes("current.party.equipmentTargets") && web.includes('row.kind === "trained"') && css.includes(".hero-card.trained"), "Trained soldiers are not exposed as distinct equipment targets in the party dock");
 assert(!html.includes("胜率") || html.includes("不提供胜率"), "Frontend must not expose a win probability");
 assert(!web.includes("successChance") && !web.includes("intendedLesson"), "Frontend contains hidden-solution vocabulary");
 assert(web.includes("targetSlot") && web.includes("current.outposts") && web.includes("outpost.plotSlot"), "Building-local actions or captured-outpost construction nodes are missing");
@@ -49,9 +69,68 @@ assert(css.includes(".grind-level.locked") && css.includes(".grind-progress") &&
 assert(web.includes("今日装备") && web.includes("铁匠收入") && web.includes("current.economy.dailyGearDrops"), "Continuous equipment combat does not show its smithy gold loop nearby");
 assert(!html.includes('id="iron-value"') && !html.includes('id="steel-value"'), "Removed material resources remain in the top-level UI");
 assert(web.includes("targetItemId") && web.includes("data-unequip-action"), "Manual equip/unequip recovery path is missing");
+assert(web.includes("openEquipmentDialog") && web.includes('dialog.showModal()') && web.includes('dock-toggle").addEventListener("click", () => openEquipmentDialog()'), "Equipment launcher does not open a modal from the map UI");
+assert(html.includes('class="equipment-mode-tabs"') && html.includes('data-equipment-mode="formation"') && html.includes('data-equipment-mode="character"') && !html.includes(">编队<small>后续</small>") && /\.equipment-window\s*\{[^}]*grid-template-rows:\s*58px\s+minmax\(0,\s*1fr\)/.test(css), "Equipment modal lacks the working formation/character page switch");
+assert(web.includes("FORMATION_SPECS") && [2, 4, 8, 20, 40, 100, 200].every((capacity) => web.includes(`capacity: ${capacity}`)), "Formation size ladder is incomplete");
+assert(web.includes('unlocked: false') && web.includes("大型战团") && web.includes("大型军阵") && web.includes("远征军团"), "40/100/200-unit formations are not visibly locked");
+assert(web.includes("return characterTargets(current).map") && web.includes("unitCount: 1") && !web.includes("headcount: 10"), "Formation roster does not count each browsable hero or ten-person squad as one unit");
+assert(web.includes('unitCount > formation.capacity') && web.includes('cities.length > 1') && web.includes('formation-row ${row.id === formation.id ? "selected" : ""} ${rowStatus.valid ? "" : "invalid"}'), "Formation over-capacity or mixed-city invalid states are missing");
+assert(web.includes('editorPanel.classList.toggle("invalid", !status.valid)') && css.includes(".formation-editor-panel.invalid"), "Invalid formation does not turn the whole editor red");
+assert(web.includes('draggable="true"') && web.includes('data-formation-drop="deployed"') && web.includes('data-formation-drop="available"') && web.includes('addEventListener("dragstart"') && web.includes('addEventListener("drop"'), "Formation members cannot be dragged between deployed and available strips");
+assert(web.includes("formationCityFilter") && web.includes("formation-city-filter") && web.includes("member.city === CURRENT_CITY"), "Available-member city filter is missing");
+assert(web.includes('${available.length}个单位可选') && web.includes("关闭筛选可查看其他城池"), "City filter does not explain hidden candidates or expose the filtered unit count");
+assert(web.includes('class="formation-position-open') && web.includes(">调整站位</button>") && web.includes('positionBlocked ? "disabled"') && web.includes("超出编队单位上限"), "Deployed roster lacks a visible positioning action or its blocked reason");
+assert(web.includes("formationGridShape") && web.includes('capacity === 2') && web.includes('columns: 1, rows: 2') && web.includes('capacity === 8') && web.includes('columns: 4, rows: 2') && web.includes('columns: 5, rows: Math.ceil(capacity / 5)'), "Formation sizes do not expand from front/back slots into the twenty-unit square formation");
+assert(web.includes("formation.positions") && web.includes("saved?.positions") && web.includes("positions[openIndex] = id"), "Formation positions are not persisted or initialized from member order");
+assert(web.includes("moveFormationPosition") && web.includes("formation.positions[targetIndex] = memberId") && web.includes("formation.positions[sourceIndex] = replacedId || null"), "Dropping a formation unit does not move to an empty slot or swap occupied slots");
+assert(web.includes("formation-position-finish") && web.includes("敌军方向") && web.includes("前线") && web.includes("后方") && web.includes("selectedFormationPositionMemberId"), "Position editor lacks orientation, completion, or click-based recovery controls");
+assert(/\.formation-position-grid\s*\{[^}]*grid-template-columns:\s*repeat\(var\(--formation-columns\)/.test(css) && css.includes(".formation-position-slot.drag-over") && css.includes(".formation-position-slot.selected"), "Position field does not render a responsive slot grid with drag and selected feedback");
+const formationCardSource = web.slice(web.indexOf("function formationMemberCard"), web.indexOf("function updateFormationMember"));
+const formationSlotSource = web.slice(web.indexOf("function formationPositionSlot"), web.indexOf("function bindFormationPositionDrag"));
+assert(formationCardSource.includes("member.name") && formationCardSource.includes("member.roleIcon") && formationCardSource.includes("member.city") && formationCardSource.includes("formatCombatPower(member.combatPower)"), "Formation member cards do not show profession icon, name, city, and formatted combat power");
+assert(formationCardSource.includes('class="formation-member-art" aria-hidden="true"></span>') && formationCardSource.includes('class="formation-member-role"'), "Formation cards do not keep the portrait area empty while placing the profession icon at the information boundary");
+assert(formationSlotSource.includes("member.name") && formationSlotSource.includes("member.roleIcon") && formationSlotSource.includes("member.city") && formationSlotSource.includes("formatCombatPower(member.combatPower)"), "Position slots do not preserve the same profession icon, name, city, and combat-power hierarchy");
+assert(!formationCardSource.includes("member.glyph") && !formationSlotSource.includes("member.glyph"), "Formation cards or position slots still use the old identity glyphs");
+assert(web.includes('const ROLE_ICONS = { knight: "🛡️", warrior: "⚔️"') && web.includes('roleIcon: ROLE_ICONS[unit.roleKey]') && web.includes('toLocaleString("zh-CN")'), "Formation cards do not reuse canonical role icons or support full million-scale combat-power formatting");
+assert(/\.formation-member-strip\s*\{[^}]*grid-auto-columns:\s*162px/.test(css) && css.includes(".formation-member-summary") && css.includes(".formation-member-power") && css.includes("border-top: 1px solid #4e493a"), "Formation cards are not wide portrait-and-summary rectangles with a separated information footer");
+assert(/\.formation-member\s*\{[^}]*grid-template-rows:\s*minmax\(56px,\s*1fr\)\s+60px/.test(css) && css.includes(".formation-member-art > img"), "Formation cards do not preserve a dedicated empty upper portrait layer for future artwork");
+assert(/\.formation-member-role\s*\{[^}]*left:\s*50%[^}]*top:\s*0[^}]*border:\s*0[^}]*font-size:\s*17px[^}]*translate\(-50%,\s*-52%\)/.test(css), "Profession icon is not a small unframed bridge centered on the portrait-information boundary");
+assert(/\.position-member-identity\s*>\s*i\s*\{[^}]*border:\s*0[^}]*background:\s*transparent/.test(css), "Position profession icons still use unnecessary framed boxes");
+assert(formationCardSource.indexOf("member.name") < formationCardSource.indexOf("formatCombatPower(member.combatPower)") && /\.formation-member-power\s+b\s*\{[^}]*13px/.test(css), "Formation name is not above the compact combat-power row");
+assert(css.includes(".position-member-identity") && css.includes(".position-member-power"), "Position slots lack the icon/name/city header and separated combat-power footer");
+assert(/\.equipment-workspace\.formation-mode\s*\{[^}]*grid-template-columns:\s*285px\s+minmax\(0,\s*1fr\)/.test(css) && /\.formation-editor-panel\s*\{[^}]*grid-template-rows:\s*72px\s+minmax\(0,\s*\.94fr\)\s+minmax\(0,\s*1\.06fr\)/.test(css), "Formation page does not preserve the left roster and right deployed/available hierarchy");
+assert(web.includes("Number(b.target.active) - Number(a.target.active)") && web.includes("character-page-nav") && web.includes("data-character-page"), "Character page does not paginate through party-first equipment targets");
+assert(web.includes("function characterTargets(current)") && web.includes("current.party.characterTargets") && web.includes('hero.kind === "militia" ? "民兵"'), "Character pagination does not include read-only militia records");
+assert(web.includes("hero.equipmentLocked") && web.includes('class="portrait-equipment-slot locked" disabled') && web.includes("装备锁定") && web.includes("装备未开放 · 这里只能查看物品"), "Militia equipment is not visibly locked across slots, controls, and backpack");
+assert(css.includes(".portrait-equipment-slot.locked:disabled") && css.includes(".mini-button.equipment-locked:disabled") && css.includes(".equipment-lock-note"), "Militia equipment lock lacks persistent visual treatment");
+assert(!html.includes('id="equipment-unit-axis"') && !css.includes(".equipment-unit-axis-track"), "Removed two-row character axis still consumes vertical space");
+assert(web.includes("hero.equipment.slice(0, 4)") && web.includes("hero.equipment.slice(4, 8)"), "Character portrait does not have four equipment slots on each side");
+assert(/\.equipment-workspace\s*\{[^}]*grid-template-columns:[^}]+/.test(css) && /\.character-stage\s*\{[^}]*grid-template-columns:\s*62px\s+minmax\(180px,\s*1fr\)\s+62px/.test(css), "Equipment modal does not preserve the requested character/backpack and portrait/slot hierarchy");
+assert(web.includes("portrait-placeholder") && !web.includes('class="portrait-glyph"') && !css.includes(".portrait-glyph"), "Character art placeholder still renders a giant identity glyph");
+assert(/\.portrait-equipment-slot\s*\{[^}]*width:\s*56px[^}]*height:\s*56px/.test(css) && web.includes("equipment-slot-tooltip") && /\.portrait-equipment-slot:hover\s+\.equipment-slot-tooltip/.test(css), "Equipment slots are not compact squares with hover details");
+assert(web.includes('id="modal-auto-equip-all"') && web.includes('class="mini-button character-stat-toggle"') && web.indexOf('id="modal-auto-equip-all"') < web.indexOf('class="mini-button character-stat-toggle"'), "Stats button is not placed immediately after whole-party auto-equip");
+assert(web.includes("character-stat-overlay") && /\.character-stat-toggle:hover\s*\+\s*\.character-stat-overlay/.test(css) && !/\.character-stat-toggle\s*\{[^}]*position:\s*absolute/.test(css), "Inline stats button no longer opens the character stat overlay correctly");
+assert(web.includes("skill.details?.length") && web.includes("skill-detail-tooltip") && /\.character-skill:hover\s+\.skill-detail-tooltip/.test(css), "Character skills do not expose numeric hover details");
+assert(web.includes('<strong>${esc(skill.name)}</strong><span>${esc(skill.type)}</span><small>${esc(timing)}</small>'), "Skill cards do not place the name above the skill type");
+assert(web.includes('class="skill-summary">${esc(skill.description)}</p>') && /\.character-skill\s*\{[^}]*min-height:\s*64px/.test(css), "Skill cards do not reserve a taller row for the one-line effect summary");
+assert(/\.character-skills\s*\{[^}]*padding:\s*0[^}]*border:\s*0[^}]*background:\s*transparent/.test(css), "Skill area still has an unnecessary outer frame");
+assert(/\.equipment-character-panel\s*\{[^}]*grid-template-rows:\s*44px\s+minmax\(270px,\s*1fr\)\s+auto/.test(css), "Portrait stage did not yield roughly five percent of its minimum height to skills");
+assert(web.includes("groupA = ownerA?.id === targetId ? 0 : ownerA ? 2 : 1") && web.includes("current.party.equipmentTargets"), "Backpack is not ordered as current equipment, free items, then other characters' equipment");
+assert(web.includes("data-modal-equip") && web.includes("data-modal-unequip"), "New equipment modal lacks equip or unequip recovery actions");
+assert(web.includes("if (changed) selectedItemId = null") && web.includes("previousHero") && web.includes("nextHero"), "Character pagination does not reset stale item selection or expose both directions");
+assert(web.includes("renderUnitRail(current)") && web.includes("current.party.heroes.map") && web.includes("current.war.untrainedUnits") && web.includes("current.party.trainedUnits.map"), "Main-map unit rail does not render every hero, militia unit, and trained unit");
+assert(web.includes('hero.active ? "队内" : "候补"') && web.includes('hero.id === "player" ? "主角"'), "Unit rail does not distinguish the player, active heroes, and reserve heroes");
+assert(/\.unit-roster-rail\s*\{[^}]*position:\s*absolute[^}]*left:\s*14px[^}]*width:\s*84px[^}]*user-select:\s*none/.test(css), "Unit blocks are not positioned directly on the left side of the map");
+assert(/\.unit-roster-list\s*\{[^}]*flex-flow:\s*column\s+wrap[^}]*overflow:\s*visible/.test(css), "Unit blocks must wrap into a second column instead of scrolling");
+assert(/\.unit-avatar\s*\{[^}]*width:\s*40px[^}]*height:\s*40px/.test(css), "Unit blocks were not reduced to the requested compact size");
+assert(!/\.unit-roster-rail\s*\{[^}]*(?:border|background|box-shadow):/.test(css) && !/\.unit-roster-list\s*\{[^}]*overflow-y:\s*auto/.test(css), "Unit blocks are still enclosed by a large framed scrolling panel");
 assert(css.includes(".game-shell.combat-mode") && css.includes(".battle-mount .battle-view-field"), "Combat state does not reclaim the screen for the battlefield");
 assert(web.includes("INVENTORY_PAGE_SIZE = 24") && web.includes("inventory-prev") && web.includes("inventory-next"), "Inventory pagination is missing");
 assert(/\.dock-content\s*\{[^}]*overflow:\s*hidden/.test(css), "Bottom command dock must not become a nested scrolling surface");
+assert(/\.party-layout\s*\{[^}]*overflow-x:\s*auto/.test(css), "Party layout must horizontally scroll when equipment is clipped");
+assert(/\.hero-roster\s*\{[^}]*overflow-y:\s*auto/.test(css), "Unit roster must vertically scroll when many units are present");
+assert(/\.hero-detail\s*\{[^}]*overflow-y:\s*auto/.test(css), "Equipment detail must vertically scroll to reveal the lower equipment row");
+assert(web.includes("partyScrollLeft") && web.includes("partyRosterScrollTop") && web.includes("partyDetailScrollTop"), "Party scroll positions must be preserved");
 assert(/\.inventory-grid\s*\{[^}]*overflow:\s*hidden/.test(css), "Inventory grid must page instead of scrolling");
 assert(/grid-template-rows:\s*72px\s+minmax\(0,\s*1fr\)/.test(css), "Map does not own the full space below the header");
 assert(/\.command-dock\s*\{[^}]*position:\s*absolute[^}]*transform:\s*translateY\(calc\(100%\s*-\s*42px\)\)/.test(css), "Character equipment panel is not an overlay drawer");
@@ -85,6 +164,14 @@ state = GAME.applyPlayerAction(state, story.id);
 observation = GAME.getPlayerObservation(state);
 state = GAME.applyPlayerAction(state, observation.actions.find((action) => action.kind === "decision").id);
 observation = GAME.getPlayerObservation(state);
+assert(observation.party.equipmentTargets.every((target) => target.equipment.length === 8 && target.skills.length === 4 && Number.isFinite(target.stats.maxHp)), "Equipment modal observation lacks slots, skills, or current combat stats");
+assert(observation.party.equipmentTargets.every((target) => target.skills.every((skill) => Array.isArray(skill.details) && skill.details.length)), "Character skill observation lacks concrete numeric details");
+assert(observation.party.equipmentTargets[0].skills.some((skill) => skill.details.some((detail) => detail.includes("物理攻击") && detail.includes("物理伤害"))), "Damage skill details do not expose attack scaling and damage type");
+assert.equal(observation.party.characterTargets.length, observation.party.equipmentTargets.length + observation.war.untrainedUnits, "Character modal observation omits militia");
+assert(observation.party.militiaUnits.every((unit) => unit.equipmentLocked && unit.equipment.every((slot) => slot.locked) && unit.skills.length === 4), "Militia observation does not combine locked equipment with real skills");
+assert(!observation.party.equipmentTargets.some((unit) => unit.kind === "militia"), "Militia leaked into the equipable target list");
+assert(observation.party.characterTargets.every((unit) => Number.isInteger(unit.combatPower) && unit.combatPower > 0), "Formation roster observation lacks public combat power");
+assert(observation.party.characterTargets.every((unit) => unit.roleKey), "Formation roster observation lacks canonical role keys for profession icons");
 assert.equal(observation.buildings.length, 7);
 assert.equal(observation.buildings.filter((building) => building.complete).length, 5);
 assert.equal(observation.buildings.filter((building) => !building.type).length, 2);
@@ -104,7 +191,24 @@ assert.equal(state.equipment.player.weapon, null, "Unequip action did not free t
 
 const combatAction = GAME.getPlayerObservation(state).actions.find((action) => action.kind === "grind");
 assert.throws(() => GAME.applyPlayerAction(state, combatAction.id), /战斗必须先完整运行实际战斗过程/);
-const plan = GAME.preparePlayerCombat(state, combatAction.id);
+const deploymentMembers = observation.party.characterTargets.slice(0, 4);
+const deployment = { formationId: "verify_squad", capacity: 4, memberIds: deploymentMembers.map((member) => member.id), positions: deploymentMembers.map((member) => member.id) };
+assert.equal(GAME.preparePlayerCombat(state, combatAction.id, { ...deployment, capacity: 8 }), null, "Mismatched formation capacity produced a combat plan");
+const duoDeployment = { formationId: "verify_duo", capacity: 2, memberIds: deployment.memberIds.slice(0, 2), positions: deployment.positions.slice(0, 2) };
+assert.equal(GAME.preparePlayerCombat(state, combatAction.id, duoDeployment).leftTeam.length, 2, "Smaller formation did not enter a larger-capacity battle");
+const plan = GAME.preparePlayerCombat(state, combatAction.id, deployment);
+assert.equal(plan.leftTeam.length, deploymentMembers.length, "Selected formation member count did not become the actual combat team");
+assert(deploymentMembers.filter((member) => member.kind === "hero").every((member) => plan.leftTeam.some((unit) => unit.name === member.name && unit.unitKind === "hero")), "Selected formation heroes did not become the actual combat team");
+assert.equal(plan.leftTeam.filter((unit) => unit.unitKind === "militia").length, deploymentMembers.filter((member) => member.kind === "militia").length, "Selected formation militia did not become the actual combat team");
+assert.deepEqual(plan.leftTeam.map((unit) => unit.slotIndex), deploymentMembers.map((_, index) => index), "Selected formation positions did not reach the battle plan");
+const militiaMember = observation.party.characterTargets.find((member) => member.kind === "militia");
+assert(militiaMember, "Static supply contract needs one militia unit");
+const supplyDeployment = { formationId: "verify_supply", capacity: 2, memberIds: [deploymentMembers[0].id, militiaMember.id], positions: [deploymentMembers[0].id, militiaMember.id] };
+const emptySupplyPlan = GAME.preparePlayerCombat(state, combatAction.id, { ...supplyDeployment, foodSupplied: 0 });
+const fullSupplyPlan = GAME.preparePlayerCombat(state, combatAction.id, { ...supplyDeployment, foodSupplied: 1 });
+assert.equal(emptySupplyPlan.performancePct, 20, "Empty supply did not reach the real 20% combat plan");
+assert.equal(fullSupplyPlan.performancePct, 100, "Full supply did not reach the real 100% combat plan");
+assert(emptySupplyPlan.leftTeam[0].maxHp < fullSupplyPlan.leftTeam[0].maxHp, "Supply performance is only cosmetic and did not scale real combat stats");
 const result = GAME.simulatePlan(plan);
 assert(result.signals.length > 0, "Static integration contract did not produce a real battle timeline");
 const steppedSim = new COMBAT.CombatSimulation({ seed: plan.seed, maxTime: plan.maxTime, healthInterval: 0.5, randomizeStats: false });
@@ -122,7 +226,7 @@ while (steppedSim.time < plan.maxTime) {
 }
 const steppedResult = steppedSim.buildResult();
 assert.equal(GAME.combatResultFingerprint(steppedResult), GAME.combatResultFingerprint(result), "Frame-stepped battle playback diverges from authoritative settlement");
-state = GAME.applyPlayerCombatResult(state, combatAction.id, result);
+state = GAME.applyPlayerCombatResult(state, combatAction.id, result, deployment);
 let retryRounds = 0;
 while (state.inventory.length < 2 && retryRounds < 30) {
   const retryAction = GAME.getPlayerObservation(state).actions.find((action) => action.kind === "grind" && action.available);
@@ -139,7 +243,7 @@ console.log(JSON.stringify({
   files: ["index.html", "styles.css", "border-village-web.js"],
   map: "shared camera + node-local actions",
   combat: "shared battle view + verified result settlement",
-  equipment: "eight slots + whole-party one-click loadout + manual override",
-  layout: "full-height map + bottom overlay drawer + paged inventory",
+  equipment: "eight slots for heroes and trained soldiers + whole-force one-click loadout + manual override",
+  layout: "full-height map + modal three-region equipment workspace",
   serverStarted: false,
 }, null, 2));

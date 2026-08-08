@@ -63,6 +63,14 @@ function verifyIntroAndInformationBoundary() {
   assert(current.actions.some((row) => row.kind === "combat" && row.label.includes("占领后解锁1个建设位")), "Known raid does not advertise territorial reward");
   assert(current.actions.some((row) => row.kind === "combat" && row.label.includes("实战训练")), "Training battle is not visible");
   assert(!JSON.stringify(current).includes("精钢") && !JSON.stringify(current).includes("铁料"), "Removed material resources remain player-visible");
+  assert(current.party.heroes.every((hero) => hero.skills.length === 4 && Number.isFinite(hero.stats.maxHp) && Number.isFinite(hero.stats.armor)), "Equipment UI lacks public combat skills or current numerical stats");
+  assert.equal(current.party.characterTargets.length, current.party.equipmentTargets.length + current.war.untrainedUnits, "Militia are missing from the browsable character list");
+  assert.equal(current.party.militiaUnits.length, current.war.untrainedUnits, "Militia character records do not match the current untrained-unit count");
+  assert(current.party.militiaUnits.every((unit) => unit.kind === "militia" && unit.equipmentLocked && unit.equipment.length === 8 && unit.equipment.every((slot) => slot.locked && !slot.item)), "Militia equipment slots are not visibly and structurally locked");
+  assert(current.party.militiaUnits.every((unit) => unit.skills.length === 4 && unit.skills.every((skill) => skill.details.length) && Number.isFinite(unit.stats.maxHp)), "Militia character records lack real skills or combat stats");
+  assert(current.party.characterTargets.every((unit) => Number.isInteger(unit.combatPower) && unit.combatPower > 0), "Browsable units lack a positive public combat-power value derived from current combat stats");
+  assert(current.party.characterTargets.every((unit) => typeof unit.roleKey === "string" && unit.roleKey.length > 0), "Browsable units lack a canonical role key for profession icons");
+  assert(!current.party.equipmentTargets.some((unit) => unit.kind === "militia") && !current.actions.some((row) => row.targetHeroId?.startsWith("militia_")), "Militia incorrectly received equipment ownership or equipment actions");
 
   let guardState = GAME.createInitialState("wounded-guard-v3");
   guardState = take(guardState, (row) => row.kind === "story", "guard route opening");
@@ -185,6 +193,26 @@ function verifyTrainingAndFoodGradient() {
   assert.equal(trained.plan.kind, "training");
   assert.equal(state.resources.food, beforeFood - 6);
   assert.equal(GAME.trainedUnits(state), trained.result.metrics.leftAlive > 0 && trained.result.metrics.rightAlive === 0 ? 1 : 0);
+  const trainedTarget = view(state).party.equipmentTargets.find((row) => row.id === "trained_1");
+  assert(trainedTarget && trainedTarget.kind === "trained", "Newly trained soldier did not appear as an equipment target");
+  assert.equal(trainedTarget.equipment.length, 8, "Trained soldier does not have the shared eight equipment slots");
+  assert.equal(trainedTarget.skills.length, 4, "Trained soldier lacks its public skill kit in the equipment view");
+  assert(view(state).actions.some((row) => row.kind === "selection" && row.targetHeroId === "trained_1"), "Trained soldier cannot be selected for equipment");
+
+  const baseFinalState = structuredClone(state);
+  baseFinalState.phase = "final";
+  baseFinalState.resources.food = 20;
+  const baseSoldier = GAME.finalBattlePlan(baseFinalState).leftTeam.find((unit) => unit.name === "灰谷战士第1队");
+  const starter = structuredClone(state.inventory.find((item) => item.id === "starter_sword"));
+  state.inventory.push({ ...starter, id: "trained_test_weapon", name: "战士测试重刃", power: 500, equipmentLevel: 500, baseStats: { physicalPower: 220 }, affixes: [] });
+  state = GAME.applyPlayerAction(state, action(state, (row) => row.kind === "selection" && row.targetHeroId === "trained_1", "select trained soldier").id);
+  state = GAME.applyPlayerAction(state, action(state, (row) => row.kind === "equipment" && row.targetHeroId === "trained_1" && row.targetItemId === "trained_test_weapon", "equip trained soldier").id);
+  assert.equal(state.equipment.trained_1.weapon, "trained_test_weapon", "Equipment was not persisted on the trained soldier");
+  const gearedFinalState = structuredClone(state);
+  gearedFinalState.phase = "final";
+  gearedFinalState.resources.food = 20;
+  const gearedSoldier = GAME.finalBattlePlan(gearedFinalState).leftTeam.find((unit) => unit.name === "灰谷战士第1队");
+  assert(gearedSoldier.physicalPower > baseSoldier.physicalPower + 150, "Trained soldier equipment did not affect real combat stats");
 
   state.phase = "final";
   state.resources.population = 50;
@@ -265,9 +293,13 @@ function verifyVisibleDisabledActions() {
   const blockedRaid = current.actions.find((row) => row.kind === "combat" && row.label.includes("粮秣营") && row.available === false);
   assert(blockedBuild?.disabledReason.includes("行动力"));
   assert(blockedRecruit?.disabledReason.includes("人口已达上限"));
-  assert(blockedTraining?.disabledReason.includes("粮食"));
-  assert(blockedRaid?.disabledReason.includes("粮食"));
+  assert(blockedTraining?.disabledReason.includes("行动力"));
+  assert(blockedRaid?.disabledReason.includes("行动力"));
   assert.equal(GAME.preparePlayerCombat(state, blockedRaid.id), null, "Unavailable raid produced a combat plan");
+  state.ap = 1;
+  const underfed = view(state);
+  assert(underfed.actions.find((row) => row.kind === "combat" && row.label.includes("实战训练"))?.available, "Zero food incorrectly hid training instead of allowing under-supplied preparation");
+  assert(underfed.actions.find((row) => row.kind === "combat" && row.label.includes("粮秣营"))?.available, "Zero food incorrectly hid a raid instead of allowing under-supplied preparation");
   assert(!JSON.stringify(current).includes("血鼓萨满祭坛"), "Disabled-state visibility leaked future content");
 }
 
@@ -307,6 +339,72 @@ function verifyExplicitCostsAndFinalReadiness() {
   assert(final.description.includes("军需官判断") && final.description.includes("名英雄中"), "Final action lacks visible readiness facts");
 }
 
+function verifyTownProsperityObservation() {
+  const state = reachManagement("town-prosperity-v3");
+  const cases = [
+    [0, 1, 3], [39, 1, 3], [40, 2, 4], [69, 2, 4], [70, 3, 5], [99, 3, 5], [100, 4, 6],
+  ];
+  for (const [population, level, actions] of cases) {
+    state.resources.population = population;
+    const current = view(state);
+    assert.equal(current.town.name, "灰谷村");
+    assert.equal(current.town.population, population);
+    assert.equal(current.town.populationCap, state.resources.populationCap);
+    assert.equal(current.town.prosperity.level, level, `Wrong prosperity level at population ${population}`);
+    assert.equal(current.town.actionCapacity, actions, `Wrong action capacity at population ${population}`);
+  }
+  state.resources.population = 30;
+  const prosperity = view(state).town.prosperity;
+  assert.deepEqual(prosperity.milestones.filter((row) => row.unitReward).map((row) => row.population), [10, 20, 30, 40, 50, 60, 70, 80, 90, 100], "Early unit rewards are not expressed as data-driven population milestones");
+  assert(prosperity.milestones.find((row) => row.population === 40)?.rewards.includes("每日行动+1"), "Prosperity upgrade does not expose its future action reward");
+  assert.equal(prosperity.nextLevel.population, 40);
+}
+
+function verifyFormationDeploymentContract() {
+  let state = reachManagement("formation-deployment-v3");
+  let current = view(state);
+  const members = current.party.characterTargets.slice(0, 4);
+  const squad = { formationId: "verify_squad", capacity: 4, memberIds: members.map((member) => member.id), positions: members.map((member) => member.id).reverse() };
+  const hunt = action(state, (row) => row.kind === "grind", "formation hunt");
+  const huntPlan = GAME.preparePlayerCombat(state, hunt.id, squad);
+  assert(huntPlan && huntPlan.leftTeam.length === members.length, "Four-unit formation did not replace the automatic hunt party");
+  assert.deepEqual(huntPlan.leftTeam.map((unit) => unit.slotIndex), members.map((_, index) => index), "Formation positions did not survive plan construction");
+  assert.deepEqual(huntPlan.leftTeam.map((unit) => unit.role), [...members].reverse().map((member) => member.roleKey), "Formation position order did not determine the battle lineup");
+  assert.equal(GAME.preparePlayerCombat(state, hunt.id, { ...squad, capacity: 8 }), null, "Wrong-capacity formation entered a four-unit hunt");
+  const duo = { formationId: "verify_duo", capacity: 2, memberIds: squad.memberIds.slice(0, 2), positions: squad.positions.slice(0, 2) };
+  assert.equal(GAME.preparePlayerCombat(state, hunt.id, duo).leftTeam.length, 2, "Two-unit formation did not enter a four-unit hunt through downward compatibility");
+
+  const militia = current.party.characterTargets.find((member) => member.kind === "militia");
+  assert(militia, "Supply verification needs one militia unit");
+  const suppliedDuo = { formationId: "verify_supply", capacity: 2, memberIds: [members[0].id, militia.id], positions: [members[0].id, militia.id] };
+  const emptyPotPlan = GAME.preparePlayerCombat(state, hunt.id, { ...suppliedDuo, foodSupplied: 0 });
+  const fullPotPlan = GAME.preparePlayerCombat(state, hunt.id, { ...suppliedDuo, foodSupplied: 1 });
+  assert.equal(emptyPotPlan.fullFood, 1, "Formation food requirement did not count one militia as one food");
+  assert.equal(emptyPotPlan.foodCommitted, 0);
+  assert.equal(emptyPotPlan.performancePct, 20, "Empty supply pot must leave the team at 20% performance");
+  assert.equal(fullPotPlan.performancePct, 100, "Full supply pot must restore 100% performance");
+  assert(emptyPotPlan.leftTeam[0].maxHp < fullPotPlan.leftTeam[0].maxHp && emptyPotPlan.leftTeam[0].power < fullPotPlan.leftTeam[0].power, "Supply percentage did not affect the real combat team stats");
+
+  const training = action(state, (row) => row.kind === "combat" && row.label.includes("实战训练"), "formation training");
+  const trainingPlan = GAME.preparePlayerCombat(state, training.id, squad);
+  assert.equal(trainingPlan.leftTeam.length, members.length + 1, "Training battle did not append its fixed trainee after the selected formation");
+
+  const raid = action(state, (row) => row.kind === "combat" && row.label.includes("占领后解锁1个建设位"), "formation raid");
+  const raidMembers = current.party.characterTargets.slice(0, 8);
+  const expedition = { formationId: "verify_expedition", capacity: 8, memberIds: raidMembers.map((member) => member.id), positions: raidMembers.map((member) => member.id) };
+  const raidPlan = GAME.preparePlayerCombat(state, raid.id, expedition);
+  assert(raidPlan && raidPlan.leftTeam.length === raidMembers.length, "Eight-unit formation did not replace the automatic raid party");
+
+  state.phase = "final";
+  state.resources.food = 999;
+  current = view(state);
+  const final = action(state, (row) => row.kind === "combat" && row.label.includes("决战"), "formation final");
+  const finalMembers = current.party.characterTargets.slice(0, 20);
+  const warband = { formationId: "verify_warband", capacity: 20, memberIds: finalMembers.map((member) => member.id), positions: finalMembers.map((member) => member.id) };
+  const finalPlan = GAME.preparePlayerCombat(state, final.id, warband);
+  assert(finalPlan && finalPlan.leftTeam.length === finalMembers.length, "Twenty-unit formation did not replace the automatic final-battle army");
+}
+
 verifyIntroAndInformationBoundary();
 verifyImmediateConstructionAndYieldSignals();
 verifyGrindDifficultyLadder();
@@ -317,6 +415,8 @@ verifyCombatRetryContract();
 verifyVisibleDisabledActions();
 verifyOneClickEquipmentAndCombatBoundary();
 verifyExplicitCostsAndFinalReadiness();
+verifyTownProsperityObservation();
+verifyFormationDeploymentContract();
 
 console.log(JSON.stringify({
   status: "PASS",
@@ -330,11 +430,14 @@ console.log(JSON.stringify({
     "five visible manual grind difficulties unlocked by 5/10/30/50 total wins across any difficulty",
     "equipment drops drive capped smithy gold",
     "three-item market and five-sale daily limit",
-    "real training battle upgrades militia to food-costly warriors",
+    "real training battle upgrades militia to individually equipable eight-slot warriors",
     "captured raid node becomes an on-map construction plot",
     "failed raids and final battles refund costs and remain retryable",
     "visible disabled actions without future-site leakage",
     "real-combat settlement boundary and whole-party one-click equipment",
     "structured event costs and visible final-battle readiness facts",
+    "current-town prosperity observation exposes population cap, action tiers, and future unit rewards",
+    "downward-compatible 2/4/8/20-unit formations and positions enter authoritative combat plans",
+    "explicit formation food supply scales real combat stats from 20% to 100%",
   ],
 }, null, 2));

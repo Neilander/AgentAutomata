@@ -132,13 +132,82 @@ function starterItem() {
   return { id: "starter_sword", name: "旧民兵剑", slot: "weapon", slotLabel: "武器", rarity: "普通", rarityId: "common", equipmentLevel: 12, power: 7, baseStats: { physicalPower: 6 }, affixes: [{ stat: "might", label: "武力", value: 1, level: 1, category: "major", percent: false }], identityTags: [], source: "村庄仓库" };
 }
 
-function actionPointsForPopulation(population) {
+const PROSPERITY_LEVELS = [
+  { level: 1, name: "边陲村落", population: 0, actionCapacity: 3 },
+  { level: 2, name: "兴盛村庄", population: 40, actionCapacity: 4 },
+  { level: 3, name: "边境镇集", population: 70, actionCapacity: 5 },
+  { level: 4, name: "繁荣城镇", population: 100, actionCapacity: 6 },
+];
+const POPULATION_UNIT_MILESTONES = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+
+function prosperityLevelForPopulation(population) {
   const value = Math.max(0, Number(population) || 0);
-  return value >= 100 ? 6 : value >= 70 ? 5 : value >= 40 ? 4 : 3;
+  return [...PROSPERITY_LEVELS].reverse().find((row) => value >= row.population) || PROSPERITY_LEVELS[0];
+}
+
+function actionPointsForPopulation(population) { return prosperityLevelForPopulation(population).actionCapacity; }
+
+function townProsperity(state) {
+  const population = Math.max(0, Number(state.resources.population) || 0);
+  const current = prosperityLevelForPopulation(population);
+  const next = PROSPERITY_LEVELS.find((row) => row.population > population) || null;
+  const populationMilestones = [0, ...POPULATION_UNIT_MILESTONES];
+  const milestones = populationMilestones.map((threshold) => {
+    const prosperity = PROSPERITY_LEVELS.find((row) => row.population === threshold) || null;
+    const unitReward = POPULATION_UNIT_MILESTONES.includes(threshold) ? 1 : 0;
+    const rewards = [];
+    if (threshold === 0) rewards.push("基础每日行动3");
+    else if (prosperity) rewards.push("每日行动+1");
+    if (unitReward) rewards.push("新增1个民兵单位");
+    return { population: threshold, prosperityLevel: prosperity?.level || null, prosperityName: prosperity?.name || null, actionCapacity: prosperity?.actionCapacity || null, unitReward, rewards, reached: population >= threshold };
+  });
+  const levelEnd = next?.population ?? Math.max(population, PROSPERITY_LEVELS.at(-1).population);
+  const levelSpan = Math.max(1, levelEnd - current.population);
+  return {
+    level: current.level,
+    name: current.name,
+    actionCapacity: current.actionCapacity,
+    currentLevelPopulation: current.population,
+    nextLevelPopulation: next?.population ?? null,
+    nextLevel: next ? { level: next.level, name: next.name, population: next.population, actionCapacity: next.actionCapacity } : null,
+    levelProgress: next ? Math.max(0, Math.min(1, (population - current.population) / levelSpan)) : 1,
+    milestones,
+  };
 }
 
 function militiaUnits(state) { return Math.min(10, Math.floor(state.resources.population / 10)); }
 function trainedUnits(state) { return Math.min(militiaUnits(state), Math.max(0, Number(state.army?.trainedUnits || 0))); }
+function trainedUnitId(index) { return `trained_${index + 1}`; }
+function militiaUnitId(index) { return `militia_${index + 1}`; }
+function trainedUnitIndex(targetId) {
+  const match = /^trained_(\d+)$/.exec(String(targetId || ""));
+  return match ? Number(match[1]) - 1 : -1;
+}
+function militiaUnitIndex(targetId) {
+  const match = /^militia_(\d+)$/.exec(String(targetId || ""));
+  return match ? Number(match[1]) - 1 : -1;
+}
+function trainedRole(index) { return ["knight", "warrior", "ranger"][index % 3]; }
+function militiaRole(index) { return ["warrior", "knight", "ranger", "warrior", "ranger"][index % 5]; }
+function trainedTargetInfo(index) {
+  const role = trainedRole(index);
+  const preferred = { knight: ["坚韧", "韧性"], warrior: ["武力", "坚韧"], ranger: ["敏捷", "暴击率"] }[role];
+  const roleName = { knight: "重甲战士", warrior: "近战战士", ranger: "远程战士" }[role];
+  return { id: trainedUnitId(index), name: `灰谷战士第${index + 1}队`, role: `${roleName} · 10人单位`, roleKey: role, preferredAffixes: preferred, kind: "trained" };
+}
+function militiaTargetInfo(index) {
+  const role = militiaRole(index);
+  const roleName = { knight: "持盾民兵", warrior: "近战民兵", ranger: "弓手民兵" }[role];
+  return { id: militiaUnitId(index), name: `灰谷民兵第${index + 1}队`, role: `${roleName} · 10人单位`, roleKey: role, preferredAffixes: [], kind: "militia" };
+}
+function equipmentTargetIds(state) { return [...state.roster, ...Array.from({ length: trainedUnits(state) }, (_, index) => trainedUnitId(index))]; }
+function equipmentTargetInfo(state, targetId) {
+  if (HEROES[targetId] && state.roster.includes(targetId)) return { id: targetId, name: HEROES[targetId].name, role: HEROES[targetId].role, preferredAffixes: HEROES[targetId].preferredAffixes || [], kind: "hero" };
+  const index = trainedUnitIndex(targetId);
+  return index >= 0 && index < trainedUnits(state) ? trainedTargetInfo(index) : null;
+}
+function equipmentSlots(state, targetId) { return state.equipment[targetId] || emptyEquipment(); }
+function ensureEquipmentSlots(state, targetId) { if (!state.equipment[targetId]) state.equipment[targetId] = emptyEquipment(); return state.equipment[targetId]; }
 function unlockedGrindDifficulty(totalWins) {
   const wins = Math.max(0, Number(totalWins) || 0);
   let unlocked = 1;
@@ -279,7 +348,11 @@ function heroCombatSpec(state, heroId, slotIndex) {
   const baseBonus = heroId === "captain" && state.flags.captainBlessed ? .16 : 0;
   const personal = hero.combatScale || {};
   const spec = roleSpec(hero.combatRole, hero.name, slotIndex, { hp: (.92 + hero.base / 430 + baseBonus) * (personal.hp || 1), power: (.86 + hero.base / 360 + baseBonus) * (personal.power || 1), armor: (.95 + baseBonus) * (personal.armor || 1), unitKind: "hero" });
-  const items = Object.values(state.equipment[heroId] || {}).map((itemId) => state.inventory.find((item) => item.id === itemId)).filter(Boolean);
+  return applyEquipmentToCombatSpec(state, heroId, spec);
+}
+
+function applyEquipmentToCombatSpec(state, targetId, spec) {
+  const items = Object.values(equipmentSlots(state, targetId)).map((itemId) => state.inventory.find((item) => item.id === itemId)).filter(Boolean);
   const bundle = BUILD_LAYERS.buildEquipmentModifierBundle(items);
   spec.maxHp += Math.round(bundle.maxHpAdd || 0); spec.hp = spec.maxHp;
   spec.physicalPower += Math.round(bundle.physicalPowerAdd || 0); spec.magicPower += Math.round(bundle.magicPowerAdd || 0); spec.power = Math.max(spec.physicalPower, spec.magicPower);
@@ -294,13 +367,85 @@ function enemySpec(role, name, slotIndex, tier = 1, scales = {}) {
 }
 
 function militiaSpec(index, slotIndex = index) {
-  const roles = ["warrior", "knight", "ranger", "warrior", "ranger"];
-  return roleSpec(roles[index % roles.length], `灰谷村民兵第${index + 1}队`, slotIndex, { hp: .82, power: .74, armor: .9, unitKind: "militia" });
+  return roleSpec(militiaRole(index), `灰谷村民兵第${index + 1}队`, slotIndex, { hp: .82, power: .74, armor: .9, unitKind: "militia" });
 }
 
-function trainedSpec(index, slotIndex = index) {
-  const roles = ["knight", "warrior", "ranger"];
-  return roleSpec(roles[index % roles.length], `灰谷战士第${index + 1}队`, slotIndex, { hp: 1.26, power: 1.18, armor: 1.12, unitKind: "trained" });
+function trainedSpec(state, index, slotIndex = index) {
+  const spec = roleSpec(trainedRole(index), `灰谷战士第${index + 1}队`, slotIndex, { hp: 1.26, power: 1.18, armor: 1.12, unitKind: "trained" });
+  return applyEquipmentToCombatSpec(state, trainedUnitId(index), spec);
+}
+
+function formationDeploymentRows(state, deployment, capacity) {
+  if (!deployment) return null;
+  const deploymentCapacity = Number(deployment.capacity);
+  if (!Number.isInteger(deploymentCapacity) || deploymentCapacity <= 0 || deploymentCapacity > capacity || !Array.isArray(deployment.memberIds)) return null;
+  const memberIds = [...new Set(deployment.memberIds.map(String))];
+  if (!memberIds.length || memberIds.length > deploymentCapacity) return null;
+  const available = new Set([
+    ...state.roster,
+    ...Array.from({ length: trainedUnits(state) }, (_, index) => trainedUnitId(index)),
+    ...Array.from({ length: militiaUnits(state) - trainedUnits(state) }, (_, index) => militiaUnitId(index)),
+  ]);
+  if (memberIds.some((id) => !available.has(id))) return null;
+  const memberSet = new Set(memberIds);
+  const used = new Set();
+  const rows = [];
+  const positions = Array.isArray(deployment.positions) ? deployment.positions.slice(0, deploymentCapacity) : [];
+  positions.forEach((rawId, slotIndex) => {
+    const id = String(rawId || "");
+    if (!memberSet.has(id) || used.has(id)) return;
+    used.add(id); rows.push({ id, slotIndex });
+  });
+  const openSlots = Array.from({ length: deploymentCapacity }, (_, index) => index).filter((slotIndex) => !rows.some((row) => row.slotIndex === slotIndex));
+  for (const id of memberIds) {
+    if (used.has(id)) continue;
+    rows.push({ id, slotIndex: openSlots.shift() });
+  }
+  return rows.sort((a, b) => a.slotIndex - b.slotIndex);
+}
+
+function formationCombatTeam(state, deployment, capacity) {
+  const rows = formationDeploymentRows(state, deployment, capacity);
+  if (!rows) return null;
+  return rows.map(({ id, slotIndex }) => {
+    if (HEROES[id] && state.roster.includes(id)) return heroCombatSpec(state, id, slotIndex);
+    const trainedIndex = trainedUnitIndex(id);
+    if (trainedIndex >= 0 && trainedIndex < trainedUnits(state)) return trainedSpec(state, trainedIndex, slotIndex);
+    const militiaIndex = militiaUnitIndex(id);
+    if (militiaIndex >= 0 && militiaIndex < militiaUnits(state) - trainedUnits(state)) return militiaSpec(militiaIndex, slotIndex);
+    return null;
+  }).filter(Boolean);
+}
+
+function formationSoldierFood(team) {
+  return team.reduce((sum, unit) => sum + (unit.unitKind === "trained" ? 3 : unit.unitKind === "militia" ? 1 : 0), 0);
+}
+
+function resolveFormationSupply(state, fullFood, deployment) {
+  const required = Math.max(0, Math.floor(Number(fullFood) || 0));
+  const hasExplicitSupply = Boolean(deployment && Object.prototype.hasOwnProperty.call(deployment, "foodSupplied"));
+  const requested = hasExplicitSupply ? Math.floor(Number(deployment.foodSupplied) || 0) : required;
+  const foodCommitted = Math.max(0, Math.min(required, Math.floor(Number(state.resources.food) || 0), requested));
+  const supplyRatio = required > 0 ? foodCommitted / required : 1;
+  const performance = required > 0 ? .2 + .8 * supplyRatio : 1;
+  return { fullFood: required, foodCommitted, supplyRatio, performance, performancePct: Math.round(performance * 100) };
+}
+
+function applySupplyPerformance(team, performance) {
+  if (performance >= .999) return team;
+  return team.map((unit) => {
+    const scaled = { ...unit };
+    const basePower = Number(unit.power ?? 1);
+    const basePhysicalPower = Number(unit.physicalPower ?? basePower);
+    const baseMagicPower = Number(unit.magicPower ?? basePower);
+    scaled.maxHp = Math.max(1, Math.round(Number(unit.maxHp ?? unit.hp ?? 1) * performance));
+    scaled.hp = scaled.maxHp;
+    scaled.physicalPower = Math.max(0, Math.round(basePhysicalPower * performance));
+    scaled.magicPower = Math.max(0, Math.round(baseMagicPower * performance));
+    scaled.power = Math.max(1, scaled.physicalPower, scaled.magicPower, Math.round(basePower * performance));
+    scaled.armor = Math.max(0, Math.round(Number(unit.armor ?? 0) * performance));
+    return scaled;
+  });
 }
 
 function expeditionArmy(state, limit = 3) {
@@ -308,18 +453,22 @@ function expeditionArmy(state, limit = 3) {
   const trained = Math.min(trainedUnits(state), limit);
   const regular = Math.min(Math.max(0, total - trainedUnits(state)), limit - trained);
   const rows = [];
-  for (let index = 0; index < trained; index += 1) rows.push({ spec: trainedSpec(index), food: 3, trained: true });
+  for (let index = 0; index < trained; index += 1) rows.push({ spec: trainedSpec(state, index), food: 3, trained: true });
   for (let index = 0; index < regular; index += 1) rows.push({ spec: militiaSpec(index), food: 1, trained: false });
   return rows;
 }
 
-function huntPlan(state) {
+function huntPlan(state, deployment = null) {
   if (state.phase !== "management") return null;
   const difficulty = grindProgress(state).selectedDifficulty;
   const config = GRIND_DIFFICULTIES[difficulty];
-  const leftTeam = state.activeParty.slice(0, 4).map((heroId, index) => heroCombatSpec(state, heroId, index));
+  const deployed = formationCombatTeam(state, deployment, 4);
+  if (deployment && !deployed) return null;
+  const unscaledLeftTeam = deployed || state.activeParty.slice(0, 4).map((heroId, index) => heroCombatSpec(state, heroId, index));
+  const supply = deployed ? resolveFormationSupply(state, formationSoldierFood(deployed), deployment) : { fullFood: 0, foodCommitted: 0, supplyRatio: 1, performance: 1, performancePct: 100 };
+  const leftTeam = deployed ? applySupplyPerformance(unscaledLeftTeam, supply.performance) : unscaledLeftTeam;
   const rightTeam = config.enemies.map(([role, name], index) => enemySpec(role, name, index, config.enemyTier, config.scale));
-  return { kind: "hunt", title: `边林讨伐 · 难度${difficulty}「${config.name}」`, seed: `${state.seed}|hunt|${difficulty}|${state.stats.grindAttempts}`, leftTeam, rightTeam, maxTime: 80, foodCommitted: 0, lootTier: config.lootTier, lootCountLabel: config.lootCountLabel, rarityLabel: config.rarityLabel, grindDifficulty: difficulty };
+  return { kind: "hunt", title: `边林讨伐 · 难度${difficulty}「${config.name}」`, seed: `${state.seed}|hunt|${difficulty}|${state.stats.grindAttempts}|food${supply.foodCommitted}`, leftTeam, rightTeam, maxTime: 80, ...supply, lootTier: config.lootTier, lootCountLabel: config.lootCountLabel, rarityLabel: config.rarityLabel, grindDifficulty: difficulty };
 }
 
 function raidFoodRequirement(state, raidId) {
@@ -327,60 +476,81 @@ function raidFoodRequirement(state, raidId) {
   return raid ? raid.baseFood + expeditionArmy(state).reduce((sum, row) => sum + row.food, 0) : 0;
 }
 
-function raidPlan(state, raidId) {
+function raidPlan(state, raidId, deployment = null) {
   const raid = RAIDS[raidId];
   if (!raid || state.phase !== "management" || state.ap <= 0 || state.resolvedRaids[raidId] || !raid.unlock(state)) return null;
-  const food = raidFoodRequirement(state, raidId);
-  if (state.resources.food < food) return null;
-  const heroes = state.activeParty.slice(0, 4).map((heroId, index) => heroCombatSpec(state, heroId, index));
-  const soldiers = expeditionArmy(state).map((row, index) => ({ ...row.spec, slotIndex: heroes.length + index }));
-  const leftTeam = [...heroes, ...soldiers];
+  const deployed = formationCombatTeam(state, deployment, 8);
+  if (deployment && !deployed) return null;
+  const food = deployed ? raid.baseFood + formationSoldierFood(deployed) : raidFoodRequirement(state, raidId);
+  const heroes = deployed ? [] : state.activeParty.slice(0, 4).map((heroId, index) => heroCombatSpec(state, heroId, index));
+  const soldiers = deployed ? [] : expeditionArmy(state).map((row, index) => ({ ...row.spec, slotIndex: heroes.length + index }));
+  const unscaledLeftTeam = deployed || [...heroes, ...soldiers];
+  const supply = resolveFormationSupply(state, food, deployment);
+  const leftTeam = applySupplyPerformance(unscaledLeftTeam, supply.performance);
   const rightTeam = raid.enemies.map(([role, name], index) => enemySpec(role, name, index, raid.tier, raid.combatScale));
-  return { kind: "raid", raidId, title: raid.title, seed: `${state.seed}|raid|${raidId}|${state.stats.combats}`, leftTeam, rightTeam, maxTime: 100, foodCommitted: food, deployedArmy: soldiers.length };
+  return { kind: "raid", raidId, title: raid.title, seed: `${state.seed}|raid|${raidId}|${state.stats.combats}|food${supply.foodCommitted}`, leftTeam, rightTeam, maxTime: 100, ...supply, deployedArmy: leftTeam.filter((unit) => unit.unitKind === "trained" || unit.unitKind === "militia").length };
 }
 
-function trainingPlan(state) {
-  if (state.phase !== "management" || state.ap <= 0 || state.resources.food < 6 || trainedUnits(state) >= militiaUnits(state)) return null;
-  const heroes = state.activeParty.slice(0, 4).map((heroId, index) => heroCombatSpec(state, heroId, index));
-  const candidate = militiaSpec(trainedUnits(state), heroes.length);
+function trainingPlan(state, deployment = null) {
+  if (state.phase !== "management" || state.ap <= 0 || trainedUnits(state) >= militiaUnits(state)) return null;
+  const deployed = formationCombatTeam(state, deployment, 4);
+  if (deployment && !deployed) return null;
+  const heroes = deployed || state.activeParty.slice(0, 4).map((heroId, index) => heroCombatSpec(state, heroId, index));
+  const candidate = militiaSpec(trainedUnits(state), deployment ? 4 : heroes.length);
   const rightTeam = [["warrior", "圣殿训练兵"], ["knight", "圣殿盾教官"], ["ranger", "圣殿射术教官"]].map(([role, name], index) => enemySpec(role, name, index, 2, { hp: 1.62, power: 1.3, armor: 1.08 }));
-  return { kind: "training", title: "民兵实战训练", seed: `${state.seed}|training|${state.day}|${state.stats.soldiersTrained}|${state.stats.combats}`, leftTeam: [...heroes, candidate], rightTeam, maxTime: 80, foodCommitted: 6, trainedOnWin: 1 };
+  const unscaledLeftTeam = [...heroes, candidate];
+  const fullFood = 6 + (deployed ? formationSoldierFood(deployed) : 0);
+  const supply = resolveFormationSupply(state, fullFood, deployment);
+  const leftTeam = applySupplyPerformance(unscaledLeftTeam, supply.performance);
+  return { kind: "training", title: "民兵实战训练", seed: `${state.seed}|training|${state.day}|${state.stats.soldiersTrained}|${state.stats.combats}|food${supply.foodCommitted}`, leftTeam, rightTeam, maxTime: 80, ...supply, trainedOnWin: 1 };
 }
 
-function finalBattlePlan(state, foodAvailable = state.resources.food) {
+function finalBattlePlan(state, foodAvailable = state.resources.food, deployment = null) {
   if (state.phase !== "final") return null;
-  const heroes = state.activeParty.slice(0, 10).map((heroId, index) => heroCombatSpec(state, heroId, index));
+  const deployed = formationCombatTeam(state, deployment, 20);
+  if (deployment && !deployed) return null;
+  const heroes = deployed ? [] : state.activeParty.slice(0, 10).map((heroId, index) => heroCombatSpec(state, heroId, index));
   const total = militiaUnits(state);
   const trained = trainedUnits(state);
   const regular = total - trained;
-  const fullFood = trained * 3 + regular;
+  const fullFood = deployed ? formationSoldierFood(deployed) : trained * 3 + regular;
   let food = Math.max(0, Math.min(state.resources.food, Number(foodAvailable) || 0));
   const soldiers = [];
   let deployedTrained = 0;
   let deployedMilitia = 0;
-  for (let index = 0; index < trained && food >= 3; index += 1) { soldiers.push(trainedSpec(index, heroes.length + soldiers.length)); food -= 3; deployedTrained += 1; }
+  for (let index = 0; index < trained && food >= 3; index += 1) { soldiers.push(trainedSpec(state, index, heroes.length + soldiers.length)); food -= 3; deployedTrained += 1; }
   for (let index = 0; index < regular && food >= 1; index += 1) { soldiers.push(militiaSpec(index, heroes.length + soldiers.length)); food -= 1; deployedMilitia += 1; }
   const foodCommitted = deployedTrained * 3 + deployedMilitia;
-  const leftTeam = [...heroes, ...soldiers];
+  const unscaledLeftTeam = deployed || [...heroes, ...soldiers];
+  const supply = deployed ? resolveFormationSupply(state, fullFood, deployment) : null;
+  const leftTeam = deployed ? applySupplyPerformance(unscaledLeftTeam, supply.performance) : unscaledLeftTeam;
   const remainingUnits = Math.max(0, state.enemy.orcUnits);
   const roles = ["warrior", "knight", "ranger", "warrior", "berserker"];
   const rightTeam = Array.from({ length: remainingUnits }, (_, index) => enemySpec(roles[index % roles.length], `兽人军团第${index + 1}队`, index, 3, { hp: 1.25, power: 1.06, armor: 1.11 }));
   const bossDefs = [["knight", "兽人铁壁主将"], ["berserker", "兽人狂战主将"], ["warlock", "兽人血鼓主将"]];
   for (let index = 0; index < state.enemy.bosses; index += 1) rightTeam.push(enemySpec(bossDefs[index][0], bossDefs[index][1], rightTeam.length, 5, { hp: 2.62, power: 1.56, armor: 1.35 }));
-  return { kind: "final", title: "灰谷村决战", seed: `${state.seed}|final|${state.stats.combats}`, leftTeam, rightTeam, maxTime: 150, fullFood, foodCommitted, deployedArmy: soldiers.length, totalArmy: total, deployedTrained, deployedMilitia };
+  const selectedSoldiers = leftTeam.filter((unit) => unit.unitKind === "trained" || unit.unitKind === "militia");
+  const selectedTrained = selectedSoldiers.filter((unit) => unit.unitKind === "trained").length;
+  const selectedMilitia = selectedSoldiers.filter((unit) => unit.unitKind === "militia").length;
+  const supplyFields = deployed ? supply : { fullFood, foodCommitted, supplyRatio: fullFood > 0 ? foodCommitted / fullFood : 1, performance: 1, performancePct: 100 };
+  return { kind: "final", title: "灰谷村决战", seed: `${state.seed}|final|${state.stats.combats}|food${supplyFields.foodCommitted}`, leftTeam, rightTeam, maxTime: 150, ...supplyFields, deployedArmy: selectedSoldiers.length, totalArmy: deployed ? selectedSoldiers.length : total, deployedTrained: deployed ? selectedTrained : deployedTrained, deployedMilitia: deployed ? selectedMilitia : deployedMilitia };
 }
 
 function finalReadiness(state, preview = finalBattlePlan(state, state.resources.food)) {
   const heroes = state.activeParty.slice(0, 10);
-  const occupiedSlots = heroes.reduce((sum, heroId) => sum + Object.values(state.equipment[heroId] || {}).filter(Boolean).length, 0);
-  const equippedHeroes = heroes.filter((heroId) => Object.values(state.equipment[heroId] || {}).some(Boolean)).length;
+  const deployedSoldiers = Array.from({ length: Number(preview?.deployedTrained || 0) }, (_, index) => trainedUnitId(index));
+  const equippableAllies = [...heroes, ...deployedSoldiers];
+  const occupiedSlots = equippableAllies.reduce((sum, targetId) => sum + Object.values(equipmentSlots(state, targetId)).filter(Boolean).length, 0);
+  const equippedHeroes = heroes.filter((heroId) => Object.values(equipmentSlots(state, heroId)).some(Boolean)).length;
+  const equippedSoldiers = deployedSoldiers.filter((targetId) => Object.values(equipmentSlots(state, targetId)).some(Boolean)).length;
+  const equippedAllies = equippedHeroes + equippedSoldiers;
   const allies = heroes.length + Number(preview?.deployedArmy || 0);
   const enemies = Math.max(0, state.enemy.orcUnits) + Math.max(0, state.enemy.bosses);
   let risk = "势均力敌";
-  if (equippedHeroes === 0 || (equippedHeroes * 3 < heroes.length && allies + 3 < enemies)) risk = "极度危险";
-  else if (allies < enemies || equippedHeroes < heroes.length) risk = "危险";
-  else if (allies >= enemies + 3 && equippedHeroes === heroes.length) risk = "占优";
-  return { risk, allies, enemies, heroes: heroes.length, equippedHeroes, occupiedSlots };
+  if (equippedAllies === 0 || (equippedAllies * 3 < equippableAllies.length && allies + 3 < enemies)) risk = "极度危险";
+  else if (allies < enemies || equippedAllies < equippableAllies.length) risk = "危险";
+  else if (allies >= enemies + 3 && equippedAllies === equippableAllies.length) risk = "占优";
+  return { risk, allies, enemies, heroes: heroes.length, equippedHeroes, soldiers: deployedSoldiers.length, equippedSoldiers, occupiedSlots };
 }
 
 function simulatePlan(plan) { return COMBAT.simulateTeams(plan.leftTeam, plan.rightTeam, { seed: plan.seed, maxTime: plan.maxTime, randomizeStats: false }); }
@@ -425,7 +595,7 @@ function withAvailability(row, ...reasons) {
 function internalActions(state) {
   if (state.result) return [];
   if (state.phase === "prologue") {
-    const lockedHunt = withAvailability({ id: "combat:hunt", label: "前往边林免费讨伐魔物", kind: "grind", actionPointCost: 0, description: "刷怪不消耗行动力或粮食。" }, "先完成当前开场剧情，组织好第一支队伍");
+    const lockedHunt = withAvailability({ id: "combat:hunt", label: "前往边林免费讨伐魔物", kind: "grind", actionPointCost: 0, description: "刷怪不消耗行动力；士兵出战需要军粮，英雄不需要。" }, "先完成当前开场剧情，组织好第一支队伍");
     if (state.storyStep === "arrival") return [{ id: "story:arrival", label: "陪伊莎贝拉巡视这座安静的边陲村", kind: "story", actionPointCost: 0 }, lockedHunt];
     if (state.storyStep === "survivors") return [
       { id: "story:save_scout", label: "先救掌握敌情的圣殿斥候莱恩", kind: "decision", actionPointCost: 0, knownResult: "莱恩将成为第二名圣殿骑士，并带回粮秣营位置" },
@@ -437,8 +607,8 @@ function internalActions(state) {
   if (state.phase === "final") {
     const preview = finalBattlePlan(state, state.resources.food);
     const readiness = finalReadiness(state, preview);
-    const rows = [{ id: "combat:final", label: `投入${preview.foodCommitted}粮食组织决战（${preview.deployedArmy}/${preview.totalArmy}支部队可以出战）`, kind: "combat", actionPointCost: 0, foodCost: preview.foodCommitted, fullFood: preview.fullFood, description: `军需官判断：${readiness.risk}。已知阵容${readiness.allies}对${readiness.enemies}；${readiness.heroes}名英雄中${readiness.equippedHeroes}名穿有装备，共占用${readiness.occupiedSlots}个部位。你仍可立即开战。` }];
-    rows.push(withAvailability({ id: "combat:hunt", label: "前往边林免费讨伐魔物", kind: "grind", actionPointCost: 0, description: "刷怪不消耗行动力或粮食。" }, "兽人大军已经抵达，当前只能组织决战"));
+    const rows = [{ id: "combat:final", label: `投入${preview.foodCommitted}粮食组织决战（${preview.deployedArmy}/${preview.totalArmy}支部队可以出战）`, kind: "combat", actionPointCost: 0, foodCost: preview.foodCommitted, fullFood: preview.fullFood, description: `军需官判断：${readiness.risk}。已知阵容${readiness.allies}对${readiness.enemies}；${readiness.heroes}名英雄中${readiness.equippedHeroes}名、${readiness.soldiers}支出战战士中${readiness.equippedSoldiers}支穿有装备，共占用${readiness.occupiedSlots}个部位。你仍可立即开战。` }];
+    rows.push(withAvailability({ id: "combat:hunt", label: "前往边林免费讨伐魔物", kind: "grind", actionPointCost: 0, description: "刷怪不消耗行动力；士兵出战需要军粮，英雄不需要。" }, "兽人大军已经抵达，当前只能组织决战"));
     rows.push(...equipmentActions(state));
     return rows;
   }
@@ -466,12 +636,12 @@ function internalActions(state) {
     rows.push(withAvailability({ id: "recruit:basic", label: "派人接纳流民（预计6—10人）", kind: "recruit", actionPointCost: 1, knownCost: {} }, apReason, capacityReason));
     rows.push(withAvailability({ id: "recruit:funded", label: "投入10金币扩大征召（预计14—20人）", kind: "recruit", actionPointCost: 1, knownCost: { gold: 10 } }, apReason, capacityReason, missingCostReason(state, { gold: 10 })));
     const untrained = Math.max(0, militiaUnits(state) - trainedUnits(state));
-    rows.push(withAvailability({ id: "combat:training", label: "投入6粮进行民兵实战训练（胜利后1队晋升战士）", kind: "combat", actionPointCost: 1, knownCost: { food: 6 }, foodCost: 6, targetSlot: conscription.slot }, apReason, untrained > 0 ? "" : "目前没有尚未训练的民兵单位。", missingCostReason(state, { food: 6 })));
+    rows.push(withAvailability({ id: "combat:training", label: "进行民兵实战训练（满额需6粮，胜利后1队晋升战士）", kind: "combat", actionPointCost: 1, knownCost: {}, foodCost: 6, targetSlot: conscription.slot }, apReason, untrained > 0 ? "" : "目前没有尚未训练的民兵单位。"));
   }
   for (const [raidId, raid] of Object.entries(RAIDS)) {
     if (!raid.unlock(state) || state.resolvedRaids[raidId]) continue;
     const food = raidFoodRequirement(state, raidId);
-    rows.push(withAvailability({ id: `combat:raid:${raidId}`, label: `突袭${raid.title}（消耗${food}粮，占领后解锁1个建设位）`, kind: "combat", actionPointCost: 1, knownCost: { food }, foodCost: food, description: `胜利后永久控制此地，并削弱最终敌军。` }, apReason, missingCostReason(state, { food })));
+    rows.push(withAvailability({ id: `combat:raid:${raidId}`, label: `突袭${raid.title}（满额需${food}粮，占领后解锁1个建设位）`, kind: "combat", actionPointCost: 1, knownCost: {}, foodCost: food, description: `胜利后永久控制此地，并削弱最终敌军；军粮不足也能出发，但部队发挥会下降。` }, apReason));
   }
   const event = Object.entries(EVENTS).find(([id, row]) => row.day === state.day && !state.resolvedEvents[id]);
   if (event) for (const option of event[1].options) rows.push(withAvailability({ id: `event:${event[0]}:${option.id}`, label: option.label, kind: "event", actionPointCost: 1, knownCost: clone(option.cost || {}), description: option.description }, apReason, option.req && !option.req(state) ? option.reqText || "尚未满足条件。" : ""));
@@ -496,7 +666,7 @@ function actionCatalog(state) { return internalActions(state).map((row) => ({ ..
 function canPay(state, cost) { return Object.entries(cost || {}).every(([key, value]) => Number(state.resources[key] || 0) >= value); }
 function pay(state, cost) { if (!canPay(state, cost)) throw new Error("资源不足。"); for (const [key, value] of Object.entries(cost || {})) state.resources[key] -= value; }
 function spendAction(state) { if (state.ap <= 0) throw new Error("今日已经没有行动力。"); state.ap -= 1; state.stats.actionsSpent += 1; }
-function equippedIds(state) { return new Set(Object.values(state.equipment).flatMap((slots) => Object.values(slots || {}).filter(Boolean))); }
+function equippedIds(state) { return new Set(equipmentTargetIds(state).flatMap((targetId) => Object.values(equipmentSlots(state, targetId)).filter(Boolean))); }
 function unequippedItems(state) { const equipped = equippedIds(state); return state.inventory.filter((item) => !equipped.has(item.id)); }
 function salePrice(item) { return ({ "普通": 2, "稀有": 4, "史诗": 8, "传说": 12, "神话": 18 })[item.rarity] || 1; }
 function marketItemSummary(item) {
@@ -507,52 +677,59 @@ function marketItemSummary(item) {
 
 function equipmentActions(state) {
   const rows = [];
-  const selectedHero = state.roster.includes(state.selectedHeroId) ? state.selectedHeroId : state.roster[0];
-  if (!selectedHero) return rows;
-  rows.push({ id: "autoequip_all", label: "一键按显示评分为全队分配装备", kind: "equipment", operation: "auto_equip_all", actionPointCost: 0, knownResult: "重新分配现有装备，不消耗行动力；不会生成新装备。" });
-  for (const heroId of state.roster) if (heroId !== selectedHero) rows.push({ id: `select:${heroId}`, label: `查看并为${HEROES[heroId].name}配装`, kind: "selection", actionPointCost: 0, targetHeroId: heroId });
-  rows.push({ id: `autoequip:${selectedHero}`, label: `一键为${HEROES[selectedHero].name}换上最高评分装备`, kind: "equipment", operation: "auto_equip", actionPointCost: 0, targetHeroId: selectedHero, knownResult: "只使用无人穿戴的装备，不会抢走其他角色身上的物品。" });
-  for (const item of unequippedItems(state)) rows.push({ id: `equip:${selectedHero}:${item.id}`, label: `让${HEROES[selectedHero].name}装备${item.name}`, kind: "equipment", actionPointCost: 0, targetHeroId: selectedHero, targetItemId: item.id });
-  for (const [slot, itemId] of Object.entries(state.equipment[selectedHero] || {})) {
+  const targets = equipmentTargetIds(state);
+  const selectedTarget = targets.includes(state.selectedHeroId) ? state.selectedHeroId : targets[0];
+  const selectedInfo = equipmentTargetInfo(state, selectedTarget);
+  if (!selectedTarget || !selectedInfo) return rows;
+  rows.push({ id: "autoequip_all", label: "一键按显示评分为英雄与战士分配装备", kind: "equipment", operation: "auto_equip_all", actionPointCost: 0, knownResult: "重新分配现有装备，不消耗行动力；已训练战士也会参与分配。" });
+  for (const targetId of targets) if (targetId !== selectedTarget) {
+    const info = equipmentTargetInfo(state, targetId);
+    rows.push({ id: `select:${targetId}`, label: `查看并为${info.name}配装`, kind: "selection", actionPointCost: 0, targetHeroId: targetId });
+  }
+  rows.push({ id: `autoequip:${selectedTarget}`, label: `一键为${selectedInfo.name}换上最高评分装备`, kind: "equipment", operation: "auto_equip", actionPointCost: 0, targetHeroId: selectedTarget, knownResult: "只使用无人穿戴的装备，不会抢走其他单位身上的物品。" });
+  for (const item of unequippedItems(state)) rows.push({ id: `equip:${selectedTarget}:${item.id}`, label: `让${selectedInfo.name}装备${item.name}`, kind: "equipment", actionPointCost: 0, targetHeroId: selectedTarget, targetItemId: item.id });
+  for (const [slot, itemId] of Object.entries(equipmentSlots(state, selectedTarget))) {
     const item = state.inventory.find((row) => row.id === itemId);
-    if (item) rows.push({ id: `unequip:${selectedHero}:${slot}`, label: `卸下${HEROES[selectedHero].name}的${item.name}`, kind: "equipment", actionPointCost: 0, targetHeroId: selectedHero, targetItemId: item.id, targetEquipmentSlot: slot, operation: "unequip" });
+    if (item) rows.push({ id: `unequip:${selectedTarget}:${slot}`, label: `卸下${selectedInfo.name}的${item.name}`, kind: "equipment", actionPointCost: 0, targetHeroId: selectedTarget, targetItemId: item.id, targetEquipmentSlot: slot, operation: "unequip" });
   }
   return rows;
 }
 
-function equippedPower(state, heroId) {
-  return Object.values(state.equipment[heroId] || {}).reduce((sum, itemId) => sum + Number(state.inventory.find((item) => item.id === itemId)?.power || 0), 0);
+function equippedPower(state, targetId) {
+  return Object.values(equipmentSlots(state, targetId)).reduce((sum, itemId) => sum + Number(state.inventory.find((item) => item.id === itemId)?.power || 0), 0);
 }
 
-function autoEquipHero(state, heroId) {
-  if (!state.roster.includes(heroId)) throw new Error("无法为这个角色整理装备。");
-  const currentIds = new Set(Object.values(state.equipment[heroId] || {}).filter(Boolean));
+function autoEquipTarget(state, targetId) {
+  const info = equipmentTargetInfo(state, targetId);
+  if (!info) throw new Error("无法为这个单位整理装备。");
+  const slots = ensureEquipmentSlots(state, targetId);
+  const currentIds = new Set(Object.values(slots).filter(Boolean));
   const candidates = state.inventory.filter((item) => currentIds.has(item.id) || !equippedIds(state).has(item.id));
-  const beforePower = equippedPower(state, heroId);
+  const beforePower = equippedPower(state, targetId);
   const changedSlots = [];
   for (const slot of Object.keys(SLOT_DATA)) {
-    const currentId = state.equipment[heroId][slot];
+    const currentId = slots[slot];
     const best = candidates.filter((item) => item.slot === slot).sort((a, b) => Number(b.power || 0) - Number(a.power || 0) || rarityIndex(b.rarity) - rarityIndex(a.rarity) || Number(b.equipmentLevel || 0) - Number(a.equipmentLevel || 0) || String(a.id).localeCompare(String(b.id)))[0];
     if (!best || best.id === currentId) continue;
-    state.equipment[heroId][slot] = best.id;
+    slots[slot] = best.id;
     changedSlots.push(SLOT_DATA[slot].label);
   }
-  const afterPower = equippedPower(state, heroId);
-  if (changedSlots.length) addLog(state, `${HEROES[heroId].name}一键更换${changedSlots.length}个部位（${changedSlots.join("、")}），装备评分${beforePower}→${afterPower}（+${afterPower - beforePower}）。`, "equipment");
-  else addLog(state, `${HEROES[heroId].name}已经穿着当前可用的最高评分装备。`, "equipment");
+  const afterPower = equippedPower(state, targetId);
+  if (changedSlots.length) addLog(state, `${info.name}一键更换${changedSlots.length}个部位（${changedSlots.join("、")}），装备评分${beforePower}→${afterPower}（+${afterPower - beforePower}）。`, "equipment");
+  else addLog(state, `${info.name}已经穿着当前可用的最高评分装备。`, "equipment");
 }
 
-function autoEquipAllHeroes(state) {
-  const heroes = state.roster.slice();
-  const before = heroes.reduce((sum, heroId) => sum + Object.values(state.equipment[heroId] || {}).filter(Boolean).length, 0);
-  for (const heroId of heroes) state.equipment[heroId] = emptyEquipment();
+function autoEquipAllTargets(state) {
+  const targets = equipmentTargetIds(state);
+  const before = targets.reduce((sum, targetId) => sum + Object.values(equipmentSlots(state, targetId)).filter(Boolean).length, 0);
+  for (const targetId of targets) state.equipment[targetId] = emptyEquipment();
   for (const slot of Object.keys(SLOT_DATA)) {
     const items = state.inventory.filter((item) => item.slot === slot).sort((a, b) => Number(b.power || 0) - Number(a.power || 0) || rarityIndex(b.rarity) - rarityIndex(a.rarity) || String(a.id).localeCompare(String(b.id)));
-    for (let index = 0; index < Math.min(heroes.length, items.length); index += 1) state.equipment[heroes[index]][slot] = items[index].id;
+    for (let index = 0; index < Math.min(targets.length, items.length); index += 1) state.equipment[targets[index]][slot] = items[index].id;
   }
-  const after = heroes.reduce((sum, heroId) => sum + Object.values(state.equipment[heroId] || {}).filter(Boolean).length, 0);
-  const equippedHeroes = heroes.filter((heroId) => Object.values(state.equipment[heroId] || {}).some(Boolean)).length;
-  addLog(state, `已按显示评分把现有装备分给全队：${equippedHeroes}/${heroes.length}名英雄穿有装备，共占用${after}个部位${after === before ? "（装备数量不变）" : `（原${before}个）`}。`, "equipment");
+  const after = targets.reduce((sum, targetId) => sum + Object.values(equipmentSlots(state, targetId)).filter(Boolean).length, 0);
+  const equippedTargets = targets.filter((targetId) => Object.values(equipmentSlots(state, targetId)).some(Boolean)).length;
+  addLog(state, `已按显示评分把现有装备分给英雄与战士：${equippedTargets}/${targets.length}个单位穿有装备，共占用${after}个部位${after === before ? "（装备数量不变）" : `（原${before}个）`}。`, "equipment");
 }
 
 function applyPlayerAction(stateInput, publicId) {
@@ -609,17 +786,17 @@ function applyInternalAction(state, id) {
     state.market.sellRemaining -= 1; state.resources.gold += price; state.inventory = state.inventory.filter((row) => row.id !== itemId); state.stats.itemsSold += 1; addLog(state, `集市以${price}金币买走了${item.name}，今日还能出售${state.market.sellRemaining}件装备。`, "market"); return;
   }
   if (id.startsWith("event:")) { applyEvent(state, id.split(":")[1], id.split(":")[2]); spendAction(state); return; }
-  if (id === "autoequip_all") { autoEquipAllHeroes(state); return; }
+  if (id === "autoequip_all") { autoEquipAllTargets(state); return; }
   if (id.startsWith("select:")) { state.selectedHeroId = id.split(":")[1]; return; }
-  if (id.startsWith("autoequip:")) { autoEquipHero(state, id.split(":")[1]); return; }
+  if (id.startsWith("autoequip:")) { autoEquipTarget(state, id.split(":")[1]); return; }
   if (id.startsWith("equip:")) {
-    const [, heroId, itemId] = id.split(":"); const item = unequippedItems(state).find((row) => row.id === itemId); if (!item || !state.roster.includes(heroId)) throw new Error("无法进行这次装备操作。");
-    state.equipment[heroId][item.slot] = item.id; addLog(state, `${HEROES[heroId].name}装备了${item.name}。`, "equipment"); return;
+    const [, targetId, itemId] = id.split(":"); const item = unequippedItems(state).find((row) => row.id === itemId); const info = equipmentTargetInfo(state, targetId); if (!item || !info) throw new Error("无法进行这次装备操作。");
+    ensureEquipmentSlots(state, targetId)[item.slot] = item.id; addLog(state, `${info.name}装备了${item.name}。`, "equipment"); return;
   }
   if (id.startsWith("unequip:")) {
-    const [, heroId, slot] = id.split(":"); const itemId = state.equipment[heroId]?.[slot]; const item = state.inventory.find((row) => row.id === itemId);
-    if (!item || heroId !== state.selectedHeroId) throw new Error("无法卸下这件装备。");
-    state.equipment[heroId][slot] = null; addLog(state, `${HEROES[heroId].name}卸下了${item.name}。`, "equipment"); return;
+    const [, targetId, slot] = id.split(":"); const itemId = equipmentSlots(state, targetId)[slot]; const item = state.inventory.find((row) => row.id === itemId); const info = equipmentTargetInfo(state, targetId);
+    if (!item || !info || targetId !== state.selectedHeroId) throw new Error("无法卸下这件装备。");
+    ensureEquipmentSlots(state, targetId)[slot] = null; addLog(state, `${info.name}卸下了${item.name}。`, "equipment"); return;
   }
   if (id.startsWith("party:")) {
     const [, op, heroId] = id.split(":"); if (op === "add" && !state.activeParty.includes(heroId)) state.activeParty.push(heroId); if (op === "remove") state.activeParty = state.activeParty.filter((row) => row !== heroId); return;
@@ -683,31 +860,32 @@ function endDay(state) {
   state.day += 1; morning(state);
 }
 
-function preparePlayerCombat(state, publicId) {
+function preparePlayerCombat(state, publicId, deployment = null) {
   const match = actionCatalog(state).find((row) => row.publicId === publicId);
   if (!match || !match.available || !["combat", "grind"].includes(match.kind)) return null;
   let plan = null;
-  if (match.id === "combat:hunt") plan = huntPlan(state);
-  else if (match.id === "combat:training") plan = trainingPlan(state);
-  else if (match.id.startsWith("combat:raid:")) plan = raidPlan(state, match.id.split(":")[2]);
-  else if (match.id === "combat:final") plan = finalBattlePlan(state, state.resources.food);
-  return plan ? { ...clone(plan), publicActionId: publicId } : null;
+  if (match.id === "combat:hunt") plan = huntPlan(state, deployment);
+  else if (match.id === "combat:training") plan = trainingPlan(state, deployment);
+  else if (match.id.startsWith("combat:raid:")) plan = raidPlan(state, match.id.split(":")[2], deployment);
+  else if (match.id === "combat:final") plan = finalBattlePlan(state, state.resources.food, deployment);
+  return plan ? { ...clone(plan), publicActionId: publicId, deployment: deployment ? clone(deployment) : null } : null;
 }
 
-function applyPlayerCombatResult(stateInput, publicId, result) {
+function applyPlayerCombatResult(stateInput, publicId, result, deployment = null) {
   const match = actionCatalog(stateInput).find((row) => row.publicId === publicId);
   if (!match || !["combat", "grind"].includes(match.kind)) throw new Error("这个战斗已经不在当前画面中。");
   if (!match.available) throw new Error(match.disabledReason || "当前无法发起这个战斗。");
-  const state = clone(stateInput); const plan = preparePlayerCombat(stateInput, publicId); if (!plan) throw new Error("无法重建战斗计划。");
+  const state = clone(stateInput); const plan = preparePlayerCombat(stateInput, publicId, deployment); if (!plan) throw new Error("无法重建战斗计划。");
   const verifiedResult = simulatePlan(plan);
   if (!combatResultFingerprint(result) || combatResultFingerprint(result) !== combatResultFingerprint(verifiedResult)) throw new Error("战斗结果与实际模拟过程不一致，拒绝结算。");
   result = verifiedResult;
-  state.stats.combats += 1; const summary = combatSummary(result, plan.title); state.lastCombat = { ...summary, foodCommitted: plan.foodCommitted || 0, fullFood: plan.fullFood || plan.foodCommitted || 0, deployedArmy: plan.deployedArmy || 0, totalArmy: plan.totalArmy || plan.deployedArmy || 0 }; if (!summary.win) state.stats.failedCombats += 1;
+  state.stats.combats += 1; const summary = combatSummary(result, plan.title); state.lastCombat = { ...summary, foodCommitted: plan.foodCommitted || 0, fullFood: plan.fullFood || plan.foodCommitted || 0, performancePct: Number(plan.performancePct || 100), deployedArmy: plan.deployedArmy || 0, totalArmy: plan.totalArmy || plan.deployedArmy || 0 }; if (!summary.win) state.stats.failedCombats += 1;
   if (plan.kind === "hunt") {
     const grind = ensureGrindProgress(state);
     const difficulty = Math.max(1, Math.min(GRIND_DIFFICULTY_COUNT, Number(plan.grindDifficulty) || grind.selectedDifficulty));
     state.stats.grindAttempts += 1;
     if (summary.win) {
+      state.resources.food -= plan.foodCommitted;
       state.stats.grindWins += 1;
       grind.totalWins = state.stats.grindWins;
       grind.winsByDifficulty[difficulty] += 1;
@@ -717,13 +895,16 @@ function applyPlayerCombatResult(stateInput, publicId, result) {
       const lootCount = weightedPick(state, config.lootCountTable);
       const items = Array.from({ length: lootCount }, () => generateItem(state, `边林难度${difficulty}`, plan.lootTier || difficulty, weightedPick(state, config.rarityTable)));
       state.inventory.push(...items); const gold = registerGearDrops(state, items.length);
-      addLog(state, `难度${difficulty}讨伐获胜（累计${grind.totalWins}胜，本档${grind.winsByDifficulty[difficulty]}胜），得到${items.map((item) => item.name).join("、")}；今日新装备${state.economy.dailyGearDrops}件${gold ? `，铁匠铺新增${gold}金币收入` : ""}。`, "loot");
+      addLog(state, `难度${difficulty}讨伐获胜（军粮${plan.foodCommitted}/${plan.fullFood || 0}，发挥${plan.performancePct || 100}%；累计${grind.totalWins}胜，本档${grind.winsByDifficulty[difficulty]}胜），得到${items.map((item) => item.name).join("、")}；今日新装备${state.economy.dailyGearDrops}件${gold ? `，铁匠铺新增${gold}金币收入` : ""}。`, "loot");
       if (grind.unlockedDifficulty > previousUnlocked) addLog(state, `累计讨伐${grind.totalWins}胜，难度${grind.unlockedDifficulty}「${GRIND_DIFFICULTIES[grind.unlockedDifficulty].name}」已经解锁。无论此前刷哪个难度，胜利都计入解锁。`, "grind_unlock");
     } else addLog(state, `难度${difficulty}讨伐失败，累计胜场不增加；可以立即重试或切回已解锁的低难度。`, "combat_loss");
   } else if (plan.kind === "training") {
     if (summary.win) {
       state.resources.food -= plan.foodCommitted; spendAction(state);
-      state.army.trainedUnits = trainedUnits(state) + 1; state.stats.soldiersTrained += 1; addLog(state, `实战训练获胜，1支民兵晋升为战士。现有${trainedUnits(state)}支战士；战士每次出战消耗3粮。`, "training");
+      const newUnitIndex = trainedUnits(state);
+      state.army.trainedUnits = newUnitIndex + 1;
+      ensureEquipmentSlots(state, trainedUnitId(newUnitIndex));
+      state.stats.soldiersTrained += 1; addLog(state, `实战训练获胜，${trainedTargetInfo(newUnitIndex).name}正式成军并开放8个装备部位。现有${trainedUnits(state)}支战士；战士每次出战消耗3粮。`, "training");
     } else addLog(state, "实战训练失败；本次不消耗行动力和粮食，可以立即重试。", "combat_loss");
   } else if (plan.kind === "raid") {
     const raid = RAIDS[plan.raidId];
@@ -754,9 +935,122 @@ function enforceInventoryLimit(state) {
   const equipped = equippedIds(state); const removable = state.inventory.filter((item) => !equipped.has(item.id)).sort((a, b) => rarityIndex(a.rarity) - rarityIndex(b.rarity) || a.power - b.power); const removed = removable.slice(0, excess); const ids = new Set(removed.map((item) => item.id)); state.inventory = state.inventory.filter((item) => !ids.has(item.id)); state.stats.autoDiscarded = Number(state.stats.autoDiscarded || 0) + removed.length; return removed;
 }
 
+const SKILL_DAMAGE_LABELS = { physical: "物理", fire: "火焰", poison: "毒素", arcane: "奥术", blood: "直接" };
+const PASSIVE_DETAILS = {
+  lineBreaker: ["对前排目标造成的伤害提高6%。"],
+  fortressStance: ["自身获得的护盾提高8%；每损失1%生命，再提高0.12%，最多共提高20%。"],
+  duelistFocus: ["目标每有1层标记，对其造成的伤害提高4.5%。"],
+  rageEngine: ["生命越低，造成的伤害最高提高50%，攻击速度最高提高75%。", "造成伤害时吸取5.5%—19.5%生命，损失生命越多吸血越高。"],
+  hotbedPact: ["中毒敌人死亡时，把其剩余毒层的18%（向上取整）扩散给其他敌人，持续6秒。"],
+  catalyst: ["对带有任意异常状态的目标造成的伤害提高6%。"],
+};
+
+function skillPercent(value) { return `${Math.round(Number(value || 0) * 1000) / 10}%`; }
+function skillPowerLabel(type) { return type === "physical" ? "物理攻击" : "魔法攻击"; }
+function skillDamageFormula(effect, options = {}) {
+  const type = options.type || effect.type || effect.scaleWith || "physical";
+  const flat = Number(options.flat ?? effect.flat ?? 0);
+  const ratio = Number(options.power ?? effect.power ?? 0) + .04;
+  const parts = [];
+  if (flat) parts.push(String(flat));
+  if (ratio) parts.push(`${skillPowerLabel(effect.scaleWith || type)}×${skillPercent(ratio)}`);
+  return { formula: parts.join(" + ") || "0", damage: SKILL_DAMAGE_LABELS[type] || type };
+}
+
+function describeSkillEffect(effect) {
+  if (["hitTarget", "hitEnemies"].includes(effect.kind)) {
+    const value = skillDamageFormula(effect);
+    const target = effect.kind === "hitTarget" ? "单个敌人" : effect.count == null ? "所有敌人" : `至多${effect.count}名敌人`;
+    return [`对${target}造成${value.formula}点${value.damage}伤害（护甲结算前）。`];
+  }
+  if (effect.kind === "hitMarkedTarget") {
+    const value = skillDamageFormula(effect);
+    return [`对目标造成${value.formula} + 每层标记${effect.perMark || 0}点${value.damage}伤害（护甲结算前）。${effect.consumeMark ? "随后清除标记。" : ""}`];
+  }
+  if (effect.kind === "hitTargetWithStatus") {
+    const value = skillDamageFormula(effect);
+    return [`对目标造成${value.formula} + 每层异常${effect.perStatus || 0}点${value.damage}伤害，最多计算${effect.maxStatus || 0}层（护甲结算前）。`];
+  }
+  if (effect.kind === "markTarget") return [`施加${effect.stacks || 0}层标记，最多叠加${effect.max || 0}层。`];
+  if (effect.kind === "poisonTarget") return [`对单个敌人施加${effect.stacks || 0}层中毒，持续${effect.time || 0}秒，最高20层。`];
+  if (effect.kind === "poisonEnemies") return [`对所有敌人施加${effect.stacks || 0}层中毒，持续${effect.time || 0}秒，最高20层。`];
+  if (effect.kind === "selfRawDamage") return [`消耗自身最大生命的${skillPercent(effect.maxHp)}，该伤害不受护甲减免。`];
+  if (effect.kind === "buffCarryPower") return [`使攻击最高的友军物理攻击与魔法攻击提高${effect.amount || 0}，持续${effect.duration || 0}秒。`];
+  if (effect.kind === "targetTimer" && effect.timer === "slowTimer") return [`使目标减速${effect.duration || 0}秒：移动速度降低40%，普攻间隔增加25%。`];
+  if (effect.kind === "timer" && effect.timer === "guardTimer") return [`自身受到的伤害降低28%，持续${effect.duration || 0}秒。`];
+  if (effect.kind === "timer" && effect.timer === "tauntTimer") return [`嘲讽敌人${effect.duration || 0}秒，使其优先攻击自己。`];
+  if (effect.kind === "timer" && effect.timer === "bloodFuryTimer") return [`进入血怒${effect.duration || 0}秒：普攻额外造成物理攻击×${skillPercent(SKILLS.berserkerModel?.ratios?.blood ?? .48)}的物理伤害。`];
+  if (effect.kind === "timer" && effect.timer === "whirlwindTimer") return [`进入旋风架势${effect.duration || 0}秒：普攻主目标额外受到物理攻击×${skillPercent(SKILLS.berserkerModel?.ratios?.whirlwind ?? .26)}伤害，并溅射另外${SKILLS.berserkerModel?.splashTargets ?? 2}名敌人物理攻击×${skillPercent(SKILLS.berserkerModel?.ratios?.splash ?? .18)}。`];
+  if (effect.kind === "teamTimer" && effect.timer === "bonusPowerTimer") return [`全队物理攻击与魔法攻击提高14，持续${effect.duration || 0}秒。`];
+  if (effect.kind === "teamTimer" && effect.timer === "guardTimer") return [`全队受到的伤害降低28%，持续${effect.duration || 0}秒。`];
+  if (effect.kind === "teamShield") {
+    const target = effect.selfOnly ? "自身" : "全队每名角色";
+    return [`为${target}提供${effect.flat || 0} + 魔法攻击×${skillPercent(effect.power)}点护盾。`];
+  }
+  if (effect.kind === "arrowStorm") return ["对所有敌人造成29 + 物理攻击×32%的物理伤害；后排目标额外受到16点伤害（护甲结算前）。"];
+  if (effect.kind === "plagueOffering") return ["引爆所有中毒敌人：造成22 + 魔法攻击×26% + 每层中毒9点毒素伤害，并保留原毒层的45%（护甲结算前）。"];
+  if (effect.kind === "grandMixture") return ["对所有敌人造成18 + 魔法攻击×20% + 每层异常8点奥术伤害，最多计算8层异常（护甲结算前）。"];
+  if (effect.kind === "berserkerRoar") {
+    const model = SKILLS.berserkerModel || {};
+    return [
+      `${model.durations?.immortal ?? 4.5}秒内生命不会低于1点。`,
+      `${model.durations?.haste ?? 5}秒内攻击速度提高${skillPercent((model.hasteMultiplier ?? 1.35) - 1)}，并获得${skillPercent(model.passive?.roarLeech ?? .18)}吸血。`,
+      `同时获得${model.durations?.roarFury ?? 5}秒血怒与旋风效果。`,
+    ];
+  }
+  return [];
+}
+
+function skillNumericDetails(key, definition) {
+  if (PASSIVE_DETAILS[key]) return clone(PASSIVE_DETAILS[key]);
+  const details = (definition.effects || []).flatMap(describeSkillEffect).filter(Boolean);
+  return [...new Set(details.length ? details : [definition.desc || "技能详情尚未记录。"])];
+}
+
+function combatPowerVisible(spec) {
+  const mainPower = Math.max(Number(spec.physicalPower || 0), Number(spec.magicPower || 0));
+  const tempoBonus = Math.max(0, Number(spec.attackSpeedMult || 1) - 1) + Math.max(0, Number(spec.skillHasteMult || 1) - 1);
+  return Math.max(1, Math.round(Number(spec.maxHp || 0) + mainPower * 5 + Number(spec.armor || 0) * 10 + tempoBonus * 200));
+}
+
+function combatProfileVisible(spec) {
+  const skillSlots = [["small1", "技能一"], ["small2", "技能二"], ["passive", "被动"], ["ultimate", "终极技能"]];
+  return {
+    combatPower: combatPowerVisible(spec),
+    stats: {
+      maxHp: spec.maxHp,
+      physicalPower: spec.physicalPower,
+      magicPower: spec.magicPower,
+      armor: spec.armor,
+      attackSpeedPct: Math.round(((spec.attackSpeedMult || 1) - 1) * 100),
+      skillHastePct: Math.round(((spec.skillHasteMult || 1) - 1) * 100),
+    },
+    skills: skillSlots.map(([slot, slotLabel]) => {
+      const key = spec[slot];
+      const definition = SKILLS.skills[key] || {};
+      return { slot, slotLabel, key, name: definition.name || key, type: definition.type || slotLabel, cooldown: Number(definition.cooldown || 0), description: definition.desc || "技能详情尚未记录。", details: skillNumericDetails(key, definition) };
+    }),
+  };
+}
+
 function heroVisible(state, heroId) {
-  const equipment = Object.entries(state.equipment[heroId] || {}).map(([slot, itemId]) => ({ slot, slotLabel: SLOT_DATA[slot].label, item: itemId ? clone(state.inventory.find((row) => row.id === itemId) || null) : null }));
-  return { id: heroId, name: HEROES[heroId].name, role: HEROES[heroId].role, preferredAffixes: clone(HEROES[heroId].preferredAffixes || []), active: state.activeParty.includes(heroId), equipment };
+  const equipment = Object.entries(equipmentSlots(state, heroId)).map(([slot, itemId]) => ({ slot, slotLabel: SLOT_DATA[slot].label, item: itemId ? clone(state.inventory.find((row) => row.id === itemId) || null) : null }));
+  const profile = combatProfileVisible(heroCombatSpec(state, heroId, 0));
+  return { id: heroId, name: HEROES[heroId].name, role: HEROES[heroId].role, roleKey: HEROES[heroId].combatRole, kind: "hero", preferredAffixes: clone(HEROES[heroId].preferredAffixes || []), active: state.activeParty.includes(heroId), equipment, ...profile };
+}
+
+function trainedVisible(state, index) {
+  const info = trainedTargetInfo(index);
+  const equipment = Object.entries(equipmentSlots(state, info.id)).map(([slot, itemId]) => ({ slot, slotLabel: SLOT_DATA[slot].label, item: itemId ? clone(state.inventory.find((row) => row.id === itemId) || null) : null }));
+  const profile = combatProfileVisible(trainedSpec(state, index, 0));
+  return { ...info, preferredAffixes: clone(info.preferredAffixes), active: true, equipment, ...profile };
+}
+
+function militiaVisible(index) {
+  const info = militiaTargetInfo(index);
+  const equipment = Object.keys(SLOT_DATA).map((slot) => ({ slot, slotLabel: SLOT_DATA[slot].label, item: null, locked: true }));
+  const profile = combatProfileVisible(militiaSpec(index, 0));
+  return { ...info, active: true, equipmentLocked: true, equipmentLockReason: "民兵必须经过实战训练成为战士后，才能使用装备。", equipment, ...profile };
 }
 
 function currentEvent(state) { return Object.entries(EVENTS).find(([id, row]) => row.day === state.day && !state.resolvedEvents[id]) || null; }
@@ -776,11 +1070,16 @@ function getPlayerObservation(state) {
   const grind = grindProgress(state);
   const event = currentEvent(state);
   const story = state.phase === "prologue" ? state.storyStep === "arrival" ? { title: "安静的边陲村", text: "圣殿骑士队长伊莎贝拉认为附近只有零星魔物。她准备明日派出巡逻队。" } : { title: "巡逻队覆灭", text: "两名幸存者带回敌情：约400名兽人，折算20个军团单位，另有3名主将，第7日抵达。" } : null;
+  const visibleHeroes = state.roster.map((heroId) => heroVisible(state, heroId));
+  const visibleTrained = Array.from({ length: trainedUnits(state) }, (_, index) => trainedVisible(state, index));
+  const visibleMilitia = Array.from({ length: militiaUnits(state) - trainedUnits(state) }, (_, index) => militiaVisible(index));
+  const prosperity = townProsperity(state);
   return {
     schema: "border_village_war_player_observation_v2",
     time: { day: state.day, finalDay: FINAL_DAY, phase: state.phase, actionsRemaining: state.ap, actionCapacity: actionPointsForPopulation(state.resources.population) },
     story,
-    war: { knownEnemyUnits: state.enemy.orcUnits, knownBosses: state.enemy.bosses, militiaUnits: militiaUnits(state), trainedUnits: trainedUnits(state), untrainedUnits: militiaUnits(state) - trainedUnits(state), finalBattleDay: FINAL_DAY, publicRule: "每10名实际人口形成1支部队；民兵出战消耗1粮，训练后的战士消耗3粮。缺粮部队不会出战。", finalMorningRule: "第7日决战前仍会收获一次农田，但不再获得经营行动力。" },
+    town: { id: "gray_valley", name: "灰谷村", population: state.resources.population, populationCap: state.resources.populationCap, actionsRemaining: state.ap, actionCapacity: prosperity.actionCapacity, prosperity },
+    war: { knownEnemyUnits: state.enemy.orcUnits, knownBosses: state.enemy.bosses, militiaUnits: militiaUnits(state), trainedUnits: trainedUnits(state), untrainedUnits: militiaUnits(state) - trainedUnits(state), finalBattleDay: FINAL_DAY, publicRule: "前期每达到10名实际人口形成1支部队；民兵一战满额需要1粮，训练后的战士需要3粮。粮食不足仍可出战，但发挥下降。", finalMorningRule: "第7日决战前仍会收获一次农田，但不再获得经营行动力。" },
     resources: clone(state.resources),
     buildings: state.buildings.filter((row) => row.unlocked !== false).map((row) => ({ slot: row.slot, site: row.site, siteTitle: row.site === "village" ? "灰谷村" : RAIDS[row.site].title, type: row.type, name: row.type ? BUILDINGS[row.type].name : "空建设位", level: row.level, complete: row.complete, yieldType: row.type ? BUILDINGS[row.type].yieldType : "建设", yieldLabel: row.type ? BUILDINGS[row.type].yieldLabel : "可建农田 / 铁匠铺 / 房屋", yieldStatus: buildingYieldStatus(state, row), description: row.type ? BUILDINGS[row.type].description : "选择一种持久收益；建造消耗1行动力并立即完成。" })),
     productionForecasts: buildingRows(state, "farm").map((row) => ({ slot: row.slot, level: row.level, nextYieldRange: [8, 12] })),
@@ -801,7 +1100,7 @@ function getPlayerObservation(state) {
       }),
     },
     market: { sellRemaining: state.market.sellRemaining, priceRule: "每天刷新3件装备；每天最多出售5件未穿戴装备", stock: state.market.stock.filter((row) => row.count > 0).map((row) => ({ id: row.id, label: row.label, type: row.type, price: row.price, count: row.count, item: row.item ? clone(row.item) : null })) },
-    party: { selectedHeroId: state.selectedHeroId, activeLimit: state.phase === "final" ? 10 : 4, finalBattleRule: "第7日决战会自动集结全部已招募英雄，最多10人。", heroes: state.roster.map((heroId) => heroVisible(state, heroId)) },
+    party: { selectedHeroId: equipmentTargetIds(state).includes(state.selectedHeroId) ? state.selectedHeroId : state.roster[0], activeLimit: state.phase === "final" ? 10 : 4, finalBattleRule: "第7日决战会自动集结全部已招募英雄；已训练战士按军粮出战，并使用各自8部位装备。", heroes: visibleHeroes, trainedUnits: visibleTrained, militiaUnits: visibleMilitia, equipmentTargets: [...visibleHeroes, ...visibleTrained], characterTargets: [...visibleHeroes, ...visibleTrained, ...visibleMilitia] },
     inventory: state.inventory.map((item) => clone(item)), inventoryLimit: INVENTORY_LIMIT,
     raids: Object.entries(RAIDS).filter(([id, raid]) => raid.unlock(state) && !state.resolvedRaids[id]).map(([id, raid]) => ({ id, title: raid.title, description: raid.description, foodCost: raidFoodRequirement(state, id), visibleEffectOnVictory: `占领后解锁1个建设位；最终敌军减少${raid.removedUnits}个军团单位${raid.removesBoss ? "和1名主将" : ""}` })),
     outposts: Object.entries(RAIDS).filter(([id]) => state.resolvedRaids[id]).map(([id, raid]) => ({ id, title: raid.title, description: `已经控制的前哨；可以在原地建立持久产能。`, plotSlot: raid.plotSlot })),
@@ -813,8 +1112,8 @@ function getPlayerObservation(state) {
 }
 
 return {
-  VERSION, FINAL_DAY, INVENTORY_LIMIT, HEROES, BUILDINGS, RAIDS, EVENTS, SLOT_DATA, RARITY_DATA, GRIND_DIFFICULTIES,
-  createInitialState, getPlayerObservation, actionPointsForPopulation, militiaUnits, trainedUnits, smithUtilization, internalActions,
+  VERSION, FINAL_DAY, INVENTORY_LIMIT, HEROES, BUILDINGS, RAIDS, EVENTS, SLOT_DATA, RARITY_DATA, GRIND_DIFFICULTIES, PROSPERITY_LEVELS, POPULATION_UNIT_MILESTONES,
+  createInitialState, getPlayerObservation, actionPointsForPopulation, townProsperity, militiaUnits, trainedUnits, smithUtilization, internalActions,
   applyPlayerAction, preparePlayerCombat, applyPlayerCombatResult, simulatePlan, combatResultFingerprint, huntPlan, trainingPlan, raidPlan, finalBattlePlan,
 };
 });

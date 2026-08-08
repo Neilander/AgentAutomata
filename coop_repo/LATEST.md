@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-08-02_1746_border-village-global-grind-wins.md`](reports/2026-08-02_1746_border-village-global-grind-wins.md)
+[`reports/2026-08-08_0058_border-village-town-prosperity-ui.md`](reports/2026-08-08_0058_border-village-town-prosperity-ui.md)
 
-Last updated: 2026-08-02
+Last updated: 2026-08-08
 
-当前重点：边林所有难度共享总胜场，累计5/10/30/50胜依次解锁难度2—5；一直刷难度1也能解锁难度5。各档胜场仅作统计，失败不计数，解锁不自动切换。真实50场难度1流程与核心/静态前端回归通过，未启动服务器或浏览器。
+当前重点：右上角当前城镇框显示城镇名、人口/上限、行动和繁荣；点击后进入可横向拖拽的人口收益轨迹。

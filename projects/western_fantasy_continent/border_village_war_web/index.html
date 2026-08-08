@@ -15,13 +15,19 @@
         <h1>我的超能力是无限刷装</h1>
       </div>
       <div id="day-rail" class="day-rail" aria-label="七日时间轴"></div>
-      <div class="resource-strip" aria-label="村庄资源">
+      <div class="resource-strip" aria-label="全局资源">
         <span><i>◈</i> 金币 <strong id="gold-value">0</strong></span>
         <span><i>♨</i> 粮食 <strong id="food-value">0</strong></span>
-        <span><i>♟</i> 人口 <strong id="population-value">0/0</strong></span>
       </div>
       <div class="top-actions">
-        <div class="ap-orb"><span>今日行动</span><strong><b id="ap-value">0</b>/<em id="ap-capacity">0</em></strong></div>
+        <button type="button" id="town-status-open" class="town-status-card" aria-label="查看当前城镇繁荣与人口收益">
+          <span class="town-status-title"><i>⌂</i><strong id="town-name">灰谷村</strong><em id="town-prosperity">繁荣 Lv.1</em></span>
+          <span class="town-status-metrics">
+            <span>人口 <b id="population-value">0/0</b></span>
+            <span>行动 <b><i id="ap-value">0</i>/<i id="ap-capacity">0</i></b></span>
+          </span>
+          <span class="town-status-progress"><i id="town-prosperity-fill"></i></span>
+        </button>
         <button id="end-day-button" class="button quiet">结束本日</button>
         <button id="restart-open" class="icon-button" aria-label="重新开始" title="重新开始">↻</button>
       </div>
@@ -57,6 +63,8 @@
             </svg>
             <div id="map-node-layer" class="map-node-layer"></div>
           </div>
+
+          <aside id="unit-roster-rail" class="unit-roster-rail" aria-label="我方全部单位"></aside>
 
           <aside class="war-board">
             <span class="eyebrow">第7日 · 魔物总攻</span>
@@ -114,9 +122,9 @@
       </section>
     </main>
 
-    <section id="command-dock" class="command-dock">
+    <section id="command-dock" class="command-dock equipment-launcher">
       <button id="dock-toggle" class="dock-toggle" type="button" aria-expanded="false">
-        <span>队伍与装备</span><small>▲ 展开</small>
+        <span>队伍与装备</span><small>打开军备</small>
       </button>
       <div id="dock-drawer" class="dock-drawer">
         <div class="dock-tabs" role="tablist">
@@ -129,17 +137,89 @@
     </section>
   </div>
 
+  <dialog id="equipment-dialog" class="equipment-dialog">
+    <form method="dialog" class="equipment-window">
+      <header class="equipment-window-head">
+        <div><span class="eyebrow">灰谷村军备</span><h2>队伍与装备</h2></div>
+        <nav class="equipment-mode-tabs" aria-label="军备页面">
+          <button type="button" class="equipment-mode-tab" data-equipment-mode="formation">编队</button>
+          <button type="button" class="equipment-mode-tab active" data-equipment-mode="character" aria-current="page">人物</button>
+        </nav>
+        <button id="equipment-close" value="cancel" class="equipment-close" aria-label="关闭军备">×</button>
+      </header>
+      <div class="equipment-workspace">
+        <section id="equipment-character-panel" class="equipment-character-panel"></section>
+        <section id="equipment-backpack-panel" class="equipment-backpack-panel"></section>
+      </div>
+    </form>
+  </dialog>
+
   <dialog id="combat-preview-dialog" class="combat-preview-dialog">
     <form method="dialog">
-      <span class="eyebrow">战前侦察</span>
-      <h2 id="preview-title">确认交战</h2>
-      <div id="preview-supply" class="preview-supply"></div>
-      <div id="preview-teams" class="preview-teams"></div>
-      <p class="dialog-note">只显示已知成员、固定粮食消耗与实际出战阵容，不提供胜率、敌方倍率或推荐答案。</p>
-      <div class="dialog-actions">
-        <button value="cancel" class="button quiet">暂不交战</button>
-        <button id="preview-confirm" value="default" class="button danger">进入战斗</button>
+      <div id="preview-slide-track" class="preview-slide-track">
+        <section class="preview-slide-page preview-formation-page">
+          <span class="eyebrow">战前侦察</span>
+          <h2 id="preview-title">确认交战</h2>
+          <div id="preview-battle-rule" class="preview-battle-rule"></div>
+          <div id="preview-supply" class="preview-supply"></div>
+          <div class="preview-formation-workspace">
+            <section class="preview-formation-picker">
+              <header><strong>选择编队</strong><small>依照本场规模排列</small></header>
+              <div id="preview-formations" class="preview-formations"></div>
+            </section>
+            <section id="preview-teams" class="preview-teams"></section>
+          </div>
+          <p class="dialog-note">小编队可参加更大规模战斗；编队依次显示为：容量兼容且合法、容量兼容但不合法、超过人数上限。只公开已知敌人和实际出战成员，不提供胜率。</p>
+          <div class="dialog-actions">
+            <button value="cancel" class="button quiet">暂不交战</button>
+            <button type="button" id="preview-to-supply" class="button danger">开战</button>
+          </div>
+        </section>
+        <section class="preview-slide-page preview-supply-page">
+          <span class="eyebrow">战前准备</span>
+          <h2 id="preview-supply-title">向军粮锅投入粮食</h2>
+          <div id="preview-supply-formation" class="preview-supply-formation"></div>
+          <div class="supply-pot-stage">
+            <button type="button" id="preview-supply-pot" class="supply-pot" aria-label="投入1粮食；长按连续投入">
+              <span class="supply-pot-steam" aria-hidden="true"></span>
+              <span class="supply-pot-rim" aria-hidden="true"></span>
+              <span id="preview-supply-fill" class="supply-pot-fill" aria-hidden="true"></span>
+              <strong>＋1</strong>
+              <small>点击投入 · 长按连续</small>
+            </button>
+          </div>
+          <p id="preview-supply-note" class="preview-supply-note">投入越充足，部队发挥越完整。</p>
+          <div class="preview-supply-counter" aria-live="polite">
+            <span><strong id="preview-supply-fraction">0/0</strong> 粮食</span>
+            <b id="preview-supply-percent">100%</b>
+          </div>
+          <div class="dialog-actions supply-actions">
+            <button type="button" id="preview-back" class="button quiet">返回选队</button>
+            <button type="button" id="preview-supply-reset" class="button quiet">清空</button>
+            <button id="preview-confirm" value="default" class="button danger">以当前军粮出发</button>
+          </div>
+        </section>
       </div>
+    </form>
+  </dialog>
+
+  <dialog id="prosperity-dialog" class="prosperity-dialog">
+    <form method="dialog">
+      <header class="prosperity-window-head">
+        <div><span class="eyebrow">城镇繁荣</span><h2 id="prosperity-title">灰谷村发展轨迹</h2></div>
+        <button value="cancel" class="equipment-close" aria-label="关闭繁荣界面">×</button>
+      </header>
+      <section class="prosperity-current-summary">
+        <div><small>当前人口</small><strong id="prosperity-population">0/0</strong></div>
+        <div><small>当前繁荣</small><strong id="prosperity-current-level">Lv.1 边陲村落</strong></div>
+        <div><small>每日行动</small><strong id="prosperity-actions">3</strong></div>
+        <p id="prosperity-next">继续增加人口可以提升城镇繁荣。</p>
+      </section>
+      <div class="prosperity-drag-hint"><span>人口增长与城镇收益</span><small>按住横向拖拽，查看未来里程碑 →</small></div>
+      <div id="prosperity-viewport" class="prosperity-viewport" tabindex="0" aria-label="可横向拖拽的人口繁荣里程碑">
+        <div id="prosperity-track" class="prosperity-track"></div>
+      </div>
+      <footer class="prosperity-rule"><span>当前规则</span><p>前期每10人口成立1个民兵单位；繁荣等级提升会增加每日行动。后续城镇可以采用不同的人口奖励表。</p></footer>
     </form>
   </dialog>
 

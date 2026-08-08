@@ -3,6 +3,23 @@
 
   const GAME = window.BORDER_VILLAGE_WAR;
   const SAVE_KEY = "infinite_loot_border_village_war_v3";
+  const FORMATION_SAVE_KEY = "infinite_loot_border_village_formations_v1";
+  const CURRENT_CITY = "灰谷村";
+  const FORMATION_SPECS = [
+    { id: "duo", name: "灰谷侦察组", capacity: 2, unlocked: true },
+    { id: "squad", name: "灰谷巡逻队", capacity: 4, unlocked: true },
+    { id: "company", name: "边境远征队", capacity: 8, unlocked: true },
+    { id: "warband", name: "灰谷战团", capacity: 20, unlocked: true },
+    { id: "host", name: "大型战团", capacity: 40, unlocked: false },
+    { id: "army", name: "大型军阵", capacity: 100, unlocked: false },
+    { id: "legion", name: "远征军团", capacity: 200, unlocked: false },
+  ];
+  const COMBAT_FORMATION_RULES = {
+    hunt: { label: "小队讨伐", capacity: 4, fixedNote: "" },
+    training: { label: "实战训练", capacity: 4, fixedNote: "另有1支受训民兵固定参战" },
+    raid: { label: "据点突袭", capacity: 8, fixedNote: "" },
+    final: { label: "村庄决战", capacity: 20, fixedNote: "" },
+  };
   const MAP_WIDTH = 1400;
   const MAP_HEIGHT = 860;
   const MAP_PAN_MARGIN_X = 520;
@@ -11,12 +28,15 @@
   const RARITY_ORDER = { "神话": 5, "传说": 4, "史诗": 3, "稀有": 2, "普通": 1 };
   const SLOT_ICONS = { "武器": "⚔", "头盔": "⌃", "胸甲": "⬡", "护手": "✦", "腿甲": "▥", "靴子": "⌄", "戒指": "○", "护符": "◇" };
   const RESOURCE_LABELS = { gold: "金币", food: "粮食", population: "实际人口", populationCap: "人口上限" };
-  const STAT_LABELS = { physicalPower: "物理威力", magicPower: "魔法威力", maxHp: "生命", armor: "护甲" };
+  const STAT_LABELS = { physicalPower: "物理威力", magicPower: "魔法威力", maxHp: "生命", armor: "护甲", attackSpeedPct: "攻击速度", skillHastePct: "技能急速" };
   const PLOT_POSITIONS = [[430, 520], [295, 650], [570, 690], [835, 680], [1060, 560], [1020, 405], [865, 300]];
   const RAID_POSITIONS = { foragers: [245, 240], beastPen: [620, 125], shaman: [1100, 225] };
   const BUILDING_SIGILS = { house: "舍", farm: "田", conscription: "征", smithy: "锻", market: "市" };
+  const UNIT_GLYPHS = { player: "我", captain: "伊", scout: "莱", guard: "马", sellsword: "犬", witch: "盐", hunter: "苔", alchemist: "莎" };
+  const ROLE_ICONS = { knight: "🛡️", warrior: "⚔️", berserker: "🪓", assassin: "🗡️", ranger: "🏹", mage: "🔥", priest: "✨", warlock: "☠️", bard: "🎵", alchemist: "⚗️" };
 
   let state = loadState();
+  let formationState = loadFormationState();
   let mode = "campaign";
   let selectedNodeId = null;
   let selectedHeroId = null;
@@ -35,6 +55,18 @@
   let resizeObserver = null;
   let mapInputBound = false;
   let locations = [];
+  let partyScrollLeft = 0;
+  let partyRosterScrollTop = 0;
+  let partyDetailScrollTop = 0;
+  let equipmentBackpackScrollTop = 0;
+  let equipmentMode = "character";
+  let formationCityFilter = false;
+  let formationPositioning = false;
+  let selectedFormationPositionMemberId = null;
+  let draggedFormationMemberId = null;
+  let supplyHoldDelay = null;
+  let supplyHoldInterval = null;
+  let prosperityDrag = null;
   const newlyUnlocked = new Set();
 
   function loadState() {
@@ -50,8 +82,30 @@
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (_) { /* local storage is optional */ }
   }
 
+  function defaultFormationState() {
+    return {
+      version: 1,
+      selectedId: "warband",
+      formations: FORMATION_SPECS.filter((spec) => spec.unlocked).map((spec) => ({ ...spec, members: ["player"] })),
+    };
+  }
+
+  function loadFormationState() {
+    try {
+      const raw = localStorage.getItem(FORMATION_SAVE_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (parsed?.version === 1 && Array.isArray(parsed.formations)) return parsed;
+    } catch (_) { /* local storage is optional */ }
+    return defaultFormationState();
+  }
+
+  function saveFormationState() {
+    try { localStorage.setItem(FORMATION_SAVE_KEY, JSON.stringify(formationState)); } catch (_) { /* local storage is optional */ }
+  }
+
   function view() { return GAME.getPlayerObservation(state); }
   function esc(value) { return String(value == null ? "" : value).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[ch])); }
+  function formatCombatPower(value) { return Math.max(0, Math.round(Number(value || 0))).toLocaleString("zh-CN"); }
 
   function showToast(text) {
     const toast = document.querySelector("#toast");
@@ -135,16 +189,158 @@
   }
 
   function openCombatPreview(plan, launchKind) {
-    pendingPreview = { plan, launchKind };
+    const current = view();
+    normalizeFormationState(current);
+    const entries = combatFormationEntries(current, plan);
+    const preferred = entries.find((entry) => entry.group === 0) || entries[0] || null;
+    pendingPreview = { basePlan: plan, plan: null, launchKind, stage: "formation", foodSupplied: 0, selectedFormationId: preferred?.formation.id || null };
     document.querySelector("#preview-title").textContent = plan.title;
-    document.querySelector("#preview-supply").innerHTML = plan.kind === "hunt"
-      ? `<span>行动 <b>0</b></span><span>粮食 <b>0</b></span><span>当前队伍 <b>${plan.leftTeam.length}人</b></span>`
-      : `<span>固定耗粮 <b>${plan.foodCommitted}</b></span>${plan.totalArmy != null ? `<span>军队出战 <b>${plan.deployedArmy}/${plan.totalArmy}</b></span>` : ""}<span>规模 <b>${plan.leftTeam.length} 对 ${plan.rightTeam.length}</b></span>`;
-    const team = (rows) => rows.map((unit) => `<li><span>${esc(unit.name)}</span><small>${esc(unit.roleName || unit.role || unit.unitKind || "战斗成员")}</small></li>`).join("");
-    document.querySelector("#preview-teams").innerHTML = `<section><h3>我方 · ${plan.leftTeam.length}</h3><ul>${team(plan.leftTeam)}</ul></section><section><h3>敌方 · ${plan.rightTeam.length}</h3><ul>${team(plan.rightTeam)}</ul></section>`;
+    document.querySelector("#preview-slide-track").classList.remove("supplying");
+    renderCombatFormationPreview();
     const dialog = document.querySelector("#combat-preview-dialog");
     if (dialog.open) dialog.close();
     dialog.showModal();
+  }
+
+  function combatFormationRule(plan) {
+    return COMBAT_FORMATION_RULES[plan?.kind] || { label: "特殊战斗", capacity: Math.max(1, Number(plan?.leftTeam?.length || 1)), fixedNote: "" };
+  }
+
+  function combatFormationEntries(current, plan) {
+    normalizeFormationState(current);
+    const rule = combatFormationRule(plan);
+    const roster = formationRoster(current);
+    return formationState.formations.map((formation, order) => {
+      const status = formationStatus(formation, roster);
+      const reasons = [...status.reasons];
+      if (!status.unitCount) reasons.push("编队中没有成员");
+      const legal = reasons.length === 0;
+      const matches = formation.capacity <= rule.capacity;
+      const group = matches && legal ? 0 : matches ? 1 : 2;
+      return { formation, status: { ...status, valid: legal, reasons }, matches, group, order };
+    }).sort((a, b) => a.group - b.group || Math.abs(rule.capacity - a.formation.capacity) - Math.abs(rule.capacity - b.formation.capacity) || a.order - b.order);
+  }
+
+  function formationDeployment(formation, foodSupplied) {
+    const deployment = { formationId: formation.id, capacity: formation.capacity, memberIds: [...formation.members], positions: [...formation.positions] };
+    if (foodSupplied !== undefined && foodSupplied !== null) deployment.foodSupplied = Math.max(0, Math.floor(Number(foodSupplied) || 0));
+    return deployment;
+  }
+
+  function orderedFormationMembers(entry) {
+    const byId = new Map(entry.status.members.map((member) => [member.id, member]));
+    const ordered = entry.formation.positions.map((id, slotIndex) => ({ member: byId.get(id), slotIndex })).filter((row) => row.member);
+    const used = new Set(ordered.map((row) => row.member.id));
+    for (const member of entry.status.members) if (!used.has(member.id)) ordered.push({ member, slotIndex: ordered.length });
+    return ordered;
+  }
+
+  function renderCombatFormationPreview() {
+    if (!pendingPreview?.basePlan) return;
+    const current = view();
+    const basePlan = pendingPreview.basePlan;
+    const rule = combatFormationRule(basePlan);
+    const entries = combatFormationEntries(current, basePlan);
+    let selected = entries.find((entry) => entry.formation.id === pendingPreview.selectedFormationId) || entries[0] || null;
+    pendingPreview.selectedFormationId = selected?.formation.id || null;
+    const groupLabels = ["容量兼容且合法", "容量兼容但不合法", "超过人数上限"];
+    let previousGroup = -1;
+    const formationRows = entries.map((entry) => {
+      const heading = entry.group !== previousGroup ? `<p class="preview-formation-group group-${entry.group}">${groupLabels[entry.group]}</p>` : "";
+      previousGroup = entry.group;
+      const stateLabel = entry.group === 0 ? "可出战" : entry.group === 1 ? "不合法" : `${entry.formation.capacity}单位`;
+      return `${heading}<button type="button" class="preview-formation-row group-${entry.group} ${entry.formation.id === selected?.formation.id ? "selected" : ""}" data-preview-formation="${esc(entry.formation.id)}"><i>${entry.status.unitCount}/${entry.formation.capacity}</i><span><strong>${esc(entry.formation.name)}</strong><small>${esc(entry.status.cityLabel)} · 粮${entry.status.foodCost}/战</small></span><em>${esc(stateLabel)}</em></button>`;
+    }).join("");
+    document.querySelector("#preview-formations").innerHTML = formationRows || `<div class="preview-formation-empty">尚未建立任何编队</div>`;
+    document.querySelector("#preview-battle-rule").innerHTML = `<span>战斗类型 <b>${esc(rule.label)}</b></span><span>参战上限 <b>${rule.capacity}单位</b></span>${rule.fixedNote ? `<span class="fixed"><b>固定成员</b> ${esc(rule.fixedNote)}</span>` : ""}`;
+    let selectedPlan = null;
+    let blockedReason = "没有可用编队";
+    if (selected) {
+      if (!selected.matches) blockedReason = `本场最多允许${rule.capacity}单位编队；当前编队上限为${selected.formation.capacity}单位`;
+      else if (!selected.status.valid) blockedReason = selected.status.reasons.join("；");
+      else {
+        selectedPlan = GAME.preparePlayerCombat(state, basePlan.publicActionId, formationDeployment(selected.formation));
+        if (!selectedPlan) blockedReason = "当前资源不足，或编队成员已经无法参加这场战斗";
+      }
+    }
+    pendingPreview.plan = selectedPlan;
+    const shownPlan = selectedPlan || basePlan;
+    document.querySelector("#preview-supply").innerHTML = `<span>行动 <b>${["hunt", "final"].includes(basePlan.kind) ? 0 : 1}</b></span><span>满额粮食 <b>${selectedPlan ? Number(selectedPlan.fullFood || 0) : "—"}</b></span><span>我方 <b>${selectedPlan ? selectedPlan.leftTeam.length : "—"}单位</b></span><span>敌方已知 <b>${basePlan.rightTeam.length}单位</b></span>`;
+    const next = document.querySelector("#preview-to-supply");
+    next.disabled = !selectedPlan;
+    next.classList.toggle("blocked", !selectedPlan);
+    next.textContent = selectedPlan ? "开战" : "当前编队无法出战";
+    next.title = selectedPlan ? `使用${selected.formation.name}进入战前准备` : blockedReason;
+    if (!selected) {
+      document.querySelector("#preview-teams").innerHTML = `<div class="preview-formation-empty">没有编队可供查看</div>`;
+    } else {
+      const members = orderedFormationMembers(selected).map(({ member, slotIndex }) => `<li><i>${slotIndex + 1}</i><span class="preview-member-role" aria-hidden="true">${esc(member.roleIcon)}</span><span><strong>${esc(member.name)}</strong><small>${esc(member.profession)} · ${esc(member.city)}</small></span><b>${formatCombatPower(member.combatPower)}</b></li>`).join("");
+      const enemies = shownPlan.rightTeam.map((unit) => `<li><span><strong>${esc(unit.name)}</strong><small>${esc(unit.roleName || unit.role || unit.unitKind || "战斗成员")}</small></span></li>`).join("");
+      const stateClass = selectedPlan ? "ready" : "blocked";
+      const stateText = selectedPlan ? `不超过${rule.capacity}单位参战上限，可以出战` : blockedReason;
+      document.querySelector("#preview-teams").innerHTML = `<header class="preview-selected-head ${stateClass}"><div><span class="eyebrow">当前选择</span><h3>${esc(selected.formation.name)}</h3><p>${esc(stateText)}</p></div><strong>${selected.status.unitCount}/${selected.formation.capacity}</strong></header><div class="preview-formation-metrics"><span>状态<b>${selectedPlan ? "可出战" : "不可出战"}</b></span><span>驻地<b>${esc(selected.status.cityLabel)}</b></span><span>一战粮耗<b>${selectedPlan ? Number(selectedPlan.fullFood || 0) : selected.status.foodCost}</b></span><span>总战斗力<b>${formatCombatPower(selected.status.members.reduce((sum, member) => sum + member.combatPower, 0))}</b></span></div><div class="preview-lineup-columns"><section><h4>编队成员 · ${selected.status.members.length}</h4><ul>${members || `<li class="empty">尚未编入成员</li>`}</ul>${rule.fixedNote ? `<p class="preview-fixed-note">＋ ${esc(rule.fixedNote)}</p>` : ""}</section><section><h4>敌方情报 · ${shownPlan.rightTeam.length}</h4><ul>${enemies}</ul></section></div>`;
+    }
+    document.querySelectorAll("[data-preview-formation]").forEach((button) => button.addEventListener("click", () => {
+      pendingPreview.selectedFormationId = button.dataset.previewFormation;
+      formationState.selectedId = button.dataset.previewFormation;
+      saveFormationState();
+      renderCombatFormationPreview();
+    }));
+  }
+
+  function stopSupplyHold() {
+    clearTimeout(supplyHoldDelay);
+    clearInterval(supplyHoldInterval);
+    supplyHoldDelay = null;
+    supplyHoldInterval = null;
+  }
+
+  function selectedPreviewFormation() {
+    if (!pendingPreview?.basePlan) return null;
+    return combatFormationEntries(view(), pendingPreview.basePlan).find((entry) => entry.formation.id === pendingPreview.selectedFormationId) || null;
+  }
+
+  function renderCombatSupplyStage() {
+    const selected = selectedPreviewFormation();
+    if (!pendingPreview || !selected?.matches || !selected.status.valid) return;
+    const current = view();
+    const probe = GAME.preparePlayerCombat(state, pendingPreview.basePlan.publicActionId, formationDeployment(selected.formation, current.resources.food));
+    const fullFood = Math.max(0, Number(probe?.fullFood || 0));
+    const maxFood = Math.min(fullFood, Math.max(0, Number(current.resources.food || 0)));
+    pendingPreview.foodSupplied = Math.max(0, Math.min(maxFood, Math.floor(Number(pendingPreview.foodSupplied) || 0)));
+    const plan = GAME.preparePlayerCombat(state, pendingPreview.basePlan.publicActionId, formationDeployment(selected.formation, pendingPreview.foodSupplied));
+    pendingPreview.plan = plan;
+    const supplied = Number(plan?.foodCommitted || 0);
+    const performance = Number(plan?.performancePct || 100);
+    const fillPct = fullFood > 0 ? Math.round(supplied / fullFood * 100) : 100;
+    document.querySelector("#preview-supply-title").textContent = `${pendingPreview.basePlan.title} · 军粮准备`;
+    document.querySelector("#preview-supply-formation").innerHTML = `<span>出战编队 <b>${esc(selected.formation.name)}</b></span><span>${selected.status.unitCount}/${selected.formation.capacity}单位</span><span>库存 <b>${current.resources.food}粮</b></span>`;
+    document.querySelector("#preview-supply-fraction").textContent = `${supplied}/${fullFood}`;
+    document.querySelector("#preview-supply-percent").textContent = `${performance}%`;
+    document.querySelector("#preview-supply-percent").classList.toggle("full", performance >= 100);
+    document.querySelector("#preview-supply-fill").style.setProperty("--supply-fill", `${fillPct}%`);
+    const pot = document.querySelector("#preview-supply-pot");
+    pot.disabled = !plan || fullFood <= 0 || supplied >= maxFood;
+    pot.classList.toggle("empty-stock", fullFood > 0 && maxFood <= 0);
+    pot.querySelector("strong").textContent = fullFood <= 0 ? "无需军粮" : supplied >= maxFood ? (maxFood < fullFood ? "粮仓已空" : "已经投满") : "＋1";
+    document.querySelector("#preview-supply-note").textContent = fullFood <= 0 ? "这支队伍没有士兵，本场无需投入军粮。" : maxFood < fullFood ? `粮仓最多只能投入${maxFood}/${fullFood}；当前部队按${performance}%发挥。` : `0粮时按20%发挥；每投入1粮都会直接提高这场战斗的生命、攻击与护甲。`;
+    const confirm = document.querySelector("#preview-confirm");
+    confirm.disabled = !plan;
+    confirm.textContent = plan ? `以${performance}%发挥出发` : "当前无法出发";
+  }
+
+  function openCombatSupplyStage() {
+    if (!pendingPreview?.plan) return;
+    pendingPreview.stage = "supply";
+    pendingPreview.foodSupplied = 0;
+    document.querySelector("#preview-slide-track").classList.add("supplying");
+    renderCombatSupplyStage();
+  }
+
+  function addPreviewFood(amount = 1) {
+    if (pendingPreview?.stage !== "supply") return;
+    pendingPreview.foodSupplied = Math.max(0, Number(pendingPreview.foodSupplied || 0) + amount);
+    renderCombatSupplyStage();
   }
 
   function startCombat(plan) {
@@ -185,7 +381,7 @@
       const beforeRaids = new Set(before.raids.map((raid) => raid.title));
       const beforeOutposts = new Set(before.outposts.map((outpost) => outpost.id));
       const plan = pendingCombat;
-      state = GAME.applyPlayerCombatResult(state, plan.publicActionId, pendingCombatResult);
+      state = GAME.applyPlayerCombatResult(state, plan.publicActionId, pendingCombatResult, plan.deployment);
       saveState();
       battleView?.destroy?.(); battleView = null; pendingCombat = null; pendingCombatResult = null; mode = "campaign";
       const after = view();
@@ -205,7 +401,7 @@
   }
 
   function startGrind(plan) {
-    grindSession = { rounds: 0, wins: 0, loot: [], auto: true, fighting: false, timer: null, plan: null, lastWin: null };
+    grindSession = { rounds: 0, wins: 0, loot: [], auto: true, fighting: false, timer: null, plan: null, deployment: plan.deployment, lastWin: null };
     mode = "grind";
     render();
     requestAnimationFrame(() => startGrindRound(plan));
@@ -213,7 +409,7 @@
 
   function currentGrindPlan() {
     const action = view().actions.find((row) => row.kind === "grind");
-    return action ? GAME.preparePlayerCombat(state, action.id) : null;
+    return action ? GAME.preparePlayerCombat(state, action.id, grindSession?.deployment || null) : null;
   }
 
   function startGrindRound(plan = currentGrindPlan()) {
@@ -238,7 +434,7 @@
     if (!grindSession?.plan) return;
     try {
       const beforeIds = new Set(state.inventory.map((item) => item.id));
-      state = GAME.applyPlayerCombatResult(state, grindSession.plan.publicActionId, result);
+      state = GAME.applyPlayerCombatResult(state, grindSession.plan.publicActionId, result, grindSession.plan.deployment);
       const added = state.inventory.filter((item) => !beforeIds.has(item.id));
       grindSession.rounds += 1;
       grindSession.lastWin = result.metrics.leftAlive > 0 && result.metrics.rightAlive === 0;
@@ -326,9 +522,13 @@
     document.querySelector("#day-rail").innerHTML = Array.from({ length: 7 }, (_, index) => { const day = index + 1; const cls = day < current.time.day || current.result ? "past" : day === current.time.day ? "current" : ""; return `<span class="day-tick ${cls} ${day === 7 ? "final" : ""}"><b>${day}</b>${day === 7 ? "总攻" : "日"}</span>`; }).join("");
     document.querySelector("#gold-value").textContent = current.resources.gold;
     document.querySelector("#food-value").textContent = current.resources.food;
-    document.querySelector("#population-value").textContent = `${current.resources.population}/${current.resources.populationCap}`;
-    document.querySelector("#ap-value").textContent = current.time.actionsRemaining;
-    document.querySelector("#ap-capacity").textContent = current.time.actionCapacity;
+    const town = current.town;
+    document.querySelector("#town-name").textContent = town.name;
+    document.querySelector("#town-prosperity").textContent = `繁荣 Lv.${town.prosperity.level}`;
+    document.querySelector("#population-value").textContent = `${town.population}/${town.populationCap}`;
+    document.querySelector("#ap-value").textContent = town.actionsRemaining;
+    document.querySelector("#ap-capacity").textContent = town.actionCapacity;
+    document.querySelector("#town-prosperity-fill").style.width = `${Math.round(town.prosperity.levelProgress * 100)}%`;
     document.querySelector("#enemy-units").textContent = current.war.knownEnemyUnits;
     document.querySelector("#enemy-bosses").textContent = current.war.knownBosses;
     document.querySelector("#militia-units").textContent = current.war.untrainedUnits;
@@ -343,7 +543,81 @@
     document.querySelector("#inventory-count").textContent = current.inventory.length;
   }
 
+  function renderProsperityDialog(current) {
+    const town = current.town;
+    const prosperity = town.prosperity;
+    const reached = prosperity.milestones.filter((row) => row.reached);
+    const currentMilestonePopulation = reached.length ? reached.at(-1).population : 0;
+    document.querySelector("#prosperity-title").textContent = `${town.name}发展轨迹`;
+    document.querySelector("#prosperity-population").textContent = `${town.population}/${town.populationCap}`;
+    document.querySelector("#prosperity-current-level").textContent = `Lv.${prosperity.level} ${prosperity.name}`;
+    document.querySelector("#prosperity-actions").textContent = `${town.actionsRemaining}/${town.actionCapacity}`;
+    document.querySelector("#prosperity-next").textContent = prosperity.nextLevel
+      ? `距离 Lv.${prosperity.nextLevel.level}「${prosperity.nextLevel.name}」还差${Math.max(0, prosperity.nextLevel.population - town.population)}人口；达到后每日行动上限${prosperity.actionCapacity}→${prosperity.nextLevel.actionCapacity}。`
+      : `已达到当前章节最高繁荣等级；人口仍受房屋上限约束。`;
+    document.querySelector("#prosperity-track").innerHTML = prosperity.milestones.map((milestone) => {
+      const isCurrent = milestone.population === currentMilestonePopulation;
+      const beyondCap = milestone.population > town.populationCap;
+      const title = milestone.prosperityName || (milestone.population ? "人口扩张" : prosperity.name);
+      const rewards = milestone.rewards.map((reward) => `<span>${esc(reward)}</span>`).join("");
+      const stateText = milestone.reached ? "已获得" : beyondCap ? "超过当前人口上限" : `还差${Math.max(0, milestone.population - town.population)}人口`;
+      const badge = milestone.prosperityLevel ? `繁荣 Lv.${milestone.prosperityLevel}` : milestone.population === town.populationCap ? "当前上限" : "人口收益";
+      return `<article class="prosperity-milestone ${milestone.reached ? "reached" : "future"} ${isCurrent ? "current" : ""} ${beyondCap ? "beyond-cap" : ""}" data-prosperity-population="${milestone.population}"><header class="prosperity-milestone-head"><strong>${milestone.population}人口</strong><em>${esc(badge)}</em></header><div class="prosperity-milestone-body"><h3>${esc(title)}</h3><p>${milestone.prosperityLevel ? `每日行动上限 ${milestone.actionCapacity}` : "人口达到门槛时立即获得收益"}</p>${rewards}<small>${esc(stateText)}</small></div></article>`;
+    }).join("");
+  }
+
+  function openProsperityDialog() {
+    const current = view();
+    renderProsperityDialog(current);
+    const dialog = document.querySelector("#prosperity-dialog");
+    if (dialog.open) dialog.close();
+    dialog.showModal();
+    requestAnimationFrame(() => {
+      const viewport = document.querySelector("#prosperity-viewport");
+      const marker = viewport.querySelector(".prosperity-milestone.current");
+      if (marker) viewport.scrollLeft = Math.max(0, marker.offsetLeft - viewport.clientWidth * .3);
+    });
+  }
+
+  function renderUnitRail(current) {
+    const heroes = current.party.heroes.map((hero) => ({
+      id: hero.id,
+      name: hero.name,
+      role: hero.role,
+      kind: hero.id === "player" ? "player" : "hero",
+      glyph: UNIT_GLYPHS[hero.id] || hero.name.slice(-1),
+      status: hero.id === "player" ? "主角" : hero.active ? "队内" : "候补",
+      active: hero.id === "player" || hero.active,
+    }));
+    const militia = Array.from({ length: current.war.untrainedUnits }, (_, index) => {
+      const unitNumber = index + 1;
+      return {
+        id: `militia_${unitNumber}`,
+        name: `灰谷民兵第${unitNumber}队`,
+        role: "民兵 · 10人单位",
+        kind: "militia",
+        glyph: "民",
+        status: `${unitNumber}`,
+        active: true,
+      };
+    });
+    const trained = current.party.trainedUnits.map((unit, index) => ({
+      id: unit.id,
+      name: unit.name,
+      role: unit.role,
+      kind: "trained",
+      glyph: "战",
+      status: `${index + 1}`,
+      active: true,
+    }));
+    const units = [...heroes, ...militia, ...trained];
+    const rail = document.querySelector("#unit-roster-rail");
+    rail.innerHTML = `<div class="unit-roster-list" role="list" aria-label="我方${units.length}个单位">${units.map((unit) => `<div class="unit-avatar ${esc(unit.kind)} ${unit.active ? "active" : "reserve"}" role="listitem" data-equipment-target="${esc(unit.id)}" title="${esc(unit.name)}｜${esc(unit.role)}｜${esc(unit.status)}" aria-label="${esc(unit.name)}，${esc(unit.role)}，${esc(unit.status)}"><strong>${esc(unit.glyph)}</strong><small>${esc(unit.status)}</small></div>`).join("")}</div>`;
+    rail.querySelectorAll("[data-equipment-target]").forEach((avatar) => avatar.addEventListener("click", (event) => { event.stopPropagation(); openEquipmentDialog(avatar.dataset.equipmentTarget); }));
+  }
+
   function renderMap(current) {
+    renderUnitRail(current);
     locations = buildLocations(current);
     const layer = document.querySelector("#map-node-layer");
     layer.innerHTML = locations.map((location) => `<button class="map-node ${esc(location.type)} ${selectedNodeId === location.id ? "selected" : ""} ${newlyUnlocked.has(location.id) ? "newly-unlocked" : ""}" data-node-id="${esc(location.id)}" style="left:${location.x}px;top:${location.y}px">${location.yieldLabel ? `<span class="yield-badge">${esc(location.yieldLabel)}</span>` : ""}<span class="sigil">${esc(location.sigil)}</span><strong>${esc(location.title)}</strong><small>${esc(location.kicker)}</small>${location.actions.length ? `<b class="count">${location.actions.length}</b>` : ""}</button>`).join("");
@@ -390,7 +664,8 @@
   }
 
   function ensureSelections(current) {
-    if (!current.party.heroes.some((hero) => hero.id === selectedHeroId)) selectedHeroId = current.party.selectedHeroId || current.party.heroes[0]?.id || null;
+    const targets = characterTargets(current);
+    if (!targets.some((target) => target.id === selectedHeroId)) selectedHeroId = current.party.selectedHeroId || targets[0]?.id || null;
     if (!current.inventory.some((item) => item.id === selectedItemId)) {
       selectedItemId = sortItems(current.inventory)[0]?.id || null;
       inventoryPage = 0;
@@ -400,26 +675,391 @@
   }
 
   function selectHero(heroId) {
+    const changed = selectedHeroId !== heroId;
     const current = view();
     if (current.party.selectedHeroId !== heroId) {
       const action = current.actions.find((row) => row.kind === "selection" && row.targetHeroId === heroId);
       if (action) { state = GAME.applyPlayerAction(state, action.id); saveState(); }
     }
     selectedHeroId = heroId;
+    if (changed) selectedItemId = null;
     renderDock(view());
+    if (document.querySelector("#equipment-dialog")?.open) {
+      renderEquipmentDialog(view());
+    }
   }
 
   function sortItems(items) { return items.slice().sort((a, b) => (RARITY_ORDER[b.rarity] || 0) - (RARITY_ORDER[a.rarity] || 0) || b.power - a.power || String(a.id).localeCompare(String(b.id))); }
 
+  function characterTargets(current) { return current.party.characterTargets || current.party.equipmentTargets; }
+
+  function equipmentOwners(current) {
+    const owners = new Map();
+    for (const target of current.party.equipmentTargets) {
+      for (const slot of target.equipment) if (slot.item) owners.set(slot.item.id, target);
+    }
+    return owners;
+  }
+
+  function orderedEquipmentItems(current, targetId) {
+    const owners = equipmentOwners(current);
+    return current.inventory.slice().sort((a, b) => {
+      const ownerA = owners.get(a.id), ownerB = owners.get(b.id);
+      const groupA = ownerA?.id === targetId ? 0 : ownerA ? 2 : 1;
+      const groupB = ownerB?.id === targetId ? 0 : ownerB ? 2 : 1;
+      return groupA - groupB || (RARITY_ORDER[b.rarity] || 0) - (RARITY_ORDER[a.rarity] || 0) || b.power - a.power || String(a.id).localeCompare(String(b.id));
+    });
+  }
+
+  function formationRoster(current) {
+    return characterTargets(current).map((unit) => ({
+      id: unit.id,
+      name: unit.name,
+      profession: String(unit.role || "未知职业").split(" · ")[0],
+      roleKey: unit.roleKey || "",
+      roleIcon: ROLE_ICONS[unit.roleKey] || "◆",
+      kind: unit.kind,
+      unitCount: 1,
+      foodCost: unit.kind === "trained" ? 3 : unit.kind === "militia" ? 1 : 0,
+      combatPower: Number(unit.combatPower || 0),
+      city: unit.city || CURRENT_CITY,
+    }));
+  }
+
+  function normalizeFormationState(current) {
+    const available = new Set(formationRoster(current).map((member) => member.id));
+    const byId = new Map((formationState.formations || []).map((formation) => [formation.id, formation]));
+    formationState.formations = FORMATION_SPECS.filter((spec) => spec.unlocked).map((spec) => {
+      const saved = byId.get(spec.id);
+      const members = [...new Set((saved?.members || ["player"]).filter((id) => available.has(id)))];
+      const memberSet = new Set(members);
+      const positioned = new Set();
+      const positions = Array.from({ length: spec.capacity }, (_, index) => {
+        const id = Array.isArray(saved?.positions) ? saved.positions[index] : null;
+        if (!id || !memberSet.has(id) || positioned.has(id)) return null;
+        positioned.add(id);
+        return id;
+      });
+      for (const id of members) {
+        if (positioned.has(id)) continue;
+        const openIndex = positions.indexOf(null);
+        if (openIndex < 0) break;
+        positions[openIndex] = id;
+        positioned.add(id);
+      }
+      return { ...spec, name: saved?.name || spec.name, members, positions };
+    });
+    if (!formationState.formations.some((formation) => formation.id === formationState.selectedId)) formationState.selectedId = "warband";
+  }
+
+  function selectedFormation(current) {
+    normalizeFormationState(current);
+    return formationState.formations.find((formation) => formation.id === formationState.selectedId) || formationState.formations[0];
+  }
+
+  function formationStatus(formation, roster) {
+    const byId = new Map(roster.map((member) => [member.id, member]));
+    const members = formation.members.map((id) => byId.get(id)).filter(Boolean);
+    const unitCount = members.reduce((sum, member) => sum + member.unitCount, 0);
+    const foodCost = members.reduce((sum, member) => sum + Number(member.foodCost || 0), 0);
+    const cities = [...new Set(members.map((member) => member.city))];
+    const reasons = [];
+    if (unitCount > formation.capacity) reasons.push(`超出${formation.capacity}单位上限（当前${unitCount}单位）`);
+    if (cities.length > 1) reasons.push(`成员分处${cities.join("、")}`);
+    return { members, unitCount, foodCost, cities, cityLabel: cities.length === 0 ? "未驻扎" : cities.length === 1 ? cities[0] : "跨城编队", valid: reasons.length === 0, reasons };
+  }
+
+  function formationMemberCard(member, zone) {
+    const action = zone === "deployed" ? "拖到下方移出编队" : "拖到上方加入编队";
+    return `<button type="button" class="formation-member ${esc(member.kind)}" draggable="true" data-formation-member="${esc(member.id)}" data-formation-zone="${esc(zone)}" title="${esc(member.profession)}｜${esc(member.name)}｜${esc(member.city)}｜战斗力${formatCombatPower(member.combatPower)}｜${action}" aria-label="${esc(member.profession)}，${esc(member.name)}，城镇${esc(member.city)}，战斗力${formatCombatPower(member.combatPower)}"><span class="formation-member-art" aria-hidden="true"></span><span class="formation-member-summary"><i class="formation-member-role" aria-hidden="true">${esc(member.roleIcon)}</i><span class="formation-member-identity"><strong>${esc(member.name)}</strong><small>${esc(member.city)}</small></span><span class="formation-member-power"><em>战斗力</em><b>${formatCombatPower(member.combatPower)}</b></span></span></button>`;
+  }
+
+  function updateFormationMember(current, memberId, operation) {
+    const formation = selectedFormation(current);
+    const rosterIds = new Set(formationRoster(current).map((member) => member.id));
+    if (!rosterIds.has(memberId)) return;
+    if (operation === "add" && !formation.members.includes(memberId)) {
+      formation.members.push(memberId);
+      const openIndex = formation.positions.indexOf(null);
+      if (openIndex >= 0) formation.positions[openIndex] = memberId;
+    }
+    if (operation === "remove") {
+      formation.members = formation.members.filter((id) => id !== memberId);
+      formation.positions = formation.positions.map((id) => id === memberId ? null : id);
+    }
+    saveFormationState();
+    renderFormationDialog(view());
+  }
+
+  function formationGridShape(capacity) {
+    if (capacity === 2) return { columns: 1, rows: 2 };
+    if (capacity === 4) return { columns: 2, rows: 2 };
+    if (capacity === 8) return { columns: 4, rows: 2 };
+    return { columns: 5, rows: Math.ceil(capacity / 5) };
+  }
+
+  function moveFormationPosition(current, memberId, targetIndex) {
+    const formation = selectedFormation(current);
+    const sourceIndex = formation.positions.indexOf(memberId);
+    if (sourceIndex < 0 || targetIndex < 0 || targetIndex >= formation.positions.length || sourceIndex === targetIndex) return;
+    const replacedId = formation.positions[targetIndex];
+    formation.positions[targetIndex] = memberId;
+    formation.positions[sourceIndex] = replacedId || null;
+    const positionedIds = formation.positions.filter(Boolean);
+    formation.members = [...positionedIds, ...formation.members.filter((id) => !positionedIds.includes(id))];
+    selectedFormationPositionMemberId = null;
+    saveFormationState();
+    showToast(replacedId ? "两个单位已交换站位" : `单位已移动到第${targetIndex + 1}号槽位`);
+    renderFormationDialog(view());
+  }
+
+  function formationPositionSlot(member, index) {
+    if (!member) return `<button type="button" class="formation-position-slot empty" data-formation-position-index="${index}" aria-label="第${index + 1}号空槽"><i>＋</i><small>${index + 1}</small></button>`;
+    const selected = selectedFormationPositionMemberId === member.id;
+    return `<button type="button" class="formation-position-slot occupied ${esc(member.kind)} ${selected ? "selected" : ""}" draggable="true" data-formation-position-index="${index}" data-formation-position-member="${esc(member.id)}" title="${esc(member.profession)}｜${esc(member.name)}｜${esc(member.city)}｜战斗力${formatCombatPower(member.combatPower)}" aria-label="第${index + 1}号槽位，${esc(member.profession)}，${esc(member.name)}，城镇${esc(member.city)}，战斗力${formatCombatPower(member.combatPower)}"><span class="position-member-identity"><i aria-hidden="true">${esc(member.roleIcon)}</i><span><strong>${esc(member.name)}</strong><em>${esc(member.city)}</em></span></span><span class="position-member-power"><em>战斗力</em><b>${formatCombatPower(member.combatPower)}</b></span><small>${index + 1}</small></button>`;
+  }
+
+  function bindFormationPositionDrag() {
+    const editor = document.querySelector("#equipment-backpack-panel");
+    editor.querySelectorAll("[data-formation-position-index]").forEach((slot) => {
+      slot.addEventListener("dragstart", (event) => {
+        const memberId = slot.dataset.formationPositionMember;
+        if (!memberId) { event.preventDefault(); return; }
+        draggedFormationMemberId = memberId;
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", memberId);
+        slot.classList.add("dragging");
+      });
+      slot.addEventListener("dragend", () => {
+        draggedFormationMemberId = null;
+        slot.classList.remove("dragging");
+        editor.querySelectorAll(".drag-over").forEach((target) => target.classList.remove("drag-over"));
+      });
+      slot.addEventListener("dragover", (event) => { event.preventDefault(); event.dataTransfer.dropEffect = "move"; slot.classList.add("drag-over"); });
+      slot.addEventListener("dragleave", () => slot.classList.remove("drag-over"));
+      slot.addEventListener("drop", (event) => {
+        event.preventDefault();
+        slot.classList.remove("drag-over");
+        const memberId = event.dataTransfer.getData("text/plain") || draggedFormationMemberId;
+        if (memberId) moveFormationPosition(view(), memberId, Number(slot.dataset.formationPositionIndex));
+      });
+      slot.addEventListener("click", () => {
+        const memberId = slot.dataset.formationPositionMember;
+        if (!selectedFormationPositionMemberId) {
+          if (memberId) { selectedFormationPositionMemberId = memberId; renderFormationDialog(view()); }
+          return;
+        }
+        if (selectedFormationPositionMemberId === memberId) {
+          selectedFormationPositionMemberId = null;
+          renderFormationDialog(view());
+          return;
+        }
+        moveFormationPosition(view(), selectedFormationPositionMemberId, Number(slot.dataset.formationPositionIndex));
+      });
+    });
+  }
+
+  function renderFormationPositionEditor(editorPanel, formation, status, roster) {
+    const byId = new Map(roster.map((member) => [member.id, member]));
+    const shape = formationGridShape(formation.capacity);
+    const slots = formation.positions.map((id, index) => formationPositionSlot(byId.get(id), index)).join("");
+    const instruction = selectedFormationPositionMemberId ? "已选中单位，再点一个槽位即可交换或移动" : "拖动头像交换位置；也可以先点头像，再点目标槽位";
+    editorPanel.classList.add("positioning");
+    editorPanel.innerHTML = `<header class="formation-editor-head"><div><span class="eyebrow">调整站位</span><h3>${esc(formation.name)}</h3><p>${esc(instruction)}</p></div><div class="formation-editor-actions"><strong>${status.unitCount}/${formation.capacity}单位</strong><button type="button" class="formation-position-finish">完成站位</button></div></header><section class="formation-position-stage"><div class="formation-enemy-direction"><span>敌军方向</span><b>↑</b></div><div class="formation-position-grid" style="--formation-columns:${shape.columns};--formation-rows:${shape.rows}">${slots}</div><div class="formation-rank-guide"><span>前线</span><i></i><span>后方</span></div></section>`;
+    editorPanel.querySelector(".formation-position-finish").addEventListener("click", () => { formationPositioning = false; selectedFormationPositionMemberId = null; renderFormationDialog(view()); });
+    bindFormationPositionDrag();
+  }
+
+  function bindFormationDrag(current) {
+    const editor = document.querySelector("#equipment-backpack-panel");
+    editor.querySelectorAll("[data-formation-member]").forEach((card) => {
+      card.addEventListener("dragstart", (event) => {
+        draggedFormationMemberId = card.dataset.formationMember;
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", draggedFormationMemberId);
+        card.classList.add("dragging");
+      });
+      card.addEventListener("dragend", () => { draggedFormationMemberId = null; card.classList.remove("dragging"); editor.querySelectorAll(".drag-over").forEach((zone) => zone.classList.remove("drag-over")); });
+      card.addEventListener("click", () => updateFormationMember(view(), card.dataset.formationMember, card.dataset.formationZone === "deployed" ? "remove" : "add"));
+    });
+    editor.querySelectorAll("[data-formation-drop]").forEach((zone) => {
+      zone.addEventListener("dragover", (event) => { event.preventDefault(); event.dataTransfer.dropEffect = "move"; zone.classList.add("drag-over"); });
+      zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+      zone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        zone.classList.remove("drag-over");
+        const memberId = event.dataTransfer.getData("text/plain") || draggedFormationMemberId;
+        if (memberId) updateFormationMember(view(), memberId, zone.dataset.formationDrop === "deployed" ? "add" : "remove");
+      });
+    });
+  }
+
+  function renderFormationDialog(current) {
+    const workspace = document.querySelector(".equipment-workspace");
+    workspace.classList.add("formation-mode");
+    const listPanel = document.querySelector("#equipment-character-panel");
+    const editorPanel = document.querySelector("#equipment-backpack-panel");
+    listPanel.className = "formation-list-panel";
+    editorPanel.className = "formation-editor-panel";
+    const roster = formationRoster(current);
+    const formation = selectedFormation(current);
+    const status = formationStatus(formation, roster);
+    const deployedIds = new Set(formation.members);
+    const available = roster.filter((member) => !deployedIds.has(member.id) && (!formationCityFilter || member.city === CURRENT_CITY));
+    editorPanel.classList.toggle("invalid", !status.valid);
+    const formationRows = FORMATION_SPECS.map((spec) => {
+      if (!spec.unlocked) return `<div class="formation-row locked" aria-label="${spec.capacity}单位编队尚未解锁"><i>锁</i><div><strong>${esc(spec.name)}</strong><span>${spec.capacity}单位编队</span></div><small>尚未解锁</small></div>`;
+      const row = formationState.formations.find((item) => item.id === spec.id);
+      const rowStatus = formationStatus(row, roster);
+      return `<button type="button" class="formation-row ${row.id === formation.id ? "selected" : ""} ${rowStatus.valid ? "" : "invalid"}" data-formation-select="${esc(row.id)}"><i>${rowStatus.unitCount}/${row.capacity}</i><div><strong>${esc(row.name)}</strong><span>${esc(rowStatus.cityLabel)}</span></div><small>粮${rowStatus.foodCost}/战 · ${rowStatus.valid ? "合法" : "不合法"}</small></button>`;
+    }).join("");
+    listPanel.innerHTML = `<header><span class="eyebrow">所有编队</span><strong>${formationState.formations.length}支可用</strong></header><div class="formation-list">${formationRows}</div><p>2 / 4 / 8 / 20单位编队现已开放；更大规模需要后续权限。</p>`;
+    const errorText = status.valid ? `${status.cityLabel} · 当前${status.unitCount}/${formation.capacity}单位 · 一战粮耗${status.foodCost}` : `编队不合法：${status.reasons.join("；")}；一战粮耗${status.foodCost}`;
+    const deployed = status.members.map((member) => formationMemberCard(member, "deployed")).join("");
+    const candidateCards = available.map((member) => formationMemberCard(member, "available")).join("");
+    listPanel.querySelectorAll("[data-formation-select]").forEach((button) => button.addEventListener("click", () => { formationState.selectedId = button.dataset.formationSelect; formationPositioning = false; selectedFormationPositionMemberId = null; saveFormationState(); renderFormationDialog(view()); }));
+    if (formationPositioning) {
+      renderFormationPositionEditor(editorPanel, formation, status, roster);
+      return;
+    }
+    editorPanel.classList.remove("positioning");
+    const positionBlocked = status.unitCount > formation.capacity;
+    editorPanel.innerHTML = `<header class="formation-editor-head ${status.valid ? "" : "invalid"}"><div><span class="eyebrow">当前编队</span><h3>${esc(formation.name)}</h3><p>${esc(errorText)}</p></div><strong>${status.unitCount}/${formation.capacity}单位</strong></header><section class="formation-zone deployed" data-formation-drop="deployed"><header><div><strong>出战成员</strong><span>拖到这里加入编队</span></div><div class="formation-zone-actions"><small>${status.members.length}个单位</small><button type="button" class="formation-position-open ${positionBlocked ? "blocked" : ""}" ${positionBlocked ? "disabled" : ""} title="${positionBlocked ? "超出编队单位上限，移出多余单位后才能调整站位" : "在阵地槽位中调整前后顺序"}">调整站位</button></div></header><div class="formation-member-strip">${deployed || `<div class="formation-empty">把下方成员拖到这里</div>`}</div></section><section class="formation-zone available" data-formation-drop="available"><header><div><strong>可选成员</strong><span>${formationCityFilter ? `只看${CURRENT_CITY} · ` : ""}${available.length}个单位可选</span></div><button type="button" class="formation-city-filter ${formationCityFilter ? "active" : ""}" aria-pressed="${formationCityFilter}">筛选 · ${CURRENT_CITY}</button></header><div class="formation-member-strip">${candidateCards || `<div class="formation-empty">${formationCityFilter ? `没有更多位于${CURRENT_CITY}的成员；关闭筛选可查看其他城池` : "所有成员都已在当前编队"}</div>`}</div></section>`;
+    editorPanel.querySelector(".formation-position-open").addEventListener("click", () => { formationPositioning = true; selectedFormationPositionMemberId = null; renderFormationDialog(view()); });
+    editorPanel.querySelector(".formation-city-filter").addEventListener("click", () => { formationCityFilter = !formationCityFilter; renderFormationDialog(view()); });
+    bindFormationDrag(current);
+  }
+
+  function renderEquipmentModeTabs() {
+    document.querySelectorAll("[data-equipment-mode]").forEach((tab) => {
+      const active = tab.dataset.equipmentMode === equipmentMode;
+      tab.classList.toggle("active", active);
+      if (active) tab.setAttribute("aria-current", "page"); else tab.removeAttribute("aria-current");
+    });
+  }
+
+  function openEquipmentDialog(targetId = null) {
+    if (mode !== "campaign") return;
+    const current = view();
+    if (targetId && characterTargets(current).some((target) => target.id === targetId)) { equipmentMode = "character"; selectHero(targetId); }
+    const dialog = document.querySelector("#equipment-dialog");
+    if (!dialog.open) dialog.showModal();
+    renderEquipmentDialog(view());
+  }
+
+  function renderEquipmentDialog(current) {
+    const dialog = document.querySelector("#equipment-dialog");
+    if (!dialog?.open) return;
+    renderEquipmentModeTabs();
+    if (equipmentMode === "formation") { renderFormationDialog(current); return; }
+    const workspace = document.querySelector(".equipment-workspace");
+    workspace.classList.remove("formation-mode");
+    document.querySelector("#equipment-character-panel").className = "equipment-character-panel";
+    document.querySelector("#equipment-backpack-panel").className = "equipment-backpack-panel";
+    const oldGrid = dialog.querySelector(".equipment-backpack-grid");
+    if (oldGrid) equipmentBackpackScrollTop = oldGrid.scrollTop;
+
+    const originalTargets = characterTargets(current);
+    const indexedTargets = originalTargets.map((target, index) => ({ target, index }));
+    const targets = indexedTargets.sort((a, b) => Number(b.target.active) - Number(a.target.active) || a.index - b.index).map((row) => row.target);
+    const hero = targets.find((target) => target.id === selectedHeroId) || targets[0];
+    if (!hero) return;
+    selectedHeroId = hero.id;
+    const owners = equipmentOwners(current);
+    const items = orderedEquipmentItems(current, hero.id);
+    const selectedItem = items.find((item) => item.id === selectedItemId) || items[0] || null;
+    selectedItemId = selectedItem?.id || null;
+    const equipmentPower = hero.equipment.reduce((sum, slot) => sum + Number(slot.item?.power || 0), 0);
+    const heroIndex = targets.findIndex((target) => target.id === hero.id);
+    const previousHero = heroIndex > 0 ? targets[heroIndex - 1] : null;
+    const nextHero = heroIndex < targets.length - 1 ? targets[heroIndex + 1] : null;
+    const stateLabel = hero.kind === "militia" ? "民兵" : hero.kind === "trained" ? "战士" : hero.active ? "队内" : "候补";
+
+    const slotHtml = (slot) => {
+      if (hero.equipmentLocked) {
+        const reason = hero.equipmentLockReason || "这个单位暂时不能使用装备。";
+        return `<button type="button" class="portrait-equipment-slot locked" disabled title="${esc(reason)}" aria-label="${esc(slot.slotLabel)}：装备未开放"><i>${SLOT_ICONS[slot.slotLabel] || "◆"}</i><em>锁</em><small>${esc(slot.slotLabel)}</small><div class="equipment-slot-tooltip"><span>${esc(slot.slotLabel)}</span><strong>装备未开放</strong><p>${esc(reason)}</p></div></button>`;
+      }
+      const item = slot.item;
+      const base = item ? Object.entries(item.baseStats || {}).map(([key, value]) => `${STAT_LABELS[key] || key}+${value}`).join(" · ") : "";
+      const affixes = item ? item.affixes.map((affix) => `${affix.label}+${affix.value}${affix.percent ? "%" : ""}`).join(" · ") : "";
+      const tooltip = item ? `<div class="equipment-slot-tooltip"><span>${esc(slot.slotLabel)} · ${esc(item.rarity)}</span><strong class="rarity-${esc(item.rarity)}">${esc(item.name)}</strong><p>显示评分 +${item.power}</p><p>${esc(base || "无基础属性")}</p><p>${esc(affixes || "无额外词条")}</p></div>` : `<div class="equipment-slot-tooltip"><span>${esc(slot.slotLabel)}</span><strong>空装备槽</strong><p>从右侧背包选择一件${esc(slot.slotLabel)}进行装备。</p></div>`;
+      return `<button type="button" class="portrait-equipment-slot ${item ? `filled rarity-border-${esc(item.rarity)}` : "empty"}" ${item ? `data-equipment-item="${esc(item.id)}"` : ""} aria-label="${esc(slot.slotLabel)}：${item ? esc(item.name) : "空"}"><i>${SLOT_ICONS[slot.slotLabel] || "◆"}</i><small>${esc(slot.slotLabel)}</small>${tooltip}</button>`;
+    };
+    const leftSlots = hero.equipment.slice(0, 4).map(slotHtml).join("");
+    const rightSlots = hero.equipment.slice(4, 8).map(slotHtml).join("");
+    const skills = (hero.skills || []).map((skill) => {
+      const details = (skill.details?.length ? skill.details : [skill.description]).map((detail) => `<li>${esc(detail)}</li>`).join("");
+      const timing = skill.cooldown ? `${skill.cooldown}秒冷却` : "持续生效";
+      return `<button type="button" class="character-skill" aria-label="${esc(skill.name)}，${esc(skill.type)}，${esc(timing)}，${esc(skill.description)}，悬停查看详细数值"><strong>${esc(skill.name)}</strong><span>${esc(skill.type)}</span><small>${esc(timing)}</small><p class="skill-summary">${esc(skill.description)}</p><div class="skill-detail-tooltip"><header><span>${esc(skill.type)}</span><strong>${esc(skill.name)}</strong><b>${esc(timing)}</b></header><p>${esc(skill.description)}</p><ul>${details}</ul></div></button>`;
+    }).join("");
+    const stats = Object.entries(hero.stats || {}).map(([key, value]) => `<div><span>${esc(STAT_LABELS[key] || key)}</span><b>${["attackSpeedPct", "skillHastePct"].includes(key) ? `${value >= 0 ? "+" : ""}${value}%` : value}</b></div>`).join("");
+    const autoEquipAction = current.actions.find((action) => action.operation === "auto_equip" && action.targetHeroId === hero.id);
+    const autoEquipAllAction = current.actions.find((action) => action.operation === "auto_equip_all");
+    const affixTags = hero.equipmentLocked ? `<span class="locked">装备未开放</span>` : hero.preferredAffixes.map((tag) => `<span>${esc(tag)}</span>`).join("");
+    const powerLabel = hero.equipmentLocked ? "民兵不能穿戴装备" : `装备评分 ${equipmentPower}`;
+    const statNote = hero.equipmentLocked ? "这是该民兵当前的基础战斗数值；装备栏尚未开放。" : "数值已经包含当前穿戴装备；这里只展示玩家可见的结果，不显示内部胜率。";
+    document.querySelector("#equipment-character-panel").innerHTML = `<header class="character-page-nav"><button type="button" class="character-page-arrow" data-character-page="${previousHero ? esc(previousHero.id) : ""}" ${previousHero ? "" : "disabled"} aria-label="上一个人物">‹</button><div><span>${heroIndex + 1}/${targets.length} · ${esc(stateLabel)}</span><strong>${esc(hero.name)}</strong></div><button type="button" class="character-page-arrow" data-character-page="${nextHero ? esc(nextHero.id) : ""}" ${nextHero ? "" : "disabled"} aria-label="下一个人物">›</button></header><div class="character-stage ${hero.equipmentLocked ? "equipment-locked" : ""}"><div class="portrait-slots left">${leftSlots}</div><div class="character-portrait"><span class="portrait-placeholder" aria-hidden="true"></span><h3>${esc(hero.name)}</h3><p>${esc(hero.role)}</p><div class="affix-tags">${affixTags}</div><strong class="portrait-power ${hero.equipmentLocked ? "locked" : ""}">${esc(powerLabel)}</strong></div><div class="portrait-slots right">${rightSlots}</div></div><div class="character-skills"><header><span>技能</span><div><button type="button" class="mini-button ${hero.equipmentLocked ? "equipment-locked" : ""}" id="modal-auto-equip" ${!autoEquipAction || autoEquipAction.available === false ? "disabled" : ""} title="${hero.equipmentLocked ? esc(hero.equipmentLockReason) : "一键为当前单位配装"}">${hero.equipmentLocked ? "装备锁定" : "一键当前"}</button><button type="button" class="mini-button" id="modal-auto-equip-all" ${!autoEquipAllAction || autoEquipAllAction.available === false ? "disabled" : ""}>一键全队</button><button type="button" class="mini-button character-stat-toggle" aria-label="悬停查看完整数值">数值</button><aside class="character-stat-overlay"><span class="eyebrow">当前战斗数值</span><h3>${esc(hero.name)}</h3><div class="character-stat-grid">${stats}</div><p>${esc(statNote)}</p></aside></div></header><div class="character-skill-grid">${skills}</div></div>`;
+
+    const itemCells = items.map((item) => { const owner = owners.get(item.id); const ownerState = owner?.id === hero.id ? "current" : owner ? "other" : "free"; const ownerLabel = owner?.id === hero.id ? "当前" : owner ? "他人" : ""; return `<button type="button" class="equipment-item-cell ${item.id === selectedItem?.id ? "selected" : ""} ${ownerState} rarity-border-${esc(item.rarity)}" data-backpack-item="${esc(item.id)}" title="${esc(item.name)}｜${esc(item.rarity)}｜评分+${item.power}${owner ? `｜${esc(owner.name)}已装备` : ""}"><i>${SLOT_ICONS[item.slotLabel] || "◆"}</i><strong class="rarity-${esc(item.rarity)}">${esc(item.name)}</strong><small>${esc(item.slotLabel)} · +${item.power}</small>${ownerLabel ? `<em>${ownerLabel}</em>` : ""}</button>`; }).join("");
+    let detailHtml = `<div class="equipment-item-detail empty">背包是空的。</div>`;
+    if (selectedItem) {
+      const equippedBy = owners.get(selectedItem.id);
+      const equipAction = current.actions.find((action) => action.kind === "equipment" && action.targetItemId === selectedItem.id && action.targetHeroId === hero.id && action.operation !== "unequip");
+      const unequipAction = current.actions.find((action) => action.kind === "equipment" && action.targetItemId === selectedItem.id && action.targetHeroId === hero.id && action.operation === "unequip");
+      const itemStats = Object.entries(selectedItem.baseStats || {}).map(([key, value]) => `${STAT_LABELS[key] || key}+${value}`).join(" · ");
+      const itemAffixes = selectedItem.affixes.map((affix) => `${affix.label}+${affix.value}${affix.percent ? "%" : ""}`).join(" · ");
+      const transfer = equippedBy && equippedBy.id !== hero.id ? `由${equippedBy.name}穿戴；需要先由该单位卸下。` : equippedBy ? `当前由${hero.name}穿戴。` : "当前未被任何单位穿戴。";
+      detailHtml = `<div class="equipment-item-detail"><div><span class="eyebrow">${esc(selectedItem.slotLabel)} · ${esc(selectedItem.rarity)}</span><h3 class="rarity-${esc(selectedItem.rarity)}">${esc(selectedItem.name)}</h3><p>评分+${selectedItem.power} · ${esc(itemStats || "无基础属性")}</p><p>${esc(itemAffixes || "无额外词条")}</p><small class="${equippedBy && equippedBy.id !== hero.id ? "disabled-reason" : ""}">${esc(transfer)}</small></div><div class="equipment-item-actions">${equipAction ? `<button type="button" class="button primary" data-modal-equip="${esc(equipAction.id)}">装备</button>` : ""}${unequipAction ? `<button type="button" class="button quiet" data-modal-unequip="${esc(unequipAction.id)}">卸下</button>` : ""}</div></div>`;
+    }
+    const backpackNote = hero.equipmentLocked ? `<p class="equipment-lock-note">装备未开放 · 这里只能查看物品</p>` : `<p><i class="current"></i>当前穿戴在前　<i class="free"></i>未穿戴居中　<i class="other"></i>他人穿戴在后</p>`;
+    document.querySelector("#equipment-backpack-panel").innerHTML = `<header><div><span class="eyebrow">背包</span><strong>${items.length}/200</strong></div>${backpackNote}</header><div class="equipment-backpack-grid">${itemCells || `<div class="empty-actions">还没有装备。</div>`}</div>${detailHtml}`;
+
+    const grid = dialog.querySelector(".equipment-backpack-grid");
+    grid.scrollTop = equipmentBackpackScrollTop;
+    grid.addEventListener("scroll", () => { equipmentBackpackScrollTop = grid.scrollTop; }, { passive: true });
+    dialog.querySelectorAll("[data-character-page]").forEach((button) => button.addEventListener("click", () => { if (button.dataset.characterPage) selectHero(button.dataset.characterPage); }));
+    dialog.querySelectorAll("[data-equipment-item],[data-backpack-item]").forEach((button) => button.addEventListener("click", () => { selectedItemId = button.dataset.equipmentItem || button.dataset.backpackItem; renderEquipmentDialog(view()); }));
+    dialog.querySelector("#modal-auto-equip")?.addEventListener("click", () => applyVisibleAction(view().actions.find((action) => action.id === autoEquipAction?.id), { quiet: true }));
+    dialog.querySelector("#modal-auto-equip-all")?.addEventListener("click", () => applyVisibleAction(view().actions.find((action) => action.id === autoEquipAllAction?.id), { quiet: true }));
+    dialog.querySelector("[data-modal-equip]")?.addEventListener("click", (event) => applyVisibleAction(view().actions.find((action) => action.id === event.currentTarget.dataset.modalEquip), { quiet: true }));
+    dialog.querySelector("[data-modal-unequip]")?.addEventListener("click", (event) => applyVisibleAction(view().actions.find((action) => action.id === event.currentTarget.dataset.modalUnequip), { quiet: true }));
+  }
+
+  function rememberPartyScroll() {
+    const layout = document.querySelector(".party-layout");
+    const roster = document.querySelector(".hero-roster");
+    const detail = document.querySelector(".hero-detail");
+    if (layout) partyScrollLeft = layout.scrollLeft;
+    if (roster) partyRosterScrollTop = roster.scrollTop;
+    if (detail) partyDetailScrollTop = detail.scrollTop;
+  }
+
+  function bindPartyScroll(dock) {
+    const layout = dock.querySelector(".party-layout");
+    const roster = dock.querySelector(".hero-roster");
+    const detail = dock.querySelector(".hero-detail");
+    if (!layout || !roster || !detail) return;
+    layout.scrollLeft = partyScrollLeft;
+    roster.scrollTop = partyRosterScrollTop;
+    detail.scrollTop = partyDetailScrollTop;
+    layout.addEventListener("scroll", () => { partyScrollLeft = layout.scrollLeft; }, { passive: true });
+    roster.addEventListener("scroll", () => { partyRosterScrollTop = roster.scrollTop; }, { passive: true });
+    detail.addEventListener("scroll", () => { partyDetailScrollTop = detail.scrollTop; }, { passive: true });
+  }
+
   function renderDock(current) {
+    rememberPartyScroll();
     document.querySelectorAll(".dock-tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.tab === activeTab));
     const dock = document.querySelector("#dock-content");
     if (activeTab === "inventory") return renderInventory(current, dock);
     if (activeTab === "journal") return renderJournal(current, dock);
-    const hero = current.party.heroes.find((row) => row.id === selectedHeroId) || current.party.heroes[0];
+    const targets = current.party.equipmentTargets;
+    const hero = targets.find((row) => row.id === selectedHeroId) || targets[0];
     if (!hero) { dock.innerHTML = `<div class="empty-actions">还没有可查看的角色。</div>`; return; }
     const equipmentPower = hero.equipment.reduce((sum, slot) => sum + Number(slot.item?.power || 0), 0);
-    dock.innerHTML = `<div class="party-layout"><div class="hero-roster">${current.party.heroes.map((row) => `<button class="hero-card ${row.id === hero.id ? "selected" : ""} ${row.active ? "" : "inactive"}" data-hero-id="${esc(row.id)}"><strong>${esc(row.name)}</strong><small>${esc(row.role)}</small>${row.active ? "<em>出战</em>" : ""}</button>`).join("")}</div><div class="hero-detail"><section class="hero-summary"><span class="eyebrow">当前角色</span><h3>${esc(hero.name)}</h3><p>${esc(hero.role)} · 装备评分${equipmentPower}</p><p>擅长词条</p><div class="affix-tags">${hero.preferredAffixes.map((tag) => `<span>${esc(tag)}</span>`).join("")}</div><p>${esc(current.party.finalBattleRule)}</p><div class="hero-quick-actions"><button id="auto-equip-all" class="button primary">一键整队配装</button><button id="auto-equip" class="button quiet">只配当前角色</button><div id="party-toggle"></div></div></section><section class="equipment-slots">${hero.equipment.map((slot) => `<div class="equipment-slot"><span>${SLOT_ICONS[slot.slotLabel] || "◆"} ${esc(slot.slotLabel)}</span><strong class="${slot.item ? `rarity-${esc(slot.item.rarity)}` : ""}">${slot.item ? esc(slot.item.name) : "空"}</strong><small>${slot.item ? `${esc(slot.item.rarity)} · 评分+${slot.item.power}` : "从背包手动装备"}</small></div>`).join("")}</section></div></div>`;
+    dock.innerHTML = `<div class="party-layout"><div class="hero-roster">${targets.map((row) => `<button class="hero-card ${row.id === hero.id ? "selected" : ""} ${row.active ? "" : "inactive"} ${row.kind === "trained" ? "trained" : ""}" data-hero-id="${esc(row.id)}"><strong>${esc(row.name)}</strong><small>${esc(row.role)}</small>${row.kind === "trained" ? "<em>战士</em>" : row.active ? "<em>出战</em>" : ""}</button>`).join("")}</div><div class="hero-detail"><section class="hero-summary"><span class="eyebrow">当前配装单位</span><h3>${esc(hero.name)}</h3><p>${esc(hero.role)} · 装备评分${equipmentPower}</p><p>擅长词条</p><div class="affix-tags">${hero.preferredAffixes.map((tag) => `<span>${esc(tag)}</span>`).join("")}</div><p>${esc(current.party.finalBattleRule)}</p><div class="hero-quick-actions"><button id="auto-equip-all" class="button primary">一键英雄与战士配装</button><button id="auto-equip" class="button quiet">只配当前单位</button><div id="party-toggle"></div></div></section><section class="equipment-slots">${hero.equipment.map((slot) => `<div class="equipment-slot"><span>${SLOT_ICONS[slot.slotLabel] || "◆"} ${esc(slot.slotLabel)}</span><strong class="${slot.item ? `rarity-${esc(slot.item.rarity)}` : ""}">${slot.item ? esc(slot.item.name) : "空"}</strong><small>${slot.item ? `${esc(slot.item.rarity)} · 评分+${slot.item.power}` : "从背包手动装备"}</small></div>`).join("")}</section></div></div>`;
+    bindPartyScroll(dock);
     dock.querySelectorAll("[data-hero-id]").forEach((button) => button.addEventListener("click", () => selectHero(button.dataset.heroId)));
     const partyAction = current.actions.find((action) => action.kind === "party" && action.targetHeroId === hero.id);
     const autoEquipAction = current.actions.find((action) => action.operation === "auto_equip" && action.targetHeroId === hero.id);
@@ -432,7 +1072,7 @@
     autoEquipAllButton.disabled = !autoEquipAllAction || autoEquipAllAction.available === false;
     autoEquipAllButton.title = autoEquipAllAction?.disabledReason || autoEquipAllAction?.description || "当前阶段不能整理装备";
     autoEquipAllButton.addEventListener("click", () => applyVisibleAction(view().actions.find((action) => action.id === autoEquipAllAction?.id)));
-    document.querySelector("#party-toggle").innerHTML = partyAction ? `<button class="mini-button ${partyAction.available === false ? "unavailable" : ""}" data-party-action="${esc(partyAction.id)}" ${partyAction.available === false ? "disabled" : ""}>${esc(partyAction.label)}</button>${partyAction.disabledReason ? `<small class="disabled-reason">${esc(partyAction.disabledReason)}</small>` : ""}` : `<small>${hero.active ? "当前在经营期出战队伍中" : "当前为候补；第7日仍会自动集结"}</small>`;
+    document.querySelector("#party-toggle").innerHTML = partyAction ? `<button class="mini-button ${partyAction.available === false ? "unavailable" : ""}" data-party-action="${esc(partyAction.id)}" ${partyAction.available === false ? "disabled" : ""}>${esc(partyAction.label)}</button>${partyAction.disabledReason ? `<small class="disabled-reason">${esc(partyAction.disabledReason)}</small>` : ""}` : hero.kind === "trained" ? `<small>训练完成的战士单位；突袭和决战出战时使用这套装备。</small>` : `<small>${hero.active ? "当前在经营期出战队伍中" : "当前为候补；第7日仍会自动集结"}</small>`;
     document.querySelector("[data-party-action]")?.addEventListener("click", () => applyVisibleAction(view().actions.find((action) => action.id === document.querySelector("[data-party-action]").dataset.partyAction), { quiet: true }));
   }
 
@@ -449,7 +1089,7 @@
   function renderInventory(current, dock) {
     const items = sortItems(current.inventory);
     const item = items.find((row) => row.id === selectedItemId) || items[0] || null;
-    const selectedHero = current.party.heroes.find((hero) => hero.id === selectedHeroId) || current.party.heroes[0];
+    const selectedHero = current.party.equipmentTargets.find((hero) => hero.id === selectedHeroId) || current.party.equipmentTargets[0];
     const pageCount = Math.max(1, Math.ceil(items.length / INVENTORY_PAGE_SIZE));
     inventoryPage = Math.min(Math.max(0, inventoryPage), pageCount - 1);
     const pageItems = items.slice(inventoryPage * INVENTORY_PAGE_SIZE, (inventoryPage + 1) * INVENTORY_PAGE_SIZE);
@@ -458,7 +1098,7 @@
     document.querySelector("#inventory-next")?.addEventListener("click", () => { inventoryPage += 1; selectedItemId = items[inventoryPage * INVENTORY_PAGE_SIZE]?.id || selectedItemId; renderDock(view()); });
     dock.querySelectorAll("[data-item-id]").forEach((button) => button.addEventListener("click", () => { selectedItemId = button.dataset.itemId; renderDock(view()); }));
     if (!item) return;
-    const equippedBy = current.party.heroes.find((hero) => hero.equipment.some((slot) => slot.item?.id === item.id));
+    const equippedBy = current.party.equipmentTargets.find((hero) => hero.equipment.some((slot) => slot.item?.id === item.id));
     const equipAction = current.actions.find((action) => action.kind === "equipment" && action.targetItemId === item.id && action.targetHeroId === selectedHero?.id && action.operation !== "unequip");
     const unequipAction = current.actions.find((action) => action.kind === "equipment" && action.targetItemId === item.id && action.targetHeroId === selectedHero?.id && action.operation === "unequip");
     const sellAction = current.actions.find((action) => action.kind === "market" && action.targetItemId === item.id);
@@ -486,6 +1126,8 @@
     document.querySelector("#map-view").hidden = mode !== "campaign";
     document.querySelector("#combat-view").hidden = mode !== "combat";
     document.querySelector("#grind-view").hidden = mode !== "grind";
+    const equipmentDialog = document.querySelector("#equipment-dialog");
+    if (mode !== "campaign" && equipmentDialog.open) equipmentDialog.close();
     if (mode !== "campaign" && dockExpanded) setDockExpanded(false);
     document.querySelector(".command-dock").hidden = mode !== "campaign";
     if (mode === "campaign") renderMap(current);
@@ -496,6 +1138,7 @@
     }
     if (mode === "grind") renderGrindHud();
     renderDock(current);
+    if (equipmentDialog.open) renderEquipmentDialog(current);
   }
 
   function positionPopover() {
@@ -527,7 +1170,7 @@
     fit();
     if (!mapInputBound) {
       mapInputBound = true;
-      viewport.addEventListener("pointerdown", (event) => { if (event.target.closest(".map-node,.node-popover,.war-board,.map-camera-controls")) return; event.preventDefault(); mapDrag = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false }; viewport.setPointerCapture(event.pointerId); viewport.classList.add("dragging"); });
+      viewport.addEventListener("pointerdown", (event) => { if (event.target.closest(".map-node,.node-popover,.war-board,[data-equipment-target],.map-camera-controls")) return; event.preventDefault(); mapDrag = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false }; viewport.setPointerCapture(event.pointerId); viewport.classList.add("dragging"); });
       viewport.addEventListener("pointermove", (event) => { if (!mapDrag || mapDrag.id !== event.pointerId) return; const dx = event.clientX - mapDrag.x, dy = event.clientY - mapDrag.y; if (Math.abs(dx) + Math.abs(dy) > 4) mapDrag.moved = true; mapCamera.panByScreen(dx, dy); mapDrag.x = event.clientX; mapDrag.y = event.clientY; renderCamera(); });
       const endDrag = (event) => { if (!mapDrag || mapDrag.id !== event.pointerId) return; const close = !mapDrag.moved; mapDrag = null; viewport.classList.remove("dragging"); if (close) { selectedNodeId = null; renderMap(view()); } };
       viewport.addEventListener("pointerup", endDrag); viewport.addEventListener("pointercancel", endDrag);
@@ -542,13 +1185,77 @@
 
   function bindStaticControls() {
     document.querySelector("#end-day-button").addEventListener("click", () => { const id = document.querySelector("#end-day-button").dataset.actionId; runAction(view().actions.find((action) => action.id === id)); });
-    document.querySelector("#dock-toggle").addEventListener("click", () => setDockExpanded(!dockExpanded));
+    document.querySelector("#town-status-open").addEventListener("click", openProsperityDialog);
+    const prosperityViewport = document.querySelector("#prosperity-viewport");
+    prosperityViewport.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+      prosperityDrag = { id: event.pointerId, x: event.clientX, scrollLeft: prosperityViewport.scrollLeft };
+      prosperityViewport.setPointerCapture(event.pointerId);
+      prosperityViewport.classList.add("dragging");
+    });
+    prosperityViewport.addEventListener("pointermove", (event) => {
+      if (!prosperityDrag || prosperityDrag.id !== event.pointerId) return;
+      prosperityViewport.scrollLeft = prosperityDrag.scrollLeft - (event.clientX - prosperityDrag.x);
+    });
+    const endProsperityDrag = (event) => {
+      if (!prosperityDrag || prosperityDrag.id !== event.pointerId) return;
+      prosperityDrag = null;
+      prosperityViewport.classList.remove("dragging");
+    };
+    prosperityViewport.addEventListener("pointerup", endProsperityDrag);
+    prosperityViewport.addEventListener("pointercancel", endProsperityDrag);
+    prosperityViewport.addEventListener("wheel", (event) => {
+      if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+      event.preventDefault();
+      prosperityViewport.scrollLeft += event.deltaY;
+    }, { passive: false });
+    prosperityViewport.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      event.preventDefault();
+      prosperityViewport.scrollBy({ left: event.key === "ArrowLeft" ? -180 : 180, behavior: "smooth" });
+    });
+    document.querySelector("#dock-toggle").addEventListener("click", () => openEquipmentDialog());
+    document.querySelectorAll("[data-equipment-mode]").forEach((tab) => tab.addEventListener("click", () => { equipmentMode = tab.dataset.equipmentMode; if (equipmentMode !== "formation") { formationPositioning = false; selectedFormationPositionMemberId = null; } renderEquipmentDialog(view()); }));
     document.querySelectorAll(".dock-tab").forEach((tab) => tab.addEventListener("click", () => { activeTab = tab.dataset.tab; renderDock(view()); }));
-    document.querySelector("#preview-confirm").addEventListener("click", () => { if (!pendingPreview) return; const current = pendingPreview; pendingPreview = null; current.launchKind === "grind" ? startGrind(current.plan) : startCombat(current.plan); });
+    document.querySelector("#preview-to-supply").addEventListener("click", openCombatSupplyStage);
+    document.querySelector("#preview-back").addEventListener("click", () => {
+      if (!pendingPreview) return;
+      stopSupplyHold();
+      pendingPreview.stage = "formation";
+      document.querySelector("#preview-slide-track").classList.remove("supplying");
+    });
+    document.querySelector("#preview-supply-reset").addEventListener("click", () => { if (!pendingPreview) return; pendingPreview.foodSupplied = 0; renderCombatSupplyStage(); });
+    const supplyPot = document.querySelector("#preview-supply-pot");
+    supplyPot.addEventListener("pointerdown", (event) => {
+      if (supplyPot.disabled) return;
+      event.preventDefault();
+      stopSupplyHold();
+      addPreviewFood(1);
+      supplyHoldDelay = setTimeout(() => {
+        supplyHoldInterval = setInterval(() => {
+          addPreviewFood(1);
+          if (supplyPot.disabled) stopSupplyHold();
+        }, 85);
+      }, 320);
+    });
+    supplyPot.addEventListener("keydown", (event) => {
+      if ((event.key === "Enter" || event.key === " ") && !event.repeat) { event.preventDefault(); addPreviewFood(1); }
+    });
+    window.addEventListener("pointerup", stopSupplyHold);
+    window.addEventListener("pointercancel", stopSupplyHold);
+    window.addEventListener("blur", stopSupplyHold);
+    document.querySelector("#combat-preview-dialog").addEventListener("close", stopSupplyHold);
+    document.querySelector("#preview-confirm").addEventListener("click", (event) => {
+      if (!pendingPreview?.plan) { event.preventDefault(); return; }
+      stopSupplyHold();
+      const current = pendingPreview;
+      pendingPreview = null;
+      current.launchKind === "grind" ? startGrind(current.plan) : startCombat(current.plan);
+    });
     document.querySelector("#stop-grind").addEventListener("click", stopGrind);
     document.querySelector("#recruit-confirm").addEventListener("click", () => { document.querySelector("#recruit-overlay").hidden = true; });
     document.querySelector("#restart-open").addEventListener("click", () => document.querySelector("#restart-dialog").showModal());
-    document.querySelector("#restart-confirm").addEventListener("click", () => { const seed = document.querySelector("#restart-seed").value.trim() || "browser-border-village"; battleView?.destroy?.(); battleView = null; clearTimeout(grindSession?.timer); grindSession = null; pendingCombat = null; pendingCombatResult = null; mode = "campaign"; state = GAME.createInitialState(seed); selectedNodeId = "command"; selectedHeroId = "player"; selectedItemId = null; newlyUnlocked.clear(); saveState(); render(); });
+    document.querySelector("#restart-confirm").addEventListener("click", () => { const seed = document.querySelector("#restart-seed").value.trim() || "browser-border-village"; battleView?.destroy?.(); battleView = null; clearTimeout(grindSession?.timer); grindSession = null; pendingCombat = null; pendingCombatResult = null; document.querySelector("#equipment-dialog")?.close(); mode = "campaign"; state = GAME.createInitialState(seed); formationState = defaultFormationState(); equipmentMode = "character"; formationCityFilter = false; formationPositioning = false; selectedFormationPositionMemberId = null; selectedNodeId = "command"; selectedHeroId = "player"; selectedItemId = null; partyScrollLeft = 0; partyRosterScrollTop = 0; partyDetailScrollTop = 0; equipmentBackpackScrollTop = 0; newlyUnlocked.clear(); saveState(); saveFormationState(); render(); });
     window.addEventListener("keydown", (event) => { if (event.key !== "Escape" || mode !== "campaign") return; if (dockExpanded) { setDockExpanded(false); return; } if (selectedNodeId) { selectedNodeId = null; renderMap(view()); } });
   }
 

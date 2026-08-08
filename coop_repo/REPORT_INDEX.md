@@ -2,6 +2,66 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-08-08
+
+- `2026-08-08_0058_border-village-town-prosperity-ui.md`：人口与行动归入右上角当前城镇框；点击繁荣进入可拖拽人口轨迹，查看行动和单位的当前/未来收益。
+
+- `2026-08-08_0016_border-village-prebattle-food-supply.md`：编队常显一战粮耗；开战后左滑进入军粮大锅，点击/长按投入，`x/X`与20%—100%发挥进入真实战斗和权威结算。
+
+## 2026-08-07
+
+- `2026-08-07_2355_border-village-downward-compatible-formations.md`：战斗人数改为上限；2/4/8人小编队可进入更大战斗，同组内最接近上限的队伍优先。
+
+- `2026-08-07_2342_border-village-prebattle-formation-picker.md`：战前公开4/8/20单位规格，三段排序全部编队；点击查看详情，所选成员与站位进入真实战斗和权威结算。
+
+- `2026-08-07_2315_border-village-formation-boundary-icon.md`：立绘区域完全留空，缩小职业图标居中跨在立绘与信息区域的分界线上。
+
+## 2026-08-06
+
+- `2026-08-06_2333_border-village-formation-compact-summary.md`：职业图标居中于上方视觉区；姓名移到战斗力上方靠左，战斗力相关字号缩小。
+
+- `2026-08-06_2320_border-village-formation-art-slot.md`：编队人物牌新增向下展开的中段立绘位，顶部职业图标去框，底部战斗力层保持独立。
+
+## 2026-08-05
+
+- `2026-08-05_1820_border-village-formation-identity-cards.md`：编队单位改为横向人物牌；复用正式职业图标，右侧恢复姓名/城镇，底栏独立显示百万级战斗力。
+
+- `2026-08-05_1706_border-village-formation-tactical-cards.md`：编队成员卡和站位槽改为战斗力/职业/城镇；删除姓名与“我/民/战”字形，并新增随真实属性变化的公开战斗力。
+
+- `2026-08-05_1640_border-village-militia-character-page.md`：民兵进入人物翻页并显示真实技能/数值；八槽与配装动作明确锁定，装备权限仍只属于英雄和战士。
+
+- `2026-08-05_1600_border-village-formation-position-editor.md`：出战成员新增站位编辑；2单位一前一后、20单位5×4方阵，槽位持久化并支持拖动或点击移动/交换。
+
+- `2026-08-05_1550_border-village-formation-unit-capacity.md`：编队容量统一按单位计算；英雄、10人民兵队、10人战士队各占1单位，所有容量、超编校验与界面文案同步修正。
+
+- `2026-08-05_1533_border-village-formation-page-v1.md`：启用军备编队页；2/4/8/20人可编辑、40/100/200人锁定，上下拖拽成员，超员/混城整队标红，并可筛选当前城池。
+
+- `2026-08-05_1511_border-village-inline-stats-button.md`：数值按钮移到“一键全队”右侧，删除人物区右下角绝对定位，原数值覆盖层交互保持不变。
+
+- `2026-08-05_1456_border-village-taller-skill-cards.md`：立绘区让出约5%高度，技能区删除外框；技能卡增高并恢复一行效果概述，精确公式仍按悬停或聚焦显示。
+
+- `2026-08-05_1404_border-village-skill-card-hierarchy.md`：修正技能卡视觉层级，固定左上技能名、下一行技能类型、右上冷却，数值悬停浮层保持不变。
+
+- `2026-08-05_1358_border-village-numeric-skill-tooltips.md`：技能卡按需显示真实数值；悬停或聚焦可查看目标数、基础值、攻击倍率、伤害类型、持续时间与被动比例，六类职业全部抽查通过。
+
+- `2026-08-05_1337_border-village-compact-equipment-slots.md`：人物立绘区移除巨大身份汉字，保留无文字占位；八槽缩成56px小方格，完整装备属性和词条改为悬停或键盘聚焦显示。
+
+- `2026-08-05_1218_border-village-character-page-equipment.md`：删除占高的两排角色轴；军备顶部改为“编队/人物”，人物页用前后分页切人，左人物与右背包取得完整主体高度并适配短窗口。
+
+- `2026-08-05_1206_border-village-equipment-modal-v1.md`：独立三块军备浮窗替代底部换装主路径；两排圆形单位轴、长立绘八槽技能、悬停真实数值层，以及按所有权排序的背包装备/卸下流程全部接通。
+
+- `2026-08-05_1143_border-village-unit-block-wrap.md`：单位方块缩至40px，删除整体大框、标题和滚动条；方块直接浮在地图左侧，垂直空间不足时自动向右换列。
+
+- `2026-08-05_1127_border-village-map-unit-roster.md`：主地图左侧增加常驻我方单位头像列，完整显示玩家、含候补的全部主将、每支民兵与战士；状态实时同步，长列表内部滚动并隔离地图输入。
+
+- `2026-08-05_0141_infinite-loot-ui-and-chapter2-direction.md`：记录第一章真人试玩后的UI/循环问题，确立先打磨单位、粮食、军备与刷装目标感，再用第二章验证运输、防守、因果抉择和人物关系系统的路线。
+
+- `2026-08-05_0024_border-village-equipment-detail-vertical-scroll.md`：修正上一版滚动方向误判；右侧装备详情独立纵向滚动，可在较矮窗口查看第二排装备，不再劫持滚轮横移。
+
+- `2026-08-05_0013_border-village-equipment-scroll.md`：底部队伍与装备栏增加横向滚动与滚轮映射，左侧单位名单独立纵向滚动；选择单位后保留位置，静态与核心回归通过。
+
+- `2026-08-05_0004_border-village-trained-soldier-equipment.md`：每支已训练战士成为独立8部位配装单位，与英雄共用手动和一键分配；装备真实进入突袭/决战属性，旧存档空槽兼容，五类回归通过。
+
 ## 2026-08-02
 
 - `2026-08-02_1746_border-village-global-grind-wins.md`：5/10/30/50解锁改为所有难度共享总胜场；全程刷难度1到50胜可解锁难度5，各档胜场仅作统计，核心与静态前端回归通过。

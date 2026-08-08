@@ -31,6 +31,22 @@
   const STAT_LABELS = { physicalPower: "物理威力", magicPower: "魔法威力", maxHp: "生命", armor: "护甲", attackSpeedPct: "攻击速度", skillHastePct: "技能急速" };
   const PLOT_POSITIONS = [[430, 520], [295, 650], [570, 690], [835, 680], [1060, 560], [1020, 405], [865, 300]];
   const RAID_POSITIONS = { foragers: [245, 240], beastPen: [620, 125], shaman: [1100, 225] };
+  const MILITIA_WORLD_POSITIONS = [[620, 500], [675, 500], [730, 500], [785, 500], [620, 555], [675, 555], [730, 555], [785, 555], [665, 610], [745, 610]];
+  const HERO_WORLD_POSITIONS = {
+    player: [700, 445], captain: [785, 335], scout: [520, 360], guard: [885, 465],
+    sellsword: [520, 605], witch: [380, 405], hunter: [930, 610], alchemist: [955, 330],
+  };
+  const HERO_FALLBACK_POSITIONS = [[465, 335], [905, 390], [455, 610], [940, 580]];
+  const CIVILIAN_ROUTES = [
+    { x: 565, y: 430, route: "market", duration: 8.4, delay: -1.2 },
+    { x: 820, y: 545, route: "river", duration: 10.8, delay: -6.1 },
+    { x: 410, y: 605, route: "field", duration: 9.7, delay: -3.4 },
+    { x: 890, y: 370, route: "gate", duration: 7.9, delay: -5.5 },
+    { x: 575, y: 315, route: "river", duration: 11.6, delay: -8.3 },
+    { x: 925, y: 525, route: "market", duration: 9.2, delay: -4.6 },
+    { x: 475, y: 455, route: "gate", duration: 8.8, delay: -2.5 },
+    { x: 830, y: 625, route: "field", duration: 12.1, delay: -9.2 },
+  ];
   const BUILDING_SIGILS = { house: "舍", farm: "田", conscription: "征", smithy: "锻", market: "市" };
   const UNIT_GLYPHS = { player: "我", captain: "伊", scout: "莱", guard: "马", sellsword: "犬", witch: "盐", hunter: "苔", alchemist: "莎" };
   const ROLE_ICONS = { knight: "🛡️", warrior: "⚔️", berserker: "🪓", assassin: "🗡️", ranger: "🏹", mage: "🔥", priest: "✨", warlock: "☠️", bard: "🎵", alchemist: "⚗️" };
@@ -67,6 +83,8 @@
   let supplyHoldDelay = null;
   let supplyHoldInterval = null;
   let prosperityDrag = null;
+  let prosperityGrowthFrame = null;
+  let prosperityGrowthTimers = [];
   const newlyUnlocked = new Set();
 
   function loadState() {
@@ -169,7 +187,8 @@
       render();
       const resultLines = signals.slice(0, 5).map((row) => row.text);
       if (unlocked.length) resultLines.push(`新情报：${unlocked.map((raid) => raid.title).join("、")}已经标在地图上。`);
-      if (recruited) showRecruit(recruited, resultLines.join(" "));
+      if (action.kind === "recruit" && after.town.population > before.town.population) showPopulationGrowth(before, after);
+      else if (recruited) showRecruit(recruited, resultLines.join(" "));
       else if ((["build", "recruit", "event", "time"].includes(action.kind) || action.operation === "auto_equip") && !options.quiet) showResult(action.label, resultLines);
       else showToast(resultLines[0] || `${action.label}完成`);
     } catch (error) {
@@ -543,39 +562,129 @@
     document.querySelector("#inventory-count").textContent = current.inventory.length;
   }
 
-  function renderProsperityDialog(current) {
-    const town = current.town;
+  function clearProsperityGrowthAnimation() {
+    if (prosperityGrowthFrame != null) cancelAnimationFrame(prosperityGrowthFrame);
+    prosperityGrowthFrame = null;
+    prosperityGrowthTimers.forEach((timer) => clearTimeout(timer));
+    prosperityGrowthTimers = [];
+  }
+
+  function renderProsperitySummary(town) {
     const prosperity = town.prosperity;
-    const reached = prosperity.milestones.filter((row) => row.reached);
-    const currentMilestonePopulation = reached.length ? reached.at(-1).population : 0;
-    document.querySelector("#prosperity-title").textContent = `${town.name}发展轨迹`;
     document.querySelector("#prosperity-population").textContent = `${town.population}/${town.populationCap}`;
     document.querySelector("#prosperity-current-level").textContent = `Lv.${prosperity.level} ${prosperity.name}`;
     document.querySelector("#prosperity-actions").textContent = `${town.actionsRemaining}/${town.actionCapacity}`;
     document.querySelector("#prosperity-next").textContent = prosperity.nextLevel
       ? `距离 Lv.${prosperity.nextLevel.level}「${prosperity.nextLevel.name}」还差${Math.max(0, prosperity.nextLevel.population - town.population)}人口；达到后每日行动上限${prosperity.actionCapacity}→${prosperity.nextLevel.actionCapacity}。`
       : `已达到当前章节最高繁荣等级；人口仍受房屋上限约束。`;
-    document.querySelector("#prosperity-track").innerHTML = prosperity.milestones.map((milestone) => {
+  }
+
+  function setProsperityLivePopulation(population, populationCap) {
+    const marker = document.querySelector("#prosperity-live-marker");
+    if (!marker) return;
+    const nodes = [...document.querySelectorAll("#prosperity-track [data-prosperity-population]")];
+    const rows = nodes.map((node) => ({ node, population: Number(node.dataset.prosperityPopulation), center: node.offsetLeft + node.offsetWidth / 2 }));
+    const lower = [...rows].reverse().find((row) => row.population <= population) || rows[0];
+    const upper = rows.find((row) => row.population >= population) || rows.at(-1);
+    const ratio = upper && lower && upper.population !== lower.population ? (population - lower.population) / (upper.population - lower.population) : 0;
+    marker.style.left = `${Math.round((lower?.center || 104) + ((upper?.center || lower?.center || 104) - (lower?.center || 104)) * ratio)}px`;
+    marker.querySelector("strong").textContent = `${Math.round(population)}/${populationCap}`;
+    document.querySelector("#prosperity-population").textContent = `${Math.round(population)}/${populationCap}`;
+  }
+
+  function renderProsperityDialog(current, options = {}) {
+    const town = current.town;
+    const prosperity = town.prosperity;
+    const displayTown = options.displayTown || town;
+    const displayPopulation = Number.isFinite(options.population) ? options.population : displayTown.population;
+    const reached = prosperity.milestones.filter((row) => row.population <= displayPopulation);
+    const currentMilestonePopulation = reached.length ? reached.at(-1).population : 0;
+    document.querySelector("#prosperity-title").textContent = `${town.name}发展轨迹`;
+    renderProsperitySummary(displayTown);
+    document.querySelector("#prosperity-track").innerHTML = `<div id="prosperity-live-marker" class="prosperity-live-marker"><strong>${displayPopulation}/${town.populationCap}</strong></div>${prosperity.milestones.map((milestone) => {
       const isCurrent = milestone.population === currentMilestonePopulation;
+      const isPopulationCap = milestone.population === town.populationCap;
       const beyondCap = milestone.population > town.populationCap;
-      const title = milestone.prosperityName || (milestone.population ? "人口扩张" : prosperity.name);
-      const rewards = milestone.rewards.map((reward) => `<span>${esc(reward)}</span>`).join("");
-      const stateText = milestone.reached ? "已获得" : beyondCap ? "超过当前人口上限" : `还差${Math.max(0, milestone.population - town.population)}人口`;
-      const badge = milestone.prosperityLevel ? `繁荣 Lv.${milestone.prosperityLevel}` : milestone.population === town.populationCap ? "当前上限" : "人口收益";
-      return `<article class="prosperity-milestone ${milestone.reached ? "reached" : "future"} ${isCurrent ? "current" : ""} ${beyondCap ? "beyond-cap" : ""}" data-prosperity-population="${milestone.population}"><header class="prosperity-milestone-head"><strong>${milestone.population}人口</strong><em>${esc(badge)}</em></header><div class="prosperity-milestone-body"><h3>${esc(title)}</h3><p>${milestone.prosperityLevel ? `每日行动上限 ${milestone.actionCapacity}` : "人口达到门槛时立即获得收益"}</p>${rewards}<small>${esc(stateText)}</small></div></article>`;
-    }).join("");
+      const isReached = milestone.population <= displayPopulation;
+      const actionReward = milestone.population === 0 ? `每日行动 ${milestone.actionCapacity}` : milestone.prosperityLevel ? "行动力 +1" : "";
+      const unitReward = milestone.unitReward ? "+1 民兵单位" : "";
+      const levelLabel = milestone.prosperityLevel ? `Lv.${milestone.prosperityLevel} ${milestone.prosperityName}` : "";
+      const stateText = isCurrent ? "当前人口阶段" : beyondCap ? "需要提高人口上限" : "";
+      return `<div class="prosperity-milestone ${isReached ? "reached" : "future"} ${isCurrent ? "current" : ""} ${isPopulationCap ? "population-cap" : ""} ${beyondCap ? "beyond-cap" : ""}" data-prosperity-population="${milestone.population}" data-prosperity-level="${milestone.prosperityLevel || ""}" data-prosperity-name="${esc(milestone.prosperityName || "")}" data-action-capacity="${milestone.actionCapacity || ""}">${isPopulationCap ? `<span class="prosperity-cap-gate">人口上限</span>` : ""}<div class="prosperity-axis-population"><strong>${milestone.population}</strong><small>人口</small></div><i class="prosperity-axis-dot" aria-hidden="true"></i><div class="prosperity-axis-rewards">${actionReward ? `<strong>${esc(actionReward)}</strong>` : ""}${unitReward ? `<em>${esc(unitReward)}</em>` : ""}${levelLabel ? `<span>${esc(levelLabel)}</span>` : ""}${stateText ? `<small>${esc(stateText)}</small>` : ""}</div></div>`;
+    }).join("")}`;
+    requestAnimationFrame(() => setProsperityLivePopulation(displayPopulation, town.populationCap));
   }
 
   function openProsperityDialog() {
+    clearProsperityGrowthAnimation();
     const current = view();
-    renderProsperityDialog(current);
     const dialog = document.querySelector("#prosperity-dialog");
+    dialog.classList.remove("growth-mode");
+    document.querySelector("#prosperity-growth-caption").hidden = true;
+    document.querySelector("#prosperity-level-burst").hidden = true;
+    document.querySelector("#prosperity-growth-return").hidden = true;
+    renderProsperityDialog(current);
     if (dialog.open) dialog.close();
     dialog.showModal();
     requestAnimationFrame(() => {
       const viewport = document.querySelector("#prosperity-viewport");
       const marker = viewport.querySelector(".prosperity-milestone.current");
       if (marker) viewport.scrollLeft = Math.max(0, marker.offsetLeft - viewport.clientWidth * .3);
+    });
+  }
+
+  function showPopulationGrowth(before, after) {
+    clearProsperityGrowthAnimation();
+    const dialog = document.querySelector("#prosperity-dialog");
+    const beforeTown = before.town;
+    const afterTown = after.town;
+    const startPopulation = beforeTown.population;
+    const endPopulation = afterTown.population;
+    const gained = Math.max(0, endPopulation - startPopulation);
+    dialog.classList.add("growth-mode");
+    const caption = document.querySelector("#prosperity-growth-caption");
+    caption.hidden = false;
+    caption.textContent = `征召完成 · 人口 ${startPopulation} → ${endPopulation}（+${gained}）`;
+    document.querySelector("#prosperity-level-burst").hidden = true;
+    document.querySelector("#prosperity-growth-return").hidden = true;
+    renderProsperityDialog(after, { displayTown: beforeTown, population: startPopulation });
+    document.querySelector("#prosperity-title").textContent = `${afterTown.name}人口增长`;
+    if (dialog.open) dialog.close();
+    dialog.showModal();
+    requestAnimationFrame(() => {
+      const viewport = document.querySelector("#prosperity-viewport");
+      const startNode = viewport.querySelector(`.prosperity-milestone[data-prosperity-population="${Math.floor(startPopulation / 10) * 10}"]`);
+      if (startNode) viewport.scrollLeft = Math.max(0, startNode.offsetLeft - viewport.clientWidth * .25);
+      setProsperityLivePopulation(startPopulation, afterTown.populationCap);
+      const duration = Math.max(700, Math.min(1500, gained * 85));
+      const startedAt = performance.now();
+      const crossed = new Set();
+      const animate = (now) => {
+        const progress = Math.max(0, Math.min(1, (now - startedAt) / duration));
+        const shownPopulation = Math.floor(startPopulation + gained * progress);
+        setProsperityLivePopulation(shownPopulation, afterTown.populationCap);
+        document.querySelectorAll("#prosperity-track [data-prosperity-population]").forEach((node) => {
+          const threshold = Number(node.dataset.prosperityPopulation);
+          if (threshold <= startPopulation || threshold > shownPopulation || crossed.has(threshold)) return;
+          crossed.add(threshold);
+          node.classList.remove("future", "current");
+          node.classList.add("reached", "current", "growth-earned");
+          document.querySelectorAll("#prosperity-track .prosperity-milestone.current").forEach((row) => { if (row !== node) row.classList.remove("current"); });
+          if (node.dataset.prosperityLevel) {
+            const burst = document.querySelector("#prosperity-level-burst");
+            burst.querySelector("strong").textContent = `Lv.${node.dataset.prosperityLevel} ${node.dataset.prosperityName}`;
+            burst.querySelector("span").textContent = `每日行动上限提升至 ${node.dataset.actionCapacity}`;
+            burst.hidden = false;
+            prosperityGrowthTimers.push(setTimeout(() => { burst.hidden = true; }, 1050));
+          }
+        });
+        if (progress < 1) { prosperityGrowthFrame = requestAnimationFrame(animate); return; }
+        prosperityGrowthFrame = null;
+        setProsperityLivePopulation(endPopulation, afterTown.populationCap);
+        renderProsperitySummary(afterTown);
+        prosperityGrowthTimers.push(setTimeout(() => { document.querySelector("#prosperity-growth-return").hidden = false; }, beforeTown.prosperity.level < afterTown.prosperity.level ? 1100 : 350));
+      };
+      prosperityGrowthFrame = requestAnimationFrame(animate);
     });
   }
 
@@ -616,12 +725,43 @@
     rail.querySelectorAll("[data-equipment-target]").forEach((avatar) => avatar.addEventListener("click", (event) => { event.stopPropagation(); openEquipmentDialog(avatar.dataset.equipmentTarget); }));
   }
 
+  function renderWorldUnits(current) {
+    const heroes = current.party.heroes.map((hero, index) => ({
+      id: hero.id,
+      name: hero.name,
+      icon: ROLE_ICONS[hero.roleKey] || UNIT_GLYPHS[hero.id] || "◆",
+      badge: UNIT_GLYPHS[hero.id] || hero.name.slice(-1),
+      detail: `${hero.role} · ${hero.id === "player" ? "主角" : hero.active ? "当前队内" : "村中待命"}`,
+      kind: hero.id === "player" ? "player" : hero.id === "captain" ? "captain" : "hero",
+      position: HERO_WORLD_POSITIONS[hero.id] || HERO_FALLBACK_POSITIONS[index % HERO_FALLBACK_POSITIONS.length],
+    }));
+    const militiaUnits = current.party.militiaUnits.map((unit, index) => ({
+      id: unit.id,
+      name: unit.name,
+      icon: ROLE_ICONS[unit.roleKey] || "⚔️",
+      unitNumber: index + 1,
+      detail: `${unit.role} · 村庄中央集结`,
+      kind: "militia",
+      position: MILITIA_WORLD_POSITIONS[index % MILITIA_WORLD_POSITIONS.length],
+    }));
+    const civilianCount = Math.min(CIVILIAN_ROUTES.length, Math.max(0, current.town.prosperity.level * 2));
+    const civilians = CIVILIAN_ROUTES.slice(0, civilianCount).map((route, index) => `<span class="town-civilian route-${route.route}" style="left:${route.x}px;top:${route.y}px;--route-duration:${route.duration}s;--route-delay:${route.delay}s" aria-hidden="true"><i><b></b></i></span>`).join("");
+    const layer = document.querySelector("#map-unit-layer");
+    const heroHtml = heroes.map((hero, index) => `<button type="button" class="world-unit hero ${hero.kind}" data-equipment-target="${esc(hero.id)}" style="left:${hero.position[0]}px;top:${hero.position[1]}px;--idle-delay:-${(index % 5) * .43}s" title="${esc(hero.name)}｜${esc(hero.detail)}" aria-label="${esc(hero.name)}，${esc(hero.detail)}"><span class="world-unit-avatar" aria-hidden="true"><i>${esc(hero.icon)}</i><b>${esc(hero.badge)}</b></span></button>`).join("");
+    const militiaHtml = militiaUnits.map((unit, index) => {
+      return `<button type="button" class="world-unit militia" data-equipment-target="${esc(unit.id)}" style="left:${unit.position[0]}px;top:${unit.position[1]}px;--idle-delay:-${(index % 7) * .37}s" title="${esc(unit.name)}｜${esc(unit.detail)}" aria-label="${esc(unit.name)}，${esc(unit.detail)}"><span class="world-unit-avatar" aria-hidden="true"><i>${esc(unit.icon)}</i><b>${unit.unitNumber}</b></span></button>`;
+    }).join("");
+    layer.innerHTML = civilians + heroHtml + militiaHtml;
+    layer.querySelectorAll("[data-equipment-target]").forEach((unit) => unit.addEventListener("click", (event) => { event.stopPropagation(); openEquipmentDialog(unit.dataset.equipmentTarget); }));
+  }
+
   function renderMap(current) {
     renderUnitRail(current);
     locations = buildLocations(current);
     const layer = document.querySelector("#map-node-layer");
     layer.innerHTML = locations.map((location) => `<button class="map-node ${esc(location.type)} ${selectedNodeId === location.id ? "selected" : ""} ${newlyUnlocked.has(location.id) ? "newly-unlocked" : ""}" data-node-id="${esc(location.id)}" style="left:${location.x}px;top:${location.y}px">${location.yieldLabel ? `<span class="yield-badge">${esc(location.yieldLabel)}</span>` : ""}<span class="sigil">${esc(location.sigil)}</span><strong>${esc(location.title)}</strong><small>${esc(location.kicker)}</small>${location.actions.length ? `<b class="count">${location.actions.length}</b>` : ""}</button>`).join("");
     layer.querySelectorAll("[data-node-id]").forEach((node) => node.addEventListener("click", (event) => { event.stopPropagation(); selectedNodeId = node.dataset.nodeId; newlyUnlocked.delete(selectedNodeId); renderMap(view()); }));
+    renderWorldUnits(current);
     renderPopover();
     renderCamera();
     const ending = document.querySelector("#ending-card");
@@ -1186,6 +1326,15 @@
   function bindStaticControls() {
     document.querySelector("#end-day-button").addEventListener("click", () => { const id = document.querySelector("#end-day-button").dataset.actionId; runAction(view().actions.find((action) => action.id === id)); });
     document.querySelector("#town-status-open").addEventListener("click", openProsperityDialog);
+    const prosperityDialog = document.querySelector("#prosperity-dialog");
+    prosperityDialog.addEventListener("cancel", (event) => {
+      if (prosperityDialog.classList.contains("growth-mode") && document.querySelector("#prosperity-growth-return").hidden) event.preventDefault();
+    });
+    prosperityDialog.addEventListener("close", () => {
+      clearProsperityGrowthAnimation();
+      prosperityDialog.classList.remove("growth-mode");
+      document.querySelector("#prosperity-level-burst").hidden = true;
+    });
     const prosperityViewport = document.querySelector("#prosperity-viewport");
     prosperityViewport.addEventListener("pointerdown", (event) => {
       if (event.button !== 0) return;

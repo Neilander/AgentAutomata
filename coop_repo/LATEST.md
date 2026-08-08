@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-08-08_0058_border-village-town-prosperity-ui.md`](reports/2026-08-08_0058_border-village-town-prosperity-ui.md)
+[`reports/2026-08-08_1724_border-village-heroes-and-prosperity-residents.md`](reports/2026-08-08_1724_border-village-heroes-and-prosperity-residents.md)
 
 Last updated: 2026-08-08
 
-当前重点：右上角当前城镇框显示城镇名、人口/上限、行动和繁荣；点击后进入可横向拖拽的人口收益轨迹。
+当前重点：简化地图同时显示真实英雄与民兵；每个繁荣等级额外带来2名不可交互普通居民，并使用四类错开的短路线。

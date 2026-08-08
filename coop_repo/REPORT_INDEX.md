@@ -4,6 +4,26 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-08-08
 
+- `2026-08-08_1724_border-village-heroes-and-prosperity-residents.md`：简化地图补回真实英雄；繁荣等级生成不可交互普通居民，并使用四类错开的短路线。
+
+- `2026-08-08_1636_border-village-simplified-map-with-militia-space.md`：撤除详细聚落与多人物剪影，恢复初版式外围节点；中央只保留圆形民兵集结区。
+
+- `2026-08-08_1618_border-village-circular-militia-avatars.md`：每支10人民兵从三人剪影改为单个战斗风格圆形职业头像，保留小号编号和人物页入口。
+
+- `2026-08-08_1614_border-village-spatial-town-draft.md`：灰谷村增加围栏、道路、房屋等连续聚落空间；真实英雄、民兵和战士进入语义站位并可点击。
+
+- `2026-08-08_1541_border-village-recruitment-backdrop-80.md`：征召人口轴纯黑遮罩由50%加深至80%，其余反馈不变。
+
+- `2026-08-08_1536_border-village-recruitment-black-backdrop.md`：征召人口轴遮罩改为50%透明度纯黑，并移除灰度与模糊滤镜。
+
+- `2026-08-08_1529_border-village-isolated-recruitment-axis.md`：征召结果去除完整繁荣窗口的标题、概况、说明、底板和外框，只在灰幕中保留人口轴与最后的返回按钮。
+
+- `2026-08-08_1208_border-village-recruitment-population-growth.md`：征召后以灰色遮罩进入同一人口轴，动态表现人口增长、实际跨线收益与繁荣升级，结束后才显示返回。
+
+- `2026-08-08_1154_border-village-population-cap-gate.md`：人口轴在当前人口上限处增加带标牌的单一纵向阻拦线，线后未来收益继续显示但弱化。
+
+- `2026-08-08_1151_border-village-prosperity-axis-correction.md`：城镇框移到顶部栏下方的地图右上角；删除收益卡片，改为人口在上、奖励在下的连续轴，行动力主显、民兵次显。
+
 - `2026-08-08_0058_border-village-town-prosperity-ui.md`：人口与行动归入右上角当前城镇框；点击繁荣进入可拖拽人口轨迹，查看行动和单位的当前/未来收益。
 
 - `2026-08-08_0016_border-village-prebattle-food-supply.md`：编队常显一战粮耗；开战后左滑进入军粮大锅，点击/长按投入，`x/X`与20%—100%发挥进入真实战斗和权威结算。

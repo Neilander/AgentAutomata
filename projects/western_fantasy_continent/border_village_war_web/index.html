@@ -20,14 +20,6 @@
         <span><i>♨</i> 粮食 <strong id="food-value">0</strong></span>
       </div>
       <div class="top-actions">
-        <button type="button" id="town-status-open" class="town-status-card" aria-label="查看当前城镇繁荣与人口收益">
-          <span class="town-status-title"><i>⌂</i><strong id="town-name">灰谷村</strong><em id="town-prosperity">繁荣 Lv.1</em></span>
-          <span class="town-status-metrics">
-            <span>人口 <b id="population-value">0/0</b></span>
-            <span>行动 <b><i id="ap-value">0</i>/<i id="ap-capacity">0</i></b></span>
-          </span>
-          <span class="town-status-progress"><i id="town-prosperity-fill"></i></span>
-        </button>
         <button id="end-day-button" class="button quiet">结束本日</button>
         <button id="restart-open" class="icon-button" aria-label="重新开始" title="重新开始">↻</button>
       </div>
@@ -35,6 +27,16 @@
 
     <main id="campaign-panel" class="campaign-panel">
       <section id="map-view" class="map-view">
+        <aside class="map-town-status" aria-label="当前城镇">
+          <button type="button" id="town-status-open" class="town-status-card" aria-label="查看当前城镇繁荣与人口收益">
+            <span class="town-status-title"><i>⌂</i><strong id="town-name">灰谷村</strong><em id="town-prosperity">繁荣 Lv.1</em></span>
+            <span class="town-status-metrics">
+              <span>人口 <b id="population-value">0/0</b></span>
+              <span>行动 <b><i id="ap-value">0</i>/<i id="ap-capacity">0</i></b></span>
+            </span>
+            <span class="town-status-progress"><i id="town-prosperity-fill"></i></span>
+          </button>
+        </aside>
         <div id="map-viewport" class="map-viewport" aria-label="可拖动缩放的灰谷村地图">
           <div id="map-world" class="map-world">
             <svg class="village-map" viewBox="0 0 1400 860" preserveAspectRatio="none" aria-hidden="true">
@@ -62,6 +64,7 @@
               </g>
             </svg>
             <div id="map-node-layer" class="map-node-layer"></div>
+            <div id="map-unit-layer" class="map-unit-layer" aria-label="灰谷村中的人物与部队"></div>
           </div>
 
           <aside id="unit-roster-rail" class="unit-roster-rail" aria-label="我方全部单位"></aside>
@@ -206,8 +209,8 @@
   <dialog id="prosperity-dialog" class="prosperity-dialog">
     <form method="dialog">
       <header class="prosperity-window-head">
-        <div><span class="eyebrow">城镇繁荣</span><h2 id="prosperity-title">灰谷村发展轨迹</h2></div>
-        <button value="cancel" class="equipment-close" aria-label="关闭繁荣界面">×</button>
+        <div><span class="eyebrow">城镇繁荣</span><h2 id="prosperity-title">灰谷村发展轨迹</h2><p id="prosperity-growth-caption" class="prosperity-growth-caption" hidden></p></div>
+        <button id="prosperity-close" value="cancel" class="equipment-close" aria-label="关闭繁荣界面">×</button>
       </header>
       <section class="prosperity-current-summary">
         <div><small>当前人口</small><strong id="prosperity-population">0/0</strong></div>
@@ -219,7 +222,8 @@
       <div id="prosperity-viewport" class="prosperity-viewport" tabindex="0" aria-label="可横向拖拽的人口繁荣里程碑">
         <div id="prosperity-track" class="prosperity-track"></div>
       </div>
-      <footer class="prosperity-rule"><span>当前规则</span><p>前期每10人口成立1个民兵单位；繁荣等级提升会增加每日行动。后续城镇可以采用不同的人口奖励表。</p></footer>
+      <div id="prosperity-level-burst" class="prosperity-level-burst" hidden><small>繁荣等级提升</small><strong></strong><span></span></div>
+      <footer class="prosperity-rule"><span>当前规则</span><p>前期每10人口成立1个民兵单位；繁荣等级提升会增加每日行动。后续城镇可以采用不同的人口奖励表。</p><button id="prosperity-growth-return" value="default" class="button primary" hidden>返回城镇</button></footer>
     </form>
   </dialog>
 

@@ -15,7 +15,10 @@ for (const forbidden of [
 ]) assert(!text.includes(forbidden), `formal request leaked forbidden token: ${forbidden}`);
 
 assert.equal(request.type, "decision");
-assert.deepEqual(request.observation.actions.map((action) => action.kind), ["story", "grind"]);
+const initialActionCount = request.observation.actions.length;
+assert.equal(request.observation.actions[0].kind, "story");
+assert(request.observation.actions.some((action) => action.kind === "equipment" && action.label.includes("装备")), "Opening request must expose real equipment actions");
+assert(request.observation.actions.every((action) => ["story", "grind", "equipment"].includes(action.kind)), "Opening request exposed management, event, or combat-resolution actions");
 const visibleLockedGrind = request.observation.actions.find((action) => action.kind === "grind");
 assert.equal(visibleLockedGrind.available, false);
 assert(visibleLockedGrind.disabledReason.includes("先完成当前开场剧情"));
@@ -48,7 +51,7 @@ assert(!text.includes("女巫") && !text.includes("炼金师"), "Day two must no
 
 const trace = LOOP.exportVisibleTrace(session);
 const traceText = JSON.stringify(trace);
-assert(trace.cycles[0].decisionInput.observation.actions.length === 2);
+assert.equal(trace.cycles[0].decisionInput.observation.actions.length, initialActionCount);
 assert(trace.cycles[0].cognitionEvidence.length >= 2);
 assert(!traceText.includes("gameState") && !traceText.includes("rngState") && !traceText.includes("fingerprint"));
 console.log("border village formal input boundary passed");

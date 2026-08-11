@@ -93,6 +93,12 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 .map-node.outpost { border-color: #69906c; background: linear-gradient(160deg, #314735, #19251c); }
 .map-node.outpost .sigil { color: #b9d18f; border-color: #658a68; }
 .map-node.grind { border-color: #5f8069; }
+.map-node.challenge { width: 126px; border-color: #8f6fa8; background: radial-gradient(circle at 50% 15%, #795b8d38, transparent 45%), linear-gradient(160deg, #3c3044, #1c1820); box-shadow: 0 0 22px #724f8838, 0 9px 19px #10120ed1, inset 0 0 0 1px #d9b8ee14; }
+.map-node.challenge .sigil { color: #e1bdf2; border-color: #9470aa; background: #1d1522; }
+.map-node.challenge .yield-badge { border-color: #91594f; color: #f0a08c; background: #2b1717f2; }
+.map-node.challenge.completed { border-color: #658b79; background: linear-gradient(160deg, #30483e, #19241f); box-shadow: 0 9px 19px #10120ed1, inset 0 0 0 1px #bfe6cf14; }
+.map-node.challenge.completed .sigil { color: #b9ddc4; border-color: #628a73; background: #142019; }
+.map-node.challenge.completed .yield-badge { border-color: #5f806d; color: #bce0c7; background: #142019ee; }
 .map-node.event { border-color: #c2a557; box-shadow: 0 0 24px #caa54930, 0 9px 19px #10120ed1; }
 .map-node.final { width: 140px; border-color: #b85e50; }
 .map-node.newly-unlocked { animation: node-pulse 1.35s ease 2; }
@@ -124,7 +130,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 @keyframes civilian-route-river { 0%, 12% { transform: translate(0, 0); } 38% { transform: translate(-24px, 26px); } 66% { transform: translate(20px, 40px); } 88%, 100% { transform: translate(0, 0); } }
 @keyframes civilian-route-field { 0%, 10% { transform: translate(0, 0); } 35% { transform: translate(34px, 8px); } 55% { transform: translate(16px, -22px); } 78% { transform: translate(-18px, -10px); } 100% { transform: translate(0, 0); } }
 @keyframes civilian-route-gate { 0%, 14% { transform: translate(0, 0); } 46% { transform: translate(-42px, -30px); } 62% { transform: translate(-42px, -30px) scaleX(-1); } 94%, 100% { transform: translate(0, 0) scaleX(-1); } }
-@media (prefers-reduced-motion: reduce) { .world-unit, .town-civilian > i { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .world-unit, .town-civilian > i, .loot-cell.rarity-神话, .rarity-border-神话, .loot-cell.rarity-神话::before, .rarity-border-神话::before, .loot-cell.rarity-永恒, .rarity-border-永恒, .loot-cell.rarity-永恒::before, .rarity-border-永恒::before, .loot-cell.rarity-黑金, .rarity-border-黑金, .loot-cell.rarity-黑金::before, .rarity-border-黑金::before, .loot-cell.rarity-炼狱, .rarity-border-炼狱, .loot-cell.rarity-炼狱::before, .rarity-border-炼狱::before { animation: none; } }
 
 .unit-roster-rail { position: absolute; z-index: 10; left: 14px; top: 14px; bottom: 54px; width: 84px; user-select: none; }
 .unit-roster-list { width: 100%; height: 100%; display: flex; flex-flow: column wrap; align-content: flex-start; gap: 4px; overflow: visible; }
@@ -223,7 +229,20 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 .loot-cell small { font-size: 8px; }
 .loot-cell.rarity-史诗 { border-color: #9164b0; color: #caa8e4; }
 .loot-cell.rarity-传说 { border-color: #c68943; color: #eab66f; }
-.loot-cell.rarity-神话 { border-color: #c75450; color: #f08a7f; box-shadow: inset 0 0 18px #d3584e33; }
+.loot-cell.rarity-神话 { position: relative; isolation: isolate; overflow: hidden; border-color: #ff7568; color: #ffd4bd; background: radial-gradient(circle at 22% 18%, #ffb35a30 0 18%, transparent 38%), radial-gradient(circle at 82% 82%, #b42cff35 0 16%, transparent 42%), linear-gradient(135deg, #27080d, #721923 42%, #3b102d 72%, #19080d); box-shadow: 0 0 15px #e33e493d, inset 0 0 20px #ff62534d, inset 0 0 0 1px #ffba7042; animation: mythic-cell-pulse 2.8s ease-in-out infinite alternate; }
+.loot-cell.rarity-神话::before, .rarity-border-神话::before { content: ""; position: absolute; z-index: 0; inset: 1px; background: linear-gradient(112deg, transparent 13%, #ff38531f 26%, #ffbe676b 42%, #fff5d9b8 49%, #c95cff5c 57%, #ff334b24 70%, transparent 84%); background-size: 260% 100%; background-position: 150% 0; mix-blend-mode: screen; pointer-events: none; animation: mythic-cell-sweep 3.8s cubic-bezier(.45, 0, .55, 1) infinite; }
+.loot-cell.rarity-神话::after, .rarity-border-神话::after { content: ""; position: absolute; z-index: 0; inset: 3px; border: 1px solid #ffc27455; box-shadow: inset 0 0 12px #ff375833; pointer-events: none; }
+.loot-cell.rarity-神话 > i, .loot-cell.rarity-神话 > b, .loot-cell.rarity-神话 > small { position: relative; z-index: 1; text-shadow: 0 1px 5px #180106, 0 0 7px #ff685766; }
+.loot-cell.rarity-永恒 { position: relative; isolation: isolate; overflow: hidden; border-color: #dff8ff; color: #f4fdff; background: radial-gradient(circle at 25% 18%, #ffffff7a 0 7%, transparent 31%), radial-gradient(circle at 80% 86%, #70d6ff61 0 12%, transparent 40%), linear-gradient(138deg, #07182b, #125083 42%, #4f9ec8 51%, #256a9f 59%, #08172b); box-shadow: 0 0 17px #8ce6ff73, inset 0 0 22px #d9f8ff66, inset 0 0 0 1px #ffffff99; animation: eternal-cell-pulse 2.7s ease-in-out infinite alternate; }
+.loot-cell.rarity-永恒::before, .rarity-border-永恒::before { content: ""; position: absolute; z-index: 0; inset: 1px; background: linear-gradient(110deg, transparent 12%, #8ae8ff17 28%, #e8fbff9c 46%, #ffffffb8 50%, #74cfff66 57%, transparent 76%); background-size: 270% 100%; background-position: 160% 0; mix-blend-mode: screen; pointer-events: none; animation: eternal-cell-sweep 4.4s ease-in-out infinite; }
+.loot-cell.rarity-永恒::after, .rarity-border-永恒::after { content: ""; position: absolute; z-index: 0; inset: 3px; border: 1px solid #e8fbff9c; box-shadow: inset 0 0 13px #87dbff80; pointer-events: none; }
+.loot-cell.rarity-黑金 { position: relative; isolation: isolate; overflow: hidden; border-color: #e8c76c; color: #ffe9a8; background: radial-gradient(circle at 72% 24%, #ffd85e2e 0 8%, transparent 31%), repeating-linear-gradient(128deg, transparent 0 16px, #c38c2229 17px 19px, transparent 20px 37px), linear-gradient(145deg, #050504, #17140d 45%, #35270c 55%, #080705); box-shadow: 0 0 14px #b77c243d, inset 0 0 24px #d6a52f3d, inset 0 0 0 1px #ffe69b63; animation: blackgold-cell-pulse 3.4s ease-in-out infinite alternate; }
+.loot-cell.rarity-黑金::before, .rarity-border-黑金::before { content: ""; position: absolute; z-index: 0; inset: 1px; background: linear-gradient(112deg, transparent 15%, #9c68150d 32%, #f2b93d66 44%, #fff0a7cf 50%, #b67a1c52 58%, transparent 75%); background-size: 280% 100%; background-position: 155% 0; mix-blend-mode: screen; pointer-events: none; animation: blackgold-cell-sweep 4.6s cubic-bezier(.45, 0, .55, 1) infinite; }
+.loot-cell.rarity-黑金::after, .rarity-border-黑金::after { content: ""; position: absolute; z-index: 0; inset: 3px; border: 1px solid #d9ad485c; box-shadow: inset 0 0 14px #c28a2438; pointer-events: none; }
+.loot-cell.rarity-炼狱 { position: relative; isolation: isolate; overflow: hidden; border-color: #ff6a31; color: #ffd1a2; background: radial-gradient(ellipse at 22% 100%, #ffb12f9c 0 4%, #ff3b1852 18%, transparent 48%), radial-gradient(ellipse at 78% 105%, #ff6b188c 0 5%, #bd161d55 22%, transparent 51%), linear-gradient(155deg, #090203, #3b0708 52%, #160202); box-shadow: 0 0 18px #f03a1f66, inset 0 -15px 25px #ff4d1d5c, inset 0 0 0 1px #ffad5b75; animation: infernal-cell-pulse 1.8s ease-in-out infinite alternate; }
+.loot-cell.rarity-炼狱::before, .rarity-border-炼狱::before { content: ""; position: absolute; z-index: 0; inset: 1px; background: radial-gradient(ellipse at 18% 112%, #fff09dcc 0 4%, #ff9d2f8c 6%, transparent 23%), radial-gradient(ellipse at 52% 115%, #ffd56baf 0 3%, #ff431f85 9%, transparent 31%), radial-gradient(ellipse at 84% 110%, #ffb12f9e 0 4%, #e5201f75 12%, transparent 29%); background-size: 100% 130%; background-position: 0 20%; mix-blend-mode: screen; pointer-events: none; animation: infernal-cell-flame 2.2s ease-in-out infinite alternate; }
+.loot-cell.rarity-炼狱::after, .rarity-border-炼狱::after { content: ""; position: absolute; z-index: 0; inset: 3px; border: 1px solid #ff7b3b66; box-shadow: inset 0 -9px 15px #ff6a263d; pointer-events: none; }
+.loot-cell.rarity-永恒 > i, .loot-cell.rarity-永恒 > b, .loot-cell.rarity-永恒 > small, .loot-cell.rarity-黑金 > i, .loot-cell.rarity-黑金 > b, .loot-cell.rarity-黑金 > small, .loot-cell.rarity-炼狱 > i, .loot-cell.rarity-炼狱 > b, .loot-cell.rarity-炼狱 > small { position: relative; z-index: 1; text-shadow: 0 1px 5px #020508, 0 0 7px currentColor; }
 .loot-cell.rarity-稀有 { border-color: #527fa6; color: #8fbae0; }
 .grind-actions { display: flex; gap: 5px; }
 .mini-button { padding: 7px 10px; font-size: 10px; }
@@ -483,8 +502,7 @@ button.formation-row { cursor: pointer; }
 .character-stage { min-height: 0; display: grid; grid-template-columns: 62px minmax(180px, 1fr) 62px; gap: 10px; padding: 10px 13px 0; }
 .portrait-slots { min-height: 0; display: grid; grid-template-rows: repeat(4, 56px); gap: 8px; align-content: center; }
 .portrait-equipment-slot { position: relative; width: 56px; height: 56px; display: grid; place-items: center; padding: 0; overflow: visible; border: 1px solid #4f4a3c; color: #a9a18d; background: #171a16e8; cursor: pointer; }
-.portrait-equipment-slot i { color: #c9b77d; font-size: 20px; font-style: normal; }
-.portrait-equipment-slot > small { position: absolute; left: 2px; right: 2px; bottom: 2px; overflow: hidden; color: #8f8878; text-align: center; text-overflow: ellipsis; white-space: nowrap; font-size: 7px; }
+.portrait-equipment-slot i { color: #d7c58d; font-size: 20px; font-style: normal; text-shadow: 0 1px 4px #050706, 0 0 6px #050706b8; }
 .portrait-equipment-slot.empty { border-style: dashed; opacity: .74; }
 .portrait-equipment-slot.locked:disabled { border-color: #5f5547; border-style: solid; color: #756f64; background: repeating-linear-gradient(135deg, #1d1f1b, #1d1f1b 7px, #24251f 7px, #24251f 14px); cursor: not-allowed; opacity: .82; }
 .portrait-equipment-slot.locked i { color: #777064; filter: grayscale(1); }
@@ -565,7 +583,29 @@ button.formation-row { cursor: pointer; }
 .rarity-border-稀有 { border-color: #527fa6; }
 .rarity-border-史诗 { border-color: #9164b0; }
 .rarity-border-传说 { border-color: #c68943; }
-.rarity-border-神话 { border-color: #c75450; }
+.rarity-border-神话 { position: relative; isolation: isolate; border-color: #ff7568; color: #ffd4bd; background: radial-gradient(circle at 18% 16%, #ffb85e2e 0 16%, transparent 38%), radial-gradient(circle at 86% 84%, #bd36ff32 0 15%, transparent 40%), linear-gradient(135deg, #27080d, #721923 42%, #3c102e 72%, #19080d); box-shadow: 0 0 14px #e43c4938, inset 0 0 19px #ff63514d, inset 0 0 0 1px #ffbd7440; animation: mythic-cell-pulse 2.8s ease-in-out infinite alternate; }
+.rarity-border-永恒 { position: relative; isolation: isolate; border-color: #dff8ff; color: #f4fdff; background: radial-gradient(circle at 20% 16%, #ffffff66 0 7%, transparent 30%), radial-gradient(circle at 84% 84%, #6ad4ff50 0 12%, transparent 38%), linear-gradient(138deg, #07182b, #125083 42%, #4f9ec8 51%, #256a9f 59%, #08172b); box-shadow: 0 0 17px #8ce6ff66, inset 0 0 22px #d9f8ff5c, inset 0 0 0 1px #ffffff91; animation: eternal-cell-pulse 2.7s ease-in-out infinite alternate; }
+.rarity-border-黑金 { position: relative; isolation: isolate; border-color: #e8c76c; color: #ffe9a8; background: radial-gradient(circle at 72% 24%, #ffd85e29 0 8%, transparent 31%), repeating-linear-gradient(128deg, transparent 0 16px, #c38c2226 17px 19px, transparent 20px 37px), linear-gradient(145deg, #050504, #17140d 45%, #35270c 55%, #080705); box-shadow: 0 0 14px #b77c2438, inset 0 0 24px #d6a52f38, inset 0 0 0 1px #ffe69b5c; animation: blackgold-cell-pulse 3.4s ease-in-out infinite alternate; }
+.rarity-border-炼狱 { position: relative; isolation: isolate; border-color: #ff6a31; color: #ffd1a2; background: radial-gradient(ellipse at 22% 100%, #ffb12f91 0 4%, #ff3b184d 18%, transparent 48%), radial-gradient(ellipse at 78% 105%, #ff6b1880 0 5%, #bd161d50 22%, transparent 51%), linear-gradient(155deg, #090203, #3b0708 52%, #160202); box-shadow: 0 0 18px #f03a1f5c, inset 0 -15px 25px #ff4d1d52, inset 0 0 0 1px #ffad5b70; animation: infernal-cell-pulse 1.8s ease-in-out infinite alternate; }
+.portrait-equipment-slot.rarity-border-神话 > i { color: #ffe0c4; text-shadow: 0 1px 4px #250207, 0 0 7px #ff5e4f99; }
+.portrait-equipment-slot.rarity-border-永恒 > i { color: #f5fdff; text-shadow: 0 1px 4px #03121f, 0 0 8px #d8f7ffb8; }
+.portrait-equipment-slot.rarity-border-黑金 > i { color: #ffe59a; text-shadow: 0 1px 4px #030302, 0 0 8px #dcae4699; }
+.portrait-equipment-slot.rarity-border-炼狱 > i { color: #ffd2a6; text-shadow: 0 1px 4px #210201, 0 0 8px #ff512fb0; }
+.equipment-item-cell.rarity-border-神话 > i, .equipment-item-cell.rarity-border-神话 > strong, .equipment-item-cell.rarity-border-神话 > small, .equipment-item-cell.rarity-border-神话 > em, .portrait-equipment-slot.rarity-border-神话 > i, .equipment-slot.rarity-border-神话 > span, .equipment-slot.rarity-border-神话 > strong, .equipment-slot.rarity-border-神话 > small { position: relative; z-index: 1; text-shadow: 0 1px 5px #180106, 0 0 7px #ff685755; }
+.equipment-item-cell:is(.rarity-border-永恒, .rarity-border-黑金, .rarity-border-炼狱) > i, .equipment-item-cell:is(.rarity-border-永恒, .rarity-border-黑金, .rarity-border-炼狱) > strong, .equipment-item-cell:is(.rarity-border-永恒, .rarity-border-黑金, .rarity-border-炼狱) > small, .equipment-item-cell:is(.rarity-border-永恒, .rarity-border-黑金, .rarity-border-炼狱) > em, .portrait-equipment-slot:is(.rarity-border-永恒, .rarity-border-黑金, .rarity-border-炼狱) > i, .equipment-slot:is(.rarity-border-永恒, .rarity-border-黑金, .rarity-border-炼狱) > span, .equipment-slot:is(.rarity-border-永恒, .rarity-border-黑金, .rarity-border-炼狱) > strong, .equipment-slot:is(.rarity-border-永恒, .rarity-border-黑金, .rarity-border-炼狱) > small { position: relative; z-index: 1; text-shadow: 0 1px 5px #020508, 0 0 7px currentColor; }
+.equipment-item-cell.rarity-border-神话 small, .equipment-slot.rarity-border-神话 > span, .equipment-slot.rarity-border-神话 > small { color: #efb3a8; }
+.equipment-item-cell.rarity-border-神话.selected { box-shadow: 0 0 20px #ef405264, inset 0 0 20px #ff63515c, inset 0 0 0 2px #ffd67c; }
+.equipment-item-cell.rarity-border-永恒.selected { box-shadow: 0 0 22px #91e8ff80, inset 0 0 22px #dff9ff73, inset 0 0 0 2px #ffffff; }
+.equipment-item-cell.rarity-border-黑金.selected { box-shadow: 0 0 20px #d5a73561, inset 0 0 20px #c8952b52, inset 0 0 0 2px #ffe08a; }
+.equipment-item-cell.rarity-border-炼狱.selected { box-shadow: 0 0 22px #ff472880, inset 0 -13px 23px #ff5b274f, inset 0 0 0 2px #ff9d52; }
+@keyframes mythic-cell-sweep { 0%, 12% { background-position: 150% 0; opacity: .25; } 46% { opacity: .92; } 72%, 100% { background-position: -85% 0; opacity: .28; } }
+@keyframes mythic-cell-pulse { from { filter: brightness(.92) saturate(1.05); } to { filter: brightness(1.12) saturate(1.28); } }
+@keyframes eternal-cell-sweep { 0%, 12% { background-position: 160% 0; opacity: .16; } 50% { opacity: .72; } 78%, 100% { background-position: -95% 0; opacity: .2; } }
+@keyframes eternal-cell-pulse { from { filter: brightness(.94) saturate(1.02); } to { filter: brightness(1.14) saturate(1.2); } }
+@keyframes blackgold-cell-sweep { 0%, 18% { background-position: 155% 0; opacity: .18; } 52% { opacity: .82; } 78%, 100% { background-position: -90% 0; opacity: .2; } }
+@keyframes blackgold-cell-pulse { from { filter: brightness(.9) contrast(1.05); } to { filter: brightness(1.09) contrast(1.14); } }
+@keyframes infernal-cell-flame { from { background-position: 0 26%; filter: brightness(.85) saturate(1.05); } to { background-position: 0 -2%; filter: brightness(1.23) saturate(1.35); } }
+@keyframes infernal-cell-pulse { from { filter: brightness(.9) saturate(1.08); } to { filter: brightness(1.13) saturate(1.32); } }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 7px; margin-top: 14px; }
 .dialog-note { color: #999281; font-size: 10px; }
 .combat-preview-dialog { width: min(1040px, calc(100vw - 42px)); max-width: none; max-height: none; padding: 0; overflow: hidden; }
@@ -685,7 +725,10 @@ button.formation-row { cursor: pointer; }
 .rarity-稀有 { color: #83b5df; }
 .rarity-史诗 { color: #c49ae4; }
 .rarity-传说 { color: #e9aa5b; }
-.rarity-神话 { color: #f1786f; }
+.rarity-神话 { color: #ff8d82; text-shadow: 0 0 8px #ef3f505c; }
+.rarity-永恒 { color: #dcf8ff; text-shadow: 0 0 9px #70dbff99; }
+.rarity-黑金 { color: #f0cb6b; text-shadow: 0 0 8px #b17a2380; }
+.rarity-炼狱 { color: #ff824b; text-shadow: 0 0 9px #f134218f; }
 
 @media (max-height: 820px) {
   .game-shell { grid-template-rows: 58px minmax(0, 1fr); }

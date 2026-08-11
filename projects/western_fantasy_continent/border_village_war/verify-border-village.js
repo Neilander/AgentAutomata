@@ -42,6 +42,14 @@ function endDay(state) { return take(state, (row) => row.kind === "time", "end d
 function verifyIntroAndInformationBoundary() {
   let state = GAME.createInitialState("intro-v3");
   let current = view(state);
+  const rarityOrder = ["普通", "稀有", "史诗", "传说", "神话", "永恒", "黑金", "炼狱"];
+  assert.deepEqual(current.inventory.map((item) => item.rarity).sort((a, b) => rarityOrder.indexOf(a) - rarityOrder.indexOf(b)), rarityOrder, "New game does not contain one equipment item of every rarity for visual comparison");
+  assert.deepEqual(current.inventory.map((item) => item.affixes.length), [1, 2, 4, 7, 12, 15, 18, 22], "Starter rarity showcase does not use the formal rarity affix counts");
+  const eternalItem = current.inventory.find((item) => item.rarity === "永恒");
+  const prologueEquip = action(state, (row) => row.kind === "equipment" && row.targetHeroId === "player" && row.targetItemId === eternalItem.id, "prologue equipment action");
+  state = GAME.applyPlayerAction(state, prologueEquip.id);
+  current = view(state);
+  assert.equal(current.party.heroes.find((hero) => hero.id === "player").equipment.find((slot) => slot.slot === eternalItem.slot).item.id, eternalItem.id, "Visible starter showcase gear cannot be equipped during the opening story");
   assert.deepEqual(Object.keys(current.resources).sort(), ["food", "gold", "population", "populationCap"]);
   assert.equal(current.buildings.filter((row) => row.type === "house").length, 1);
   assert.equal(current.buildings.filter((row) => row.type === "farm").length, 1);
@@ -106,10 +114,10 @@ function verifyGrindDifficultyLadder() {
   assert.equal(current.grind.unlockedDifficulty, 1);
   assert.equal(current.grind.levels.length, 5, "All five difficulty slots must remain visible");
   const lockedTwo = current.actions.find((row) => row.operation === "select_grind_difficulty" && row.targetDifficulty === 2);
-  assert(lockedTwo && lockedTwo.available === false && lockedTwo.disabledReason.includes("5场") && lockedTwo.disabledReason.includes("任意难度"), "Difficulty 2 must be visibly locked with its shared total-win requirement");
-  assert.throws(() => GAME.applyPlayerAction(state, lockedTwo.id), /胜利达到5场|无法执行|尚未解锁/);
+  assert(lockedTwo && lockedTwo.available === false && lockedTwo.disabledReason.includes("5") && lockedTwo.disabledReason.includes("积分") && lockedTwo.disabledReason.includes("难度N"), "Difficulty 2 must visibly explain its shared weighted-score requirement");
+  assert.throws(() => GAME.applyPlayerAction(state, lockedTwo.id), /积分达到5|无法执行|尚未解锁/);
 
-  for (let wins = 0; wins < GAME.GRIND_DIFFICULTIES[1].unlockWinsToNext;) {
+  for (let wins = 0; wins < GAME.GRIND_DIFFICULTIES[1].winsAtCurrentDifficultyToNext;) {
     const round = fight(state, (row) => row.kind === "grind", `difficulty 1 clear ${wins + 1}`);
     state = round.state;
     if (round.result.metrics.leftAlive > 0 && round.result.metrics.rightAlive === 0) wins += 1;
@@ -117,8 +125,10 @@ function verifyGrindDifficultyLadder() {
   current = view(state);
   assert.equal(current.grind.unlockedDifficulty, 2, "Five victories did not unlock difficulty 2");
   assert.equal(current.grind.selectedDifficulty, 1, "Unlocking a difficulty must not auto-select it");
+  assert.equal(current.grind.unlockScore, 5, "Difficulty 1 victories should contribute one unlock point each");
   assert.equal(current.grind.levels[0].wins, 5);
-  assert.deepEqual(current.grind.levels.map((row) => row.unlockAtTotalWins), [0, 5, 10, 30, 50]);
+  assert.deepEqual(current.grind.levels.map((row) => row.unlockAtScore), [0, 5, 20, 90, 200]);
+  assert.deepEqual(current.grind.levels.map((row) => row.winScore), [1, 2, 3, 4, 5]);
   assert.deepEqual(current.grind.levels[0].rarityChances, [{ rarity: "普通", chance: .9 }, { rarity: "稀有", chance: .1 }]);
   assert.deepEqual(current.grind.levels[2].lootCountChances, [{ count: 1, chance: .25 }, { count: 2, chance: .75 }]);
   assert.deepEqual(current.grind.levels[3].rarityChances, [{ rarity: "普通", chance: .5 }, { rarity: "稀有", chance: .3 }, { rarity: "史诗", chance: .19 }, { rarity: "传说", chance: .01 }]);
@@ -139,22 +149,43 @@ function verifyGrindDifficultyLadder() {
   const failed = fight(state, (row) => row.kind === "grind", "deliberately underpowered difficulty 2");
   assert(failed.result.metrics.rightAlive > 0, "Newly unlocked difficulty 2 is not meaningfully dangerous to an underpowered party");
   assert.equal(view(failed.state).grind.levels[1].wins, 0, "A defeat advanced clear progress");
+  assert.equal(view(failed.state).grind.unlockScore, 5, "A defeat advanced weighted unlock score");
   state = failed.state;
   const selectOne = view(state).actions.find((row) => row.operation === "select_grind_difficulty" && row.targetDifficulty === 1);
   state = GAME.applyPlayerAction(state, selectOne.id);
   plan = GAME.huntPlan(state);
   assert.equal(plan.grindDifficulty, 1, "Player could not return to an unlocked lower difficulty");
+  state.roster = Object.keys(GAME.HEROES);
   state.activeParty = state.roster.slice(0, 4);
-  let attempts = 0;
-  while (state.stats.grindWins < 50 && attempts < 100) {
-    const round = fight(state, (row) => row.kind === "grind", `global clear ${state.stats.grindWins + 1}`);
-    state = round.state;
-    attempts += 1;
+  for (const [index, heroId] of state.activeParty.entries()) {
+    const item = { id: `weighted_test_weapon_${index}`, name: "加权验证武器", slot: "weapon", slotLabel: "武器", rarity: "神话", rarityId: "mythic", equipmentLevel: 999, power: 999, baseStats: { physicalPower: 500, magicPower: 500, maxHp: 3000, armor: 100 }, affixes: [], identityTags: [], source: "验证夹具" };
+    state.inventory.push(item);
+    state.equipment[heroId].weapon = item.id;
   }
+  const selectTwoAgain = view(state).actions.find((row) => row.operation === "select_grind_difficulty" && row.targetDifficulty === 2);
+  state = GAME.applyPlayerAction(state, selectTwoAgain.id);
+  const scoreBeforeDifficultyTwoWin = view(state).grind.unlockScore;
+  let weightedWin = null;
+  for (let attempts = 0; attempts < 8 && !weightedWin; attempts += 1) {
+    const round = fight(state, (row) => row.kind === "grind", `weighted difficulty 2 clear ${attempts + 1}`);
+    state = round.state;
+    if (round.result.metrics.leftAlive > 0 && round.result.metrics.rightAlive === 0) weightedWin = round;
+  }
+  assert(weightedWin, "Full party could not produce a difficulty 2 victory for weighted-score verification");
+  assert.equal(view(state).grind.unlockScore, scoreBeforeDifficultyTwoWin + 2, "Difficulty 2 victory did not add two unlock points");
+
+  state.grind.winsByDifficulty = { 1: 200, 2: 0, 3: 0, 4: 0, 5: 0 };
+  state.stats.grindWins = 200;
   current = view(state);
-  assert.equal(current.grind.totalWins, 50, "Global grind victories were not counted across the selected difficulty");
-  assert.equal(current.grind.unlockedDifficulty, 5, "Staying on difficulty 1 did not unlock difficulty 5 at 50 total victories");
+  assert.equal(current.grind.unlockScore, 200, "Weighted unlock score was not derived from per-difficulty wins");
+  assert.equal(current.grind.unlockedDifficulty, 5, "Staying on difficulty 1 did not eventually unlock difficulty 5 at 200 points");
   assert.equal(current.grind.levels[4].wins, 0, "Global unlock test unexpectedly required wins on difficulty 5");
+  for (const [score, expectedDifficulty] of [[4, 1], [5, 2], [19, 2], [20, 3], [89, 3], [90, 4], [199, 4], [200, 5]]) {
+    const boundaryState = reachManagement(`weighted-boundary-${score}`);
+    boundaryState.grind.winsByDifficulty = { 1: score, 2: 0, 3: 0, 4: 0, 5: 0 };
+    boundaryState.stats.grindWins = score;
+    assert.equal(view(boundaryState).grind.unlockedDifficulty, expectedDifficulty, `Weighted score ${score} unlocked the wrong difficulty`);
+  }
   assert(GAME.GRIND_DIFFICULTIES[5].lootTier > GAME.GRIND_DIFFICULTIES[1].lootTier && GAME.GRIND_DIFFICULTIES[5].lootCountTable[0][0] > GAME.GRIND_DIFFICULTIES[1].lootCountTable[0][0], "Higher difficulties do not improve loot quality and quantity");
 }
 
@@ -405,6 +436,78 @@ function verifyFormationDeploymentContract() {
   assert(finalPlan && finalPlan.leftTeam.length === finalMembers.length, "Twenty-unit formation did not replace the automatic final-battle army");
 }
 
+function verifyAncientRuinsChallengeStory() {
+  const opening = view(GAME.createInitialState("ancient-ruins-hidden"));
+  assert.equal(opening.challenge, null, "Ancient ruins appeared before the opening story introduced the world map");
+  assert(!JSON.stringify(opening).includes("薇奥拉") && !JSON.stringify(opening).includes("艾琳"), "Opening observation leaked the trapped explorers");
+
+  let state = reachManagement("ancient-ruins-flow");
+  let current = view(state);
+  assert.equal(current.challenge?.stage, "entrance", "Ancient ruins did not appear as a distinct challenge after the prologue");
+  assert(!current.challenge.description.includes("薇奥拉") && !current.challenge.description.includes("艾琳") && !current.challenge.description.includes("密室"), "Entrance description leaked the secret-room story before victory");
+  const entranceAction = action(state, (row) => row.targetChallengeId === "ancient_ruins" && row.targetChallengeStage === "entrance", "ancient ruins entrance");
+  const entrancePlan = GAME.preparePlayerCombat(state, entranceAction.id);
+  assert.equal(entrancePlan.kind, "challenge");
+  assert.equal(entrancePlan.formationCapacity, 4);
+  const grindState = structuredClone(state);
+  grindState.grind.unlockedDifficulty = 5; grindState.grind.selectedDifficulty = 5; grindState.grind.unlockScore = 200;
+  const difficultyFive = GAME.huntPlan(grindState);
+  const average = (team, key) => team.reduce((sum, unit) => sum + Number(unit[key] || 0), 0) / team.length;
+  assert(average(entrancePlan.rightTeam, "maxHp") > average(difficultyFive.rightTeam, "maxHp") && average(entrancePlan.rightTeam, "power") > average(difficultyFive.rightTeam, "power"), "Ancient ruins entrance enemies are not individually stronger than difficulty-five grind enemies");
+
+  const retryState = structuredClone(state);
+  retryState.activeParty = ["player"];
+  for (const heroId of retryState.roster) retryState.equipment[heroId] = Object.fromEntries(Object.keys(GAME.SLOT_DATA).map((slot) => [slot, null]));
+  const retryView = view(retryState);
+  const retryAction = retryView.actions.find((row) => row.targetChallengeStage === "entrance");
+  const retryPlan = GAME.preparePlayerCombat(retryState, retryAction.id);
+  const retryResult = GAME.simulatePlan(retryPlan);
+  assert.equal(retryResult.metrics.leftAlive > 0 && retryResult.metrics.rightAlive === 0, false, "Deliberately unequipped solo party unexpectedly cleared the high-difficulty entrance");
+  const retried = GAME.applyPlayerCombatResult(retryState, retryAction.id, retryResult);
+  assert.equal(view(retried).challenge.stage, "entrance", "Failed challenge advanced the story");
+  assert.equal(retried.ap, retryState.ap, "Failed challenge consumed action points");
+  assert.equal(retried.resources.food, retryState.resources.food, "Failed challenge consumed food");
+  assert(view(retried).actions.some((row) => row.targetChallengeStage === "entrance" && row.available), "Failed challenge cannot be retried");
+
+  state.resources.food = 100; state.ap = 10;
+  for (const heroId of state.roster) {
+    const id = `ancient_ruins_fixture_${heroId}`;
+    state.inventory.push({ id, name: "遗迹流程验证武器", slot: "weapon", slotLabel: "武器", rarity: "神话", rarityId: "mythic", equipmentLevel: 999, power: 999, baseStats: { physicalPower: 1200, magicPower: 1200, maxHp: 8000, armor: 300 }, affixes: [], identityTags: [], source: "验证夹具" });
+    state.equipment[heroId].weapon = id;
+  }
+  const entranceWin = fight(state, (row) => row.targetChallengeStage === "entrance", "ancient ruins entrance victory");
+  assert(entranceWin.result.metrics.leftAlive > 0 && entranceWin.result.metrics.rightAlive === 0, "Boosted verification party failed to clear the entrance");
+  state = entranceWin.state; current = view(state);
+  assert.equal(current.challenge.stage, "secret_room");
+  assert(current.challenge.description.includes("薇奥拉") && current.challenge.description.includes("艾琳") && current.challenge.description.includes("魔力枯竭"), "Secret-room story did not appear after the entrance battle");
+  assert.equal(current.actions.filter((row) => row.kind === "challenge").length, 2, "Secret room does not offer two meaningful rescue approaches");
+  const starvedState = structuredClone(state); starvedState.resources.food = 0;
+  const starvedChoices = view(starvedState).actions.filter((row) => row.kind === "challenge");
+  assert(starvedChoices.some((row) => row.label.includes("12份粮食") && row.available === false && row.disabledReason.includes("还缺12粮食")), "Unaffordable rescue supply option disappeared or lacks its visible shortage reason");
+  assert(starvedChoices.some((row) => row.label.includes("密道") && row.available), "No-cost route option disappeared when supplies were exhausted");
+
+  const routeState = GAME.applyPlayerAction(state, action(state, (row) => row.kind === "challenge" && row.label.includes("密道"), "route approach").id);
+  const supplyState = GAME.applyPlayerAction(state, action(state, (row) => row.kind === "challenge" && row.label.includes("12份粮食"), "supply approach").id);
+  const routeAction = action(routeState, (row) => row.targetChallengeStage === "heart", "route heart battle");
+  const supplyAction = action(supplyState, (row) => row.targetChallengeStage === "heart", "supply heart battle");
+  const routePlan = GAME.preparePlayerCombat(routeState, routeAction.id);
+  const supplyPlan = GAME.preparePlayerCombat(supplyState, supplyAction.id);
+  assert.equal(routePlan.formationCapacity, 8);
+  assert.equal(supplyPlan.rightTeam.length - routePlan.rightTeam.length, 2, "Route approach did not bypass two ancient guards");
+  assert(average(supplyPlan.rightTeam, "maxHp") > average(entrancePlan.rightTeam, "maxHp") && average(supplyPlan.rightTeam, "power") > average(entrancePlan.rightTeam, "power"), "Ruins heart is not harder per enemy than the already high-difficulty entrance");
+  assert(supplyPlan.leftTeam.some((unit) => unit.name.includes("艾琳") && unit.name.includes("虚弱")), "Supply approach did not add the exhausted teacher as a fixed guest");
+  assert(!routePlan.leftTeam.some((unit) => unit.name.includes("艾琳")), "Route approach incorrectly made the exhausted teacher fight");
+
+  const heartResult = GAME.simulatePlan(supplyPlan);
+  assert(heartResult.metrics.leftAlive > 0 && heartResult.metrics.rightAlive === 0, "Boosted verification party failed to clear the ruins heart");
+  state = GAME.applyPlayerCombatResult(supplyState, supplyAction.id, heartResult);
+  current = view(state);
+  assert(current.challenge.completed && current.challenge.stage === "complete", "Ancient ruins did not reach its completed story state");
+  assert(current.party.heroes.some((hero) => hero.id === "heiress") && current.party.heroes.some((hero) => hero.id === "mentor"), "Rescued heiress and teacher did not join the roster");
+  assert(current.inventory.some((item) => item.rarity === "永恒" && item.name.startsWith("远古遗珍")), "Final challenge reward lacks its guaranteed eternal relic");
+  assert(!current.actions.some((row) => row.targetChallengeId === "ancient_ruins"), "Completed challenge still exposes repeatable story actions");
+}
+
 verifyIntroAndInformationBoundary();
 verifyImmediateConstructionAndYieldSignals();
 verifyGrindDifficultyLadder();
@@ -417,17 +520,19 @@ verifyOneClickEquipmentAndCombatBoundary();
 verifyExplicitCostsAndFinalReadiness();
 verifyTownProsperityObservation();
 verifyFormationDeploymentContract();
+verifyAncientRuinsChallengeStory();
 
 console.log(JSON.stringify({
   status: "PASS",
   version: GAME.VERSION,
   checks: [
     "gold/food-only resource surface",
+    "new game starts with one formal item from each rarity for visual comparison",
     "initial farm/smithy/house plus two visible plots",
     "permanent grind location with visible prologue lock reason",
     "wounded starter guard uses the shared knight kit at reduced stats without a hidden captain buff",
     "immediate AP-only construction with yield badges",
-    "five visible manual grind difficulties unlocked by 5/10/30/50 total wins across any difficulty",
+    "five visible manual grind difficulties unlocked by weighted score at 5/20/90/200 points",
     "equipment drops drive capped smithy gold",
     "three-item market and five-sale daily limit",
     "real training battle upgrades militia to individually equipable eight-slot warriors",
@@ -439,5 +544,6 @@ console.log(JSON.stringify({
     "current-town prosperity observation exposes population cap, action tiers, and future unit rewards",
     "downward-compatible 2/4/8/20-unit formations and positions enter authoritative combat plans",
     "explicit formation food supply scales real combat stats from 20% to 100%",
+    "two-stage ancient-ruins challenge with gated story reveal, divergent real-combat consequences, retry safety, recruits, and eternal relic reward",
   ],
 }, null, 2));

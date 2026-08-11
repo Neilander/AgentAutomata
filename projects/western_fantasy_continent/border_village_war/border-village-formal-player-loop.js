@@ -254,12 +254,13 @@ function compactObservation(view) {
       heroes: view.party.heroes.map((hero) => ({ name: hero.name, role: hero.role, preferredAffixes: clone(hero.preferredAffixes), active: hero.active, equipment: hero.equipment.map((slot) => ({ slot: slot.slotLabel, item: slot.item ? publicItem(slot.item) : null })) })),
     },
     inventory: { total: view.inventory.length, limit: view.inventoryLimit, rarityCounts, visibleItems: visibleItems.map(publicItem) },
+    challenge: clone(view.challenge),
     raids: view.raids.map(({ id, ...row }) => row),
     outposts: view.outposts.map(({ id, ...row }) => row),
     event: view.event ? { title: view.event.title, scene: view.event.scene } : null,
     recentSignals: clone(view.recentSignals),
     lastCombat: clone(view.lastCombat),
-    actions: view.actions.map(({ targetSlot, targetHeroId, targetItemId, targetStockId, targetEquipmentSlot, operation, ...action }) => clone(action)),
+    actions: view.actions.map(({ targetSlot, targetHeroId, targetItemId, targetStockId, targetEquipmentSlot, targetChallengeId, targetChallengeStage, operation, ...action }) => clone(action)),
     result: clone(view.result),
   };
 }

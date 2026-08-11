@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-08-08_1724_border-village-heroes-and-prosperity-residents.md`](reports/2026-08-08_1724_border-village-heroes-and-prosperity-residents.md)
+[`reports/2026-08-11_0059_border-village-ancient-ruins-challenge.md`](reports/2026-08-11_0059_border-village-ancient-ruins-challenge.md)
 
-Last updated: 2026-08-08
+Last updated: 2026-08-11
 
-当前重点：简化地图同时显示真实英雄与民兵；每个繁荣等级额外带来2名不可交互普通居民，并使用四类错开的短路线。
+当前重点：新增远古遗迹两段式高难剧情挑战；入口胜利后才揭示被困小姐与魔力枯竭老师，两种救援选择会改变核心战真实阵容。

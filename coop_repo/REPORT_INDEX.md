@@ -2,6 +2,30 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-08-11
+
+- `2026-08-11_0059_border-village-ancient-ruins-challenge.md`：新增远古遗迹两场高难实战与延迟揭示的密室救援剧情；两种选择改变核心战阵容，最终招募两人并获得永恒遗珍。
+
+- `2026-08-11_0039_border-village-icon-only-equipment-slots.md`：人物页左右装备槽移除常驻部位文字，只保留图标、稀有度材质、悬浮详情和无障碍名称。
+
+- `2026-08-11_0029_border-village-rarity-slot-text-contrast.md`：人物页装备槽增加暗色标签衬底，并为神话、永恒、黑金、炼狱分别设置高对比前景色。
+
+- `2026-08-11_0026_border-village-eternal-moving-highlight.md`：永恒装备去除固定中央白杠，改为中亮蓝色过渡与较弱的4.4秒移动白光。
+
+## 2026-08-10
+
+- `2026-08-10_2356_border-village-equip-fix-and-three-ascendant-rarities.md`：修复开场装备动作缺失；增加永恒蓝白、黑金、炼狱三档正式装备与掉落/背包/装备槽整格特效。
+
+- `2026-08-10_2342_border-village-starter-rarity-showcase.md`：新档初始发放普通至神话各一件正式装备，便于直接比较五档格子视觉。
+
+- `2026-08-10_2324_border-village-mythic-cell-iridescence.md`：神话装备改为整格深红材质、红金紫扫光和轻微呼吸，覆盖背包、已装备槽与掉落陈列。
+
+- `2026-08-10_2302_border-village-weighted-grind-unlocks.md`：难度N胜利+N讨伐积分；累计5/20/90/200分依次解锁难度2—5，前端同步显示积分与估算胜场。
+
+- `2026-08-10_2237_border-village-building-to-building-units.md`：纠正局部巡逻；英雄与民兵改为从一座建筑移动到另一座建筑，到站停留且可悬停暂停。
+
+- `2026-08-10_2222_border-village-hero-militia-patrols.md`：真实英雄使用8类岗位巡逻，民兵使用4类集结区路线；移动点击热区与头像保持一致。
+
 ## 2026-08-08
 
 - `2026-08-08_1724_border-village-heroes-and-prosperity-residents.md`：简化地图补回真实英雄；繁荣等级生成不可交互普通居民，并使用四类错开的短路线。

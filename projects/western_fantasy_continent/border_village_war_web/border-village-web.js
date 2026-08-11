@@ -18,6 +18,7 @@
     hunt: { label: "小队讨伐", capacity: 4, fixedNote: "" },
     training: { label: "实战训练", capacity: 4, fixedNote: "另有1支受训民兵固定参战" },
     raid: { label: "据点突袭", capacity: 8, fixedNote: "" },
+    challenge: { label: "遗迹挑战", capacity: 8, fixedNote: "" },
     final: { label: "村庄决战", capacity: 20, fixedNote: "" },
   };
   const MAP_WIDTH = 1400;
@@ -25,18 +26,30 @@
   const MAP_PAN_MARGIN_X = 520;
   const MAP_PAN_MARGIN_Y = 340;
   const INVENTORY_PAGE_SIZE = 24;
-  const RARITY_ORDER = { "神话": 5, "传说": 4, "史诗": 3, "稀有": 2, "普通": 1 };
+  const RARITY_ORDER = { "炼狱": 8, "黑金": 7, "永恒": 6, "神话": 5, "传说": 4, "史诗": 3, "稀有": 2, "普通": 1 };
   const SLOT_ICONS = { "武器": "⚔", "头盔": "⌃", "胸甲": "⬡", "护手": "✦", "腿甲": "▥", "靴子": "⌄", "戒指": "○", "护符": "◇" };
   const RESOURCE_LABELS = { gold: "金币", food: "粮食", population: "实际人口", populationCap: "人口上限" };
   const STAT_LABELS = { physicalPower: "物理威力", magicPower: "魔法威力", maxHp: "生命", armor: "护甲", attackSpeedPct: "攻击速度", skillHastePct: "技能急速" };
   const PLOT_POSITIONS = [[430, 520], [295, 650], [570, 690], [835, 680], [1060, 560], [1020, 405], [865, 300]];
   const RAID_POSITIONS = { foragers: [245, 240], beastPen: [620, 125], shaman: [1100, 225] };
-  const MILITIA_WORLD_POSITIONS = [[620, 500], [675, 500], [730, 500], [785, 500], [620, 555], [675, 555], [730, 555], [785, 555], [665, 610], [745, 610]];
-  const HERO_WORLD_POSITIONS = {
-    player: [700, 445], captain: [785, 335], scout: [520, 360], guard: [885, 465],
-    sellsword: [520, 605], witch: [380, 405], hunter: [930, 610], alchemist: [955, 330],
+  const CHALLENGE_POSITION = [1240, 690];
+  const BUILDING_APPROACH_OFFSETS = [[70, 0], [65, -35], [15, -65], [-15, -65], [-70, -5], [-65, 20], [-25, 65]];
+  const BUILDING_PATROL_ROUTES = {
+    west: [0, 1, 2, 0],
+    south: [2, 3, 4, 2],
+    east: [4, 5, 6, 4],
+    workshop: [5, 4, 3, 5],
+    villageCross: [0, 2, 3, 5, 6, 0],
+    westNorth: [1, 0, 6, 5, 1],
+    fullRing: [0, 1, 2, 3, 4, 5, 6, 0],
+    reverseRing: [6, 5, 4, 3, 2, 1, 0, 6],
   };
-  const HERO_FALLBACK_POSITIONS = [[465, 335], [905, 390], [455, 610], [940, 580]];
+  const HERO_PATROL_ROUTES = {
+    player: "villageCross", captain: "east", scout: "fullRing", guard: "south",
+    sellsword: "west", witch: "westNorth", hunter: "reverseRing", alchemist: "workshop", heiress: "fullRing", mentor: "east",
+  };
+  const HERO_FALLBACK_ROUTES = ["villageCross", "south", "east", "west"];
+  const MILITIA_PATROL_ROUTES = ["west", "south", "east", "workshop"];
   const CIVILIAN_ROUTES = [
     { x: 565, y: 430, route: "market", duration: 8.4, delay: -1.2 },
     { x: 820, y: 545, route: "river", duration: 10.8, delay: -6.1 },
@@ -48,7 +61,7 @@
     { x: 830, y: 625, route: "field", duration: 12.1, delay: -9.2 },
   ];
   const BUILDING_SIGILS = { house: "舍", farm: "田", conscription: "征", smithy: "锻", market: "市" };
-  const UNIT_GLYPHS = { player: "我", captain: "伊", scout: "莱", guard: "马", sellsword: "犬", witch: "盐", hunter: "苔", alchemist: "莎" };
+  const UNIT_GLYPHS = { player: "我", captain: "伊", scout: "莱", guard: "马", sellsword: "犬", witch: "盐", hunter: "苔", alchemist: "莎", heiress: "薇", mentor: "艾" };
   const ROLE_ICONS = { knight: "🛡️", warrior: "⚔️", berserker: "🪓", assassin: "🗡️", ranger: "🏹", mage: "🔥", priest: "✨", warlock: "☠️", bard: "🎵", alchemist: "⚗️" };
 
   let state = loadState();
@@ -189,7 +202,7 @@
       if (unlocked.length) resultLines.push(`新情报：${unlocked.map((raid) => raid.title).join("、")}已经标在地图上。`);
       if (action.kind === "recruit" && after.town.population > before.town.population) showPopulationGrowth(before, after);
       else if (recruited) showRecruit(recruited, resultLines.join(" "));
-      else if ((["build", "recruit", "event", "time"].includes(action.kind) || action.operation === "auto_equip") && !options.quiet) showResult(action.label, resultLines);
+      else if ((["build", "recruit", "event", "challenge", "time"].includes(action.kind) || action.operation === "auto_equip") && !options.quiet) showResult(action.label, resultLines);
       else showToast(resultLines[0] || `${action.label}完成`);
     } catch (error) {
       showToast(error.message || String(error));
@@ -222,7 +235,8 @@
   }
 
   function combatFormationRule(plan) {
-    return COMBAT_FORMATION_RULES[plan?.kind] || { label: "特殊战斗", capacity: Math.max(1, Number(plan?.leftTeam?.length || 1)), fixedNote: "" };
+    const base = COMBAT_FORMATION_RULES[plan?.kind] || { label: "特殊战斗", capacity: Math.max(1, Number(plan?.leftTeam?.length || 1)), fixedNote: "" };
+    return { ...base, capacity: Number(plan?.formationCapacity || base.capacity), fixedNote: plan?.fixedNote || base.fixedNote };
   }
 
   function combatFormationEntries(current, plan) {
@@ -487,9 +501,9 @@
     const current = view();
     const level = current.grind.levels.find((row) => row.difficulty === current.grind.selectedDifficulty);
     document.querySelector("#grind-title").textContent = grindSession.plan?.title || "边林讨伐";
-    const totalProgress = current.grind.nextUnlockAt ? `${current.grind.totalWins}/${current.grind.nextUnlockAt}` : `${current.grind.totalWins}`;
-    document.querySelector("#grind-stats").innerHTML = `<span>难度 <b>${current.grind.selectedDifficulty}</b></span><span>总胜场 <b>${totalProgress}</b></span><span>轮次 <b>${grindSession.rounds + (grindSession.fighting ? 1 : 0)}</b></span><span>本次掉落 <b>${grindSession.loot.length}</b></span><span>今日装备 <b>${current.economy.dailyGearDrops}/20</b></span><span>铁匠收入 <b>${current.economy.smithGoldPaid}</b></span>`;
-    const unlockText = current.grind.nextUnlockAt ? ` · 任意难度累计${current.grind.totalWins}/${current.grind.nextUnlockAt}胜解锁难度${current.grind.nextUnlockDifficulty}` : " · 已解锁全部难度";
+    const scoreProgress = current.grind.nextUnlockScore ? `${current.grind.unlockScore}/${current.grind.nextUnlockScore}` : `${current.grind.unlockScore}`;
+    document.querySelector("#grind-stats").innerHTML = `<span>难度 <b>${current.grind.selectedDifficulty}</b></span><span>讨伐积分 <b>${scoreProgress}</b></span><span>总胜场 <b>${current.grind.totalWins}</b></span><span>轮次 <b>${grindSession.rounds + (grindSession.fighting ? 1 : 0)}</b></span><span>本次掉落 <b>${grindSession.loot.length}</b></span><span>今日装备 <b>${current.economy.dailyGearDrops}/20</b></span><span>铁匠收入 <b>${current.economy.smithGoldPaid}</b></span>`;
+    const unlockText = current.grind.nextUnlockScore ? ` · 当前难度每胜+${current.grind.selectedWinScore}积分；${current.grind.unlockScore}/${current.grind.nextUnlockScore}解锁难度${current.grind.nextUnlockDifficulty}` : " · 已解锁全部难度";
     document.querySelector("#grind-status").textContent = (grindSession.fighting ? "当前轮战斗中" : grindSession.lastWin === false ? (grindSession.auto ? "本轮战败，没有掉落；下一批敌人正在接近" : "本轮战败，没有掉落") : grindSession.auto ? "下一批敌人正在接近" : "连续讨伐已经停止") + unlockText;
     document.querySelector("#grind-loot-count").textContent = `${grindSession.loot.length}件`;
     document.querySelector("#grind-loot-shelf").innerHTML = grindSession.loot.length ? grindSession.loot.map((item) => `<div class="loot-cell rarity-${esc(item.rarity)}"><i>${SLOT_ICONS[item.slotLabel] || "◆"}</i><b>+${item.power}</b><small>${esc(item.rarity)}${esc(item.slotLabel)}</small></div>`).join("") : `<div class="empty-actions">战胜敌人后，掉落会陈列在这里。</div>`;
@@ -517,7 +531,7 @@
     const visibleGrind = grindBattles.length ? [...grindSettings, ...grindBattles] : [{ id: "ui:grind-unavailable", label: "前往边林免费讨伐魔物", kind: "grind", available: false, disabledReason: current.result ? "本轮战争已经结束；重开后可以再次刷装。" : "当前阶段暂时无法离开这里刷装。", actionPointCost: 0, knownCost: {}, description: "刷怪地点始终保留在地图上。" }];
     const grindLocked = grindBattles.length === 0 || grindBattles.every((action) => action.available === false);
     const selectedGrind = current.grind.levels.find((row) => row.selected);
-    rows.push({ id: "grind", title: "边林讨伐", kicker: "五档无限刷装", description: "任意难度获胜都会增加总胜场，并在5/10/30/50胜时解锁新难度。解锁后不会自动切换。", status: grindLocked ? "地点已知 · 暂时不能出发" : `总胜场${current.grind.totalWins} · 当前难度${selectedGrind.difficulty}「${selectedGrind.name}」`, actions: visibleGrind, grind: current.grind, x: 1190, y: 275, sigil: "猎", type: grindLocked ? "grind locked" : "grind" });
+    rows.push({ id: "grind", title: "边林讨伐", kicker: "五档无限刷装", description: "难度N获胜一次增加N点讨伐积分；累计5/20/90/200积分依次解锁新难度。解锁后不会自动切换。", status: grindLocked ? "地点已知 · 暂时不能出发" : `讨伐积分${current.grind.unlockScore} · 总胜场${current.grind.totalWins} · 当前难度${selectedGrind.difficulty}「${selectedGrind.name}」`, actions: visibleGrind, grind: current.grind, x: 1190, y: 275, sigil: "猎", type: grindLocked ? "grind locked" : "grind" });
 
     current.raids.forEach((raid) => {
       const raidActions = current.actions.filter((action) => action.kind === "combat" && action.label.includes(raid.title));
@@ -532,6 +546,11 @@
       const local = current.actions.filter((action) => action.targetSlot === building.slot);
       rows.push({ id: `outpost:${outpost.id}`, title: building.type ? `${outpost.title} · ${building.name}` : outpost.title, kicker: "已控制前哨", description: building.type ? building.description : outpost.description, status: building.yieldStatus, yieldLabel: building.yieldLabel, emptyText: building.type ? "这是自动产生持久收益的建筑，无需额外操作。" : "选择一种建筑，把占领转化为长期产能。", actions: local, x: position[0], y: position[1], sigil: building.type ? BUILDING_SIGILS[building.type] || "旗" : "+", type: building.type ? "outpost building" : "outpost empty" });
     });
+
+    if (current.challenge) {
+      const challengeActions = current.actions.filter((action) => action.targetChallengeId === current.challenge.id);
+      rows.push({ id: `challenge:${current.challenge.id}`, title: current.challenge.title, kicker: current.challenge.kicker, description: current.challenge.description, status: current.challenge.status, yieldLabel: current.challenge.completed ? "剧情完成" : "高危挑战", emptyText: current.challenge.completed ? "两名幸存者已经回到灰谷村。" : "当前阶段无法继续探索。", actions: challengeActions, x: CHALLENGE_POSITION[0], y: CHALLENGE_POSITION[1], sigil: current.challenge.completed ? "归" : "遗", type: current.challenge.completed ? "challenge completed" : "challenge" });
+    }
 
     if (current.time.phase === "final") rows.push({ id: "final", title: "灰谷村北门", kicker: "最终决战", description: `${current.war.knownEnemyUnits}支兽人军团与${current.war.knownBosses}名主将已经抵达。`, status: `${current.party.heroes.length}名英雄、${current.war.trainedUnits}支战士与${current.war.untrainedUnits}支民兵等待军粮。`, actions: current.actions.filter((action) => action.kind === "combat" || action.operation === "auto_equip_all"), x: 700, y: 115, sigil: "战", type: "final" });
     return rows;
@@ -733,26 +752,69 @@
       badge: UNIT_GLYPHS[hero.id] || hero.name.slice(-1),
       detail: `${hero.role} · ${hero.id === "player" ? "主角" : hero.active ? "当前队内" : "村中待命"}`,
       kind: hero.id === "player" ? "player" : hero.id === "captain" ? "captain" : "hero",
-      position: HERO_WORLD_POSITIONS[hero.id] || HERO_FALLBACK_POSITIONS[index % HERO_FALLBACK_POSITIONS.length],
+      route: HERO_PATROL_ROUTES[hero.id] || HERO_FALLBACK_ROUTES[index % HERO_FALLBACK_ROUTES.length],
+      lane: 0,
     }));
     const militiaUnits = current.party.militiaUnits.map((unit, index) => ({
       id: unit.id,
       name: unit.name,
       icon: ROLE_ICONS[unit.roleKey] || "⚔️",
       unitNumber: index + 1,
-      detail: `${unit.role} · 村庄中央集结`,
+      detail: `${unit.role} · 建筑间巡行`,
       kind: "militia",
-      position: MILITIA_WORLD_POSITIONS[index % MILITIA_WORLD_POSITIONS.length],
+      route: MILITIA_PATROL_ROUTES[index % MILITIA_PATROL_ROUTES.length],
+      lane: Math.floor(index / MILITIA_PATROL_ROUTES.length) - 1,
     }));
     const civilianCount = Math.min(CIVILIAN_ROUTES.length, Math.max(0, current.town.prosperity.level * 2));
     const civilians = CIVILIAN_ROUTES.slice(0, civilianCount).map((route, index) => `<span class="town-civilian route-${route.route}" style="left:${route.x}px;top:${route.y}px;--route-duration:${route.duration}s;--route-delay:${route.delay}s" aria-hidden="true"><i><b></b></i></span>`).join("");
     const layer = document.querySelector("#map-unit-layer");
-    const heroHtml = heroes.map((hero, index) => `<button type="button" class="world-unit hero ${hero.kind}" data-equipment-target="${esc(hero.id)}" style="left:${hero.position[0]}px;top:${hero.position[1]}px;--idle-delay:-${(index % 5) * .43}s" title="${esc(hero.name)}｜${esc(hero.detail)}" aria-label="${esc(hero.name)}，${esc(hero.detail)}"><span class="world-unit-avatar" aria-hidden="true"><i>${esc(hero.icon)}</i><b>${esc(hero.badge)}</b></span></button>`).join("");
+    const heroHtml = heroes.map((hero, index) => { const start = buildingPatrolPoints(hero.route, hero.lane)[0]; return `<button type="button" class="world-unit hero ${hero.kind}" data-equipment-target="${esc(hero.id)}" data-building-route="${hero.route}" data-route-lane="${hero.lane}" data-route-duration="${30 + (index % 4) * 3.5}" data-route-delay="${1.8 + index * 2.7}" style="left:${start[0]}px;top:${start[1]}px;--idle-delay:-${(index % 5) * .43}s" title="${esc(hero.name)}｜${esc(hero.detail)}" aria-label="${esc(hero.name)}，${esc(hero.detail)}"><span class="world-unit-avatar" aria-hidden="true"><i>${esc(hero.icon)}</i><b>${esc(hero.badge)}</b></span></button>`; }).join("");
     const militiaHtml = militiaUnits.map((unit, index) => {
-      return `<button type="button" class="world-unit militia" data-equipment-target="${esc(unit.id)}" style="left:${unit.position[0]}px;top:${unit.position[1]}px;--idle-delay:-${(index % 7) * .37}s" title="${esc(unit.name)}｜${esc(unit.detail)}" aria-label="${esc(unit.name)}，${esc(unit.detail)}"><span class="world-unit-avatar" aria-hidden="true"><i>${esc(unit.icon)}</i><b>${unit.unitNumber}</b></span></button>`;
+      const start = buildingPatrolPoints(unit.route, unit.lane)[0];
+      return `<button type="button" class="world-unit militia" data-equipment-target="${esc(unit.id)}" data-building-route="${unit.route}" data-route-lane="${unit.lane}" data-route-duration="${25 + (index % 4) * 2.8}" data-route-delay="${1.2 + index * 1.9}" style="left:${start[0]}px;top:${start[1]}px;--idle-delay:-${(index % 7) * .37}s" title="${esc(unit.name)}｜${esc(unit.detail)}" aria-label="${esc(unit.name)}，${esc(unit.detail)}"><span class="world-unit-avatar" aria-hidden="true"><i>${esc(unit.icon)}</i><b>${unit.unitNumber}</b></span></button>`;
     }).join("");
     layer.innerHTML = civilians + heroHtml + militiaHtml;
     layer.querySelectorAll("[data-equipment-target]").forEach((unit) => unit.addEventListener("click", (event) => { event.stopPropagation(); openEquipmentDialog(unit.dataset.equipmentTarget); }));
+    startBuildingPatrols(layer);
+  }
+
+  function buildingPatrolPoints(routeName, lane = 0) {
+    const route = BUILDING_PATROL_ROUTES[routeName] || BUILDING_PATROL_ROUTES.west;
+    return route.map((plotIndex) => {
+      const [plotX, plotY] = PLOT_POSITIONS[plotIndex];
+      const [approachX, approachY] = BUILDING_APPROACH_OFFSETS[plotIndex];
+      return [plotX + approachX + lane * 8, plotY + approachY + lane * 4];
+    });
+  }
+
+  function buildingPatrolFrames(points) {
+    const origin = points[0];
+    const segmentCount = Math.max(1, points.length - 1);
+    const frames = [];
+    for (let segment = 0; segment < segmentCount; segment += 1) {
+      const point = points[segment];
+      const next = points[segment + 1];
+      const translate = `${point[0] - origin[0]}px ${point[1] - origin[1]}px`;
+      frames.push({ translate, offset: segment / segmentCount });
+      frames.push({ translate, offset: (segment + .24) / segmentCount });
+      frames.push({ translate: `${next[0] - origin[0]}px ${next[1] - origin[1]}px`, offset: (segment + 1) / segmentCount });
+    }
+    return frames;
+  }
+
+  function startBuildingPatrols(layer) {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    layer.querySelectorAll("[data-building-route]").forEach((unit) => {
+      if (typeof unit.animate !== "function") return;
+      const points = buildingPatrolPoints(unit.dataset.buildingRoute, Number(unit.dataset.routeLane || 0));
+      const animation = unit.animate(buildingPatrolFrames(points), { duration: Number(unit.dataset.routeDuration) * 1000, delay: -Number(unit.dataset.routeDelay) * 1000, iterations: Infinity, easing: "linear", fill: "both" });
+      const pause = () => animation.pause();
+      const resume = () => { if (!unit.matches(":hover") && document.activeElement !== unit) animation.play(); };
+      unit.addEventListener("pointerenter", pause);
+      unit.addEventListener("pointerleave", resume);
+      unit.addEventListener("focus", pause);
+      unit.addEventListener("blur", resume);
+    });
   }
 
   function renderMap(current) {
@@ -796,11 +858,12 @@
       const interactive = Boolean(action && action.available !== false);
       return `<button class="grind-level ${cls}" ${interactive ? `data-action-id="${esc(action.id)}"` : "disabled"} title="${esc(action?.disabledReason || `${level.threat} · ${level.lootCountLabel} · ${level.rarityLabel}`)}"><b>${level.difficulty}</b><span>${level.unlocked ? level.name : "未解锁"}</span></button>`;
     }).join("");
-    const pct = grind.nextUnlockAt ? Math.min(100, Math.round(grind.totalWins / grind.nextUnlockAt * 100)) : 100;
-    const nextText = grind.nextUnlockAt ? `再胜${Math.max(0, grind.nextUnlockAt - grind.totalWins)}场解锁难度${grind.nextUnlockDifficulty}` : "全部难度已解锁";
-    const progressLabel = grind.nextUnlockAt ? `总讨伐胜利 ${grind.totalWins}/${grind.nextUnlockAt}` : `总讨伐胜利 ${grind.totalWins}`;
-    const progressBar = grind.nextUnlockAt ? `<div class="grind-progress"><i style="width:${pct}%"></i></div>` : "";
-    return `<section class="grind-difficulty-panel"><div class="grind-levels">${selector}</div><div class="grind-progress-copy"><strong>${progressLabel}</strong><span>${esc(nextText)}</span></div>${progressBar}<small>任意难度胜利都计入解锁<br>当前难度：${esc(selected.threat)} · ${esc(selected.lootCountLabel)}<br>${esc(selected.rarityLabel)}</small></section>`;
+    const remainingScore = grind.nextUnlockScore ? Math.max(0, grind.nextUnlockScore - grind.unlockScore) : 0;
+    const pct = grind.nextUnlockScore ? Math.min(100, Math.round(grind.unlockScore / grind.nextUnlockScore * 100)) : 100;
+    const nextText = grind.nextUnlockScore ? `还差${remainingScore}积分；按当前难度约${Math.ceil(remainingScore / selected.winScore)}胜解锁难度${grind.nextUnlockDifficulty}` : "全部难度已解锁";
+    const progressLabel = grind.nextUnlockScore ? `讨伐积分 ${grind.unlockScore}/${grind.nextUnlockScore}` : `讨伐积分 ${grind.unlockScore}`;
+    const progressBar = grind.nextUnlockScore ? `<div class="grind-progress"><i style="width:${pct}%"></i></div>` : "";
+    return `<section class="grind-difficulty-panel"><div class="grind-levels">${selector}</div><div class="grind-progress-copy"><strong>${progressLabel}</strong><span>${esc(nextText)}</span></div>${progressBar}<small>难度N胜利一次获得N积分；当前难度每胜+${selected.winScore}<br>当前难度：${esc(selected.threat)} · ${esc(selected.lootCountLabel)}<br>${esc(selected.rarityLabel)}</small></section>`;
   }
 
   function ensureSelections(current) {
@@ -1118,13 +1181,13 @@
     const slotHtml = (slot) => {
       if (hero.equipmentLocked) {
         const reason = hero.equipmentLockReason || "这个单位暂时不能使用装备。";
-        return `<button type="button" class="portrait-equipment-slot locked" disabled title="${esc(reason)}" aria-label="${esc(slot.slotLabel)}：装备未开放"><i>${SLOT_ICONS[slot.slotLabel] || "◆"}</i><em>锁</em><small>${esc(slot.slotLabel)}</small><div class="equipment-slot-tooltip"><span>${esc(slot.slotLabel)}</span><strong>装备未开放</strong><p>${esc(reason)}</p></div></button>`;
+        return `<button type="button" class="portrait-equipment-slot locked" disabled title="${esc(reason)}" aria-label="${esc(slot.slotLabel)}：装备未开放"><i>${SLOT_ICONS[slot.slotLabel] || "◆"}</i><em>锁</em><div class="equipment-slot-tooltip"><span>${esc(slot.slotLabel)}</span><strong>装备未开放</strong><p>${esc(reason)}</p></div></button>`;
       }
       const item = slot.item;
       const base = item ? Object.entries(item.baseStats || {}).map(([key, value]) => `${STAT_LABELS[key] || key}+${value}`).join(" · ") : "";
       const affixes = item ? item.affixes.map((affix) => `${affix.label}+${affix.value}${affix.percent ? "%" : ""}`).join(" · ") : "";
       const tooltip = item ? `<div class="equipment-slot-tooltip"><span>${esc(slot.slotLabel)} · ${esc(item.rarity)}</span><strong class="rarity-${esc(item.rarity)}">${esc(item.name)}</strong><p>显示评分 +${item.power}</p><p>${esc(base || "无基础属性")}</p><p>${esc(affixes || "无额外词条")}</p></div>` : `<div class="equipment-slot-tooltip"><span>${esc(slot.slotLabel)}</span><strong>空装备槽</strong><p>从右侧背包选择一件${esc(slot.slotLabel)}进行装备。</p></div>`;
-      return `<button type="button" class="portrait-equipment-slot ${item ? `filled rarity-border-${esc(item.rarity)}` : "empty"}" ${item ? `data-equipment-item="${esc(item.id)}"` : ""} aria-label="${esc(slot.slotLabel)}：${item ? esc(item.name) : "空"}"><i>${SLOT_ICONS[slot.slotLabel] || "◆"}</i><small>${esc(slot.slotLabel)}</small>${tooltip}</button>`;
+      return `<button type="button" class="portrait-equipment-slot ${item ? `filled rarity-border-${esc(item.rarity)}` : "empty"}" ${item ? `data-equipment-item="${esc(item.id)}"` : ""} aria-label="${esc(slot.slotLabel)}：${item ? esc(item.name) : "空"}"><i>${SLOT_ICONS[slot.slotLabel] || "◆"}</i>${tooltip}</button>`;
     };
     const leftSlots = hero.equipment.slice(0, 4).map(slotHtml).join("");
     const rightSlots = hero.equipment.slice(4, 8).map(slotHtml).join("");

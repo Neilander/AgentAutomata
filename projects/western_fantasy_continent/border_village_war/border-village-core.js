@@ -15,7 +15,12 @@ const FINAL_DAY = 7;
 const INVENTORY_LIMIT = 200;
 const GRIND_DIFFICULTY_COUNT = 5;
 const SLOT_DATA = GEAR_RULES.SLOT_DATA;
-const RARITY_DATA = GEAR_RULES.RARITY_DATA;
+const RARITY_DATA = [
+  ...GEAR_RULES.RARITY_DATA.map((row) => ({ ...row })),
+  { id: "eternal", label: "永恒", affixes: 15, value: 5.5 },
+  { id: "blackgold", label: "黑金", affixes: 18, value: 7.0 },
+  { id: "infernal", label: "炼狱", affixes: 22, value: 9.0 },
+];
 const AFFIX_DEFS = GEAR_RULES.AFFIX_DEFS;
 const RARITIES = RARITY_DATA.map((row) => row.label);
 const RARITY_BY_LABEL = Object.fromEntries(RARITY_DATA.map((row) => [row.label, row]));
@@ -30,6 +35,8 @@ const HEROES = {
   witch: { name: "边林女巫·盐枝", role: "持续削弱", combatRole: "warlock", base: 58, preferredAffixes: ["奥术", "效果强度"] },
   hunter: { name: "山地猎人·苔牙", role: "猎杀大型敌人", combatRole: "ranger", base: 57, preferredAffixes: ["敏捷", "暴击率"] },
   alchemist: { name: "旅行炼金师·罗莎", role: "范围破阵", combatRole: "alchemist", base: 58, preferredAffixes: ["奥术", "节律"] },
+  heiress: { name: "探险家小姐·薇奥拉", role: "遗迹学识与机关破解", combatRole: "alchemist", base: 55, preferredAffixes: ["奥术", "效果强度"] },
+  mentor: { name: "魔剑导师·艾琳", role: "护卫与魔法反击", combatRole: "mage", base: 64, preferredAffixes: ["奥术", "坚韧"] },
 };
 
 const BUILDINGS = {
@@ -44,6 +51,27 @@ const RAIDS = {
   foragers: { title: "兽人粮秣营", description: "侦察报告显示六名守军分守粮车、箭塔和营门。", unlock: (s) => Boolean(s.flags.foragerIntel), enemies: [["warrior", "搬运队"], ["warrior", "粮车守卫"], ["ranger", "护粮射手"], ["knight", "营门盾卫"], ["berserker", "押运蛮兵"], ["ranger", "兽人投矛手"]], combatScale: { hp: 1.01, power: .97, armor: 1.0 }, tier: 2, baseFood: 5, removedUnits: 2, reward: { food: 12 }, loot: 2, plotSlot: 7 },
   beastPen: { title: "披甲战兽栏", description: "五名战兽与驯兽兵守着准备投入总攻的兽栏。", unlock: (s) => Boolean(s.flags.beastIntel), enemies: [["berserker", "披甲战兽"], ["berserker", "披甲战兽"], ["knight", "兽栏卫士"], ["ranger", "驯兽射手"], ["berserker", "铁链战兽"]], combatScale: { hp: 1.01, power: .97, armor: 1.03 }, tier: 3, baseFood: 8, removedUnits: 3, reward: { gold: 12 }, loot: 3, plotSlot: 8 },
   shaman: { title: "血鼓萨满祭坛", description: "八名祭坛守军围绕血鼓结阵，持续强化总攻部队。", unlock: (s) => Boolean(s.flags.shamanIntel), enemies: [["knight", "祭坛守卫"], ["warrior", "祭坛守卫"], ["warlock", "血鼓萨满"], ["priest", "图腾医者"], ["warrior", "血鼓战士"], ["berserker", "献祭蛮兵"], ["ranger", "山脊射手"], ["assassin", "图腾猎手"]], combatScale: { hp: .92, power: .9, armor: 1.0 }, tier: 4, baseFood: 12, removedUnits: 1, removesBoss: true, reward: { gold: 18 }, loot: 4, plotSlot: 9 },
+};
+
+const ANCIENT_RUINS = {
+  id: "ancient_ruins",
+  title: "远古遗迹",
+  entrance: {
+    title: "远古遗迹 · 封锁回廊",
+    formationCapacity: 4,
+    baseFood: 8,
+    tier: 6,
+    combatScale: { hp: 1.24, power: 1.17, armor: 1.18 },
+    enemies: [["knight", "外环石像盾卫"], ["knight", "外环石像盾卫"], ["ranger", "墓道弩机"], ["ranger", "墓道弩机"], ["assassin", "噬魔伏兽"], ["warlock", "封印残影"], ["priest", "守门祭器"]],
+  },
+  heart: {
+    title: "远古遗迹 · 守秘者大厅",
+    formationCapacity: 8,
+    baseFood: 12,
+    tier: 7,
+    combatScale: { hp: 1.3, power: 1.23, armor: 1.22 },
+    enemies: [["knight", "遗迹守心者"], ["knight", "无名重甲像"], ["warrior", "封魔执刑者"], ["warrior", "封魔执刑者"], ["ranger", "晶簇射手"], ["assassin", "镜廊追猎者"], ["warlock", "枯竭咒灵"], ["priest", "永眠祭司"], ["alchemist", "古代造物"], ["mage", "核心回响"]],
+  },
 };
 
 const EVENTS = {
@@ -78,11 +106,11 @@ const EVENTS = {
 };
 
 const GRIND_DIFFICULTIES = {
-  1: { name: "林缘", threat: "入门", unlockWinsToNext: 5, lootTier: 1, lootCountTable: [[1, 1]], lootCountLabel: "必定1件", rarityTable: [["普通", .90], ["稀有", .10]], rarityLabel: "普通90% · 稀有10%", enemyTier: 1, scale: { hp: .72, power: .7, armor: .9 }, enemies: [["warrior", "林地小兽"], ["ranger", "投石小怪"]] },
-  2: { name: "兽径", threat: "危险", unlockWinsToNext: 10, lootTier: 2, lootCountTable: [[1, 1]], lootCountLabel: "必定1件", rarityTable: [["普通", .75], ["稀有", .25]], rarityLabel: "普通75% · 稀有25%", enemyTier: 2, scale: { hp: 1.08, power: 1.03, armor: 1.0 }, enemies: [["knight", "披甲魔物"], ["warrior", "林地魔物"], ["ranger", "投矛魔物"], ["priest", "魔物祭徒"]] },
-  3: { name: "腐沼", threat: "凶险", unlockWinsToNext: 30, lootTier: 3, lootCountTable: [[1, .25], [2, .75]], lootCountLabel: "25%掉1件 · 75%掉2件", rarityTable: [["普通", .70], ["稀有", .25], ["史诗", .05]], rarityLabel: "普通70% · 稀有25% · 史诗5%", enemyTier: 3, scale: { hp: 1.06, power: 1.02, armor: 1.04 }, enemies: [["knight", "腐沼甲兽"], ["warrior", "噬人魔"], ["ranger", "毒矢魔物"], ["assassin", "潜沼猎手"], ["warlock", "沼泽咒师"], ["priest", "魔物祭徒"]] },
-  4: { name: "血林", threat: "致命", unlockWinsToNext: 50, lootTier: 4, lootCountTable: [[2, .75], [3, .25]], lootCountLabel: "75%掉2件 · 25%掉3件", rarityTable: [["普通", .50], ["稀有", .30], ["史诗", .19], ["传说", .01]], rarityLabel: "普通50% · 稀有30% · 史诗19% · 传说1%", enemyTier: 4, scale: { hp: .93, power: .92, armor: 1.0 }, enemies: [["knight", "血林巨怪"], ["berserker", "狂化战兽"], ["warrior", "血林屠夫"], ["ranger", "血羽猎手"], ["assassin", "血影猎手"], ["alchemist", "腐血投手"], ["warlock", "血咒魔物"], ["priest", "血祭司"]] },
-  5: { name: "魔潮腹地", threat: "绝境", unlockWinsToNext: null, lootTier: 5, lootCountTable: [[3, 1]], lootCountLabel: "必定3件", rarityTable: [["普通", .30], ["稀有", .45], ["史诗", .20], ["传说", .05]], rarityLabel: "普通30% · 稀有45% · 史诗20% · 传说5%", enemyTier: 5, scale: { hp: 1.175, power: 1.125, armor: 1.115 }, enemies: [["knight", "魔潮重甲兽"], ["knight", "深林铁卫"], ["berserker", "魔潮撕裂者"], ["warrior", "魔潮战士"], ["ranger", "腐箭猎手"], ["ranger", "夜羽猎手"], ["assassin", "无光伏击者"], ["alchemist", "腐浆投手"], ["warlock", "深林咒师"], ["priest", "魔潮祭司"]] },
+  1: { name: "林缘", threat: "入门", unlockScoreToNext: 5, winsAtCurrentDifficultyToNext: 5, lootTier: 1, lootCountTable: [[1, 1]], lootCountLabel: "必定1件", rarityTable: [["普通", .90], ["稀有", .10]], rarityLabel: "普通90% · 稀有10%", enemyTier: 1, scale: { hp: .72, power: .7, armor: .9 }, enemies: [["warrior", "林地小兽"], ["ranger", "投石小怪"]] },
+  2: { name: "兽径", threat: "危险", unlockScoreToNext: 20, winsAtCurrentDifficultyToNext: 10, lootTier: 2, lootCountTable: [[1, 1]], lootCountLabel: "必定1件", rarityTable: [["普通", .75], ["稀有", .25]], rarityLabel: "普通75% · 稀有25%", enemyTier: 2, scale: { hp: 1.08, power: 1.03, armor: 1.0 }, enemies: [["knight", "披甲魔物"], ["warrior", "林地魔物"], ["ranger", "投矛魔物"], ["priest", "魔物祭徒"]] },
+  3: { name: "腐沼", threat: "凶险", unlockScoreToNext: 90, winsAtCurrentDifficultyToNext: 30, lootTier: 3, lootCountTable: [[1, .25], [2, .75]], lootCountLabel: "25%掉1件 · 75%掉2件", rarityTable: [["普通", .70], ["稀有", .25], ["史诗", .05]], rarityLabel: "普通70% · 稀有25% · 史诗5%", enemyTier: 3, scale: { hp: 1.06, power: 1.02, armor: 1.04 }, enemies: [["knight", "腐沼甲兽"], ["warrior", "噬人魔"], ["ranger", "毒矢魔物"], ["assassin", "潜沼猎手"], ["warlock", "沼泽咒师"], ["priest", "魔物祭徒"]] },
+  4: { name: "血林", threat: "致命", unlockScoreToNext: 200, winsAtCurrentDifficultyToNext: 50, lootTier: 4, lootCountTable: [[2, .75], [3, .25]], lootCountLabel: "75%掉2件 · 25%掉3件", rarityTable: [["普通", .50], ["稀有", .30], ["史诗", .19], ["传说", .01]], rarityLabel: "普通50% · 稀有30% · 史诗19% · 传说1%", enemyTier: 4, scale: { hp: .93, power: .92, armor: 1.0 }, enemies: [["knight", "血林巨怪"], ["berserker", "狂化战兽"], ["warrior", "血林屠夫"], ["ranger", "血羽猎手"], ["assassin", "血影猎手"], ["alchemist", "腐血投手"], ["warlock", "血咒魔物"], ["priest", "血祭司"]] },
+  5: { name: "魔潮腹地", threat: "绝境", unlockScoreToNext: null, winsAtCurrentDifficultyToNext: null, lootTier: 5, lootCountTable: [[3, 1]], lootCountLabel: "必定3件", rarityTable: [["普通", .30], ["稀有", .45], ["史诗", .20], ["传说", .05]], rarityLabel: "普通30% · 稀有45% · 史诗20% · 传说5%", enemyTier: 5, scale: { hp: 1.175, power: 1.125, armor: 1.115 }, enemies: [["knight", "魔潮重甲兽"], ["knight", "深林铁卫"], ["berserker", "魔潮撕裂者"], ["warrior", "魔潮战士"], ["ranger", "腐箭猎手"], ["ranger", "夜羽猎手"], ["assassin", "无光伏击者"], ["alchemist", "腐浆投手"], ["warlock", "深林咒师"], ["priest", "魔潮祭司"]] },
 };
 
 function clone(value) { return structuredClone(value); }
@@ -93,6 +121,16 @@ function weightedPick(state, rows) { let roll = rand(state) * rows.reduce((sum, 
 function rarityIndex(label) { return RARITIES.indexOf(label); }
 function emptyEquipment() { return Object.fromEntries(Object.keys(SLOT_DATA).map((slot) => [slot, null])); }
 function addLog(state, text, kind = "result") { state.recent.unshift({ day: state.day, kind, text }); state.recent = state.recent.slice(0, 40); }
+
+function ancientRuinsState(state) {
+  return state.challenges?.ancientRuins || { stage: "entrance", approach: null, completed: false };
+}
+
+function ensureAncientRuinsState(state) {
+  if (!state.challenges) state.challenges = {};
+  if (!state.challenges.ancientRuins) state.challenges.ancientRuins = { stage: "entrance", approach: null, completed: false };
+  return state.challenges.ancientRuins;
+}
 
 function createInitialState(seed = "border-village-war") {
   const state = {
@@ -117,6 +155,7 @@ function createInitialState(seed = "border-village-war") {
     army: { trainedUnits: 0 },
     roster: ["player"], activeParty: ["player"], selectedHeroId: "player", equipment: {}, inventory: [],
     flags: {}, resolvedEvents: {}, resolvedRaids: {}, enemy: { orcUnits: 20, bosses: 3 },
+    challenges: { ancientRuins: { stage: "entrance", approach: null, completed: false } },
     recent: [], lastCombat: null, lastOutcome: null, result: null,
     stats: { actionsSpent: 0, grindAttempts: 0, grindWins: 0, combats: 0, failedCombats: 0, itemsSold: 0, soldiersTrained: 0 },
   };
@@ -124,12 +163,30 @@ function createInitialState(seed = "border-village-war") {
   const starter = starterItem();
   state.inventory.push(starter);
   state.equipment.player.weapon = starter.id;
+  addStarterRarityShowcase(state);
   addLog(state, "一队圣殿骑士来到灰谷村。女队长伊莎贝拉认为附近只有零星魔物，决定让部下明日沿边境巡逻。", "story");
   return state;
 }
 
 function starterItem() {
   return { id: "starter_sword", name: "旧民兵剑", slot: "weapon", slotLabel: "武器", rarity: "普通", rarityId: "common", equipmentLevel: 12, power: 7, baseStats: { physicalPower: 6 }, affixes: [{ stat: "might", label: "武力", value: 1, level: 1, category: "major", percent: false }], identityTags: [], source: "村庄仓库" };
+}
+
+function addStarterRarityShowcase(state) {
+  const showcase = [
+    ["稀有", "helm", "初始展示·稀有头盔"],
+    ["史诗", "chest", "初始展示·史诗胸甲"],
+    ["传说", "ring", "初始展示·传说戒指"],
+    ["神话", "charm", "初始展示·神话护符"],
+    ["永恒", "gloves", "初始展示·永恒手甲"],
+    ["黑金", "legs", "初始展示·黑金腿甲"],
+    ["炼狱", "boots", "初始展示·炼狱战靴"],
+  ];
+  for (const [rarity, slot, name] of showcase) {
+    const item = generateItem(state, "初始稀有度展示", 1, rarity, slot);
+    item.name = name;
+    state.inventory.push(item);
+  }
 }
 
 const PROSPERITY_LEVELS = [
@@ -208,11 +265,11 @@ function equipmentTargetInfo(state, targetId) {
 }
 function equipmentSlots(state, targetId) { return state.equipment[targetId] || emptyEquipment(); }
 function ensureEquipmentSlots(state, targetId) { if (!state.equipment[targetId]) state.equipment[targetId] = emptyEquipment(); return state.equipment[targetId]; }
-function unlockedGrindDifficulty(totalWins) {
-  const wins = Math.max(0, Number(totalWins) || 0);
+function unlockedGrindDifficulty(unlockScore) {
+  const score = Math.max(0, Number(unlockScore) || 0);
   let unlocked = 1;
   for (let difficulty = 1; difficulty < GRIND_DIFFICULTY_COUNT; difficulty += 1) {
-    if (wins < GRIND_DIFFICULTIES[difficulty].unlockWinsToNext) break;
+    if (score < GRIND_DIFFICULTIES[difficulty].unlockScoreToNext) break;
     unlocked = difficulty + 1;
   }
   return unlocked;
@@ -224,9 +281,10 @@ function grindProgress(state) {
     return [difficulty, Math.max(0, Number(raw.winsByDifficulty?.[difficulty] || 0))];
   }));
   const totalWins = Math.max(0, Number(state.stats?.grindWins) || 0);
-  const unlockedDifficulty = unlockedGrindDifficulty(totalWins);
+  const unlockScore = Object.entries(winsByDifficulty).reduce((sum, [difficulty, wins]) => sum + Number(difficulty) * wins, 0);
+  const unlockedDifficulty = unlockedGrindDifficulty(unlockScore);
   const selectedDifficulty = Math.max(1, Math.min(unlockedDifficulty, Number(raw.selectedDifficulty) || 1));
-  return { selectedDifficulty, unlockedDifficulty, totalWins, winsByDifficulty };
+  return { selectedDifficulty, unlockedDifficulty, totalWins, unlockScore, winsByDifficulty };
 }
 function ensureGrindProgress(state) { state.grind = grindProgress(state); return state.grind; }
 function buildingRows(state, type) { return state.buildings.filter((row) => row.unlocked !== false && row.type === type && row.complete); }
@@ -258,7 +316,7 @@ function refreshMarket(state) {
   for (let index = 0; index < 3; index += 1) {
     const forced = index === 2 && rand(state) < .24 ? "史诗" : null;
     const item = generateItem(state, "灰谷集市", tier + 1, forced);
-    const price = ({ "普通": 6, "稀有": 10, "史诗": 18, "传说": 28, "神话": 40 })[item.rarity] || 6;
+    const price = ({ "普通": 6, "稀有": 10, "史诗": 18, "传说": 28, "神话": 40, "永恒": 60, "黑金": 85, "炼狱": 120 })[item.rarity] || 6;
     stock.push({ id: `gear_${state.day}_${index}`, type: "gear", label: `${item.name}（评分+${item.power}）`, price, count: 1, item });
   }
   state.market = { day: state.day, sellRemaining: 5, stock };
@@ -491,6 +549,40 @@ function raidPlan(state, raidId, deployment = null) {
   return { kind: "raid", raidId, title: raid.title, seed: `${state.seed}|raid|${raidId}|${state.stats.combats}|food${supply.foodCommitted}`, leftTeam, rightTeam, maxTime: 100, ...supply, deployedArmy: leftTeam.filter((unit) => unit.unitKind === "trained" || unit.unitKind === "militia").length };
 }
 
+function ancientRuinsFoodRequirement(state, stage = ancientRuinsState(state).stage) {
+  const config = stage === "heart" ? ANCIENT_RUINS.heart : ANCIENT_RUINS.entrance;
+  const heroes = state.activeParty.slice(0, config.formationCapacity);
+  const soldiers = expeditionArmy(state, Math.max(0, config.formationCapacity - heroes.length));
+  return config.baseFood + soldiers.reduce((sum, row) => sum + row.food, 0);
+}
+
+function ancientRuinsPlan(state, stage, deployment = null) {
+  const progress = ancientRuinsState(state);
+  if (state.phase !== "management" || state.ap <= 0 || progress.completed || progress.stage !== stage || !["entrance", "heart"].includes(stage)) return null;
+  const config = stage === "heart" ? ANCIENT_RUINS.heart : ANCIENT_RUINS.entrance;
+  const deployed = formationCombatTeam(state, deployment, config.formationCapacity);
+  if (deployment && !deployed) return null;
+  const heroes = deployed ? [] : state.activeParty.slice(0, config.formationCapacity).map((heroId, index) => heroCombatSpec(state, heroId, index));
+  const soldiers = deployed ? [] : expeditionArmy(state, Math.max(0, config.formationCapacity - heroes.length)).map((row, index) => ({ ...row.spec, slotIndex: heroes.length + index }));
+  const unscaledLeftTeam = deployed || [...heroes, ...soldiers];
+  if (stage === "heart" && progress.approach === "supply") {
+    unscaledLeftTeam.push(roleSpec("mage", `${HEROES.mentor.name}（虚弱）`, unscaledLeftTeam.length, { hp: .58, power: .55, armor: .76, unitKind: "guest" }));
+  }
+  const fullFood = config.baseFood + (deployed ? formationSoldierFood(deployed) : soldiers.reduce((sum, row) => sum + row.food, 0));
+  const supply = resolveFormationSupply(state, fullFood, deployment);
+  const leftTeam = applySupplyPerformance(unscaledLeftTeam, supply.performance);
+  const enemyRows = stage === "heart" && progress.approach === "route" ? config.enemies.slice(0, -2) : config.enemies;
+  const rightTeam = enemyRows.map(([role, name], index) => enemySpec(role, name, index, config.tier, config.combatScale));
+  const fixedNote = stage === "heart" && progress.approach === "supply" ? `${HEROES.mentor.name}以魔力枯竭状态固定参战，不占编队单位` : "";
+  return {
+    kind: "challenge", challengeId: ANCIENT_RUINS.id, challengeStage: stage, title: config.title,
+    seed: `${state.seed}|challenge|${stage}|${progress.approach || "none"}|${state.stats.combats}|food${supply.foodCommitted}`,
+    leftTeam, rightTeam, maxTime: stage === "heart" ? 125 : 110, ...supply,
+    formationCapacity: config.formationCapacity, fixedNote,
+    deployedArmy: leftTeam.filter((unit) => unit.unitKind === "trained" || unit.unitKind === "militia").length,
+  };
+}
+
 function trainingPlan(state, deployment = null) {
   if (state.phase !== "management" || state.ap <= 0 || trainedUnits(state) >= militiaUnits(state)) return null;
   const deployed = formationCombatTeam(state, deployment, 4);
@@ -576,7 +668,7 @@ function combatSummary(result, title) {
 
 function publicActionId(state, internalId) {
   const grind = grindProgress(state);
-  const grindSignature = `${grind.selectedDifficulty}|${grind.unlockedDifficulty}|${grind.totalWins}|${Object.values(grind.winsByDifficulty).join(",")}`;
+  const grindSignature = `${grind.selectedDifficulty}|${grind.unlockedDifficulty}|${grind.totalWins}|${grind.unlockScore}|${Object.values(grind.winsByDifficulty).join(",")}`;
   return `choice_${hash(`${state.seed}|${state.day}|${state.ap}|${state.phase}|${state.stats.actionsSpent}|${state.stats.grindAttempts}|${grindSignature}|${internalId}`)}`;
 }
 
@@ -596,13 +688,14 @@ function internalActions(state) {
   if (state.result) return [];
   if (state.phase === "prologue") {
     const lockedHunt = withAvailability({ id: "combat:hunt", label: "前往边林免费讨伐魔物", kind: "grind", actionPointCost: 0, description: "刷怪不消耗行动力；士兵出战需要军粮，英雄不需要。" }, "先完成当前开场剧情，组织好第一支队伍");
-    if (state.storyStep === "arrival") return [{ id: "story:arrival", label: "陪伊莎贝拉巡视这座安静的边陲村", kind: "story", actionPointCost: 0 }, lockedHunt];
+    if (state.storyStep === "arrival") return [{ id: "story:arrival", label: "陪伊莎贝拉巡视这座安静的边陲村", kind: "story", actionPointCost: 0 }, lockedHunt, ...equipmentActions(state)];
     if (state.storyStep === "survivors") return [
       { id: "story:save_scout", label: "先救掌握敌情的圣殿斥候莱恩", kind: "decision", actionPointCost: 0, knownResult: "莱恩将成为第二名圣殿骑士，并带回粮秣营位置" },
       { id: "story:save_guard", label: "先救伤势更重的圣殿盾骑马库斯", kind: "decision", actionPointCost: 0, knownResult: "马库斯将成为负伤盾骑，提供第二道前排，但当前战力低于伊莎贝拉" },
       lockedHunt,
+      ...equipmentActions(state),
     ];
-    return [];
+    return equipmentActions(state);
   }
   if (state.phase === "final") {
     const preview = finalBattlePlan(state, state.resources.food);
@@ -618,8 +711,8 @@ function internalActions(state) {
   const rows = [{ id: "combat:hunt", label: `挑战难度${grind.selectedDifficulty}「${selectedConfig.name}」`, kind: "grind", actionPointCost: 0, description: `胜利掉落：${selectedConfig.lootCountLabel}；${selectedConfig.rarityLabel}。` }];
   for (let difficulty = 1; difficulty <= GRIND_DIFFICULTY_COUNT; difficulty += 1) {
     const config = GRIND_DIFFICULTIES[difficulty];
-    const previousTarget = difficulty > 1 ? GRIND_DIFFICULTIES[difficulty - 1].unlockWinsToNext : 0;
-    const lockedReason = difficulty > grind.unlockedDifficulty ? `累计讨伐胜利达到${previousTarget}场后解锁（当前${Math.min(grind.totalWins, previousTarget)}/${previousTarget}；任意难度胜利都计数）` : "";
+    const previousTarget = difficulty > 1 ? GRIND_DIFFICULTIES[difficulty - 1].unlockScoreToNext : 0;
+    const lockedReason = difficulty > grind.unlockedDifficulty ? `累计讨伐积分达到${previousTarget}后解锁（当前${Math.min(grind.unlockScore, previousTarget)}/${previousTarget}；难度N胜利获得N积分）` : "";
     rows.push(withAvailability({ id: `grind:select:${difficulty}`, label: difficulty === grind.selectedDifficulty ? `难度${difficulty}「${config.name}」· 当前` : `切换难度${difficulty}「${config.name}」`, kind: "grind_setting", operation: "select_grind_difficulty", actionPointCost: 0, targetDifficulty: difficulty, description: `${config.threat} · ${config.lootCountLabel} · ${config.rarityLabel}` }, lockedReason));
   }
   const apReason = actionPointReason(state);
@@ -642,6 +735,18 @@ function internalActions(state) {
     if (!raid.unlock(state) || state.resolvedRaids[raidId]) continue;
     const food = raidFoodRequirement(state, raidId);
     rows.push(withAvailability({ id: `combat:raid:${raidId}`, label: `突袭${raid.title}（满额需${food}粮，占领后解锁1个建设位）`, kind: "combat", actionPointCost: 1, knownCost: {}, foodCost: food, description: `胜利后永久控制此地，并削弱最终敌军；军粮不足也能出发，但部队发挥会下降。` }, apReason));
+  }
+  const ruins = ancientRuinsState(state);
+  if (!ruins.completed && ruins.stage === "entrance") {
+    const food = ancientRuinsFoodRequirement(state, "entrance");
+    rows.push(withAvailability({ id: "combat:challenge:ancient_ruins:entrance", label: `突破远古遗迹封锁回廊（高难·4单位，满额需${food}粮）`, kind: "combat", actionPointCost: 1, knownCost: {}, foodCost: food, description: "守卫强度高于魔潮腹地；胜利后才能继续深入遗迹。", targetChallengeId: ANCIENT_RUINS.id, targetChallengeStage: "entrance" }, apReason));
+  } else if (!ruins.completed && ruins.stage === "secret_room") {
+    rows.push(withAvailability({ id: "challenge:ancient_ruins:supply", label: "拿出12份粮食和恢复药，先让老师恢复意识", kind: "challenge", actionPointCost: 0, knownCost: { food: 12 }, description: "艾琳仍会非常虚弱，但能在下一场战斗中固定保护薇奥拉。", targetChallengeId: ANCIENT_RUINS.id, targetChallengeStage: "secret_room" }, missingCostReason(state, { food: 12 })));
+    rows.push({ id: "challenge:ancient_ruins:route", label: "不强迫老师起身，听薇奥拉复盘机关并寻找密道", kind: "challenge", actionPointCost: 0, knownCost: {}, description: "薇奥拉能带队绕开一部分古代守卫；艾琳无法参加下一场战斗。", targetChallengeId: ANCIENT_RUINS.id, targetChallengeStage: "secret_room" });
+  } else if (!ruins.completed && ruins.stage === "heart") {
+    const food = ancientRuinsFoodRequirement(state, "heart");
+    const approachText = ruins.approach === "supply" ? "艾琳会以虚弱状态固定参战" : "薇奥拉已经标出避开两组守卫的密道";
+    rows.push(withAvailability({ id: "combat:challenge:ancient_ruins:heart", label: `挑战守秘者大厅（极高难·8单位，满额需${food}粮）`, kind: "combat", actionPointCost: 1, knownCost: {}, foodCost: food, description: `${approachText}；胜利后才能把两人带出遗迹。`, targetChallengeId: ANCIENT_RUINS.id, targetChallengeStage: "heart" }, apReason));
   }
   const event = Object.entries(EVENTS).find(([id, row]) => row.day === state.day && !state.resolvedEvents[id]);
   if (event) for (const option of event[1].options) rows.push(withAvailability({ id: `event:${event[0]}:${option.id}`, label: option.label, kind: "event", actionPointCost: 1, knownCost: clone(option.cost || {}), description: option.description }, apReason, option.req && !option.req(state) ? option.reqText || "尚未满足条件。" : ""));
@@ -668,7 +773,7 @@ function pay(state, cost) { if (!canPay(state, cost)) throw new Error("资源不
 function spendAction(state) { if (state.ap <= 0) throw new Error("今日已经没有行动力。"); state.ap -= 1; state.stats.actionsSpent += 1; }
 function equippedIds(state) { return new Set(equipmentTargetIds(state).flatMap((targetId) => Object.values(equipmentSlots(state, targetId)).filter(Boolean))); }
 function unequippedItems(state) { const equipped = equippedIds(state); return state.inventory.filter((item) => !equipped.has(item.id)); }
-function salePrice(item) { return ({ "普通": 2, "稀有": 4, "史诗": 8, "传说": 12, "神话": 18 })[item.rarity] || 1; }
+function salePrice(item) { return ({ "普通": 2, "稀有": 4, "史诗": 8, "传说": 12, "神话": 18, "永恒": 26, "黑金": 38, "炼狱": 55 })[item.rarity] || 1; }
 function marketItemSummary(item) {
   const bases = Object.entries(item.baseStats || {}).map(([key, value]) => `${AFFIX_DEFS[key]?.label || key}+${value}`);
   const affixes = (item.affixes || []).slice(0, 4).map((row) => `${row.label}+${row.value}${row.percent ? "%" : ""}`);
@@ -755,6 +860,7 @@ function applyInternalAction(state, id) {
     recruitHero(state, heroId); state.activeParty = ["player", "captain", heroId]; state.flags.foragerIntel = true;
     state.day = 3; state.phase = "management"; state.storyStep = null;
     addLog(state, `${HEROES[heroId].name}活了下来。伊莎贝拉把敌军规模写在村口木板上：400名兽人，折算20个军团单位，另有3名主将，第7日抵达。`, "threat");
+    addLog(state, "整理巡逻队沿途记录时，众人在北侧山壁发现一座远古遗迹：入口散落着昂贵的探险器材，脚印只有进去的，没有出来的。", "challenge_unlock");
     morning(state); return;
   }
   if (id.startsWith("build:")) {
@@ -784,6 +890,18 @@ function applyInternalAction(state, id) {
   if (id.startsWith("market:sell:")) {
     const itemId = id.slice("market:sell:".length); const item = unequippedItems(state).find((row) => row.id === itemId); if (!item) throw new Error("这件装备无法出售。"); if (state.market.sellRemaining <= 0) throw new Error("集市今日已经收购5件装备。"); const price = salePrice(item);
     state.market.sellRemaining -= 1; state.resources.gold += price; state.inventory = state.inventory.filter((row) => row.id !== itemId); state.stats.itemsSold += 1; addLog(state, `集市以${price}金币买走了${item.name}，今日还能出售${state.market.sellRemaining}件装备。`, "market"); return;
+  }
+  if (id === "challenge:ancient_ruins:supply" || id === "challenge:ancient_ruins:route") {
+    const ruins = ensureAncientRuinsState(state);
+    if (ruins.stage !== "secret_room" || ruins.completed) throw new Error("密室里的选择已经过去了。");
+    if (id.endsWith("supply")) {
+      pay(state, { food: 12 }); ruins.approach = "supply";
+      addLog(state, "你把12份粮食和恢复药交给薇奥拉。艾琳恢复了意识，却连站稳都很困难；她坚持靠着墙握住剑，要在下一场战斗中继续保护学生。", "challenge_choice");
+    } else {
+      ruins.approach = "route";
+      addLog(state, "你没有强迫艾琳起身。薇奥拉把被困数日记下的机关变化全部画了出来，最终指出一条能绕开两组古代守卫的密道。", "challenge_choice");
+    }
+    ruins.stage = "heart"; return;
   }
   if (id.startsWith("event:")) { applyEvent(state, id.split(":")[1], id.split(":")[2]); spendAction(state); return; }
   if (id === "autoequip_all") { autoEquipAllTargets(state); return; }
@@ -867,6 +985,7 @@ function preparePlayerCombat(state, publicId, deployment = null) {
   if (match.id === "combat:hunt") plan = huntPlan(state, deployment);
   else if (match.id === "combat:training") plan = trainingPlan(state, deployment);
   else if (match.id.startsWith("combat:raid:")) plan = raidPlan(state, match.id.split(":")[2], deployment);
+  else if (match.id.startsWith("combat:challenge:ancient_ruins:")) plan = ancientRuinsPlan(state, match.id.split(":")[3], deployment);
   else if (match.id === "combat:final") plan = finalBattlePlan(state, state.resources.food, deployment);
   return plan ? { ...clone(plan), publicActionId: publicId, deployment: deployment ? clone(deployment) : null } : null;
 }
@@ -889,15 +1008,16 @@ function applyPlayerCombatResult(stateInput, publicId, result, deployment = null
       state.stats.grindWins += 1;
       grind.totalWins = state.stats.grindWins;
       grind.winsByDifficulty[difficulty] += 1;
+      grind.unlockScore += difficulty;
       const previousUnlocked = grind.unlockedDifficulty;
       const config = GRIND_DIFFICULTIES[difficulty];
-      grind.unlockedDifficulty = unlockedGrindDifficulty(grind.totalWins);
+      grind.unlockedDifficulty = unlockedGrindDifficulty(grind.unlockScore);
       const lootCount = weightedPick(state, config.lootCountTable);
       const items = Array.from({ length: lootCount }, () => generateItem(state, `边林难度${difficulty}`, plan.lootTier || difficulty, weightedPick(state, config.rarityTable)));
       state.inventory.push(...items); const gold = registerGearDrops(state, items.length);
-      addLog(state, `难度${difficulty}讨伐获胜（军粮${plan.foodCommitted}/${plan.fullFood || 0}，发挥${plan.performancePct || 100}%；累计${grind.totalWins}胜，本档${grind.winsByDifficulty[difficulty]}胜），得到${items.map((item) => item.name).join("、")}；今日新装备${state.economy.dailyGearDrops}件${gold ? `，铁匠铺新增${gold}金币收入` : ""}。`, "loot");
-      if (grind.unlockedDifficulty > previousUnlocked) addLog(state, `累计讨伐${grind.totalWins}胜，难度${grind.unlockedDifficulty}「${GRIND_DIFFICULTIES[grind.unlockedDifficulty].name}」已经解锁。无论此前刷哪个难度，胜利都计入解锁。`, "grind_unlock");
-    } else addLog(state, `难度${difficulty}讨伐失败，累计胜场不增加；可以立即重试或切回已解锁的低难度。`, "combat_loss");
+      addLog(state, `难度${difficulty}讨伐获胜（军粮${plan.foodCommitted}/${plan.fullFood || 0}，发挥${plan.performancePct || 100}%；本场+${difficulty}积分，累计${grind.unlockScore}积分，本档${grind.winsByDifficulty[difficulty]}胜），得到${items.map((item) => item.name).join("、")}；今日新装备${state.economy.dailyGearDrops}件${gold ? `，铁匠铺新增${gold}金币收入` : ""}。`, "loot");
+      if (grind.unlockedDifficulty > previousUnlocked) addLog(state, `累计讨伐${grind.unlockScore}积分，难度${grind.unlockedDifficulty}「${GRIND_DIFFICULTIES[grind.unlockedDifficulty].name}」已经解锁。难度N胜利会获得N积分。`, "grind_unlock");
+    } else addLog(state, `难度${difficulty}讨伐失败，讨伐积分不增加；可以立即重试或切回已解锁的低难度。`, "combat_loss");
   } else if (plan.kind === "training") {
     if (summary.win) {
       state.resources.food -= plan.foodCommitted; spendAction(state);
@@ -918,6 +1038,25 @@ function applyPlayerCombatResult(stateInput, publicId, result, deployment = null
       addLog(state, `突袭支付${plan.foodCommitted}粮；据点缴获${rewardText}；带回${items.length}件装备${smithGold ? `，并使铁匠铺追加收入${smithGold}金币` : ""}。`, "loot");
       addLog(state, `${raid.title}已被占领：最终敌军减少${raid.removedUnits}个军团单位${raid.removesBoss ? "和1名主将" : ""}，原地解锁1个建设位。`, "raid_win");
     } else addLog(state, `${raid.title}突袭失败；本次不消耗行动力和粮食，据点仍在，可以立即重试。`, "raid_loss");
+  } else if (plan.kind === "challenge") {
+    const ruins = ensureAncientRuinsState(state);
+    if (summary.win && plan.challengeStage === "entrance") {
+      state.resources.food -= plan.foodCommitted; spendAction(state); ruins.stage = "secret_room";
+      const items = [generateItem(state, ANCIENT_RUINS.title, 4, "史诗"), generateItem(state, ANCIENT_RUINS.title, 4, "传说")];
+      state.inventory.push(...items); const smithGold = registerGearDrops(state, items.length);
+      addLog(state, `封锁回廊被突破，带回${items.map((item) => item.name).join("、")}${smithGold ? `；铁匠铺追加收入${smithGold}金币` : ""}。`, "loot");
+      addLog(state, "回廊尽头的密室里，富家小姐薇奥拉抱着她的女保镖兼老师艾琳。两人已经被困数日，补给彻底耗尽；艾琳的魔力早已枯竭，虚弱地躺在学生怀里，石门外的古代守卫仍在撞击。", "challenge_story");
+    } else if (summary.win && plan.challengeStage === "heart") {
+      state.resources.food -= plan.foodCommitted; spendAction(state); ruins.stage = "complete"; ruins.completed = true;
+      const relic = generateItem(state, ANCIENT_RUINS.title, 4, "永恒"); relic.name = `远古遗珍·${relic.slotLabel}`;
+      const items = [relic, generateItem(state, ANCIENT_RUINS.title, 4), generateItem(state, ANCIENT_RUINS.title, 4)];
+      state.inventory.push(...items); const smithGold = registerGearDrops(state, items.length);
+      recruitHero(state, "heiress"); recruitHero(state, "mentor");
+      addLog(state, `守秘者大厅被清空，队伍带回${items.map((item) => item.name).join("、")}${smithGold ? `；铁匠铺追加收入${smithGold}金币` : ""}。`, "loot");
+      addLog(state, "薇奥拉和艾琳被安全带回灰谷村。艾琳需要休养才能恢复魔法，但两人都决定留下：薇奥拉负责辨认遗物，艾琳康复后继续担任她的老师与护卫。", "challenge_complete");
+    } else {
+      addLog(state, `${plan.title}挑战失败；本次不消耗行动力和粮食，剧情进度保持不变，可以更换编队后重试。`, "challenge_loss");
+    }
   } else {
     if (summary.win) {
       state.resources.food -= plan.foodCommitted; state.phase = "complete"; state.result = { win: true, title: "灰谷村守住了", day: state.day, population: state.resources.population, militiaUnits: militiaUnits(state), trainedUnits: trainedUnits(state), deployedArmy: plan.deployedArmy, totalArmy: plan.totalArmy, remainingEnemyUnits: state.enemy.orcUnits, remainingBosses: state.enemy.bosses, combat: clone(summary) };
@@ -1053,6 +1192,18 @@ function militiaVisible(index) {
   return { ...info, active: true, equipmentLocked: true, equipmentLockReason: "民兵必须经过实战训练成为战士后，才能使用装备。", equipment, ...profile };
 }
 
+function ancientRuinsVisible(state) {
+  if (state.phase === "prologue") return null;
+  const ruins = ancientRuinsState(state);
+  if (ruins.completed) return { id: ANCIENT_RUINS.id, title: ANCIENT_RUINS.title, stage: "complete", completed: true, kicker: "高难剧情挑战 · 已完成", description: "薇奥拉与艾琳已经获救，守秘者大厅也被清空。遗迹深处仍保持封闭。", status: "救援完成 · 获得永恒遗珍 · 两名角色加入" };
+  if (ruins.stage === "secret_room") return { id: ANCIENT_RUINS.id, title: ANCIENT_RUINS.title, stage: ruins.stage, completed: false, kicker: "高难剧情挑战 · 密室", description: "密室里，富家小姐薇奥拉抱着她的女保镖兼老师艾琳。两人已经被困数日，没有任何补给；艾琳魔力枯竭，虚弱地躺在学生怀里。", status: "石门外仍有守卫 · 当前需要决定如何救援" };
+  if (ruins.stage === "heart") {
+    const route = ruins.approach === "supply" ? "艾琳恢复意识，但只能以虚弱状态参加下一战。" : "薇奥拉已经标出能避开两组守卫的密道，艾琳仍无法起身。";
+    return { id: ANCIENT_RUINS.id, title: ANCIENT_RUINS.title, stage: ruins.stage, completed: false, kicker: "高难剧情挑战 · 最深处", description: `${route}想把两人带出去，必须穿过守秘者大厅。`, status: "极高难度 · 8单位上限 · 胜利奖励包含永恒遗珍" };
+  }
+  return { id: ANCIENT_RUINS.id, title: ANCIENT_RUINS.title, stage: "entrance", completed: false, kicker: "高难剧情挑战 · 未探索", description: "北侧山壁嵌着一座没有记载的远古遗迹。入口散落着昂贵的探险器材，地上只有进入遗迹的脚印，没有出来的。", status: "入口守卫强度高于魔潮腹地 · 4单位上限" };
+}
+
 function currentEvent(state) { return Object.entries(EVENTS).find(([id, row]) => row.day === state.day && !state.resolvedEvents[id]) || null; }
 
 function buildingYieldStatus(state, row) {
@@ -1088,18 +1239,21 @@ function getPlayerObservation(state) {
       selectedDifficulty: grind.selectedDifficulty,
       unlockedDifficulty: grind.unlockedDifficulty,
       totalWins: grind.totalWins,
+      unlockScore: grind.unlockScore,
+      selectedWinScore: grind.selectedDifficulty,
       nextUnlockDifficulty: grind.unlockedDifficulty < GRIND_DIFFICULTY_COUNT ? grind.unlockedDifficulty + 1 : null,
-      nextUnlockAt: grind.unlockedDifficulty < GRIND_DIFFICULTY_COUNT ? GRIND_DIFFICULTIES[grind.unlockedDifficulty].unlockWinsToNext : null,
+      nextUnlockScore: grind.unlockedDifficulty < GRIND_DIFFICULTY_COUNT ? GRIND_DIFFICULTIES[grind.unlockedDifficulty].unlockScoreToNext : null,
       levels: Array.from({ length: GRIND_DIFFICULTY_COUNT }, (_, index) => {
         const difficulty = index + 1;
         const config = GRIND_DIFFICULTIES[difficulty];
         const wins = grind.winsByDifficulty[difficulty];
         const unlocked = difficulty <= grind.unlockedDifficulty;
-        const unlockAtTotalWins = difficulty > 1 ? GRIND_DIFFICULTIES[difficulty - 1].unlockWinsToNext : 0;
-        return { difficulty, name: config.name, threat: config.threat, wins, unlockAtTotalWins, lootCountLabel: config.lootCountLabel, rarityLabel: config.rarityLabel, lootCountChances: config.lootCountTable.map(([count, chance]) => ({ count, chance })), rarityChances: config.rarityTable.map(([rarity, chance]) => ({ rarity, chance })), unlocked, selected: difficulty === grind.selectedDifficulty, lockedReason: unlocked ? "" : `累计讨伐胜利${unlockAtTotalWins}场后解锁；任意难度胜利都计数` };
+        const unlockAtScore = difficulty > 1 ? GRIND_DIFFICULTIES[difficulty - 1].unlockScoreToNext : 0;
+        return { difficulty, name: config.name, threat: config.threat, wins, winScore: difficulty, unlockAtScore, winsAtPreviousDifficulty: difficulty > 1 ? GRIND_DIFFICULTIES[difficulty - 1].winsAtCurrentDifficultyToNext : 0, lootCountLabel: config.lootCountLabel, rarityLabel: config.rarityLabel, lootCountChances: config.lootCountTable.map(([count, chance]) => ({ count, chance })), rarityChances: config.rarityTable.map(([rarity, chance]) => ({ rarity, chance })), unlocked, selected: difficulty === grind.selectedDifficulty, lockedReason: unlocked ? "" : `累计讨伐积分${unlockAtScore}后解锁；难度N胜利获得N积分` };
       }),
     },
     market: { sellRemaining: state.market.sellRemaining, priceRule: "每天刷新3件装备；每天最多出售5件未穿戴装备", stock: state.market.stock.filter((row) => row.count > 0).map((row) => ({ id: row.id, label: row.label, type: row.type, price: row.price, count: row.count, item: row.item ? clone(row.item) : null })) },
+    challenge: ancientRuinsVisible(state),
     party: { selectedHeroId: equipmentTargetIds(state).includes(state.selectedHeroId) ? state.selectedHeroId : state.roster[0], activeLimit: state.phase === "final" ? 10 : 4, finalBattleRule: "第7日决战会自动集结全部已招募英雄；已训练战士按军粮出战，并使用各自8部位装备。", heroes: visibleHeroes, trainedUnits: visibleTrained, militiaUnits: visibleMilitia, equipmentTargets: [...visibleHeroes, ...visibleTrained], characterTargets: [...visibleHeroes, ...visibleTrained, ...visibleMilitia] },
     inventory: state.inventory.map((item) => clone(item)), inventoryLimit: INVENTORY_LIMIT,
     raids: Object.entries(RAIDS).filter(([id, raid]) => raid.unlock(state) && !state.resolvedRaids[id]).map(([id, raid]) => ({ id, title: raid.title, description: raid.description, foodCost: raidFoodRequirement(state, id), visibleEffectOnVictory: `占领后解锁1个建设位；最终敌军减少${raid.removedUnits}个军团单位${raid.removesBoss ? "和1名主将" : ""}` })),
@@ -1107,13 +1261,13 @@ function getPlayerObservation(state) {
     event: event ? { id: event[0], title: event[1].title, scene: event[1].scene } : null,
     recentSignals: state.recent.slice(0, 10).map((row) => ({ day: row.day, kind: row.kind, text: row.text })),
     lastCombat: clone(state.lastCombat), result: clone(state.result),
-    actions: catalog.map((row) => ({ id: row.publicId, label: row.label, kind: row.kind, available: row.available, disabledReason: row.disabledReason, actionPointCost: row.actionPointCost || 0, knownCost: clone(row.knownCost || {}), knownGain: clone(row.knownGain || {}), description: row.description || row.knownResult || "", foodCost: row.foodCost || 0, fullFood: row.fullFood || 0, targetSlot: Number.isInteger(row.targetSlot) ? row.targetSlot : null, targetHeroId: row.targetHeroId || null, targetItemId: row.targetItemId || null, targetStockId: row.targetStockId || null, targetEquipmentSlot: row.targetEquipmentSlot || null, targetDifficulty: Number.isInteger(row.targetDifficulty) ? row.targetDifficulty : null, operation: row.operation || null })),
+    actions: catalog.map((row) => ({ id: row.publicId, label: row.label, kind: row.kind, available: row.available, disabledReason: row.disabledReason, actionPointCost: row.actionPointCost || 0, knownCost: clone(row.knownCost || {}), knownGain: clone(row.knownGain || {}), description: row.description || row.knownResult || "", foodCost: row.foodCost || 0, fullFood: row.fullFood || 0, targetSlot: Number.isInteger(row.targetSlot) ? row.targetSlot : null, targetHeroId: row.targetHeroId || null, targetItemId: row.targetItemId || null, targetStockId: row.targetStockId || null, targetEquipmentSlot: row.targetEquipmentSlot || null, targetDifficulty: Number.isInteger(row.targetDifficulty) ? row.targetDifficulty : null, targetChallengeId: row.targetChallengeId || null, targetChallengeStage: row.targetChallengeStage || null, operation: row.operation || null })),
   };
 }
 
 return {
-  VERSION, FINAL_DAY, INVENTORY_LIMIT, HEROES, BUILDINGS, RAIDS, EVENTS, SLOT_DATA, RARITY_DATA, GRIND_DIFFICULTIES, PROSPERITY_LEVELS, POPULATION_UNIT_MILESTONES,
+  VERSION, FINAL_DAY, INVENTORY_LIMIT, HEROES, BUILDINGS, RAIDS, ANCIENT_RUINS, EVENTS, SLOT_DATA, RARITY_DATA, GRIND_DIFFICULTIES, PROSPERITY_LEVELS, POPULATION_UNIT_MILESTONES,
   createInitialState, getPlayerObservation, actionPointsForPopulation, townProsperity, militiaUnits, trainedUnits, smithUtilization, internalActions,
-  applyPlayerAction, preparePlayerCombat, applyPlayerCombatResult, simulatePlan, combatResultFingerprint, huntPlan, trainingPlan, raidPlan, finalBattlePlan,
+  applyPlayerAction, preparePlayerCombat, applyPlayerCombatResult, simulatePlan, combatResultFingerprint, huntPlan, trainingPlan, raidPlan, ancientRuinsPlan, finalBattlePlan,
 };
 });

@@ -2,6 +2,10 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-08-11
+
+- `2026-08-11_1556_combat-profession-school-framework.md`：确立职业物理技能、可选魔法学派与少量角色专属技能三层来源；总览引用新框架，并以自然学派六件套“繁生之环”验证跨职业套装表达。
+
 ## 2026-07-24
 
 - `2026-07-24_1300_fifteen-day-workbench-entry.md`：删除临时独立启动器，将“无限刷装：十五日围剿”加入既有工作台 Demo 区首位，并由原工作台服务器提供游戏页面、十五日核心与共享战斗资源；测试端口全部返回 HTTP 200。

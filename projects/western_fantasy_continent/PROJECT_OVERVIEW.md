@@ -132,7 +132,9 @@ This makes battle diagnosis, failure explanation, and visible combat feedback co
 
 Equipment should stay pure and convenient.
 
-Equipment can have detailed attributes, such as fire duration, mark crit, healing amplification, or attack speed, but the product role of equipment is still mostly attribute configuration. Avoid turning every equipment piece into a complex rules object.
+Common equipment can have detailed attributes, such as fire duration, mark crit, healing amplification, or attack speed, but its product role is still mostly attribute configuration. Avoid turning every ordinary drop into a complex rules object.
+
+Named sets and special loose items are the explicit exception. They may change combat rules and provide visible build engines, while ordinary equipment remains readable. The current accepted structure separates physical profession skills from optional magic-school spells, then allows profession sets, school sets, universal sets, and special loose items to coexist. See [`design/combat_profession_magic_school_framework_v1.md`](design/combat_profession_magic_school_framework_v1.md) for the current framework and the first school-set candidate.
 
 The equipment loop should eventually become:
 
@@ -189,6 +191,8 @@ Classes already have tested identities after multiple tuning passes:
 - priest;
 - knight;
 - related branches such as shadow assassin, low-health berserker, ember burst, and poison teams.
+
+These existing class keys are proven combat assets, not necessarily the final player-facing profession taxonomy. The current direction is to split broad physical classes into visually direct professions such as shield soldier, cavalry, heavy-weapon warrior, swordsman, archer, and hunter, while magic spells belong to optional schools such as infernal, nature, frost, holy light, and shadow. Reuse the existing Matrix mechanics during this migration rather than rebuilding simplified combat. The durable design reference is [`design/combat_profession_magic_school_framework_v1.md`](design/combat_profession_magic_school_framework_v1.md).
 
 Combat must be visible. A large part of the game fantasy is watching auto-battle unfold. Pure background text resolution is not enough.
 

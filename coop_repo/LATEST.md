@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-07-29_0302_border-village-final-balance-replay.md`](reports/2026-07-29_0302_border-village-final-balance-replay.md)
+[`reports/2026-08-11_1556_combat-profession-school-framework.md`](reports/2026-08-11_1556_combat-profession-school-framework.md)
 
-Last updated: 2026-07-29
+Last updated: 2026-08-11
 
-当前重点：《边陲村魔物战争》小幅平衡调整后的同状态决战回归已从“我方全灭、敌方余1”翻转为“我方余2、敌方全灭”。满额军粮下已能险胜，但9/11我方单位倒下，压力仍高；下一步应以匹配种子重复验证胜率与幸存人数的稳定性。
+当前重点：战斗内容已整理为“职业物理技能 + 可选魔法学派 + 少量角色专属技能”三层来源；总设计入口已经引用该框架。首个自然学派六件套“繁生之环”作为待评审候选，下一步应先确认套装表达方向，再扩展职业套装与独立三件套。

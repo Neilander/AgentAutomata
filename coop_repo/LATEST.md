@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-08-08_1659_standard-rules-engine-v1.md`](reports/2026-08-08_1659_standard-rules-engine-v1.md)
+[`reports/2026-08-11_2245_one-turn-grounded-match-v0.md`](reports/2026-08-11_2245_one-turn-grounded-match-v0.md)
 
-Last updated: 2026-08-08
+Last updated: 2026-08-11
 
-当前重点：正式规则引擎 V1 已隔离完成，13 项规则测试和 100 局合成地图冒烟测试通过；规则代码与地图数据已分离。当前缺真实天空/基地/城市组件数据和规划玩家接线，合成地图胜率无难度意义。下一步由用户提供组件俯拍图，录入核对后先跑 Roswell 威胁 0/1。
+当前重点：一步 Grounded Match 已隔离完成。程序对一个数学目标穷举当前全部合法放骰行为并逐项做一次真实状态转移，区分完成、部分、无关、有害和无效；下一步是在玩家知识边界内调取多个短期目标逐个 Match，暂不进入长期规划。

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Under Falling Skies 基地板录入器</title>
+  <link rel="stylesheet" href="base-map-editor.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">STANDARD MAP DATA TOOL</p>
+        <h1>基地 A / B 录入器</h1>
+        <p class="subtitle">照着组件图片点格子，不需要手写 JSON。先选一个或多个格子，再在右侧填写它们的信息。</p>
+      </div>
+      <div class="top-actions">
+        <button id="saveButton" class="button secondary" type="button">保存到浏览器</button>
+        <button id="copyButton" class="button secondary" type="button">复制 JSON</button>
+        <button id="exportButton" class="button primary" type="button">导出 JSON</button>
+        <label class="button ghost" for="importInput">导入</label>
+        <input id="importInput" type="file" accept="application/json,.json" hidden>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <section class="board-panel" aria-label="基地板编辑区">
+        <div class="panel-heading">
+          <div>
+            <span class="step-label">01 / 选择板块与格子</span>
+            <h2>基地结构</h2>
+          </div>
+          <div class="board-tabs" role="tablist" aria-label="基地板">
+            <button class="board-tab active" data-board="A" type="button">基地 A</button>
+            <button class="board-tab" data-board="B" type="button">基地 B</button>
+          </div>
+        </div>
+
+        <div class="column-labels" aria-hidden="true">
+          <span>第1列</span><span>第2列</span><span>第3列</span><span>第4列</span><span>第5列</span>
+        </div>
+        <div id="boardGrid" class="board-grid" aria-label="五列基地板格子"></div>
+
+        <div class="board-controls">
+          <button id="addRowButton" class="text-button" type="button">＋ 增加一行</button>
+          <button id="removeRowButton" class="text-button danger-text" type="button">－ 删除末行</button>
+          <span class="selection-hint">单击选择；Shift＋单击可同时选择多格房间。</span>
+        </div>
+
+        <aside class="legend" aria-label="房间颜色图例">
+          <span><i class="swatch aa"></i>防空</span>
+          <span><i class="swatch energy"></i>能源</span>
+          <span><i class="swatch fighter"></i>战斗机</span>
+          <span><i class="swatch research"></i>研究</span>
+          <span><i class="swatch robot"></i>机器人</span>
+          <span><i class="swatch tunnel"></i>通道</span>
+        </aside>
+      </section>
+
+      <aside class="editor-panel" aria-label="所选格子属性">
+        <div class="panel-heading compact">
+          <div>
+            <span class="step-label">02 / 填写信息</span>
+            <h2>所选格子</h2>
+          </div>
+          <span id="selectionCount" class="selection-count">未选择</span>
+        </div>
+
+        <div id="emptySelection" class="empty-state">
+          <div class="empty-icon">⌁</div>
+          <p>先在左侧点击一个格子。</p>
+          <small>如果一个房间横跨多个格子，请按住 Shift 把它们一起选中。</small>
+        </div>
+
+        <form id="cellForm" class="cell-form hidden">
+          <label>
+            <span>格子内容</span>
+            <select id="roomType">
+              <option value="unused">未使用 / 空白</option>
+              <option value="aa">防空炮（顶部灰色房间）</option>
+              <option value="energy">能源（黄色）</option>
+              <option value="fighter">战斗机（橙色）</option>
+              <option value="research">研究（绿色）</option>
+              <option value="robot">机器人（蓝色）</option>
+              <option value="tunnel">只有通道，没有房间效果</option>
+            </select>
+          </label>
+
+          <label>
+            <span>房间编号</span>
+            <input id="roomId" type="text" placeholder="留空会自动生成，例如 A-research-1">
+            <small>多格房间的所有格子必须使用同一个编号。一起选中时会自动处理。</small>
+          </label>
+
+          <div class="two-columns">
+            <label>
+              <span>效果修正</span>
+              <input id="modifier" type="number" step="1" value="0">
+              <small>房间角落的 +1、−1；没有就填 0。</small>
+            </label>
+            <label>
+              <span>能源消耗</span>
+              <input id="energyCost" type="number" min="0" step="1" value="0">
+              <small>房间下方闪电数量。</small>
+            </label>
+          </div>
+
+          <div class="two-columns">
+            <label>
+              <span>解锁深度</span>
+              <input id="unlockIndex" type="number" min="0" step="1" value="0">
+              <small>挖掘机至少走到第几步才能用。</small>
+            </label>
+            <label>
+              <span>挖掘路径序号</span>
+              <input id="pathOrder" type="number" min="0" step="1" placeholder="不在路径上则留空">
+              <small>按黄色小箭头，从 0 开始依次编号。</small>
+            </label>
+          </div>
+
+          <button id="applyButton" class="button primary wide" type="submit">应用到所选格子</button>
+          <button id="clearSelectedButton" class="button ghost wide" type="button">清空所选格子</button>
+        </form>
+
+        <section class="global-settings">
+          <h3>全局设置</h3>
+          <label>
+            <span>挖掘机初始路径位置</span>
+            <input id="startExcavatorIndex" type="number" min="0" step="1" value="0">
+          </label>
+        </section>
+      </aside>
+    </section>
+
+    <section class="output-panel">
+      <div class="panel-heading compact">
+        <div>
+          <span class="step-label">03 / 检查与导出</span>
+          <h2>录入检查</h2>
+        </div>
+        <span id="completionBadge" class="status-badge neutral">尚未录入</span>
+      </div>
+      <div id="validationMessages" class="validation-messages"></div>
+      <details>
+        <summary>查看将要导出的 JSON</summary>
+        <pre id="jsonPreview"></pre>
+      </details>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="base-map-editor.js"></script>
+</body>
+</html>

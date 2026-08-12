@@ -1,0 +1,69 @@
+{
+  "schema": "ufs_incremental_rule_cognition_stage_v1",
+  "stage": 4,
+  "sourcePages": [7, 8],
+  "conceptsAdded": [
+    { "id": "spawn_queue", "label": "待生成飞船", "definition": "暂时放在母舰上、将在母舰阶段第三步重新进入天空的飞船" },
+    { "id": "mothership_action", "label": "母舰行动", "definition": "母舰下降一行后在投放点一侧执行的行效果" },
+    { "id": "research_back", "label": "研究倒退", "definition": "母舰行动使研究标记向下移动" },
+    { "id": "excavator_back", "label": "挖掘机倒退", "definition": "母舰行动使挖掘机沿路径后退但不越过起点" },
+    { "id": "spawn_white_ship", "label": "增加白色飞船", "definition": "母舰行动把额外白色飞船加入待生成区" }
+  ],
+  "environmentFactsAdded": [
+    { "id": "mothership_phase_order", "fact": "母舰阶段依次为母舰下降、执行母舰行动、生成飞船" },
+    { "id": "mothership_collects_row_ships", "fact": "母舰下降到有飞船的一行时会收回这些飞船等待重新生成" },
+    { "id": "different_research_rooms_separate", "fact": "不同研究房必须分别结算，房间值不能跨房间相加" }
+  ],
+  "knowledgeAdded": [
+    {
+      "id": "excavate_cost_and_result",
+      "subject": "玩家",
+      "environment": "房间阶段存在一颗合法放在未挖掘格的骰子",
+      "behavior": "支付1能源并移除该骰子",
+      "result": "挖掘机移动到该格，身后路径全部变为已挖掘",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "research_order_changes_usefulness",
+      "subject": "玩家",
+      "environment": "拥有多个研究房且轨道连续格成本不同",
+      "behavior": "选择研究房结算顺序",
+      "result": "各房间分别支付连续研究格成本，因此不同顺序可能推进不同距离或让一个房间无法推进",
+      "confidence": 0.95,
+      "source": "explicit_rulebook_example"
+    },
+    {
+      "id": "mothership_descends_each_round",
+      "subject": "外星母舰",
+      "environment": "母舰阶段第一步",
+      "behavior": "下降到下一行",
+      "result": "收回该行飞船，并接近骷髅失败行",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "mothership_action_applies_row_effect",
+      "subject": "外星母舰",
+      "environment": "母舰阶段下降后所在行",
+      "behavior": "执行投放点旁的母舰行动",
+      "result": "可能令挖掘机后退、研究倒退、增加白色飞船或使城市受伤",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    }
+  ],
+  "behaviorsAdded": [
+    { "id": "pay_to_excavate", "label": "支付1能源把挖掘机移动到本回合的挖掘骰位置", "knownConstraints": ["骰子在放置时已经满足距离限制", "可以选择不执行"] },
+    { "id": "choose_research_room_order", "label": "根据当前研究格成本选择多个研究房的结算顺序", "knownConstraints": ["房间值不能相加", "规则书明确展示了顺序可能使一个房间失效"] }
+  ],
+  "openQuestions": [
+    "待生成飞船具体放到哪些投放点？",
+    "飞船数量超过投放点时怎样处理？",
+    "怎样正式结束母舰阶段并开始新回合？"
+  ],
+  "blockedInferences": [
+    "知道研究结算顺序重要，但不知道当前轨道的全局最优顺序",
+    "知道挖掘消耗1能源，但不知道某次挖掘是否值得牺牲其他房间",
+    "不知道应主动让母舰收回哪些飞船"
+  ]
+}

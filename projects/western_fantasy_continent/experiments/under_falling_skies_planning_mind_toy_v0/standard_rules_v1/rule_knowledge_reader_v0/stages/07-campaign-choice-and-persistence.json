@@ -1,0 +1,53 @@
+{
+  "schema": "ufs_incremental_rule_cognition_stage_v1",
+  "stage": 7,
+  "sourcePages": [13, 14],
+  "availability": "campaign_only_after_standard_rules",
+  "conceptsAdded": [
+    { "id": "campaign_chapter", "label": "战役章节", "definition": "逐步揭示内容的四个战役阶段之一" },
+    { "id": "battle_pile", "label": "战斗组合", "definition": "随机组合的一张情景、一座城市和一名角色" },
+    { "id": "scenario", "label": "情景", "definition": "为一场战斗加入特殊规则的战役组件" },
+    { "id": "character_once_per_game", "label": "角色单局能力", "definition": "每局只能使用一次、后续章节可能升级的角色能力" },
+    { "id": "saved_component", "label": "已保留组件", "definition": "满足条件后留到后续章节继续使用的城市或角色" },
+    { "id": "removed_component", "label": "已移除组件", "definition": "本次战役后续不再使用、但重玩战役时仍可恢复的组件" }
+  ],
+  "environmentFactsAdded": [
+    { "id": "campaign_length", "fact": "战役有四章，通常约10局，并按章节逐步揭示" },
+    { "id": "two_simultaneous_attacks", "fact": "每次从本章组件随机形成两组攻击，玩家选择一组，另一组自动失败并移除" },
+    { "id": "damaged_city_retry", "fact": "城市未受损面失败后，用同一情景和角色在受损面再玩一局" }
+  ],
+  "knowledgeAdded": [
+    {
+      "id": "choose_one_campaign_battle",
+      "subject": "玩家",
+      "environment": "本章出现两组随机战斗组合",
+      "behavior": "选择其中一组进行战斗",
+      "result": "选择组成为当前战斗；未选择组的城市、情景和角色从本次战役移除",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "campaign_component_persistence",
+      "subject": "玩家",
+      "environment": "完成一场战役战斗",
+      "behavior": "结算胜负并记录结果",
+      "result": "情景总会移除；两局都输则城市移除，任一局胜利则城市保留；角色总会保留",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    }
+  ],
+  "behaviorsAdded": [
+    { "id": "choose_campaign_pile", "label": "在两组战斗组合中选择本次战斗", "knownConstraints": ["未选组合永久离开本次战役", "可以只看漫画面以保留另一情景规则的未知性"] },
+    { "id": "use_character_ability", "label": "在一局中使用一次当前角色能力", "knownConstraints": ["每局一次", "新遇到角色先用蓝面"] },
+    { "id": "retry_damaged_city", "label": "首局失败后用城市受损面重试同一战斗", "knownConstraints": ["同一情景和角色", "重新随机选择对应威胁等级的天空威胁面"] }
+  ],
+  "openQuestions": [
+    "后续章节如何升级角色和调整内容？",
+    "一章怎样结束并进入下一章？"
+  ],
+  "blockedInferences": [
+    "不知道未翻看的情景规则",
+    "不知道哪组战斗组合对长期战役最优",
+    "首局Roswell独立游戏玩家不得使用任何战役组件或长期保留价值"
+  ]
+}

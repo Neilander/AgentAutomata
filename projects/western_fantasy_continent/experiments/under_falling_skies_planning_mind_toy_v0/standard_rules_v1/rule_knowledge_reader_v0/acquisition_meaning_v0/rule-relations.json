@@ -1,0 +1,65 @@
+{
+  "schema": "ufs_acquisition_meaning_relations_v1",
+  "relations": [
+    {
+      "id": "research_means_acquire_victory",
+      "ruleText": "完成研究会赢得游戏",
+      "sourceRef": "concept:research",
+      "acquireTarget": "victory",
+      "introducedStage": 1,
+      "sourceKnowledgeIds": ["win_by_research_before_destruction"],
+      "activation": "always",
+      "interpretation": "直接结果关系；读到胜利目标时即可使用"
+    },
+    {
+      "id": "research_room_means_acquire_research",
+      "ruleText": "研究房会推进研究轨道",
+      "sourceRef": "roomType:research",
+      "acquireTarget": "research",
+      "introducedStage": 3,
+      "sourceKnowledgeIds": ["research_room_advances_track"],
+      "activation": "always",
+      "interpretation": "直接行为结果关系"
+    },
+    {
+      "id": "energy_means_acquire_research_after_block",
+      "ruleText": "房间需要能源，而研究来自研究房；缺少能源会阻止研究",
+      "sourceRef": "concept:energy",
+      "acquireTarget": "research",
+      "introducedStage": 3,
+      "sourceKnowledgeIds": ["room_requires_energy", "research_room_advances_track"],
+      "activation": "event:research_room_energy_shortage",
+      "interpretation": "由两条声明规则组合出的关系；新玩家在真实缺电卡点后才程序化"
+    },
+    {
+      "id": "energy_room_means_acquire_energy",
+      "ruleText": "能源房会获得能源",
+      "sourceRef": "roomType:energy",
+      "acquireTarget": "energy",
+      "introducedStage": 3,
+      "sourceKnowledgeIds": ["energy_room_generates_energy"],
+      "activation": "always",
+      "interpretation": "直接行为结果关系；只有能源成为子目标后才进入胜利意义链"
+    },
+    {
+      "id": "infrastructure_means_acquire_final_research_after_block",
+      "ruleText": "最终研究需要下半部多格研究房，而挖掘会开放下半部房间",
+      "sourceRef": "concept:infrastructure",
+      "acquireTarget": "research",
+      "introducedStage": 5,
+      "sourceKnowledgeIds": ["excavate_cost_and_result", "final_research_requires_lower_multi_room"],
+      "activation": "event:final_research_room_locked",
+      "interpretation": "跨章节规则组合；在最终研究房尚未开放的卡点后程序化"
+    },
+    {
+      "id": "excavate_means_acquire_infrastructure",
+      "ruleText": "执行挖掘会开放更深的基地空间",
+      "sourceRef": "roomType:excavate",
+      "acquireTarget": "infrastructure",
+      "introducedStage": 4,
+      "sourceKnowledgeIds": ["excavate_cost_and_result"],
+      "activation": "always",
+      "interpretation": "直接行为结果关系；只有建设成为子目标后才进入胜利意义链"
+    }
+  ]
+}

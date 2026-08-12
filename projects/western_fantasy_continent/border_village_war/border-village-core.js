@@ -8,6 +8,7 @@
 const COMBAT = typeof module !== "undefined" && module.exports ? require("../game_data/combat-sim") : root.GAME_COMBAT_SIM;
 const SKILLS = typeof module !== "undefined" && module.exports ? require("../game_data/skill-data") : root.GAME_SKILL_DATA;
 const BUILD_LAYERS = typeof module !== "undefined" && module.exports ? require("../game_data/build-layers") : root.GAME_BUILD_LAYERS;
+const EQUIPMENT_SETS = typeof module !== "undefined" && module.exports ? require("../game_data/equipment-sets") : root.GAME_EQUIPMENT_SETS;
 const GEAR_RULES = typeof module !== "undefined" && module.exports ? require("../fifteen_day_demo/fifteen-day-core") : root.FIFTEEN_DAY_DEMO;
 
 const VERSION = "border_village_war_v3";
@@ -646,6 +647,35 @@ function finalReadiness(state, preview = finalBattlePlan(state, state.resources.
 }
 
 function simulatePlan(plan) { return COMBAT.simulateTeams(plan.leftTeam, plan.rightTeam, { seed: plan.seed, maxTime: plan.maxTime, randomizeStats: false }); }
+
+function natureSetMockPlan(variant = "set") {
+  const setEnabled = variant !== "baseline";
+  const setItems = EQUIPMENT_SETS.mockSetItems("verdantCircle", 6);
+  const withVerdantSet = (spec) => setEnabled ? BUILD_LAYERS.applyBuildLayers(spec, { equipmentItems: setItems, tags: ["mock", "verdantCircle"] }) : spec;
+  const guardian = roleSpec("knight", "演武守卫·石墙", 0, { hp: 1.42, power: .78, armor: 1.35, unitKind: "mock" });
+  const healer = withVerdantSet(roleSpec("priest", "自然祭司·青芽", 2, { hp: 1.04, power: 1.12, armor: 1.02, small1: "verdantMend", small2: "verdantMend", unitKind: "mock" }));
+  const warlock = withVerdantSet(roleSpec("warlock", "自然术士·盐枝", 3, { hp: 1.03, power: 1.15, armor: 1.02, small1: "venomBrand", small2: "venomBrand", ultimate: "plagueOffering", unitKind: "mock" }));
+  healer.skillHasteMult = 1.18;
+  warlock.skillHasteMult = 1.16;
+  const enemies = [
+    ["knight", "木桩重卫"],
+    ["warrior", "披甲演武傀儡"],
+    ["ranger", "弩机傀儡"],
+    ["mage", "法术演武傀儡"],
+  ].map(([role, name], index) => enemySpec(role, name, index, 3, { hp: 1.28, power: .9, armor: 1.04 }));
+  return {
+    kind: "mock",
+    mock: true,
+    mockVariant: setEnabled ? "set" : "baseline",
+    title: setEnabled ? "繁生之环 · 六件套演武" : "繁生之环 · 无套装对照",
+    seed: "verdant-circle-ab-v2",
+    leftTeam: [guardian, healer, warlock],
+    rightTeam: enemies,
+    maxTime: 40,
+    foodCommitted: 0,
+    fullFood: 0,
+  };
+}
 function combatWon(result) { return result?.metrics?.leftAlive > 0 && result?.metrics?.rightAlive === 0; }
 function combatResultFingerprint(result) {
   if (!result || !result.metrics || !Array.isArray(result.units) || !Array.isArray(result.signals)) return null;
@@ -1268,6 +1298,6 @@ function getPlayerObservation(state) {
 return {
   VERSION, FINAL_DAY, INVENTORY_LIMIT, HEROES, BUILDINGS, RAIDS, ANCIENT_RUINS, EVENTS, SLOT_DATA, RARITY_DATA, GRIND_DIFFICULTIES, PROSPERITY_LEVELS, POPULATION_UNIT_MILESTONES,
   createInitialState, getPlayerObservation, actionPointsForPopulation, townProsperity, militiaUnits, trainedUnits, smithUtilization, internalActions,
-  applyPlayerAction, preparePlayerCombat, applyPlayerCombatResult, simulatePlan, combatResultFingerprint, huntPlan, trainingPlan, raidPlan, ancientRuinsPlan, finalBattlePlan,
+  applyPlayerAction, preparePlayerCombat, applyPlayerCombatResult, simulatePlan, combatResultFingerprint, huntPlan, trainingPlan, raidPlan, ancientRuinsPlan, finalBattlePlan, natureSetMockPlan,
 };
 });

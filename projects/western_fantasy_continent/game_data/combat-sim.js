@@ -66,6 +66,7 @@ class CombatSimulation {
     this.skills = SKILL_DATA.createSkillLibrary(this.api());
     this.randomizeStats = options.randomizeStats !== false;
     this.currentActionSource = null;
+    this.currentSchoolCast = null;
     this.runtimeFieldEffectId = options.fieldEffectId || options.runtimeFieldEffect || null;
     this.runtimeField = RUNTIME_FIELDS?.createRuntimeField?.(this.runtimeFieldEffectId, this) || null;
   }
@@ -309,6 +310,8 @@ class CombatSimulation {
         deathRoarUsed: false,
         forcedTargetId: null,
         forcedTargetTimer: 0,
+        verdantSpreadCd: 0,
+        natureSeeds: {},
         assassinFocusTargetId: null,
         lastTargetSignalId: null,
         hiddenRetaliateTimer: 2.2,
@@ -413,7 +416,7 @@ class CombatSimulation {
   tickTimers(unit, dt) {
     for (const key of ["small1", "small2", "ultimate"]) unit.skillCd[key] = Math.max(0, unit.skillCd[key] - dt * (unit.skillHasteMult || 1));
     unit.attackCd -= dt * (unit.hasteTimer > 0 ? (unit.hasteMultiplier || 1.45) : 1) * (unit.attackSpeedMult || 1);
-    for (const key of ["slowTimer", "guardTimer", "hiddenTimer", "shadowBurstCd", "shieldVulnerableTimer", "tauntTimer", "duelTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer", "forcedTargetTimer"]) {
+    for (const key of ["slowTimer", "guardTimer", "hiddenTimer", "shadowBurstCd", "shieldVulnerableTimer", "tauntTimer", "duelTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer", "forcedTargetTimer", "verdantSpreadCd"]) {
       unit[key] = Math.max(0, unit[key] - dt);
     }
     if (unit.forcedTargetTimer <= 0) unit.forcedTargetId = null;
@@ -423,6 +426,7 @@ class CombatSimulation {
   tickStatuses(unit, dt) {
     this.tickDot(unit, unit.poison, dt, 2.1, "poison");
     this.tickDot(unit, unit.burn, dt, 2.15, "burn");
+    this.tickNatureSeeds(unit, dt);
   }
 
   tickDot(unit, dot, dt, perStack, type) {
@@ -439,6 +443,69 @@ class CombatSimulation {
     if (dot.time <= 0) Object.assign(dot, status());
   }
 
+  tickNatureSeeds(unit, dt) {
+    for (const [sourceId, seed] of Object.entries(unit.natureSeeds || {})) {
+      seed.time = Math.max(0, seed.time - dt);
+      if (seed.time > 0) continue;
+      const source = this.units.find((candidate) => candidate.id === sourceId);
+      delete unit.natureSeeds[sourceId];
+      if (source) this.bloomNatureSeed(source, unit, seed, false);
+    }
+  }
+
+  touchSchoolTarget(source, target) {
+    const context = this.currentSchoolCast;
+    if (!source || !target || context?.school !== "nature" || context.sourceId !== source.id) return;
+    if (!source.mechanicModifiers?.["set:verdantCircle:sowing"]) return;
+    if (context.touchedTargetIds.has(target.id)) return;
+    context.touchedTargetIds.add(target.id);
+
+    const seeds = target.natureSeeds || (target.natureSeeds = {});
+    const existing = seeds[source.id];
+    if (!existing) {
+      seeds[source.id] = { sourceId: source.id, growth: 1, time: 6, canSpread: true, setId: "verdantCircle" };
+      this.emitNatureSeedSignal("seedPlant", source, target, seeds[source.id]);
+      return;
+    }
+
+    existing.growth = Math.min(3, existing.growth + 1);
+    existing.time = 6;
+    this.emitNatureSeedSignal("seedGrow", source, target, existing);
+    if (existing.growth < 3 || !source.mechanicModifiers?.["set:verdantCircle:propagation"]) return;
+    delete seeds[source.id];
+    this.bloomNatureSeed(source, target, existing, true);
+  }
+
+  bloomNatureSeed(source, target, seed, immediate) {
+    if (!source || !target || !this.isAlive(target)) return;
+    const growth = Math.max(1, Math.min(3, Number(seed.growth) || 1));
+    this.emitNatureSeedSignal("seedBloom", source, target, seed, { immediate });
+    this.withAction(source, { tags: ["equipmentSet", "verdantCircle", "nature", "seedBloom"], skillName: "繁生之环·绽放", meta: { growth, immediate } }, () => {
+      if (source.side === target.side) this.healUnit(target, target.maxHp * 0.04 * growth, "繁生之环·绽放", source);
+      else this.takeDamage(source, target, this.effectivePower(source, "magic") * 0.55 * growth, "nature", "繁生之环·绽放");
+    });
+    if (!immediate || !seed.canSpread || (source.verdantSpreadCd || 0) > 0) return;
+    const spreadTarget = this.units
+      .filter((candidate) => candidate.side === target.side && candidate.id !== target.id && this.isAlive(candidate) && !candidate.natureSeeds?.[source.id])
+      .sort(this.byDistance(target))[0];
+    if (!spreadTarget) return;
+    source.verdantSpreadCd = 6;
+    spreadTarget.natureSeeds[source.id] = { sourceId: source.id, growth: 1, time: 6, canSpread: false, setId: "verdantCircle" };
+    this.emitNatureSeedSignal("seedSpread", source, spreadTarget, spreadTarget.natureSeeds[source.id], { origin: SIGNALS.unitRef(target) });
+  }
+
+  emitNatureSeedSignal(action, source, target, seed, extraMeta = {}) {
+    this.emitSignal({
+      kind: "status",
+      tags: ["status", "equipmentSet", "verdantCircle", "nature", "natureSeed", action],
+      source: SIGNALS.unitRef(source),
+      target: SIGNALS.unitRef(target),
+      amount: seed.growth,
+      skillName: action === "seedPlant" ? "繁生之环·播种" : action === "seedGrow" ? "繁生之环·生长" : action === "seedSpread" ? "繁生之环·传播" : "繁生之环·绽放",
+      meta: { growth: seed.growth, duration: seed.time, canSpread: seed.canSpread, setId: seed.setId, ...extraMeta },
+    });
+  }
+
   castSlot(unit, slot, target) {
     const skill = this.skills[unit[slot]];
     if (!skill) return;
@@ -449,11 +516,17 @@ class CombatSimulation {
       target: SIGNALS.unitRef(target),
       skillKey: unit[slot],
       skillName: skill.name,
-      meta: { slot, role: unit.roleName },
+      meta: { slot, role: unit.roleName, school: skill.school || null },
     });
-    this.withAction(unit, { tags: ["skill", slot === "ultimate" ? "ultimate" : "smallSkill"], skillKey: unit[slot], skillName: skill.name }, () => {
-      skill.cast({ unit, target, visual: false });
-    });
+    const previousSchoolCast = this.currentSchoolCast;
+    this.currentSchoolCast = skill.school ? { school: skill.school, sourceId: unit.id, touchedTargetIds: new Set() } : null;
+    try {
+      this.withAction(unit, { tags: ["skill", slot === "ultimate" ? "ultimate" : "smallSkill", skill.school || ""].filter(Boolean), skillKey: unit[slot], skillName: skill.name, meta: { school: skill.school || null } }, () => {
+        skill.cast({ unit, target, visual: false });
+      });
+    } finally {
+      this.currentSchoolCast = previousSchoolCast;
+    }
     unit.skillCd[slot] = skill.cooldown;
     if (slot === "ultimate") this.triggerEncore(unit);
   }
@@ -621,6 +694,7 @@ class CombatSimulation {
 
   hit(source, target, amount, type, label, visual, scaleWith = type) {
     if (!target) return;
+    this.touchSchoolTarget(source, target);
     let value = amount + this.effectivePower(source, scaleWith) * 0.04;
     if (source.passive === "lineBreaker" && target.line === "前排") value *= 1.06;
     if (source.passive === "rageEngine") value *= 1 + (1 - this.hpRatio(source)) * (BERSERKER_PASSIVE.maxDamageAmp ?? 0.45);
@@ -758,6 +832,7 @@ class CombatSimulation {
 
   healUnit(unit, amount, label = "治疗", source = this.currentActionSource) {
     if (!unit || !this.isAlive(unit)) return;
+    this.touchSchoolTarget(source, unit);
     const context = { amount, label };
     this.runtimeField?.beforeHeal?.(source, unit, context);
     amount = context.amount;
@@ -786,6 +861,7 @@ class CombatSimulation {
 
   shield(unit, amount, label, source = this.currentActionSource) {
     if (!unit || !this.isAlive(unit)) return;
+    this.touchSchoolTarget(source, unit);
     const context = { amount, label };
     this.runtimeField?.beforeShield?.(source, unit, context);
     amount = context.amount;
@@ -862,6 +938,7 @@ class CombatSimulation {
   }
 
   addPoison(target, stacks, time, source) {
+    this.touchSchoolTarget(source, target);
     target.poison.stacks = Math.min(20, target.poison.stacks + stacks);
     target.poison.time = Math.max(target.poison.time, time);
     target.poison.source = source;
@@ -877,6 +954,7 @@ class CombatSimulation {
   }
 
   addBurn(target, stacks, time, source) {
+    this.touchSchoolTarget(source, target);
     target.burn.stacks += stacks;
     target.burn.time = Math.max(target.burn.time, time);
     target.burn.source = source;

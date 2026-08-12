@@ -8,8 +8,8 @@
 
 当前最新工作报告：
 
-[`reports/2026-08-11_0059_border-village-ancient-ruins-challenge.md`](reports/2026-08-11_0059_border-village-ancient-ruins-challenge.md)
+[`reports/2026-08-11_1802_verdant-ab-and-green-bloom.md`](reports/2026-08-11_1802_verdant-ab-and-green-bloom.md)
 
 Last updated: 2026-08-11
 
-当前重点：新增远古遗迹两段式高难剧情挑战；入口胜利后才揭示被困小姐与魔力枯竭老师，两种救援选择会改变核心战真实阵容。
+当前重点：繁生之环演武改为同条件 A/B；无套装剩2敌，六件套全灭并显示伤害/治疗/击倒/用时差值，绽放改为明显绿色花瓣与扩散光。

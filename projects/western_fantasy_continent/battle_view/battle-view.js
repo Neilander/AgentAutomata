@@ -1,5 +1,7 @@
 (() => {
   const SLASH_BASE = "/effect_lab/assets/brackeys/particles/alpha";
+  const BATTLE_VIEW_BASE = document.currentScript?.src ? new URL(".", document.currentScript.src).href : "../battle_view/";
+  const NATURE_SEED_ICON = `${BATTLE_VIEW_BASE}assets/plant-seed.svg`;
   const SKILLS = window.GAME_SKILL_DATA || {};
   const SIGNALS = window.GAME_COMBAT_SIGNALS || {};
   const CAMERA_2D = window.AgentAutomataCamera2D || null;
@@ -370,20 +372,7 @@
         this.startUnified({ leftTeam, rightTeam, seed, title, randomizeStats, fieldEffectId });
         return;
       }
-      this.stop(false);
-      this.state.time = 0;
-      this.state.result = null;
-      this.state.logs = [`${title}\u5f00\u59cb\u3002`];
-      this.state.signalBus?.clear();
-      this.state.units = [
-        ...this.makeUnits("ally", leftTeam),
-        ...this.makeUnits("enemy", rightTeam),
-      ];
-      this.state.running = true;
-      this.resetPresentationClock(performance.now());
-      this.state.seed = seed;
-      this.render();
-      this.state.raf = setInterval(() => this.tick(performance.now()), 33);
+      throw new Error("共享战斗模拟器没有加载，已拒绝启动旧备用战斗。");
     }
 
     preview({ leftTeam = [], rightTeam = [], title = "预览" } = {}) {
@@ -401,8 +390,7 @@
 
     startUnified({ leftTeam = [], rightTeam = [], seed = "battle-view", title = "\u6218\u6597", randomizeStats, fieldEffectId } = {}) {
       if (!window.GAME_COMBAT_SIM?.CombatSimulation) {
-        this.start({ leftTeam, rightTeam, seed, title });
-        return;
+        throw new Error("共享战斗模拟器没有加载，无法启动战斗。");
       }
       this.stop(false);
       const sim = new window.GAME_COMBAT_SIM.CombatSimulation({
@@ -516,6 +504,7 @@
         unit.hiddenTimer = combatUnit.hiddenTimer || 0;
         unit.guardTimer = combatUnit.guardTimer || 0;
         unit.forcedTargetId = combatUnit.forcedTargetId || null;
+        unit.natureSeeds = structuredClone(combatUnit.natureSeeds || {});
       }
     }
 
@@ -588,7 +577,16 @@
       }
       if (signal.kind === "status") {
         if (!target) return;
-        if (tags.includes("burn")) {
+        if (tags.includes("natureSeed")) {
+          const action = tags.includes("seedPlant") ? "plant" : tags.includes("seedGrow") ? "grow" : tags.includes("seedSpread") ? "spread" : "bloom";
+          const labels = { plant: "播种", grow: `生长 ${amount}/3`, spread: "传播", bloom: "绽放" };
+          this.floater(target, labels[action], "nature");
+          this.natureSeedFx(target, action);
+          if (action === "spread") {
+            const origin = this.displayUnitForRef(signal.meta?.origin);
+            if (origin) this.beam(origin, target, "green");
+          }
+        } else if (tags.includes("burn")) {
           this.floater(target, `\u71c3\u70e7+${amount}`, "fire");
           this.ring(target, "fire");
         } else if (tags.includes("poison")) {
@@ -1126,13 +1124,17 @@
       this.els.time.textContent = `${this.state.time.toFixed(1)}s`;
       this.els.left.textContent = String(this.state.units.filter((unit) => unit.side === "ally" && this.alive(unit)).length);
       this.els.right.textContent = String(this.state.units.filter((unit) => unit.side === "enemy" && this.alive(unit)).length);
-      this.els.unitLayer.innerHTML = this.state.units.map((unit) => `
+      this.els.unitLayer.innerHTML = this.state.units.map((unit) => {
+        const seed = Object.values(unit.natureSeeds || {}).sort((a, b) => (b.growth || 0) - (a.growth || 0))[0];
+        const seedHtml = seed ? `<span class="battle-nature-seed growth-${Math.max(1, Math.min(3, seed.growth || 1))}"><img src="${NATURE_SEED_ICON}" alt=""><b>${"●".repeat(Math.max(1, Math.min(3, seed.growth || 1)))}</b><small>${Math.max(0, seed.time || 0).toFixed(1)}s</small></span>` : "";
+        return `
         <div class="battle-unit ${unit.side === "enemy" ? "enemy" : ""} ${unit.unitKind === "militia" ? "militia-unit" : ""} ${unit.hiddenTimer > 0 ? "hidden" : ""} ${unit.guardTimer > 0 ? "guarded" : ""} ${this.alive(unit) ? "" : "dead"}" style="${this.pointStyle(unit)}">
+          ${seedHtml}
           <div class="battle-avatar">${unit.icon}</div>
           <div class="battle-unit-name">${unit.name}</div>
           <div class="battle-hp"><span style="width:${Math.max(0, unit.hpNow / unit.maxHp * 100)}%"></span></div>
         </div>
-      `).join("");
+      `; }).join("");
       this.els.log.innerHTML = this.state.logs.slice(0, 10).map((item) => `<div>${item}</div>`).join("");
     }
 
@@ -1165,6 +1167,25 @@
       node.style.setProperty("--scale", this.effectCameraScale().toFixed(3));
       this.els.fxLayer.appendChild(node);
       this.removeNodeLater(node, 720);
+    }
+
+    natureSeedFx(unit, action = "plant") {
+      if (!unit || !this.els?.fxLayer) return;
+      const node = document.createElement("img");
+      node.className = `battle-vfx-seed ${action === "bloom" ? "bloom" : ""}`;
+      node.alt = "";
+      node.src = NATURE_SEED_ICON;
+      this.placeNode(node, unit);
+      this.els.fxLayer.appendChild(node);
+      this.removeNodeLater(node, action === "bloom" ? 980 : 680);
+      if (action === "bloom") {
+        const burst = document.createElement("div");
+        burst.className = "battle-vfx-bloom-burst";
+        this.placeNode(burst, unit);
+        this.els.fxLayer.appendChild(burst);
+        this.removeNodeLater(burst, 980);
+      }
+      this.ring(unit, "green");
     }
 
     afterimage(before, unit, color = "purple") {

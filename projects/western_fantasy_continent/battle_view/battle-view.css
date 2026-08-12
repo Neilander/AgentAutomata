@@ -118,6 +118,31 @@
   box-shadow: 0 0 16px rgba(159, 214, 255, 0.38);
 }
 
+.battle-nature-seed {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: -18px;
+  display: grid;
+  grid-template-columns: 18px auto;
+  grid-template-rows: 12px 10px;
+  align-items: center;
+  min-width: 48px;
+  padding: 3px 6px 3px 4px;
+  border: 1px solid rgba(167, 239, 172, 0.62);
+  border-radius: 12px;
+  background: rgba(8, 22, 12, 0.82);
+  box-shadow: 0 0 14px rgba(108, 225, 126, 0.3), inset 0 0 8px rgba(117, 235, 137, 0.12);
+  color: #a8f1ae;
+  transform: translateX(-50%);
+  animation: battleSeedIdle 1.5s ease-in-out infinite;
+}
+
+.battle-nature-seed img { grid-row: 1 / 3; width: 17px; height: 17px; filter: drop-shadow(0 0 5px #72df80); }
+.battle-nature-seed b { overflow: hidden; font-size: 8px; letter-spacing: 1px; line-height: 1; white-space: nowrap; }
+.battle-nature-seed small { color: rgba(222, 255, 224, 0.72); font-size: 8px; line-height: 1; }
+.battle-nature-seed.growth-3 { border-color: rgba(224, 255, 185, 0.9); box-shadow: 0 0 18px rgba(151, 255, 133, 0.52), inset 0 0 10px rgba(226, 255, 188, 0.22); }
+
 .battle-unit.militia-unit {
   width: 64px;
   min-height: 72px;
@@ -199,6 +224,41 @@
   mix-blend-mode: screen;
 }
 
+.battle-vfx-seed {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px #7ce48a) drop-shadow(0 0 18px rgba(159, 239, 131, 0.72));
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%);
+  animation: battleSeedPlant 0.68s ease-out forwards;
+}
+
+.battle-vfx-seed.bloom {
+  width: 76px;
+  height: 76px;
+  filter: brightness(0) saturate(100%) invert(86%) sepia(31%) saturate(935%) hue-rotate(60deg) brightness(98%) contrast(91%) drop-shadow(0 0 12px #58ef70) drop-shadow(0 0 28px #39c65a);
+  mix-blend-mode: screen;
+  animation: battleSeedBloom 0.98s cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+.battle-vfx-bloom-burst {
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  border: 3px solid #75ed79;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 8deg, rgba(163, 255, 151, .92) 0 7deg, transparent 7deg 24deg);
+  box-shadow: inset 0 0 28px #4ad85c, 0 0 24px #55e76b;
+  -webkit-mask: radial-gradient(circle, transparent 0 18%, #000 22% 52%, transparent 66%);
+  mask: radial-gradient(circle, transparent 0 18%, #000 22% 52%, transparent 66%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%);
+  animation: battleBloomBurst .98s cubic-bezier(.18,.8,.2,1) forwards;
+}
+
 .battle-floater {
   color: #f5df9b;
   font-size: 13px;
@@ -211,6 +271,7 @@
 .battle-floater.heal { color: #9fe6c6; }
 .battle-floater.shield { color: #9fd6ff; }
 .battle-floater.purple { color: #d8b8ff; text-shadow: 0 0 12px rgba(181, 140, 255, 0.85); }
+.battle-floater.nature { color: #b8f5af; text-shadow: 0 0 12px rgba(111, 228, 126, 0.88); }
 
 .battle-skill-label {
   min-width: 54px;
@@ -315,4 +376,27 @@
 @keyframes battleAfterimage {
   0% { opacity: 0.72; transform: translate(-50%, -50%) scale(0.86); }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(1.35); }
+}
+
+@keyframes battleSeedIdle {
+  0%, 100% { translate: 0 0; filter: brightness(1); }
+  50% { translate: 0 -2px; filter: brightness(1.25); }
+}
+
+@keyframes battleSeedPlant {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.2) rotate(-22deg); }
+  32% { opacity: 1; transform: translate(-50%, -72%) scale(1.1) rotate(8deg); }
+  100% { opacity: 0; transform: translate(-50%, -105%) scale(.78) rotate(18deg); }
+}
+
+@keyframes battleSeedBloom {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.25) rotate(-35deg); }
+  24% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) rotate(0); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.15) rotate(42deg); filter: drop-shadow(0 0 22px #cfff9f) brightness(1.8); }
+}
+
+@keyframes battleBloomBurst {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.18) rotate(-18deg); }
+  24% { opacity: .95; transform: translate(-50%, -50%) scale(.72) rotate(5deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.75) rotate(32deg); }
 }

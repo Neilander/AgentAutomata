@@ -1,4 +1,5 @@
 const SKILL_DATA = typeof require === "function" ? require("./skill-data") : window.GAME_SKILL_DATA;
+const EQUIPMENT_SETS = typeof require === "function" ? require("./equipment-sets") : window.GAME_EQUIPMENT_SETS;
 const BUILD_LAYER_MECHANIC_CURVES = (typeof require === "function" ? require("./mechanic-curves") : window.GAME_MECHANIC_CURVES) || {
   hasMechanicCurve: () => false,
   mechanicCurveValue: (_id, value) => Number(value) || 0,
@@ -94,6 +95,9 @@ function buildEquipmentModifierBundle(items = []) {
     for (const affix of item.affixes || []) {
       applyAffixValue(bundle, affix, "equipment-affix");
     }
+  }
+  for (const [key, value] of Object.entries(EQUIPMENT_SETS?.buildSetMechanicModifiers?.(items) || {})) {
+    addMechanicModifier(bundle, key, value);
   }
   return finalizeBundle(bundle);
 }

@@ -27,8 +27,15 @@ for (const id of [
 ]) assert(html.includes(`id="${id}"`), `Missing required UI element #${id}`);
 
 assert(html.includes("../../../shared/game_camera_2d/camera-core.js"), "Shared camera module is not loaded");
+assert(html.indexOf("../game_data/equipment-sets.js") < html.indexOf("../game_data/build-layers.js"), "Equipment sets must load before shared build layers");
 assert(html.indexOf("../fifteen_day_demo/fifteen-day-core.js") < html.indexOf("../border_village_war/border-village-core.js"), "Gear rule dependency must load before border village core");
 assert(web.includes("AgentAutomataCamera2D.createCamera2D") && web.includes("fitBounds") && web.includes("panByScreen"), "Map does not use the shared camera");
+assert(web.includes('id: "mock:verdant-circle"') && web.includes('kind: "mock_battle"') && web.includes('GAME.natureSetMockPlan(action.mockVariant || "set")'), "Initial village lacks the repeatable Verdant Circle mock battle");
+assert(web.includes('mockVariant: "baseline"') && web.includes('mockVariant: "set"') && web.includes("六件套相对无套装") && web.includes("mockResults.baseline") && web.includes("mockResults.set"), "Verdant Circle mock lacks a same-seed baseline/set comparison or visible deltas");
+assert(battleViewSource.includes("battle-vfx-bloom-burst") && css.includes(".mock-comparison"), "Verdant comparison or bloom feedback is not visibly emphasized");
+assert(web.includes("view().actions.find((row) => row.id === actionId) || location.actions.find((row) => row.id === actionId)"), "Node-local mock actions render but cannot be resolved when clicked");
+assert(web.includes("setSignals.plant") && web.includes("setSignals.grow") && web.includes("setSignals.bloom") && web.includes("setSignals.spread"), "Mock battle result does not report real set trigger counts");
+assert(battleViewSource.includes("共享战斗模拟器没有加载，已拒绝启动旧备用战斗"), "Battle view can still silently fall back to a divergent simulator");
 assert(!html.includes('class="village-ground"') && !html.includes('class="decorative-cottage"') && !css.includes(".map-building-art"), "Rejected detailed town scenery or physical building art still clutters the simplified map");
 assert(web.includes("function renderWorldUnits") && web.includes("current.party.heroes.map") && web.includes("current.party.militiaUnits.map") && web.includes("BUILDING_PATROL_ROUTES") && !web.includes("TRAINED_WORLD_POSITIONS"), "Simplified world layer should show owned heroes and militia without duplicating trained-unit scenery");
 assert(web.includes('class="world-unit hero ${hero.kind}"') && web.includes('class="world-unit militia"') && web.includes('data-equipment-target="${esc(unit.id)}"') && web.includes("ROLE_ICONS[unit.roleKey]") && css.includes(".map-unit-layer") && css.includes(".world-unit-avatar") && css.includes("@keyframes world-unit-idle"), "Map heroes or militia lack compact clickable battle-style avatars");

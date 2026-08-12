@@ -2189,6 +2189,7 @@ const GAME_SKILL_ASSETS = (() => {
         "name": "沼雾瓶",
         "type": "小技能",
         "role": "炼金师",
+        "school": "nature",
         "cooldown": 10,
         "icon": "fizzing-flask",
         "desc": "敌方全体少量铺毒。",
@@ -2426,6 +2427,7 @@ const GAME_SKILL_ASSETS = (() => {
         "name": "万毒献祭",
         "type": "大招",
         "role": "术士",
+        "school": "nature",
         "cooldown": 30,
         "icon": "death-skull",
         "desc": "引爆所有中毒敌人，保留部分毒层。",
@@ -3603,6 +3605,7 @@ const GAME_SKILL_ASSETS = (() => {
         "name": "腐毒烙印",
         "type": "小技能",
         "role": "术士",
+        "school": "nature",
         "cooldown": 6,
         "icon": "poison-bottle",
         "desc": "单体上毒，已有毒则延长。",
@@ -3675,6 +3678,24 @@ const GAME_SKILL_ASSETS = (() => {
             "kind": "poisonTarget",
             "stacks": 2,
             "time": 7
+          }
+        ]
+      },
+      "verdantMend": {
+        "name": "繁枝愈合",
+        "type": "小技能",
+        "role": "自然学派",
+        "school": "nature",
+        "cooldown": 3.8,
+        "openingCooldown": 1,
+        "icon": "fruiting",
+        "desc": "治疗生命比例最低的友军，并触发自然学派效果。",
+        "effects": [
+          {
+            "kind": "healLowestAlly",
+            "flat": 34,
+            "power": 0.32,
+            "label": "繁枝愈合"
           }
         ]
       },

@@ -4,6 +4,12 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-08-11
 
+- `2026-08-11_1802_verdant-ab-and-green-bloom.md`：繁生之环演武改为同角色同种子的无套装/六件套 A/B；战后显示直接差值，绽放改为绿色花瓣与扩散光。
+
+- `2026-08-11_1738_border-village-mock-click-fix.md`：修复演武场按钮显示但点击无反应；节点浮窗现在能解析节点本地 Mock 行动，并增加静态回归。
+
+- `2026-08-11_1656_border-village-verdant-circle-mock.md`：实现自然学派六件套繁生之环、种子状态与绿白特效；初始村庄加入不改存档的共享战斗演武和真实触发统计。
+
 - `2026-08-11_0059_border-village-ancient-ruins-challenge.md`：新增远古遗迹两场高难实战与延迟揭示的密室救援剧情；两种选择改变核心战阵容，最终招募两人并获得永恒遗珍。
 
 - `2026-08-11_0039_border-village-icon-only-equipment-slots.md`：人物页左右装备槽移除常驻部位文字，只保留图标、稀有度材质、悬浮详情和无障碍名称。

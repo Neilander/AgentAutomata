@@ -192,6 +192,8 @@ Classes already have tested identities after multiple tuning passes:
 
 Combat must be visible. A large part of the game fantasy is watching auto-battle unfold. Pure background text resolution is not enough.
 
+The accepted profession / magic-school / equipment-set framework is recorded in [`design/combat_profession_magic_school_framework_v1.md`](design/combat_profession_magic_school_framework_v1.md). Physical skills come from professions; magic skills carry optional school tags; characters are not forced to have a school. The first implemented school set is the Nature-school six-piece set `繁生之环`, with a repeatable mock battle in the initial village.
+
 ### Equipment Farming
 
 Existing prototypes:

@@ -76,6 +76,7 @@
   let pendingPreview = null;
   let pendingCombat = null;
   let pendingCombatResult = null;
+  const mockResults = {};
   let battleView = null;
   let grindSession = null;
   let toastTimer = null;
@@ -212,6 +213,7 @@
   function runAction(action) {
     if (!action) return;
     if (action.available === false) return showToast(action.disabledReason || "当前无法执行这个行动。");
+    if (action.kind === "mock_battle") return startCombat(GAME.natureSetMockPlan(action.mockVariant || "set"));
     if (["combat", "grind"].includes(action.kind)) {
       const plan = GAME.preparePlayerCombat(state, action.id);
       if (!plan) return showToast("这个战斗入口已经失效。");
@@ -387,7 +389,7 @@
       try {
         if (!window.GAME_BATTLE_VIEW?.mount) throw new Error("共享战斗视图没有加载");
         battleView?.destroy?.();
-        battleView = window.GAME_BATTLE_VIEW.mount({ container: mount, maxTime: plan.maxTime || 150, speed: 2.5, camera: false, gameTime: false, postProcessing: false, onFinish: finishCombat });
+        battleView = window.GAME_BATTLE_VIEW.mount({ container: mount, maxTime: plan.maxTime || 150, speed: plan.mock ? 3 : 2.5, camera: false, gameTime: false, postProcessing: false, onFinish: finishCombat });
         battleView.start({ leftTeam: structuredClone(plan.leftTeam), rightTeam: structuredClone(plan.rightTeam), seed: plan.seed, title: plan.title, randomizeStats: false });
       } catch (error) {
         battleView?.destroy?.(); battleView = null; pendingCombat = null; mode = "campaign"; render(); showToast(`战斗无法启动：${error.message || String(error)}`);
@@ -402,13 +404,37 @@
     const top = result.units.filter((unit) => unit.side === "left").sort((a, b) => Number(b.damageDone || 0) - Number(a.damageDone || 0)).slice(0, 3);
     const box = document.querySelector("#combat-result");
     box.hidden = false;
-    box.classList.toggle("loss", !win);
-    box.innerHTML = `<h3>${win ? "我方获胜" : "我方失利"}</h3><div class="combat-result-metrics"><span>我方存活<b>${result.metrics.leftAlive}/${pendingCombat.leftTeam.length}</b></span><span>敌方存活<b>${result.metrics.rightAlive}/${pendingCombat.rightTeam.length}</b></span><span>伤害<b>${Math.round(result.metrics.leftDamage || 0)}</b></span><span>用时<b>${Number(result.duration || 0).toFixed(1)}s</b></span></div><p>${fallen.length ? `倒下：${esc(fallen.join("、"))}<br>` : ""}主要输出：${top.map((unit) => `${esc(unit.name)} ${Math.round(unit.damageDone || 0)}`).join(" · ") || "暂无"}${win ? "" : "<br><strong>失败不消耗行动力或粮食，可以立即重试。</strong>"}</p><button id="commit-combat" class="button ${win ? "primary" : "danger"}">${win ? "查看战后变化" : "返回地图并重试"}</button>`;
+    box.classList.toggle("loss", !win && !pendingCombat.mock);
+    const setSignals = pendingCombat.mock ? { plant: 0, grow: 0, bloom: 0, spread: 0 } : null;
+    if (setSignals) for (const signal of (result.signals || []).filter((row) => row.kind === "status")) {
+      if (signal.tags?.includes("seedPlant")) setSignals.plant += 1;
+      if (signal.tags?.includes("seedGrow")) setSignals.grow += 1;
+      if (signal.tags?.includes("seedBloom")) setSignals.bloom += 1;
+      if (signal.tags?.includes("seedSpread")) setSignals.spread += 1;
+    }
+    let comparisonHtml = "";
+    if (pendingCombat.mock) {
+      const variant = pendingCombat.mockVariant || "set";
+      mockResults[variant] = { damage: Math.round(result.metrics.leftDamage || 0), healing: Math.round(result.metrics.leftHealing || 0), defeated: pendingCombat.rightTeam.length - result.metrics.rightAlive, duration: Number(result.duration || 0) };
+      if (mockResults.baseline && mockResults.set) {
+        const delta = { damage: mockResults.set.damage - mockResults.baseline.damage, healing: mockResults.set.healing - mockResults.baseline.healing, defeated: mockResults.set.defeated - mockResults.baseline.defeated, duration: mockResults.set.duration - mockResults.baseline.duration };
+        comparisonHtml = `<p class="mock-comparison"><strong>六件套相对无套装</strong><span>伤害 ${delta.damage >= 0 ? "+" : ""}${delta.damage}</span><span>治疗 ${delta.healing >= 0 ? "+" : ""}${delta.healing}</span><span>击倒 ${delta.defeated >= 0 ? "+" : ""}${delta.defeated}</span><span>用时 ${delta.duration >= 0 ? "+" : ""}${delta.duration.toFixed(1)}s</span></p>`;
+      }
+    }
+    const combatMetrics = `<div class="combat-result-metrics"><span>总伤害<b>${Math.round(result.metrics.leftDamage || 0)}</b></span><span>总治疗<b>${Math.round(result.metrics.leftHealing || 0)}</b></span><span>击倒<b>${pendingCombat.rightTeam.length - result.metrics.rightAlive}/${pendingCombat.rightTeam.length}</b></span><span>用时<b>${Number(result.duration || 0).toFixed(1)}s</b></span></div>`;
+    const metrics = setSignals
+      ? `${combatMetrics}${pendingCombat.mockVariant === "set" ? `<div class="combat-result-metrics set-metrics"><span>播种<b>${setSignals.plant}</b></span><span>生长<b>${setSignals.grow}</b></span><span>绽放<b>${setSignals.bloom}</b></span><span>传播<b>${setSignals.spread}</b></span></div>` : ""}`
+      : `<div class="combat-result-metrics"><span>我方存活<b>${result.metrics.leftAlive}/${pendingCombat.leftTeam.length}</b></span><span>敌方存活<b>${result.metrics.rightAlive}/${pendingCombat.rightTeam.length}</b></span><span>伤害<b>${Math.round(result.metrics.leftDamage || 0)}</b></span><span>用时<b>${Number(result.duration || 0).toFixed(1)}s</b></span></div>`;
+    box.innerHTML = `<h3>${pendingCombat.mock ? pendingCombat.mockVariant === "baseline" ? "无套装对照结束" : "六件套演武结束" : win ? "我方获胜" : "我方失利"}</h3>${metrics}${comparisonHtml}<p>${fallen.length ? `倒下：${esc(fallen.join("、"))}<br>` : ""}主要输出：${top.map((unit) => `${esc(unit.name)} ${Math.round(unit.damageDone || 0)}`).join(" · ") || "暂无"}${pendingCombat.mock ? `<br><strong>${mockResults.baseline && mockResults.set ? "已完成同条件对比。" : "返回演武场再运行另一组，即可显示同条件差值。"}</strong>` : win ? "" : "<br><strong>失败不消耗行动力或粮食，可以立即重试。</strong>"}</p><button id="commit-combat" class="button ${win || pendingCombat.mock ? "primary" : "danger"}">${pendingCombat.mock ? "返回演武场" : win ? "查看战后变化" : "返回地图并重试"}</button>`;
     document.querySelector("#commit-combat").addEventListener("click", commitCombat);
   }
 
   function commitCombat() {
     if (!pendingCombat || !pendingCombatResult) return;
+    if (pendingCombat.mock) {
+      battleView?.destroy?.(); battleView = null; pendingCombat = null; pendingCombatResult = null; mode = "campaign"; selectedNodeId = "mock:verdant-circle"; render();
+      return;
+    }
     try {
       const before = view();
       const beforeRaids = new Set(before.raids.map((raid) => raid.title));
@@ -532,6 +558,8 @@
     const grindLocked = grindBattles.length === 0 || grindBattles.every((action) => action.available === false);
     const selectedGrind = current.grind.levels.find((row) => row.selected);
     rows.push({ id: "grind", title: "边林讨伐", kicker: "五档无限刷装", description: "难度N获胜一次增加N点讨伐积分；累计5/20/90/200积分依次解锁新难度。解锁后不会自动切换。", status: grindLocked ? "地点已知 · 暂时不能出发" : `讨伐积分${current.grind.unlockScore} · 总胜场${current.grind.totalWins} · 当前难度${selectedGrind.difficulty}「${selectedGrind.name}」`, actions: visibleGrind, grind: current.grind, x: 1190, y: 275, sigil: "猎", type: grindLocked ? "grind locked" : "grind" });
+
+    rows.push({ id: "mock:verdant-circle", title: "繁生之环演武场", kicker: "同条件 A/B 测试", description: "两场使用完全相同的角色、自然技能、敌人和随机种子；唯一差别是是否穿着繁生之环六件套。建议先跑无套装，再跑六件套。", status: mockResults.baseline && mockResults.set ? "两组已完成 · 战后可查看差值" : "不消耗行动力或粮食 · 不改变存档", yieldLabel: "A/B", actions: [{ id: "mock:verdant-circle:baseline", label: "A · 无套装对照", kind: "mock_battle", mockVariant: "baseline", available: true, actionPointCost: 0, knownCost: {}, description: "自然技能照常施放，但没有播种、绽放与传播。" }, { id: "mock:verdant-circle:set", label: "B · 繁生之环六件套", kind: "mock_battle", mockVariant: "set", available: true, actionPointCost: 0, knownCost: {}, description: "除套装外与A组完全相同；战后显示相对差值。" }], x: 1060, y: 760, sigil: "芽", type: "mock" });
 
     current.raids.forEach((raid) => {
       const raidActions = current.actions.filter((action) => action.kind === "combat" && action.label.includes(raid.title));
@@ -845,7 +873,11 @@
     const grindHtml = location.grind ? renderGrindDifficultyPanel(location) : "";
     const actionHtml = normalActions.map((action) => `<button class="action-card ${action.available === false ? "unavailable" : ""}" data-action-id="${esc(action.id)}" ${action.available === false ? "disabled" : ""}><strong>${esc(action.label)}</strong><em>${esc(costText(action))}</em>${action.description ? `<small>${esc(action.description)}</small>` : ""}${action.disabledReason ? `<small class="disabled-reason">${esc(action.disabledReason)}</small>` : ""}</button>`).join("");
     document.querySelector("#node-actions").innerHTML = grindHtml + (actionHtml || `<div class="empty-actions">${esc(location.emptyText || "这里暂时没有可执行行动。")}</div>`);
-    document.querySelectorAll("#node-actions [data-action-id]").forEach((button) => button.addEventListener("click", () => runAction(view().actions.find((action) => action.id === button.dataset.actionId))));
+    document.querySelectorAll("#node-actions [data-action-id]").forEach((button) => button.addEventListener("click", () => {
+      const actionId = button.dataset.actionId;
+      const action = view().actions.find((row) => row.id === actionId) || location.actions.find((row) => row.id === actionId);
+      runAction(action);
+    }));
     requestAnimationFrame(positionPopover);
   }
 
@@ -1336,7 +1368,7 @@
     if (mode === "campaign") renderMap(current);
     if (mode === "combat") {
       document.querySelector("#combat-title").textContent = pendingCombat?.title || "战斗";
-      document.querySelector("#combat-supply").innerHTML = pendingCombat ? `<span>粮食消耗 <b>${pendingCombat.foodCommitted || 0}</b></span>${pendingCombat.totalArmy != null ? `<span>军队出战 <b>${pendingCombat.deployedArmy}/${pendingCombat.totalArmy}</b></span>` : ""}` : "";
+      document.querySelector("#combat-supply").innerHTML = pendingCombat?.mock ? `<span>演武测试 <b>不改存档</b></span><span>共享战斗 <b>完整运行</b></span>` : pendingCombat ? `<span>粮食消耗 <b>${pendingCombat.foodCommitted || 0}</b></span>${pendingCombat.totalArmy != null ? `<span>军队出战 <b>${pendingCombat.deployedArmy}/${pendingCombat.totalArmy}</b></span>` : ""}` : "";
       document.querySelector("#combat-result").hidden = !pendingCombatResult;
     }
     if (mode === "grind") renderGrindHud();
@@ -1467,7 +1499,7 @@
     document.querySelector("#stop-grind").addEventListener("click", stopGrind);
     document.querySelector("#recruit-confirm").addEventListener("click", () => { document.querySelector("#recruit-overlay").hidden = true; });
     document.querySelector("#restart-open").addEventListener("click", () => document.querySelector("#restart-dialog").showModal());
-    document.querySelector("#restart-confirm").addEventListener("click", () => { const seed = document.querySelector("#restart-seed").value.trim() || "browser-border-village"; battleView?.destroy?.(); battleView = null; clearTimeout(grindSession?.timer); grindSession = null; pendingCombat = null; pendingCombatResult = null; document.querySelector("#equipment-dialog")?.close(); mode = "campaign"; state = GAME.createInitialState(seed); formationState = defaultFormationState(); equipmentMode = "character"; formationCityFilter = false; formationPositioning = false; selectedFormationPositionMemberId = null; selectedNodeId = "command"; selectedHeroId = "player"; selectedItemId = null; partyScrollLeft = 0; partyRosterScrollTop = 0; partyDetailScrollTop = 0; equipmentBackpackScrollTop = 0; newlyUnlocked.clear(); saveState(); saveFormationState(); render(); });
+    document.querySelector("#restart-confirm").addEventListener("click", () => { const seed = document.querySelector("#restart-seed").value.trim() || "browser-border-village"; battleView?.destroy?.(); battleView = null; clearTimeout(grindSession?.timer); grindSession = null; pendingCombat = null; pendingCombatResult = null; delete mockResults.baseline; delete mockResults.set; document.querySelector("#equipment-dialog")?.close(); mode = "campaign"; state = GAME.createInitialState(seed); formationState = defaultFormationState(); equipmentMode = "character"; formationCityFilter = false; formationPositioning = false; selectedFormationPositionMemberId = null; selectedNodeId = "command"; selectedHeroId = "player"; selectedItemId = null; partyScrollLeft = 0; partyRosterScrollTop = 0; partyDetailScrollTop = 0; equipmentBackpackScrollTop = 0; newlyUnlocked.clear(); saveState(); saveFormationState(); render(); });
     window.addEventListener("keydown", (event) => { if (event.key !== "Escape" || mode !== "campaign") return; if (dockExpanded) { setDockExpanded(false); return; } if (selectedNodeId) { selectedNodeId = null; renderMap(view()); } });
   }
 

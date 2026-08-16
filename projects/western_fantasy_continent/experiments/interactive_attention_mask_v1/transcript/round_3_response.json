@@ -1,0 +1,171 @@
+{
+  "schema": "masked_attention_response_v1",
+  "round": 3,
+  "previousResponseHash": "9ebffca3ad65173284ba583513f40b45d640309fe084fa1c7d41b0856f42e329",
+  "requestHash": "d9f2fd37d294163b92686b69fa8c2caf057d95ac7414846c8b217573dde1b14d",
+  "responses": [
+    {
+      "caseId": "arrow_city",
+      "command": {
+        "caseId": "arrow_city",
+        "kind": "act",
+        "operation": "resolve_column_descent",
+        "target": "column-0",
+        "reason": "普通基地格、灰色1点骰及列内ship-a的位置均已揭示，现在按实际下降1执行该列下降。",
+        "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY：下降后应只关注ship-a的新最终停留格"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "movements": [
+            {
+              "shipId": "ship-a",
+              "from": "sky-c0-r0",
+              "to": "sky-c0-r1",
+              "amount": 1
+            }
+          ],
+          "zeroMovementMeansNoLandingEffect": false
+        }
+      }
+    },
+    {
+      "caseId": "air_defense_zero",
+      "command": {
+        "caseId": "air_defense_zero",
+        "kind": "act",
+        "operation": "resolve_column_descent",
+        "target": "column-0",
+        "reason": "防空房、灰色1点骰及列内ship-a均已揭示；修正后实际下降为0，应结算为不移动且不触发落点效果。",
+        "expectedWakeup": "N01_ZERO_DESCENT_NO_LANDING与S01_ZERO_MOVE_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "movements": [
+            {
+              "shipId": "ship-a",
+              "from": "sky-c0-r0",
+              "to": "sky-c0-r0",
+              "amount": 0
+            }
+          ],
+          "zeroMovementMeansNoLandingEffect": true
+        }
+      }
+    },
+    {
+      "caseId": "mothership_skull",
+      "command": {
+        "caseId": "mothership_skull",
+        "kind": "act",
+        "operation": "resolve_column_descent",
+        "target": "column-0",
+        "reason": "普通基地格、灰色1点骰及列内ship-a的位置均已揭示，现在按实际下降1执行该列下降。",
+        "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY：下降后应只关注ship-a的新最终停留格"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "movements": [
+            {
+              "shipId": "ship-a",
+              "from": "sky-c0-r0",
+              "to": "sky-c0-r1",
+              "amount": 1
+            }
+          ],
+          "zeroMovementMeansNoLandingEffect": false
+        }
+      }
+    },
+    {
+      "caseId": "path_not_endpoint",
+      "command": {
+        "caseId": "path_not_endpoint",
+        "kind": "act",
+        "operation": "resolve_column_descent",
+        "target": "column-0",
+        "reason": "普通基地格、灰色2点骰及ship-a起点均已揭示，现在按实际下降2执行；路径经过格不触发。",
+        "expectedWakeup": "G02_DESCENT_TO_FINAL_CHECK：只检查ship-a下降后的最终停留格"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "movements": [
+            {
+              "shipId": "ship-a",
+              "from": "sky-c0-r0",
+              "to": "sky-c0-r2",
+              "amount": 2
+            }
+          ],
+          "zeroMovementMeansNoLandingEffect": false
+        }
+      }
+    },
+    {
+      "caseId": "white_random_stop",
+      "command": {
+        "caseId": "white_random_stop",
+        "kind": "act",
+        "operation": "resolve_column_descent",
+        "target": "column-0",
+        "reason": "普通基地格、白色1点骰及列内ship-a的位置均已揭示，现在先按实际下降1完成飞船移动，尚不提前重投。",
+        "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY；飞船链结束后才检查白骰重投条件"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "movements": [
+            {
+              "shipId": "ship-a",
+              "from": "sky-c0-r0",
+              "to": "sky-c0-r1",
+              "amount": 1
+            }
+          ],
+          "zeroMovementMeansNoLandingEffect": false
+        }
+      }
+    },
+    {
+      "caseId": "two_ship_split",
+      "command": {
+        "caseId": "two_ship_split",
+        "kind": "act",
+        "operation": "resolve_column_descent",
+        "target": "column-0",
+        "reason": "普通基地格、灰色1点骰以及ship-a和ship-b的位置均已揭示，现在按实际下降1同时移动该列两艘飞船。",
+        "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY：下降后需分别关注两艘飞船各自的新最终停留格"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "movements": [
+            {
+              "shipId": "ship-a",
+              "from": "sky-c0-r0",
+              "to": "sky-c0-r1",
+              "amount": 1
+            },
+            {
+              "shipId": "ship-b",
+              "from": "sky-c0-r1",
+              "to": "sky-c0-r2",
+              "amount": 1
+            }
+          ],
+          "zeroMovementMeansNoLandingEffect": false
+        }
+      }
+    }
+  ],
+  "responseHash": "18d43577bd75ce111a70a114419d05da7d144d4a39526cc68909c57779ba477b"
+}

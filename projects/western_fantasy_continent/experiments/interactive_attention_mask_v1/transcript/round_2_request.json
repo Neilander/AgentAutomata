@@ -1,0 +1,54 @@
+{
+  "schema": "masked_attention_request_v1",
+  "round": 2,
+  "commands": [
+    {
+      "caseId": "arrow_city",
+      "kind": "focus",
+      "operation": "inspect_column_occupants",
+      "target": "column-0",
+      "reason": "基地格已确认普通，骰值1对应实际下降1；执行列下降前需知道该列全部飞船及当前位置，以逐艘处理而不猜测。",
+      "expectedWakeup": "G01_PLACE_TO_EACH_SHIP与A01_PLACE_DIE_AND_DESCEND_COLUMN"
+    },
+    {
+      "caseId": "air_defense_zero",
+      "kind": "focus",
+      "operation": "inspect_column_occupants",
+      "target": "column-0",
+      "reason": "防空房已使骰值1的实际下降为0；仍先确认该列受影响的飞船集合，再按零移动边界结算，不猜测列内对象。",
+      "expectedWakeup": "N01_ZERO_DESCENT_NO_LANDING与S01_ZERO_MOVE_STOP"
+    },
+    {
+      "caseId": "mothership_skull",
+      "kind": "focus",
+      "operation": "inspect_column_occupants",
+      "target": "column-0",
+      "reason": "基地格已确认普通，骰值1对应实际下降1；先揭示该列全部飞船及位置，之后才能执行下降。",
+      "expectedWakeup": "G01_PLACE_TO_EACH_SHIP与A01_PLACE_DIE_AND_DESCEND_COLUMN"
+    },
+    {
+      "caseId": "path_not_endpoint",
+      "kind": "focus",
+      "operation": "inspect_column_occupants",
+      "target": "column-0",
+      "reason": "基地格已确认普通，骰值2对应实际下降2；先确定该列飞船及起点，后续下降只结算最终格而不关注路径图标。",
+      "expectedWakeup": "G01_PLACE_TO_EACH_SHIP，下降后由G02_DESCENT_TO_FINAL_CHECK只检查终点"
+    },
+    {
+      "caseId": "white_random_stop",
+      "kind": "focus",
+      "operation": "inspect_column_occupants",
+      "target": "column-0",
+      "reason": "普通基地格令白色1点骰实际下降1；需先知道该列全部飞船并完成其链，不能提前触发重投。",
+      "expectedWakeup": "G01_PLACE_TO_EACH_SHIP；全部飞船完成后才可能唤醒G08_ALL_SHIPS_TO_WHITE_REROLL"
+    },
+    {
+      "caseId": "two_ship_split",
+      "kind": "focus",
+      "operation": "inspect_column_occupants",
+      "target": "column-0",
+      "reason": "基地格已确认普通，骰值1对应实际下降1；现在必须揭示该列完整飞船集合，确保多艘飞船逐一结算。",
+      "expectedWakeup": "G01_PLACE_TO_EACH_SHIP与A01_PLACE_DIE_AND_DESCEND_COLUMN"
+    }
+  ]
+}

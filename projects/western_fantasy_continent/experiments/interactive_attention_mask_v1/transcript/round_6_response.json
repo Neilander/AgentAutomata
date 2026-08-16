@@ -1,0 +1,124 @@
+{
+  "schema": "masked_attention_response_v1",
+  "round": 6,
+  "previousResponseHash": "995b0b06e01a55fbe47c3b452435b6d37e74b5b07f72b00614d70d8e54cb2923",
+  "requestHash": "7df65ea83a15fcdae57418a052289915a10a701af016271e2a3d7b6837a23c02",
+  "responses": [
+    {
+      "caseId": "arrow_city",
+      "command": {
+        "caseId": "arrow_city",
+        "kind": "focus",
+        "operation": "inspect_ship_cell",
+        "target": "ship-a",
+        "reason": "箭头动作已把ship-a移到sky-c1-r1并明确要求重新检查落点；目标格局部特征仍被遮罩，必须先揭示。",
+        "expectedWakeup": "G06_ARROW_RECURSIVE_RECHECK，可能按新最终格唤醒A03、A04、A05或无立即效果边界"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "shipId": "ship-a",
+          "position": "sky-c1-r1",
+          "feature": {
+            "kind": "city_hit"
+          }
+        }
+      }
+    },
+    {
+      "caseId": "mothership_skull",
+      "command": {
+        "caseId": "mothership_skull",
+        "kind": "focus",
+        "operation": "inspect_mothership_row",
+        "target": "mothership",
+        "reason": "母舰已下降到mothership-r1且新行必须检查；新行局部特征尚未揭示，不能直接假设是否为骷髅行。",
+        "expectedWakeup": "P05_MOTHERSHIP_NEW_ROW；若揭示为骷髅行则唤醒G04_MOTHERSHIP_TO_FAILURE"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "position": "mothership-r1",
+          "feature": {
+            "kind": "skull",
+            "rightSideAction": "gain-1-tech"
+          }
+        }
+      }
+    },
+    {
+      "caseId": "path_not_endpoint",
+      "command": {
+        "caseId": "path_not_endpoint",
+        "kind": "act",
+        "operation": "finish_case",
+        "target": "case",
+        "reason": "ship-a的真正终点爆炸格已确认无立即效果，落点链结束；本次为灰骰，无白骰重投后续。",
+        "expectedWakeup": "S02_TERMINAL_CELL_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "finished",
+        "detail": {
+          "finalState": {
+            "shipPositions": {
+              "ship-a": "sky-c0-r2"
+            },
+            "cityHp": 3,
+            "mothershipPosition": null,
+            "outcome": null,
+            "unplacedDiceState": "none"
+          }
+        }
+      }
+    },
+    {
+      "caseId": "white_random_stop",
+      "command": {
+        "caseId": "white_random_stop",
+        "kind": "focus",
+        "operation": "inspect_unplaced_dice",
+        "target": "unplaced-dice",
+        "reason": "唯一飞船的普通天空格落点链已完成；因本次放置白骰，现在先揭示尚未放置的骰子集合，再决定重投。",
+        "expectedWakeup": "P07_WHITE_DIE_POST_RESOLUTION与G08_ALL_SHIPS_TO_WHITE_REROLL"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "dice": [
+            {
+              "id": "die-b",
+              "currentValue": 5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "caseId": "two_ship_split",
+      "command": {
+        "caseId": "two_ship_split",
+        "kind": "focus",
+        "operation": "inspect_ship_cell",
+        "target": "ship-a",
+        "reason": "ship-a已横移到sky-c1-r1，箭头目标格局部特征仍被遮罩；本轮先完成对ship-a新最终格的复查，再处理ship-b。",
+        "expectedWakeup": "G06_ARROW_RECURSIVE_RECHECK，之后仍需单独关注ship-b"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "shipId": "ship-a",
+          "position": "sky-c1-r1",
+          "feature": {
+            "kind": "city_hit"
+          }
+        }
+      }
+    }
+  ],
+  "responseHash": "8b94386a1311e8d008629e26ae9d9a38233ac978cae54e08efa067b9d83ea674"
+}

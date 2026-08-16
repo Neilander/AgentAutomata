@@ -1,0 +1,353 @@
+{
+  "schema": "blind_agent_player_memory_v0",
+  "sourceRuleIds": [
+    "R01",
+    "R02",
+    "R03",
+    "R04",
+    "R05",
+    "R06",
+    "R07",
+    "R08"
+  ],
+  "actionSchemas": [
+    {
+      "id": "place_die_and_descend_column",
+      "meaning": "在骰子阶段把一颗骰子放入基地的一列，并让该列全部外星飞船同时下降。",
+      "inputs": [
+        "所放骰子的点数",
+        "所选基地列",
+        "该位置是否为防空房",
+        "该列全部外星飞船的当前位置"
+      ],
+      "stateChange": "通常使该列全部外星飞船同时下降骰子点数；若骰子放入防空房，则下降量减少1格。",
+      "outputPorts": [
+        "每艘飞船的实际下降量",
+        "每艘飞船的最终停留位置",
+        "需要按最终位置继续处理的效果"
+      ]
+    },
+    {
+      "id": "resolve_ship_final_stop",
+      "meaning": "飞船移动完成后，只检查并结算最终停留格。",
+      "inputs": [
+        "飞船最终停留格"
+      ],
+      "stateChange": "忽略移动路径上经过的天空格；根据最终停留格决定是否产生母舰下降、箭头移动、城市受伤或无即时效果。",
+      "outputPorts": [
+        "最终格类型",
+        "被唤醒的后续动作",
+        "没有即时后续动作"
+      ]
+    },
+    {
+      "id": "lower_mothership_from_stop",
+      "meaning": "飞船最终停在母舰下降格时，母舰立即下降一行。",
+      "inputs": [
+        "飞船最终停在母舰下降格",
+        "母舰下降后的行"
+      ],
+      "stateChange": "母舰下降一行；不结算该行右侧动作；如果抵达骷髅行，玩家立即失败。",
+      "outputPorts": [
+        "母舰新行",
+        "是否抵达骷髅行",
+        "立即失败或继续"
+      ]
+    },
+    {
+      "id": "follow_arrow_and_resolve_new_stop",
+      "meaning": "飞船最终停在箭头格时，沿箭头移动到同一行箭头所指的列。",
+      "inputs": [
+        "箭头格所在行",
+        "箭头所指的列"
+      ],
+      "stateChange": "把飞船移到同一行的目标列，并把新位置作为新的最终停留格继续结算。",
+      "outputPorts": [
+        "箭头移动后的新最终停留格",
+        "新最终停留格唤醒的后续动作"
+      ]
+    },
+    {
+      "id": "ship_hits_city",
+      "meaning": "飞船下降到天空区域下方并击中城市。",
+      "inputs": [
+        "被击中的城市",
+        "击中城市的飞船"
+      ],
+      "stateChange": "城市受到1点伤害，飞船返回母舰等待重新生成。",
+      "outputPorts": [
+        "城市受到1点伤害",
+        "飞船返回母舰等待区"
+      ]
+    },
+    {
+      "id": "reroll_after_white_die",
+      "meaning": "放置白骰后，重新投掷所有尚未放置的骰子。",
+      "inputs": [
+        "已放置的白骰",
+        "所有尚未放置的骰子"
+      ],
+      "stateChange": "所有尚未放置的骰子进入重投；新结果在重投发生前未知。",
+      "outputPorts": [
+        "待发生的重投",
+        "未知的新骰子结果",
+        "确定性预想停止点"
+      ]
+    }
+  ],
+  "attentionPresets": [
+    {
+      "id": "after_die_placement",
+      "action": "place_die_and_descend_column",
+      "lookInOrder": [
+        "先看所放骰子的点数与所选列",
+        "再看是否放入防空房，并据此算实际下降量",
+        "若实际下降量为0，停止飞船效果检查",
+        "否则同时更新该列全部飞船的位置",
+        "只查看每艘飞船的最终停留位置并逐一唤醒终点处理",
+        "若放置的是白骰，再关注所有尚未放置骰子的重投"
+      ],
+      "visibleButDoNotResolve": [
+        "飞船移动路径上经过的天空格可以看见，但不能当作停留格触发",
+        "白骰引发重投后的新骰子结果在重投发生前不能确定或继续模拟"
+      ]
+    },
+    {
+      "id": "after_final_stop",
+      "action": "resolve_ship_final_stop",
+      "lookInOrder": [
+        "识别真正的最终停留格",
+        "若为箭头格，先完成箭头移动，再查看新的最终停留格",
+        "若为母舰下降格，立即处理母舰下降并检查骷髅行",
+        "若飞船已击中城市，处理1点伤害与飞船返回",
+        "若为爆炸格，记录骰子阶段无即时效果"
+      ],
+      "visibleButDoNotResolve": [
+        "到达母舰下降后的那一行时，右侧动作可见但不能结算",
+        "爆炸格在骰子阶段可见但没有即时效果"
+      ]
+    },
+    {
+      "id": "after_mothership_drop",
+      "action": "lower_mothership_from_stop",
+      "lookInOrder": [
+        "先把母舰下降一行",
+        "立即检查新行是否为骷髅行",
+        "若是则立即判定失败，若不是则结束这次母舰下降处理"
+      ],
+      "visibleButDoNotResolve": [
+        "母舰新行右侧的动作不能因这次下降而结算"
+      ]
+    },
+    {
+      "id": "after_arrow",
+      "action": "follow_arrow_and_resolve_new_stop",
+      "lookInOrder": [
+        "确认箭头所指列",
+        "保持同一行移动飞船到目标列",
+        "把目标格当作新的最终停留格重新检查"
+      ],
+      "visibleButDoNotResolve": [
+        "箭头移动前所在的箭头格只负责改向，后果应由新的最终停留格继续决定"
+      ]
+    },
+    {
+      "id": "after_city_hit",
+      "action": "ship_hits_city",
+      "lookInOrder": [
+        "确认飞船已经下降到天空区域下方并击中城市",
+        "给城市1点伤害",
+        "把飞船返回母舰等待重新生成"
+      ],
+      "visibleButDoNotResolve": []
+    },
+    {
+      "id": "after_white_die",
+      "action": "reroll_after_white_die",
+      "lookInOrder": [
+        "识别本次放置的是白骰",
+        "收集所有尚未放置的骰子",
+        "触发它们重新投掷",
+        "在重投结果出现前停止对这些骰子的确定性预想"
+      ],
+      "visibleButDoNotResolve": [
+        "尚未发生的重投结果不能被预先当成已知输入"
+      ]
+    }
+  ],
+  "glueMemories": [
+    {
+      "id": "die_placement_wakes_column_descent",
+      "learnedFrom": [
+        "R01",
+        "R02"
+      ],
+      "cue": "一颗骰子被放入基地的一列",
+      "requiredFacts": [
+        "骰子点数",
+        "所选列",
+        "是否为防空房",
+        "该列有哪些飞船"
+      ],
+      "nextActions": [
+        "计算实际下降量",
+        "让该列全部飞船同时下降",
+        "若下降量大于0则检查各飞船最终停留格"
+      ]
+    },
+    {
+      "id": "movement_wakes_final_stop_only",
+      "learnedFrom": [
+        "R03"
+      ],
+      "cue": "飞船完成下降或箭头移动",
+      "requiredFacts": [
+        "移动完成后的最终停留格"
+      ],
+      "nextActions": [
+        "忽略路径上经过的天空格",
+        "只结算最终停留格"
+      ]
+    },
+    {
+      "id": "mothership_space_wakes_drop",
+      "learnedFrom": [
+        "R04"
+      ],
+      "cue": "飞船最终停在母舰下降格",
+      "requiredFacts": [
+        "母舰下降一行后的行",
+        "该行是否为骷髅行"
+      ],
+      "nextActions": [
+        "母舰立即下降一行",
+        "不结算该行右侧动作",
+        "检查是否因抵达骷髅行而立即失败"
+      ]
+    },
+    {
+      "id": "arrow_space_wakes_new_final_stop",
+      "learnedFrom": [
+        "R05"
+      ],
+      "cue": "飞船最终停在箭头格",
+      "requiredFacts": [
+        "箭头所在行",
+        "箭头所指列"
+      ],
+      "nextActions": [
+        "沿同一行移动到箭头所指列",
+        "结算新的最终停留格"
+      ]
+    },
+    {
+      "id": "city_contact_wakes_damage_and_return",
+      "learnedFrom": [
+        "R07"
+      ],
+      "cue": "飞船下降到天空区域下方并击中城市",
+      "requiredFacts": [
+        "被击中的城市",
+        "击中城市的飞船"
+      ],
+      "nextActions": [
+        "城市受到1点伤害",
+        "飞船返回母舰等待重新生成"
+      ]
+    },
+    {
+      "id": "white_die_wakes_reroll_boundary",
+      "learnedFrom": [
+        "R08"
+      ],
+      "cue": "放置了一颗白骰",
+      "requiredFacts": [
+        "哪些骰子尚未放置"
+      ],
+      "nextActions": [
+        "重新投掷所有尚未放置的骰子",
+        "在重投结果出现前停止继续确定地模拟这些骰子"
+      ]
+    }
+  ],
+  "knownNoActionMemories": [
+    {
+      "id": "air_defense_one_means_no_ship_effect",
+      "learnedFrom": [
+        "R02"
+      ],
+      "condition": "1点骰放入防空房",
+      "memory": "实际下降量为0；飞船不移动，也不触发飞船效果。"
+    },
+    {
+      "id": "passed_sky_spaces_do_not_trigger",
+      "learnedFrom": [
+        "R03"
+      ],
+      "condition": "飞船只是在移动路径中经过天空格",
+      "memory": "经过格不触发，只处理最终停留格。"
+    },
+    {
+      "id": "mothership_row_side_action_not_resolved",
+      "learnedFrom": [
+        "R04"
+      ],
+      "condition": "母舰因飞船停在母舰下降格而下降到新行",
+      "memory": "不结算该行右侧动作。"
+    },
+    {
+      "id": "explosion_has_no_immediate_dice_phase_effect",
+      "learnedFrom": [
+        "R06"
+      ],
+      "condition": "骰子阶段的飞船最终停在爆炸格",
+      "memory": "爆炸格在骰子阶段没有立即效果。"
+    }
+  ],
+  "uncertainBoundaries": [
+    {
+      "id": "stop_before_white_die_reroll_result",
+      "learnedFrom": [
+        "R08"
+      ],
+      "boundary": "白骰已放置并触发尚未放置骰子的重投，但重投结果尚未发生。",
+      "certainUpTo": "可以确定所有尚未放置的骰子都将重投。",
+      "stopBecause": "新点数是随机且尚未知的，不能继续确定地模拟这些骰子的后续放置或效果。"
+    },
+    {
+      "id": "stop_when_rule_has_no_immediate_effect",
+      "learnedFrom": [
+        "R06"
+      ],
+      "boundary": "骰子阶段的飞船最终停在爆炸格。",
+      "certainUpTo": "可以确定此时没有立即效果。",
+      "stopBecause": "现有规则没有给出骰子阶段的进一步即时后果，不能自行补写。"
+    }
+  ],
+  "ownChecks": [
+    {
+      "id": "all_rules_covered",
+      "check": "sourceRuleIds必须恰好覆盖R01至R08；逐条确认：整列同时下降、防空房减1、只结算终点、母舰下降与骷髅行、箭头转移、爆炸格无即时效果、城市受伤并返回、白骰重投边界都已进入记忆。"
+    },
+    {
+      "id": "do_not_resolve_path_spaces",
+      "check": "每次飞船移动时，先算完整移动并确定最终停留格；不得把途中经过的天空格当成终点结算。"
+    },
+    {
+      "id": "arrow_creates_new_final_stop",
+      "check": "若原最终格是箭头格，必须先移到同一行所指列，再把新格作为真正要继续结算的最终停留格。"
+    },
+    {
+      "id": "air_defense_zero_move_stops_effects",
+      "check": "防空房中的1点骰产生0格移动时，不应虚构最终格触发或任何飞船效果。"
+    },
+    {
+      "id": "mothership_drop_does_not_resolve_side_action",
+      "check": "母舰因终点格下降后，只检查骷髅行失败；不得顺手结算新行右侧动作。"
+    },
+    {
+      "id": "stop_at_unknown_reroll",
+      "check": "白骰触发重投时，只预想到重投将发生；在结果出现前不得猜点数或推演其后果。"
+    }
+  ]
+}

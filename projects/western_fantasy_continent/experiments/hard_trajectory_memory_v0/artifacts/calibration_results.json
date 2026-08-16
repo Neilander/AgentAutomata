@@ -1,0 +1,4338 @@
+{
+  "config": {
+    "schema": "hard_trajectory_memory_frozen_config_v0",
+    "calibrationCases": 63,
+    "memoryTrajectories": 73,
+    "memorySegments": 102,
+    "memoryConfig": {
+      "state_weight": 0.5,
+      "direction_weight": 0.5,
+      "signature_mode": "state_delta",
+      "prediction_mode": "future_prototype"
+    },
+    "queryConfig": {
+      "top_k": 8,
+      "threshold": 0.4750000000000001,
+      "score_band": 0.1,
+      "temperature": 0.035,
+      "future_cluster_threshold": 0.58,
+      "outcome_direction_weight": 0.0,
+      "support_bonus": 0.04
+    },
+    "calibration": {
+      "signatureMode": "state_delta",
+      "predictionMode": "future_prototype",
+      "stateWeight": 0.5,
+      "directionWeight": 0.5,
+      "threshold": 0.4750000000000001,
+      "futureClusterThreshold": 0.58,
+      "outcomeDirectionWeight": 0.0,
+      "supportBonus": 0.04,
+      "balanced": 0.8657608695652175,
+      "macroAccuracy": 0.8654761904761905,
+      "accuracy": 0.8412698412698413
+    },
+    "frozenHashes": {
+      "trajectory_memory.py": "75e4200c0694dd5a8d55855561e1807c8cd13a4b53eddeede233081cac0e00c0",
+      "fixtures.py": "af87dccb1d28cbe37f770d8613b68ac36eb72f98e19f363938f0358e3c7e7c94",
+      "final_holdout.py": "d9d956661bcfd0d2f7cc98d1bca783052182ad2f97ff0e3d59c1ed0783e7ed56",
+      "evaluate_frozen.py": "c1b654503ba57ca33aea7d9dd6d5905d8e4a923f9c22de77563260c98a0a3e2d"
+    }
+  },
+  "development": {
+    "cases": 63,
+    "correct": 53,
+    "accuracy": 0.8412698412698413,
+    "positiveAccuracy": 0.775,
+    "negativeAccuracy": 0.9565217391304348,
+    "groups": {
+      "paraphrase": {
+        "cases": 14,
+        "correct": 11,
+        "accuracy": 0.7857142857142857
+      },
+      "context": {
+        "cases": 5,
+        "correct": 3,
+        "accuracy": 0.6
+      },
+      "numeric": {
+        "cases": 6,
+        "correct": 4,
+        "accuracy": 0.6666666666666666
+      },
+      "procedural": {
+        "cases": 6,
+        "correct": 4,
+        "accuracy": 0.6666666666666666
+      },
+      "nonce": {
+        "cases": 3,
+        "correct": 2,
+        "accuracy": 0.6666666666666666
+      },
+      "arrow_discrimination": {
+        "cases": 2,
+        "correct": 2,
+        "accuracy": 1.0
+      },
+      "near_negative": {
+        "cases": 9,
+        "correct": 9,
+        "accuracy": 1.0
+      },
+      "modality": {
+        "cases": 3,
+        "correct": 3,
+        "accuracy": 1.0
+      },
+      "observation": {
+        "cases": 3,
+        "correct": 3,
+        "accuracy": 1.0
+      },
+      "position": {
+        "cases": 2,
+        "correct": 2,
+        "accuracy": 1.0
+      },
+      "actor_transfer": {
+        "cases": 9,
+        "correct": 9,
+        "accuracy": 1.0
+      },
+      "nonce_negative": {
+        "cases": 1,
+        "correct": 1,
+        "accuracy": 1.0
+      }
+    },
+    "rows": [
+      {
+        "id": "dev-detonate-1",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "detonated",
+        "predicted": "stays_quiet",
+        "geometricPrediction": "stays_quiet",
+        "correct": false,
+        "bestScore": 0.6244150686573344,
+        "evidenceScore": 0.6244150686573344,
+        "confidence": 0.11198142570208178,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 10,
+            "trajectoryId": "quiet-0",
+            "stepIndex": 1,
+            "score": 0.6244150686573344,
+            "weight": 1.0,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "stays_quiet",
+            0.7792783818035538
+          ],
+          [
+            "shield_absorbed",
+            0.6854065686301665
+          ],
+          [
+            "detonated",
+            0.6572787097294321
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "dev-quiet-1",
+        "kind": "positive",
+        "group": "context",
+        "expected": "stays_quiet",
+        "predicted": "stays_quiet",
+        "geometricPrediction": "stays_quiet",
+        "correct": true,
+        "bestScore": 0.552613398056936,
+        "evidenceScore": 0.5883577996729734,
+        "confidence": 0.09404089483675465,
+        "agreement": 0.901850348102882,
+        "effectiveSupport": 2.4439364546059603,
+        "selected": [
+          {
+            "matrixRow": 11,
+            "trajectoryId": "quiet-1",
+            "stepIndex": 1,
+            "score": 0.552613398056936,
+            "weight": 0.5945954038624686,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 8,
+            "trajectoryId": "detonate-4",
+            "stepIndex": 1,
+            "score": 0.5100326086454233,
+            "weight": 0.1761414204292189,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 10,
+            "trajectoryId": "quiet-0",
+            "stepIndex": 1,
+            "score": 0.5032102128023002,
+            "weight": 0.14494604968294791,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 20,
+            "trajectoryId": "switch-1",
+            "stepIndex": 1,
+            "score": 0.46361576402059146,
+            "weight": 0.0467629693653729,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 13,
+            "trajectoryId": "quiet-3",
+            "stepIndex": 1,
+            "score": 0.4559399991375618,
+            "weight": 0.037554156659991816,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "stays_quiet",
+            0.7913411888113596
+          ],
+          [
+            "shield_absorbed",
+            0.7261663058552814
+          ],
+          [
+            "no_followup",
+            0.713497778170398
+          ]
+        ],
+        "clusterMass": 1.0000000000000002,
+        "clusterCount": 1,
+        "evidenceCount": 5
+      },
+      {
+        "id": "dev-bounce-1",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "bounced_away",
+        "predicted": "bounced_away",
+        "geometricPrediction": "bounced_away",
+        "correct": true,
+        "bestScore": 0.7142957892174915,
+        "evidenceScore": 0.733996749781771,
+        "confidence": 0.24569844556893894,
+        "agreement": 0.9646787250175649,
+        "effectiveSupport": 1.6364414129542624,
+        "selected": [
+          {
+            "matrixRow": 14,
+            "trajectoryId": "bounce-0",
+            "stepIndex": 1,
+            "score": 0.7142957892174915,
+            "weight": 0.7356714517031424,
+            "rememberedNextConcept": "bounced_away",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 15,
+            "trajectoryId": "bounce-1",
+            "stepIndex": 1,
+            "score": 0.6784701115184775,
+            "weight": 0.26432854829685765,
+            "rememberedNextConcept": "bounced_away",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "bounced_away",
+            0.835443610833303
+          ],
+          [
+            "tool_broken",
+            0.7125134307131227
+          ],
+          [
+            "blast_damage",
+            0.7049487506647412
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 2
+      },
+      {
+        "id": "dev-switch-1",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "switch_activated",
+        "predicted": "switch_activated",
+        "geometricPrediction": "switch_activated",
+        "correct": true,
+        "bestScore": 0.5870853762681447,
+        "evidenceScore": 0.6330378099594236,
+        "confidence": 0.1560112694845491,
+        "agreement": 0.9209710167080342,
+        "effectiveSupport": 3.154439552325426,
+        "selected": [
+          {
+            "matrixRow": 20,
+            "trajectoryId": "switch-1",
+            "stepIndex": 1,
+            "score": 0.5870853762681447,
+            "weight": 0.4523942081394481,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 24,
+            "trajectoryId": "switch-3",
+            "stepIndex": 1,
+            "score": 0.5718813923521389,
+            "weight": 0.29299466515277284,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 22,
+            "trajectoryId": "switch-2",
+            "stepIndex": 1,
+            "score": 0.5408591317577321,
+            "weight": 0.12075987847270571,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 18,
+            "trajectoryId": "switch-0",
+            "stepIndex": 1,
+            "score": 0.5361096466987676,
+            "weight": 0.1054360412891098,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 8,
+            "trajectoryId": "detonate-4",
+            "stepIndex": 1,
+            "score": 0.49021834433048006,
+            "weight": 0.02841520694596362,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "switch_activated",
+            0.792881830837746
+          ],
+          [
+            "door_open",
+            0.7657650604190035
+          ],
+          [
+            "passage_open",
+            0.6768007654863183
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 5
+      },
+      {
+        "id": "dev-melt-1",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "melted",
+        "predicted": "melted",
+        "geometricPrediction": "melted",
+        "correct": true,
+        "bestScore": 0.6351033198279884,
+        "evidenceScore": 0.6700243191592654,
+        "confidence": 0.20415254600315724,
+        "agreement": 0.9591944982372382,
+        "effectiveSupport": 2.3941421507140053,
+        "selected": [
+          {
+            "matrixRow": 26,
+            "trajectoryId": "melt-0",
+            "stepIndex": 1,
+            "score": 0.6351033198279884,
+            "weight": 0.6018978249959279,
+            "rememberedNextConcept": "melted",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 28,
+            "trajectoryId": "melt-1",
+            "stepIndex": 1,
+            "score": 0.5991648167857876,
+            "weight": 0.21556733763288982,
+            "rememberedNextConcept": "melted",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 30,
+            "trajectoryId": "melt-2",
+            "stepIndex": 1,
+            "score": 0.5581979712697828,
+            "weight": 0.06687278157072742,
+            "rememberedNextConcept": "melted",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 72,
+            "trajectoryId": "poison-1",
+            "stepIndex": 1,
+            "score": 0.5398554246946179,
+            "weight": 0.03959565035079955,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 70,
+            "trajectoryId": "poison-0",
+            "stepIndex": 1,
+            "score": 0.5395629723885371,
+            "weight": 0.039266176224281524,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 32,
+            "trajectoryId": "melt-3",
+            "stepIndex": 1,
+            "score": 0.5372928927472758,
+            "weight": 0.0368002292253737,
+            "rememberedNextConcept": "melted",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "melted",
+            0.8797821961667065
+          ],
+          [
+            "puddle_formed",
+            0.7627039774092421
+          ],
+          [
+            "fluff_black",
+            0.6947336928900998
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 6
+      },
+      {
+        "id": "dev-brittle-1",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "barrier_broken",
+        "predicted": "barrier_broken",
+        "geometricPrediction": "barrier_broken",
+        "correct": true,
+        "bestScore": 0.4658331669421789,
+        "evidenceScore": 0.5410002749811408,
+        "confidence": 0.0,
+        "agreement": 0.8523861314162995,
+        "effectiveSupport": 6.548118136579529,
+        "selected": [
+          {
+            "matrixRow": 40,
+            "trajectoryId": "brittle-3",
+            "stepIndex": 1,
+            "score": 0.4658331669421789,
+            "weight": 0.23047822657577394,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 36,
+            "trajectoryId": "brittle-1",
+            "stepIndex": 1,
+            "score": 0.46139609695535794,
+            "weight": 0.20303593195235753,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 38,
+            "trajectoryId": "brittle-2",
+            "stepIndex": 1,
+            "score": 0.44488501312345685,
+            "weight": 0.12667664227192604,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 4,
+            "trajectoryId": "detonate-2",
+            "stepIndex": 1,
+            "score": 0.4416879624487628,
+            "weight": 0.11561820317326606,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 34,
+            "trajectoryId": "brittle-0",
+            "stepIndex": 1,
+            "score": 0.43977841223476777,
+            "weight": 0.10947922806178562,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 8,
+            "trajectoryId": "detonate-4",
+            "stepIndex": 1,
+            "score": 0.43807000779739014,
+            "weight": 0.10426370113952209,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 14,
+            "trajectoryId": "bounce-0",
+            "stepIndex": 1,
+            "score": 0.4163300938161807,
+            "weight": 0.05602415171463873,
+            "rememberedNextConcept": "bounced_away",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 2,
+            "trajectoryId": "detonate-1",
+            "stepIndex": 1,
+            "score": 0.4153158216371981,
+            "weight": 0.054423915110729845,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "barrier_broken",
+            0.8554044871003336
+          ],
+          [
+            "tool_broken",
+            0.8000302703621665
+          ],
+          [
+            "blast_damage",
+            0.7939296237188349
+          ]
+        ],
+        "clusterMass": 0.9999999999999998,
+        "clusterCount": 1,
+        "evidenceCount": 8
+      },
+      {
+        "id": "dev-hard-1",
+        "kind": "positive",
+        "group": "context",
+        "expected": "tool_broken",
+        "predicted": "shield_absorbed",
+        "geometricPrediction": "shield_absorbed",
+        "correct": false,
+        "bestScore": 0.5887296221001388,
+        "evidenceScore": 0.6565005405875264,
+        "confidence": 0.17641358959719747,
+        "agreement": 0.8717089603658108,
+        "effectiveSupport": 5.4426874867856005,
+        "selected": [
+          {
+            "matrixRow": 91,
+            "trajectoryId": "no-effect-near-wall-13",
+            "stepIndex": 1,
+            "score": 0.5887296221001388,
+            "weight": 0.25341821790983105,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 66,
+            "trajectoryId": "shield-0",
+            "stepIndex": 1,
+            "score": 0.587974390574026,
+            "weight": 0.24800852376192192,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 69,
+            "trajectoryId": "shield-3",
+            "stepIndex": 1,
+            "score": 0.5715401325493534,
+            "weight": 0.1550756226966249,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 67,
+            "trajectoryId": "shield-1",
+            "stepIndex": 1,
+            "score": 0.5672797827547087,
+            "weight": 0.1373027863511983,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 68,
+            "trajectoryId": "shield-2",
+            "stepIndex": 1,
+            "score": 0.5586545459419661,
+            "weight": 0.10731337248573435,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 44,
+            "trajectoryId": "hard-2",
+            "stepIndex": 1,
+            "score": 0.5300198316840925,
+            "weight": 0.04735245072127099,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 42,
+            "trajectoryId": "hard-0",
+            "stepIndex": 1,
+            "score": 0.5124911816907116,
+            "weight": 0.028697212844860216,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 43,
+            "trajectoryId": "hard-1",
+            "stepIndex": 1,
+            "score": 0.5044886023444786,
+            "weight": 0.02283181322855821,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "shield_absorbed",
+            0.818602373870212
+          ],
+          [
+            "no_followup",
+            0.7674529674220327
+          ],
+          [
+            "tool_broken",
+            0.7622127476240403
+          ]
+        ],
+        "clusterMass": 0.9999999999999999,
+        "clusterCount": 1,
+        "evidenceCount": 8
+      },
+      {
+        "id": "dev-money-1",
+        "kind": "positive",
+        "group": "numeric",
+        "expected": "bankrupt",
+        "predicted": "bankrupt",
+        "geometricPrediction": "bankrupt",
+        "correct": true,
+        "bestScore": 0.6750176995002307,
+        "evidenceScore": 0.6750176995002307,
+        "confidence": 0.1499063471774333,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 48,
+            "trajectoryId": "money-2",
+            "stepIndex": 1,
+            "score": 0.6750176995002307,
+            "weight": 1.0,
+            "rememberedNextConcept": "bankrupt",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "bankrupt",
+            0.8367871814230138
+          ],
+          [
+            "collapsed",
+            0.6345600174940531
+          ],
+          [
+            "barrier_broken",
+            0.6132089505135716
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "dev-card-1",
+        "kind": "positive",
+        "group": "procedural",
+        "expected": "event_revealed",
+        "predicted": "marker_placed",
+        "geometricPrediction": "marker_placed",
+        "correct": false,
+        "bestScore": 0.48013231041145116,
+        "evidenceScore": 0.5442808284009766,
+        "confidence": 0.008074548555085725,
+        "agreement": 0.9009916512758193,
+        "effectiveSupport": 4.971456968374404,
+        "selected": [
+          {
+            "matrixRow": 55,
+            "trajectoryId": "card-2",
+            "stepIndex": 2,
+            "score": 0.48013231041145116,
+            "weight": 0.3469677697479308,
+            "rememberedNextConcept": "marker_placed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 51,
+            "trajectoryId": "card-0",
+            "stepIndex": 2,
+            "score": 0.4632340154733491,
+            "weight": 0.2140957759907556,
+            "rememberedNextConcept": "marker_placed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 57,
+            "trajectoryId": "card-3",
+            "stepIndex": 2,
+            "score": 0.43872768163979414,
+            "weight": 0.10629757790113507,
+            "rememberedNextConcept": "marker_placed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 53,
+            "trajectoryId": "card-1",
+            "stepIndex": 2,
+            "score": 0.43480024917563154,
+            "weight": 0.09501456004299576,
+            "rememberedNextConcept": "marker_placed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 54,
+            "trajectoryId": "card-2",
+            "stepIndex": 1,
+            "score": 0.4268261878924563,
+            "weight": 0.0756562323685088,
+            "rememberedNextConcept": "event_revealed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 56,
+            "trajectoryId": "card-3",
+            "stepIndex": 1,
+            "score": 0.4196458026172118,
+            "weight": 0.061623664213789044,
+            "rememberedNextConcept": "event_revealed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 89,
+            "trajectoryId": "no-effect-card-draw-11",
+            "stepIndex": 1,
+            "score": 0.41550448108652627,
+            "weight": 0.054746995133202456,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 21,
+            "trajectoryId": "switch-1",
+            "stepIndex": 2,
+            "score": 0.40910398744549825,
+            "weight": 0.04559742460168254,
+            "rememberedNextConcept": "door_open",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "marker_placed",
+            0.841257569106886
+          ],
+          [
+            "event_revealed",
+            0.7405183760230416
+          ],
+          [
+            "no_followup",
+            0.6959376341935184
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 8
+      },
+      {
+        "id": "dev-nonce-1",
+        "kind": "positive",
+        "group": "nonce",
+        "expected": "fluff_black",
+        "predicted": "fluff_black",
+        "geometricPrediction": "fluff_black",
+        "correct": true,
+        "bestScore": 0.7335798922246094,
+        "evidenceScore": 0.7815255306854144,
+        "confidence": 0.3828194342527601,
+        "agreement": 0.9602233428165952,
+        "effectiveSupport": 3.3156078207964055,
+        "selected": [
+          {
+            "matrixRow": 60,
+            "trajectoryId": "nonce-1",
+            "stepIndex": 1,
+            "score": 0.7335798922246094,
+            "weight": 0.4082054469396247,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 62,
+            "trajectoryId": "nonce-2",
+            "stepIndex": 1,
+            "score": 0.7213070653712714,
+            "weight": 0.28746996875531683,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 58,
+            "trajectoryId": "nonce-0",
+            "stepIndex": 1,
+            "score": 0.7098223850294496,
+            "weight": 0.20705504467622246,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 64,
+            "trajectoryId": "nonce-3",
+            "stepIndex": 1,
+            "score": 0.6833799273697768,
+            "weight": 0.09726953962883589,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "fluff_black",
+            0.8376619096758193
+          ],
+          [
+            "ring_rotating",
+            0.7354515978526608
+          ],
+          [
+            "no_followup",
+            0.6677588352839744
+          ]
+        ],
+        "clusterMass": 0.9999999999999999,
+        "clusterCount": 1,
+        "evidenceCount": 4
+      },
+      {
+        "id": "dev-shield-1",
+        "kind": "positive",
+        "group": "context",
+        "expected": "shield_absorbed",
+        "predicted": "shield_absorbed",
+        "geometricPrediction": "shield_absorbed",
+        "correct": true,
+        "bestScore": 0.4574221012806703,
+        "evidenceScore": 0.5262623441169733,
+        "confidence": 0.0,
+        "agreement": 0.8837441137049119,
+        "effectiveSupport": 4.772339472961047,
+        "selected": [
+          {
+            "matrixRow": 66,
+            "trajectoryId": "shield-0",
+            "stepIndex": 1,
+            "score": 0.4574221012806703,
+            "weight": 0.25922226372708634,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 93,
+            "trajectoryId": "no-effect-near-shield-15",
+            "stepIndex": 1,
+            "score": 0.44933086973468694,
+            "weight": 0.20571831098825405,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 68,
+            "trajectoryId": "shield-2",
+            "stepIndex": 1,
+            "score": 0.44303720676799796,
+            "weight": 0.17186149120764743,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 69,
+            "trajectoryId": "shield-3",
+            "stepIndex": 1,
+            "score": 0.43867535876546915,
+            "weight": 0.15172423657578177,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 89,
+            "trajectoryId": "no-effect-card-draw-11",
+            "stepIndex": 1,
+            "score": 0.42576417680334,
+            "weight": 0.10491743703252022,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": false
+          },
+          {
+            "matrixRow": 67,
+            "trajectoryId": "shield-1",
+            "stepIndex": 1,
+            "score": 0.40695140208676017,
+            "weight": 0.061293014336656036,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 78,
+            "trajectoryId": "no-effect-pass-0",
+            "stepIndex": 1,
+            "score": 0.3963404339455221,
+            "weight": 0.04526324613205401,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "shield_absorbed",
+            0.7976868137953197
+          ],
+          [
+            "no_followup",
+            0.7594477407330482
+          ],
+          [
+            "tool_broken",
+            0.7180966451264149
+          ]
+        ],
+        "clusterMass": 0.8950825629674797,
+        "clusterCount": 2,
+        "evidenceCount": 6
+      },
+      {
+        "id": "dev-poison-1",
+        "kind": "positive",
+        "group": "context",
+        "expected": "health_reduced",
+        "predicted": "health_reduced",
+        "geometricPrediction": "health_reduced",
+        "correct": true,
+        "bestScore": 0.7116557468791476,
+        "evidenceScore": 0.7630646803533168,
+        "confidence": 0.3662394048325186,
+        "agreement": 0.9718828571759471,
+        "effectiveSupport": 3.6154753359434544,
+        "selected": [
+          {
+            "matrixRow": 74,
+            "trajectoryId": "poison-2",
+            "stepIndex": 1,
+            "score": 0.7116557468791476,
+            "weight": 0.385966393698354,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 72,
+            "trajectoryId": "poison-1",
+            "stepIndex": 1,
+            "score": 0.6944899273948053,
+            "weight": 0.23634635083400152,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 70,
+            "trajectoryId": "poison-0",
+            "stepIndex": 1,
+            "score": 0.6892694585878216,
+            "weight": 0.20359690146482332,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 76,
+            "trajectoryId": "poison-3",
+            "stepIndex": 1,
+            "score": 0.6837895916951038,
+            "weight": 0.1740903540028212,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "health_reduced",
+            0.8996480536999327
+          ],
+          [
+            "collapsed",
+            0.7614973305651294
+          ],
+          [
+            "tool_broken",
+            0.6050776368900741
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 4
+      },
+      {
+        "id": "dev-arrow-up",
+        "kind": "positive",
+        "group": "arrow_discrimination",
+        "expected": "threshold_alarm",
+        "predicted": "threshold_alarm",
+        "geometricPrediction": "threshold_alarm",
+        "correct": true,
+        "bestScore": 0.7344693189478122,
+        "evidenceScore": 0.7344693189478122,
+        "confidence": 0.19446327952611037,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 96,
+            "trajectoryId": "cross-up-1",
+            "stepIndex": 1,
+            "score": 0.7344693189478122,
+            "weight": 1.0,
+            "rememberedNextConcept": "threshold_alarm",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "threshold_alarm",
+            0.8608494131544389
+          ],
+          [
+            "switch_activated",
+            0.6822828038391933
+          ],
+          [
+            "detonated",
+            0.6751038961332181
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "dev-arrow-down",
+        "kind": "negative",
+        "group": "arrow_discrimination",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "stays_quiet",
+        "correct": true,
+        "bestScore": 0.8956130373922138,
+        "evidenceScore": 0.8956130373922138,
+        "confidence": 0.31523492255043767,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 97,
+            "trajectoryId": "stay-above-1",
+            "stepIndex": 1,
+            "score": 0.8956130373922138,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "stays_quiet",
+            0.6723534889715663
+          ],
+          [
+            "no_followup",
+            0.6694771596759921
+          ],
+          [
+            "threshold_alarm",
+            0.6070572305404014
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "dev-neg-pass",
+        "kind": "negative",
+        "group": "near_negative",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "stays_quiet",
+        "correct": true,
+        "bestScore": 0.8013111638363819,
+        "evidenceScore": 0.8013111638363819,
+        "confidence": 0.24455893021543612,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 78,
+            "trajectoryId": "no-effect-pass-0",
+            "stepIndex": 1,
+            "score": 0.8013111638363819,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "stays_quiet",
+            0.7361738737471568
+          ],
+          [
+            "detonated",
+            0.6438742296919516
+          ],
+          [
+            "no_followup",
+            0.62585876194811
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "dev-neg-approach",
+        "kind": "negative",
+        "group": "near_negative",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "no_followup",
+        "correct": true,
+        "bestScore": 0.6851367500050436,
+        "evidenceScore": 0.6851367500050436,
+        "confidence": 0.15749022551355382,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 80,
+            "trajectoryId": "no-effect-approach-2",
+            "stepIndex": 1,
+            "score": 0.6851367500050436,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "no_followup",
+            0.6880019784270239
+          ],
+          [
+            "stays_quiet",
+            0.5926370939849251
+          ],
+          [
+            "shield_absorbed",
+            0.5486128744137293
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "dev-neg-hypothesis",
+        "kind": "negative",
+        "group": "modality",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "no_followup",
+        "correct": true,
+        "bestScore": 0.5606159519402685,
+        "evidenceScore": 0.5681350128313295,
+        "confidence": 0.05809353366972789,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 84,
+            "trajectoryId": "no-effect-hypothesis-6",
+            "stepIndex": 1,
+            "score": 0.5606159519402685,
+            "weight": 0.9053604331012182,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 85,
+            "trajectoryId": "no-effect-hypothesis-7",
+            "stepIndex": 1,
+            "score": 0.48157693980166205,
+            "weight": 0.09463956689878175,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": false
+          }
+        ],
+        "topConcepts": [
+          [
+            "no_followup",
+            0.6783398836767223
+          ],
+          [
+            "detonated",
+            0.6701444018968026
+          ],
+          [
+            "blast_damage",
+            0.6344285103479528
+          ]
+        ],
+        "clusterMass": 0.9053604331012182,
+        "clusterCount": 2,
+        "evidenceCount": 1
+      },
+      {
+        "id": "dev-neg-observe",
+        "kind": "negative",
+        "group": "observation",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "stays_quiet",
+        "correct": true,
+        "bestScore": 0.5948914666618239,
+        "evidenceScore": 0.5948914666618239,
+        "confidence": 0.08985450722573834,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 82,
+            "trajectoryId": "no-effect-observe-4",
+            "stepIndex": 1,
+            "score": 0.5948914666618239,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "stays_quiet",
+            0.6812738169279832
+          ],
+          [
+            "no_followup",
+            0.6766646916172178
+          ],
+          [
+            "blast_damage",
+            0.6461857936095494
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "dev-neg-money-safe",
+        "kind": "negative",
+        "group": "numeric",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "no_followup",
+        "correct": true,
+        "bestScore": 0.5940288311556661,
+        "evidenceScore": 0.6086923633650834,
+        "confidence": 0.1129014187202363,
+        "agreement": 0.9689533408473483,
+        "effectiveSupport": 1.4428038020545255,
+        "selected": [
+          {
+            "matrixRow": 87,
+            "trajectoryId": "no-effect-safe-money-9",
+            "stepIndex": 1,
+            "score": 0.5940288311556661,
+            "weight": 0.8107208794635488,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 86,
+            "trajectoryId": "no-effect-safe-money-8",
+            "stepIndex": 1,
+            "score": 0.5431142936124357,
+            "weight": 0.18927912053645124,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "no_followup",
+            0.596286855811234
+          ],
+          [
+            "stays_quiet",
+            0.5904961656672277
+          ],
+          [
+            "shield_absorbed",
+            0.5703350066865528
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 2
+      },
+      {
+        "id": "dev-neg-card-held",
+        "kind": "negative",
+        "group": "procedural",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "event_revealed",
+        "correct": true,
+        "bestScore": 0.766917656424549,
+        "evidenceScore": 0.766917656424549,
+        "confidence": 0.2187821860792408,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 88,
+            "trajectoryId": "no-effect-card-draw-10",
+            "stepIndex": 1,
+            "score": 0.766917656424549,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "event_revealed",
+            0.6610837718312933
+          ],
+          [
+            "no_followup",
+            0.6283342695964471
+          ],
+          [
+            "marker_placed",
+            0.5915269444779081
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-det-a",
+        "kind": "positive",
+        "group": "position",
+        "expected": "detonated",
+        "predicted": "detonated",
+        "geometricPrediction": "detonated",
+        "correct": true,
+        "bestScore": 0.4618333439420568,
+        "evidenceScore": 0.530526310685359,
+        "confidence": 0.0,
+        "agreement": 0.8472688812651136,
+        "effectiveSupport": 5.219029712108946,
+        "selected": [
+          {
+            "matrixRow": 78,
+            "trajectoryId": "no-effect-pass-0",
+            "stepIndex": 1,
+            "score": 0.4618333439420568,
+            "weight": 0.26001365076693667,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 4,
+            "trajectoryId": "detonate-2",
+            "stepIndex": 1,
+            "score": 0.46161869505671915,
+            "weight": 0.2584239122493781,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 0,
+            "trajectoryId": "detonate-0",
+            "stepIndex": 1,
+            "score": 0.43935808616950944,
+            "weight": 0.13680874252791647,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 2,
+            "trajectoryId": "detonate-1",
+            "stepIndex": 1,
+            "score": 0.4284775822961763,
+            "weight": 0.10025454193810833,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 81,
+            "trajectoryId": "no-effect-approach-3",
+            "stepIndex": 1,
+            "score": 0.42140427916721784,
+            "weight": 0.08190974711437013,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 79,
+            "trajectoryId": "no-effect-pass-1",
+            "stepIndex": 1,
+            "score": 0.419039950574989,
+            "weight": 0.07655931123305888,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 10,
+            "trajectoryId": "quiet-0",
+            "stepIndex": 1,
+            "score": 0.40459429902133104,
+            "weight": 0.05066994069839653,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 30,
+            "trajectoryId": "melt-2",
+            "stepIndex": 1,
+            "score": 0.39200314453244955,
+            "weight": 0.035360153471834854,
+            "rememberedNextConcept": "melted",
+            "inWinningCluster": false
+          }
+        ],
+        "topConcepts": [
+          [
+            "detonated",
+            0.8041058637830297
+          ],
+          [
+            "blast_damage",
+            0.7684271607568771
+          ],
+          [
+            "stays_quiet",
+            0.7265532597166194
+          ]
+        ],
+        "clusterMass": 0.9646398465281651,
+        "clusterCount": 2,
+        "evidenceCount": 7
+      },
+      {
+        "id": "hold-det-b",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "detonated",
+        "predicted": "tool_broken",
+        "geometricPrediction": "tool_broken",
+        "correct": false,
+        "bestScore": 0.5211585976485444,
+        "evidenceScore": 0.5983363759913315,
+        "confidence": 0.07110851337861311,
+        "agreement": 0.8354897665095337,
+        "effectiveSupport": 6.885683896152567,
+        "selected": [
+          {
+            "matrixRow": 42,
+            "trajectoryId": "hard-0",
+            "stepIndex": 1,
+            "score": 0.5211585976485444,
+            "weight": 0.2268890719032553,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 43,
+            "trajectoryId": "hard-1",
+            "stepIndex": 1,
+            "score": 0.506487399035684,
+            "weight": 0.14919946840423162,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 45,
+            "trajectoryId": "hard-3",
+            "stepIndex": 1,
+            "score": 0.5055052344921176,
+            "weight": 0.14507085535501282,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 69,
+            "trajectoryId": "shield-3",
+            "stepIndex": 1,
+            "score": 0.5053461680253412,
+            "weight": 0.14441303962493668,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 8,
+            "trajectoryId": "detonate-4",
+            "stepIndex": 1,
+            "score": 0.49645705034690624,
+            "weight": 0.11202283491473906,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 10,
+            "trajectoryId": "quiet-0",
+            "stepIndex": 1,
+            "score": 0.4899802076132991,
+            "weight": 0.09309775630459906,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 2,
+            "trajectoryId": "detonate-1",
+            "stepIndex": 1,
+            "score": 0.4785515103017761,
+            "weight": 0.06716255501912817,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 12,
+            "trajectoryId": "quiet-2",
+            "stepIndex": 1,
+            "score": 0.475833589898659,
+            "weight": 0.06214441847409746,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "tool_broken",
+            0.7941506000365128
+          ],
+          [
+            "barrier_broken",
+            0.7497328003221267
+          ],
+          [
+            "shield_absorbed",
+            0.7458679110478298
+          ]
+        ],
+        "clusterMass": 1.0000000000000002,
+        "clusterCount": 1,
+        "evidenceCount": 8
+      },
+      {
+        "id": "hold-det-c",
+        "kind": "positive",
+        "group": "actor_transfer",
+        "expected": "detonated",
+        "predicted": "detonated",
+        "geometricPrediction": "detonated",
+        "correct": true,
+        "bestScore": 0.5207633988898841,
+        "evidenceScore": 0.5746025469068511,
+        "confidence": 0.06347180552315365,
+        "agreement": 0.8531006624065854,
+        "effectiveSupport": 3.8419448142072903,
+        "selected": [
+          {
+            "matrixRow": 8,
+            "trajectoryId": "detonate-4",
+            "stepIndex": 1,
+            "score": 0.5207633988898841,
+            "weight": 0.4612642224391453,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 69,
+            "trajectoryId": "shield-3",
+            "stepIndex": 1,
+            "score": 0.4770993066239339,
+            "weight": 0.1324791846524893,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 68,
+            "trajectoryId": "shield-2",
+            "stepIndex": 1,
+            "score": 0.4666162445338729,
+            "weight": 0.09819050069424652,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 58,
+            "trajectoryId": "nonce-0",
+            "stepIndex": 1,
+            "score": 0.4638815167357845,
+            "weight": 0.09081045266716227,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 24,
+            "trajectoryId": "switch-3",
+            "stepIndex": 1,
+            "score": 0.45379778464144416,
+            "weight": 0.06807892985409222,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 62,
+            "trajectoryId": "nonce-2",
+            "stepIndex": 1,
+            "score": 0.44575282011872247,
+            "weight": 0.0540987800653321,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 22,
+            "trajectoryId": "switch-2",
+            "stepIndex": 1,
+            "score": 0.4414531887322904,
+            "weight": 0.047844923720866815,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 67,
+            "trajectoryId": "shield-1",
+            "stepIndex": 1,
+            "score": 0.4410026652659353,
+            "weight": 0.04723300590666543,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "detonated",
+            0.7995718282500701
+          ],
+          [
+            "blast_damage",
+            0.7692364572030204
+          ],
+          [
+            "shield_absorbed",
+            0.7597758738983738
+          ]
+        ],
+        "clusterMass": 0.9999999999999999,
+        "clusterCount": 1,
+        "evidenceCount": 8
+      },
+      {
+        "id": "hold-quiet-a",
+        "kind": "positive",
+        "group": "context",
+        "expected": "stays_quiet",
+        "predicted": "shield_absorbed",
+        "geometricPrediction": "shield_absorbed",
+        "correct": false,
+        "bestScore": 0.55011852719158,
+        "evidenceScore": 0.6110551571143467,
+        "confidence": 0.11211805793281181,
+        "agreement": 0.8714946628412461,
+        "effectiveSupport": 4.587869467760678,
+        "selected": [
+          {
+            "matrixRow": 69,
+            "trajectoryId": "shield-3",
+            "stepIndex": 1,
+            "score": 0.55011852719158,
+            "weight": 0.33640375350294077,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 10,
+            "trajectoryId": "quiet-0",
+            "stepIndex": 1,
+            "score": 0.5396697003100874,
+            "weight": 0.24957866972057885,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 78,
+            "trajectoryId": "no-effect-pass-0",
+            "stepIndex": 1,
+            "score": 0.52049417222647,
+            "weight": 0.1443010791159391,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 68,
+            "trajectoryId": "shield-2",
+            "stepIndex": 1,
+            "score": 0.5163906736975719,
+            "weight": 0.12833693740766478,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 66,
+            "trajectoryId": "shield-0",
+            "stepIndex": 1,
+            "score": 0.48206831264699074,
+            "weight": 0.04813551401388389,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 67,
+            "trajectoryId": "shield-1",
+            "stepIndex": 1,
+            "score": 0.46743251740116676,
+            "weight": 0.03168535742574747,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 92,
+            "trajectoryId": "no-effect-near-switch-14",
+            "stepIndex": 1,
+            "score": 0.4667769627749121,
+            "weight": 0.03109740984938506,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 11,
+            "trajectoryId": "quiet-1",
+            "stepIndex": 1,
+            "score": 0.46605357590659385,
+            "weight": 0.030461278963860153,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "shield_absorbed",
+            0.7951830771751591
+          ],
+          [
+            "stays_quiet",
+            0.7877897537976165
+          ],
+          [
+            "no_followup",
+            0.7642316096497973
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 8
+      },
+      {
+        "id": "hold-quiet-b",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "stays_quiet",
+        "predicted": "stays_quiet",
+        "geometricPrediction": "stays_quiet",
+        "correct": true,
+        "bestScore": 0.6085803312500678,
+        "evidenceScore": 0.6085803312500678,
+        "confidence": 0.10011383773777535,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 11,
+            "trajectoryId": "quiet-1",
+            "stepIndex": 1,
+            "score": 0.6085803312500678,
+            "weight": 1.0,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "stays_quiet",
+            0.7524816966788457
+          ],
+          [
+            "shield_absorbed",
+            0.6839773789685133
+          ],
+          [
+            "no_followup",
+            0.682093554480381
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-quiet-c",
+        "kind": "positive",
+        "group": "actor_transfer",
+        "expected": "stays_quiet",
+        "predicted": "stays_quiet",
+        "geometricPrediction": "stays_quiet",
+        "correct": true,
+        "bestScore": 0.5799566519718612,
+        "evidenceScore": 0.5799566519718612,
+        "confidence": 0.07866138020978843,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 13,
+            "trajectoryId": "quiet-3",
+            "stepIndex": 1,
+            "score": 0.5799566519718612,
+            "weight": 1.0,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "stays_quiet",
+            0.8309569946596025
+          ],
+          [
+            "shield_absorbed",
+            0.684144581557234
+          ],
+          [
+            "blast_damage",
+            0.6374654566197857
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-bounce-a",
+        "kind": "positive",
+        "group": "position",
+        "expected": "bounced_away",
+        "predicted": "bounced_away",
+        "geometricPrediction": "bounced_away",
+        "correct": true,
+        "bestScore": 0.621207737684263,
+        "evidenceScore": 0.6489330080388326,
+        "confidence": 0.16800230207911412,
+        "agreement": 0.9543510626882779,
+        "effectiveSupport": 1.99996915684642,
+        "selected": [
+          {
+            "matrixRow": 15,
+            "trajectoryId": "bounce-1",
+            "stepIndex": 1,
+            "score": 0.621207737684263,
+            "weight": 0.5019635309151291,
+            "rememberedNextConcept": "bounced_away",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 14,
+            "trajectoryId": "bounce-0",
+            "stepIndex": 1,
+            "score": 0.6209328419430087,
+            "weight": 0.4980364690848708,
+            "rememberedNextConcept": "bounced_away",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "bounced_away",
+            0.8266642733658149
+          ],
+          [
+            "tool_broken",
+            0.7163228240554546
+          ],
+          [
+            "blast_damage",
+            0.7072601629723261
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 2
+      },
+      {
+        "id": "hold-bounce-b",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "bounced_away",
+        "predicted": "bounced_away",
+        "geometricPrediction": "bounced_away",
+        "correct": true,
+        "bestScore": 0.5426258419355753,
+        "evidenceScore": 0.5539522892160302,
+        "confidence": 0.06080623345759935,
+        "agreement": 0.9732404859273945,
+        "effectiveSupport": 1.3273190845362286,
+        "selected": [
+          {
+            "matrixRow": 17,
+            "trajectoryId": "bounce-3",
+            "stepIndex": 1,
+            "score": 0.5426258419355753,
+            "weight": 0.8623260063808146,
+            "rememberedNextConcept": "bounced_away",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 16,
+            "trajectoryId": "bounce-2",
+            "stepIndex": 1,
+            "score": 0.46001235765419907,
+            "weight": 0.08138965135051897,
+            "rememberedNextConcept": "bounced_away",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 14,
+            "trajectoryId": "bounce-0",
+            "stepIndex": 1,
+            "score": 0.4471032464870706,
+            "weight": 0.05628434226866645,
+            "rememberedNextConcept": "bounced_away",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "bounced_away",
+            0.7331852727853766
+          ],
+          [
+            "tool_broken",
+            0.6744674475918454
+          ],
+          [
+            "blast_damage",
+            0.6545734982466349
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 3
+      },
+      {
+        "id": "hold-bounce-c",
+        "kind": "positive",
+        "group": "actor_transfer",
+        "expected": "bounced_away",
+        "predicted": "bounced_away",
+        "geometricPrediction": "bounced_away",
+        "correct": true,
+        "bestScore": 0.7575664659414453,
+        "evidenceScore": 0.7619514025334291,
+        "confidence": 0.2280054067416296,
+        "agreement": 0.9906935967323708,
+        "effectiveSupport": 1.1158577758013415,
+        "selected": [
+          {
+            "matrixRow": 15,
+            "trajectoryId": "bounce-1",
+            "stepIndex": 1,
+            "score": 0.7575664659414453,
+            "weight": 0.9450682850439157,
+            "rememberedNextConcept": "bounced_away",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 14,
+            "trajectoryId": "bounce-0",
+            "stepIndex": 1,
+            "score": 0.6579856448616177,
+            "weight": 0.05493171495608438,
+            "rememberedNextConcept": "bounced_away",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "bounced_away",
+            0.7643295454010457
+          ],
+          [
+            "tool_broken",
+            0.6830378168126867
+          ],
+          [
+            "blast_damage",
+            0.6717639180022985
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 2
+      },
+      {
+        "id": "hold-switch-a",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "switch_activated",
+        "predicted": "switch_activated",
+        "geometricPrediction": "switch_activated",
+        "correct": true,
+        "bestScore": 0.5921383805729793,
+        "evidenceScore": 0.6291808496634123,
+        "confidence": 0.14979981881560608,
+        "agreement": 0.9363930481462172,
+        "effectiveSupport": 2.5245472185481863,
+        "selected": [
+          {
+            "matrixRow": 24,
+            "trajectoryId": "switch-3",
+            "stepIndex": 1,
+            "score": 0.5921383805729793,
+            "weight": 0.5443130047938882,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 20,
+            "trajectoryId": "switch-1",
+            "stepIndex": 1,
+            "score": 0.5700944463053867,
+            "weight": 0.2899468889017549,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 18,
+            "trajectoryId": "switch-0",
+            "stepIndex": 1,
+            "score": 0.5376448634935882,
+            "weight": 0.11472831178329425,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 22,
+            "trajectoryId": "switch-2",
+            "stepIndex": 1,
+            "score": 0.5092770150369328,
+            "weight": 0.05101179452106247,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "switch_activated",
+            0.7849755165376859
+          ],
+          [
+            "door_open",
+            0.7537345202369301
+          ],
+          [
+            "passage_open",
+            0.663003441215948
+          ]
+        ],
+        "clusterMass": 0.9999999999999998,
+        "clusterCount": 1,
+        "evidenceCount": 4
+      },
+      {
+        "id": "hold-switch-b",
+        "kind": "positive",
+        "group": "actor_transfer",
+        "expected": "switch_activated",
+        "predicted": "switch_activated",
+        "geometricPrediction": "switch_activated",
+        "correct": true,
+        "bestScore": 0.6668317216272375,
+        "evidenceScore": 0.6980168467982358,
+        "confidence": 0.22906698777130147,
+        "agreement": 0.9442831101850756,
+        "effectiveSupport": 2.1806611906420192,
+        "selected": [
+          {
+            "matrixRow": 24,
+            "trajectoryId": "switch-3",
+            "stepIndex": 1,
+            "score": 0.6668317216272375,
+            "weight": 0.6372217878174068,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 18,
+            "trajectoryId": "switch-0",
+            "stepIndex": 1,
+            "score": 0.6257084521667224,
+            "weight": 0.19679591248239808,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 20,
+            "trajectoryId": "switch-1",
+            "stepIndex": 1,
+            "score": 0.5968354368780124,
+            "weight": 0.08624774585304631,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 22,
+            "trajectoryId": "switch-2",
+            "stepIndex": 1,
+            "score": 0.5940872060852199,
+            "weight": 0.07973455384714874,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "switch_activated",
+            0.7777144397038198
+          ],
+          [
+            "door_open",
+            0.7569067263693544
+          ],
+          [
+            "passage_open",
+            0.6553544679833956
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 4
+      },
+      {
+        "id": "hold-melt-a",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "melted",
+        "predicted": "fluff_black",
+        "geometricPrediction": "fluff_black",
+        "correct": false,
+        "bestScore": 0.5384684516054747,
+        "evidenceScore": 0.6104714169440051,
+        "confidence": 0.10025631980275519,
+        "agreement": 0.8716250333635426,
+        "effectiveSupport": 6.050095962355118,
+        "selected": [
+          {
+            "matrixRow": 58,
+            "trajectoryId": "nonce-0",
+            "stepIndex": 1,
+            "score": 0.5384684516054747,
+            "weight": 0.25249806459631696,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 60,
+            "trajectoryId": "nonce-1",
+            "stepIndex": 1,
+            "score": 0.5343899597116905,
+            "weight": 0.22472450817618683,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 64,
+            "trajectoryId": "nonce-3",
+            "stepIndex": 1,
+            "score": 0.5174961432094494,
+            "weight": 0.13868355740800611,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 72,
+            "trajectoryId": "poison-1",
+            "stepIndex": 1,
+            "score": 0.5059448452753206,
+            "weight": 0.09969920356028966,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 26,
+            "trajectoryId": "melt-0",
+            "stepIndex": 1,
+            "score": 0.5022058557047424,
+            "weight": 0.08959767895529903,
+            "rememberedNextConcept": "melted",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 62,
+            "trajectoryId": "nonce-2",
+            "stepIndex": 1,
+            "score": 0.5007607432032954,
+            "weight": 0.08597361840983145,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 28,
+            "trajectoryId": "melt-1",
+            "stepIndex": 1,
+            "score": 0.4938085097012271,
+            "weight": 0.07048537514872052,
+            "rememberedNextConcept": "melted",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 70,
+            "trajectoryId": "poison-0",
+            "stepIndex": 1,
+            "score": 0.4724947754647269,
+            "weight": 0.03833799374534944,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "fluff_black",
+            0.843567679525445
+          ],
+          [
+            "ring_rotating",
+            0.7482936992029214
+          ],
+          [
+            "no_followup",
+            0.7227204994952481
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 8
+      },
+      {
+        "id": "hold-melt-b",
+        "kind": "positive",
+        "group": "actor_transfer",
+        "expected": "melted",
+        "predicted": "melted",
+        "geometricPrediction": "melted",
+        "correct": true,
+        "bestScore": 0.47122643199826975,
+        "evidenceScore": 0.5271790394380184,
+        "confidence": 0.0,
+        "agreement": 0.884811410019561,
+        "effectiveSupport": 4.0503981543147685,
+        "selected": [
+          {
+            "matrixRow": 90,
+            "trajectoryId": "no-effect-near-heat-12",
+            "stepIndex": 1,
+            "score": 0.47122643199826975,
+            "weight": 0.311979860113221,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 30,
+            "trajectoryId": "melt-2",
+            "stepIndex": 1,
+            "score": 0.46792676796010035,
+            "weight": 0.2839114856769967,
+            "rememberedNextConcept": "melted",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 26,
+            "trajectoryId": "melt-0",
+            "stepIndex": 1,
+            "score": 0.46348018659732126,
+            "weight": 0.2500391080022066,
+            "rememberedNextConcept": "melted",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 28,
+            "trajectoryId": "melt-1",
+            "stepIndex": 1,
+            "score": 0.4122455125723089,
+            "weight": 0.05784514396886098,
+            "rememberedNextConcept": "melted",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 92,
+            "trajectoryId": "no-effect-near-switch-14",
+            "stepIndex": 1,
+            "score": 0.391792246318843,
+            "weight": 0.03224588610719808,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 32,
+            "trajectoryId": "melt-3",
+            "stepIndex": 1,
+            "score": 0.39176258739313696,
+            "weight": 0.03221857258610302,
+            "rememberedNextConcept": "melted",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 91,
+            "trajectoryId": "no-effect-near-wall-13",
+            "stepIndex": 1,
+            "score": 0.39126078483943105,
+            "weight": 0.03175994354541357,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "melted",
+            0.8841896853278102
+          ],
+          [
+            "puddle_formed",
+            0.7585321174495275
+          ],
+          [
+            "no_followup",
+            0.6915733883065658
+          ]
+        ],
+        "clusterMass": 0.9999999999999998,
+        "clusterCount": 1,
+        "evidenceCount": 7
+      },
+      {
+        "id": "hold-break-a",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "barrier_broken",
+        "predicted": "barrier_broken",
+        "geometricPrediction": "barrier_broken",
+        "correct": true,
+        "bestScore": 0.5308685759750777,
+        "evidenceScore": 0.584371889576557,
+        "confidence": 0.08502793887308044,
+        "agreement": 0.93872848359946,
+        "effectiveSupport": 3.8098234140151215,
+        "selected": [
+          {
+            "matrixRow": 36,
+            "trajectoryId": "brittle-1",
+            "stepIndex": 1,
+            "score": 0.5308685759750777,
+            "weight": 0.3045293848125338,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 40,
+            "trajectoryId": "brittle-3",
+            "stepIndex": 1,
+            "score": 0.5305079839144945,
+            "weight": 0.3014080377961328,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 34,
+            "trajectoryId": "brittle-0",
+            "stepIndex": 1,
+            "score": 0.5198131059801228,
+            "weight": 0.22204876347778463,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 38,
+            "trajectoryId": "brittle-2",
+            "stepIndex": 1,
+            "score": 0.5108768280695083,
+            "weight": 0.1720138139135487,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "barrier_broken",
+            0.8528050350454295
+          ],
+          [
+            "tool_broken",
+            0.7855178855663554
+          ],
+          [
+            "passage_open",
+            0.7102303966901331
+          ]
+        ],
+        "clusterMass": 0.9999999999999999,
+        "clusterCount": 1,
+        "evidenceCount": 4
+      },
+      {
+        "id": "hold-break-b",
+        "kind": "positive",
+        "group": "actor_transfer",
+        "expected": "barrier_broken",
+        "predicted": "barrier_broken",
+        "geometricPrediction": "barrier_broken",
+        "correct": true,
+        "bestScore": 0.5909120891238818,
+        "evidenceScore": 0.6177458460033018,
+        "confidence": 0.13178088163186158,
+        "agreement": 0.9566578280587873,
+        "effectiveSupport": 1.955887240579642,
+        "selected": [
+          {
+            "matrixRow": 38,
+            "trajectoryId": "brittle-2",
+            "stepIndex": 1,
+            "score": 0.5909120891238818,
+            "weight": 0.6808229814855034,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 40,
+            "trajectoryId": "brittle-3",
+            "stepIndex": 1,
+            "score": 0.5482724299726764,
+            "weight": 0.20134630933500008,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 34,
+            "trajectoryId": "brittle-0",
+            "stepIndex": 1,
+            "score": 0.5116089712689302,
+            "weight": 0.0706331065574363,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 36,
+            "trajectoryId": "brittle-1",
+            "stepIndex": 1,
+            "score": 0.49749851593801364,
+            "weight": 0.04719760262206021,
+            "rememberedNextConcept": "barrier_broken",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "barrier_broken",
+            0.8417487776406023
+          ],
+          [
+            "tool_broken",
+            0.7503607940018842
+          ],
+          [
+            "passage_open",
+            0.7132273329867396
+          ]
+        ],
+        "clusterMass": 0.9999999999999999,
+        "clusterCount": 1,
+        "evidenceCount": 4
+      },
+      {
+        "id": "hold-hard-a",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "tool_broken",
+        "predicted": "tool_broken",
+        "geometricPrediction": "tool_broken",
+        "correct": true,
+        "bestScore": 0.5323300107522823,
+        "evidenceScore": 0.5672206811946515,
+        "confidence": 0.07204983639146588,
+        "agreement": 0.9457445582284891,
+        "effectiveSupport": 2.392327546954429,
+        "selected": [
+          {
+            "matrixRow": 42,
+            "trajectoryId": "hard-0",
+            "stepIndex": 1,
+            "score": 0.5323300107522823,
+            "weight": 0.6024702065562513,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 45,
+            "trajectoryId": "hard-3",
+            "stepIndex": 1,
+            "score": 0.48642597276261507,
+            "weight": 0.16230775769700642,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 43,
+            "trajectoryId": "hard-1",
+            "stepIndex": 1,
+            "score": 0.48131099360928736,
+            "weight": 0.14023954698968885,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 44,
+            "trajectoryId": "hard-2",
+            "stepIndex": 1,
+            "score": 0.46767291234756525,
+            "weight": 0.09498248875705352,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "tool_broken",
+            0.7563170081869515
+          ],
+          [
+            "barrier_broken",
+            0.7198976022348424
+          ],
+          [
+            "bounced_away",
+            0.6565255242884821
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 4
+      },
+      {
+        "id": "hold-hard-b",
+        "kind": "positive",
+        "group": "actor_transfer",
+        "expected": "tool_broken",
+        "predicted": "tool_broken",
+        "geometricPrediction": "tool_broken",
+        "correct": true,
+        "bestScore": 0.506303952855088,
+        "evidenceScore": 0.5747507673476742,
+        "confidence": 0.04835977399576618,
+        "agreement": 0.8653952266071259,
+        "effectiveSupport": 5.535436153896077,
+        "selected": [
+          {
+            "matrixRow": 42,
+            "trajectoryId": "hard-0",
+            "stepIndex": 1,
+            "score": 0.506303952855088,
+            "weight": 0.3048227781803345,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 45,
+            "trajectoryId": "hard-3",
+            "stepIndex": 1,
+            "score": 0.49554083149176903,
+            "weight": 0.22412698741932416,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 43,
+            "trajectoryId": "hard-1",
+            "stepIndex": 1,
+            "score": 0.4656696473858246,
+            "weight": 0.09546411295793852,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 67,
+            "trajectoryId": "shield-1",
+            "stepIndex": 1,
+            "score": 0.46075419842119175,
+            "weight": 0.08295588805739902,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 8,
+            "trajectoryId": "detonate-4",
+            "stepIndex": 1,
+            "score": 0.459923224110938,
+            "weight": 0.08100953584127492,
+            "rememberedNextConcept": "detonated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 69,
+            "trajectoryId": "shield-3",
+            "stepIndex": 1,
+            "score": 0.4566494644756728,
+            "weight": 0.07377580885661814,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 68,
+            "trajectoryId": "shield-2",
+            "stepIndex": 1,
+            "score": 0.45491478309566635,
+            "weight": 0.07020844194698365,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 66,
+            "trajectoryId": "shield-0",
+            "stepIndex": 1,
+            "score": 0.4536085281898352,
+            "weight": 0.06763644674012695,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "tool_broken",
+            0.8062881679755498
+          ],
+          [
+            "barrier_broken",
+            0.7554805875879044
+          ],
+          [
+            "shield_absorbed",
+            0.7366764258180344
+          ]
+        ],
+        "clusterMass": 0.9999999999999999,
+        "clusterCount": 1,
+        "evidenceCount": 8
+      },
+      {
+        "id": "hold-money-a",
+        "kind": "positive",
+        "group": "numeric",
+        "expected": "bankrupt",
+        "predicted": "bankrupt",
+        "geometricPrediction": "bankrupt",
+        "correct": true,
+        "bestScore": 0.5124455667968042,
+        "evidenceScore": 0.5832049475537938,
+        "confidence": 0.059028337833019646,
+        "agreement": 0.8741615746480916,
+        "effectiveSupport": 5.864894646891449,
+        "selected": [
+          {
+            "matrixRow": 47,
+            "trajectoryId": "money-1",
+            "stepIndex": 1,
+            "score": 0.5124455667968042,
+            "weight": 0.2886286610122633,
+            "rememberedNextConcept": "bankrupt",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 48,
+            "trajectoryId": "money-2",
+            "stepIndex": 1,
+            "score": 0.4901691735408674,
+            "weight": 0.15273013999119184,
+            "rememberedNextConcept": "bankrupt",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 71,
+            "trajectoryId": "poison-0",
+            "stepIndex": 2,
+            "score": 0.48916543254566774,
+            "weight": 0.1484123070689345,
+            "rememberedNextConcept": "collapsed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 49,
+            "trajectoryId": "money-3",
+            "stepIndex": 1,
+            "score": 0.48837651167038965,
+            "weight": 0.1451044260091764,
+            "rememberedNextConcept": "bankrupt",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 75,
+            "trajectoryId": "poison-2",
+            "stepIndex": 2,
+            "score": 0.4746050871727495,
+            "weight": 0.09790370477173109,
+            "rememberedNextConcept": "collapsed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 86,
+            "trajectoryId": "no-effect-safe-money-8",
+            "stepIndex": 1,
+            "score": 0.46844437123158134,
+            "weight": 0.08210212800276523,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 46,
+            "trajectoryId": "money-0",
+            "stepIndex": 1,
+            "score": 0.4592255566830758,
+            "weight": 0.06309043885542731,
+            "rememberedNextConcept": "bankrupt",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 77,
+            "trajectoryId": "poison-3",
+            "stepIndex": 2,
+            "score": 0.42239694517986776,
+            "weight": 0.022028194288510217,
+            "rememberedNextConcept": "collapsed",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "bankrupt",
+            0.8638261710575879
+          ],
+          [
+            "collapsed",
+            0.7492126607122566
+          ],
+          [
+            "health_reduced",
+            0.6868583474672619
+          ]
+        ],
+        "clusterMass": 0.9999999999999999,
+        "clusterCount": 1,
+        "evidenceCount": 8
+      },
+      {
+        "id": "hold-money-b",
+        "kind": "positive",
+        "group": "numeric",
+        "expected": "bankrupt",
+        "predicted": null,
+        "geometricPrediction": null,
+        "correct": false,
+        "bestScore": 0.3879521970237384,
+        "evidenceScore": 0.4427167156079575,
+        "confidence": 0.0,
+        "agreement": 0.0,
+        "effectiveSupport": 0.0,
+        "selected": [],
+        "topConcepts": [],
+        "clusterMass": 0.0,
+        "clusterCount": 0,
+        "evidenceCount": 0
+      },
+      {
+        "id": "hold-card-a",
+        "kind": "positive",
+        "group": "procedural",
+        "expected": "event_revealed",
+        "predicted": "event_revealed",
+        "geometricPrediction": "event_revealed",
+        "correct": true,
+        "bestScore": 0.5932667994512641,
+        "evidenceScore": 0.6367214198289852,
+        "confidence": 0.15452676807076415,
+        "agreement": 0.8876799311599639,
+        "effectiveSupport": 2.9634837221238195,
+        "selected": [
+          {
+            "matrixRow": 50,
+            "trajectoryId": "card-0",
+            "stepIndex": 1,
+            "score": 0.5932667994512641,
+            "weight": 0.4325541617528356,
+            "rememberedNextConcept": "event_revealed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 88,
+            "trajectoryId": "no-effect-card-draw-10",
+            "stepIndex": 1,
+            "score": 0.5854253002454988,
+            "weight": 0.3457322783541758,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 52,
+            "trajectoryId": "card-1",
+            "stepIndex": 1,
+            "score": 0.5598858004661622,
+            "weight": 0.16666148510018922,
+            "rememberedNextConcept": "event_revealed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 54,
+            "trajectoryId": "card-2",
+            "stepIndex": 1,
+            "score": 0.5211168195801782,
+            "weight": 0.05505207479279924,
+            "rememberedNextConcept": "event_revealed",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "event_revealed",
+            0.8732849706628603
+          ],
+          [
+            "marker_placed",
+            0.750182623592407
+          ],
+          [
+            "switch_activated",
+            0.6577117408193234
+          ]
+        ],
+        "clusterMass": 0.9999999999999998,
+        "clusterCount": 1,
+        "evidenceCount": 4
+      },
+      {
+        "id": "hold-card-b",
+        "kind": "positive",
+        "group": "procedural",
+        "expected": "event_revealed",
+        "predicted": "door_open",
+        "geometricPrediction": "switch_activated",
+        "correct": false,
+        "bestScore": 0.5213968323365152,
+        "evidenceScore": 0.5844691169097019,
+        "confidence": 0.06097216190352689,
+        "agreement": 0.9022795551638882,
+        "effectiveSupport": 3.943701074446327,
+        "selected": [
+          {
+            "matrixRow": 23,
+            "trajectoryId": "switch-2",
+            "stepIndex": 2,
+            "score": 0.5213968323365152,
+            "weight": 0.3417524478366078,
+            "rememberedNextConcept": "door_open",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 21,
+            "trajectoryId": "switch-1",
+            "stepIndex": 2,
+            "score": 0.5074327567383171,
+            "weight": 0.2293187712313129,
+            "rememberedNextConcept": "door_open",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 19,
+            "trajectoryId": "switch-0",
+            "stepIndex": 2,
+            "score": 0.48933109039058353,
+            "weight": 0.13671829700247834,
+            "rememberedNextConcept": "door_open",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 25,
+            "trajectoryId": "switch-3",
+            "stepIndex": 2,
+            "score": 0.4738334131098323,
+            "weight": 0.08780617278017416,
+            "rememberedNextConcept": "door_open",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 72,
+            "trajectoryId": "poison-1",
+            "stepIndex": 1,
+            "score": 0.46504783884947115,
+            "weight": 0.06831404591621773,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": false
+          },
+          {
+            "matrixRow": 51,
+            "trajectoryId": "card-0",
+            "stepIndex": 2,
+            "score": 0.45252046904992926,
+            "weight": 0.04776009911377747,
+            "rememberedNextConcept": "marker_placed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 60,
+            "trajectoryId": "nonce-1",
+            "stepIndex": 1,
+            "score": 0.450392036428219,
+            "weight": 0.04494224332378154,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 70,
+            "trajectoryId": "poison-0",
+            "stepIndex": 1,
+            "score": 0.4491601394008028,
+            "weight": 0.04338792279565015,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": false
+          }
+        ],
+        "topConcepts": [
+          [
+            "switch_activated",
+            0.7906122463765044
+          ],
+          [
+            "door_open",
+            0.7809640541888847
+          ],
+          [
+            "passage_open",
+            0.711194724743379
+          ]
+        ],
+        "clusterMass": 0.8882980312881323,
+        "clusterCount": 2,
+        "evidenceCount": 6
+      },
+      {
+        "id": "hold-nonce-a",
+        "kind": "positive",
+        "group": "nonce",
+        "expected": "fluff_black",
+        "predicted": "no_followup",
+        "geometricPrediction": "no_followup",
+        "correct": false,
+        "bestScore": 0.5491858503191209,
+        "evidenceScore": 0.6112723034819796,
+        "confidence": 0.10477001713655149,
+        "agreement": 0.8186737430790298,
+        "effectiveSupport": 4.721664232445557,
+        "selected": [
+          {
+            "matrixRow": 91,
+            "trajectoryId": "no-effect-near-wall-13",
+            "stepIndex": 1,
+            "score": 0.5491858503191209,
+            "weight": 0.387414918369521,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 64,
+            "trajectoryId": "nonce-3",
+            "stepIndex": 1,
+            "score": 0.5147598646371694,
+            "weight": 0.1448786750348931,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 62,
+            "trajectoryId": "nonce-2",
+            "stepIndex": 1,
+            "score": 0.5069531000005629,
+            "weight": 0.11591373493364245,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 92,
+            "trajectoryId": "no-effect-near-switch-14",
+            "stepIndex": 1,
+            "score": 0.5020683310989552,
+            "weight": 0.10081442235544101,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 24,
+            "trajectoryId": "switch-3",
+            "stepIndex": 1,
+            "score": 0.4955509771157842,
+            "weight": 0.08368596745063682,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 22,
+            "trajectoryId": "switch-2",
+            "stepIndex": 1,
+            "score": 0.49144857936989284,
+            "weight": 0.0744300640083725,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 60,
+            "trajectoryId": "nonce-1",
+            "stepIndex": 1,
+            "score": 0.48255351680825637,
+            "weight": 0.0577264400543009,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 90,
+            "trajectoryId": "no-effect-near-heat-12",
+            "stepIndex": 1,
+            "score": 0.4651761785061931,
+            "weight": 0.03513577779319225,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "no_followup",
+            0.7637479081979445
+          ],
+          [
+            "stays_quiet",
+            0.7618130533619574
+          ],
+          [
+            "shield_absorbed",
+            0.7536688513170569
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 8
+      },
+      {
+        "id": "hold-nonce-b",
+        "kind": "positive",
+        "group": "nonce",
+        "expected": "fluff_black",
+        "predicted": "fluff_black",
+        "geometricPrediction": "fluff_black",
+        "correct": true,
+        "bestScore": 0.6068996979883727,
+        "evidenceScore": 0.6577907816156073,
+        "confidence": 0.17712022943523245,
+        "agreement": 0.9603490131594097,
+        "effectiveSupport": 3.1151270850007475,
+        "selected": [
+          {
+            "matrixRow": 62,
+            "trajectoryId": "nonce-2",
+            "stepIndex": 1,
+            "score": 0.6068996979883727,
+            "weight": 0.42917180313555525,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 60,
+            "trajectoryId": "nonce-1",
+            "stepIndex": 1,
+            "score": 0.5868435480418953,
+            "weight": 0.24197259033313415,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 64,
+            "trajectoryId": "nonce-3",
+            "stepIndex": 1,
+            "score": 0.5714623249903406,
+            "weight": 0.15592278876292534,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 58,
+            "trajectoryId": "nonce-0",
+            "stepIndex": 1,
+            "score": 0.5569283077412815,
+            "weight": 0.10293557480591396,
+            "rememberedNextConcept": "fluff_black",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 70,
+            "trajectoryId": "poison-0",
+            "stepIndex": 1,
+            "score": 0.5254994263992374,
+            "weight": 0.04193560665409301,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": false
+          },
+          {
+            "matrixRow": 72,
+            "trajectoryId": "poison-1",
+            "stepIndex": 1,
+            "score": 0.5114388106249141,
+            "weight": 0.028061636308378286,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": false
+          }
+        ],
+        "topConcepts": [
+          [
+            "fluff_black",
+            0.8318854769482642
+          ],
+          [
+            "ring_rotating",
+            0.7253416607513069
+          ],
+          [
+            "no_followup",
+            0.6630084501181928
+          ]
+        ],
+        "clusterMass": 0.9300027570375287,
+        "clusterCount": 2,
+        "evidenceCount": 4
+      },
+      {
+        "id": "hold-shield-a",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "shield_absorbed",
+        "predicted": "shield_absorbed",
+        "geometricPrediction": "shield_absorbed",
+        "correct": true,
+        "bestScore": 0.6424072088145726,
+        "evidenceScore": 0.6858344032908765,
+        "confidence": 0.23121545955206235,
+        "agreement": 0.9386161580616796,
+        "effectiveSupport": 2.961452513239719,
+        "selected": [
+          {
+            "matrixRow": 69,
+            "trajectoryId": "shield-3",
+            "stepIndex": 1,
+            "score": 0.6424072088145726,
+            "weight": 0.4483621360080027,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 66,
+            "trajectoryId": "shield-0",
+            "stepIndex": 1,
+            "score": 0.6323900594625186,
+            "weight": 0.3367689133190803,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 67,
+            "trajectoryId": "shield-1",
+            "stepIndex": 1,
+            "score": 0.5950794310675359,
+            "weight": 0.11597550718374312,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 68,
+            "trajectoryId": "shield-2",
+            "stepIndex": 1,
+            "score": 0.5895026682059581,
+            "weight": 0.09889344348917373,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "shield_absorbed",
+            0.7826356239973414
+          ],
+          [
+            "no_followup",
+            0.7350633524227536
+          ],
+          [
+            "tool_broken",
+            0.7284559383898375
+          ]
+        ],
+        "clusterMass": 0.9999999999999999,
+        "clusterCount": 1,
+        "evidenceCount": 4
+      },
+      {
+        "id": "hold-shield-b",
+        "kind": "positive",
+        "group": "actor_transfer",
+        "expected": "shield_absorbed",
+        "predicted": "shield_absorbed",
+        "geometricPrediction": "tool_broken",
+        "correct": true,
+        "bestScore": 0.5180629612348019,
+        "evidenceScore": 0.565582982468895,
+        "confidence": 0.0581298870294277,
+        "agreement": 0.8791888427303907,
+        "effectiveSupport": 3.2805153562189378,
+        "selected": [
+          {
+            "matrixRow": 68,
+            "trajectoryId": "shield-2",
+            "stepIndex": 1,
+            "score": 0.5180629612348019,
+            "weight": 0.5187464978152141,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 66,
+            "trajectoryId": "shield-0",
+            "stepIndex": 1,
+            "score": 0.46083828194739307,
+            "weight": 0.1011317865404711,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 22,
+            "trajectoryId": "switch-2",
+            "stepIndex": 1,
+            "score": 0.45438659972231216,
+            "weight": 0.08410707636245338,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 13,
+            "trajectoryId": "quiet-3",
+            "stepIndex": 1,
+            "score": 0.4519700816200252,
+            "weight": 0.07849597356669888,
+            "rememberedNextConcept": "stays_quiet",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 67,
+            "trajectoryId": "shield-1",
+            "stepIndex": 1,
+            "score": 0.4464121496881087,
+            "weight": 0.06697030258516302,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 18,
+            "trajectoryId": "switch-0",
+            "stepIndex": 1,
+            "score": 0.4404826549727548,
+            "weight": 0.0565335994203723,
+            "rememberedNextConcept": "switch_activated",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 42,
+            "trajectoryId": "hard-0",
+            "stepIndex": 1,
+            "score": 0.4402670794357645,
+            "weight": 0.05618646212072691,
+            "rememberedNextConcept": "tool_broken",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 69,
+            "trajectoryId": "shield-3",
+            "stepIndex": 1,
+            "score": 0.42642043898504894,
+            "weight": 0.03782830158890023,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "tool_broken",
+            0.7554342124942747
+          ],
+          [
+            "no_followup",
+            0.7529992984630385
+          ],
+          [
+            "shield_absorbed",
+            0.7452476948573001
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 8
+      },
+      {
+        "id": "hold-poison-a",
+        "kind": "positive",
+        "group": "paraphrase",
+        "expected": "health_reduced",
+        "predicted": "health_reduced",
+        "geometricPrediction": "health_reduced",
+        "correct": true,
+        "bestScore": 0.7575341750193599,
+        "evidenceScore": 0.8105822496705046,
+        "confidence": 0.44333361019967216,
+        "agreement": 0.9715465314594894,
+        "effectiveSupport": 3.7667097170064494,
+        "selected": [
+          {
+            "matrixRow": 74,
+            "trajectoryId": "poison-2",
+            "stepIndex": 1,
+            "score": 0.7575341750193599,
+            "weight": 0.3400081251882085,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 72,
+            "trajectoryId": "poison-1",
+            "stepIndex": 1,
+            "score": 0.7470449771902689,
+            "weight": 0.25196196621226546,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 70,
+            "trajectoryId": "poison-0",
+            "stepIndex": 1,
+            "score": 0.7458774597886926,
+            "weight": 0.24369574691535245,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 76,
+            "trajectoryId": "poison-3",
+            "stepIndex": 1,
+            "score": 0.7320868094078361,
+            "weight": 0.1643341616841736,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "health_reduced",
+            0.9003817715384425
+          ],
+          [
+            "collapsed",
+            0.7628563394841259
+          ],
+          [
+            "tool_broken",
+            0.6050464685988419
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 4
+      },
+      {
+        "id": "hold-poison-b",
+        "kind": "positive",
+        "group": "actor_transfer",
+        "expected": "health_reduced",
+        "predicted": "health_reduced",
+        "geometricPrediction": "health_reduced",
+        "correct": true,
+        "bestScore": 0.6073111804079963,
+        "evidenceScore": 0.6178197583072471,
+        "confidence": 0.11929935603183837,
+        "agreement": 0.9901627616622859,
+        "effectiveSupport": 1.3004553176355107,
+        "selected": [
+          {
+            "matrixRow": 76,
+            "trajectoryId": "poison-3",
+            "stepIndex": 1,
+            "score": 0.6073111804079963,
+            "weight": 0.8721495823431686,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 74,
+            "trajectoryId": "poison-2",
+            "stepIndex": 1,
+            "score": 0.5202053671736772,
+            "weight": 0.07240124009301944,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 70,
+            "trajectoryId": "poison-0",
+            "stepIndex": 1,
+            "score": 0.5108688880655157,
+            "weight": 0.05544917756381188,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "health_reduced",
+            0.8796357788810694
+          ],
+          [
+            "collapsed",
+            0.7358674562938864
+          ],
+          [
+            "tool_broken",
+            0.5715636629125416
+          ]
+        ],
+        "clusterMass": 0.9999999999999999,
+        "clusterCount": 1,
+        "evidenceCount": 3
+      },
+      {
+        "id": "hold-neg-pass-1",
+        "kind": "negative",
+        "group": "near_negative",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "stays_quiet",
+        "correct": true,
+        "bestScore": 0.7955290562661987,
+        "evidenceScore": 0.7955290562661987,
+        "confidence": 0.24022544059427317,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 78,
+            "trajectoryId": "no-effect-pass-0",
+            "stepIndex": 1,
+            "score": 0.7955290562661987,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "stays_quiet",
+            0.7361738737471568
+          ],
+          [
+            "detonated",
+            0.6438742296919516
+          ],
+          [
+            "no_followup",
+            0.62585876194811
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-neg-pass-2",
+        "kind": "negative",
+        "group": "near_negative",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "stays_quiet",
+        "correct": true,
+        "bestScore": 0.860397680532212,
+        "evidenceScore": 0.860397680532212,
+        "confidence": 0.28884223068055376,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 79,
+            "trajectoryId": "no-effect-pass-1",
+            "stepIndex": 1,
+            "score": 0.860397680532212,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "stays_quiet",
+            0.6748901992644408
+          ],
+          [
+            "detonated",
+            0.6493424759793631
+          ],
+          [
+            "shield_absorbed",
+            0.6148721069647402
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-neg-approach-1",
+        "kind": "negative",
+        "group": "near_negative",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "no_followup",
+        "correct": true,
+        "bestScore": 0.5460462675561648,
+        "evidenceScore": 0.5578721317196046,
+        "confidence": 0.04522355766372708,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 80,
+            "trajectoryId": "no-effect-approach-2",
+            "stepIndex": 1,
+            "score": 0.5460462675561648,
+            "weight": 0.8493210027388242,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 98,
+            "trajectoryId": "cross-up-2",
+            "stepIndex": 1,
+            "score": 0.4855212756894652,
+            "weight": 0.15067899726117595,
+            "rememberedNextConcept": "threshold_alarm",
+            "inWinningCluster": false
+          }
+        ],
+        "topConcepts": [
+          [
+            "no_followup",
+            0.6880019784270239
+          ],
+          [
+            "stays_quiet",
+            0.5926370939849251
+          ],
+          [
+            "shield_absorbed",
+            0.5486128744137293
+          ]
+        ],
+        "clusterMass": 0.8493210027388242,
+        "clusterCount": 2,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-neg-observe-1",
+        "kind": "negative",
+        "group": "observation",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "no_followup",
+        "correct": true,
+        "bestScore": 0.5849155567573536,
+        "evidenceScore": 0.6053361218652413,
+        "confidence": 0.10536696404837269,
+        "agreement": 0.8902953106827207,
+        "effectiveSupport": 1.6661475874017764,
+        "selected": [
+          {
+            "matrixRow": 82,
+            "trajectoryId": "no-effect-observe-4",
+            "stepIndex": 1,
+            "score": 0.5849155567573536,
+            "weight": 0.7620294913014652,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 70,
+            "trajectoryId": "poison-0",
+            "stepIndex": 1,
+            "score": 0.5102116493059836,
+            "weight": 0.09016018320063003,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 72,
+            "trajectoryId": "poison-1",
+            "stepIndex": 1,
+            "score": 0.5096892811348122,
+            "weight": 0.08882455186851988,
+            "rememberedNextConcept": "health_reduced",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 1,
+            "trajectoryId": "detonate-0",
+            "stepIndex": 2,
+            "score": 0.49536144289386186,
+            "weight": 0.05898577362938479,
+            "rememberedNextConcept": "blast_damage",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "no_followup",
+            0.7276048422702837
+          ],
+          [
+            "blast_damage",
+            0.7174798334795901
+          ],
+          [
+            "stays_quiet",
+            0.7026516220473568
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 4
+      },
+      {
+        "id": "hold-neg-hypo-1",
+        "kind": "negative",
+        "group": "modality",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "no_followup",
+        "correct": true,
+        "bestScore": 0.5554556262848526,
+        "evidenceScore": 0.574869362901221,
+        "confidence": 0.07888370494059123,
+        "agreement": 0.9254742488572932,
+        "effectiveSupport": 1.6247328713533307,
+        "selected": [
+          {
+            "matrixRow": 84,
+            "trajectoryId": "no-effect-hypothesis-6",
+            "stepIndex": 1,
+            "score": 0.5554556262848526,
+            "weight": 0.7577583915349897,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 69,
+            "trajectoryId": "shield-3",
+            "stepIndex": 1,
+            "score": 0.5085547685540763,
+            "weight": 0.1984108902191975,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 68,
+            "trajectoryId": "shield-2",
+            "stepIndex": 1,
+            "score": 0.45570458717765605,
+            "weight": 0.04383071824581288,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "no_followup",
+            0.7366822457995807
+          ],
+          [
+            "detonated",
+            0.7045370991196243
+          ],
+          [
+            "shield_absorbed",
+            0.7011314947283441
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 3
+      },
+      {
+        "id": "hold-neg-remember-1",
+        "kind": "negative",
+        "group": "modality",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "no_followup",
+        "correct": true,
+        "bestScore": 0.4458325311309965,
+        "evidenceScore": 0.4786980995654149,
+        "confidence": 0.0,
+        "agreement": 0.8798691732105125,
+        "effectiveSupport": 2.274224717622643,
+        "selected": [
+          {
+            "matrixRow": 83,
+            "trajectoryId": "no-effect-observe-5",
+            "stepIndex": 1,
+            "score": 0.4458325311309965,
+            "weight": 0.6423979399940851,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 84,
+            "trajectoryId": "no-effect-hypothesis-6",
+            "stepIndex": 1,
+            "score": 0.3892398999096605,
+            "weight": 0.12752030862962258,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 68,
+            "trajectoryId": "shield-2",
+            "stepIndex": 1,
+            "score": 0.3579856491313767,
+            "weight": 0.05221120054078147,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 81,
+            "trajectoryId": "no-effect-approach-3",
+            "stepIndex": 1,
+            "score": 0.35694630987281717,
+            "weight": 0.05068356185363985,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 92,
+            "trajectoryId": "no-effect-near-switch-14",
+            "stepIndex": 1,
+            "score": 0.35631174947025324,
+            "weight": 0.049772933736538114,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 78,
+            "trajectoryId": "no-effect-pass-0",
+            "stepIndex": 1,
+            "score": 0.34892557635382704,
+            "weight": 0.040303480073394925,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 69,
+            "trajectoryId": "shield-3",
+            "stepIndex": 1,
+            "score": 0.3460368217668785,
+            "weight": 0.037110575171938,
+            "rememberedNextConcept": "shield_absorbed",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "no_followup",
+            0.8021051954537306
+          ],
+          [
+            "stays_quiet",
+            0.6849763818260484
+          ],
+          [
+            "shield_absorbed",
+            0.6435680323562162
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 7
+      },
+      {
+        "id": "hold-neg-safe-money-1",
+        "kind": "negative",
+        "group": "numeric",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "no_followup",
+        "correct": true,
+        "bestScore": 0.8975812841971997,
+        "evidenceScore": 0.8975812841971997,
+        "confidence": 0.3167100554492578,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 86,
+            "trajectoryId": "no-effect-safe-money-8",
+            "stepIndex": 1,
+            "score": 0.8975812841971997,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "no_followup",
+            0.6323708942480093
+          ],
+          [
+            "marker_placed",
+            0.5975720112010061
+          ],
+          [
+            "stays_quiet",
+            0.575036055279371
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-neg-safe-money-2",
+        "kind": "negative",
+        "group": "numeric",
+        "expected": "no_followup",
+        "predicted": "bankrupt",
+        "geometricPrediction": "bankrupt",
+        "correct": false,
+        "bestScore": 0.4893012813578763,
+        "evidenceScore": 0.5310926169083074,
+        "confidence": 0.013485190985191955,
+        "agreement": 0.9637656201199672,
+        "effectiveSupport": 2.05352748224438,
+        "selected": [
+          {
+            "matrixRow": 49,
+            "trajectoryId": "money-3",
+            "stepIndex": 1,
+            "score": 0.4893012813578763,
+            "weight": 0.5099207993778323,
+            "rememberedNextConcept": "bankrupt",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 46,
+            "trajectoryId": "money-0",
+            "stepIndex": 1,
+            "score": 0.460292389833031,
+            "weight": 0.222611911052843,
+            "rememberedNextConcept": "bankrupt",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 86,
+            "trajectoryId": "no-effect-safe-money-8",
+            "stepIndex": 1,
+            "score": 0.4564930838162091,
+            "weight": 0.19971240280962912,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": false
+          },
+          {
+            "matrixRow": 48,
+            "trajectoryId": "money-2",
+            "stepIndex": 1,
+            "score": 0.39687290313640683,
+            "weight": 0.03635910347105204,
+            "rememberedNextConcept": "bankrupt",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 100,
+            "trajectoryId": "cross-up-3",
+            "stepIndex": 1,
+            "score": 0.39173591749703973,
+            "weight": 0.03139578328864355,
+            "rememberedNextConcept": "threshold_alarm",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "bankrupt",
+            0.8768671991217349
+          ],
+          [
+            "collapsed",
+            0.623350154271932
+          ],
+          [
+            "threshold_alarm",
+            0.6207396157134174
+          ]
+        ],
+        "clusterMass": 0.8002875971903709,
+        "clusterCount": 2,
+        "evidenceCount": 4
+      },
+      {
+        "id": "hold-neg-card-draw",
+        "kind": "negative",
+        "group": "procedural",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "event_revealed",
+        "correct": true,
+        "bestScore": 0.9317185173859158,
+        "evidenceScore": 0.9317185173859158,
+        "confidence": 0.34229473091973417,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 88,
+            "trajectoryId": "no-effect-card-draw-10",
+            "stepIndex": 1,
+            "score": 0.9317185173859158,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "event_revealed",
+            0.6610837718312933
+          ],
+          [
+            "no_followup",
+            0.6283342695964471
+          ],
+          [
+            "marker_placed",
+            0.5915269444779081
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-neg-card-inspect",
+        "kind": "negative",
+        "group": "procedural",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "event_revealed",
+        "correct": true,
+        "bestScore": 0.6533955474944964,
+        "evidenceScore": 0.6533955474944964,
+        "confidence": 0.13370129215783436,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 88,
+            "trajectoryId": "no-effect-card-draw-10",
+            "stepIndex": 1,
+            "score": 0.6533955474944964,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "event_revealed",
+            0.6610837718312933
+          ],
+          [
+            "no_followup",
+            0.6283342695964471
+          ],
+          [
+            "marker_placed",
+            0.5915269444779081
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-neg-ice-near",
+        "kind": "negative",
+        "group": "near_negative",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "melted",
+        "correct": true,
+        "bestScore": 0.9593835197817138,
+        "evidenceScore": 0.9593835197817138,
+        "confidence": 0.36302869328492093,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 90,
+            "trajectoryId": "no-effect-near-heat-12",
+            "stepIndex": 1,
+            "score": 0.9593835197817138,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "melted",
+            0.6803770793714294
+          ],
+          [
+            "no_followup",
+            0.6427664770440855
+          ],
+          [
+            "stays_quiet",
+            0.6149947988152917
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-neg-wall-near",
+        "kind": "negative",
+        "group": "near_negative",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "barrier_broken",
+        "correct": true,
+        "bestScore": 0.9061529866369069,
+        "evidenceScore": 0.9061529866369069,
+        "confidence": 0.323134249933241,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 91,
+            "trajectoryId": "no-effect-near-wall-13",
+            "stepIndex": 1,
+            "score": 0.9061529866369069,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "barrier_broken",
+            0.7446161445494599
+          ],
+          [
+            "shield_absorbed",
+            0.742628279387961
+          ],
+          [
+            "stays_quiet",
+            0.6786863902249748
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-neg-switch-near",
+        "kind": "negative",
+        "group": "near_negative",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "door_open",
+        "correct": true,
+        "bestScore": 0.8999301538232777,
+        "evidenceScore": 0.8999301538232777,
+        "confidence": 0.31847045198677004,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 92,
+            "trajectoryId": "no-effect-near-switch-14",
+            "stepIndex": 1,
+            "score": 0.8999301538232777,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "door_open",
+            0.6363399106381988
+          ],
+          [
+            "switch_activated",
+            0.6344988001386889
+          ],
+          [
+            "stays_quiet",
+            0.6316721622313809
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-neg-shield-far",
+        "kind": "negative",
+        "group": "near_negative",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "shield_absorbed",
+        "correct": true,
+        "bestScore": 0.9903206732337524,
+        "evidenceScore": 0.9903206732337524,
+        "confidence": 0.3862150196832879,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 93,
+            "trajectoryId": "no-effect-near-shield-15",
+            "stepIndex": 1,
+            "score": 0.9903206732337524,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "shield_absorbed",
+            0.7066555244893504
+          ],
+          [
+            "no_followup",
+            0.6284175601141286
+          ],
+          [
+            "stays_quiet",
+            0.555789775573063
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      },
+      {
+        "id": "hold-neg-nonce-near",
+        "kind": "negative",
+        "group": "nonce_negative",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "no_followup",
+        "correct": true,
+        "bestScore": 0.6750555289007435,
+        "evidenceScore": 0.6919773927769128,
+        "confidence": 0.19222622740700865,
+        "agreement": 0.9448901464028303,
+        "effectiveSupport": 1.5266054293961389,
+        "selected": [
+          {
+            "matrixRow": 90,
+            "trajectoryId": "no-effect-near-heat-12",
+            "stepIndex": 1,
+            "score": 0.6750555289007435,
+            "weight": 0.7938480316304558,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 91,
+            "trajectoryId": "no-effect-near-wall-13",
+            "stepIndex": 1,
+            "score": 0.6156768474582108,
+            "weight": 0.14552651322607027,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          },
+          {
+            "matrixRow": 92,
+            "trajectoryId": "no-effect-near-switch-14",
+            "stepIndex": 1,
+            "score": 0.5850293272421161,
+            "weight": 0.060625455143473846,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "no_followup",
+            0.6785645903596762
+          ],
+          [
+            "melted",
+            0.6666233114196942
+          ],
+          [
+            "stays_quiet",
+            0.6617432610161714
+          ]
+        ],
+        "clusterMass": 0.9999999999999999,
+        "clusterCount": 1,
+        "evidenceCount": 3
+      },
+      {
+        "id": "hold-neg-poison-see",
+        "kind": "negative",
+        "group": "observation",
+        "expected": "no_followup",
+        "predicted": "no_followup",
+        "geometricPrediction": "no_followup",
+        "correct": true,
+        "bestScore": 0.8929600162586859,
+        "evidenceScore": 0.8929600162586859,
+        "confidence": 0.3132465749786708,
+        "agreement": 1.0,
+        "effectiveSupport": 1.0,
+        "selected": [
+          {
+            "matrixRow": 83,
+            "trajectoryId": "no-effect-observe-5",
+            "stepIndex": 1,
+            "score": 0.8929600162586859,
+            "weight": 1.0,
+            "rememberedNextConcept": "no_followup",
+            "inWinningCluster": true
+          }
+        ],
+        "topConcepts": [
+          [
+            "no_followup",
+            0.7344847132239393
+          ],
+          [
+            "stays_quiet",
+            0.5887116293132597
+          ],
+          [
+            "shield_absorbed",
+            0.5511710337380913
+          ]
+        ],
+        "clusterMass": 1.0,
+        "clusterCount": 1,
+        "evidenceCount": 1
+      }
+    ]
+  }
+}

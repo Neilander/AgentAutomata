@@ -1,0 +1,149 @@
+{
+  "schema": "masked_attention_response_v1",
+  "round": 4,
+  "previousResponseHash": "18d43577bd75ce111a70a114419d05da7d144d4a39526cc68909c57779ba477b",
+  "requestHash": "5ab1fa511625cef58e0f778b0ae3c23539cfa9f596f17b53babddc3b8740d94d",
+  "responses": [
+    {
+      "caseId": "arrow_city",
+      "command": {
+        "caseId": "arrow_city",
+        "kind": "focus",
+        "operation": "inspect_ship_cell",
+        "target": "ship-a",
+        "reason": "ship-a已实际下降到sky-c0-r1；按最终格规则只检查它当前所在格的局部特征，以决定是否唤醒后续落点动作。",
+        "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY，可能进一步唤醒A03、A04、A05或无立即效果边界"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "shipId": "ship-a",
+          "position": "sky-c0-r1",
+          "feature": {
+            "kind": "arrow",
+            "direction": "right",
+            "target": "sky-c1-r1"
+          }
+        }
+      }
+    },
+    {
+      "caseId": "air_defense_zero",
+      "command": {
+        "caseId": "air_defense_zero",
+        "kind": "act",
+        "operation": "finish_case",
+        "target": "case",
+        "reason": "防空修正后的实际下降为0，响应明确确认不触发落点效果；灰骰也无白骰重投，确定性链已结束。",
+        "expectedWakeup": "S01_ZERO_MOVE_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "finished",
+        "detail": {
+          "finalState": {
+            "shipPositions": {
+              "ship-a": "sky-c0-r0"
+            },
+            "cityHp": 3,
+            "mothershipPosition": null,
+            "outcome": null,
+            "unplacedDiceState": "none"
+          }
+        }
+      }
+    },
+    {
+      "caseId": "mothership_skull",
+      "command": {
+        "caseId": "mothership_skull",
+        "kind": "focus",
+        "operation": "inspect_ship_cell",
+        "target": "ship-a",
+        "reason": "ship-a已实际下降到sky-c0-r1；只查看当前最终停留格局部特征，不根据案例名称猜测落点。",
+        "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY，可能进一步唤醒A03、A04、A05或无立即效果边界"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "shipId": "ship-a",
+          "position": "sky-c0-r1",
+          "feature": {
+            "kind": "mothership_down"
+          }
+        }
+      }
+    },
+    {
+      "caseId": "path_not_endpoint",
+      "command": {
+        "caseId": "path_not_endpoint",
+        "kind": "focus",
+        "operation": "inspect_ship_cell",
+        "target": "ship-a",
+        "reason": "ship-a从r0下降2格后最终位于sky-c0-r2；只检查该终点，明确忽略路径经过的r1及其图标。",
+        "expectedWakeup": "G02_DESCENT_TO_FINAL_CHECK，可能唤醒终点对应动作或N03/N04"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "shipId": "ship-a",
+          "position": "sky-c0-r2",
+          "feature": {
+            "kind": "explosion"
+          }
+        }
+      }
+    },
+    {
+      "caseId": "white_random_stop",
+      "command": {
+        "caseId": "white_random_stop",
+        "kind": "focus",
+        "operation": "inspect_ship_cell",
+        "target": "ship-a",
+        "reason": "ship-a已下降到sky-c0-r1；必须先揭示并完成其最终落点链，白骰重投只能在全部飞船结算后发生。",
+        "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY；落点链结束后再考虑G08_ALL_SHIPS_TO_WHITE_REROLL"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "shipId": "ship-a",
+          "position": "sky-c0-r1",
+          "feature": {
+            "kind": "plain"
+          }
+        }
+      }
+    },
+    {
+      "caseId": "two_ship_split",
+      "command": {
+        "caseId": "two_ship_split",
+        "kind": "focus",
+        "operation": "inspect_ship_cell",
+        "target": "ship-a",
+        "reason": "两艘飞船均已下降；本轮先只检查ship-a在sky-c0-r1的最终停留格，ship-b留待后续单独关注。",
+        "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY，决定ship-a的落点链后仍需处理ship-b"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "shipId": "ship-a",
+          "position": "sky-c0-r1",
+          "feature": {
+            "kind": "arrow",
+            "direction": "right",
+            "target": "sky-c1-r1"
+          }
+        }
+      }
+    }
+  ],
+  "responseHash": "ef9fbbdae09ab4e1fcafd8af368b03c637d21c3703a9751f3d0b0f83aa5f20c0"
+}

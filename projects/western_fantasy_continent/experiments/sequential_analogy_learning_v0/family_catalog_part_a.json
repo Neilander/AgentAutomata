@@ -1,0 +1,5745 @@
+[
+  {
+    "family_id": "F001",
+    "split": "shared",
+    "name_zh": "脆弱施力者撞击坚硬承受者而自毁",
+    "subject_count": 2,
+    "interaction_count": 1,
+    "observable_before": "{actor}结构脆且正在高速接近{target}；{target}比{actor}坚硬且被牢固支撑",
+    "interactions": [
+      {
+        "subject": "actor",
+        "relation": "actor正面撞击target",
+        "object": "target"
+      }
+    ],
+    "effects": [
+      {
+        "role": "actor",
+        "predicate": "因冲击反力断裂并失去原功能"
+      },
+      {
+        "role": "target",
+        "predicate": "保持基本完整"
+      }
+    ],
+    "invariant": "接触产生的反力超过脆弱施力者的破坏阈值，而承受者未越过自身阈值。",
+    "boundary_condition": "只有撞击能量足以破坏{actor}且不足以破坏{target}时成立。",
+    "near_negative": {
+      "changed_fact": "{actor}改为韧性材料，冲击低于其屈服阈值",
+      "effects": [
+        {
+          "role": "actor",
+          "predicate": "弹开或仅轻微变形"
+        },
+        {
+          "role": "target",
+          "predicate": "保持完整"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "兵器",
+        "entities": {
+          "actor": "水晶长矛",
+          "target": "玄武岩盾"
+        },
+        "before": "矛脆而盾厚重固定",
+        "interaction_phrases": [
+          "水晶长矛刺中玄武岩盾"
+        ]
+      },
+      {
+        "domain": "工程",
+        "entities": {
+          "actor": "陶瓷钻头",
+          "target": "钛合金板"
+        },
+        "before": "钻头有微裂纹且板材受夹持",
+        "interaction_phrases": [
+          "钻头高速顶到板面"
+        ]
+      },
+      {
+        "domain": "交通",
+        "entities": {
+          "actor": "薄壳无人机",
+          "target": "混凝土桥墩"
+        },
+        "before": "无人机机壳脆且桥墩稳固",
+        "interaction_phrases": [
+          "无人机迎面撞桥墩"
+        ]
+      },
+      {
+        "domain": "自然",
+        "entities": {
+          "actor": "冰柱",
+          "target": "花岗岩崖"
+        },
+        "before": "冰柱高速滑落且岩壁坚硬",
+        "interaction_phrases": [
+          "冰柱撞上崖面"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F041",
+    "split": "shared",
+    "name_zh": "专业分工配合提高联合产出",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{specialist_a}擅长阶段甲但不擅长阶段乙；{specialist_b}擅长阶段乙；{task}可拆成顺序衔接的两阶段",
+    "interactions": [
+      {
+        "subject": "specialist_a",
+        "relation": "specialist_a完成阶段甲并交付中间物",
+        "object": "task"
+      },
+      {
+        "subject": "specialist_b",
+        "relation": "specialist_b接手完成阶段乙",
+        "object": "task"
+      }
+    ],
+    "effects": [
+      {
+        "role": "task",
+        "predicate": "以高于单人包办的速度和质量完成"
+      },
+      {
+        "role": "specialist_a",
+        "predicate": "集中使用自身优势能力"
+      },
+      {
+        "role": "specialist_b",
+        "predicate": "无需重复前一阶段"
+      }
+    ],
+    "invariant": "互补技能与可衔接任务让各主体集中于比较优势。",
+    "boundary_condition": "交接成本若超过专业化收益，联合产出不会提高。",
+    "near_negative": {
+      "changed_fact": "两阶段无法清晰交接且中间物需由接手者全部返工",
+      "effects": [
+        {
+          "role": "task",
+          "predicate": "总耗时不降反升"
+        },
+        {
+          "role": "specialist_b",
+          "predicate": "重复完成前一阶段"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "制造",
+        "entities": {
+          "specialist_a": "精密车工",
+          "specialist_b": "热处理师",
+          "task": "齿轮订单"
+        },
+        "before": "两人技能互补",
+        "interaction_phrases": [
+          "车工切削齿坯并交件",
+          "热处理师淬火定型"
+        ]
+      },
+      {
+        "domain": "医疗",
+        "entities": {
+          "specialist_a": "影像医师",
+          "specialist_b": "外科医师",
+          "task": "肿瘤治疗"
+        },
+        "before": "诊断与手术技能不同",
+        "interaction_phrases": [
+          "影像医师定位病灶",
+          "外科医师按定位切除"
+        ]
+      },
+      {
+        "domain": "软件",
+        "entities": {
+          "specialist_a": "接口工程师",
+          "specialist_b": "数据库工程师",
+          "task": "数据服务"
+        },
+        "before": "任务可按契约拆分",
+        "interaction_phrases": [
+          "接口工程师定义并交付契约",
+          "数据库工程师实现查询层"
+        ]
+      },
+      {
+        "domain": "冒险",
+        "entities": {
+          "specialist_a": "斥候",
+          "specialist_b": "开锁师",
+          "task": "潜入任务"
+        },
+        "before": "侦察和开锁需不同专长",
+        "interaction_phrases": [
+          "斥候标出安全路线",
+          "开锁师沿路线开启密门"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F042",
+    "split": "shared",
+    "name_zh": "中间交接缺失使串行协作链断裂",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{worker_a}的输出是{worker_b}开始工作的必要输入；{goal}依赖两阶段都完成",
+    "interactions": [
+      {
+        "subject": "worker_a",
+        "relation": "worker_a完成中间产物但未交给worker_b",
+        "object": "worker_b"
+      },
+      {
+        "subject": "worker_b",
+        "relation": "worker_b在截止前仍未收到输入",
+        "object": "goal"
+      }
+    ],
+    "effects": [
+      {
+        "role": "worker_b",
+        "predicate": "无法开始其阶段"
+      },
+      {
+        "role": "goal",
+        "predicate": "即使第一阶段完成也整体延期"
+      }
+    ],
+    "invariant": "串行依赖中必要中间状态未跨过主体边界，后继阶段保持阻塞。",
+    "boundary_condition": "后继者能独立重建输入或共享仓库自动同步时不成立。",
+    "near_negative": {
+      "changed_fact": "中间产物自动写入双方共享且可见的仓库",
+      "effects": [
+        {
+          "role": "worker_b",
+          "predicate": "按时取得输入并开工"
+        },
+        {
+          "role": "goal",
+          "predicate": "协作链继续推进"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "物流",
+        "entities": {
+          "worker_a": "拣货员",
+          "worker_b": "装车员",
+          "goal": "发货目标"
+        },
+        "before": "装车需拣货清单和货物",
+        "interaction_phrases": [
+          "拣货员完成但把货留错月台",
+          "装车员截止前没收到"
+        ]
+      },
+      {
+        "domain": "软件",
+        "entities": {
+          "worker_a": "设计师",
+          "worker_b": "开发者",
+          "goal": "页面上线"
+        },
+        "before": "开发需最终设计稿",
+        "interaction_phrases": [
+          "设计师只存本机未分享",
+          "开发者等待链接"
+        ]
+      },
+      {
+        "domain": "军队",
+        "entities": {
+          "worker_a": "侦察班",
+          "worker_b": "炮兵班",
+          "goal": "火力打击"
+        },
+        "before": "炮兵需坐标才能射击",
+        "interaction_phrases": [
+          "侦察班测得坐标但电台关闭",
+          "炮兵始终未获坐标"
+        ]
+      },
+      {
+        "domain": "医疗",
+        "entities": {
+          "worker_a": "检验科",
+          "worker_b": "临床医生",
+          "goal": "及时用药"
+        },
+        "before": "处方依赖培养结果",
+        "interaction_phrases": [
+          "检验科完成报告但发错病区",
+          "医生截止前未见结果"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F043",
+    "split": "shared",
+    "name_zh": "独立冗余观察在单点失明时保留感知",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{observer_a}与{observer_b}独立覆盖同一{event}；两者不共享同一失效源",
+    "interactions": [
+      {
+        "subject": "observer_a",
+        "relation": "observer_a因局部故障失去观测",
+        "object": "event"
+      },
+      {
+        "subject": "event",
+        "relation": "event发生并仍落在observer_b覆盖内",
+        "object": "observer_b"
+      }
+    ],
+    "effects": [
+      {
+        "role": "observer_b",
+        "predicate": "继续记录事件"
+      },
+      {
+        "role": "event",
+        "predicate": "仍能被系统检测而非完全漏失"
+      }
+    ],
+    "invariant": "同一事实有故障独立的多条感知路径，单条失效不消除全部证据。",
+    "boundary_condition": "观察者共用电源、视线或数据管道时共同故障可同时致盲。",
+    "near_negative": {
+      "changed_fact": "两名观察者共用唯一被切断的数据线",
+      "effects": [
+        {
+          "role": "observer_b",
+          "predicate": "虽传感正常也无法上报"
+        },
+        {
+          "role": "event",
+          "predicate": "在汇总系统中漏失"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "安防",
+        "entities": {
+          "observer_a": "北侧摄像头",
+          "observer_b": "独立门磁",
+          "event": "闯入事件"
+        },
+        "before": "两者供电独立",
+        "interaction_phrases": [
+          "摄像头镜头被遮住",
+          "门被开启触发门磁"
+        ]
+      },
+      {
+        "domain": "航空",
+        "entities": {
+          "observer_a": "主高度计",
+          "observer_b": "备用机械高度计",
+          "event": "下降事件"
+        },
+        "before": "备用表不依赖主电路",
+        "interaction_phrases": [
+          "主高度计断电",
+          "飞机继续下降被备用表显示"
+        ]
+      },
+      {
+        "domain": "审计",
+        "entities": {
+          "observer_a": "销售台账",
+          "observer_b": "银行流水",
+          "event": "异常付款"
+        },
+        "before": "记录来源独立",
+        "interaction_phrases": [
+          "销售台账被删改",
+          "银行流水仍记录付款"
+        ]
+      },
+      {
+        "domain": "战场",
+        "entities": {
+          "observer_a": "瞭望塔",
+          "observer_b": "巡逻斥候",
+          "event": "敌军接近"
+        },
+        "before": "两者位置和通信独立",
+        "interaction_phrases": [
+          "瞭望塔被烟遮蔽",
+          "斥候仍目击敌军"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F044",
+    "split": "shared",
+    "name_zh": "相互冲突且同权的指令造成执行停滞",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{executor}必须服从{commander_a}与{commander_b}；两名指挥者同权且无冲突裁决规则",
+    "interactions": [
+      {
+        "subject": "commander_a",
+        "relation": "commander_a命令执行动作甲",
+        "object": "executor"
+      },
+      {
+        "subject": "commander_b",
+        "relation": "commander_b同时命令执行与甲互斥的动作乙",
+        "object": "executor"
+      }
+    ],
+    "effects": [
+      {
+        "role": "executor",
+        "predicate": "无法同时满足命令而延迟或停止行动"
+      },
+      {
+        "role": "commander_a",
+        "predicate": "其指令未被确定执行"
+      },
+      {
+        "role": "commander_b",
+        "predicate": "其指令未被确定执行"
+      }
+    ],
+    "invariant": "互斥约束来自同等级权威且缺少优先级，执行者无法得到唯一合法动作。",
+    "boundary_condition": "存在明确优先级、合并方案或上级裁决时僵局解除。",
+    "near_negative": {
+      "changed_fact": "预设规则明确{commander_a}在该类事件中优先",
+      "effects": [
+        {
+          "role": "executor",
+          "predicate": "执行动作甲而不再停滞"
+        },
+        {
+          "role": "commander_b",
+          "predicate": "其冲突命令被覆盖"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "军事",
+        "entities": {
+          "executor": "传令兵",
+          "commander_a": "城防官",
+          "commander_b": "野战官"
+        },
+        "before": "两官同级且无联合章程",
+        "interaction_phrases": [
+          "城防官命令关门",
+          "野战官同时命令开门接兵"
+        ]
+      },
+      {
+        "domain": "软件",
+        "entities": {
+          "executor": "部署器",
+          "commander_a": "策略控制器甲",
+          "commander_b": "策略控制器乙"
+        },
+        "before": "两个控制器同权",
+        "interaction_phrases": [
+          "甲要求扩容",
+          "乙同时要求缩容"
+        ]
+      },
+      {
+        "domain": "家庭",
+        "entities": {
+          "executor": "司机",
+          "commander_a": "监护人甲",
+          "commander_b": "监护人乙"
+        },
+        "before": "双方无事先约定",
+        "interaction_phrases": [
+          "甲要求去医院",
+          "乙同时要求去学校"
+        ]
+      },
+      {
+        "domain": "机器人",
+        "entities": {
+          "executor": "机械臂",
+          "commander_a": "安全模块",
+          "commander_b": "产量模块"
+        },
+        "before": "模块优先级配置相同",
+        "interaction_phrases": [
+          "安全模块命令停止",
+          "产量模块命令继续抓取"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F045",
+    "split": "shared",
+    "name_zh": "先行合作建立可信记录并诱发互惠",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{actor_a}与{actor_b}将重复互动但起初缺乏信任；双方都能观察并回报对方行为",
+    "interactions": [
+      {
+        "subject": "actor_a",
+        "relation": "actor_a先付出可验证的小额合作",
+        "object": "actor_b"
+      },
+      {
+        "subject": "actor_b",
+        "relation": "actor_b观察到付出并在下一轮回报",
+        "object": "actor_a"
+      }
+    ],
+    "effects": [
+      {
+        "role": "actor_a",
+        "predicate": "获得对方回报并建立合作预期"
+      },
+      {
+        "role": "actor_b",
+        "predicate": "从戒备转为愿意重复合作"
+      }
+    ],
+    "invariant": "可观察、可回报的先行成本信号改变对方对未来互动的预期。",
+    "boundary_condition": "只有一次互动、行为不可归因或对方无法回报时互惠机制弱。",
+    "near_negative": {
+      "changed_fact": "双方确定互动只有一次且身份随后消失",
+      "effects": [
+        {
+          "role": "actor_a",
+          "predicate": "先行付出未必得到回报"
+        },
+        {
+          "role": "actor_b",
+          "predicate": "缺少维持声誉的激励"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "贸易",
+        "entities": {
+          "actor_a": "山村商人",
+          "actor_b": "河谷商人"
+        },
+        "before": "双方将每月见面但互不信任",
+        "interaction_phrases": [
+          "山村商人先按约交小批货",
+          "河谷商人下轮准时付款"
+        ]
+      },
+      {
+        "domain": "外交",
+        "entities": {
+          "actor_a": "城邦甲",
+          "actor_b": "城邦乙"
+        },
+        "before": "边境摩擦但长期相邻",
+        "interaction_phrases": [
+          "甲先撤回一处巡逻",
+          "乙随后开放一处关卡"
+        ]
+      },
+      {
+        "domain": "网络协作",
+        "entities": {
+          "actor_a": "上传者甲",
+          "actor_b": "下载者乙"
+        },
+        "before": "平台记录分享比率",
+        "interaction_phrases": [
+          "甲先给乙上传数据块",
+          "乙完成后回传稀缺块"
+        ]
+      },
+      {
+        "domain": "动物行为",
+        "entities": {
+          "actor_a": "灵长类甲",
+          "actor_b": "灵长类乙"
+        },
+        "before": "群内长期共处且能识别个体",
+        "interaction_phrases": [
+          "甲先为乙梳理毛发",
+          "乙稍后为甲梳理"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F046",
+    "split": "shared",
+    "name_zh": "多方同步到窄时间窗才产生联合效果",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{actor_a}与{actor_b}的单独作用都不足；{target}只在很短窗口内可被联合影响",
+    "interactions": [
+      {
+        "subject": "actor_a",
+        "relation": "actor_a在窗口内施加第一作用",
+        "object": "target"
+      },
+      {
+        "subject": "actor_b",
+        "relation": "actor_b几乎同时施加互补作用",
+        "object": "target"
+      }
+    ],
+    "effects": [
+      {
+        "role": "target",
+        "predicate": "因两个作用重叠而发生单方无法造成的变化"
+      },
+      {
+        "role": "actor_a",
+        "predicate": "其作用与另一作用形成时间叠加"
+      }
+    ],
+    "invariant": "互补输入必须在目标响应衰减前重叠，合量才越过阈值。",
+    "boundary_condition": "时差超过窗口或任一输入缺失都会失败。",
+    "near_negative": {
+      "changed_fact": "{actor_b}在第一作用完全衰减后才行动",
+      "effects": [
+        {
+          "role": "target",
+          "predicate": "两次单独作用均未越过阈值"
+        },
+        {
+          "role": "actor_a",
+          "predicate": "先前作用已经消散"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "攻城",
+        "entities": {
+          "actor_a": "撞锤队",
+          "actor_b": "拉索队",
+          "target": "重门"
+        },
+        "before": "门轴只有受拉时才易撞开",
+        "interaction_phrases": [
+          "撞锤队在倒数点撞击",
+          "拉索队同刻侧拉门轴"
+        ]
+      },
+      {
+        "domain": "化学",
+        "entities": {
+          "actor_a": "注射泵甲",
+          "actor_b": "注射泵乙",
+          "target": "短寿命反应区"
+        },
+        "before": "两试剂单独无效且中间体瞬逝",
+        "interaction_phrases": [
+          "甲泵注入试剂A",
+          "乙泵同步注入试剂B"
+        ]
+      },
+      {
+        "domain": "音乐",
+        "entities": {
+          "actor_a": "歌者甲",
+          "actor_b": "歌者乙",
+          "target": "和声共振"
+        },
+        "before": "单音不能激发目标和弦",
+        "interaction_phrases": [
+          "甲唱基音",
+          "乙同步唱互补音"
+        ]
+      },
+      {
+        "domain": "计算",
+        "entities": {
+          "actor_a": "事务甲",
+          "actor_b": "事务乙",
+          "target": "双条件触发器"
+        },
+        "before": "触发器要求同周期两信号",
+        "interaction_phrases": [
+          "甲提交第一标志",
+          "乙同周期提交第二标志"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F047",
+    "split": "shared",
+    "name_zh": "级联负载转移使相邻节点连续过载",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{node_a}与{node_b}共同承担接近上限的负载；{node_c}依赖它们保持网络连通",
+    "interactions": [
+      {
+        "subject": "node_a",
+        "relation": "node_a先失效并把负载转移给node_b",
+        "object": "node_b"
+      },
+      {
+        "subject": "node_b",
+        "relation": "node_b因新增负载越过容量后也失效",
+        "object": "node_c"
+      }
+    ],
+    "effects": [
+      {
+        "role": "node_b",
+        "predicate": "由原本可用转为过载失效"
+      },
+      {
+        "role": "node_c",
+        "predicate": "失去服务或承受下一轮转移"
+      }
+    ],
+    "invariant": "节点故障不是消除需求而是把需求推给余量不足的邻居。",
+    "boundary_condition": "邻居有足够备用容量、主动卸载或故障后需求消失时级联终止。",
+    "near_negative": {
+      "changed_fact": "{node_b}的备用余量大于转移负载",
+      "effects": [
+        {
+          "role": "node_b",
+          "predicate": "接管后仍稳定运行"
+        },
+        {
+          "role": "node_c",
+          "predicate": "继续得到服务"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "电网",
+        "entities": {
+          "node_a": "输电线甲",
+          "node_b": "输电线乙",
+          "node_c": "下游城市"
+        },
+        "before": "两线都接近热限",
+        "interaction_phrases": [
+          "甲线跳闸将潮流转给乙",
+          "乙线过热再跳闸"
+        ]
+      },
+      {
+        "domain": "服务器",
+        "entities": {
+          "node_a": "实例甲",
+          "node_b": "实例乙",
+          "node_c": "用户群"
+        },
+        "before": "两实例CPU均较高",
+        "interaction_phrases": [
+          "甲崩溃请求转到乙",
+          "乙超载崩溃"
+        ]
+      },
+      {
+        "domain": "桥梁",
+        "entities": {
+          "node_a": "吊索甲",
+          "node_b": "吊索乙",
+          "node_c": "桥面段"
+        },
+        "before": "吊索余量有限",
+        "interaction_phrases": [
+          "甲索断裂载荷转给乙",
+          "乙索超强度断裂"
+        ]
+      },
+      {
+        "domain": "组织",
+        "entities": {
+          "node_a": "值班员甲",
+          "node_b": "值班员乙",
+          "node_c": "客户队列"
+        },
+        "before": "两人工作量接近极限",
+        "interaction_phrases": [
+          "甲请假任务移交乙",
+          "乙过载停止响应"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F048",
+    "split": "shared",
+    "name_zh": "滞回使状态切换后的恢复阈值不同",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{system}当前处于低态且上切阈值高于下切阈值；{driver}可连续升降",
+    "interactions": [
+      {
+        "subject": "driver",
+        "relation": "driver升高并越过上切阈值使system转为高态",
+        "object": "system"
+      },
+      {
+        "subject": "driver",
+        "relation": "driver随后回落但仍高于下切阈值",
+        "object": "system"
+      }
+    ],
+    "effects": [
+      {
+        "role": "system",
+        "predicate": "保持高态而不立即返回低态"
+      },
+      {
+        "role": "driver",
+        "predicate": "同一中间值因历史不同对应不同系统状态"
+      }
+    ],
+    "invariant": "进入与退出状态使用不同阈值，形成路径依赖区间。",
+    "boundary_condition": "驱动继续降到下切阈值以下时系统才复位。",
+    "near_negative": {
+      "changed_fact": "{driver}回落并越过下切阈值",
+      "effects": [
+        {
+          "role": "system",
+          "predicate": "恢复低态"
+        },
+        {
+          "role": "driver",
+          "predicate": "完成复位条件"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "磁学",
+        "entities": {
+          "system": "磁芯",
+          "driver": "外加磁场"
+        },
+        "before": "磁芯未磁化且有矫顽力",
+        "interaction_phrases": [
+          "磁场升过磁化阈值",
+          "磁场回落到中间值"
+        ]
+      },
+      {
+        "domain": "生态",
+        "entities": {
+          "system": "浑浊湖泊",
+          "driver": "营养盐负荷"
+        },
+        "before": "湖泊清澈且两稳态并存",
+        "interaction_phrases": [
+          "负荷升高令湖变浑",
+          "负荷略降但未到恢复线"
+        ]
+      },
+      {
+        "domain": "组织",
+        "entities": {
+          "system": "应急等级",
+          "driver": "风险指数"
+        },
+        "before": "升级线高于降级线",
+        "interaction_phrases": [
+          "指数越过升级线",
+          "指数回落到两线之间"
+        ]
+      },
+      {
+        "domain": "机械",
+        "entities": {
+          "system": "弹跳开关",
+          "driver": "施加压力"
+        },
+        "before": "开关有不同闭合和释放点",
+        "interaction_phrases": [
+          "压力越过闭合点",
+          "压力回落但未到释放点"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F049",
+    "split": "shared",
+    "name_zh": "采用规模跨过临界点后网络价值自持增长",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{adopters}越多会让{platform}对每个新成员越有价值；当前采用规模接近能自持的临界点；{alternative}没有同步增强",
+    "interactions": [
+      {
+        "subject": "adopters",
+        "relation": "一批新成员加入使adopters跨过临界规模",
+        "object": "platform"
+      },
+      {
+        "subject": "platform",
+        "relation": "更高网络价值吸引后续成员",
+        "object": "adopters"
+      }
+    ],
+    "effects": [
+      {
+        "role": "adopters",
+        "predicate": "无需持续补贴也继续增长"
+      },
+      {
+        "role": "platform",
+        "predicate": "从难以启动转为自我强化"
+      }
+    ],
+    "invariant": "规模提高个体收益，个体收益又提高加入率，跨点后正反馈超过流失。",
+    "boundary_condition": "连接价值不随成员数增加或拥堵成本增长更快时不成立。",
+    "near_negative": {
+      "changed_fact": "新成员彼此不能互动，平台价值与规模无关",
+      "effects": [
+        {
+          "role": "adopters",
+          "predicate": "补贴停止后不再自然增长"
+        },
+        {
+          "role": "platform",
+          "predicate": "没有网络自强化"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "通信",
+        "entities": {
+          "adopters": "首批用户",
+          "platform": "新通讯网",
+          "alternative": "旧邮路"
+        },
+        "before": "网络用户接近城镇临界覆盖",
+        "interaction_phrases": [
+          "一个大商会全员加入",
+          "可联系人数增加吸引居民"
+        ]
+      },
+      {
+        "domain": "支付",
+        "entities": {
+          "adopters": "商户与顾客",
+          "platform": "电子钱包",
+          "alternative": "现金"
+        },
+        "before": "受理点接近便利临界",
+        "interaction_phrases": [
+          "连锁店全面受理",
+          "更多顾客因可用点增多注册"
+        ]
+      },
+      {
+        "domain": "语言",
+        "entities": {
+          "adopters": "学习者",
+          "platform": "贸易通语",
+          "alternative": "地方方言"
+        },
+        "before": "通语使用者接近跨城可用规模",
+        "interaction_phrases": [
+          "大型港口采用通语",
+          "跨地交流价值吸引新学者"
+        ]
+      },
+      {
+        "domain": "协作软件",
+        "entities": {
+          "adopters": "团队成员",
+          "platform": "共享平台",
+          "alternative": "邮件附件"
+        },
+        "before": "接近多数同事在平台内",
+        "interaction_phrases": [
+          "关键部门整体迁入",
+          "可协作对象增多带动余部"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F050",
+    "split": "shared",
+    "name_zh": "同类投入增加时边际收益递减",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{activity}已获得大量同类{input}；最容易改善的部分已被先前投入解决",
+    "interactions": [
+      {
+        "subject": "input",
+        "relation": "再次增加一单位input",
+        "object": "activity"
+      },
+      {
+        "subject": "input",
+        "relation": "新增投入作用于剩余较难改善部分",
+        "object": "activity"
+      }
+    ],
+    "effects": [
+      {
+        "role": "activity",
+        "predicate": "仍有收益但小于早期同量投入的收益"
+      },
+      {
+        "role": "input",
+        "predicate": "单位增量产出下降"
+      }
+    ],
+    "invariant": "固定其他条件下，可优先利用的高回报机会逐步耗尽。",
+    "boundary_condition": "技术跃迁、互补投入同步增加或尚未触及饱和区时边际收益可不降。",
+    "near_negative": {
+      "changed_fact": "新增投入同时解锁了此前不可用的互补技术",
+      "effects": [
+        {
+          "role": "activity",
+          "predicate": "边际收益可能跃升"
+        },
+        {
+          "role": "input",
+          "predicate": "不再只是作用于剩余低回报部分"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "农业",
+        "entities": {
+          "activity": "高肥力田地",
+          "input": "氮肥"
+        },
+        "before": "作物主要缺氮已被补足",
+        "interaction_phrases": [
+          "再追加一袋氮肥",
+          "肥料只改善残余轻微缺口"
+        ]
+      },
+      {
+        "domain": "学习",
+        "entities": {
+          "activity": "已熟练技能",
+          "input": "重复练习时数"
+        },
+        "before": "常见错误已纠正",
+        "interaction_phrases": [
+          "再练一小时",
+          "时间用于罕见难点"
+        ]
+      },
+      {
+        "domain": "计算",
+        "entities": {
+          "activity": "并行程序",
+          "input": "更多处理器"
+        },
+        "before": "可并行部分已获很多核心",
+        "interaction_phrases": [
+          "再增加一个核心",
+          "核心等待串行部分"
+        ]
+      },
+      {
+        "domain": "防御",
+        "entities": {
+          "activity": "厚重城墙",
+          "input": "额外石层"
+        },
+        "before": "常规箭矢已无法穿透",
+        "interaction_phrases": [
+          "再加一层石块",
+          "新增厚度只防极少数重击"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F051",
+    "split": "shared",
+    "name_zh": "高退出成本使主体留在次优路径",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{agent}已对{old_path}投入不可回收的专用资产；{new_path}长期更优但迁移需立刻放弃旧资产并支付切换成本",
+    "interactions": [
+      {
+        "subject": "agent",
+        "relation": "agent比较短期迁移损失与当前收益",
+        "object": "new_path"
+      },
+      {
+        "subject": "agent",
+        "relation": "agent在切换成本高于近期改进时继续old_path",
+        "object": "old_path"
+      }
+    ],
+    "effects": [
+      {
+        "role": "agent",
+        "predicate": "暂时留在长期次优方案"
+      },
+      {
+        "role": "old_path",
+        "predicate": "因既有专用投入形成锁定"
+      }
+    ],
+    "invariant": "不可转移资产与一次性迁移成本改变当前选择，即使新方案稳态更好。",
+    "boundary_condition": "沉没成本不影响未来、迁移获补贴或长期收益足以覆盖切换成本时可转向。",
+    "near_negative": {
+      "changed_fact": "旧资产可无损转用于{new_path}且迁移几乎无成本",
+      "effects": [
+        {
+          "role": "agent",
+          "predicate": "转向长期更优方案"
+        },
+        {
+          "role": "old_path",
+          "predicate": "不再形成锁定"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "工业",
+        "entities": {
+          "agent": "工厂",
+          "old_path": "旧规格产线",
+          "new_path": "新标准产线"
+        },
+        "before": "旧模具专用且重建昂贵",
+        "interaction_phrases": [
+          "工厂核算立即报废成本",
+          "近期节省不足而继续旧规格"
+        ]
+      },
+      {
+        "domain": "软件",
+        "entities": {
+          "agent": "企业",
+          "old_path": "遗留平台",
+          "new_path": "现代平台"
+        },
+        "before": "大量插件只兼容旧平台",
+        "interaction_phrases": [
+          "企业估算迁移重写量",
+          "本年度继续维护遗留平台"
+        ]
+      },
+      {
+        "domain": "交通",
+        "entities": {
+          "agent": "城市",
+          "old_path": "燃油车体系",
+          "new_path": "电动体系"
+        },
+        "before": "加油站和维修网已成形",
+        "interaction_phrases": [
+          "城市比较改造成本",
+          "预算期内继续旧体系"
+        ]
+      },
+      {
+        "domain": "魔法",
+        "entities": {
+          "agent": "学院",
+          "old_path": "古符文体系",
+          "new_path": "高效新咒式"
+        },
+        "before": "教材与法器全绑定古符文",
+        "interaction_phrases": [
+          "学院评估重训和换器成本",
+          "继续教授旧体系"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F052",
+    "split": "shared",
+    "name_zh": "延迟校正造成过度补偿与往复振荡",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{controller}根据滞后的{measurement}调整{system}；调整强度足以在反馈到达前跨过目标",
+    "interactions": [
+      {
+        "subject": "controller",
+        "relation": "controller因旧测量持续向上校正",
+        "object": "system"
+      },
+      {
+        "subject": "controller",
+        "relation": "新测量到达时system已过冲，控制器又反向强校正",
+        "object": "system"
+      }
+    ],
+    "effects": [
+      {
+        "role": "system",
+        "predicate": "在目标两侧反复过冲而不平稳收敛"
+      },
+      {
+        "role": "controller",
+        "predicate": "持续追赶过时状态"
+      }
+    ],
+    "invariant": "反馈延迟与高增益组合使校正相位滞后并反向放大误差。",
+    "boundary_condition": "降低增益、缩短延迟或加入预测可恢复稳定。",
+    "near_negative": {
+      "changed_fact": "{measurement}近乎实时且校正幅度很小",
+      "effects": [
+        {
+          "role": "system",
+          "predicate": "逐步收敛目标"
+        },
+        {
+          "role": "controller",
+          "predicate": "不会反复过度修正"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "温控",
+        "entities": {
+          "controller": "恒温器",
+          "measurement": "迟滞温度计",
+          "system": "房间温度"
+        },
+        "before": "读数延迟且加热功率大",
+        "interaction_phrases": [
+          "恒温器按旧低温持续加热",
+          "高温读数到达后又全力制冷"
+        ]
+      },
+      {
+        "domain": "供应链",
+        "entities": {
+          "controller": "采购员",
+          "measurement": "延迟销量报表",
+          "system": "库存"
+        },
+        "before": "报表晚数周且订单批量大",
+        "interaction_phrases": [
+          "采购员按旧缺货猛补",
+          "过量到货后又骤停采购"
+        ]
+      },
+      {
+        "domain": "交通",
+        "entities": {
+          "controller": "信号控制器",
+          "measurement": "延迟车流数据",
+          "system": "路口队列"
+        },
+        "before": "配时改动大且数据滞后",
+        "interaction_phrases": [
+          "控制器按旧拥堵延长绿灯",
+          "新数据到达后过度缩短"
+        ]
+      },
+      {
+        "domain": "游戏经济",
+        "entities": {
+          "controller": "平衡师",
+          "measurement": "滞后统计",
+          "system": "物品价格"
+        },
+        "before": "统计周期长且调整幅度大",
+        "interaction_phrases": [
+          "按旧高价大量增产",
+          "价格暴跌后又大量减产"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F053",
+    "split": "shared",
+    "name_zh": "正反馈把初始优势放大成失控增长",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{state}的增加会增强{amplifier}；{amplifier}反过来进一步增加{state}；{brake}当前弱于该回路",
+    "interactions": [
+      {
+        "subject": "state",
+        "relation": "state受到一次小幅正扰动",
+        "object": "amplifier"
+      },
+      {
+        "subject": "amplifier",
+        "relation": "增强后的amplifier再次推高state",
+        "object": "state"
+      }
+    ],
+    "effects": [
+      {
+        "role": "state",
+        "predicate": "以加速方式偏离原水平"
+      },
+      {
+        "role": "amplifier",
+        "predicate": "随状态增强而继续增强"
+      }
+    ],
+    "invariant": "闭环增益为正且大于抑制，输出的一部分回到输入同方向相加。",
+    "boundary_condition": "资源饱和、硬上限或负反馈强到足以抵消时增长停止。",
+    "near_negative": {
+      "changed_fact": "{brake}随{state}增长得更快并超过放大回路",
+      "effects": [
+        {
+          "role": "state",
+          "predicate": "扰动后回到有限水平"
+        },
+        {
+          "role": "amplifier",
+          "predicate": "被抑制而不能失控"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "气候",
+        "entities": {
+          "state": "升温",
+          "amplifier": "冰面反照率下降",
+          "brake": "散热"
+        },
+        "before": "融冰会增加吸热",
+        "interaction_phrases": [
+          "小幅升温融化冰面",
+          "暗色海水吸热再升温"
+        ]
+      },
+      {
+        "domain": "金融",
+        "entities": {
+          "state": "资产涨价",
+          "amplifier": "追涨买盘",
+          "brake": "风险限制"
+        },
+        "before": "涨价会吸引更多买家",
+        "interaction_phrases": [
+          "价格小涨触发追买",
+          "买盘进一步推高价格"
+        ]
+      },
+      {
+        "domain": "麦克风",
+        "entities": {
+          "state": "声压",
+          "amplifier": "扬声器回授",
+          "brake": "限幅器"
+        },
+        "before": "麦克风能拾取扬声器声音",
+        "interaction_phrases": [
+          "微小噪声进入麦克风",
+          "扬声器放大后再被拾取"
+        ]
+      },
+      {
+        "domain": "魔法",
+        "entities": {
+          "state": "火焰强度",
+          "amplifier": "吸取周围法力",
+          "brake": "封印"
+        },
+        "before": "火越强吸法越快",
+        "interaction_phrases": [
+          "火焰受一点法力激发",
+          "更强火焰吸取更多法力"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F054",
+    "split": "shared",
+    "name_zh": "负反馈抵消扰动并稳定目标水平",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{system}有明确目标值；{sensor}能测出偏差；{controller}的作用方向与偏差相反",
+    "interactions": [
+      {
+        "subject": "system",
+        "relation": "扰动使system偏离目标",
+        "object": "controller"
+      },
+      {
+        "subject": "sensor",
+        "relation": "sensor报告偏差后controller施加反向作用",
+        "object": "controller"
+      }
+    ],
+    "effects": [
+      {
+        "role": "system",
+        "predicate": "偏差缩小并趋近目标"
+      },
+      {
+        "role": "controller",
+        "predicate": "随误差减小而减弱输出"
+      }
+    ],
+    "invariant": "系统输出的变化被测量后以相反符号反馈到输入。",
+    "boundary_condition": "传感方向错误、控制器饱和或延迟过大可使稳定失败。",
+    "near_negative": {
+      "changed_fact": "{sensor}把偏差符号报告反了",
+      "effects": [
+        {
+          "role": "system",
+          "predicate": "偏差被进一步放大"
+        },
+        {
+          "role": "controller",
+          "predicate": "错误地沿扰动方向施力"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "生理",
+        "entities": {
+          "system": "体温",
+          "sensor": "温度感受器",
+          "controller": "出汗反应"
+        },
+        "before": "体温目标稳定",
+        "interaction_phrases": [
+          "运动使体温升高",
+          "感受器触发出汗散热"
+        ]
+      },
+      {
+        "domain": "机械",
+        "entities": {
+          "system": "发动机转速",
+          "sensor": "转速计",
+          "controller": "调速器"
+        },
+        "before": "调速器可收小油门",
+        "interaction_phrases": [
+          "负载下降使转速升高",
+          "调速器检测后减油"
+        ]
+      },
+      {
+        "domain": "组织",
+        "entities": {
+          "system": "项目风险",
+          "sensor": "风险仪表",
+          "controller": "审查频率"
+        },
+        "before": "风险越高审查越密",
+        "interaction_phrases": [
+          "缺陷使风险升高",
+          "管理者增加审查压低风险"
+        ]
+      },
+      {
+        "domain": "生态",
+        "entities": {
+          "system": "猎物数量",
+          "sensor": "捕食者感知",
+          "controller": "捕食压力"
+        },
+        "before": "猎物多会支持更多捕食",
+        "interaction_phrases": [
+          "猎物数量上升",
+          "捕食活动随之增强"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F055",
+    "split": "shared",
+    "name_zh": "不可见累积使行动后果延迟显现",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{action}每次产生少量不可见的{latent}；只有累计{latent}越过阈值才出现外显后果",
+    "interactions": [
+      {
+        "subject": "action",
+        "relation": "action被重复执行并积累latent",
+        "object": "latent"
+      },
+      {
+        "subject": "latent",
+        "relation": "累积量在稍后首次越过阈值",
+        "object": "action"
+      }
+    ],
+    "effects": [
+      {
+        "role": "latent",
+        "predicate": "从隐蔽积累转为可观测后果"
+      },
+      {
+        "role": "action",
+        "predicate": "早期看似无害但被确认为延迟原因"
+      }
+    ],
+    "invariant": "多次小增量在内部状态中保留，阈值事件晚于致因动作。",
+    "boundary_condition": "潜变量能快速恢复或每次增量在下一次前归零时不会累积。",
+    "near_negative": {
+      "changed_fact": "{latent}在两次行动间完全消散",
+      "effects": [
+        {
+          "role": "latent",
+          "predicate": "始终低于阈值"
+        },
+        {
+          "role": "action",
+          "predicate": "不产生累积性延迟后果"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "材料",
+        "entities": {
+          "action": "反复小载荷",
+          "latent": "金属疲劳损伤"
+        },
+        "before": "单次载荷不造成可见裂纹",
+        "interaction_phrases": [
+          "小载荷循环累积微裂纹",
+          "某次循环后裂纹贯通"
+        ]
+      },
+      {
+        "domain": "债务",
+        "entities": {
+          "action": "持续小额借款",
+          "latent": "累计利息"
+        },
+        "before": "每期利息看似很小",
+        "interaction_phrases": [
+          "多期借款滚入本金",
+          "总债务越过偿付能力"
+        ]
+      },
+      {
+        "domain": "生态",
+        "entities": {
+          "action": "少量排污",
+          "latent": "沉积毒素"
+        },
+        "before": "每次排放未见鱼死",
+        "interaction_phrases": [
+          "毒素在底泥累积",
+          "浓度稍后越过生物阈值"
+        ]
+      },
+      {
+        "domain": "魔法",
+        "entities": {
+          "action": "重复使用禁术",
+          "latent": "灵魂裂痕"
+        },
+        "before": "每次只留下不可见微损",
+        "interaction_phrases": [
+          "施法多次积累裂痕",
+          "裂痕越线后显现失控"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F056",
+    "split": "shared",
+    "name_zh": "替身绑定把原本指向主体的伤害转移",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{actor}即将承受可转移的{harm}；{proxy}通过有效绑定被指定为该类后果的承受者",
+    "interactions": [
+      {
+        "subject": "harm",
+        "relation": "harm命中actor的绑定边界",
+        "object": "actor"
+      },
+      {
+        "subject": "harm",
+        "relation": "绑定规则把后果重定向到proxy",
+        "object": "proxy"
+      }
+    ],
+    "effects": [
+      {
+        "role": "actor",
+        "predicate": "免受或少受该次可转移伤害"
+      },
+      {
+        "role": "proxy",
+        "predicate": "代替主体承受伤害并可能损坏"
+      }
+    ],
+    "invariant": "绑定改变后果的目标角色而不消除后果总量。",
+    "boundary_condition": "伤害类型必须在绑定范围内且替身仍有效连接。",
+    "near_negative": {
+      "changed_fact": "{harm}属于绑定未覆盖的类型",
+      "effects": [
+        {
+          "role": "actor",
+          "predicate": "直接承受伤害"
+        },
+        {
+          "role": "proxy",
+          "predicate": "保持不变"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "魔法",
+        "entities": {
+          "actor": "法师",
+          "harm": "诅咒伤害",
+          "proxy": "替身木偶"
+        },
+        "before": "木偶绑定只覆盖诅咒",
+        "interaction_phrases": [
+          "诅咒触及法师灵印",
+          "灵印把裂伤转给木偶"
+        ]
+      },
+      {
+        "domain": "电气",
+        "entities": {
+          "actor": "设备",
+          "harm": "浪涌电流",
+          "proxy": "牺牲保险丝"
+        },
+        "before": "保险丝串联在浪涌路径",
+        "interaction_phrases": [
+          "浪涌进入设备边界",
+          "保险丝先熔断承受热损"
+        ]
+      },
+      {
+        "domain": "车辆",
+        "entities": {
+          "actor": "乘员舱",
+          "harm": "碰撞能量",
+          "proxy": "溃缩区"
+        },
+        "before": "溃缩区设计为先变形",
+        "interaction_phrases": [
+          "冲击到达车身",
+          "溃缩区压皱吸收能量"
+        ]
+      },
+      {
+        "domain": "组织",
+        "entities": {
+          "actor": "核心服务",
+          "harm": "故障请求",
+          "proxy": "隔离沙箱"
+        },
+        "before": "不可信任务仅在沙箱运行",
+        "interaction_phrases": [
+          "故障请求触发崩溃",
+          "崩溃只终止沙箱"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F057",
+    "split": "shared",
+    "name_zh": "两个互补条件同时满足才启动",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{actor_a}能满足条件甲，{actor_b}能满足条件乙，两条件缺一不可；{target}当前两条件均未满足",
+    "interactions": [
+      {
+        "subject": "actor_a",
+        "relation": "actor_a满足条件甲",
+        "object": "target"
+      },
+      {
+        "subject": "actor_b",
+        "relation": "actor_b满足条件乙",
+        "object": "target"
+      }
+    ],
+    "effects": [
+      {
+        "role": "target",
+        "predicate": "在两条件同时为真后启动"
+      },
+      {
+        "role": "actor_a",
+        "predicate": "单独不充分但成为联合必要部分"
+      },
+      {
+        "role": "actor_b",
+        "predicate": "补齐最后必要条件"
+      }
+    ],
+    "invariant": "结果由逻辑合取控制，任一输入为假时输出为假。",
+    "boundary_condition": "两条件需在同一有效期内成立且不能互相抵消。",
+    "near_negative": {
+      "changed_fact": "只有条件甲满足而条件乙仍为假",
+      "effects": [
+        {
+          "role": "target",
+          "predicate": "保持未启动"
+        },
+        {
+          "role": "actor_a",
+          "predicate": "其单独作用不足"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "门锁",
+        "entities": {
+          "actor_a": "钥匙持有者",
+          "actor_b": "口令持有者",
+          "target": "密门"
+        },
+        "before": "密门要求钥匙和口令",
+        "interaction_phrases": [
+          "钥匙插入并转动",
+          "正确口令同时说出"
+        ]
+      },
+      {
+        "domain": "生物",
+        "entities": {
+          "actor_a": "光照",
+          "actor_b": "水分",
+          "target": "种子萌发"
+        },
+        "before": "种子休眠且两条件都缺",
+        "interaction_phrases": [
+          "光照达到要求",
+          "水分同时达到要求"
+        ]
+      },
+      {
+        "domain": "计算",
+        "entities": {
+          "actor_a": "用户登录",
+          "actor_b": "硬件确认",
+          "target": "敏感操作"
+        },
+        "before": "操作要求密码和实体确认",
+        "interaction_phrases": [
+          "用户提交正确密码",
+          "硬件键同步确认"
+        ]
+      },
+      {
+        "domain": "炼金",
+        "entities": {
+          "actor_a": "月光",
+          "actor_b": "银盐",
+          "target": "显影符阵"
+        },
+        "before": "符阵要求能量与材料",
+        "interaction_phrases": [
+          "月光照入阵心",
+          "银盐同时铺满槽线"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F058",
+    "split": "shared",
+    "name_zh": "串联系统由最弱环节先行失效",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{strong_link}与{weak_link}串联承受同一负载；{weak_link}的承载阈值更低；{load}正在增加",
+    "interactions": [
+      {
+        "subject": "load",
+        "relation": "load升到超过weak_link阈值但仍低于strong_link阈值",
+        "object": "weak_link"
+      }
+    ],
+    "effects": [
+      {
+        "role": "weak_link",
+        "predicate": "先行断裂或失效"
+      },
+      {
+        "role": "strong_link",
+        "predicate": "自身未破坏但整条功能链已中断"
+      }
+    ],
+    "invariant": "串联功能要求所有环节存活，系统容量等于最低环节容量。",
+    "boundary_condition": "弱环节有旁路、并联冗余或并不承受相同负载时系统未必断开。",
+    "near_negative": {
+      "changed_fact": "{weak_link}旁有独立并联件能承担全部负载",
+      "effects": [
+        {
+          "role": "weak_link",
+          "predicate": "可能失效"
+        },
+        {
+          "role": "strong_link",
+          "predicate": "所在系统仍保持连通"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "机械",
+        "entities": {
+          "strong_link": "粗钢链环",
+          "weak_link": "锈蚀细环",
+          "load": "拉力"
+        },
+        "before": "所有链环串联受同力",
+        "interaction_phrases": [
+          "拉力升到细环断裂值"
+        ]
+      },
+      {
+        "domain": "供应链",
+        "entities": {
+          "strong_link": "充足组装线",
+          "weak_link": "单一稀缺芯片商",
+          "load": "订单负载"
+        },
+        "before": "每件产品都需该芯片",
+        "interaction_phrases": [
+          "订单升过芯片商供给上限"
+        ]
+      },
+      {
+        "domain": "安全",
+        "entities": {
+          "strong_link": "强化服务器",
+          "weak_link": "弱口令账户",
+          "load": "攻击压力"
+        },
+        "before": "账户可进入同一系统",
+        "interaction_phrases": [
+          "撞库强度越过口令防护"
+        ]
+      },
+      {
+        "domain": "探险",
+        "entities": {
+          "strong_link": "坚固绳段",
+          "weak_link": "磨损绳结",
+          "load": "悬挂重量"
+        },
+        "before": "绳结串接整根绳索",
+        "interaction_phrases": [
+          "重量增至绳结破坏值"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F059",
+    "split": "shared",
+    "name_zh": "早期随机选择经互补资产累积形成路径依赖",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{option_a}与{option_b}起初性能接近；{agent}先偶然采用{option_a}；后续投入会专用于已选方案",
+    "interactions": [
+      {
+        "subject": "agent",
+        "relation": "agent围绕option_a积累技能与配套资产",
+        "object": "option_a"
+      },
+      {
+        "subject": "agent",
+        "relation": "新增选择因现有配套而继续偏向option_a",
+        "object": "option_a"
+      }
+    ],
+    "effects": [
+      {
+        "role": "option_a",
+        "predicate": "获得由历史积累而非初始性能产生的持续优势"
+      },
+      {
+        "role": "option_b",
+        "predicate": "即使后来略优也难以被采用"
+      }
+    ],
+    "invariant": "当前回报依赖过去选择所积累的互补资产，选择会自我强化。",
+    "boundary_condition": "配套资产可完全通用或切换成本极低时历史不会锁定未来。",
+    "near_negative": {
+      "changed_fact": "所有技能和配件在两方案间完全兼容",
+      "effects": [
+        {
+          "role": "option_a",
+          "predicate": "不因历史投入获得专属优势"
+        },
+        {
+          "role": "option_b",
+          "predicate": "可凭当前性能被自由选择"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "键盘",
+        "entities": {
+          "option_a": "布局甲",
+          "option_b": "布局乙",
+          "agent": "打字员"
+        },
+        "before": "两布局起初效率相近",
+        "interaction_phrases": [
+          "打字员先学布局甲并形成肌肉记忆",
+          "购置与培训继续围绕甲"
+        ]
+      },
+      {
+        "domain": "铁路",
+        "entities": {
+          "option_a": "轨距甲",
+          "option_b": "轨距乙",
+          "agent": "国家铁路"
+        },
+        "before": "早期两轨距均可用",
+        "interaction_phrases": [
+          "首批干线采用甲轨距",
+          "车辆和支线继续兼容甲"
+        ]
+      },
+      {
+        "domain": "魔法",
+        "entities": {
+          "option_a": "符文语法甲",
+          "option_b": "符文语法乙",
+          "agent": "法师学派"
+        },
+        "before": "两语法能力接近",
+        "interaction_phrases": [
+          "学派偶然先教甲",
+          "法器与教材继续按甲制作"
+        ]
+      },
+      {
+        "domain": "软件",
+        "entities": {
+          "option_a": "格式甲",
+          "option_b": "格式乙",
+          "agent": "内容生态"
+        },
+        "before": "早期功能相似",
+        "interaction_phrases": [
+          "首批大用户采用甲",
+          "插件和人才继续围绕甲"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F060",
+    "split": "shared",
+    "name_zh": "对手观察固定策略后适应并反制",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{actor}重复使用可观察的固定{strategy}；{opponent}能从多次结果中学习并部署反制手段",
+    "interactions": [
+      {
+        "subject": "actor",
+        "relation": "actor再次按相同模式执行strategy",
+        "object": "strategy"
+      },
+      {
+        "subject": "opponent",
+        "relation": "opponent识别模式后提前启用反制手段",
+        "object": "actor"
+      }
+    ],
+    "effects": [
+      {
+        "role": "strategy",
+        "predicate": "从早期有效转为被针对而失效"
+      },
+      {
+        "role": "opponent",
+        "predicate": "利用可预测性取得优势"
+      }
+    ],
+    "invariant": "适应性对手根据稳定模式更新行为，使策略收益随暴露次数下降。",
+    "boundary_condition": "策略不可观测、每次随机化或对手来不及学习时反制难以形成。",
+    "near_negative": {
+      "changed_fact": "{actor}每轮随机改变模式且不泄露先兆",
+      "effects": [
+        {
+          "role": "strategy",
+          "predicate": "不易被单一反制稳定克制"
+        },
+        {
+          "role": "opponent",
+          "predicate": "无法提前选择准确反制"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "战斗",
+        "entities": {
+          "actor": "剑士",
+          "strategy": "固定右侧突刺",
+          "opponent": "盾卫的右格挡"
+        },
+        "before": "剑士连续多次同起手",
+        "interaction_phrases": [
+          "剑士再次右侧突刺",
+          "盾卫预判并提前右格挡"
+        ]
+      },
+      {
+        "domain": "网络",
+        "entities": {
+          "actor": "扫描器",
+          "strategy": "固定端口序列",
+          "opponent": "防火墙封锁"
+        },
+        "before": "扫描顺序可被日志观察",
+        "interaction_phrases": [
+          "扫描器重复同序列",
+          "防火墙预先丢弃下一端口"
+        ]
+      },
+      {
+        "domain": "市场",
+        "entities": {
+          "actor": "促销商",
+          "strategy": "每周同日降价",
+          "opponent": "竞品抢先促销"
+        },
+        "before": "降价日历已重复数月",
+        "interaction_phrases": [
+          "商家准备周五降价",
+          "竞品周四先行降价锁客"
+        ]
+      },
+      {
+        "domain": "体育",
+        "entities": {
+          "actor": "投手",
+          "strategy": "固定关键球路",
+          "opponent": "击球手针对挥棒"
+        },
+        "before": "关键球路被录像识别",
+        "interaction_phrases": [
+          "投手再次使用该球路",
+          "击球手提前站位挥击"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F021",
+    "split": "shared",
+    "name_zh": "逐站转发使信息沿链条传播",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{sender}只连接{relay}；{relay}能联系{receiver}并保真复述消息",
+    "interactions": [
+      {
+        "subject": "sender",
+        "relation": "sender把消息交给relay",
+        "object": "relay"
+      },
+      {
+        "subject": "relay",
+        "relation": "relay再把消息转给receiver",
+        "object": "receiver"
+      }
+    ],
+    "effects": [
+      {
+        "role": "receiver",
+        "predicate": "获得原本无法直接取得的消息"
+      },
+      {
+        "role": "relay",
+        "predicate": "成为传播链中的中介"
+      }
+    ],
+    "invariant": "局部相邻通信通过连续转发构成端到端可达性。",
+    "boundary_condition": "每一跳都必须连通且中介愿意及时转发。",
+    "near_negative": {
+      "changed_fact": "{relay}收到后不再转发",
+      "effects": [
+        {
+          "role": "receiver",
+          "predicate": "保持不知情"
+        },
+        {
+          "role": "relay",
+          "predicate": "成为传播终点"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "军情",
+        "entities": {
+          "sender": "烽火台甲",
+          "relay": "山口烽火台",
+          "receiver": "王城"
+        },
+        "before": "甲无法直达王城",
+        "interaction_phrases": [
+          "甲点燃警讯",
+          "山口台看见后复燃"
+        ]
+      },
+      {
+        "domain": "网络",
+        "entities": {
+          "sender": "传感器",
+          "relay": "网关",
+          "receiver": "云端"
+        },
+        "before": "传感器无公网连接",
+        "interaction_phrases": [
+          "传感器发包给网关",
+          "网关转发云端"
+        ]
+      },
+      {
+        "domain": "社交",
+        "entities": {
+          "sender": "矿工",
+          "relay": "酒馆老板",
+          "receiver": "卫队长"
+        },
+        "before": "矿工不认识卫队长",
+        "interaction_phrases": [
+          "矿工告知老板",
+          "老板转告卫队长"
+        ]
+      },
+      {
+        "domain": "生物",
+        "entities": {
+          "sender": "受体细胞",
+          "relay": "信号细胞",
+          "receiver": "远端细胞"
+        },
+        "before": "信号需逐细胞传递",
+        "interaction_phrases": [
+          "受体细胞释放介质",
+          "邻细胞再释放介质"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F022",
+    "split": "shared",
+    "name_zh": "校验冗余暴露传输内容的篡改",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{sender}为{message}计算与内容绑定的校验值；{receiver}能用同一方法重算校验",
+    "interactions": [
+      {
+        "subject": "message",
+        "relation": "message在途中被改动而校验值未同步更新",
+        "object": "receiver"
+      },
+      {
+        "subject": "receiver",
+        "relation": "receiver重算并比较校验值",
+        "object": "message"
+      }
+    ],
+    "effects": [
+      {
+        "role": "receiver",
+        "predicate": "检测到内容不一致并拒绝当作完整消息"
+      },
+      {
+        "role": "message",
+        "predicate": "被标记为损坏或篡改"
+      }
+    ],
+    "invariant": "内容变化使随附校验与接收端重算值不一致。",
+    "boundary_condition": "校验必须随原内容生成且攻击者不能同时伪造有效校验。",
+    "near_negative": {
+      "changed_fact": "内容未变，只是传输顺序按协议允许的方式重排",
+      "effects": [
+        {
+          "role": "receiver",
+          "predicate": "校验通过并接受消息"
+        },
+        {
+          "role": "message",
+          "predicate": "保持有效"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "网络",
+        "entities": {
+          "sender": "发送端",
+          "message": "数据包",
+          "receiver": "接收端"
+        },
+        "before": "包头携带哈希",
+        "interaction_phrases": [
+          "一位被翻转",
+          "接收端重算哈希"
+        ]
+      },
+      {
+        "domain": "物流",
+        "entities": {
+          "sender": "仓库",
+          "message": "封箱清单",
+          "receiver": "收货方"
+        },
+        "before": "出库时记录总重量",
+        "interaction_phrases": [
+          "途中少了一件货",
+          "收货方重新称重"
+        ]
+      },
+      {
+        "domain": "文书",
+        "entities": {
+          "sender": "书记官",
+          "message": "契约页",
+          "receiver": "审阅者"
+        },
+        "before": "编号覆盖页码摘要",
+        "interaction_phrases": [
+          "一页被替换",
+          "审阅者核对蜡封编号"
+        ]
+      },
+      {
+        "domain": "遗传",
+        "entities": {
+          "sender": "复制系统",
+          "message": "DNA片段",
+          "receiver": "修复酶"
+        },
+        "before": "碱基互补可作局部校验",
+        "interaction_phrases": [
+          "单碱基错配出现",
+          "修复酶检查配对"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F023",
+    "split": "shared",
+    "name_zh": "背景噪声覆盖弱信号导致不可辨认",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{signal}到达{receiver}时强度较弱；{noise}与{signal}占用同一可辨识通道",
+    "interactions": [
+      {
+        "subject": "noise",
+        "relation": "noise强度升到signal之上",
+        "object": "signal"
+      }
+    ],
+    "effects": [
+      {
+        "role": "receiver",
+        "predicate": "无法可靠区分信号内容"
+      },
+      {
+        "role": "signal",
+        "predicate": "仍可能存在但低于可检测信噪比"
+      }
+    ],
+    "invariant": "同通道噪声降低信噪比至识别阈值以下。",
+    "boundary_condition": "接收器可用独立特征滤波或信号足够强时仍可识别。",
+    "near_negative": {
+      "changed_fact": "{noise}位于可被滤除的另一频带",
+      "effects": [
+        {
+          "role": "receiver",
+          "predicate": "滤波后仍可识别信号"
+        },
+        {
+          "role": "signal",
+          "predicate": "有效特征保留"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "声学",
+        "entities": {
+          "signal": "求救声",
+          "receiver": "听者",
+          "noise": "瀑布声"
+        },
+        "before": "呼声很远且与水声频带重叠",
+        "interaction_phrases": [
+          "瀑布声突然增强"
+        ]
+      },
+      {
+        "domain": "无线电",
+        "entities": {
+          "signal": "遥测波",
+          "receiver": "接收机",
+          "noise": "宽带干扰"
+        },
+        "before": "遥测功率接近底噪",
+        "interaction_phrases": [
+          "同频干扰器开启"
+        ]
+      },
+      {
+        "domain": "视觉",
+        "entities": {
+          "signal": "微弱星光",
+          "receiver": "望远镜",
+          "noise": "城市天光"
+        },
+        "before": "星光接近可见极限",
+        "interaction_phrases": [
+          "云层反射城市灯光"
+        ]
+      },
+      {
+        "domain": "数据",
+        "entities": {
+          "signal": "异常趋势",
+          "receiver": "分析员",
+          "noise": "随机波动"
+        },
+        "before": "效应小且方差高",
+        "interaction_phrases": [
+          "采样波动进一步增大"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F024",
+    "split": "shared",
+    "name_zh": "独立重复证据累积提高判断置信度",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{hypothesis}起初只有一条可疑证据；{observer_a}与{observer_b}的误差来源相互独立",
+    "interactions": [
+      {
+        "subject": "observer_a",
+        "relation": "observer_a报告支持hypothesis",
+        "object": "hypothesis"
+      },
+      {
+        "subject": "observer_b",
+        "relation": "observer_b独立取得一致结果",
+        "object": "hypothesis"
+      }
+    ],
+    "effects": [
+      {
+        "role": "hypothesis",
+        "predicate": "可信度高于只获单条证据时"
+      },
+      {
+        "role": "observer_b",
+        "predicate": "提供排除共同偶然误差的增量信息"
+      }
+    ],
+    "invariant": "条件独立的一致观测其联合偶然概率低于单次偶然概率。",
+    "boundary_condition": "两条证据由同一来源复制或共享偏差时不能按独立证据累积。",
+    "near_negative": {
+      "changed_fact": "{observer_b}只是转述{observer_a}的报告",
+      "effects": [
+        {
+          "role": "hypothesis",
+          "predicate": "置信度不因重复转述而实质提高"
+        },
+        {
+          "role": "observer_b",
+          "predicate": "未提供独立信息"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "侦察",
+        "entities": {
+          "hypothesis": "敌军北移假设",
+          "observer_a": "斥候甲",
+          "observer_b": "斥候乙"
+        },
+        "before": "甲的报告可能误认",
+        "interaction_phrases": [
+          "甲报告车辙向北",
+          "乙从另一山口独立目击"
+        ]
+      },
+      {
+        "domain": "医学",
+        "entities": {
+          "hypothesis": "感染判断",
+          "observer_a": "培养检测",
+          "observer_b": "独立PCR"
+        },
+        "before": "培养一次阳性可能污染",
+        "interaction_phrases": [
+          "培养检出病原",
+          "另份样本PCR阳性"
+        ]
+      },
+      {
+        "domain": "工程",
+        "entities": {
+          "hypothesis": "梁体开裂判断",
+          "observer_a": "超声仪",
+          "observer_b": "应变计"
+        },
+        "before": "单传感器可能漂移",
+        "interaction_phrases": [
+          "超声发现缺陷",
+          "独立应变计显示异常"
+        ]
+      },
+      {
+        "domain": "天文",
+        "entities": {
+          "hypothesis": "行星凌日假设",
+          "observer_a": "地面台",
+          "observer_b": "轨道台"
+        },
+        "before": "地面光变可能由天气造成",
+        "interaction_phrases": [
+          "地面台观测周期光变",
+          "轨道台同期复现"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F025",
+    "split": "shared",
+    "name_zh": "过时模型在环境改变后系统性误导行动",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{agent}按{model}选择行动；{world}已发生影响路线或规则的变化但{model}未更新",
+    "interactions": [
+      {
+        "subject": "agent",
+        "relation": "agent依据旧model规划",
+        "object": "model"
+      },
+      {
+        "subject": "agent",
+        "relation": "agent执行与当前world冲突的行动",
+        "object": "world"
+      }
+    ],
+    "effects": [
+      {
+        "role": "agent",
+        "predicate": "遭遇预料之外的阻碍或损失"
+      },
+      {
+        "role": "model",
+        "predicate": "预测与现实出现系统偏差"
+      }
+    ],
+    "invariant": "决策映射依赖的状态表征滞后于真实状态。",
+    "boundary_condition": "环境变化与当前决策无关或代理在行动前重新观测时不致误导。",
+    "near_negative": {
+      "changed_fact": "变化只发生在未被本次行动使用的区域",
+      "effects": [
+        {
+          "role": "agent",
+          "predicate": "当前行动仍按计划成功"
+        },
+        {
+          "role": "model",
+          "predicate": "局部过时但不影响本次预测"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "导航",
+        "entities": {
+          "agent": "车队",
+          "model": "旧地图",
+          "world": "冲毁的桥"
+        },
+        "before": "地图仍标桥可通行",
+        "interaction_phrases": [
+          "车队按旧图选近路",
+          "到桥头才发现断桥"
+        ]
+      },
+      {
+        "domain": "交易",
+        "entities": {
+          "agent": "商人",
+          "model": "旧价表",
+          "world": "已饱和市场"
+        },
+        "before": "价表记录去年的高价",
+        "interaction_phrases": [
+          "商人大量进货",
+          "到场发现价格暴跌"
+        ]
+      },
+      {
+        "domain": "软件",
+        "entities": {
+          "agent": "客户端",
+          "model": "旧接口契约",
+          "world": "新版服务"
+        },
+        "before": "服务字段已变更",
+        "interaction_phrases": [
+          "客户端按旧字段发请求",
+          "新版服务拒绝解析"
+        ]
+      },
+      {
+        "domain": "战术",
+        "entities": {
+          "agent": "突击队",
+          "model": "旧巡逻表",
+          "world": "改班守卫"
+        },
+        "before": "敌方已调整换岗时间",
+        "interaction_phrases": [
+          "突击队按旧空窗潜入",
+          "迎面撞上新巡逻"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F026",
+    "split": "shared",
+    "name_zh": "授权凭证委托使持有者获得受限操作权",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{issuer}拥有可授予的权限；{delegate}起初无权操作{resource}",
+    "interactions": [
+      {
+        "subject": "issuer",
+        "relation": "issuer签发限定范围的凭证给delegate",
+        "object": "delegate"
+      },
+      {
+        "subject": "delegate",
+        "relation": "delegate出示有效凭证请求resource",
+        "object": "resource"
+      }
+    ],
+    "effects": [
+      {
+        "role": "delegate",
+        "predicate": "仅在凭证范围内获准操作"
+      },
+      {
+        "role": "resource",
+        "predicate": "接受带有效授权的请求"
+      }
+    ],
+    "invariant": "受信任签发者的有效凭证把一组权限临时绑定到持有者。",
+    "boundary_condition": "凭证须未过期、未撤销且请求不超出范围。",
+    "near_negative": {
+      "changed_fact": "{delegate}请求的操作超出凭证范围",
+      "effects": [
+        {
+          "role": "delegate",
+          "predicate": "该操作被拒绝"
+        },
+        {
+          "role": "resource",
+          "predicate": "保持不变"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "网络",
+        "entities": {
+          "issuer": "管理员",
+          "delegate": "临时运维",
+          "resource": "日志库"
+        },
+        "before": "运维原本无读取权",
+        "interaction_phrases": [
+          "管理员签发只读令牌",
+          "运维带令牌查询日志"
+        ]
+      },
+      {
+        "domain": "城堡",
+        "entities": {
+          "issuer": "城主",
+          "delegate": "信使",
+          "resource": "东门"
+        },
+        "before": "信使不在常驻名单",
+        "interaction_phrases": [
+          "城主给一次性通行符",
+          "信使向东门守卫出示"
+        ]
+      },
+      {
+        "domain": "金融",
+        "entities": {
+          "issuer": "账户主人",
+          "delegate": "会计",
+          "resource": "报税账户"
+        },
+        "before": "会计无转账权",
+        "interaction_phrases": [
+          "主人授予报税查询权",
+          "会计凭授权下载账单"
+        ]
+      },
+      {
+        "domain": "实验室",
+        "entities": {
+          "issuer": "主管",
+          "delegate": "访客研究员",
+          "resource": "显微平台"
+        },
+        "before": "访客不可预约",
+        "interaction_phrases": [
+          "主管签发两小时许可",
+          "访客刷许可启动平台"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F027",
+    "split": "shared",
+    "name_zh": "上游授权撤销使派生访问同时失效",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{child_permission}依赖{root_permission}的持续有效性；{child_permission}正凭派生权限访问{resource}",
+    "interactions": [
+      {
+        "subject": "root_permission",
+        "relation": "root_permission被权威方撤销",
+        "object": "child_permission"
+      },
+      {
+        "subject": "child_permission",
+        "relation": "child_permission再次尝试访问resource",
+        "object": "resource"
+      }
+    ],
+    "effects": [
+      {
+        "role": "child_permission",
+        "predicate": "因信任链断裂而无效"
+      },
+      {
+        "role": "child_permission",
+        "predicate": "后续访问被拒绝"
+      }
+    ],
+    "invariant": "派生权限的有效性不可能超过其授权链上的已撤销祖先。",
+    "boundary_condition": "若子权限已被转换为独立授权则不随上游撤销。",
+    "near_negative": {
+      "changed_fact": "{child_permission}由另一独立权威直接签发",
+      "effects": [
+        {
+          "role": "child_permission",
+          "predicate": "仍保持有效"
+        },
+        {
+          "role": "child_permission",
+          "predicate": "可继续访问"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "云服务",
+        "entities": {
+          "child_permission": "临时会话",
+          "root_permission": "主账户角色",
+          "resource": "存储桶"
+        },
+        "before": "会话由主角色换取",
+        "interaction_phrases": [
+          "主角色被禁用",
+          "会话再次读桶"
+        ]
+      },
+      {
+        "domain": "组织",
+        "entities": {
+          "child_permission": "分包证",
+          "root_permission": "总承包许可",
+          "resource": "工地"
+        },
+        "before": "分包证依附总许可",
+        "interaction_phrases": [
+          "监管撤销总许可",
+          "分包方再次进场"
+        ]
+      },
+      {
+        "domain": "宫廷",
+        "entities": {
+          "child_permission": "下级手令",
+          "root_permission": "摄政令",
+          "resource": "王家档案"
+        },
+        "before": "手令引用摄政权威",
+        "interaction_phrases": [
+          "新王废除摄政令",
+          "持令者请求阅档"
+        ]
+      },
+      {
+        "domain": "会员",
+        "entities": {
+          "child_permission": "员工席位",
+          "root_permission": "企业订阅",
+          "resource": "资料库"
+        },
+        "before": "员工席位属于企业计划",
+        "interaction_phrases": [
+          "企业订阅终止",
+          "员工再次登录"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F028",
+    "split": "shared",
+    "name_zh": "最小权限把失陷后的损害限制在局部",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{account}只拥有完成单一职责所需权限；{attacker}取得{account}控制权但没有额外凭证",
+    "interactions": [
+      {
+        "subject": "attacker",
+        "relation": "attacker借account执行获准操作",
+        "object": "account"
+      },
+      {
+        "subject": "attacker",
+        "relation": "attacker尝试访问权限外的asset",
+        "object": "asset"
+      }
+    ],
+    "effects": [
+      {
+        "role": "asset",
+        "predicate": "因权限边界而保持不可访问"
+      },
+      {
+        "role": "account",
+        "predicate": "其授权范围内可能受损但影响不越界"
+      }
+    ],
+    "invariant": "被攻陷主体能造成的直接损害上限受其既有授权集合限制。",
+    "boundary_condition": "存在提权漏洞或共享高权限秘密时边界可被突破。",
+    "near_negative": {
+      "changed_fact": "{account}被授予了覆盖全部资产的管理员权限",
+      "effects": [
+        {
+          "role": "asset",
+          "predicate": "可被攻击者访问和修改"
+        },
+        {
+          "role": "account",
+          "predicate": "失陷扩展为系统级损害"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "数据库",
+        "entities": {
+          "account": "报表账号",
+          "attacker": "窃密者",
+          "asset": "工资表"
+        },
+        "before": "账号只读销售视图",
+        "interaction_phrases": [
+          "窃密者控制报表账号",
+          "尝试查询工资表"
+        ]
+      },
+      {
+        "domain": "城防",
+        "entities": {
+          "account": "粮仓钥匙",
+          "attacker": "盗贼",
+          "asset": "军械库"
+        },
+        "before": "钥匙只开粮仓",
+        "interaction_phrases": [
+          "盗贼偷得钥匙",
+          "尝试打开军械库"
+        ]
+      },
+      {
+        "domain": "机器人",
+        "entities": {
+          "account": "清扫控制器",
+          "attacker": "恶意程序",
+          "asset": "安全门"
+        },
+        "before": "控制器只管刷头电机",
+        "interaction_phrases": [
+          "恶意程序接管控制器",
+          "尝试解锁安全门"
+        ]
+      },
+      {
+        "domain": "财务",
+        "entities": {
+          "account": "差旅卡",
+          "attacker": "冒用者",
+          "asset": "公司主账户"
+        },
+        "before": "卡有低额商户限制",
+        "interaction_phrases": [
+          "冒用者取得卡号",
+          "尝试大额转账"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F029",
+    "split": "shared",
+    "name_zh": "达到法定人数的独立同意才解锁动作",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{action}要求至少两份独立批准；{approver_a}与{approver_b}各持一份有效批准权",
+    "interactions": [
+      {
+        "subject": "approver_a",
+        "relation": "approver_a提交第一份批准",
+        "object": "action"
+      },
+      {
+        "subject": "approver_b",
+        "relation": "approver_b提交第二份批准使数量达标",
+        "object": "action"
+      }
+    ],
+    "effects": [
+      {
+        "role": "action",
+        "predicate": "在批准数达到门槛后被允许执行"
+      },
+      {
+        "role": "approver_b",
+        "predicate": "其批准完成法定人数"
+      }
+    ],
+    "invariant": "离散许可只有在独立有效票数不少于预设阈值时成立。",
+    "boundary_condition": "重复使用同一批准者、批准过期或未达到门槛均不能解锁。",
+    "near_negative": {
+      "changed_fact": "第二份签名其实复制自{approver_a}而非独立批准",
+      "effects": [
+        {
+          "role": "action",
+          "predicate": "仍保持锁定"
+        },
+        {
+          "role": "approver_b",
+          "predicate": "不计入独立法定人数"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "金融",
+        "entities": {
+          "action": "大额付款",
+          "approver_a": "财务主管",
+          "approver_b": "审计主管"
+        },
+        "before": "付款要求双签",
+        "interaction_phrases": [
+          "财务主管签字",
+          "审计主管独立签字"
+        ]
+      },
+      {
+        "domain": "核安全",
+        "entities": {
+          "action": "反应堆启动",
+          "approver_a": "操作员甲",
+          "approver_b": "操作员乙"
+        },
+        "before": "两把钥匙必须同时确认",
+        "interaction_phrases": [
+          "甲转动钥匙",
+          "乙转动另一把钥匙"
+        ]
+      },
+      {
+        "domain": "公会",
+        "entities": {
+          "action": "开启宝库",
+          "approver_a": "会长",
+          "approver_b": "司库"
+        },
+        "before": "门锁需两枚徽记",
+        "interaction_phrases": [
+          "会长嵌入徽记",
+          "司库嵌入另一枚"
+        ]
+      },
+      {
+        "domain": "部署",
+        "entities": {
+          "action": "生产发布",
+          "approver_a": "代码审核者",
+          "approver_b": "值班负责人"
+        },
+        "before": "策略要求两人批准",
+        "interaction_phrases": [
+          "审核者批准变更",
+          "负责人批准上线"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F030",
+    "split": "shared",
+    "name_zh": "速率上限把过密请求延后或拒绝",
+    "subject_count": 2,
+    "interaction_count": 1,
+    "observable_before": "{sender}在短窗口内产生大量请求；{gate}规定每窗口可通过的最大数量",
+    "interactions": [
+      {
+        "subject": "sender",
+        "relation": "sender提交超过窗口配额的请求",
+        "object": "gate"
+      }
+    ],
+    "effects": [
+      {
+        "role": "gate",
+        "predicate": "只放行配额内请求并延后或拒绝超额部分"
+      },
+      {
+        "role": "sender",
+        "predicate": "实际完成速率被限制在上限"
+      }
+    ],
+    "invariant": "计数窗口内的服务许可总数不超过固定配额。",
+    "boundary_condition": "请求速率低于限额或发送者具有独立配额池时不触发。",
+    "near_negative": {
+      "changed_fact": "请求均匀分散到多个窗口且每窗低于配额",
+      "effects": [
+        {
+          "role": "gate",
+          "predicate": "全部放行"
+        },
+        {
+          "role": "sender",
+          "predicate": "无额外等待"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "接口",
+        "entities": {
+          "sender": "爬虫",
+          "gate": "API限流器"
+        },
+        "before": "限流器每秒准许十次",
+        "interaction_phrases": [
+          "爬虫一秒发出百次请求"
+        ]
+      },
+      {
+        "domain": "交通",
+        "entities": {
+          "sender": "入城车辆",
+          "gate": "收费闸"
+        },
+        "before": "闸口每分钟最多放行二十车",
+        "interaction_phrases": [
+          "车队同时抵达闸口"
+        ]
+      },
+      {
+        "domain": "水利",
+        "entities": {
+          "sender": "上游洪水",
+          "gate": "节流闸"
+        },
+        "before": "闸孔流量有物理上限",
+        "interaction_phrases": [
+          "洪峰超过闸孔通量"
+        ]
+      },
+      {
+        "domain": "客服",
+        "entities": {
+          "sender": "批量来电者",
+          "gate": "叫号系统"
+        },
+        "before": "系统每人每小时只建三单",
+        "interaction_phrases": [
+          "来电者连续提交十个工单"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F031",
+    "split": "shared",
+    "name_zh": "侧翼威胁迫使防守资源分散",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{defender}集中力量面对{front_actor}；{flanker}可从未受保护侧面接近{defender}",
+    "interactions": [
+      {
+        "subject": "front_actor",
+        "relation": "front_actor维持正面压力",
+        "object": "defender"
+      },
+      {
+        "subject": "flanker",
+        "relation": "flanker从侧面进入有效威胁距离",
+        "object": "defender"
+      }
+    ],
+    "effects": [
+      {
+        "role": "defender",
+        "predicate": "抽调部分正面力量应对侧翼"
+      },
+      {
+        "role": "front_actor",
+        "predicate": "面对的正面阻力下降"
+      }
+    ],
+    "invariant": "同一有限防守资源必须覆盖两个方向不重合的威胁。",
+    "boundary_condition": "防守者有独立侧翼预备队或侧翼地形不可达时不成立。",
+    "near_negative": {
+      "changed_fact": "{flanker}实际被不可越过的地形隔绝",
+      "effects": [
+        {
+          "role": "defender",
+          "predicate": "无需分兵"
+        },
+        {
+          "role": "front_actor",
+          "predicate": "正面阻力不变"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "陆战",
+        "entities": {
+          "defender": "盾墙",
+          "front_actor": "正面步兵",
+          "flanker": "轻骑兵"
+        },
+        "before": "盾墙全部朝前且右翼开放",
+        "interaction_phrases": [
+          "步兵持续压阵",
+          "骑兵绕到右翼"
+        ]
+      },
+      {
+        "domain": "棋类",
+        "entities": {
+          "defender": "王翼防线",
+          "front_actor": "中央攻子",
+          "flanker": "边线车"
+        },
+        "before": "守子集中中央",
+        "interaction_phrases": [
+          "中央攻子施压",
+          "边线车侵入后排"
+        ]
+      },
+      {
+        "domain": "商业",
+        "entities": {
+          "defender": "老牌厂商",
+          "front_actor": "低价竞品",
+          "flanker": "新渠道竞品"
+        },
+        "before": "预算全用于价格战",
+        "interaction_phrases": [
+          "低价竞品继续促销",
+          "另一竞品切入新渠道"
+        ]
+      },
+      {
+        "domain": "网络防御",
+        "entities": {
+          "defender": "安全团队",
+          "front_actor": "正面流量攻击",
+          "flanker": "侧信道入侵"
+        },
+        "before": "人员都在处理流量攻击",
+        "interaction_phrases": [
+          "攻击流量持续",
+          "入侵者从供应链接入"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F032",
+    "split": "shared",
+    "name_zh": "狭窄通道消除数量优势",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{large_group}数量多但必须穿过{choke}；{small_group}能守住{choke}且接触面有限",
+    "interactions": [
+      {
+        "subject": "large_group",
+        "relation": "large_group试图同时通过choke",
+        "object": "choke"
+      }
+    ],
+    "effects": [
+      {
+        "role": "large_group",
+        "predicate": "只有少数成员能同时发挥作用并发生拥堵"
+      },
+      {
+        "role": "small_group",
+        "predicate": "以较小兵力逐批应对"
+      }
+    ],
+    "invariant": "有效并行接触数受通道横截面限制而非总人数决定。",
+    "boundary_condition": "攻击方可绕行、扩大通道或远程越过防线时优势可恢复。",
+    "near_negative": {
+      "changed_fact": "{large_group}发现足够宽的第二入口",
+      "effects": [
+        {
+          "role": "large_group",
+          "predicate": "可同时展开更多成员"
+        },
+        {
+          "role": "small_group",
+          "predicate": "防守负担显著增加"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "战斗",
+        "entities": {
+          "large_group": "百人军团",
+          "choke": "峡谷口",
+          "small_group": "十人守队"
+        },
+        "before": "峡口仅容两人并肩",
+        "interaction_phrases": [
+          "军团涌入峡口"
+        ]
+      },
+      {
+        "domain": "动物",
+        "entities": {
+          "large_group": "狼群",
+          "choke": "洞口",
+          "small_group": "母熊"
+        },
+        "before": "洞口只容一狼进入",
+        "interaction_phrases": [
+          "狼群试图进洞"
+        ]
+      },
+      {
+        "domain": "网络",
+        "entities": {
+          "large_group": "海量连接",
+          "choke": "串行网关",
+          "small_group": "小型过滤器"
+        },
+        "before": "所有连接须过同一窄口",
+        "interaction_phrases": [
+          "连接同时冲击网关"
+        ]
+      },
+      {
+        "domain": "工业",
+        "entities": {
+          "large_group": "散装零件",
+          "choke": "单件导槽",
+          "small_group": "检测臂"
+        },
+        "before": "导槽每次只下一个零件",
+        "interaction_phrases": [
+          "料斗一次倾下大量零件"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F033",
+    "split": "shared",
+    "name_zh": "可信佯动诱使对手把资源调离真实目标",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{defender}必须在多个地点间分配有限资源；{decoy}看起来像即将攻击的高价值威胁；{real_actor}尚未暴露真实方向",
+    "interactions": [
+      {
+        "subject": "decoy",
+        "relation": "decoy制造可置信的攻击迹象",
+        "object": "defender"
+      },
+      {
+        "subject": "defender",
+        "relation": "defender调兵后real_actor攻击被削弱区域",
+        "object": "real_actor"
+      }
+    ],
+    "effects": [
+      {
+        "role": "defender",
+        "predicate": "资源被错误集中到佯动方向"
+      },
+      {
+        "role": "real_actor",
+        "predicate": "面对较弱防守获得机会"
+      }
+    ],
+    "invariant": "对手依据不完全观测重分配有限资源，错误信念改变真实方向的防守强度。",
+    "boundary_condition": "佯动不可信、对手资源充裕或等待确认后再调动时效果失效。",
+    "near_negative": {
+      "changed_fact": "{defender}拥有实时侦察确认{decoy}没有主力",
+      "effects": [
+        {
+          "role": "defender",
+          "predicate": "维持原部署"
+        },
+        {
+          "role": "real_actor",
+          "predicate": "未获得额外空隙"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "战争",
+        "entities": {
+          "defender": "守城军",
+          "decoy": "东门假营火",
+          "real_actor": "西门突击队"
+        },
+        "before": "守军预备队只能支援一门",
+        "interaction_phrases": [
+          "东门燃起大量营火",
+          "守军东调后西门突击"
+        ]
+      },
+      {
+        "domain": "体育",
+        "entities": {
+          "defender": "防守队",
+          "decoy": "假跑动",
+          "real_actor": "持球手"
+        },
+        "before": "协防人数有限",
+        "interaction_phrases": [
+          "假跑动吸引协防",
+          "持球手切入空侧"
+        ]
+      },
+      {
+        "domain": "网络",
+        "entities": {
+          "defender": "安全团队",
+          "decoy": "诱饵扫描",
+          "real_actor": "隐蔽渗透者"
+        },
+        "before": "分析资源有限",
+        "interaction_phrases": [
+          "诱饵制造高噪扫描",
+          "团队响应时渗透者走另一入口"
+        ]
+      },
+      {
+        "domain": "市场",
+        "entities": {
+          "defender": "竞争者",
+          "decoy": "预告产品",
+          "real_actor": "真实产品线"
+        },
+        "before": "竞争者研发预算有限",
+        "interaction_phrases": [
+          "公司高调展示概念机",
+          "对手跟进后公司发布另一产品"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F034",
+    "split": "shared",
+    "name_zh": "持续威胁压制使暴露行动成本过高",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{threatener}能持续覆盖{pinned}必须穿越的暴露区域；{pinned}知道一旦暴露就会迅速受损",
+    "interactions": [
+      {
+        "subject": "threatener",
+        "relation": "threatener反复展示即时打击能力",
+        "object": "pinned"
+      },
+      {
+        "subject": "pinned",
+        "relation": "pinned评估移动风险",
+        "object": "threatener"
+      }
+    ],
+    "effects": [
+      {
+        "role": "pinned",
+        "predicate": "留在掩护内并放弃原定移动"
+      },
+      {
+        "role": "threatener",
+        "predicate": "无需命中也限制了对方行动空间"
+      }
+    ],
+    "invariant": "可信即时惩罚提高某行动的预期成本，使理性主体自我约束。",
+    "boundary_condition": "威胁无法观察、无法及时响应或被压制者有安全掩蔽路线时不成立。",
+    "near_negative": {
+      "changed_fact": "{pinned}发现一条完全遮蔽的地下通道",
+      "effects": [
+        {
+          "role": "pinned",
+          "predicate": "可在不暴露下移动"
+        },
+        {
+          "role": "threatener",
+          "predicate": "无法继续限制该路线"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "战场",
+        "entities": {
+          "threatener": "机枪组",
+          "pinned": "壕沟步兵"
+        },
+        "before": "机枪覆盖壕沟外开地",
+        "interaction_phrases": [
+          "机枪持续扫过出口",
+          "步兵评估冲锋"
+        ]
+      },
+      {
+        "domain": "棋类",
+        "entities": {
+          "threatener": "远程棋子",
+          "pinned": "被钉住棋子"
+        },
+        "before": "移动会暴露王",
+        "interaction_phrases": [
+          "远程子保持攻击线",
+          "被钉子考虑移动"
+        ]
+      },
+      {
+        "domain": "商业",
+        "entities": {
+          "threatener": "专利持有人",
+          "pinned": "小厂商"
+        },
+        "before": "持有人能迅速提起禁令诉讼",
+        "interaction_phrases": [
+          "持有人公开执法记录",
+          "小厂商评估上市"
+        ]
+      },
+      {
+        "domain": "生态",
+        "entities": {
+          "threatener": "盘旋鹰",
+          "pinned": "空地鼠群"
+        },
+        "before": "鹰可看见开阔地",
+        "interaction_phrases": [
+          "鹰持续低空盘旋",
+          "鼠群试图离巢"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F035",
+    "split": "shared",
+    "name_zh": "运动破坏静态伪装而显露目标",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{hidden}静止时颜色纹理与{background}近似；{observer}能检测相对运动但难以分辨静态轮廓",
+    "interactions": [
+      {
+        "subject": "hidden",
+        "relation": "hidden相对background快速移动",
+        "object": "background"
+      }
+    ],
+    "effects": [
+      {
+        "role": "observer",
+        "predicate": "通过运动边界定位隐藏者"
+      },
+      {
+        "role": "hidden",
+        "predicate": "失去静态伪装优势"
+      }
+    ],
+    "invariant": "时间上的位置变化产生与静止背景不一致的显著特征。",
+    "boundary_condition": "观察者视线被遮挡、背景也同步移动或运动极慢时可能不显露。",
+    "near_negative": {
+      "changed_fact": "{hidden}与移动背景完全同步且无相对位移",
+      "effects": [
+        {
+          "role": "observer",
+          "predicate": "仍难以从背景中分离目标"
+        },
+        {
+          "role": "hidden",
+          "predicate": "保持伪装"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "狩猎",
+        "entities": {
+          "hidden": "斑纹鹿",
+          "background": "林地",
+          "observer": "猎人"
+        },
+        "before": "鹿静止时融入树影",
+        "interaction_phrases": [
+          "鹿突然横穿空隙"
+        ]
+      },
+      {
+        "domain": "侦察",
+        "entities": {
+          "hidden": "披伪装网的斥候",
+          "background": "草坡",
+          "observer": "哨兵"
+        },
+        "before": "斥候伏地难辨",
+        "interaction_phrases": [
+          "斥候快速起身移动"
+        ]
+      },
+      {
+        "domain": "医学影像",
+        "entities": {
+          "hidden": "微小寄生虫",
+          "background": "组织纹理",
+          "observer": "显微观察者"
+        },
+        "before": "虫体颜色与组织相似",
+        "interaction_phrases": [
+          "虫体独立蠕动"
+        ]
+      },
+      {
+        "domain": "数据安全",
+        "entities": {
+          "hidden": "潜伏进程",
+          "background": "稳定基线",
+          "observer": "监控器"
+        },
+        "before": "进程静态特征伪装正常",
+        "interaction_phrases": [
+          "进程突然产生异常活动序列"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F036",
+    "split": "shared",
+    "name_zh": "传播率越过替代率后感染规模自增长",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{carrier}每周期可接触多个{susceptible}；平均新增传播数接近一；{removal}以稳定速率清除传播者",
+    "interactions": [
+      {
+        "subject": "carrier",
+        "relation": "接触密度上升使每名carrier产生超过一名新传播者",
+        "object": "susceptible"
+      },
+      {
+        "subject": "carrier",
+        "relation": "新传播者在被removal清除前继续传播",
+        "object": "removal"
+      }
+    ],
+    "effects": [
+      {
+        "role": "carrier",
+        "predicate": "总数按代际增长"
+      },
+      {
+        "role": "susceptible",
+        "predicate": "未受影响者比例持续下降"
+      }
+    ],
+    "invariant": "每个活跃传播者产生的有效继承者均值大于一。",
+    "boundary_condition": "免疫、隔离或清除把有效再生数压到一以下时增长停止。",
+    "near_negative": {
+      "changed_fact": "有效再生数降至小于一",
+      "effects": [
+        {
+          "role": "carrier",
+          "predicate": "数量逐代衰减"
+        },
+        {
+          "role": "susceptible",
+          "predicate": "多数保持未受影响"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "流行病",
+        "entities": {
+          "carrier": "感染者",
+          "susceptible": "易感者",
+          "removal": "隔离系统"
+        },
+        "before": "聚会使接触数接近临界",
+        "interaction_phrases": [
+          "接触密度升高令每人感染多人",
+          "新感染者尚未隔离又传播"
+        ]
+      },
+      {
+        "domain": "谣言",
+        "entities": {
+          "carrier": "转发者",
+          "susceptible": "未闻者",
+          "removal": "辟谣者"
+        },
+        "before": "每名转发者平均说服一人",
+        "interaction_phrases": [
+          "平台推荐提高曝光",
+          "新听众继续转发"
+        ]
+      },
+      {
+        "domain": "火灾",
+        "entities": {
+          "carrier": "燃烧树木",
+          "susceptible": "干燥树木",
+          "removal": "消防带"
+        },
+        "before": "树距接近火跃临界",
+        "interaction_phrases": [
+          "风增强使一树点燃多树",
+          "新火点继续飞火"
+        ]
+      },
+      {
+        "domain": "恶意软件",
+        "entities": {
+          "carrier": "感染主机",
+          "susceptible": "脆弱主机",
+          "removal": "清理服务"
+        },
+        "before": "扫描速率接近清理率",
+        "interaction_phrases": [
+          "漏洞利用提速",
+          "新感染主机立刻扫描"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F037",
+    "split": "shared",
+    "name_zh": "隔离带移除连续燃料而截断传播",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{spread}只能经相邻可传播单元前进；{barrier}横跨所有前进路径且自身不可传播；{protected}位于屏障后",
+    "interactions": [
+      {
+        "subject": "spread",
+        "relation": "spread到达barrier边缘",
+        "object": "barrier"
+      }
+    ],
+    "effects": [
+      {
+        "role": "spread",
+        "predicate": "因缺少连续载体而停止越界"
+      },
+      {
+        "role": "protected",
+        "predicate": "保持未被传播触及"
+      }
+    ],
+    "invariant": "传播图中跨越边界的所有可用边都被移除。",
+    "boundary_condition": "存在飞越、地下旁路或屏障缺口时可能跨越。",
+    "near_negative": {
+      "changed_fact": "{barrier}留下一个与传播尺度相当的缺口",
+      "effects": [
+        {
+          "role": "spread",
+          "predicate": "经缺口继续传播"
+        },
+        {
+          "role": "protected",
+          "predicate": "不再保证安全"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "林火",
+        "entities": {
+          "spread": "地表火",
+          "barrier": "无植被防火带",
+          "protected": "村庄"
+        },
+        "before": "火依赖连续枯草",
+        "interaction_phrases": [
+          "火头烧到裸土边缘"
+        ]
+      },
+      {
+        "domain": "网络",
+        "entities": {
+          "spread": "蠕虫",
+          "barrier": "断开的网段边界",
+          "protected": "控制服务器"
+        },
+        "before": "蠕虫只能沿连接扫描",
+        "interaction_phrases": [
+          "蠕虫扫描到断网接口"
+        ]
+      },
+      {
+        "domain": "农业",
+        "entities": {
+          "spread": "根系病害",
+          "barrier": "挖空隔离沟",
+          "protected": "健康果园"
+        },
+        "before": "病害沿相邻根系扩展",
+        "interaction_phrases": [
+          "病根扩展到无根沟"
+        ]
+      },
+      {
+        "domain": "谣言",
+        "entities": {
+          "spread": "假消息",
+          "barrier": "不转发的审核群",
+          "protected": "新成员区"
+        },
+        "before": "消息只能靠群间转发",
+        "interaction_phrases": [
+          "假消息传到审核群"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F038",
+    "split": "shared",
+    "name_zh": "高连接枢纽被感染后加速跨群传播",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{hub}连接多个原本稀疏相连的群体；{seed}只在其中一个{audience}内传播",
+    "interactions": [
+      {
+        "subject": "seed",
+        "relation": "seed传到hub",
+        "object": "hub"
+      },
+      {
+        "subject": "hub",
+        "relation": "hub向audience同时发生接触",
+        "object": "audience"
+      }
+    ],
+    "effects": [
+      {
+        "role": "seed",
+        "predicate": "迅速进入多个先前未触及群体"
+      },
+      {
+        "role": "hub",
+        "predicate": "成为传播倍增节点"
+      }
+    ],
+    "invariant": "枢纽的高跨群度数把单群事件转换为多群并行暴露。",
+    "boundary_condition": "枢纽不转发、已免疫或连接只是名义上存在时不会加速。",
+    "near_negative": {
+      "changed_fact": "{hub}虽连接广泛但处于完全隔离且不发送任何内容",
+      "effects": [
+        {
+          "role": "seed",
+          "predicate": "仍局限在原群体"
+        },
+        {
+          "role": "hub",
+          "predicate": "不形成倍增传播"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "疾病",
+        "entities": {
+          "hub": "大型会展者",
+          "seed": "局部感染株",
+          "audience": "多地参会群体"
+        },
+        "before": "参会者来自许多城市",
+        "interaction_phrases": [
+          "感染株传给大会组织者",
+          "组织者密集接触多组来宾"
+        ]
+      },
+      {
+        "domain": "社交",
+        "entities": {
+          "hub": "头部账号",
+          "seed": "小圈谣言",
+          "audience": "不同粉丝圈"
+        },
+        "before": "粉丝圈彼此少交叉",
+        "interaction_phrases": [
+          "头部账号相信谣言",
+          "账号向全体粉丝发布"
+        ]
+      },
+      {
+        "domain": "网络",
+        "entities": {
+          "hub": "中央更新站",
+          "seed": "木马包",
+          "audience": "各分支网"
+        },
+        "before": "分支只信中央更新",
+        "interaction_phrases": [
+          "更新站接收木马包",
+          "更新站向各分支推送"
+        ]
+      },
+      {
+        "domain": "物流",
+        "entities": {
+          "hub": "全国转运仓",
+          "seed": "污染批次",
+          "audience": "地方仓群"
+        },
+        "before": "地方仓互不调货",
+        "interaction_phrases": [
+          "污染品进入总仓",
+          "总仓拆批发往各地"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F039",
+    "split": "shared",
+    "name_zh": "首次暴露形成记忆使再次响应更快",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{system}曾识别并保存{pattern}的特征；当前相同{pattern}再次出现",
+    "interactions": [
+      {
+        "subject": "system",
+        "relation": "system将输入与保存特征匹配",
+        "object": "pattern"
+      },
+      {
+        "subject": "system",
+        "relation": "匹配触发预先准备的响应",
+        "object": "pattern"
+      }
+    ],
+    "effects": [
+      {
+        "role": "system",
+        "predicate": "比首次遭遇更快且更强地响应"
+      },
+      {
+        "role": "pattern",
+        "predicate": "更早被抑制或处理"
+      }
+    ],
+    "invariant": "首次经历留下可重用的特异状态，减少再次识别和准备成本。",
+    "boundary_condition": "新模式差异超过识别泛化范围或记忆已衰退时优势消失。",
+    "near_negative": {
+      "changed_fact": "再次出现的模式关键特征完全不同",
+      "effects": [
+        {
+          "role": "system",
+          "predicate": "按首次遭遇重新学习"
+        },
+        {
+          "role": "pattern",
+          "predicate": "不会被旧记忆快速抑制"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "免疫",
+        "entities": {
+          "system": "免疫系统",
+          "pattern": "同株病毒"
+        },
+        "before": "记忆细胞仍存在",
+        "interaction_phrases": [
+          "受体匹配病毒抗原",
+          "记忆细胞快速增殖"
+        ]
+      },
+      {
+        "domain": "安全",
+        "entities": {
+          "system": "入侵检测器",
+          "pattern": "已知攻击签名"
+        },
+        "before": "签名规则已部署",
+        "interaction_phrases": [
+          "流量匹配旧签名",
+          "预置阻断规则触发"
+        ]
+      },
+      {
+        "domain": "训练",
+        "entities": {
+          "system": "消防员",
+          "pattern": "熟悉的故障场景"
+        },
+        "before": "已演练同类故障",
+        "interaction_phrases": [
+          "消防员识别场景线索",
+          "立即执行练熟流程"
+        ]
+      },
+      {
+        "domain": "制造",
+        "entities": {
+          "system": "自适应质检机",
+          "pattern": "已见缺陷纹理"
+        },
+        "before": "模板库保存该纹理",
+        "interaction_phrases": [
+          "相机匹配缺陷模板",
+          "剔除机构提前动作"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F040",
+    "split": "shared",
+    "name_zh": "早期纠错可抢占传播，晚期纠错难以追回",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{false_claim}刚出现且尚未广泛扩散；{correction}来自可信来源并能触达同一{audience}",
+    "interactions": [
+      {
+        "subject": "correction",
+        "relation": "correction在多数人转发前到达audience",
+        "object": "audience"
+      },
+      {
+        "subject": "audience",
+        "relation": "audience用纠错信息评估false_claim",
+        "object": "false_claim"
+      }
+    ],
+    "effects": [
+      {
+        "role": "false_claim",
+        "predicate": "后续转发率显著降低"
+      },
+      {
+        "role": "audience",
+        "predicate": "较少形成并固化错误信念"
+      }
+    ],
+    "invariant": "在传播分支形成前降低每个接收者的采信概率，会压低整棵传播树。",
+    "boundary_condition": "纠错晚于大规模扩散、来源不可信或触达不同人群时效果弱。",
+    "near_negative": {
+      "changed_fact": "{correction}在错误说法已跨多个群体固化后才发布",
+      "effects": [
+        {
+          "role": "false_claim",
+          "predicate": "仍由既有传播链持续流通"
+        },
+        {
+          "role": "audience",
+          "predicate": "只有部分人修正信念"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "公共信息",
+        "entities": {
+          "false_claim": "假停水通知",
+          "correction": "水务澄清",
+          "audience": "社区居民"
+        },
+        "before": "假通知只在一个小群出现",
+        "interaction_phrases": [
+          "水务立即发布澄清",
+          "居民在转发前看到核验"
+        ]
+      },
+      {
+        "domain": "战场",
+        "entities": {
+          "false_claim": "撤退谣言",
+          "correction": "指挥官口令",
+          "audience": "前线士兵"
+        },
+        "before": "谣言刚从一处传出",
+        "interaction_phrases": [
+          "指挥官立刻广播坚守令",
+          "各排先核验再行动"
+        ]
+      },
+      {
+        "domain": "市场",
+        "entities": {
+          "false_claim": "产品缺陷传言",
+          "correction": "公开检测报告",
+          "audience": "潜在买家"
+        },
+        "before": "传言尚未上热榜",
+        "interaction_phrases": [
+          "实验室快速公布报告",
+          "买家据报告判断传言"
+        ]
+      },
+      {
+        "domain": "网络",
+        "entities": {
+          "false_claim": "错误路由公告",
+          "correction": "签名撤回消息",
+          "audience": "邻接路由器"
+        },
+        "before": "错误公告尚未多跳扩散",
+        "interaction_phrases": [
+          "源站立即发签名撤回",
+          "邻居先撤销再转发"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F002",
+    "split": "shared",
+    "name_zh": "刚性施力者击碎脆弱障碍并继续",
+    "subject_count": 2,
+    "interaction_count": 1,
+    "observable_before": "{actor}坚固且具有足够动量；{target}脆弱并横在{actor}的运动路径上",
+    "interactions": [
+      {
+        "subject": "actor",
+        "relation": "actor撞击target",
+        "object": "target"
+      }
+    ],
+    "effects": [
+      {
+        "role": "target",
+        "predicate": "碎裂并失去阻挡功能"
+      },
+      {
+        "role": "actor",
+        "predicate": "保留主要动量继续前进"
+      }
+    ],
+    "invariant": "碰撞能量越过脆弱目标的断裂阈值但未显著损伤施力者。",
+    "boundary_condition": "目标必须脆且没有足够柔性让位空间。",
+    "near_negative": {
+      "changed_fact": "{target}换成可弯曲并能随撞击让位的障碍",
+      "effects": [
+        {
+          "role": "target",
+          "predicate": "弯曲后仍保持连通"
+        },
+        {
+          "role": "actor",
+          "predicate": "减速但未穿透"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "攻城",
+        "entities": {
+          "actor": "包铁冲车",
+          "target": "朽木城门"
+        },
+        "before": "冲车沉重而门板干裂",
+        "interaction_phrases": [
+          "冲车撞上城门"
+        ]
+      },
+      {
+        "domain": "交通",
+        "entities": {
+          "actor": "装甲雪地车",
+          "target": "薄冰墙"
+        },
+        "before": "车辆高速且冰墙无韧性",
+        "interaction_phrases": [
+          "车辆冲过冰墙"
+        ]
+      },
+      {
+        "domain": "制造",
+        "entities": {
+          "actor": "钢冲头",
+          "target": "糖壳模件"
+        },
+        "before": "冲头硬且糖壳受约束",
+        "interaction_phrases": [
+          "冲头压击糖壳"
+        ]
+      },
+      {
+        "domain": "采矿",
+        "entities": {
+          "actor": "钨锤",
+          "target": "风化盐晶层"
+        },
+        "before": "锤头完好且晶层酥脆",
+        "interaction_phrases": [
+          "钨锤砸中晶层"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F003",
+    "split": "shared",
+    "name_zh": "绝缘层切断载流通路",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{source}试图经接触通路向{target}传递流量；{barrier}不允许该载荷穿过",
+    "interactions": [
+      {
+        "subject": "barrier",
+        "relation": "barrier被置于source与target之间",
+        "object": "target"
+      }
+    ],
+    "effects": [
+      {
+        "role": "target",
+        "predicate": "不再接收到来自源的载荷"
+      },
+      {
+        "role": "barrier",
+        "predicate": "承担隔离界面"
+      }
+    ],
+    "invariant": "传递必须依赖连续通路，而中间层对所传载荷近似不导通。",
+    "boundary_condition": "旁路、击穿或隔离层破损会使效果失效。",
+    "near_negative": {
+      "changed_fact": "{barrier}存在贯穿裂口形成旁路",
+      "effects": [
+        {
+          "role": "target",
+          "predicate": "仍接收到部分载荷"
+        },
+        {
+          "role": "barrier",
+          "predicate": "隔离失败"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "电气",
+        "entities": {
+          "source": "带电线圈",
+          "target": "金属外壳",
+          "barrier": "陶瓷垫片"
+        },
+        "before": "外壳原本可能经支架带电",
+        "interaction_phrases": [
+          "陶瓷垫片隔开接点"
+        ]
+      },
+      {
+        "domain": "热学",
+        "entities": {
+          "source": "熔炉壁",
+          "target": "操作把手",
+          "barrier": "气凝胶层"
+        },
+        "before": "热量只可沿连接面传导",
+        "interaction_phrases": [
+          "气凝胶包覆连接颈"
+        ]
+      },
+      {
+        "domain": "防疫",
+        "entities": {
+          "source": "污染区",
+          "target": "洁净室",
+          "barrier": "密闭缓冲舱"
+        },
+        "before": "空气交换是唯一传播路径",
+        "interaction_phrases": [
+          "缓冲舱关闭两侧气路"
+        ]
+      },
+      {
+        "domain": "网络",
+        "entities": {
+          "source": "外部网段",
+          "target": "控制网",
+          "barrier": "物理断网器"
+        },
+        "before": "数据依赖唯一网线传输",
+        "interaction_phrases": [
+          "断网器分离导体"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F004",
+    "split": "shared",
+    "name_zh": "单一路径被占据导致到达失败",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{traveler}只能沿唯一通路到达{goal}；{blocker}尺寸足以封住该通路",
+    "interactions": [
+      {
+        "subject": "blocker",
+        "relation": "blocker占据唯一通路",
+        "object": "traveler"
+      }
+    ],
+    "effects": [
+      {
+        "role": "traveler",
+        "predicate": "无法按原路线到达目标"
+      },
+      {
+        "role": "goal",
+        "predicate": "暂时不可达"
+      }
+    ],
+    "invariant": "可达图中的唯一边被移除。",
+    "boundary_condition": "存在未被发现的替代路径时只会绕行而非不可达。",
+    "near_negative": {
+      "changed_fact": "另有一条可通行的侧路",
+      "effects": [
+        {
+          "role": "traveler",
+          "predicate": "绕行后仍能到达"
+        },
+        {
+          "role": "goal",
+          "predicate": "仍然可达但成本增加"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "地形",
+        "entities": {
+          "traveler": "补给队",
+          "goal": "山堡",
+          "blocker": "落石"
+        },
+        "before": "峡谷只有一条栈道",
+        "interaction_phrases": [
+          "落石堵死栈道"
+        ]
+      },
+      {
+        "domain": "物流",
+        "entities": {
+          "traveler": "货箱流",
+          "goal": "装车口",
+          "blocker": "卡住的托盘"
+        },
+        "before": "仓库只有一条传送带",
+        "interaction_phrases": [
+          "托盘横卡在带上"
+        ]
+      },
+      {
+        "domain": "软件",
+        "entities": {
+          "traveler": "请求",
+          "goal": "数据库写入",
+          "blocker": "挂起的独占锁"
+        },
+        "before": "写入必须经过同一把锁",
+        "interaction_phrases": [
+          "锁被永久占用"
+        ]
+      },
+      {
+        "domain": "水利",
+        "entities": {
+          "traveler": "灌溉水",
+          "goal": "末端田块",
+          "blocker": "淤泥塞"
+        },
+        "before": "田块仅接一条窄渠",
+        "interaction_phrases": [
+          "淤泥填满渠口"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F005",
+    "split": "shared",
+    "name_zh": "界面润滑降低阻力并提高滑移",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{mover}与{surface}直接接触且摩擦限制运动；{lubricant}能形成低剪切界面",
+    "interactions": [
+      {
+        "subject": "lubricant",
+        "relation": "lubricant进入mover与surface的接触面",
+        "object": "mover"
+      }
+    ],
+    "effects": [
+      {
+        "role": "mover",
+        "predicate": "以更小驱动力发生滑移"
+      },
+      {
+        "role": "surface",
+        "predicate": "摩擦磨损速率下降"
+      }
+    ],
+    "invariant": "中间层降低接触界面的有效摩擦系数。",
+    "boundary_condition": "润滑剂需覆盖受力面且不会在载荷下被完全挤出。",
+    "near_negative": {
+      "changed_fact": "加入的是会固化增黏的材料",
+      "effects": [
+        {
+          "role": "mover",
+          "predicate": "更难滑移"
+        },
+        {
+          "role": "surface",
+          "predicate": "与施力者粘结"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "机械",
+        "entities": {
+          "mover": "轴",
+          "surface": "轴套",
+          "lubricant": "机油"
+        },
+        "before": "干摩擦使轴温升",
+        "interaction_phrases": [
+          "机油泵入轴套"
+        ]
+      },
+      {
+        "domain": "航海",
+        "entities": {
+          "mover": "船体",
+          "surface": "冰面",
+          "lubricant": "融水膜"
+        },
+        "before": "船底被冰面拖滞",
+        "interaction_phrases": [
+          "融水铺到接触带"
+        ]
+      },
+      {
+        "domain": "医疗",
+        "entities": {
+          "mover": "导管",
+          "surface": "组织通道",
+          "lubricant": "水凝胶"
+        },
+        "before": "干燥界面阻碍插入",
+        "interaction_phrases": [
+          "水凝胶包覆导管"
+        ]
+      },
+      {
+        "domain": "制造",
+        "entities": {
+          "mover": "钢坯",
+          "surface": "模具",
+          "lubricant": "石墨膜"
+        },
+        "before": "脱模受静摩擦限制",
+        "interaction_phrases": [
+          "石墨膜覆盖模壁"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F006",
+    "split": "shared",
+    "name_zh": "周期驱动接近固有频率导致共振放大",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{oscillator}具有稳定固有频率和较低阻尼；{driver}能连续施加周期作用",
+    "interactions": [
+      {
+        "subject": "driver",
+        "relation": "driver以接近固有频率反复作用于oscillator",
+        "object": "oscillator"
+      },
+      {
+        "subject": "driver",
+        "relation": "每次作用与现有运动近同相",
+        "object": "oscillator"
+      }
+    ],
+    "effects": [
+      {
+        "role": "oscillator",
+        "predicate": "振幅逐周期累积增大"
+      },
+      {
+        "role": "driver",
+        "predicate": "以小幅输入持续注入能量"
+      }
+    ],
+    "invariant": "同相周期输入使每周期净能量为正。",
+    "boundary_condition": "频率偏差或阻尼过大时无法显著积累。",
+    "near_negative": {
+      "changed_fact": "驱动频率远离固有频率且相位漂移",
+      "effects": [
+        {
+          "role": "oscillator",
+          "predicate": "仅产生小幅受迫振动"
+        },
+        {
+          "role": "driver",
+          "predicate": "输入能量交替抵消"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "建筑",
+        "entities": {
+          "oscillator": "吊桥",
+          "driver": "齐步队列"
+        },
+        "before": "桥面阻尼低",
+        "interaction_phrases": [
+          "队列按桥的摆动节拍踏步",
+          "脚步持续同相"
+        ]
+      },
+      {
+        "domain": "声学",
+        "entities": {
+          "oscillator": "玻璃杯",
+          "driver": "纯音扬声器"
+        },
+        "before": "杯壁有清晰谐振峰",
+        "interaction_phrases": [
+          "扬声器播放共振音",
+          "声压连续维持"
+        ]
+      },
+      {
+        "domain": "魔法",
+        "entities": {
+          "oscillator": "护盾晶格",
+          "driver": "脉冲法杖"
+        },
+        "before": "晶格低耗散且周期已知",
+        "interaction_phrases": [
+          "法杖按晶格周期敲击",
+          "脉冲与亮度峰同步"
+        ]
+      },
+      {
+        "domain": "轨道",
+        "entities": {
+          "oscillator": "卫星姿态",
+          "driver": "周期潮汐矩"
+        },
+        "before": "姿态阻尼极弱",
+        "interaction_phrases": [
+          "潮汐矩周期施加",
+          "力矩方向随摆动同相"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F007",
+    "split": "shared",
+    "name_zh": "受压容器开口后沿压差快速泄放",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{container}内的{content}压力高于外界；{seal}维持封闭边界",
+    "interactions": [
+      {
+        "subject": "seal",
+        "relation": "seal被打开形成通道",
+        "object": "container"
+      }
+    ],
+    "effects": [
+      {
+        "role": "content",
+        "predicate": "经开口高速流出直至压差减小"
+      },
+      {
+        "role": "container",
+        "predicate": "内部压力下降"
+      }
+    ],
+    "invariant": "开口连通高压区与低压区，压差驱动净外流。",
+    "boundary_condition": "内外压强相等或开口被堵时不发生快速泄放。",
+    "near_negative": {
+      "changed_fact": "容器内部压力与外界相等",
+      "effects": [
+        {
+          "role": "content",
+          "predicate": "不会形成定向喷流"
+        },
+        {
+          "role": "container",
+          "predicate": "压力基本不变"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "气动",
+        "entities": {
+          "container": "储气罐",
+          "content": "压缩空气",
+          "seal": "安全阀"
+        },
+        "before": "罐压高于大气",
+        "interaction_phrases": [
+          "安全阀弹开"
+        ]
+      },
+      {
+        "domain": "地质",
+        "entities": {
+          "container": "岩层气室",
+          "content": "火山气体",
+          "seal": "岩塞"
+        },
+        "before": "气室持续积压",
+        "interaction_phrases": [
+          "岩塞开裂"
+        ]
+      },
+      {
+        "domain": "航天",
+        "entities": {
+          "container": "加压舱",
+          "content": "舱内空气",
+          "seal": "舱门密封"
+        },
+        "before": "舱外近真空",
+        "interaction_phrases": [
+          "密封圈脱落"
+        ]
+      },
+      {
+        "domain": "水利",
+        "entities": {
+          "container": "高位水箱",
+          "content": "蓄水",
+          "seal": "底闸"
+        },
+        "before": "水头高于出口",
+        "interaction_phrases": [
+          "底闸突然开启"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F008",
+    "split": "shared",
+    "name_zh": "多孔通道以毛细作用逆重力吸液",
+    "subject_count": 2,
+    "interaction_count": 1,
+    "observable_before": "{wick}含连通细孔且对{liquid}可润湿；{wick}一端接触{liquid}",
+    "interactions": [
+      {
+        "subject": "liquid",
+        "relation": "liquid浸润wick的孔隙入口",
+        "object": "wick"
+      }
+    ],
+    "effects": [
+      {
+        "role": "liquid",
+        "predicate": "沿细孔扩散到高于液面的区域"
+      },
+      {
+        "role": "wick",
+        "predicate": "由接触端向远端逐渐湿润"
+      }
+    ],
+    "invariant": "润湿表面张力在细孔中产生足以克服局部重力的压差。",
+    "boundary_condition": "孔径过大、材料不润湿或通道断裂时效果消失。",
+    "near_negative": {
+      "changed_fact": "{wick}表面改为拒水且接触角大于九十度",
+      "effects": [
+        {
+          "role": "liquid",
+          "predicate": "停留在入口而不爬升"
+        },
+        {
+          "role": "wick",
+          "predicate": "远端保持干燥"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "生活",
+        "entities": {
+          "wick": "棉布条",
+          "liquid": "染色水"
+        },
+        "before": "布条下端浸水上端悬空",
+        "interaction_phrases": [
+          "水润湿棉纤维"
+        ]
+      },
+      {
+        "domain": "植物",
+        "entities": {
+          "wick": "木质部细管",
+          "liquid": "根际水"
+        },
+        "before": "导管连续且壁面亲水",
+        "interaction_phrases": [
+          "水进入细导管"
+        ]
+      },
+      {
+        "domain": "医疗",
+        "entities": {
+          "wick": "试纸纤维",
+          "liquid": "血清样本"
+        },
+        "before": "试纸孔隙连至检测线",
+        "interaction_phrases": [
+          "血清触碰样本垫"
+        ]
+      },
+      {
+        "domain": "航天",
+        "entities": {
+          "wick": "热管毛细芯",
+          "liquid": "冷凝工质"
+        },
+        "before": "微重力下毛细芯连续",
+        "interaction_phrases": [
+          "冷凝液润湿毛细芯"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F009",
+    "split": "shared",
+    "name_zh": "受限构件热膨胀引发卡紧",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{part}受热会膨胀且与{housing}间隙很小；{housing}限制{part}自由伸展",
+    "interactions": [
+      {
+        "subject": "part",
+        "relation": "part温度升高",
+        "object": "housing"
+      },
+      {
+        "subject": "part",
+        "relation": "part膨胀压向housing",
+        "object": "housing"
+      }
+    ],
+    "effects": [
+      {
+        "role": "part",
+        "predicate": "因接触压力增大而无法正常移动"
+      },
+      {
+        "role": "housing",
+        "predicate": "承受额外胀紧力"
+      }
+    ],
+    "invariant": "热尺寸增长超过预留间隙后，几何约束转化为接触压力。",
+    "boundary_condition": "温升不足或膨胀缝足够大时不会卡紧。",
+    "near_negative": {
+      "changed_fact": "{housing}预留的间隙大于最大热膨胀量",
+      "effects": [
+        {
+          "role": "part",
+          "predicate": "仍可自由移动"
+        },
+        {
+          "role": "housing",
+          "predicate": "不承受胀紧力"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "机械",
+        "entities": {
+          "part": "钢制滑阀",
+          "housing": "阀套"
+        },
+        "before": "冷态配合间隙很小",
+        "interaction_phrases": [
+          "滑阀被热油加热",
+          "阀芯胀向阀套"
+        ]
+      },
+      {
+        "domain": "铁路",
+        "entities": {
+          "part": "长钢轨",
+          "housing": "固定扣件"
+        },
+        "before": "钢轨伸缩端被锁死",
+        "interaction_phrases": [
+          "日晒使钢轨升温",
+          "钢轨顶压扣件"
+        ]
+      },
+      {
+        "domain": "建筑",
+        "entities": {
+          "part": "金属门板",
+          "housing": "石制门框"
+        },
+        "before": "门边余隙极窄",
+        "interaction_phrases": [
+          "火场热量加热门板",
+          "门板膨胀挤住门框"
+        ]
+      },
+      {
+        "domain": "魔法机关",
+        "entities": {
+          "part": "铜质转盘",
+          "housing": "冷石槽"
+        },
+        "before": "转盘紧配于石槽",
+        "interaction_phrases": [
+          "火符加热转盘",
+          "铜盘外缘顶住槽壁"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F010",
+    "split": "shared",
+    "name_zh": "液体冻结膨胀撑裂封闭空间",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{liquid}充满{container}的封闭细隙；{liquid}结冰时体积增加且{container}缺乏余量",
+    "interactions": [
+      {
+        "subject": "liquid",
+        "relation": "温度降到liquid凝固点以下",
+        "object": "container"
+      },
+      {
+        "subject": "liquid",
+        "relation": "liquid在受限空间内冻结",
+        "object": "container"
+      }
+    ],
+    "effects": [
+      {
+        "role": "container",
+        "predicate": "被冻结膨胀产生的压力撑裂"
+      },
+      {
+        "role": "liquid",
+        "predicate": "转为固态并占据更大体积"
+      }
+    ],
+    "invariant": "相变体积增长在封闭约束中转化为破坏性压力。",
+    "boundary_condition": "容器有膨胀余量或液体未完全充满时可能不破裂。",
+    "near_negative": {
+      "changed_fact": "{container}留有足够大的可压缩气室",
+      "effects": [
+        {
+          "role": "container",
+          "predicate": "保持完整"
+        },
+        {
+          "role": "liquid",
+          "predicate": "冻结后挤压气室而非容器壁"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "管网",
+        "entities": {
+          "liquid": "清水",
+          "container": "满水铜管"
+        },
+        "before": "两端阀门关闭无余隙",
+        "interaction_phrases": [
+          "寒潮使水降至冰点下",
+          "管内水冻结"
+        ]
+      },
+      {
+        "domain": "地质",
+        "entities": {
+          "liquid": "裂隙水",
+          "container": "岩石裂缝"
+        },
+        "before": "裂隙被水充满",
+        "interaction_phrases": [
+          "夜间温度骤降",
+          "裂隙水结冰"
+        ]
+      },
+      {
+        "domain": "食品",
+        "entities": {
+          "liquid": "汤汁",
+          "container": "灌满的玻璃瓶"
+        },
+        "before": "瓶盖紧闭且无顶隙",
+        "interaction_phrases": [
+          "瓶子放入冷冻室",
+          "汤汁结冰"
+        ]
+      },
+      {
+        "domain": "炼金",
+        "entities": {
+          "liquid": "霜化药液",
+          "container": "密封水晶球"
+        },
+        "before": "药液注满球腔",
+        "interaction_phrases": [
+          "冰符降低药液温度",
+          "药液晶化膨胀"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F011",
+    "split": "shared",
+    "name_zh": "有限耗材枯竭后持续过程停机",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{process}每轮必须消耗一定量{resource}；{resource}库存有限且当前无补给",
+    "interactions": [
+      {
+        "subject": "process",
+        "relation": "process连续运行并消耗resource",
+        "object": "resource"
+      },
+      {
+        "subject": "resource",
+        "relation": "resource库存降至单轮需求以下",
+        "object": "process"
+      }
+    ],
+    "effects": [
+      {
+        "role": "process",
+        "predicate": "因缺少必要投入而停止"
+      },
+      {
+        "role": "resource",
+        "predicate": "库存耗尽或不足以支持下一轮"
+      }
+    ],
+    "invariant": "必要投入的存量在无补给时单调下降并最终低于运行门槛。",
+    "boundary_condition": "过程能改用替代投入或补给速度不低于消耗速度时不成立。",
+    "near_negative": {
+      "changed_fact": "稳定补给速率等于每轮消耗速率",
+      "effects": [
+        {
+          "role": "process",
+          "predicate": "可持续运行"
+        },
+        {
+          "role": "resource",
+          "predicate": "库存保持动态平衡"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "战斗",
+        "entities": {
+          "process": "弩炮射击",
+          "resource": "弩矢"
+        },
+        "before": "箭箱有限且补给线中断",
+        "interaction_phrases": [
+          "弩炮连续齐射",
+          "最后一批弩矢被用尽"
+        ]
+      },
+      {
+        "domain": "计算",
+        "entities": {
+          "process": "后台任务",
+          "resource": "调用额度"
+        },
+        "before": "每日额度固定且不可续购",
+        "interaction_phrases": [
+          "任务反复调用接口",
+          "剩余额度低于一次调用"
+        ]
+      },
+      {
+        "domain": "制造",
+        "entities": {
+          "process": "装配线",
+          "resource": "轴承"
+        },
+        "before": "料箱不再补货",
+        "interaction_phrases": [
+          "装配线持续取件",
+          "轴承不足一台用量"
+        ]
+      },
+      {
+        "domain": "生态",
+        "entities": {
+          "process": "蜂群育幼",
+          "resource": "储蜜"
+        },
+        "before": "冬季无法采蜜",
+        "interaction_phrases": [
+          "蜂群持续消耗储蜜",
+          "储蜜低于育幼需求"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F012",
+    "split": "shared",
+    "name_zh": "缓冲储备吸收短时需求尖峰",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{producer}平均供给足够但瞬时供给低于峰值；{buffer}预先储有可用量并连接{consumer}",
+    "interactions": [
+      {
+        "subject": "consumer",
+        "relation": "consumer出现短时需求尖峰",
+        "object": "buffer"
+      },
+      {
+        "subject": "buffer",
+        "relation": "buffer释放储量补足producer的缺口",
+        "object": "producer"
+      }
+    ],
+    "effects": [
+      {
+        "role": "consumer",
+        "predicate": "在尖峰期间仍获得足额供给"
+      },
+      {
+        "role": "buffer",
+        "predicate": "储量下降并在峰后等待回补"
+      }
+    ],
+    "invariant": "缓冲库存将供给的时间分布从低需求期平移到高需求期。",
+    "boundary_condition": "尖峰缺口积分不得超过缓冲可用容量。",
+    "near_negative": {
+      "changed_fact": "尖峰持续太久，累计缺口超过{buffer}容量",
+      "effects": [
+        {
+          "role": "consumer",
+          "predicate": "缓冲耗尽后发生供给不足"
+        },
+        {
+          "role": "buffer",
+          "predicate": "完全耗尽"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "电网",
+        "entities": {
+          "producer": "风机",
+          "buffer": "蓄电池",
+          "consumer": "营地"
+        },
+        "before": "电池满电且风机平均功率足够",
+        "interaction_phrases": [
+          "营地短时启动重机",
+          "电池补出瞬时功率"
+        ]
+      },
+      {
+        "domain": "水务",
+        "entities": {
+          "producer": "水泵",
+          "buffer": "高位水塔",
+          "consumer": "城区"
+        },
+        "before": "水塔在夜间蓄满",
+        "interaction_phrases": [
+          "早高峰用水激增",
+          "水塔重力供水补缺"
+        ]
+      },
+      {
+        "domain": "计算",
+        "entities": {
+          "producer": "磁盘",
+          "buffer": "内存缓存",
+          "consumer": "查询服务"
+        },
+        "before": "热点数据已缓存",
+        "interaction_phrases": [
+          "请求率突然升高",
+          "缓存直接返回数据"
+        ]
+      },
+      {
+        "domain": "军事",
+        "entities": {
+          "producer": "后方车队",
+          "buffer": "前线弹药库",
+          "consumer": "炮兵阵地"
+        },
+        "before": "库内有战前储备",
+        "interaction_phrases": [
+          "火力需求短时暴增",
+          "前线库发放弹药"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F013",
+    "split": "shared",
+    "name_zh": "串行瓶颈限制整体吞吐并形成上游排队",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{upstream}向{bottleneck}输入的速率高于其处理能力；所有任务必须经{bottleneck}才能到达{downstream}",
+    "interactions": [
+      {
+        "subject": "upstream",
+        "relation": "upstream持续以超额速率提交任务",
+        "object": "bottleneck"
+      }
+    ],
+    "effects": [
+      {
+        "role": "bottleneck",
+        "predicate": "以自身最大能力满载处理"
+      },
+      {
+        "role": "upstream",
+        "predicate": "未处理任务持续积压"
+      },
+      {
+        "role": "downstream",
+        "predicate": "吞吐被限制在瓶颈上限"
+      }
+    ],
+    "invariant": "串联系统吞吐不超过最小服务率，输入超出部分进入队列。",
+    "boundary_condition": "若可绕过瓶颈或输入速率降至其能力以下，队列不会增长。",
+    "near_negative": {
+      "changed_fact": "新增一条可并行处理的旁路使总能力高于输入",
+      "effects": [
+        {
+          "role": "upstream",
+          "predicate": "积压逐渐清空"
+        },
+        {
+          "role": "downstream",
+          "predicate": "吞吐随输入提高"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "物流",
+        "entities": {
+          "upstream": "分拣员",
+          "bottleneck": "单台安检机",
+          "downstream": "装车区"
+        },
+        "before": "每件包裹都须安检",
+        "interaction_phrases": [
+          "分拣员持续送入超量包裹"
+        ]
+      },
+      {
+        "domain": "计算",
+        "entities": {
+          "upstream": "并发请求",
+          "bottleneck": "单写数据库",
+          "downstream": "确认服务"
+        },
+        "before": "所有写入均串行提交",
+        "interaction_phrases": [
+          "请求速率超过写入上限"
+        ]
+      },
+      {
+        "domain": "交通",
+        "entities": {
+          "upstream": "四车道车流",
+          "bottleneck": "单车道桥",
+          "downstream": "城门"
+        },
+        "before": "车辆都必须过桥",
+        "interaction_phrases": [
+          "高峰车流涌向桥口"
+        ]
+      },
+      {
+        "domain": "生产",
+        "entities": {
+          "upstream": "三台切割机",
+          "bottleneck": "一座热处理炉",
+          "downstream": "包装线"
+        },
+        "before": "每件零件都要热处理",
+        "interaction_phrases": [
+          "切割机连续超速产出"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F014",
+    "split": "shared",
+    "name_zh": "主通道失效触发备用通道接管",
+    "subject_count": 3,
+    "interaction_count": 2,
+    "observable_before": "{primary}承担正常服务；{backup}处于可用待机状态且能检测{primary}失效；{client}可接受两条通道的同类输出",
+    "interactions": [
+      {
+        "subject": "primary",
+        "relation": "primary停止提供服务",
+        "object": "backup"
+      },
+      {
+        "subject": "backup",
+        "relation": "backup检测故障后开始供给client",
+        "object": "client"
+      }
+    ],
+    "effects": [
+      {
+        "role": "client",
+        "predicate": "经历有限切换间隙后恢复服务"
+      },
+      {
+        "role": "backup",
+        "predicate": "从待机转为承载状态"
+      }
+    ],
+    "invariant": "冗余能力在主件故障后通过故障检测与切换机制替代同一功能。",
+    "boundary_condition": "备用件必须独立可用且切换条件能够被触发。",
+    "near_negative": {
+      "changed_fact": "{backup}与{primary}共享同一故障源并同时失效",
+      "effects": [
+        {
+          "role": "client",
+          "predicate": "服务持续中断"
+        },
+        {
+          "role": "backup",
+          "predicate": "无法接管"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "供电",
+        "entities": {
+          "primary": "市电",
+          "backup": "柴油发电机",
+          "client": "医院"
+        },
+        "before": "发电机自启且油量充足",
+        "interaction_phrases": [
+          "市电断开",
+          "发电机检测断电后启动"
+        ]
+      },
+      {
+        "domain": "网络",
+        "entities": {
+          "primary": "主路由",
+          "backup": "热备路由",
+          "client": "办公网"
+        },
+        "before": "热备持续接收心跳",
+        "interaction_phrases": [
+          "主路由心跳消失",
+          "热备宣告路由"
+        ]
+      },
+      {
+        "domain": "战术",
+        "entities": {
+          "primary": "前门守卫",
+          "backup": "预备小队",
+          "client": "城门防线"
+        },
+        "before": "预备队在内墙待命",
+        "interaction_phrases": [
+          "守卫阵线崩溃",
+          "预备队补入缺口"
+        ]
+      },
+      {
+        "domain": "生理",
+        "entities": {
+          "primary": "主供血支路",
+          "backup": "侧支循环",
+          "client": "组织区域"
+        },
+        "before": "侧支血管可扩张",
+        "interaction_phrases": [
+          "主支路堵塞",
+          "侧支扩张供血"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F015",
+    "split": "shared",
+    "name_zh": "共享有限池中的抢占使另一方短缺",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{consumer_a}与{consumer_b}依赖同一有限{pool}；{pool}总量不足以同时满足双方峰值需求",
+    "interactions": [
+      {
+        "subject": "consumer_a",
+        "relation": "consumer_a抢先占用pool的大部分容量",
+        "object": "pool"
+      }
+    ],
+    "effects": [
+      {
+        "role": "consumer_a",
+        "predicate": "获得高于常态的资源份额"
+      },
+      {
+        "role": "consumer_b",
+        "predicate": "因剩余份额不足而降级或等待"
+      },
+      {
+        "role": "pool",
+        "predicate": "可用余量显著下降"
+      }
+    ],
+    "invariant": "互斥资源的已分配份额会从同一固定容量中扣除。",
+    "boundary_condition": "资源可复制、容量充足或存在强制公平配额时不发生单方挤占。",
+    "near_negative": {
+      "changed_fact": "{pool}按不可越过的独立配额切分",
+      "effects": [
+        {
+          "role": "consumer_a",
+          "predicate": "只能使用自身配额"
+        },
+        {
+          "role": "consumer_b",
+          "predicate": "保有最低保障份额"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "计算",
+        "entities": {
+          "consumer_a": "批处理",
+          "consumer_b": "交互服务",
+          "pool": "内存池"
+        },
+        "before": "两者无配额共享内存",
+        "interaction_phrases": [
+          "批处理先申请大块内存"
+        ]
+      },
+      {
+        "domain": "水权",
+        "entities": {
+          "consumer_a": "上游农场",
+          "consumer_b": "下游村庄",
+          "pool": "枯水河流"
+        },
+        "before": "河流流量低且无闸门配额",
+        "interaction_phrases": [
+          "上游农场大量引水"
+        ]
+      },
+      {
+        "domain": "战场",
+        "entities": {
+          "consumer_a": "左翼军团",
+          "consumer_b": "右翼军团",
+          "pool": "预备箭矢"
+        },
+        "before": "双方共用一座弹药库",
+        "interaction_phrases": [
+          "左翼先领取多数箭矢"
+        ]
+      },
+      {
+        "domain": "生态",
+        "entities": {
+          "consumer_a": "高冠树",
+          "consumer_b": "幼苗",
+          "pool": "林隙阳光"
+        },
+        "before": "光照有限且无法储存",
+        "interaction_phrases": [
+          "高冠树先扩展树冠遮光"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F016",
+    "split": "shared",
+    "name_zh": "投入跨过固定启动门槛后产出突现",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{project}需要先满足不可分割的最低启动条件；{input}可累积且当前接近门槛",
+    "interactions": [
+      {
+        "subject": "project",
+        "relation": "向project继续投入input",
+        "object": "input"
+      },
+      {
+        "subject": "input",
+        "relation": "累计投入首次达到启动门槛",
+        "object": "project"
+      }
+    ],
+    "effects": [
+      {
+        "role": "project",
+        "predicate": "从不可运行跃迁为可运行并开始产出"
+      },
+      {
+        "role": "input",
+        "predicate": "被固定启动成本占用"
+      }
+    ],
+    "invariant": "门槛以下追加投入不产生主要输出，跨过门槛时状态离散切换。",
+    "boundary_condition": "关键条件必须全部可由累计投入满足，且门槛没有同时上移。",
+    "near_negative": {
+      "changed_fact": "追加后累计投入仍低于最低启动门槛",
+      "effects": [
+        {
+          "role": "project",
+          "predicate": "仍不能运行"
+        },
+        {
+          "role": "input",
+          "predicate": "形成未产出的沉淀投入"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "工程",
+        "entities": {
+          "project": "跨河吊桥",
+          "input": "建材与工时"
+        },
+        "before": "主索尚缺最后一段",
+        "interaction_phrases": [
+          "运来最后一批钢索",
+          "主索闭合达到通行条件"
+        ]
+      },
+      {
+        "domain": "施法",
+        "entities": {
+          "project": "传送阵",
+          "input": "法力"
+        },
+        "before": "阵中法力略低于激活线",
+        "interaction_phrases": [
+          "法师继续注入法力",
+          "总法力跨过激活线"
+        ]
+      },
+      {
+        "domain": "组织",
+        "entities": {
+          "project": "夜间巡逻队",
+          "input": "已到岗人员"
+        },
+        "before": "少于法定两人不能出发",
+        "interaction_phrases": [
+          "第二名巡逻员到岗",
+          "人数达到最低编组"
+        ]
+      },
+      {
+        "domain": "化学",
+        "entities": {
+          "project": "自持燃烧",
+          "input": "点火热量"
+        },
+        "before": "混合物接近着火温度",
+        "interaction_phrases": [
+          "火花继续供热",
+          "局部温度越过着火点"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F017",
+    "split": "shared",
+    "name_zh": "有效成分被稀释至阈值下而失效",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{solute}在{mixture}中的浓度刚高于有效阈值；{diluent}不含{solute}且可与{mixture}均匀混合",
+    "interactions": [
+      {
+        "subject": "diluent",
+        "relation": "大量diluent加入mixture并混匀",
+        "object": "mixture"
+      }
+    ],
+    "effects": [
+      {
+        "role": "mixture",
+        "predicate": "有效成分浓度降到阈值以下"
+      },
+      {
+        "role": "solute",
+        "predicate": "总量未变但单位体积作用不足"
+      }
+    ],
+    "invariant": "溶质量近似守恒而总体积增加，使浓度下降。",
+    "boundary_condition": "加入物也含有效成分或混合后总体积几乎不变时不成立。",
+    "near_negative": {
+      "changed_fact": "加入的是同浓度补充液而非无成分稀释剂",
+      "effects": [
+        {
+          "role": "mixture",
+          "predicate": "浓度保持在有效阈值以上"
+        },
+        {
+          "role": "solute",
+          "predicate": "总量随体积同步增加"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "医疗",
+        "entities": {
+          "solute": "消毒剂",
+          "mixture": "消毒槽液",
+          "diluent": "清水"
+        },
+        "before": "消毒剂浓度略高于杀菌线",
+        "interaction_phrases": [
+          "大量清水流入并搅匀"
+        ]
+      },
+      {
+        "domain": "农业",
+        "entities": {
+          "solute": "营养盐",
+          "mixture": "水培液",
+          "diluent": "雨水"
+        },
+        "before": "营养盐浓度刚够作物吸收",
+        "interaction_phrases": [
+          "暴雨灌入水池并混合"
+        ]
+      },
+      {
+        "domain": "炼金",
+        "entities": {
+          "solute": "显形粉",
+          "mixture": "侦测药剂",
+          "diluent": "无魔蒸馏水"
+        },
+        "before": "显形粉浓度刚过起效线",
+        "interaction_phrases": [
+          "蒸馏水倒入药剂并摇匀"
+        ]
+      },
+      {
+        "domain": "环境",
+        "entities": {
+          "solute": "染料",
+          "mixture": "有色河段",
+          "diluent": "上游洪水"
+        },
+        "before": "染料可被传感器检出",
+        "interaction_phrases": [
+          "洪水汇入并充分混流"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F018",
+    "split": "shared",
+    "name_zh": "少量催化者降低路径门槛加速转化",
+    "subject_count": 3,
+    "interaction_count": 1,
+    "observable_before": "{reactant}向{product}的转化受高门槛限制；{catalyst}能提供较低门槛路径且不被净消耗",
+    "interactions": [
+      {
+        "subject": "catalyst",
+        "relation": "catalyst接触reactant并参与中间步骤",
+        "object": "reactant"
+      }
+    ],
+    "effects": [
+      {
+        "role": "reactant",
+        "predicate": "以更高速率转化"
+      },
+      {
+        "role": "product",
+        "predicate": "更快累积"
+      },
+      {
+        "role": "catalyst",
+        "predicate": "过程后仍可继续促成转化"
+      }
+    ],
+    "invariant": "催化改变速率路径而不改变总体净反应并可循环复用。",
+    "boundary_condition": "催化位点被毒化、温度不在活性区或反应本身不利时效果受限。",
+    "near_negative": {
+      "changed_fact": "加入物会随第一轮反应被等量耗尽",
+      "effects": [
+        {
+          "role": "reactant",
+          "predicate": "只发生与加入物等量的一次性转化"
+        },
+        {
+          "role": "catalyst",
+          "predicate": "被消耗而不能复用"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "化工",
+        "entities": {
+          "reactant": "氢与氮",
+          "product": "氨",
+          "catalyst": "铁催化表面"
+        },
+        "before": "无表面时反应极慢",
+        "interaction_phrases": [
+          "气体吸附到铁表面"
+        ]
+      },
+      {
+        "domain": "生物",
+        "entities": {
+          "reactant": "淀粉链",
+          "product": "短糖",
+          "catalyst": "淀粉酶"
+        },
+        "before": "常温水解缓慢",
+        "interaction_phrases": [
+          "淀粉酶结合淀粉链"
+        ]
+      },
+      {
+        "domain": "组织",
+        "entities": {
+          "reactant": "互不认识的工匠",
+          "product": "协作小组",
+          "catalyst": "可信引荐人"
+        },
+        "before": "双方因信任门槛拒绝合作",
+        "interaction_phrases": [
+          "引荐人分别担保并安排会面"
+        ]
+      },
+      {
+        "domain": "魔法",
+        "entities": {
+          "reactant": "惰性符文",
+          "product": "连通符阵",
+          "catalyst": "共鸣针"
+        },
+        "before": "符文自行连通极慢",
+        "interaction_phrases": [
+          "共鸣针依次触碰符文节点"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F019",
+    "split": "shared",
+    "name_zh": "易腐价值随暴露时间不可逆衰减",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{item}的可用性会随时间衰减；{protector}当前未提供所需保存条件",
+    "interactions": [
+      {
+        "subject": "item",
+        "relation": "item持续暴露在不利环境",
+        "object": "protector"
+      },
+      {
+        "subject": "item",
+        "relation": "暴露时长超过可接受窗口",
+        "object": "protector"
+      }
+    ],
+    "effects": [
+      {
+        "role": "item",
+        "predicate": "品质降至不可用或价值大幅降低"
+      },
+      {
+        "role": "protector",
+        "predicate": "错过保护窗口后不能恢复原品质"
+      }
+    ],
+    "invariant": "累积的时间依赖损伤越过质量下限，事后保护不能逆转已发生损伤。",
+    "boundary_condition": "暴露时间短于寿命或环境被及时恢复时仍可用。",
+    "near_negative": {
+      "changed_fact": "在可接受窗口内恢复了保存条件",
+      "effects": [
+        {
+          "role": "item",
+          "predicate": "保持可用，仅有轻微损耗"
+        },
+        {
+          "role": "protector",
+          "predicate": "重新抑制后续衰减"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "食品",
+        "entities": {
+          "item": "鲜鱼",
+          "protector": "冷库"
+        },
+        "before": "冷库停电且室温偏高",
+        "interaction_phrases": [
+          "鲜鱼持续处于室温",
+          "暴露超过安全时限"
+        ]
+      },
+      {
+        "domain": "医疗",
+        "entities": {
+          "item": "疫苗",
+          "protector": "冷链箱"
+        },
+        "before": "冷链箱未制冷",
+        "interaction_phrases": [
+          "疫苗持续受热",
+          "热暴露超过稳定窗口"
+        ]
+      },
+      {
+        "domain": "信息",
+        "entities": {
+          "item": "天气预报",
+          "protector": "实时更新源"
+        },
+        "before": "更新源断开且天气快速变化",
+        "interaction_phrases": [
+          "预报持续不更新",
+          "时效超过决策窗口"
+        ]
+      },
+      {
+        "domain": "战术",
+        "entities": {
+          "item": "伏击机会",
+          "protector": "隐蔽纪律"
+        },
+        "before": "伏兵开始暴露踪迹",
+        "interaction_phrases": [
+          "敌军持续观察异常",
+          "等待超过隐蔽窗口"
+        ]
+      }
+    ]
+  },
+  {
+    "family_id": "F020",
+    "split": "shared",
+    "name_zh": "补给存在运输时延导致当前缺口不能立刻消除",
+    "subject_count": 2,
+    "interaction_count": 2,
+    "observable_before": "{consumer}当前库存低于需求；{supplier}有足量资源但与{consumer}之间存在不可忽略的运输时延",
+    "interactions": [
+      {
+        "subject": "consumer",
+        "relation": "consumer向supplier发出补给请求",
+        "object": "supplier"
+      },
+      {
+        "subject": "supplier",
+        "relation": "supplier立即发货但货物仍在途中",
+        "object": "consumer"
+      }
+    ],
+    "effects": [
+      {
+        "role": "consumer",
+        "predicate": "在到货前仍承受短缺"
+      },
+      {
+        "role": "supplier",
+        "predicate": "库存已扣减并形成在途量"
+      }
+    ],
+    "invariant": "上游动作的效果只有经过传播或运输延迟后才到达下游。",
+    "boundary_condition": "消费者有本地安全库存或传输近乎即时则当前缺口可被覆盖。",
+    "near_negative": {
+      "changed_fact": "{consumer}持有足够覆盖运输期的安全库存",
+      "effects": [
+        {
+          "role": "consumer",
+          "predicate": "到货前维持正常运行"
+        },
+        {
+          "role": "supplier",
+          "predicate": "按时补回安全库存"
+        }
+      ]
+    },
+    "domain_realizations": [
+      {
+        "domain": "军事",
+        "entities": {
+          "consumer": "边境要塞",
+          "supplier": "王都军库"
+        },
+        "before": "箭矢将尽且车队需三日",
+        "interaction_phrases": [
+          "要塞发出急件",
+          "军库当日装车但仍在路上"
+        ]
+      },
+      {
+        "domain": "制造",
+        "entities": {
+          "consumer": "装配厂",
+          "supplier": "海外芯片厂"
+        },
+        "before": "芯片库存不足且海运需数周",
+        "interaction_phrases": [
+          "装配厂下加急订单",
+          "芯片厂发货进入海运"
+        ]
+      },
+      {
+        "domain": "计算",
+        "entities": {
+          "consumer": "边缘节点",
+          "supplier": "远端对象存储"
+        },
+        "before": "本地缺块且链路高延迟",
+        "interaction_phrases": [
+          "节点请求缺失数据",
+          "远端立即发送但包尚未到达"
+        ]
+      },
+      {
+        "domain": "生理",
+        "entities": {
+          "consumer": "活动肌肉",
+          "supplier": "消化道营养"
+        },
+        "before": "局部能量不足且吸收需要时间",
+        "interaction_phrases": [
+          "个体摄入食物",
+          "营养开始消化但未入血"
+        ]
+      }
+    ]
+  }
+]

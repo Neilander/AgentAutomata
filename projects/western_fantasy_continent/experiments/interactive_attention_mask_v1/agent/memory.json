@@ -1,0 +1,219 @@
+{
+  "schema": "interactive-attention-mask-memory-v1",
+  "sourceRuleIds": [
+    "R01",
+    "R02",
+    "R03",
+    "R04",
+    "R05",
+    "R06",
+    "R07",
+    "R08"
+  ],
+  "actionSchemas": [
+    {
+      "id": "A01_PLACE_DIE_AND_DESCEND_COLUMN",
+      "sourceRuleIds": ["R01", "R02"],
+      "trigger": "玩家把一个骰子放入某列的基地格",
+      "attention": ["放置骰的点数与颜色", "基地格局部特征", "该列全部外星飞船"],
+      "action": "先应用基地格修正，得到实际下降格数；该列每艘外星飞船按实际格数下降",
+      "result": "每艘飞船得到一个候选最终停留格；若实际下降为0则进入零移动边界"
+    },
+    {
+      "id": "A02_RESOLVE_FINAL_LANDING_ONLY",
+      "sourceRuleIds": ["R03"],
+      "trigger": "一艘飞船完成非零纵向下降",
+      "attention": ["飞船最终停留格的局部特征"],
+      "action": "忽略路径中经过格的图标，只检查最终停留格",
+      "result": "按最终停留格唤醒后续落点动作"
+    },
+    {
+      "id": "A03_MOTHERSHIP_DROP",
+      "sourceRuleIds": ["R04"],
+      "trigger": "飞船当前最终停留格是母舰下降格",
+      "attention": ["最终停留格是否为母舰下降格", "母舰下降后的新行特征"],
+      "action": "母舰立即下降一行，不结算该行右侧动作；随后检查新行是否为骷髅行",
+      "result": "若新行为骷髅行则立即失败，否则结束该飞船的落点链"
+    },
+    {
+      "id": "A04_FOLLOW_ARROW",
+      "sourceRuleIds": ["R05"],
+      "trigger": "飞船当前最终停留格是箭头格",
+      "attention": ["箭头方向与目标格", "箭头目标格的局部特征"],
+      "action": "沿箭头横向移动到目标格，把目标格替换为新的最终停留格",
+      "result": "递归检查并结算新的最终停留格"
+    },
+    {
+      "id": "A05_DAMAGE_CITY_AND_RETURN",
+      "sourceRuleIds": ["R07"],
+      "trigger": "飞船当前最终停留格的局部特征被标记为城市命中",
+      "attention": ["当前最终停留格的城市命中标记", "城市当前伤害", "该飞船当前位置"],
+      "action": "城市受到1点伤害，该飞船返回母舰等待区",
+      "result": "结束该飞船的落点链"
+    },
+    {
+      "id": "A06_REROLL_UNPLACED_WHITE_DIE_BOUNDARY",
+      "sourceRuleIds": ["R08"],
+      "trigger": "本次放置的是白色骰子，且本次放置引发的全部飞船移动和落点效果均已结算",
+      "attention": ["所放骰子的颜色", "全部受影响飞船是否结算完毕", "所有尚未放置的骰子"],
+      "action": "重新投掷所有尚未放置的骰子",
+      "result": "进入未知随机结果边界；新点数出现前停止确定性预想"
+    }
+  ],
+  "attentionPresets": [
+    {
+      "id": "P01_PLACEMENT_CONTEXT",
+      "when": "处理放骰",
+      "focus": ["骰子点数", "骰子颜色", "基地格修正", "目标列全部飞船"]
+    },
+    {
+      "id": "P02_ZERO_MOVE_GATE",
+      "when": "应用基地格修正后",
+      "focus": ["实际下降格数是否为0"]
+    },
+    {
+      "id": "P03_FINAL_CELL_ONLY",
+      "when": "一艘飞船非零移动后",
+      "focus": ["当前最终停留格局部特征"],
+      "ignore": ["路径经过格及其图标"]
+    },
+    {
+      "id": "P04_ARROW_TARGET",
+      "when": "当前最终停留格是箭头格",
+      "focus": ["箭头目标格", "目标格局部特征"],
+      "note": "目标格成为新的最终停留格，必须再次完整检查"
+    },
+    {
+      "id": "P05_MOTHERSHIP_NEW_ROW",
+      "when": "当前最终停留格是母舰下降格",
+      "focus": ["母舰下降后的新行是否为骷髅行"],
+      "ignore": ["母舰所在行右侧动作"]
+    },
+    {
+      "id": "P06_CITY_HIT",
+      "when": "检查任一当前最终停留格，包括箭头目标格",
+      "focus": ["局部特征是否标记城市命中"]
+    },
+    {
+      "id": "P07_WHITE_DIE_POST_RESOLUTION",
+      "when": "本次放置引发的全部飞船链都结束后",
+      "focus": ["所放骰是否为白色", "尚未放置的骰子集合"]
+    }
+  ],
+  "glueMemories": [
+    {
+      "id": "G01_PLACE_TO_EACH_SHIP",
+      "sourceRuleIds": ["R01", "R02"],
+      "from": "放骰并算出实际下降格数",
+      "to": "逐艘处理该列全部外星飞船",
+      "condition": "实际下降格数大于0"
+    },
+    {
+      "id": "G02_DESCENT_TO_FINAL_CHECK",
+      "sourceRuleIds": ["R03"],
+      "from": "飞船完成纵向下降",
+      "to": "只检查最终停留格",
+      "condition": "不得由路径经过格唤醒任何落点动作"
+    },
+    {
+      "id": "G03_FINAL_TO_MOTHERSHIP",
+      "sourceRuleIds": ["R04"],
+      "from": "最终停留格检查",
+      "to": "母舰下降并检查新行",
+      "condition": "最终停留格为母舰下降格"
+    },
+    {
+      "id": "G04_MOTHERSHIP_TO_FAILURE",
+      "sourceRuleIds": ["R04"],
+      "from": "母舰下降一行",
+      "to": "玩家立即失败",
+      "condition": "母舰新行为骷髅行"
+    },
+    {
+      "id": "G05_FINAL_TO_ARROW_TARGET",
+      "sourceRuleIds": ["R05"],
+      "from": "最终停留格检查",
+      "to": "横移到箭头目标并把它设为新的最终停留格",
+      "condition": "当前最终停留格为箭头格"
+    },
+    {
+      "id": "G06_ARROW_RECURSIVE_RECHECK",
+      "sourceRuleIds": ["R05"],
+      "from": "到达箭头目标格",
+      "to": "重新检查新的最终停留格并继续结算",
+      "condition": "不把箭头横移误当成落点链结束"
+    },
+    {
+      "id": "G07_ANY_FINAL_TO_CITY_HIT",
+      "sourceRuleIds": ["R07"],
+      "from": "检查当前最终停留格",
+      "to": "城市受1点伤害且飞船返回母舰等待区",
+      "condition": "局部特征标记为城市命中；纵向下降或箭头横移抵达均适用"
+    },
+    {
+      "id": "G08_ALL_SHIPS_TO_WHITE_REROLL",
+      "sourceRuleIds": ["R08"],
+      "from": "本次放置引发的全部飞船移动与落点效果完成",
+      "to": "重新投掷所有尚未放置的骰子",
+      "condition": "本次放置的是白色骰子"
+    }
+  ],
+  "noActionMemories": [
+    {
+      "id": "N01_ZERO_DESCENT_NO_LANDING",
+      "sourceRuleIds": ["R02"],
+      "condition": "实际下降格数为0",
+      "effect": "飞船不移动，也不触发任何飞船落点效果"
+    },
+    {
+      "id": "N02_PASSED_CELL_ICONS_IGNORED",
+      "sourceRuleIds": ["R03"],
+      "condition": "天空格只是在下降路径中被经过",
+      "effect": "即使带图标也不触发"
+    },
+    {
+      "id": "N03_EXPLOSION_NO_IMMEDIATE_EFFECT",
+      "sourceRuleIds": ["R06"],
+      "condition": "当前最终停留格为爆炸格",
+      "effect": "当前骰子放置阶段无立即效果；确认后结束该飞船落点链"
+    },
+    {
+      "id": "N04_NORMAL_SKY_NO_IMMEDIATE_EFFECT",
+      "sourceRuleIds": ["R06"],
+      "condition": "当前最终停留格为普通天空格",
+      "effect": "无立即效果；确认后结束该飞船落点链"
+    },
+    {
+      "id": "N05_MOTHERSHIP_RIGHT_ACTION_IGNORED",
+      "sourceRuleIds": ["R04"],
+      "condition": "母舰因飞船落在母舰下降格而下降一行",
+      "effect": "不结算该行右侧动作"
+    }
+  ],
+  "stopBoundaries": [
+    {
+      "id": "S01_ZERO_MOVE_STOP",
+      "sourceRuleIds": ["R02"],
+      "condition": "实际下降格数为0",
+      "stop": "该飞船没有落点链"
+    },
+    {
+      "id": "S02_TERMINAL_CELL_STOP",
+      "sourceRuleIds": ["R04", "R06", "R07"],
+      "condition": "飞船落点链已因非骷髅母舰下降、爆炸格、普通天空格或城市命中返回而结束",
+      "stop": "不再为该飞船推演落点动作；继续处理尚未结算的其他飞船"
+    },
+    {
+      "id": "S03_IMMEDIATE_FAILURE_STOP",
+      "sourceRuleIds": ["R04"],
+      "condition": "母舰下降后的新行是骷髅行",
+      "stop": "玩家立即失败，停止后续推演"
+    },
+    {
+      "id": "S04_RANDOM_REROLL_STOP",
+      "sourceRuleIds": ["R08"],
+      "condition": "白色骰子触发对所有尚未放置骰子的重投，且随机新点数尚未出现",
+      "stop": "确定性预想在此停止，不猜测随机结果"
+    }
+  ]
+}

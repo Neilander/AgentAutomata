@@ -1,0 +1,1799 @@
+{
+  "schema": "semantic_action_glue_mvp_v1",
+  "modelFrozenBeforeCases": true,
+  "scenarioCount": 8,
+  "passCount": 8,
+  "results": [
+    {
+      "id": "arrow_then_city_recursive",
+      "actionTrace": [
+        "move",
+        "move",
+        "damage",
+        "relocate"
+      ],
+      "awakenedPresets": [
+        "ship_lands_right_arrow",
+        "ship_hits_city"
+      ],
+      "wakeTrace": [
+        {
+          "feature": "一个画着向右尖头、会引导飞船横移的天空格",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "ship_lands_right_arrow",
+              "score": 0.7332758031829723,
+              "objectScore": 0.8109367187032758,
+              "trendScore": 0.42263214110175806
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.7046681599626443,
+              "objectScore": 0.7544662488317408,
+              "trendScore": 0.5054758044862578
+            },
+            {
+              "id": "ship_lands_explosion_no_immediate_effect",
+              "score": 0.6783700859238624,
+              "objectScore": 0.7218843889142482,
+              "trendScore": 0.5043128739623187
+            }
+          ],
+          "margin": 0.02860764322032794,
+          "activationVector": [
+            0.7332758031829723,
+            0.7046681599626443,
+            0.624296685656892,
+            0.6783700859238624,
+            0.6425800140231254
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            true,
+            true,
+            false,
+            true,
+            false
+          ],
+          "rawCandidate": "ship_lands_right_arrow",
+          "verifiedPreset": "ship_lands_right_arrow",
+          "knownNoImmediateEffect": false
+        },
+        {
+          "feature": "天空区域下方与玩家城市相撞的位置",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "ship_hits_city",
+              "score": 0.7880742009160553,
+              "objectScore": 0.8231640373346514,
+              "trendScore": 0.6477148552416706
+            },
+            {
+              "id": "ship_lands_explosion_no_immediate_effect",
+              "score": 0.6958133116116925,
+              "objectScore": 0.7144859891661672,
+              "trendScore": 0.6211226013937932
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.6946378523308099,
+              "objectScore": 0.7312540332131557,
+              "trendScore": 0.5481731288014263
+            }
+          ],
+          "margin": 0.09226088930436283,
+          "activationVector": [
+            0.6384636491631511,
+            0.6946378523308099,
+            0.7880742009160553,
+            0.6958133116116925,
+            0.6376222739593456
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            false,
+            true,
+            true,
+            true,
+            false
+          ],
+          "rawCandidate": "ship_hits_city",
+          "verifiedPreset": "ship_hits_city",
+          "knownNoImmediateEffect": false
+        }
+      ],
+      "noticed": [
+        {
+          "action": "move",
+          "feature": "一个画着向右尖头、会引导飞船横移的天空格",
+          "role": "endpoint",
+          "salience": 1.0
+        },
+        {
+          "action": "move",
+          "feature": "天空区域下方与玩家城市相撞的位置",
+          "role": "endpoint",
+          "salience": 1.0
+        }
+      ],
+      "world": {
+        "stage": "dice",
+        "units": {
+          "sky-c0-r0": {
+            "id": "sky-c0-r0",
+            "feature": null
+          },
+          "sky-c1-r0": {
+            "id": "sky-c1-r0",
+            "feature": null
+          },
+          "sky-c0-r1": {
+            "id": "sky-c0-r1",
+            "feature": "一个画着向右尖头、会引导飞船横移的天空格"
+          },
+          "sky-c1-r1": {
+            "id": "sky-c1-r1",
+            "feature": "天空区域下方与玩家城市相撞的位置"
+          },
+          "sky-c0-r2": {
+            "id": "sky-c0-r2",
+            "feature": null
+          },
+          "sky-c1-r2": {
+            "id": "sky-c1-r2",
+            "feature": null
+          },
+          "sky-c0-r3": {
+            "id": "sky-c0-r3",
+            "feature": null
+          },
+          "sky-c1-r3": {
+            "id": "sky-c1-r3",
+            "feature": null
+          },
+          "mothership-r0": {
+            "id": "mothership-r0",
+            "feature": null
+          },
+          "mothership-r1": {
+            "id": "mothership-r1",
+            "feature": null
+          },
+          "mothership-waiting": {
+            "id": "mothership-waiting",
+            "feature": null
+          }
+        },
+        "connections": [
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c0-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c1-r0",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r0",
+            "to": "sky-c1-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c0-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c1-r1",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r1",
+            "to": "sky-c1-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c0-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c1-r2",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r2",
+            "to": "sky-c1-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r3",
+            "to": "sky-c1-r3",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "mothership-r0",
+            "to": "mothership-r1",
+            "kind": "mothership_down",
+            "direction": "down"
+          }
+        ],
+        "entities": {
+          "ship": {
+            "id": "ship",
+            "type": "ship",
+            "description": "外星飞船",
+            "unitId": "mothership-waiting"
+          },
+          "mothership": {
+            "id": "mothership",
+            "type": "mothership",
+            "description": "敌方母舰",
+            "unitId": "mothership-r0"
+          },
+          "city": {
+            "id": "city",
+            "type": "city",
+            "description": "玩家城市",
+            "unitId": "sky-c1-r3",
+            "hp": 2
+          }
+        },
+        "outcome": null
+      },
+      "expectedPresets": [
+        "ship_lands_right_arrow",
+        "ship_hits_city"
+      ],
+      "expectedActions": [
+        "move",
+        "move",
+        "damage",
+        "relocate"
+      ],
+      "presetPass": true,
+      "actionPass": true
+    },
+    {
+      "id": "paraphrased_arrow_random_upstream",
+      "actionTrace": [
+        "move",
+        "move"
+      ],
+      "awakenedPresets": [
+        "ship_lands_right_arrow"
+      ],
+      "wakeTrace": [
+        {
+          "feature": "提示外星载具朝右侧换列的导航标记",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "ship_lands_right_arrow",
+              "score": 0.7037108803274341,
+              "objectScore": 0.7717131052739763,
+              "trendScore": 0.4317019805412653
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.6467453401058196,
+              "objectScore": 0.6755562043171977,
+              "trendScore": 0.5315018832603075
+            },
+            {
+              "id": "ship_hits_city",
+              "score": 0.6198807460164479,
+              "objectScore": 0.636354729840534,
+              "trendScore": 0.5539848107201034
+            }
+          ],
+          "margin": 0.056965540221614486,
+          "activationVector": [
+            0.7037108803274341,
+            0.6467453401058196,
+            0.6198807460164479,
+            0.5636528071517525,
+            0.6178201431342021
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            true,
+            false,
+            false,
+            false,
+            false
+          ],
+          "rawCandidate": "ship_lands_right_arrow",
+          "verifiedPreset": "ship_lands_right_arrow",
+          "knownNoImmediateEffect": false
+        }
+      ],
+      "noticed": [
+        {
+          "action": "move",
+          "feature": "提示外星载具朝右侧换列的导航标记",
+          "role": "endpoint",
+          "salience": 1.0
+        }
+      ],
+      "world": {
+        "stage": "dice",
+        "units": {
+          "sky-c0-r0": {
+            "id": "sky-c0-r0",
+            "feature": null
+          },
+          "sky-c1-r0": {
+            "id": "sky-c1-r0",
+            "feature": null
+          },
+          "sky-c0-r1": {
+            "id": "sky-c0-r1",
+            "feature": "提示外星载具朝右侧换列的导航标记"
+          },
+          "sky-c1-r1": {
+            "id": "sky-c1-r1",
+            "feature": null
+          },
+          "sky-c0-r2": {
+            "id": "sky-c0-r2",
+            "feature": null
+          },
+          "sky-c1-r2": {
+            "id": "sky-c1-r2",
+            "feature": null
+          },
+          "sky-c0-r3": {
+            "id": "sky-c0-r3",
+            "feature": null
+          },
+          "sky-c1-r3": {
+            "id": "sky-c1-r3",
+            "feature": null
+          },
+          "mothership-r0": {
+            "id": "mothership-r0",
+            "feature": null
+          },
+          "mothership-r1": {
+            "id": "mothership-r1",
+            "feature": null
+          },
+          "mothership-waiting": {
+            "id": "mothership-waiting",
+            "feature": null
+          }
+        },
+        "connections": [
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c0-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c1-r0",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r0",
+            "to": "sky-c1-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c0-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c1-r1",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r1",
+            "to": "sky-c1-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c0-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c1-r2",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r2",
+            "to": "sky-c1-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r3",
+            "to": "sky-c1-r3",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "mothership-r0",
+            "to": "mothership-r1",
+            "kind": "mothership_down",
+            "direction": "down"
+          }
+        ],
+        "entities": {
+          "ship": {
+            "id": "ship",
+            "type": "ship",
+            "description": "白色外星载具",
+            "unitId": "sky-c1-r1"
+          },
+          "mothership": {
+            "id": "mothership",
+            "type": "mothership",
+            "description": "敌方母舰",
+            "unitId": "mothership-r0"
+          },
+          "city": {
+            "id": "city",
+            "type": "city",
+            "description": "玩家城市",
+            "unitId": "sky-c1-r3",
+            "hp": 3
+          }
+        },
+        "outcome": null
+      },
+      "expectedPresets": [
+        "ship_lands_right_arrow"
+      ],
+      "expectedActions": [
+        "move",
+        "move"
+      ],
+      "presetPass": true,
+      "actionPass": true
+    },
+    {
+      "id": "mothership_signal_then_skull_recursive",
+      "actionTrace": [
+        "move",
+        "move",
+        "outcome"
+      ],
+      "awakenedPresets": [
+        "ship_lands_mothership_down",
+        "mothership_reaches_skull"
+      ],
+      "wakeTrace": [
+        {
+          "feature": "印着母舰向下图案的信号区域",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "mothership_reaches_skull",
+              "score": 0.803550330410389,
+              "objectScore": 0.835345662267848,
+              "trendScore": 0.676369002980553
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.8014544799750167,
+              "objectScore": 0.8558617824267437,
+              "trendScore": 0.5838252701681085
+            },
+            {
+              "id": "ship_hits_city",
+              "score": 0.6533900085500655,
+              "objectScore": 0.6492612894351927,
+              "trendScore": 0.6699048850095563
+            }
+          ],
+          "margin": 0.002095850435372304,
+          "activationVector": [
+            0.617478308957278,
+            0.8014544799750167,
+            0.6533900085500655,
+            0.6471642524066288,
+            0.803550330410389
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            false,
+            true,
+            false,
+            false,
+            false
+          ],
+          "rawCandidate": "mothership_reaches_skull",
+          "verifiedPreset": "ship_lands_mothership_down",
+          "knownNoImmediateEffect": false
+        },
+        {
+          "feature": "带有骷髅图案、母舰到达便会失败的轨道行",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "mothership_reaches_skull",
+              "score": 0.8310530637696835,
+              "objectScore": 0.8768639488053473,
+              "trendScore": 0.6478095236270276
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.6950994432811909,
+              "objectScore": 0.7292267952376955,
+              "trendScore": 0.558590035455172
+            },
+            {
+              "id": "ship_hits_city",
+              "score": 0.6134366903654678,
+              "objectScore": 0.6312819287194228,
+              "trendScore": 0.5420557369496476
+            }
+          ],
+          "margin": 0.13595362048849258,
+          "activationVector": [
+            0.5481648310049736,
+            0.6950994432811909,
+            0.6134366903654678,
+            0.5791601083206609,
+            0.8310530637696835
+          ],
+          "factMask": [
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "effectiveMask": [
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "rawCandidate": "mothership_reaches_skull",
+          "verifiedPreset": "mothership_reaches_skull",
+          "knownNoImmediateEffect": false
+        }
+      ],
+      "noticed": [
+        {
+          "action": "move",
+          "feature": "印着母舰向下图案的信号区域",
+          "role": "endpoint",
+          "salience": 1.0
+        },
+        {
+          "action": "move",
+          "feature": "带有骷髅图案、母舰到达便会失败的轨道行",
+          "role": "endpoint",
+          "salience": 1.0
+        }
+      ],
+      "world": {
+        "stage": "dice",
+        "units": {
+          "sky-c0-r0": {
+            "id": "sky-c0-r0",
+            "feature": null
+          },
+          "sky-c1-r0": {
+            "id": "sky-c1-r0",
+            "feature": null
+          },
+          "sky-c0-r1": {
+            "id": "sky-c0-r1",
+            "feature": "印着母舰向下图案的信号区域"
+          },
+          "sky-c1-r1": {
+            "id": "sky-c1-r1",
+            "feature": null
+          },
+          "sky-c0-r2": {
+            "id": "sky-c0-r2",
+            "feature": null
+          },
+          "sky-c1-r2": {
+            "id": "sky-c1-r2",
+            "feature": null
+          },
+          "sky-c0-r3": {
+            "id": "sky-c0-r3",
+            "feature": null
+          },
+          "sky-c1-r3": {
+            "id": "sky-c1-r3",
+            "feature": null
+          },
+          "mothership-r0": {
+            "id": "mothership-r0",
+            "feature": null
+          },
+          "mothership-r1": {
+            "id": "mothership-r1",
+            "feature": "带有骷髅图案、母舰到达便会失败的轨道行"
+          },
+          "mothership-waiting": {
+            "id": "mothership-waiting",
+            "feature": null
+          }
+        },
+        "connections": [
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c0-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c1-r0",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r0",
+            "to": "sky-c1-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c0-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c1-r1",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r1",
+            "to": "sky-c1-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c0-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c1-r2",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r2",
+            "to": "sky-c1-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r3",
+            "to": "sky-c1-r3",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "mothership-r0",
+            "to": "mothership-r1",
+            "kind": "mothership_down",
+            "direction": "down"
+          }
+        ],
+        "entities": {
+          "ship": {
+            "id": "ship",
+            "type": "ship",
+            "description": "外星飞船",
+            "unitId": "sky-c0-r1"
+          },
+          "mothership": {
+            "id": "mothership",
+            "type": "mothership",
+            "description": "敌方母舰",
+            "unitId": "mothership-r1"
+          },
+          "city": {
+            "id": "city",
+            "type": "city",
+            "description": "玩家城市",
+            "unitId": "sky-c1-r3",
+            "hp": 3
+          }
+        },
+        "outcome": {
+          "value": "loss",
+          "reason": "母舰抵达骷髅行"
+        }
+      },
+      "expectedPresets": [
+        "ship_lands_mothership_down",
+        "mothership_reaches_skull"
+      ],
+      "expectedActions": [
+        "move",
+        "move",
+        "outcome"
+      ],
+      "presetPass": true,
+      "actionPass": true
+    },
+    {
+      "id": "direct_city_hit",
+      "actionTrace": [
+        "move",
+        "damage",
+        "relocate"
+      ],
+      "awakenedPresets": [
+        "ship_hits_city"
+      ],
+      "wakeTrace": [
+        {
+          "feature": "飞船下降到底部后会撞上的城市建筑群",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "ship_hits_city",
+              "score": 0.8512885260662513,
+              "objectScore": 0.9078725108657987,
+              "trendScore": 0.6249525868680617
+            },
+            {
+              "id": "mothership_reaches_skull",
+              "score": 0.6816536333289088,
+              "objectScore": 0.6892639891582947,
+              "trendScore": 0.6512122100113654
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.6720102363337974,
+              "objectScore": 0.7088714330834502,
+              "trendScore": 0.5245654493351859
+            }
+          ],
+          "margin": 0.16963489273734245,
+          "activationVector": [
+            0.5754665781164778,
+            0.6720102363337974,
+            0.8512885260662513,
+            0.6255518260929045,
+            0.6816536333289088
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            false,
+            true,
+            true,
+            false,
+            false
+          ],
+          "rawCandidate": "ship_hits_city",
+          "verifiedPreset": "ship_hits_city",
+          "knownNoImmediateEffect": false
+        }
+      ],
+      "noticed": [
+        {
+          "action": "move",
+          "feature": "飞船下降到底部后会撞上的城市建筑群",
+          "role": "endpoint",
+          "salience": 1.0
+        }
+      ],
+      "world": {
+        "stage": "dice",
+        "units": {
+          "sky-c0-r0": {
+            "id": "sky-c0-r0",
+            "feature": null
+          },
+          "sky-c1-r0": {
+            "id": "sky-c1-r0",
+            "feature": null
+          },
+          "sky-c0-r1": {
+            "id": "sky-c0-r1",
+            "feature": "飞船下降到底部后会撞上的城市建筑群"
+          },
+          "sky-c1-r1": {
+            "id": "sky-c1-r1",
+            "feature": null
+          },
+          "sky-c0-r2": {
+            "id": "sky-c0-r2",
+            "feature": null
+          },
+          "sky-c1-r2": {
+            "id": "sky-c1-r2",
+            "feature": null
+          },
+          "sky-c0-r3": {
+            "id": "sky-c0-r3",
+            "feature": null
+          },
+          "sky-c1-r3": {
+            "id": "sky-c1-r3",
+            "feature": null
+          },
+          "mothership-r0": {
+            "id": "mothership-r0",
+            "feature": null
+          },
+          "mothership-r1": {
+            "id": "mothership-r1",
+            "feature": null
+          },
+          "mothership-waiting": {
+            "id": "mothership-waiting",
+            "feature": null
+          }
+        },
+        "connections": [
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c0-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c1-r0",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r0",
+            "to": "sky-c1-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c0-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c1-r1",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r1",
+            "to": "sky-c1-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c0-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c1-r2",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r2",
+            "to": "sky-c1-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r3",
+            "to": "sky-c1-r3",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "mothership-r0",
+            "to": "mothership-r1",
+            "kind": "mothership_down",
+            "direction": "down"
+          }
+        ],
+        "entities": {
+          "ship": {
+            "id": "ship",
+            "type": "ship",
+            "description": "外星飞船",
+            "unitId": "mothership-waiting"
+          },
+          "mothership": {
+            "id": "mothership",
+            "type": "mothership",
+            "description": "敌方母舰",
+            "unitId": "mothership-r0"
+          },
+          "city": {
+            "id": "city",
+            "type": "city",
+            "description": "玩家城市",
+            "unitId": "sky-c1-r3",
+            "hp": 2
+          }
+        },
+        "outcome": null
+      },
+      "expectedPresets": [
+        "ship_hits_city"
+      ],
+      "expectedActions": [
+        "move",
+        "damage",
+        "relocate"
+      ],
+      "presetPass": true,
+      "actionPass": true
+    },
+    {
+      "id": "explosion_known_no_immediate_effect",
+      "actionTrace": [
+        "move"
+      ],
+      "awakenedPresets": [
+        "ship_lands_explosion_no_immediate_effect"
+      ],
+      "wakeTrace": [
+        {
+          "feature": "一块画着明亮爆炸符号的天空地块",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "ship_lands_explosion_no_immediate_effect",
+              "score": 0.8867237499853597,
+              "objectScore": 0.9653205303488139,
+              "trendScore": 0.5723366285315429
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.7368913828506826,
+              "objectScore": 0.810651177734017,
+              "trendScore": 0.441852203317345
+            },
+            {
+              "id": "ship_lands_right_arrow",
+              "score": 0.7290783758967663,
+              "objectScore": 0.805116925713514,
+              "trendScore": 0.4249241766297751
+            }
+          ],
+          "margin": 0.14983236713467718,
+          "activationVector": [
+            0.7290783758967663,
+            0.7368913828506826,
+            0.6776098045590679,
+            0.8867237499853597,
+            0.6292900861075971
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            true,
+            true,
+            false,
+            true,
+            false
+          ],
+          "rawCandidate": "ship_lands_explosion_no_immediate_effect",
+          "verifiedPreset": "ship_lands_explosion_no_immediate_effect",
+          "knownNoImmediateEffect": true
+        }
+      ],
+      "noticed": [
+        {
+          "action": "move",
+          "feature": "一块画着明亮爆炸符号的天空地块",
+          "role": "endpoint",
+          "salience": 1.0
+        }
+      ],
+      "world": {
+        "stage": "dice",
+        "units": {
+          "sky-c0-r0": {
+            "id": "sky-c0-r0",
+            "feature": null
+          },
+          "sky-c1-r0": {
+            "id": "sky-c1-r0",
+            "feature": null
+          },
+          "sky-c0-r1": {
+            "id": "sky-c0-r1",
+            "feature": "一块画着明亮爆炸符号的天空地块"
+          },
+          "sky-c1-r1": {
+            "id": "sky-c1-r1",
+            "feature": null
+          },
+          "sky-c0-r2": {
+            "id": "sky-c0-r2",
+            "feature": null
+          },
+          "sky-c1-r2": {
+            "id": "sky-c1-r2",
+            "feature": null
+          },
+          "sky-c0-r3": {
+            "id": "sky-c0-r3",
+            "feature": null
+          },
+          "sky-c1-r3": {
+            "id": "sky-c1-r3",
+            "feature": null
+          },
+          "mothership-r0": {
+            "id": "mothership-r0",
+            "feature": null
+          },
+          "mothership-r1": {
+            "id": "mothership-r1",
+            "feature": null
+          },
+          "mothership-waiting": {
+            "id": "mothership-waiting",
+            "feature": null
+          }
+        },
+        "connections": [
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c0-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c1-r0",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r0",
+            "to": "sky-c1-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c0-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c1-r1",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r1",
+            "to": "sky-c1-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c0-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c1-r2",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r2",
+            "to": "sky-c1-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r3",
+            "to": "sky-c1-r3",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "mothership-r0",
+            "to": "mothership-r1",
+            "kind": "mothership_down",
+            "direction": "down"
+          }
+        ],
+        "entities": {
+          "ship": {
+            "id": "ship",
+            "type": "ship",
+            "description": "外星飞船",
+            "unitId": "sky-c0-r1"
+          },
+          "mothership": {
+            "id": "mothership",
+            "type": "mothership",
+            "description": "敌方母舰",
+            "unitId": "mothership-r0"
+          },
+          "city": {
+            "id": "city",
+            "type": "city",
+            "description": "玩家城市",
+            "unitId": "sky-c1-r3",
+            "hp": 3
+          }
+        },
+        "outcome": null
+      },
+      "expectedPresets": [
+        "ship_lands_explosion_no_immediate_effect"
+      ],
+      "expectedActions": [
+        "move"
+      ],
+      "presetPass": true,
+      "actionPass": true
+    },
+    {
+      "id": "arrow_seen_on_path_but_not_endpoint",
+      "actionTrace": [
+        "move"
+      ],
+      "awakenedPresets": [],
+      "wakeTrace": [],
+      "noticed": [
+        {
+          "action": "move",
+          "feature": "指示飞船向右横移的箭头格",
+          "role": "path",
+          "salience": 0.45
+        }
+      ],
+      "world": {
+        "stage": "dice",
+        "units": {
+          "sky-c0-r0": {
+            "id": "sky-c0-r0",
+            "feature": null
+          },
+          "sky-c1-r0": {
+            "id": "sky-c1-r0",
+            "feature": null
+          },
+          "sky-c0-r1": {
+            "id": "sky-c0-r1",
+            "feature": "指示飞船向右横移的箭头格"
+          },
+          "sky-c1-r1": {
+            "id": "sky-c1-r1",
+            "feature": null
+          },
+          "sky-c0-r2": {
+            "id": "sky-c0-r2",
+            "feature": null
+          },
+          "sky-c1-r2": {
+            "id": "sky-c1-r2",
+            "feature": null
+          },
+          "sky-c0-r3": {
+            "id": "sky-c0-r3",
+            "feature": null
+          },
+          "sky-c1-r3": {
+            "id": "sky-c1-r3",
+            "feature": null
+          },
+          "mothership-r0": {
+            "id": "mothership-r0",
+            "feature": null
+          },
+          "mothership-r1": {
+            "id": "mothership-r1",
+            "feature": null
+          },
+          "mothership-waiting": {
+            "id": "mothership-waiting",
+            "feature": null
+          }
+        },
+        "connections": [
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c0-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c1-r0",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r0",
+            "to": "sky-c1-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c0-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c1-r1",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r1",
+            "to": "sky-c1-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c0-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c1-r2",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r2",
+            "to": "sky-c1-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r3",
+            "to": "sky-c1-r3",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "mothership-r0",
+            "to": "mothership-r1",
+            "kind": "mothership_down",
+            "direction": "down"
+          }
+        ],
+        "entities": {
+          "ship": {
+            "id": "ship",
+            "type": "ship",
+            "description": "外星飞船",
+            "unitId": "sky-c0-r2"
+          },
+          "mothership": {
+            "id": "mothership",
+            "type": "mothership",
+            "description": "敌方母舰",
+            "unitId": "mothership-r0"
+          },
+          "city": {
+            "id": "city",
+            "type": "city",
+            "description": "玩家城市",
+            "unitId": "sky-c1-r3",
+            "hp": 3
+          }
+        },
+        "outcome": null
+      },
+      "expectedPresets": [],
+      "expectedActions": [
+        "move"
+      ],
+      "presetPass": true,
+      "actionPass": true
+    },
+    {
+      "id": "unknown_endpoint_stays_question",
+      "actionTrace": [
+        "move"
+      ],
+      "awakenedPresets": [],
+      "wakeTrace": [
+        {
+          "feature": "从未见过的紫色旋涡符文格",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "ship_lands_explosion_no_immediate_effect",
+              "score": 0.6049418390523964,
+              "objectScore": 0.59396985514072,
+              "trendScore": 0.648829774699102
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.5837348857446821,
+              "objectScore": 0.5870172583935289,
+              "trendScore": 0.5706053951492948
+            },
+            {
+              "id": "ship_lands_right_arrow",
+              "score": 0.5755707147480933,
+              "objectScore": 0.5852768023803058,
+              "trendScore": 0.5367463642192433
+            }
+          ],
+          "margin": 0.02120695330771427,
+          "activationVector": [
+            0.5755707147480933,
+            0.5837348857446821,
+            0.5744922555793043,
+            0.6049418390523964,
+            0.5412202105174191
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "rawCandidate": null,
+          "verifiedPreset": null,
+          "knownNoImmediateEffect": false
+        }
+      ],
+      "noticed": [
+        {
+          "action": "move",
+          "feature": "从未见过的紫色旋涡符文格",
+          "role": "endpoint",
+          "salience": 1.0
+        }
+      ],
+      "world": {
+        "stage": "dice",
+        "units": {
+          "sky-c0-r0": {
+            "id": "sky-c0-r0",
+            "feature": null
+          },
+          "sky-c1-r0": {
+            "id": "sky-c1-r0",
+            "feature": null
+          },
+          "sky-c0-r1": {
+            "id": "sky-c0-r1",
+            "feature": "从未见过的紫色旋涡符文格"
+          },
+          "sky-c1-r1": {
+            "id": "sky-c1-r1",
+            "feature": null
+          },
+          "sky-c0-r2": {
+            "id": "sky-c0-r2",
+            "feature": null
+          },
+          "sky-c1-r2": {
+            "id": "sky-c1-r2",
+            "feature": null
+          },
+          "sky-c0-r3": {
+            "id": "sky-c0-r3",
+            "feature": null
+          },
+          "sky-c1-r3": {
+            "id": "sky-c1-r3",
+            "feature": null
+          },
+          "mothership-r0": {
+            "id": "mothership-r0",
+            "feature": null
+          },
+          "mothership-r1": {
+            "id": "mothership-r1",
+            "feature": null
+          },
+          "mothership-waiting": {
+            "id": "mothership-waiting",
+            "feature": null
+          }
+        },
+        "connections": [
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c0-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c1-r0",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r0",
+            "to": "sky-c1-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c0-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c1-r1",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r1",
+            "to": "sky-c1-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c0-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c1-r2",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r2",
+            "to": "sky-c1-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r3",
+            "to": "sky-c1-r3",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "mothership-r0",
+            "to": "mothership-r1",
+            "kind": "mothership_down",
+            "direction": "down"
+          }
+        ],
+        "entities": {
+          "ship": {
+            "id": "ship",
+            "type": "ship",
+            "description": "外星飞船",
+            "unitId": "sky-c0-r1"
+          },
+          "mothership": {
+            "id": "mothership",
+            "type": "mothership",
+            "description": "敌方母舰",
+            "unitId": "mothership-r0"
+          },
+          "city": {
+            "id": "city",
+            "type": "city",
+            "description": "玩家城市",
+            "unitId": "sky-c1-r3",
+            "hp": 3
+          }
+        },
+        "outcome": null
+      },
+      "expectedPresets": [],
+      "expectedActions": [
+        "move"
+      ],
+      "presetPass": true,
+      "actionPass": true
+    },
+    {
+      "id": "looking_at_arrow_does_not_activate_it",
+      "actionTrace": [
+        "inspect"
+      ],
+      "awakenedPresets": [],
+      "wakeTrace": [
+        {
+          "feature": "一个画着向右尖头的天空格",
+          "relation": "observed",
+          "topK": [
+            {
+              "id": "ship_lands_right_arrow",
+              "score": 0.7922407602430521,
+              "objectScore": 0.8784376882049092,
+              "trendScore": 0.4474530483956235
+            },
+            {
+              "id": "ship_lands_explosion_no_immediate_effect",
+              "score": 0.6960003108415976,
+              "objectScore": 0.7239586910759859,
+              "trendScore": 0.5841667899040448
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.6424609987839263,
+              "objectScore": 0.6968319728857317,
+              "trendScore": 0.42497710237670405
+            }
+          ],
+          "margin": 0.09624044940145449,
+          "activationVector": [
+            0.7922407602430521,
+            0.6424609987839263,
+            0.6068573885683588,
+            0.6960003108415976,
+            0.5863356286692663
+          ],
+          "factMask": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "effectiveMask": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "rawCandidate": "ship_lands_right_arrow",
+          "verifiedPreset": null,
+          "knownNoImmediateEffect": false
+        }
+      ],
+      "noticed": [
+        {
+          "action": "inspect",
+          "feature": "一个画着向右尖头的天空格",
+          "role": "focus",
+          "salience": 1.0
+        }
+      ],
+      "world": {
+        "stage": "dice",
+        "units": {
+          "sky-c0-r0": {
+            "id": "sky-c0-r0",
+            "feature": null
+          },
+          "sky-c1-r0": {
+            "id": "sky-c1-r0",
+            "feature": null
+          },
+          "sky-c0-r1": {
+            "id": "sky-c0-r1",
+            "feature": "一个画着向右尖头的天空格"
+          },
+          "sky-c1-r1": {
+            "id": "sky-c1-r1",
+            "feature": null
+          },
+          "sky-c0-r2": {
+            "id": "sky-c0-r2",
+            "feature": null
+          },
+          "sky-c1-r2": {
+            "id": "sky-c1-r2",
+            "feature": null
+          },
+          "sky-c0-r3": {
+            "id": "sky-c0-r3",
+            "feature": null
+          },
+          "sky-c1-r3": {
+            "id": "sky-c1-r3",
+            "feature": null
+          },
+          "mothership-r0": {
+            "id": "mothership-r0",
+            "feature": null
+          },
+          "mothership-r1": {
+            "id": "mothership-r1",
+            "feature": null
+          },
+          "mothership-waiting": {
+            "id": "mothership-waiting",
+            "feature": null
+          }
+        },
+        "connections": [
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c0-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r0",
+            "to": "sky-c1-r0",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r0",
+            "to": "sky-c1-r1",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c0-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r1",
+            "to": "sky-c1-r1",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r1",
+            "to": "sky-c1-r2",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c0-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r2",
+            "to": "sky-c1-r2",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "sky-c1-r2",
+            "to": "sky-c1-r3",
+            "kind": "sky_down",
+            "direction": "down"
+          },
+          {
+            "from": "sky-c0-r3",
+            "to": "sky-c1-r3",
+            "kind": "sky_horizontal",
+            "direction": "right"
+          },
+          {
+            "from": "mothership-r0",
+            "to": "mothership-r1",
+            "kind": "mothership_down",
+            "direction": "down"
+          }
+        ],
+        "entities": {
+          "ship": {
+            "id": "ship",
+            "type": "ship",
+            "description": "外星飞船",
+            "unitId": "sky-c0-r0"
+          },
+          "mothership": {
+            "id": "mothership",
+            "type": "mothership",
+            "description": "敌方母舰",
+            "unitId": "mothership-r0"
+          },
+          "city": {
+            "id": "city",
+            "type": "city",
+            "description": "玩家城市",
+            "unitId": "sky-c1-r3",
+            "hp": 3
+          }
+        },
+        "outcome": null
+      },
+      "expectedPresets": [],
+      "expectedActions": [
+        "inspect"
+      ],
+      "presetPass": true,
+      "actionPass": true
+    }
+  ]
+}

@@ -1,0 +1,473 @@
+{
+  "schema": "semantic_action_glue_mvp_holdout_v1",
+  "policy": "frozen attention and retrieval; no tuning on holdout",
+  "caseCount": 7,
+  "passCount": 6,
+  "results": [
+    {
+      "id": "holdout_chevron_arrow",
+      "expectedPresets": [
+        "ship_lands_right_arrow"
+      ],
+      "actualPresets": [],
+      "expectedActions": [
+        "move",
+        "move"
+      ],
+      "actualActions": [
+        "move"
+      ],
+      "wakeTrace": [
+        {
+          "feature": "天空板上的白色大于号，表示敌机在这里改去右侧邻列",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.6218747202612878,
+              "objectScore": 0.6992699974892165,
+              "trendScore": 0.3122936113495728
+            },
+            {
+              "id": "ship_lands_right_arrow",
+              "score": 0.5926647468795606,
+              "objectScore": 0.6685810549782499,
+              "trendScore": 0.28899951448480343
+            },
+            {
+              "id": "ship_lands_explosion_no_immediate_effect",
+              "score": 0.585060638238584,
+              "objectScore": 0.6537126744476143,
+              "trendScore": 0.3104524934024627
+            }
+          ],
+          "margin": 0.02920997338172715,
+          "activationVector": [
+            0.5926647468795606,
+            0.6218747202612878,
+            0.5575237738729515,
+            0.585060638238584,
+            0.5517180790812993
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "rawCandidate": null,
+          "verifiedPreset": null,
+          "knownNoImmediateEffect": false
+        }
+      ],
+      "pass": false
+    },
+    {
+      "id": "holdout_mothership_height_signal",
+      "expectedPresets": [
+        "ship_lands_mothership_down",
+        "mothership_reaches_skull"
+      ],
+      "actualPresets": [
+        "ship_lands_mothership_down",
+        "mothership_reaches_skull"
+      ],
+      "expectedActions": [
+        "move",
+        "move",
+        "outcome"
+      ],
+      "actualActions": [
+        "move",
+        "move",
+        "outcome"
+      ],
+      "wakeTrace": [
+        {
+          "feature": "会令天空中的巨型母船降低一层高度的控制符号",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.7613710724747175,
+              "objectScore": 0.8376479353293833,
+              "trendScore": 0.4562636210560539
+            },
+            {
+              "id": "mothership_reaches_skull",
+              "score": 0.6942268416811868,
+              "objectScore": 0.7365029617761152,
+              "trendScore": 0.5251223613014727
+            },
+            {
+              "id": "ship_lands_explosion_no_immediate_effect",
+              "score": 0.6309650754722191,
+              "objectScore": 0.6676983042345097,
+              "trendScore": 0.48403216042305686
+            }
+          ],
+          "margin": 0.06714423079353071,
+          "activationVector": [
+            0.6040170513448382,
+            0.7613710724747175,
+            0.6295365502258264,
+            0.6309650754722191,
+            0.6942268416811868
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            false,
+            true,
+            false,
+            false,
+            false
+          ],
+          "rawCandidate": "ship_lands_mothership_down",
+          "verifiedPreset": "ship_lands_mothership_down",
+          "knownNoImmediateEffect": false
+        },
+        {
+          "feature": "母船一旦到达就宣告失败的骸骨警戒线",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "mothership_reaches_skull",
+              "score": 0.8102433173001307,
+              "objectScore": 0.8338670027336937,
+              "trendScore": 0.7157485755658782
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.6854288464204645,
+              "objectScore": 0.7169383899811462,
+              "trendScore": 0.5593906721777375
+            },
+            {
+              "id": "ship_hits_city",
+              "score": 0.6083292853401309,
+              "objectScore": 0.623144575093955,
+              "trendScore": 0.5490681263248339
+            }
+          ],
+          "margin": 0.12481447087966613,
+          "activationVector": [
+            0.5340171980635551,
+            0.6854288464204645,
+            0.6083292853401309,
+            0.5920361631414648,
+            0.8102433173001307
+          ],
+          "factMask": [
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "effectiveMask": [
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "rawCandidate": "mothership_reaches_skull",
+          "verifiedPreset": "mothership_reaches_skull",
+          "knownNoImmediateEffect": false
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "holdout_roswell_damage",
+      "expectedPresets": [
+        "ship_hits_city"
+      ],
+      "actualPresets": [
+        "ship_hits_city"
+      ],
+      "expectedActions": [
+        "move",
+        "damage",
+        "relocate"
+      ],
+      "actualActions": [
+        "move",
+        "damage",
+        "relocate"
+      ],
+      "wakeTrace": [
+        {
+          "feature": "天空轨道尽头的罗斯威尔城区，敌机落下会直接撞进城市",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "ship_hits_city",
+              "score": 0.7183114693739057,
+              "objectScore": 0.7807052701455386,
+              "trendScore": 0.46873626628737397
+            },
+            {
+              "id": "ship_lands_explosion_no_immediate_effect",
+              "score": 0.6691015677291146,
+              "objectScore": 0.6994609553694748,
+              "trendScore": 0.5476640171676733
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.6542011241712171,
+              "objectScore": 0.7083172628891352,
+              "trendScore": 0.4377365692995444
+            }
+          ],
+          "margin": 0.04920990164479111,
+          "activationVector": [
+            0.6254974317502828,
+            0.6542011241712171,
+            0.7183114693739057,
+            0.6691015677291146,
+            0.6193850621301396
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            false,
+            true,
+            true,
+            false,
+            false
+          ],
+          "rawCandidate": "ship_hits_city",
+          "verifiedPreset": "ship_hits_city",
+          "knownNoImmediateEffect": false
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "holdout_burst_icon_no_effect",
+      "expectedPresets": [
+        "ship_lands_explosion_no_immediate_effect"
+      ],
+      "actualPresets": [
+        "ship_lands_explosion_no_immediate_effect"
+      ],
+      "expectedActions": [
+        "move"
+      ],
+      "actualActions": [
+        "move"
+      ],
+      "wakeTrace": [
+        {
+          "feature": "绘有放射状星芒爆裂图案的格位",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "ship_lands_explosion_no_immediate_effect",
+              "score": 0.7278903243480734,
+              "objectScore": 0.7586280974909265,
+              "trendScore": 0.6049392317766611
+            },
+            {
+              "id": "mothership_reaches_skull",
+              "score": 0.6666096004878828,
+              "objectScore": 0.6733735480315653,
+              "trendScore": 0.6395538103131521
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.6664986742803461,
+              "objectScore": 0.7011025272832354,
+              "trendScore": 0.5280832622687892
+            }
+          ],
+          "margin": 0.06128072386019068,
+          "activationVector": [
+            0.6578652961427398,
+            0.6664986742803461,
+            0.5971493371153602,
+            0.7278903243480734,
+            0.6666096004878828
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            false,
+            true,
+            false,
+            true,
+            false
+          ],
+          "rawCandidate": "ship_lands_explosion_no_immediate_effect",
+          "verifiedPreset": "ship_lands_explosion_no_immediate_effect",
+          "knownNoImmediateEffect": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "holdout_unknown_question_lamp",
+      "expectedPresets": [],
+      "actualPresets": [],
+      "expectedActions": [
+        "move"
+      ],
+      "actualActions": [
+        "move"
+      ],
+      "wakeTrace": [
+        {
+          "feature": "一个绿色灯泡包围黑色问号的陌生标志",
+          "relation": "endpoint_overlap",
+          "topK": [
+            {
+              "id": "ship_lands_explosion_no_immediate_effect",
+              "score": 0.6161038839863806,
+              "objectScore": 0.6242496000702376,
+              "trendScore": 0.5835210196509527
+            },
+            {
+              "id": "mothership_reaches_skull",
+              "score": 0.585479766475216,
+              "objectScore": 0.5835502528214414,
+              "trendScore": 0.5931978210903146
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.5637939333288366,
+              "objectScore": 0.576846893719557,
+              "trendScore": 0.5115820917659553
+            }
+          ],
+          "margin": 0.03062411751116456,
+          "activationVector": [
+            0.5243176923324979,
+            0.5637939333288366,
+            0.5513750249876371,
+            0.6161038839863806,
+            0.585479766475216
+          ],
+          "factMask": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "effectiveMask": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "rawCandidate": null,
+          "verifiedPreset": null,
+          "knownNoImmediateEffect": false
+        }
+      ],
+      "pass": true
+    },
+    {
+      "id": "holdout_city_only_on_path",
+      "expectedPresets": [],
+      "actualPresets": [],
+      "expectedActions": [
+        "move"
+      ],
+      "actualActions": [
+        "move"
+      ],
+      "wakeTrace": [],
+      "pass": true
+    },
+    {
+      "id": "holdout_inspect_city_without_collision",
+      "expectedPresets": [],
+      "actualPresets": [],
+      "expectedActions": [
+        "inspect"
+      ],
+      "actualActions": [
+        "inspect"
+      ],
+      "wakeTrace": [
+        {
+          "feature": "天空区域下方的城市位置",
+          "relation": "observed",
+          "topK": [
+            {
+              "id": "ship_hits_city",
+              "score": 0.9223219987138465,
+              "objectScore": 1.0,
+              "trendScore": 0.6116099935692321
+            },
+            {
+              "id": "ship_lands_mothership_down",
+              "score": 0.7019169408654699,
+              "objectScore": 0.7632960304511266,
+              "trendScore": 0.4564005825228429
+            },
+            {
+              "id": "ship_lands_explosion_no_immediate_effect",
+              "score": 0.6855475557106041,
+              "objectScore": 0.6964594114725245,
+              "trendScore": 0.641900132662922
+            }
+          ],
+          "margin": 0.2204050578483766,
+          "activationVector": [
+            0.6750681258913609,
+            0.7019169408654699,
+            0.9223219987138465,
+            0.6855475557106041,
+            0.6013054437130765
+          ],
+          "factMask": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "effectiveMask": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "rawCandidate": "ship_hits_city",
+          "verifiedPreset": null,
+          "knownNoImmediateEffect": false
+        }
+      ],
+      "pass": true
+    }
+  ]
+}

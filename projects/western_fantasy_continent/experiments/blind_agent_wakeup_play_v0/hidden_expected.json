@@ -1,0 +1,62 @@
+{
+  "schema": "blind_agent_wakeup_expected_v0",
+  "createdAfterPredictionSubmission": true,
+  "cases": [
+    {
+      "id": "arrow_to_city_recursive",
+      "finalState": {"shipPositions": {"ship-a": "mothership-waiting"}, "cityHp": 2, "mothershipPosition": null, "outcome": null, "unplacedDiceState": "none"},
+      "requiredRuleIds": ["R01", "R03", "R05", "R07"],
+      "forbiddenRuleIds": [],
+      "requiredMemoryIds": ["die_placement_wakes_column_descent", "movement_wakes_final_stop_only", "arrow_space_wakes_new_final_stop", "city_contact_wakes_damage_and_return"],
+      "minimumActionSteps": 4
+    },
+    {
+      "id": "air_defense_zero_move",
+      "finalState": {"shipPositions": {"ship-a": "sky-c0-r0"}, "cityHp": 3, "mothershipPosition": null, "outcome": null, "unplacedDiceState": "none"},
+      "requiredRuleIds": ["R01", "R02"],
+      "forbiddenRuleIds": ["R05"],
+      "requiredMemoryIds": ["die_placement_wakes_column_descent", "air_defense_one_means_no_ship_effect"],
+      "minimumActionSteps": 2
+    },
+    {
+      "id": "mothership_drop_to_skull",
+      "finalState": {"shipPositions": {"ship-a": "sky-c0-r1"}, "cityHp": 3, "mothershipPosition": "mothership-r1", "outcome": "loss", "unplacedDiceState": "none"},
+      "requiredRuleIds": ["R01", "R03", "R04"],
+      "forbiddenRuleIds": [],
+      "requiredMemoryIds": ["die_placement_wakes_column_descent", "movement_wakes_final_stop_only", "mothership_space_wakes_drop", "mothership_row_side_action_not_resolved"],
+      "minimumActionSteps": 4
+    },
+    {
+      "id": "explosion_has_no_dice_effect",
+      "finalState": {"shipPositions": {"ship-a": "sky-c0-r1"}, "cityHp": 3, "mothershipPosition": null, "outcome": null, "unplacedDiceState": "none"},
+      "requiredRuleIds": ["R01", "R03", "R06"],
+      "forbiddenRuleIds": [],
+      "requiredMemoryIds": ["die_placement_wakes_column_descent", "movement_wakes_final_stop_only", "explosion_has_no_immediate_dice_phase_effect"],
+      "minimumActionSteps": 3
+    },
+    {
+      "id": "white_die_random_boundary",
+      "finalState": {"shipPositions": {"ship-a": "sky-c0-r1"}, "cityHp": 3, "mothershipPosition": null, "outcome": null, "unplacedDiceState": "rerolled_result_unknown"},
+      "requiredRuleIds": ["R01", "R03", "R08"],
+      "forbiddenRuleIds": [],
+      "requiredMemoryIds": ["die_placement_wakes_column_descent", "movement_wakes_final_stop_only", "white_die_wakes_reroll_boundary", "stop_before_white_die_reroll_result"],
+      "minimumActionSteps": 4
+    },
+    {
+      "id": "path_city_endpoint_explosion",
+      "finalState": {"shipPositions": {"ship-a": "sky-c0-r2"}, "cityHp": 3, "mothershipPosition": null, "outcome": null, "unplacedDiceState": "none"},
+      "requiredRuleIds": ["R01", "R03", "R06"],
+      "forbiddenRuleIds": ["R07"],
+      "requiredMemoryIds": ["die_placement_wakes_column_descent", "passed_sky_spaces_do_not_trigger", "movement_wakes_final_stop_only", "explosion_has_no_immediate_dice_phase_effect"],
+      "minimumActionSteps": 3
+    },
+    {
+      "id": "two_ships_split_consequences",
+      "finalState": {"shipPositions": {"ship-a": "mothership-waiting", "ship-b": "sky-c0-r2"}, "cityHp": 2, "mothershipPosition": null, "outcome": null, "unplacedDiceState": "none"},
+      "requiredRuleIds": ["R01", "R03", "R05", "R06", "R07"],
+      "forbiddenRuleIds": [],
+      "requiredMemoryIds": ["die_placement_wakes_column_descent", "movement_wakes_final_stop_only", "arrow_space_wakes_new_final_stop", "city_contact_wakes_damage_and_return", "explosion_has_no_immediate_dice_phase_effect"],
+      "minimumActionSteps": 5
+    }
+  ]
+}

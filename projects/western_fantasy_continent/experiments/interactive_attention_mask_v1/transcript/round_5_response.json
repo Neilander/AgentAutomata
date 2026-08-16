@@ -1,0 +1,111 @@
+{
+  "schema": "masked_attention_response_v1",
+  "round": 5,
+  "previousResponseHash": "ef9fbbdae09ab4e1fcafd8af368b03c637d21c3703a9751f3d0b0f83aa5f20c0",
+  "requestHash": "0b7e21ec0006683e8e24ece765333c586f0e3a3caa8c75a599381f275429c3c2",
+  "responses": [
+    {
+      "caseId": "arrow_city",
+      "command": {
+        "caseId": "arrow_city",
+        "kind": "act",
+        "operation": "follow_arrow",
+        "target": "ship-a",
+        "reason": "ship-a当前最终停留格已揭示为向右箭头，目标为sky-c1-r1；按规则横移并把目标格设为新的最终停留格。",
+        "expectedWakeup": "G06_ARROW_RECURSIVE_RECHECK：横移后必须重新关注ship-a的新最终停留格"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "shipId": "ship-a",
+          "from": "sky-c0-r1",
+          "to": "sky-c1-r1",
+          "landingMustBeCheckedAgain": true
+        }
+      }
+    },
+    {
+      "caseId": "mothership_skull",
+      "command": {
+        "caseId": "mothership_skull",
+        "kind": "act",
+        "operation": "lower_mothership",
+        "target": "mothership",
+        "reason": "ship-a当前最终停留格已揭示为母舰下降格，因此母舰应立即下降一行，且不结算该行右侧动作。",
+        "expectedWakeup": "P05_MOTHERSHIP_NEW_ROW：下降后检查母舰新行是否为骷髅行"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "mothershipPosition": "mothership-r1",
+          "rightSideActionResolved": false,
+          "newRowMustBeChecked": true
+        }
+      }
+    },
+    {
+      "caseId": "path_not_endpoint",
+      "command": {
+        "caseId": "path_not_endpoint",
+        "kind": "act",
+        "operation": "resolve_no_immediate_effect",
+        "target": "ship-a",
+        "reason": "只检查的最终停留格sky-c0-r2已揭示为爆炸格；它在当前放骰阶段无立即效果，路径中的r1不触发。",
+        "expectedWakeup": "N03_EXPLOSION_NO_IMMEDIATE_EFFECT与S02_TERMINAL_CELL_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "shipId": "ship-a",
+          "position": "sky-c0-r2",
+          "immediateEffect": "none"
+        }
+      }
+    },
+    {
+      "caseId": "white_random_stop",
+      "command": {
+        "caseId": "white_random_stop",
+        "kind": "act",
+        "operation": "resolve_no_immediate_effect",
+        "target": "ship-a",
+        "reason": "ship-a当前最终停留格已揭示为普通天空格，应确认无立即效果并结束该飞船落点链。",
+        "expectedWakeup": "N04_NORMAL_SKY_NO_IMMEDIATE_EFFECT；随后检查白骰放置后的重投条件"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "shipId": "ship-a",
+          "position": "sky-c0-r1",
+          "immediateEffect": "none"
+        }
+      }
+    },
+    {
+      "caseId": "two_ship_split",
+      "command": {
+        "caseId": "two_ship_split",
+        "kind": "act",
+        "operation": "follow_arrow",
+        "target": "ship-a",
+        "reason": "ship-a当前最终停留格已揭示为指向sky-c1-r1的右箭头；本轮只处理ship-a的横移，ship-b仍待单独关注。",
+        "expectedWakeup": "G06_ARROW_RECURSIVE_RECHECK：重新检查ship-a箭头目标；之后仍需处理ship-b"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "shipId": "ship-a",
+          "from": "sky-c0-r1",
+          "to": "sky-c1-r1",
+          "landingMustBeCheckedAgain": true
+        }
+      }
+    }
+  ],
+  "responseHash": "995b0b06e01a55fbe47c3b452435b6d37e74b5b07f72b00614d70d8e54cb2923"
+}

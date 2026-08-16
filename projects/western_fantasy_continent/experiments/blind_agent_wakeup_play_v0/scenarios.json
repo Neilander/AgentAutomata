@@ -1,0 +1,96 @@
+{
+  "schema": "blind_ufs_scenarios_v0",
+  "phase": "dice",
+  "cases": [
+    {
+      "id": "arrow_to_city_recursive",
+      "initialAction": "把灰色1点骰放入普通基地格base-c0",
+      "base": {"id": "base-c0", "column": 0, "isAirDefense": false},
+      "dice": {"id": "die-a", "color": "gray", "value": 1},
+      "ships": [{"id": "ship-a", "position": "sky-c0-r0"}],
+      "sky": [
+        {"id": "sky-c0-r1", "feature": "向右箭头格，箭头指向同一行的sky-c1-r1"},
+        {"id": "sky-c1-r1", "feature": "城市命中格"}
+      ],
+      "city": {"hp": 3},
+      "mothership": null,
+      "unplacedDice": []
+    },
+    {
+      "id": "air_defense_zero_move",
+      "initialAction": "把灰色1点骰放入防空房base-c0",
+      "base": {"id": "base-c0", "column": 0, "isAirDefense": true},
+      "dice": {"id": "die-a", "color": "gray", "value": 1},
+      "ships": [{"id": "ship-a", "position": "sky-c0-r0"}],
+      "sky": [{"id": "sky-c0-r1", "feature": "向右箭头格，箭头指向sky-c1-r1"}],
+      "city": {"hp": 3},
+      "mothership": null,
+      "unplacedDice": []
+    },
+    {
+      "id": "mothership_drop_to_skull",
+      "initialAction": "把灰色1点骰放入普通基地格base-c0",
+      "base": {"id": "base-c0", "column": 0, "isAirDefense": false},
+      "dice": {"id": "die-a", "color": "gray", "value": 1},
+      "ships": [{"id": "ship-a", "position": "sky-c0-r0"}],
+      "sky": [{"id": "sky-c0-r1", "feature": "母舰下降格"}],
+      "city": {"hp": 3},
+      "mothership": {"position": "mothership-r0", "nextPosition": "mothership-r1", "nextPositionFeature": "骷髅行", "rightSideAction": "获得1科技"},
+      "unplacedDice": []
+    },
+    {
+      "id": "explosion_has_no_dice_effect",
+      "initialAction": "把灰色1点骰放入普通基地格base-c0",
+      "base": {"id": "base-c0", "column": 0, "isAirDefense": false},
+      "dice": {"id": "die-a", "color": "gray", "value": 1},
+      "ships": [{"id": "ship-a", "position": "sky-c0-r0"}],
+      "sky": [{"id": "sky-c0-r1", "feature": "爆炸格"}],
+      "city": {"hp": 3},
+      "mothership": null,
+      "unplacedDice": []
+    },
+    {
+      "id": "white_die_random_boundary",
+      "initialAction": "把白色1点骰die-a放入普通基地格base-c0",
+      "base": {"id": "base-c0", "column": 0, "isAirDefense": false},
+      "dice": {"id": "die-a", "color": "white", "value": 1},
+      "ships": [{"id": "ship-a", "position": "sky-c0-r0"}],
+      "sky": [{"id": "sky-c0-r1", "feature": "普通天空格"}],
+      "city": {"hp": 3},
+      "mothership": null,
+      "unplacedDice": [{"id": "die-b", "color": "gray", "currentValue": 5}]
+    },
+    {
+      "id": "path_city_endpoint_explosion",
+      "initialAction": "把灰色2点骰放入普通基地格base-c0",
+      "base": {"id": "base-c0", "column": 0, "isAirDefense": false},
+      "dice": {"id": "die-a", "color": "gray", "value": 2},
+      "ships": [{"id": "ship-a", "position": "sky-c0-r0"}],
+      "sky": [
+        {"id": "sky-c0-r1", "feature": "城市命中格"},
+        {"id": "sky-c0-r2", "feature": "爆炸格"}
+      ],
+      "city": {"hp": 3},
+      "mothership": null,
+      "unplacedDice": []
+    },
+    {
+      "id": "two_ships_split_consequences",
+      "initialAction": "把灰色1点骰放入普通基地格base-c0",
+      "base": {"id": "base-c0", "column": 0, "isAirDefense": false},
+      "dice": {"id": "die-a", "color": "gray", "value": 1},
+      "ships": [
+        {"id": "ship-a", "position": "sky-c0-r0"},
+        {"id": "ship-b", "position": "sky-c0-r1"}
+      ],
+      "sky": [
+        {"id": "sky-c0-r1", "feature": "向右箭头格，箭头指向sky-c1-r1"},
+        {"id": "sky-c1-r1", "feature": "城市命中格"},
+        {"id": "sky-c0-r2", "feature": "爆炸格"}
+      ],
+      "city": {"hp": 3},
+      "mothership": null,
+      "unplacedDice": []
+    }
+  ]
+}

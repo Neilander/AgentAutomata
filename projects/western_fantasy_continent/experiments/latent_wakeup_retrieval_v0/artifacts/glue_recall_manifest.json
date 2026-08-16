@@ -1,0 +1,152 @@
+{
+  "schema": "latent_glue_recall_manifest_v0",
+  "thresholds": {
+    "minimum_score": 0.35,
+    "minimum_margin": 0.08
+  },
+  "cases": [
+    {
+      "id": "bomb_from_die_placement",
+      "object": "bomb",
+      "local_before": "危险装置还没有受到飞船接触",
+      "local_after": "危险装置受到下降飞船的碰撞",
+      "facts": [
+        "contact",
+        "endpoint_overlap"
+      ],
+      "expected_recall": "bomb_contacted",
+      "expected_verified_glue": "bomb_contacted",
+      "raw_recall": "bomb_contacted",
+      "scores": {
+        "bomb_contacted": 0.6011047755102722,
+        "bomb_moved": 0.20002289514474844,
+        "bomb_heated": 0.32435267140704105,
+        "bomb_inspected": 0.42642243461406515
+      },
+      "margin": 0.17468234089620704,
+      "accepted": true,
+      "verified_glue": "bomb_contacted",
+      "recall_correct": true,
+      "verified_correct": true
+    },
+    {
+      "id": "bomb_from_random_extra_move",
+      "object": "bomb",
+      "local_before": "爆炸物所在位置仍然空着",
+      "local_after": "随机移动的敌机落入爆炸物所在位置并压住它",
+      "facts": [
+        "contact",
+        "endpoint_overlap"
+      ],
+      "expected_recall": "bomb_contacted",
+      "expected_verified_glue": "bomb_contacted",
+      "raw_recall": "bomb_contacted",
+      "scores": {
+        "bomb_contacted": 0.5357315333718071,
+        "bomb_moved": 0.35236740768994373,
+        "bomb_heated": 0.3034762499365449,
+        "bomb_inspected": 0.37958778187082476
+      },
+      "margin": 0.15614375150098236,
+      "accepted": true,
+      "verified_glue": "bomb_contacted",
+      "recall_correct": true,
+      "verified_correct": true
+    },
+    {
+      "id": "arrow_from_ship_landing",
+      "object": "arrow_tile",
+      "local_before": "方向标记所在格还没有单位进入",
+      "local_after": "下降的飞船占据了方向标记所在格",
+      "facts": [
+        "contact",
+        "endpoint_overlap"
+      ],
+      "expected_recall": "arrow_tile_entered",
+      "expected_verified_glue": "arrow_tile_entered",
+      "raw_recall": "arrow_tile_entered",
+      "scores": {
+        "arrow_tile_entered": 0.5681297054638894,
+        "arrow_tile_removed": 0.008702582225278248,
+        "arrow_tile_inspected": 0.41303830395780394
+      },
+      "margin": 0.15509140150608547,
+      "accepted": true,
+      "verified_glue": "arrow_tile_entered",
+      "recall_correct": true,
+      "verified_correct": true
+    },
+    {
+      "id": "bomb_visible_on_path_not_endpoint",
+      "object": "bomb",
+      "local_before": "下降路径旁边可以看见炸弹",
+      "local_after": "飞船从炸弹所在行经过但最终落在更下方",
+      "facts": [
+        "path_visible"
+      ],
+      "expected_recall": null,
+      "expected_verified_glue": null,
+      "raw_recall": null,
+      "scores": {
+        "bomb_contacted": -0.0043609451082845495,
+        "bomb_moved": 0.04110752101659838,
+        "bomb_heated": -0.0008387747514769141,
+        "bomb_inspected": -0.1501410688421079
+      },
+      "margin": 0.0419462957680753,
+      "accepted": false,
+      "verified_glue": null,
+      "recall_correct": true,
+      "verified_correct": true
+    },
+    {
+      "id": "unknown_rune_landing",
+      "object": "unknown_rune",
+      "local_before": "陌生符文格还没有单位进入",
+      "local_after": "飞船落在了陌生符文格上",
+      "facts": [
+        "contact",
+        "endpoint_overlap"
+      ],
+      "expected_recall": null,
+      "expected_verified_glue": null,
+      "raw_recall": null,
+      "scores": {},
+      "margin": null,
+      "accepted": false,
+      "verified_glue": null,
+      "recall_correct": true,
+      "verified_correct": true
+    },
+    {
+      "id": "bomb_painted_blue",
+      "object": "bomb",
+      "local_before": "炸弹外壳没有涂料",
+      "local_after": "角色把炸弹外壳涂成蓝色",
+      "facts": [
+        "appearance_change"
+      ],
+      "expected_recall": null,
+      "expected_verified_glue": null,
+      "raw_recall": "bomb_contacted",
+      "scores": {
+        "bomb_contacted": 0.486144594011973,
+        "bomb_moved": 0.17929290562266792,
+        "bomb_heated": 0.334309209061898,
+        "bomb_inspected": 0.3621425586267303
+      },
+      "margin": 0.12400203538524274,
+      "accepted": true,
+      "verified_glue": null,
+      "recall_correct": false,
+      "verified_correct": true
+    }
+  ],
+  "summary": {
+    "case_count": 6,
+    "raw_recall_accuracy": 0.8333333333333334,
+    "verified_glue_accuracy": 1.0,
+    "false_raw_recall_count": 1,
+    "false_verified_glue_count": 0
+  }
+}

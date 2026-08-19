@@ -21,7 +21,7 @@
 - 第0轮提交后才创建3个基础隐藏案例。
 - 第1轮先确认第0轮在冻结反例上失败，再公开冻结规则和一个反例；提交后才创建3个新隐藏案例，并回归第0轮。
 - 第2轮先确认第1轮在相对选择反例上失败，再公开整组规则和一个反例；提交后才创建4个新隐藏案例，并回归前两轮。
-- 每轮源码快照与 SHA-256 在 `submission_history/` 和 `audit/submission_provenance.json`。
+- 每轮源码快照与按LF规范化UTF-8文本计算的 SHA-256 在 `submission_history/` 和 `audit/submission_provenance.json`，避免不同worktree换行符造成假差异。
 
 ## 可复跑入口
 

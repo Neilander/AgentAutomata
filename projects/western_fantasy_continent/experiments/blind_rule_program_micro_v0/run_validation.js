@@ -27,6 +27,10 @@ function staticSecurity(source) {
   return patterns.filter(([pattern]) => pattern.test(source)).map(([, message]) => message);
 }
 
+function stableSourceHash(source) {
+  return crypto.createHash("sha256").update(source.replace(/\r\n?/g, "\n"), "utf8").digest("hex");
+}
+
 function loadSubmission(source) {
   const context = { module: { exports: {} }, exports: {} };
   vm.runInNewContext(source, context, {
@@ -143,7 +147,7 @@ function main() {
     experiment: "blind_rule_program_micro_v0",
     round: roundIndex,
     submission_path: path.relative(ROOT, submissionPath).replaceAll("\\", "/"),
-    submission_sha256: crypto.createHash("sha256").update(source).digest("hex"),
+    submission_sha256: stableSourceHash(source),
     revision: submission?.REVISION ?? null,
     source_rule_ids: submission?.SOURCE_RULE_IDS ?? null,
     expected_rule_ids: expectedRuleIds,

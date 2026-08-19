@@ -13,11 +13,5 @@ $env:HF_HUB_OFFLINE = "1"
 $env:TRANSFORMERS_OFFLINE = "1"
 $env:GTE_MODEL_PATH = Join-Path $SharedModels "gte-multilingual-base"
 
-& $Python -m unittest -v (Join-Path $Here "test_five_slot_memory.py")
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
-& $Python -m unittest -v (Join-Path $Here "test_noticed_step_writer.py")
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
-& $Python (Join-Path $Here "run_semantic_demo.py")
+& $Python (Join-Path $Here "run_bulk_memory_validation.py")
 exit $LASTEXITCODE

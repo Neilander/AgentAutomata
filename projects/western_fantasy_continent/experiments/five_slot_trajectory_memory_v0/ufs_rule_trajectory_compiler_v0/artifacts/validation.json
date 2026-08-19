@@ -1,0 +1,199 @@
+{
+  "schema": "ufs_rule_trajectory_compiler_validation_v0",
+  "passed": true,
+  "unitTests": {
+    "run": 11,
+    "passed": true
+  },
+  "compiled": {
+    "sourceRules": 6,
+    "drafts": 6,
+    "readyEdgesInstalled": 5,
+    "unresolvedEdges": [
+      "mothership-row-effect-unresolved"
+    ],
+    "allCoordinatesHaveExactlyFiveSlots": true
+  },
+  "semanticParaphrases": {
+    "correct": 10,
+    "total": 10,
+    "accuracy": 1.0,
+    "rows": [
+      {
+        "queryId": "P01",
+        "expectedEdgeId": "place-die-to-descend-ships",
+        "selectedEdgeId": "place-die-to-descend-ships",
+        "correct": true,
+        "abstained": false,
+        "bestScore": 0.863348126411438,
+        "confidence": 0.27398417906531297
+      },
+      {
+        "queryId": "P02",
+        "expectedEdgeId": "place-die-to-descend-ships",
+        "selectedEdgeId": "place-die-to-descend-ships",
+        "correct": true,
+        "abstained": false,
+        "bestScore": 0.8230211138725281,
+        "confidence": 0.2387231945776569
+      },
+      {
+        "queryId": "P03",
+        "expectedEdgeId": "arrow-landing-to-horizontal-move",
+        "selectedEdgeId": "arrow-landing-to-horizontal-move",
+        "correct": true,
+        "abstained": false,
+        "bestScore": 0.8054924607276917,
+        "confidence": 0.22339655549093496
+      },
+      {
+        "queryId": "P04",
+        "expectedEdgeId": "arrow-landing-to-horizontal-move",
+        "selectedEdgeId": "arrow-landing-to-horizontal-move",
+        "correct": true,
+        "abstained": false,
+        "bestScore": 0.8023264408111572,
+        "confidence": 0.22062826267338947
+      },
+      {
+        "queryId": "P05",
+        "expectedEdgeId": "white-die-to-reroll",
+        "selectedEdgeId": "white-die-to-reroll",
+        "correct": true,
+        "abstained": false,
+        "bestScore": 0.8793708682060242,
+        "confidence": 0.28799408493978107
+      },
+      {
+        "queryId": "P06",
+        "expectedEdgeId": "white-die-to-reroll",
+        "selectedEdgeId": "white-die-to-reroll",
+        "correct": true,
+        "abstained": false,
+        "bestScore": 0.8654847145080566,
+        "confidence": 0.27585236108496275
+      },
+      {
+        "queryId": "P07",
+        "expectedEdgeId": "city-contact-to-damage",
+        "selectedEdgeId": "city-contact-to-damage",
+        "correct": true,
+        "abstained": false,
+        "bestScore": 0.7774786949157715,
+        "confidence": 0.1989019822620883
+      },
+      {
+        "queryId": "P08",
+        "expectedEdgeId": "city-contact-to-damage",
+        "selectedEdgeId": "city-contact-to-damage",
+        "correct": true,
+        "abstained": false,
+        "bestScore": 0.8717107772827148,
+        "confidence": 0.2812962828905905
+      },
+      {
+        "queryId": "P09",
+        "expectedEdgeId": "explosion-landing-to-stop",
+        "selectedEdgeId": "explosion-landing-to-stop",
+        "correct": true,
+        "abstained": false,
+        "bestScore": 0.7677263021469116,
+        "confidence": 0.1903747210421181
+      },
+      {
+        "queryId": "P10",
+        "expectedEdgeId": "explosion-landing-to-stop",
+        "selectedEdgeId": "explosion-landing-to-stop",
+        "correct": true,
+        "abstained": false,
+        "bestScore": 0.8220795392990112,
+        "confidence": 0.23789990407482794
+      }
+    ]
+  },
+  "twoStageComposition": {
+    "firstLocalState": "放置骰子",
+    "firstWakeup": "place-die-to-descend-ships",
+    "environmentAndAttentionAdds": "飞船最终停在箭头格",
+    "secondWakeup": "arrow-landing-to-horizontal-move",
+    "composed": true
+  },
+  "hardNegatives": {
+    "rawRetrieval": [
+      {
+        "queryId": "N01-passed-arrow-not-final",
+        "readyOnlyMatrixSelected": "arrow-landing-to-horizontal-move",
+        "readyOnlyBestScore": 0.8466235995292664,
+        "allHeadsSelected": "arrow-landing-to-horizontal-move",
+        "allHeadsState": "ready",
+        "allHeadsScore": 0.8466235995292664
+      },
+      {
+        "queryId": "N02-gray-die-not-white",
+        "readyOnlyMatrixSelected": "place-die-to-descend-ships",
+        "readyOnlyBestScore": 0.8656900525093079,
+        "allHeadsSelected": "place-die-to-descend-ships",
+        "allHeadsState": "ready",
+        "allHeadsScore": 0.8656900525093079
+      },
+      {
+        "queryId": "N03-unknown-mothership-icon",
+        "readyOnlyMatrixSelected": "arrow-landing-to-horizontal-move",
+        "readyOnlyBestScore": 0.6897125840187073,
+        "allHeadsSelected": "mothership-row-effect-unresolved",
+        "allHeadsState": "unresolved",
+        "allHeadsScore": 0.8215876817703247
+      }
+    ],
+    "agentSlotEvidence": [
+      {
+        "queryId": "P03",
+        "candidateEdgeId": "arrow-landing-to-horizontal-move",
+        "accepted": true,
+        "contradictedSlots": []
+      },
+      {
+        "queryId": "N01-passed-arrow-not-final",
+        "candidateEdgeId": "arrow-landing-to-horizontal-move",
+        "accepted": false,
+        "contradictedSlots": [
+          "affected_object",
+          "change_trend",
+          "cause_relation",
+          "temporal_state",
+          "context"
+        ]
+      },
+      {
+        "queryId": "N02-gray-die-not-white",
+        "candidateEdgeId": "place-die-to-descend-ships",
+        "accepted": true,
+        "contradictedSlots": []
+      }
+    ],
+    "conclusion": "向量负责提出候选；逐槽举证拒绝否定句误唤醒；未解决头返回查规则而不是猜后续。"
+  },
+  "adaptiveRandomEstimate": {
+    "afterLowOutcomes": {
+      "observations": 5,
+      "center": 1.5373048213191014,
+      "typical_low": 1.0,
+      "typical_high": 2.0,
+      "observed_low": 1.0,
+      "observed_high": 2.0
+    },
+    "afterRecentHighOutcomes": {
+      "observations": 13,
+      "center": 4.832307468287776,
+      "typical_low": 5.0,
+      "typical_high": 5.0,
+      "observed_low": 1.0,
+      "observed_high": 5.0
+    }
+  },
+  "honestBoundary": [
+    "AI草稿由当前AI一次性生成，程序验证结构、来源引用和禁止补具体数字；这不是独立模型盲测。",
+    "来源原句存在只能证明可追溯，不能单靠字符串程序证明每个自然语言概括都逻辑蕴含于原文。",
+    "硬负例用于暴露纯语义检索风险；正式粘连仍应读取注意到的局部状态，并允许未知时查规则。"
+  ]
+}

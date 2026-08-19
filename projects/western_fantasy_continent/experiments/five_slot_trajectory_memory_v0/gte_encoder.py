@@ -20,7 +20,7 @@ class LocalGTEEncoder:
 
     def __init__(self, model_path: str | Path | None = None) -> None:
         self.runtime = GTERuntime(model_path=model_path)
+        self.identifier = f"gte-multilingual-base:{self.runtime.model_path}"
 
     def encode(self, texts: list[str], batch_size: int = 16) -> np.ndarray:
         return self.runtime.encode(texts, batch_size=batch_size)
-

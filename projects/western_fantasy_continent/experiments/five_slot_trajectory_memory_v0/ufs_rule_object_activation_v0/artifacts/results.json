@@ -1,0 +1,1876 @@
+{
+  "schema": "ufs_rule_object_activation_v0",
+  "integrity": {
+    "answerUsage": "positive labels are used only after vector scoring",
+    "retrieval": "one query embedding followed by one matrix dot product against cached object embeddings",
+    "noRelationHardCoding": true,
+    "largestGapRuleFrozen": "sort descending and split at the largest adjacent score drop"
+  },
+  "model": "gte-multilingual-base:D:\\GithubDesktop\\AgentAutomata\\logs\\shared_models\\gte-multilingual-base",
+  "counts": {
+    "cases": 10,
+    "queries": 21,
+    "uniqueObjectDescriptions": 57
+  },
+  "overall": {
+    "meanPairwiseRankingAccuracy": 0.7976190476190477,
+    "oracleTopKExactRate": 0.47619047619047616,
+    "largestGapExactRate": 0.047619047619047616,
+    "positiveSeparationRate": 0.47619047619047616,
+    "meanSeparationMargin": -0.020546601980926504,
+    "attentionPoolMeanPairwiseRankingAccuracy": 0.8492063492063492,
+    "attentionPoolOracleTopKExactRate": 0.6666666666666666,
+    "attentionPoolLargestGapExactRate": 0.42857142857142855,
+    "attentionPoolPositiveSeparationRate": 0.6666666666666666
+  },
+  "timing": {
+    "modelLoadMs": 2043.2734000496566,
+    "objectCacheBuild": {
+      "objects": 57,
+      "totalMs": 3032.7323999954388,
+      "meanMsPerObjectAmortized": 53.20583157886735
+    },
+    "onlineQueryEncoding": {
+      "medianMs": 91.15749999182299,
+      "p95Ms": 110.98120000679046,
+      "minMs": 76.90079999156296,
+      "maxMs": 111.04579997481778
+    },
+    "smallCaseMatrixActivation": {
+      "medianMs": 0.008698099991306663,
+      "p95Ms": 0.008930600015446544
+    },
+    "cachedMatrixScaling": [
+      {
+        "candidateCount": 10,
+        "medianMs": 0.010299962013959885,
+        "p95Ms": 0.014265018398873496
+      },
+      {
+        "candidateCount": 100,
+        "medianMs": 0.030700000934302807,
+        "p95Ms": 0.04864998918492347
+      },
+      {
+        "candidateCount": 1000,
+        "medianMs": 0.39264996303245425,
+        "p95Ms": 0.5056649970356374
+      },
+      {
+        "candidateCount": 10000,
+        "medianMs": 2.0859500218648463,
+        "p95Ms": 2.326590003212914
+      },
+      {
+        "candidateCount": 100000,
+        "medianMs": 15.685299964388832,
+        "p95Ms": 18.311540014110506
+      }
+    ]
+  },
+  "byCategory": [
+    {
+      "category": "复合空间关系",
+      "queries": 2,
+      "meanPairwiseRankingAccuracy": 0.8125,
+      "oracleTopKExactRate": 0.5,
+      "largestGapExactRate": 0.0,
+      "meanSeparationMargin": -0.018844950832593355,
+      "attentionPoolMeanPairwiseRankingAccuracy": 0.875,
+      "attentionPoolOracleTopKExactRate": 0.5,
+      "attentionPoolLargestGapExactRate": 0.0
+    },
+    {
+      "category": "容器归属关系",
+      "queries": 2,
+      "meanPairwiseRankingAccuracy": 0.6875,
+      "oracleTopKExactRate": 0.0,
+      "largestGapExactRate": 0.0,
+      "meanSeparationMargin": -0.08848583147226774,
+      "attentionPoolMeanPairwiseRankingAccuracy": 0.875,
+      "attentionPoolOracleTopKExactRate": 0.5,
+      "attentionPoolLargestGapExactRate": 0.0
+    },
+    {
+      "category": "属性类别筛选",
+      "queries": 2,
+      "meanPairwiseRankingAccuracy": 1.0,
+      "oracleTopKExactRate": 1.0,
+      "largestGapExactRate": 0.0,
+      "meanSeparationMargin": 0.06317092469277535,
+      "attentionPoolMeanPairwiseRankingAccuracy": 1.0,
+      "attentionPoolOracleTopKExactRate": 1.0,
+      "attentionPoolLargestGapExactRate": 1.0
+    },
+    {
+      "category": "数值阈值关系",
+      "queries": 2,
+      "meanPairwiseRankingAccuracy": 0.6875,
+      "oracleTopKExactRate": 0.5,
+      "largestGapExactRate": 0.0,
+      "meanSeparationMargin": -0.017949911832658705,
+      "attentionPoolMeanPairwiseRankingAccuracy": 0.625,
+      "attentionPoolOracleTopKExactRate": 0.5,
+      "attentionPoolLargestGapExactRate": 0.0
+    },
+    {
+      "category": "状态类别筛选",
+      "queries": 2,
+      "meanPairwiseRankingAccuracy": 1.0,
+      "oracleTopKExactRate": 1.0,
+      "largestGapExactRate": 0.0,
+      "meanSeparationMargin": 0.05632891067592044,
+      "attentionPoolMeanPairwiseRankingAccuracy": 1.0,
+      "attentionPoolOracleTopKExactRate": 1.0,
+      "attentionPoolLargestGapExactRate": 1.0
+    },
+    {
+      "category": "等值空间关系",
+      "queries": 5,
+      "meanPairwiseRankingAccuracy": 0.625,
+      "oracleTopKExactRate": 0.0,
+      "largestGapExactRate": 0.0,
+      "meanSeparationMargin": -0.0994146762252041,
+      "attentionPoolMeanPairwiseRankingAccuracy": 0.75,
+      "attentionPoolOracleTopKExactRate": 0.6,
+      "attentionPoolLargestGapExactRate": 0.4
+    },
+    {
+      "category": "终点与经过的区分",
+      "queries": 4,
+      "meanPairwiseRankingAccuracy": 0.8125,
+      "oracleTopKExactRate": 0.5,
+      "largestGapExactRate": 0.25,
+      "meanSeparationMargin": -0.0002712361901884841,
+      "attentionPoolMeanPairwiseRankingAccuracy": 0.8333333333333333,
+      "attentionPoolOracleTopKExactRate": 0.5,
+      "attentionPoolLargestGapExactRate": 0.25
+    },
+    {
+      "category": "距离排序关系",
+      "queries": 2,
+      "meanPairwiseRankingAccuracy": 1.0,
+      "oracleTopKExactRate": 1.0,
+      "largestGapExactRate": 0.0,
+      "meanSeparationMargin": 0.03912070091248293,
+      "attentionPoolMeanPairwiseRankingAccuracy": 1.0,
+      "attentionPoolOracleTopKExactRate": 1.0,
+      "attentionPoolLargestGapExactRate": 1.0
+    }
+  ],
+  "queries": [
+    {
+      "caseId": "same_column",
+      "category": "等值空间关系",
+      "queryIndex": 1,
+      "query": "骰子放在第三列，注意与这颗骰子处于同一列的所有飞船",
+      "pairwiseRankingAccuracy": 0.75,
+      "oracleTopKExact": false,
+      "oracleTopKSelectedIndices": [
+        0,
+        4
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        4
+      ],
+      "largestGapSize": 0.12377827316511003,
+      "minPositive": 0.7123263966376003,
+      "maxNegative": 0.8552700235794355,
+      "separationMargin": -0.14294362694183516,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapExact": true,
+        "largestGapSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapSize": 0.02340981573645895,
+        "minPositive": 0.7123263966376003,
+        "maxNegative": 0.6889165809011414,
+        "separationMargin": 0.02340981573645895,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "E",
+          "text": "一颗灰色骰子，位于基地第3列",
+          "positive": false,
+          "score": 0.8552700235794355
+        },
+        {
+          "id": "A",
+          "text": "一架黄色飞船，位于天空板第3列第2行",
+          "positive": true,
+          "score": 0.7314917504143255
+        },
+        {
+          "id": "B",
+          "text": "一架白色飞船，位于天空板第3列第5行",
+          "positive": true,
+          "score": 0.7123263966376003
+        },
+        {
+          "id": "C",
+          "text": "一架黄色飞船，位于天空板第4列第2行",
+          "positive": false,
+          "score": 0.6889165809011414
+        },
+        {
+          "id": "D",
+          "text": "一架白色飞船，位于天空板第2列第5行",
+          "positive": false,
+          "score": 0.673044613766012
+        },
+        {
+          "id": "F",
+          "text": "第三列天空格上的爆炸图标",
+          "positive": false,
+          "score": 0.6519304470443965
+        }
+      ]
+    },
+    {
+      "caseId": "same_column",
+      "category": "等值空间关系",
+      "queryIndex": 2,
+      "query": "以第三列的骰子为参照，寻找和它纵向对齐的敌机",
+      "pairwiseRankingAccuracy": 0.625,
+      "oracleTopKExact": false,
+      "oracleTopKSelectedIndices": [
+        0,
+        4
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        4
+      ],
+      "largestGapSize": 0.20682154638584116,
+      "minPositive": 0.548775508841513,
+      "maxNegative": 0.7835802938646532,
+      "separationMargin": -0.23480478502314017,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          0
+        ],
+        "largestGapSize": 0.027983238637299013,
+        "minPositive": 0.548775508841513,
+        "maxNegative": 0.5418449094474633,
+        "separationMargin": 0.006930599394049719,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "E",
+          "text": "一颗灰色骰子，位于基地第3列",
+          "positive": false,
+          "score": 0.7835802938646532
+        },
+        {
+          "id": "A",
+          "text": "一架黄色飞船，位于天空板第3列第2行",
+          "positive": true,
+          "score": 0.5767587474788121
+        },
+        {
+          "id": "F",
+          "text": "第三列天空格上的爆炸图标",
+          "positive": false,
+          "score": 0.5724867759037068
+        },
+        {
+          "id": "B",
+          "text": "一架白色飞船，位于天空板第3列第5行",
+          "positive": true,
+          "score": 0.548775508841513
+        },
+        {
+          "id": "C",
+          "text": "一架黄色飞船，位于天空板第4列第2行",
+          "positive": false,
+          "score": 0.5418449094474633
+        },
+        {
+          "id": "D",
+          "text": "一架白色飞船，位于天空板第2列第5行",
+          "positive": false,
+          "score": 0.5172057064018873
+        }
+      ]
+    },
+    {
+      "caseId": "same_column",
+      "category": "等值空间关系",
+      "queryIndex": 3,
+      "query": "查看这颗位于第3列的骰子正上方那一列有哪些飞船",
+      "pairwiseRankingAccuracy": 0.75,
+      "oracleTopKExact": false,
+      "oracleTopKSelectedIndices": [
+        0,
+        4
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "largestGapSize": 0.0456982539330002,
+      "minPositive": 0.7702621095727397,
+      "maxNegative": 0.8207430902367625,
+      "separationMargin": -0.050480980664022845,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapExact": true,
+        "largestGapSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapSize": 0.027246836042943312,
+        "minPositive": 0.7702621095727397,
+        "maxNegative": 0.7430152735297963,
+        "separationMargin": 0.027246836042943312,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "E",
+          "text": "一颗灰色骰子，位于基地第3列",
+          "positive": false,
+          "score": 0.8207430902367625
+        },
+        {
+          "id": "A",
+          "text": "一架黄色飞船，位于天空板第3列第2行",
+          "positive": true,
+          "score": 0.7834459495557643
+        },
+        {
+          "id": "B",
+          "text": "一架白色飞船，位于天空板第3列第5行",
+          "positive": true,
+          "score": 0.7702621095727397
+        },
+        {
+          "id": "C",
+          "text": "一架黄色飞船，位于天空板第4列第2行",
+          "positive": false,
+          "score": 0.7430152735297963
+        },
+        {
+          "id": "D",
+          "text": "一架白色飞船，位于天空板第2列第5行",
+          "positive": false,
+          "score": 0.7319076118022043
+        },
+        {
+          "id": "F",
+          "text": "第三列天空格上的爆炸图标",
+          "positive": false,
+          "score": 0.6862093578692041
+        }
+      ]
+    },
+    {
+      "caseId": "same_row",
+      "category": "等值空间关系",
+      "queryIndex": 1,
+      "query": "注意与第4行的目标飞船处于同一横行的其他飞船",
+      "pairwiseRankingAccuracy": 0.75,
+      "oracleTopKExact": false,
+      "oracleTopKSelectedIndices": [
+        0,
+        1
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "largestGapSize": 0.12579492258465896,
+      "minPositive": 0.783476255746763,
+      "maxNegative": 0.7930424397960556,
+      "separationMargin": -0.009566184049292548,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 0.75,
+        "oracleTopKExact": false,
+        "oracleTopKSelectedIndices": [
+          0,
+          2
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          0
+        ],
+        "largestGapSize": 0.019815521596673435,
+        "minPositive": 0.783476255746763,
+        "maxNegative": 0.7879502328448135,
+        "separationMargin": -0.004473977098050419,
+        "poolIndices": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "ranking": [
+        {
+          "id": "B",
+          "text": "另一架飞船，位于天空板第4行第4列",
+          "positive": true,
+          "score": 0.8077657544414869
+        },
+        {
+          "id": "A",
+          "text": "参照飞船，位于天空板第4行第2列",
+          "positive": false,
+          "score": 0.7930424397960556
+        },
+        {
+          "id": "D",
+          "text": "一架飞船，位于天空板第3行第4列",
+          "positive": false,
+          "score": 0.7879502328448135
+        },
+        {
+          "id": "C",
+          "text": "另一架飞船，位于天空板第4行第5列",
+          "positive": true,
+          "score": 0.783476255746763
+        },
+        {
+          "id": "E",
+          "text": "一架飞船，位于天空板第5行第4列",
+          "positive": false,
+          "score": 0.7760647423315419
+        },
+        {
+          "id": "F",
+          "text": "第四行上的一个箭头格",
+          "positive": false,
+          "score": 0.6502698197468829
+        }
+      ]
+    },
+    {
+      "caseId": "same_row",
+      "category": "等值空间关系",
+      "queryIndex": 2,
+      "query": "寻找和参照飞船横向对齐、同在天空板第四行的敌机",
+      "pairwiseRankingAccuracy": 0.25,
+      "oracleTopKExact": false,
+      "oracleTopKSelectedIndices": [
+        0,
+        3
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "largestGapSize": 0.21195993448416128,
+      "minPositive": 0.7870420698557001,
+      "maxNegative": 0.8463198743034299,
+      "separationMargin": -0.05927780444772979,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 0.0,
+        "oracleTopKExact": false,
+        "oracleTopKSelectedIndices": [
+          2,
+          3
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          0,
+          2,
+          3
+        ],
+        "largestGapSize": 0.025512072140677744,
+        "minPositive": 0.7870420698557001,
+        "maxNegative": 0.832869819269112,
+        "separationMargin": -0.045827749413411834,
+        "poolIndices": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "ranking": [
+        {
+          "id": "A",
+          "text": "参照飞船，位于天空板第4行第2列",
+          "positive": false,
+          "score": 0.8463198743034299
+        },
+        {
+          "id": "D",
+          "text": "一架飞船，位于天空板第3行第4列",
+          "positive": false,
+          "score": 0.832869819269112
+        },
+        {
+          "id": "E",
+          "text": "一架飞船，位于天空板第5行第4列",
+          "positive": false,
+          "score": 0.8166976576415031
+        },
+        {
+          "id": "B",
+          "text": "另一架飞船，位于天空板第4行第4列",
+          "positive": true,
+          "score": 0.8125541419963779
+        },
+        {
+          "id": "C",
+          "text": "另一架飞船，位于天空板第4行第5列",
+          "positive": true,
+          "score": 0.7870420698557001
+        },
+        {
+          "id": "F",
+          "text": "第四行上的一个箭头格",
+          "positive": false,
+          "score": 0.5750821353715388
+        }
+      ]
+    },
+    {
+      "caseId": "same_column_above",
+      "category": "复合空间关系",
+      "queryIndex": 1,
+      "query": "骰子在第3列第6行，只注意同列并且位于它上方的飞船",
+      "pairwiseRankingAccuracy": 1.0,
+      "oracleTopKExact": true,
+      "oracleTopKSelectedIndices": [
+        0,
+        1
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        5
+      ],
+      "largestGapSize": 0.2817669391762674,
+      "minPositive": 0.920332888387112,
+      "maxNegative": 0.9090978155953083,
+      "separationMargin": 0.01123507279180369,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          0,
+          1,
+          2
+        ],
+        "largestGapSize": 0.0431461530995948,
+        "minPositive": 0.920332888387112,
+        "maxNegative": 0.9090978155953083,
+        "separationMargin": 0.01123507279180369,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "A",
+          "text": "一架飞船，位于第3列第2行，在骰子上方",
+          "positive": true,
+          "score": 0.9345260295193923
+        },
+        {
+          "id": "B",
+          "text": "一架飞船，位于第3列第5行，在骰子上方",
+          "positive": true,
+          "score": 0.920332888387112
+        },
+        {
+          "id": "C",
+          "text": "一架飞船，位于第3列第7行，在骰子下方",
+          "positive": false,
+          "score": 0.9090978155953083
+        },
+        {
+          "id": "F",
+          "text": "参照骰子，位于第3列第6行",
+          "positive": false,
+          "score": 0.8795855133320016
+        },
+        {
+          "id": "D",
+          "text": "一架飞船，位于第4列第2行，在骰子右上方",
+          "positive": false,
+          "score": 0.8659516624957135
+        },
+        {
+          "id": "E",
+          "text": "一个爆炸图标，位于第3列第4行",
+          "positive": false,
+          "score": 0.5841847233194462
+        }
+      ]
+    },
+    {
+      "caseId": "same_column_above",
+      "category": "复合空间关系",
+      "queryIndex": 2,
+      "query": "找出第三列骰子头顶上方那条射线内的全部敌机",
+      "pairwiseRankingAccuracy": 0.625,
+      "oracleTopKExact": false,
+      "oracleTopKSelectedIndices": [
+        0,
+        5
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        5
+      ],
+      "largestGapSize": 0.14045146058477298,
+      "minPositive": 0.7614958773537497,
+      "maxNegative": 0.8104208518107401,
+      "separationMargin": -0.0489249744569904,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 0.75,
+        "oracleTopKExact": false,
+        "oracleTopKSelectedIndices": [
+          0,
+          2
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          0,
+          1,
+          2
+        ],
+        "largestGapSize": 0.04879758702905734,
+        "minPositive": 0.7614958773537497,
+        "maxNegative": 0.7647150184782239,
+        "separationMargin": -0.0032191411244741897,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "F",
+          "text": "参照骰子，位于第3列第6行",
+          "positive": false,
+          "score": 0.8104208518107401
+        },
+        {
+          "id": "A",
+          "text": "一架飞船，位于第3列第2行，在骰子上方",
+          "positive": true,
+          "score": 0.7845274879689761
+        },
+        {
+          "id": "C",
+          "text": "一架飞船，位于第3列第7行，在骰子下方",
+          "positive": false,
+          "score": 0.7647150184782239
+        },
+        {
+          "id": "B",
+          "text": "一架飞船，位于第3列第5行，在骰子上方",
+          "positive": true,
+          "score": 0.7614958773537497
+        },
+        {
+          "id": "D",
+          "text": "一架飞船，位于第4列第2行，在骰子右上方",
+          "positive": false,
+          "score": 0.7126982903246923
+        },
+        {
+          "id": "E",
+          "text": "一个爆炸图标，位于第3列第4行",
+          "positive": false,
+          "score": 0.5722468297399194
+        }
+      ]
+    },
+    {
+      "caseId": "nearest_city",
+      "category": "距离排序关系",
+      "queryIndex": 1,
+      "query": "注意最接近底部城市、下一步最可能撞击城市的飞船",
+      "pairwiseRankingAccuracy": 1.0,
+      "oracleTopKExact": true,
+      "oracleTopKSelectedIndices": [
+        0
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "largestGapSize": 0.09914311477667137,
+      "minPositive": 0.8214497739552548,
+      "maxNegative": 0.7684673296120434,
+      "separationMargin": 0.05298244434321131,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0
+        ],
+        "largestGapExact": true,
+        "largestGapSelectedIndices": [
+          0
+        ],
+        "largestGapSize": 0.05298244434321131,
+        "minPositive": 0.8214497739552548,
+        "maxNegative": 0.7684673296120434,
+        "separationMargin": 0.05298244434321131,
+        "poolIndices": [
+          0,
+          1,
+          2
+        ]
+      },
+      "ranking": [
+        {
+          "id": "A",
+          "text": "飞船A在第15行，城市位于第16行，它只差一格就会撞城",
+          "positive": true,
+          "score": 0.8214497739552548
+        },
+        {
+          "id": "B",
+          "text": "飞船B在第12行，距离城市还有四格",
+          "positive": false,
+          "score": 0.7684673296120434
+        },
+        {
+          "id": "C",
+          "text": "飞船C在第7行，距离城市还有九格",
+          "positive": false,
+          "score": 0.7654782558268558
+        },
+        {
+          "id": "E",
+          "text": "城市伤害轨道当前为三点",
+          "positive": false,
+          "score": 0.7498630689239099
+        },
+        {
+          "id": "D",
+          "text": "母舰位于天空板顶部",
+          "positive": false,
+          "score": 0.6507199541472385
+        }
+      ]
+    },
+    {
+      "caseId": "nearest_city",
+      "category": "距离排序关系",
+      "queryIndex": 2,
+      "query": "从所有敌机中找出离城市最近的那一架",
+      "pairwiseRankingAccuracy": 1.0,
+      "oracleTopKExact": true,
+      "oracleTopKSelectedIndices": [
+        0
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "largestGapSize": 0.07756406475560784,
+      "minPositive": 0.6984336453030769,
+      "maxNegative": 0.6731746878213224,
+      "separationMargin": 0.02525895748175455,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0
+        ],
+        "largestGapExact": true,
+        "largestGapSelectedIndices": [
+          0
+        ],
+        "largestGapSize": 0.02525895748175455,
+        "minPositive": 0.6984336453030769,
+        "maxNegative": 0.6731746878213224,
+        "separationMargin": 0.02525895748175455,
+        "poolIndices": [
+          0,
+          1,
+          2
+        ]
+      },
+      "ranking": [
+        {
+          "id": "A",
+          "text": "飞船A在第15行，城市位于第16行，它只差一格就会撞城",
+          "positive": true,
+          "score": 0.6984336453030769
+        },
+        {
+          "id": "C",
+          "text": "飞船C在第7行，距离城市还有九格",
+          "positive": false,
+          "score": 0.6731746878213224
+        },
+        {
+          "id": "B",
+          "text": "飞船B在第12行，距离城市还有四格",
+          "positive": false,
+          "score": 0.6570671333671891
+        },
+        {
+          "id": "E",
+          "text": "城市伤害轨道当前为三点",
+          "positive": false,
+          "score": 0.6452668355807448
+        },
+        {
+          "id": "D",
+          "text": "母舰位于天空板顶部",
+          "positive": false,
+          "score": 0.567702770825137
+        }
+      ]
+    },
+    {
+      "caseId": "final_arrow",
+      "category": "终点与经过的区分",
+      "queryIndex": 1,
+      "query": "找出移动结束后最终停在箭头格上的飞船；只是途中经过箭头不算",
+      "pairwiseRankingAccuracy": 0.5,
+      "oracleTopKExact": false,
+      "oracleTopKSelectedIndices": [
+        1
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "largestGapSize": 0.07113912362625885,
+      "minPositive": 0.8079421389458785,
+      "maxNegative": 0.867966534544186,
+      "separationMargin": -0.06002439559830752,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 0.6666666666666666,
+        "oracleTopKExact": false,
+        "oracleTopKSelectedIndices": [
+          1
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          0,
+          1,
+          2
+        ],
+        "largestGapSize": 0.07113912362625885,
+        "minPositive": 0.8079421389458785,
+        "maxNegative": 0.867966534544186,
+        "separationMargin": -0.06002439559830752,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "B",
+          "text": "飞船B移动途中经过箭头格，但最终停在普通空格上",
+          "positive": false,
+          "score": 0.867966534544186
+        },
+        {
+          "id": "E",
+          "text": "一个没有飞船的向左箭头格",
+          "positive": false,
+          "score": 0.8145425664914803
+        },
+        {
+          "id": "A",
+          "text": "飞船A下降后最终停在一个向右箭头格上",
+          "positive": true,
+          "score": 0.8079421389458785
+        },
+        {
+          "id": "C",
+          "text": "飞船C还没有移动，它下方两格有一个箭头",
+          "positive": false,
+          "score": 0.7870439193396122
+        },
+        {
+          "id": "D",
+          "text": "飞船D下降后最终停在爆炸图标格上",
+          "positive": false,
+          "score": 0.7159047957133533
+        }
+      ]
+    },
+    {
+      "caseId": "final_arrow",
+      "category": "终点与经过的区分",
+      "queryIndex": 2,
+      "query": "注意这一步下降完成时落点正好是箭头的敌机",
+      "pairwiseRankingAccuracy": 1.0,
+      "oracleTopKExact": true,
+      "oracleTopKSelectedIndices": [
+        0
+      ],
+      "largestGapExact": true,
+      "largestGapSelectedIndices": [
+        0
+      ],
+      "largestGapSize": 0.06753184926134537,
+      "minPositive": 0.7304016379570194,
+      "maxNegative": 0.662869788695674,
+      "separationMargin": 0.06753184926134537,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0
+        ],
+        "largestGapExact": true,
+        "largestGapSelectedIndices": [
+          0
+        ],
+        "largestGapSize": 0.070077900364936,
+        "minPositive": 0.7304016379570194,
+        "maxNegative": 0.6603237375920834,
+        "separationMargin": 0.070077900364936,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "A",
+          "text": "飞船A下降后最终停在一个向右箭头格上",
+          "positive": true,
+          "score": 0.7304016379570194
+        },
+        {
+          "id": "E",
+          "text": "一个没有飞船的向左箭头格",
+          "positive": false,
+          "score": 0.662869788695674
+        },
+        {
+          "id": "B",
+          "text": "飞船B移动途中经过箭头格，但最终停在普通空格上",
+          "positive": false,
+          "score": 0.6603237375920834
+        },
+        {
+          "id": "C",
+          "text": "飞船C还没有移动，它下方两格有一个箭头",
+          "positive": false,
+          "score": 0.6536641818815341
+        },
+        {
+          "id": "D",
+          "text": "飞船D下降后最终停在爆炸图标格上",
+          "positive": false,
+          "score": 0.6190376043982848
+        }
+      ]
+    },
+    {
+      "caseId": "final_explosion",
+      "category": "终点与经过的区分",
+      "queryIndex": 1,
+      "query": "注意移动结束后落在爆炸图标上的飞船，经过爆炸格但没停下的不算",
+      "pairwiseRankingAccuracy": 0.75,
+      "oracleTopKExact": false,
+      "oracleTopKSelectedIndices": [
+        1
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        3,
+        4
+      ],
+      "largestGapSize": 0.06406332756667066,
+      "minPositive": 0.8308218204404372,
+      "maxNegative": 0.8450591537645232,
+      "separationMargin": -0.014237333324086054,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 0.6666666666666666,
+        "oracleTopKExact": false,
+        "oracleTopKSelectedIndices": [
+          1
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          0,
+          1,
+          3
+        ],
+        "largestGapSize": 0.07125236301633042,
+        "minPositive": 0.8308218204404372,
+        "maxNegative": 0.8450591537645232,
+        "separationMargin": -0.014237333324086054,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "B",
+          "text": "飞船B移动途中经过爆炸格，最终停在箭头格上",
+          "positive": false,
+          "score": 0.8450591537645232
+        },
+        {
+          "id": "A",
+          "text": "飞船A下降后最终停在爆炸图标格上",
+          "positive": true,
+          "score": 0.8308218204404372
+        },
+        {
+          "id": "D",
+          "text": "飞船D下方有爆炸图标，但它本轮没有移动",
+          "positive": false,
+          "score": 0.8019438411901483
+        },
+        {
+          "id": "E",
+          "text": "一个没有飞船的爆炸图标格",
+          "positive": false,
+          "score": 0.7947548057404885
+        },
+        {
+          "id": "C",
+          "text": "飞船C停在普通天空格上",
+          "positive": false,
+          "score": 0.7306914781738179
+        }
+      ]
+    },
+    {
+      "caseId": "final_explosion",
+      "category": "终点与经过的区分",
+      "queryIndex": 2,
+      "query": "哪架敌机本次最终落点触发了爆炸格",
+      "pairwiseRankingAccuracy": 1.0,
+      "oracleTopKExact": true,
+      "oracleTopKSelectedIndices": [
+        0
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1
+      ],
+      "largestGapSize": 0.07576129873168025,
+      "minPositive": 0.7047747040702376,
+      "maxNegative": 0.6991297691699433,
+      "separationMargin": 0.005644934900294274,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapSize": 0.08848855207902429,
+        "minPositive": 0.7047747040702376,
+        "maxNegative": 0.6991297691699433,
+        "separationMargin": 0.005644934900294274,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "A",
+          "text": "飞船A下降后最终停在爆炸图标格上",
+          "positive": true,
+          "score": 0.7047747040702376
+        },
+        {
+          "id": "B",
+          "text": "飞船B移动途中经过爆炸格，最终停在箭头格上",
+          "positive": false,
+          "score": 0.6991297691699433
+        },
+        {
+          "id": "E",
+          "text": "一个没有飞船的爆炸图标格",
+          "positive": false,
+          "score": 0.623368470438263
+        },
+        {
+          "id": "C",
+          "text": "飞船C停在普通天空格上",
+          "positive": false,
+          "score": 0.610641217090919
+        },
+        {
+          "id": "D",
+          "text": "飞船D下方有爆炸图标，但它本轮没有移动",
+          "positive": false,
+          "score": 0.6088335997909178
+        }
+      ]
+    },
+    {
+      "caseId": "same_room",
+      "category": "容器归属关系",
+      "queryIndex": 1,
+      "query": "注意与参照骰子放在同一个能源房间里的全部工作物",
+      "pairwiseRankingAccuracy": 0.625,
+      "oracleTopKExact": false,
+      "oracleTopKSelectedIndices": [
+        0,
+        1
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "largestGapSize": 0.06392480668174527,
+      "minPositive": 0.7030624216764245,
+      "maxNegative": 0.8376813287118605,
+      "separationMargin": -0.134618907035436,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 0.75,
+        "oracleTopKExact": false,
+        "oracleTopKSelectedIndices": [
+          0,
+          2
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          0,
+          1,
+          2
+        ],
+        "largestGapSize": 0.06392480668174527,
+        "minPositive": 0.7030624216764245,
+        "maxNegative": 0.7440523239584926,
+        "separationMargin": -0.040989902282068114,
+        "poolIndices": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "ranking": [
+        {
+          "id": "A",
+          "text": "参照灰色骰子，放在能源房间E1",
+          "positive": false,
+          "score": 0.8376813287118605
+        },
+        {
+          "id": "B",
+          "text": "另一颗白色骰子，也放在能源房间E1",
+          "positive": true,
+          "score": 0.7987393773165761
+        },
+        {
+          "id": "D",
+          "text": "一颗灰色骰子，放在研究房间R2",
+          "positive": false,
+          "score": 0.7440523239584926
+        },
+        {
+          "id": "C",
+          "text": "一个机器人，也位于能源房间E1",
+          "positive": true,
+          "score": 0.7030624216764245
+        },
+        {
+          "id": "E",
+          "text": "一个机器人，位于挖掘房间X1",
+          "positive": false,
+          "score": 0.6391376149946792
+        },
+        {
+          "id": "F",
+          "text": "能源轨道当前数值为3",
+          "positive": false,
+          "score": 0.625648498982998
+        }
+      ]
+    },
+    {
+      "caseId": "same_room",
+      "category": "容器归属关系",
+      "queryIndex": 2,
+      "query": "找出当前能源房内和这颗骰子共享房间的骰子或机器人",
+      "pairwiseRankingAccuracy": 0.75,
+      "oracleTopKExact": false,
+      "oracleTopKSelectedIndices": [
+        0,
+        1
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "largestGapSize": 0.11055282904213848,
+      "minPositive": 0.7708103198868899,
+      "maxNegative": 0.8131630757959893,
+      "separationMargin": -0.04235275590909948,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          0,
+          1,
+          2
+        ],
+        "largestGapSize": 0.057346619470176274,
+        "minPositive": 0.7708103198868899,
+        "maxNegative": 0.7649987654841907,
+        "separationMargin": 0.005811554402699204,
+        "poolIndices": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "ranking": [
+        {
+          "id": "A",
+          "text": "参照灰色骰子，放在能源房间E1",
+          "positive": false,
+          "score": 0.8131630757959893
+        },
+        {
+          "id": "B",
+          "text": "另一颗白色骰子，也放在能源房间E1",
+          "positive": true,
+          "score": 0.7826950741059282
+        },
+        {
+          "id": "C",
+          "text": "一个机器人，也位于能源房间E1",
+          "positive": true,
+          "score": 0.7708103198868899
+        },
+        {
+          "id": "D",
+          "text": "一颗灰色骰子，放在研究房间R2",
+          "positive": false,
+          "score": 0.7649987654841907
+        },
+        {
+          "id": "E",
+          "text": "一个机器人，位于挖掘房间X1",
+          "positive": false,
+          "score": 0.7076521460140144
+        },
+        {
+          "id": "F",
+          "text": "能源轨道当前数值为3",
+          "positive": false,
+          "score": 0.5970993169718759
+        }
+      ]
+    },
+    {
+      "caseId": "unplaced_dice",
+      "category": "状态类别筛选",
+      "queryIndex": 1,
+      "query": "注意本回合所有尚未放置、仍然可用的骰子",
+      "pairwiseRankingAccuracy": 1.0,
+      "oracleTopKExact": true,
+      "oracleTopKSelectedIndices": [
+        0,
+        1
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "largestGapSize": 0.13580586925073435,
+      "minPositive": 0.8094333116911758,
+      "maxNegative": 0.745669597691431,
+      "separationMargin": 0.06376371399974479,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapExact": true,
+        "largestGapSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapSize": 0.06376371399974479,
+        "minPositive": 0.8094333116911758,
+        "maxNegative": 0.745669597691431,
+        "separationMargin": 0.06376371399974479,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "A",
+          "text": "灰色骰子A，点数2，仍在可用骰池中，尚未放置",
+          "positive": true,
+          "score": 0.8330914497314196
+        },
+        {
+          "id": "B",
+          "text": "白色骰子B，点数5，仍在可用骰池中，尚未放置",
+          "positive": true,
+          "score": 0.8094333116911758
+        },
+        {
+          "id": "D",
+          "text": "白色骰子D，已经放置在研究房间",
+          "positive": false,
+          "score": 0.745669597691431
+        },
+        {
+          "id": "C",
+          "text": "灰色骰子C，已经放置在能源房间",
+          "positive": false,
+          "score": 0.7231559304505983
+        },
+        {
+          "id": "F",
+          "text": "房间内等待移除的机器人",
+          "positive": false,
+          "score": 0.587350061199864
+        },
+        {
+          "id": "E",
+          "text": "天空板上的白色飞船",
+          "positive": false,
+          "score": 0.46585035407883385
+        }
+      ]
+    },
+    {
+      "caseId": "unplaced_dice",
+      "category": "状态类别筛选",
+      "queryIndex": 2,
+      "query": "找出骰池中还没被放进房间的剩余骰子",
+      "pairwiseRankingAccuracy": 1.0,
+      "oracleTopKExact": true,
+      "oracleTopKSelectedIndices": [
+        0,
+        1
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        5
+      ],
+      "largestGapSize": 0.1701125422817717,
+      "minPositive": 0.788326221566577,
+      "maxNegative": 0.7394321142144809,
+      "separationMargin": 0.048894107352096094,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapExact": true,
+        "largestGapSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapSize": 0.048894107352096094,
+        "minPositive": 0.788326221566577,
+        "maxNegative": 0.7394321142144809,
+        "separationMargin": 0.048894107352096094,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "A",
+          "text": "灰色骰子A，点数2，仍在可用骰池中，尚未放置",
+          "positive": true,
+          "score": 0.7932085704746185
+        },
+        {
+          "id": "B",
+          "text": "白色骰子B，点数5，仍在可用骰池中，尚未放置",
+          "positive": true,
+          "score": 0.788326221566577
+        },
+        {
+          "id": "D",
+          "text": "白色骰子D，已经放置在研究房间",
+          "positive": false,
+          "score": 0.7394321142144809
+        },
+        {
+          "id": "C",
+          "text": "灰色骰子C，已经放置在能源房间",
+          "positive": false,
+          "score": 0.6978962236534817
+        },
+        {
+          "id": "F",
+          "text": "房间内等待移除的机器人",
+          "positive": false,
+          "score": 0.6286916015215079
+        },
+        {
+          "id": "E",
+          "text": "天空板上的白色飞船",
+          "positive": false,
+          "score": 0.45857905923973624
+        }
+      ]
+    },
+    {
+      "caseId": "white_dice",
+      "category": "属性类别筛选",
+      "queryIndex": 1,
+      "query": "注意当前所有白色骰子，不要选择灰色骰子或白色飞船",
+      "pairwiseRankingAccuracy": 1.0,
+      "oracleTopKExact": true,
+      "oracleTopKSelectedIndices": [
+        0,
+        1
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "largestGapSize": 0.09144499946626139,
+      "minPositive": 0.8097759362210031,
+      "maxNegative": 0.7599296818711926,
+      "separationMargin": 0.04984625434981049,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapExact": true,
+        "largestGapSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapSize": 0.04984625434981049,
+        "minPositive": 0.8097759362210031,
+        "maxNegative": 0.7599296818711926,
+        "separationMargin": 0.04984625434981049,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "B",
+          "text": "白色骰子B，点数6",
+          "positive": true,
+          "score": 0.8123356434389672
+        },
+        {
+          "id": "A",
+          "text": "白色骰子A，点数2",
+          "positive": true,
+          "score": 0.8097759362210031
+        },
+        {
+          "id": "D",
+          "text": "灰色骰子D，点数6",
+          "positive": false,
+          "score": 0.7599296818711926
+        },
+        {
+          "id": "C",
+          "text": "灰色骰子C，点数2",
+          "positive": false,
+          "score": 0.7449239932782074
+        },
+        {
+          "id": "E",
+          "text": "白色飞船，位于天空板第三列",
+          "positive": false,
+          "score": 0.7079078335768674
+        },
+        {
+          "id": "F",
+          "text": "白色房间图标",
+          "positive": false,
+          "score": 0.616462834110606
+        }
+      ]
+    },
+    {
+      "caseId": "white_dice",
+      "category": "属性类别筛选",
+      "queryIndex": 2,
+      "query": "从可见状态中找出类别为骰子且颜色为白色的对象",
+      "pairwiseRankingAccuracy": 1.0,
+      "oracleTopKExact": true,
+      "oracleTopKSelectedIndices": [
+        0,
+        1
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "largestGapSize": 0.13130338596731927,
+      "minPositive": 0.7964198524639651,
+      "maxNegative": 0.7199242574282249,
+      "separationMargin": 0.07649559503574022,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapExact": true,
+        "largestGapSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapSize": 0.07649559503574022,
+        "minPositive": 0.7964198524639651,
+        "maxNegative": 0.7199242574282249,
+        "separationMargin": 0.07649559503574022,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "B",
+          "text": "白色骰子B，点数6",
+          "positive": true,
+          "score": 0.80006495011916
+        },
+        {
+          "id": "A",
+          "text": "白色骰子A，点数2",
+          "positive": true,
+          "score": 0.7964198524639651
+        },
+        {
+          "id": "D",
+          "text": "灰色骰子D，点数6",
+          "positive": false,
+          "score": 0.7199242574282249
+        },
+        {
+          "id": "C",
+          "text": "灰色骰子C，点数2",
+          "positive": false,
+          "score": 0.70787252079158
+        },
+        {
+          "id": "F",
+          "text": "白色房间图标",
+          "positive": false,
+          "score": 0.5765691348242608
+        },
+        {
+          "id": "E",
+          "text": "白色飞船，位于天空板第三列",
+          "positive": false,
+          "score": 0.5646886573917753
+        }
+      ]
+    },
+    {
+      "caseId": "threat_threshold",
+      "category": "数值阈值关系",
+      "queryIndex": 1,
+      "query": "注意下一次下降后就会到达城市或越过城市线的高危飞船",
+      "pairwiseRankingAccuracy": 1.0,
+      "oracleTopKExact": true,
+      "oracleTopKSelectedIndices": [
+        0,
+        1
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "largestGapSize": 0.09950792009860931,
+      "minPositive": 0.8177543958031421,
+      "maxNegative": 0.799859745168018,
+      "separationMargin": 0.017894650635124076,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 1.0,
+        "oracleTopKExact": true,
+        "oracleTopKSelectedIndices": [
+          0,
+          1
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          0
+        ],
+        "largestGapSize": 0.054784257548204485,
+        "minPositive": 0.8177543958031421,
+        "maxNegative": 0.799859745168018,
+        "separationMargin": 0.017894650635124076,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "A",
+          "text": "飞船A距离城市一格，下一次下降会撞击城市",
+          "positive": true,
+          "score": 0.8725386533513466
+        },
+        {
+          "id": "B",
+          "text": "飞船B已经到达城市格，下一次结算会造成城市伤害",
+          "positive": true,
+          "score": 0.8177543958031421
+        },
+        {
+          "id": "C",
+          "text": "飞船C距离城市两格",
+          "positive": false,
+          "score": 0.799859745168018
+        },
+        {
+          "id": "D",
+          "text": "飞船D距离城市五格",
+          "positive": false,
+          "score": 0.7730273829690797
+        },
+        {
+          "id": "E",
+          "text": "城市伤害距离失败还剩一格",
+          "positive": false,
+          "score": 0.6735194628704704
+        },
+        {
+          "id": "F",
+          "text": "母舰距离骷髅格还剩一格",
+          "positive": false,
+          "score": 0.5903252224713478
+        }
+      ]
+    },
+    {
+      "caseId": "threat_threshold",
+      "category": "数值阈值关系",
+      "queryIndex": 2,
+      "query": "找出距离城市不超过一格、必须立刻处理的敌机",
+      "pairwiseRankingAccuracy": 0.375,
+      "oracleTopKExact": false,
+      "oracleTopKSelectedIndices": [
+        2,
+        4
+      ],
+      "largestGapExact": false,
+      "largestGapSelectedIndices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "largestGapSize": 0.07675213452382668,
+      "minPositive": 0.6912647726022056,
+      "maxNegative": 0.7450592469026471,
+      "separationMargin": -0.053794474300441486,
+      "attentionPool": {
+        "pairwiseRankingAccuracy": 0.25,
+        "oracleTopKExact": false,
+        "oracleTopKSelectedIndices": [
+          1,
+          2
+        ],
+        "largestGapExact": false,
+        "largestGapSelectedIndices": [
+          1,
+          2
+        ],
+        "largestGapSize": 0.023940475963540542,
+        "minPositive": 0.6912647726022056,
+        "maxNegative": 0.7337124828215091,
+        "separationMargin": -0.04244771021930349,
+        "poolIndices": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "ranking": [
+        {
+          "id": "E",
+          "text": "城市伤害距离失败还剩一格",
+          "positive": false,
+          "score": 0.7450592469026471
+        },
+        {
+          "id": "C",
+          "text": "飞船C距离城市两格",
+          "positive": false,
+          "score": 0.7337124828215091
+        },
+        {
+          "id": "B",
+          "text": "飞船B已经到达城市格，下一次结算会造成城市伤害",
+          "positive": true,
+          "score": 0.7214967620940924
+        },
+        {
+          "id": "D",
+          "text": "飞船D距离城市五格",
+          "positive": false,
+          "score": 0.6975562861305519
+        },
+        {
+          "id": "A",
+          "text": "飞船A距离城市一格，下一次下降会撞击城市",
+          "positive": true,
+          "score": 0.6912647726022056
+        },
+        {
+          "id": "F",
+          "text": "母舰距离骷髅格还剩一格",
+          "positive": false,
+          "score": 0.614512638078379
+        }
+      ]
+    }
+  ]
+}

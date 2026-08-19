@@ -1,0 +1,147 @@
+{
+  "schema": "ai_five_slot_rule_trajectory_drafts_v0",
+  "note": "由当前AI逐句读取source_rules.json后生成；程序负责来源、结构和禁止补值校验。",
+  "edges": [
+    {
+      "edgeId": "place-die-to-descend-ships",
+      "sourceRuleId": "R01",
+      "state": "ready",
+      "current": {
+        "affected_object": "被放置的骰子、目标基地格与对应列",
+        "change_trend": "骰子由尚未放置变为占据目标基地格",
+        "cause_relation": "玩家选择把该骰子放进这个基地格",
+        "temporal_state": "骰子阶段中，放置刚刚完成",
+        "context": "UFS教程描述的骰子放置"
+      },
+      "following": {
+        "affected_object": "目标列里的全部飞船",
+        "change_trend": "飞船由原行向下移动有效骰子点数N",
+        "cause_relation": "因为该列刚放入点数为N的骰子",
+        "temporal_state": "紧接骰子放置后发生",
+        "context": "UFS教程描述的同列飞船下降"
+      },
+      "variableRelations": [
+        {
+          "output": "landing_row",
+          "operation": "add",
+          "inputs": ["start_row", "die_value"],
+          "description": "结束行等于开始行加有效骰子点数"
+        }
+      ],
+      "sourceGrounding": {
+        "all": ["骰子放置后，同列全部飞船向下移动，移动格数等于有效骰子点数。"]
+      },
+      "metadata": {"expectedConcept": "same_column_descent"}
+    },
+    {
+      "edgeId": "arrow-landing-to-horizontal-move",
+      "sourceRuleId": "R02",
+      "state": "ready",
+      "current": {
+        "affected_object": "最终停在箭头格的飞船与该箭头格",
+        "change_trend": "飞船由下降中变为最终停在箭头格",
+        "cause_relation": "飞船下降后的最终位置与箭头格重合",
+        "temporal_state": "下降已经结束，正在检查最终落点",
+        "context": "UFS天空板的最终落点结算"
+      },
+      "following": {
+        "affected_object": "停在箭头格上的飞船位置",
+        "change_trend": "飞船由箭头格沿箭头方向横向移动",
+        "cause_relation": "最终停留的箭头格唤起横向移动",
+        "temporal_state": "检查最终落点后立即发生",
+        "context": "UFS天空板的箭头落点效果"
+      },
+      "sourceGrounding": {
+        "all": ["敌机只结算最终落点，不结算经过格；最终停在箭头格的敌机沿箭头横向移动。"]
+      },
+      "metadata": {"expectedConcept": "arrow_final_landing"}
+    },
+    {
+      "edgeId": "white-die-to-reroll",
+      "sourceRuleId": "R03",
+      "state": "ready",
+      "current": {
+        "affected_object": "刚放置的白骰与其余尚未放置的骰子",
+        "change_trend": "白骰由未放置变为放置完成",
+        "cause_relation": "玩家选择放置白色骰子",
+        "temporal_state": "白骰放置结算结束时",
+        "context": "UFS骰子阶段的白骰规则"
+      },
+      "following": {
+        "affected_object": "所有尚未放置骰子的点数",
+        "change_trend": "当前点数变为暂时未知的新随机点数",
+        "cause_relation": "因为一颗白骰已经完成放置",
+        "temporal_state": "白骰放置后、下一次选择之前",
+        "context": "UFS白骰重掷；结果需等实际投掷"
+      },
+      "sourceGrounding": {
+        "all": ["放置白骰后，所有尚未放置的骰子重掷。"]
+      },
+      "metadata": {"expectedConcept": "white_reroll", "outcomeKind": "random_numeric"}
+    },
+    {
+      "edgeId": "mothership-row-effect-unresolved",
+      "sourceRuleId": "R04",
+      "state": "unresolved",
+      "current": {
+        "affected_object": "母舰与母舰所在行的图标",
+        "change_trend": "母舰下降一行并到达一个待结算图标",
+        "cause_relation": "母舰下降使新一行的图标进入结算位置",
+        "temporal_state": "母舰移动完成后、图标效果发生前",
+        "context": "UFS母舰阶段；当前短句没有说明具体图标效果"
+      },
+      "following": null,
+      "unresolvedNeed": "查看母舰当前行的具体图标、作用对象和变化量后再生成下一条轨迹",
+      "sourceGrounding": {
+        "all": ["母舰下降一行，并结算母舰所在行的图标效果。"]
+      },
+      "metadata": {"expectedConcept": "mothership_icon_lookup"}
+    },
+    {
+      "edgeId": "city-contact-to-damage",
+      "sourceRuleId": "R05",
+      "state": "ready",
+      "current": {
+        "affected_object": "到达城市的飞船与城市",
+        "change_trend": "飞船由城市上方变为到达城市",
+        "cause_relation": "飞船下降的最终位置进入城市",
+        "temporal_state": "飞船移动结束并检查城市接触时",
+        "context": "UFS飞船到达城市的结算"
+      },
+      "following": {
+        "affected_object": "城市伤害状态与该飞船的位置区域",
+        "change_trend": "城市伤害增加一点，飞船由天空进入等待区",
+        "cause_relation": "因为该飞船已经到达城市",
+        "temporal_state": "城市接触后立即发生",
+        "context": "UFS城市受击与飞船等待区规则"
+      },
+      "sourceGrounding": {
+        "all": ["敌机到达城市时，城市受到一点伤害，该敌机进入等待区。"]
+      },
+      "metadata": {"expectedConcept": "city_damage"}
+    },
+    {
+      "edgeId": "explosion-landing-to-stop",
+      "sourceRuleId": "R06",
+      "state": "ready",
+      "current": {
+        "affected_object": "最终停在爆炸数字格的飞船与该格",
+        "change_trend": "飞船由下降中变为停在爆炸数字格",
+        "cause_relation": "飞船下降的最终位置与爆炸数字格重合",
+        "temporal_state": "下降结束，正在检查最终落点",
+        "context": "UFS爆炸数字格的落点结算"
+      },
+      "following": {
+        "affected_object": "停在爆炸数字格上的飞船位置",
+        "change_trend": "飞船保持原位，本次即时移动链停止",
+        "cause_relation": "爆炸数字格本身不会立即推动飞船",
+        "temporal_state": "最终落点检查完成后",
+        "context": "UFS飞船等待之后的战斗机房结算"
+      },
+      "sourceGrounding": {
+        "all": ["爆炸数字格不是立即触发的移动效果；敌机最终停在这里时保持原位，等待战斗机房结算。"]
+      },
+      "metadata": {"expectedConcept": "explosion_wait"}
+    }
+  ]
+}

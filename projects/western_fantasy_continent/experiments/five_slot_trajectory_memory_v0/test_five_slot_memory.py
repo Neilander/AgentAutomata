@@ -15,7 +15,12 @@ class StableTestEncoder:
 
     dimension = 24
 
+    def __init__(self) -> None:
+        self.calls = 0
+        self.identifier = "stable-test-encoder-v1"
+
     def encode(self, texts: list[str], batch_size: int = 16) -> np.ndarray:
+        self.calls += 1
         rows = []
         for text in texts:
             seed = int.from_bytes(hashlib.sha256(text.encode("utf-8")).digest()[:8], "big")
@@ -92,7 +97,39 @@ class FiveSlotMemoryLifecycleTest(unittest.TestCase):
         self.assertEqual(memory.query(points[0], threshold=0.99).following, points[1])
         self.assertEqual(memory.query(points[1], threshold=0.99).following, points[2])
 
+    def test_batch_query_matches_individual_query(self) -> None:
+        memory = FiveSlotTrajectoryMemory.new(StableTestEncoder())
+        starts = [coordinate("甲"), coordinate("乙"), coordinate("丙")]
+        endings = [coordinate("甲后"), coordinate("乙后"), coordinate("丙后")]
+        for index, (start, ending) in enumerate(zip(starts, endings)):
+            memory.remember(start, ending, record_id=f"batch-{index}")
+        batched = memory.query_many(starts, threshold=0.99, chunk_size=2)
+        individual = [memory.query(start, threshold=0.99) for start in starts]
+        self.assertEqual([row.following for row in batched], endings)
+        self.assertEqual(
+            [row.candidates[0].record_id for row in batched],
+            [row.candidates[0].record_id for row in individual],
+        )
+
+    def test_vector_cache_restores_memory_matrices_without_reencoding_library(self) -> None:
+        encoder = StableTestEncoder()
+        memory = FiveSlotTrajectoryMemory.new(encoder)
+        current = coordinate("缓存前")
+        following = coordinate("缓存后")
+        memory.remember(current, following, record_id="cached")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "memory.json"
+            memory.save(path, include_cache=True)
+            restored_encoder = StableTestEncoder()
+            restored = FiveSlotTrajectoryMemory.load(path, restored_encoder)
+            self.assertEqual(restored_encoder.calls, 0)
+            self.assertIsNotNone(restored._current_matrix)
+            self.assertIsNotNone(restored._following_matrix)
+            result = restored.query(current, threshold=0.99)
+        self.assertEqual(result.following, following)
+        # Only the new query's five texts are encoded; the saved library is not rebuilt.
+        self.assertEqual(restored_encoder.calls, 1)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
-

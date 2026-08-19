@@ -1,0 +1,293 @@
+{
+  "schema": "ufs_five_slot_rule_trajectories_v0",
+  "transitions": [
+    {
+      "id": "placement-to-column-descent",
+      "sourceRuleIds": ["die_moves_same_column_ships"],
+      "current": {
+        "actor": "玩家",
+        "action": "把一颗未放置骰子放入一个合法基地格",
+        "affected_object": "该骰子和所选基地列",
+        "before_state": "骰子尚未放置，同列飞船仍在原位",
+        "after_state": "骰子已经位于选定基地格",
+        "temporal_state": "骰子阶段中，放置已经发生",
+        "context": "真实UFS对局中的工人骰放置"
+      },
+      "following": {
+        "actor": "该次骰子放置",
+        "action": "使同列全部飞船按有效骰子点数下降",
+        "affected_object": "所选基地列上方的全部飞船",
+        "before_state": "飞船仍在放置骰子前的天空位置",
+        "after_state": "飞船完成向下移动并到达最终格",
+        "temporal_state": "紧接骰子放置后发生",
+        "context": "真实UFS对局中的同列下降"
+      },
+      "requires": {"diePlaced": true},
+      "materializer": "descend_same_column"
+    },
+    {
+      "id": "arrow-landing-to-horizontal-move",
+      "sourceRuleIds": ["passed_sky_spaces_do_not_trigger", "arrow_space"],
+      "current": {
+        "actor": "一艘正在下降的飞船",
+        "action": "完成下降并最终停在箭头格",
+        "affected_object": "该飞船与最终停留的箭头格",
+        "before_state": "飞船位于箭头格上方",
+        "after_state": "飞船最终停在箭头格并触发该格",
+        "temporal_state": "下降已经结束，正在结算最终停留格",
+        "context": "真实UFS天空板落点效果"
+      },
+      "following": {
+        "actor": "箭头格",
+        "action": "把停留其上的飞船移动到箭头目标",
+        "affected_object": "停在箭头格上的飞船",
+        "before_state": "飞船刚停在箭头格",
+        "after_state": "飞船到达箭头所指的目标位置",
+        "temporal_state": "最终停留格效果已经发生",
+        "context": "真实UFS天空板箭头移动"
+      },
+      "requires": {"landingEffect": "arrow"},
+      "materializer": "move_to_arrow_target"
+    },
+    {
+      "id": "mothership-space-to-mothership-descent",
+      "sourceRuleIds": ["mothership_space"],
+      "current": {
+        "actor": "一艘正在下降的飞船",
+        "action": "完成下降并最终停在母舰下降格",
+        "affected_object": "该飞船与最终停留的母舰下降格",
+        "before_state": "飞船位于母舰下降格上方",
+        "after_state": "飞船最终停在母舰下降格并触发该格",
+        "temporal_state": "下降已经结束，正在结算最终停留格",
+        "context": "真实UFS天空板落点效果"
+      },
+      "following": {
+        "actor": "母舰下降格",
+        "action": "使外星母舰下降一行并收回进入行上的飞船",
+        "affected_object": "外星母舰与其进入行上的飞船",
+        "before_state": "母舰仍在上一行",
+        "after_state": "母舰进入下一行，同一行飞船进入等待区",
+        "temporal_state": "最终停留格效果已经发生",
+        "context": "真实UFS天空板母舰下降效果"
+      },
+      "requires": {"landingEffect": "mothership_down"},
+      "materializer": "move_mothership_one_row"
+    },
+    {
+      "id": "city-contact-to-damage",
+      "sourceRuleIds": ["ship_reaches_city"],
+      "current": {
+        "actor": "一艘正在下降的飞船",
+        "action": "下降到城市所在行",
+        "affected_object": "该飞船与城市",
+        "before_state": "飞船仍在城市上方",
+        "after_state": "飞船已经撞击城市",
+        "temporal_state": "下降结束时正在结算撞城",
+        "context": "真实UFS飞船撞城事件"
+      },
+      "following": {
+        "actor": "撞击城市的飞船",
+        "action": "使城市受到一点伤害并进入等待区",
+        "affected_object": "城市伤害状态与该飞船",
+        "before_state": "城市尚未受到本次撞击伤害",
+        "after_state": "城市伤害增加一点，该飞船离开天空区",
+        "temporal_state": "撞城后果已经发生",
+        "context": "真实UFS飞船撞城后果"
+      },
+      "requires": {"landingEffect": "city"},
+      "materializer": "damage_city_and_wait"
+    },
+    {
+      "id": "quiet-or-explosion-landing-stops",
+      "sourceRuleIds": ["explosion_spaces_are_fighter_targets", "only_final_space_triggers"],
+      "current": {
+        "actor": "一艘正在下降的飞船",
+        "action": "完成下降并最终停在没有即时移动效果的天空格",
+        "affected_object": "该飞船与最终停留格",
+        "before_state": "飞船仍在最终格上方",
+        "after_state": "飞船停在空格或爆炸数字格，没有立即继续移动",
+        "temporal_state": "最终停留格已经检查完毕",
+        "context": "真实UFS天空板普通落点或爆炸数字落点"
+      },
+      "following": {
+        "actor": "当前落点结算",
+        "action": "停止本次飞船移动链",
+        "affected_object": "该飞船",
+        "before_state": "飞船刚完成下降",
+        "after_state": "飞船保持在最终停留格等待之后的房间效果",
+        "temporal_state": "本次即时后果链已经结束",
+        "context": "真实UFS天空板落点没有即时效果"
+      },
+      "requires": {"landingEffect": "quiet"},
+      "materializer": "stop_chain"
+    },
+    {
+      "id": "white-placement-to-reroll",
+      "sourceRuleIds": ["white_die_rerolls_unplaced_dice"],
+      "current": {
+        "actor": "一颗刚被放置的白色骰子",
+        "action": "完成放置以及同列飞船下降的结算",
+        "affected_object": "其余尚未放置的骰子",
+        "before_state": "其余骰子仍保持本次白骰放置前的点数",
+        "after_state": "白骰已经完成放置，准备重掷其余未放置骰子",
+        "temporal_state": "白骰放置后、进入下一个玩家选择前",
+        "context": "真实UFS对局中的白骰并行随机后果"
+      },
+      "following": {
+        "actor": "白骰放置规则",
+        "action": "重新投掷所有尚未放置的骰子",
+        "affected_object": "其余尚未放置的骰子点数",
+        "before_state": "这些骰子仍显示原来的点数",
+        "after_state": "这些骰子得到暂时未知的新随机点数",
+        "temporal_state": "白骰放置结算末尾发生",
+        "context": "玩家知道会重掷，但在实际投掷前不知道具体结果"
+      },
+      "requires": {"whiteDiePlaced": true},
+      "materializer": "mark_unknown_white_reroll"
+    },
+    {
+      "id": "reserved-energy-room-to-energy-gain",
+      "sourceRuleIds": ["energy_room_generates_energy"],
+      "current": {
+        "actor": "等待进入房间阶段的能源房骰子",
+        "action": "在房间完整且能源成本可支付时准备结算能源房",
+        "affected_object": "能源房与能源轨道",
+        "before_state": "骰子已经占据能源房，但房间效果尚未结算",
+        "after_state": "能源房达到可结算状态",
+        "temporal_state": "当前放置完成后，对未来房间阶段进行预想",
+        "context": "真实UFS对局中的延迟房间收益"
+      },
+      "following": {
+        "actor": "能源房",
+        "action": "按房间值增加能源并受能源上限限制",
+        "affected_object": "玩家能源",
+        "before_state": "能源房尚未兑现",
+        "after_state": "支付成本后按房间值增加能源，但不超过上限",
+        "temporal_state": "未来房间阶段结算时发生",
+        "context": "已放置骰子的延迟能源收益"
+      },
+      "requires": {"futureKind": "energy"},
+      "materializer": "project_energy_room"
+    },
+    {
+      "id": "reserved-research-room-to-track-advance",
+      "sourceRuleIds": ["research_room_advances_track"],
+      "current": {
+        "actor": "等待进入房间阶段的研究房骰子",
+        "action": "在房间完整且能源成本可支付时准备结算研究房",
+        "affected_object": "研究房与研究轨道",
+        "before_state": "骰子已经占据研究房，但研究尚未推进",
+        "after_state": "研究房达到可结算状态",
+        "temporal_state": "当前放置完成后，对未来房间阶段进行预想",
+        "context": "真实UFS对局中的延迟房间收益"
+      },
+      "following": {
+        "actor": "研究房",
+        "action": "用房间值支付连续研究格成本并推进研究",
+        "affected_object": "研究标记",
+        "before_state": "研究标记仍在当前格",
+        "after_state": "研究标记按可支付的连续格数量前进",
+        "temporal_state": "未来房间阶段结算时发生",
+        "context": "已放置骰子的延迟研究收益"
+      },
+      "requires": {"futureKind": "research"},
+      "materializer": "project_research_room"
+    },
+    {
+      "id": "reserved-fighter-room-to-ship-destruction",
+      "sourceRuleIds": ["fighter_room_destroys_eligible_ships"],
+      "current": {
+        "actor": "等待进入房间阶段的战斗机房骰子",
+        "action": "在房间完整且能源成本可支付时准备结算战斗机房",
+        "affected_object": "战斗机房与爆炸格上的飞船",
+        "before_state": "骰子已经占据战斗机房，但尚未开火",
+        "after_state": "战斗机房达到可结算状态",
+        "temporal_state": "当前放置完成后，对未来房间阶段进行预想",
+        "context": "真实UFS对局中的延迟房间收益"
+      },
+      "following": {
+        "actor": "战斗机房",
+        "action": "按房间值击毁爆炸数字不大于该值的飞船",
+        "affected_object": "符合条件的爆炸格飞船",
+        "before_state": "符合条件的飞船仍在天空板",
+        "after_state": "符合条件的飞船被击毁并按颜色处理去向",
+        "temporal_state": "未来房间阶段结算时发生",
+        "context": "已放置骰子的延迟战斗收益"
+      },
+      "requires": {"futureKind": "fighter"},
+      "materializer": "project_fighter_room"
+    },
+    {
+      "id": "reserved-excavation-to-path-progress",
+      "sourceRuleIds": ["excavate_cost_and_result"],
+      "current": {
+        "actor": "放在未挖掘格上的骰子",
+        "action": "等待房间阶段支付一点能源进行挖掘",
+        "affected_object": "挖掘机与未开放路径",
+        "before_state": "骰子已合法放在未挖掘格，挖掘机尚未移动",
+        "after_state": "未来可以选择支付能源并移动挖掘机",
+        "temporal_state": "当前放置完成后，对未来房间阶段进行预想",
+        "context": "真实UFS对局中的延迟挖掘收益"
+      },
+      "following": {
+        "actor": "玩家",
+        "action": "支付一点能源并把挖掘机移动到骰子所在格",
+        "affected_object": "能源、挖掘机和身后路径",
+        "before_state": "能源尚未支付，路径尚未开放",
+        "after_state": "能源减少一点，挖掘机前进，身后路径开放",
+        "temporal_state": "未来房间阶段选择挖掘时发生",
+        "context": "已放置挖掘骰子的延迟路径收益"
+      },
+      "requires": {"futureKind": "excavation"},
+      "materializer": "project_excavation"
+    },
+    {
+      "id": "partial-multi-room-to-completion-condition",
+      "sourceRuleIds": ["multi_room_requires_all_spaces"],
+      "current": {
+        "actor": "放入多格房间其中一格的骰子",
+        "action": "占据房间的一部分但尚未填满全部格子",
+        "affected_object": "该多格房间",
+        "before_state": "多格房间尚未放入本颗骰子",
+        "after_state": "多格房间增加一个已占格，但仍缺少其他格",
+        "temporal_state": "当前放置完成后，对未来房间阶段进行预想",
+        "context": "真实UFS对局中的条件性延迟收益"
+      },
+      "following": {
+        "actor": "多格房间规则",
+        "action": "要求其他格也被填满后才能形成房间值",
+        "affected_object": "该多格房间的未来可结算性",
+        "before_state": "房间仍不完整",
+        "after_state": "该放置成为组合准备；若后续未填满则没有房间效果",
+        "temporal_state": "未来剩余放置与房间阶段共同决定",
+        "context": "当前只获得条件性的组合准备价值"
+      },
+      "requires": {"futureKind": "multi_incomplete"},
+      "materializer": "project_multi_room_setup"
+    },
+    {
+      "id": "reserved-no-effect-room-to-zero-benefit",
+      "sourceRuleIds": ["aa_room", "tunnel_room"],
+      "current": {
+        "actor": "放在防空房或隧道格中的骰子",
+        "action": "等待进入房间阶段",
+        "affected_object": "该骰子的未来房间效果",
+        "before_state": "骰子已经完成放置",
+        "after_state": "该位置在房间阶段没有额外资源效果",
+        "temporal_state": "当前放置完成后，对未来房间阶段进行预想",
+        "context": "真实UFS对局中没有延迟房间收益的位置"
+      },
+      "following": {
+        "actor": "房间阶段",
+        "action": "移除或结算该骰子但不产生能源、研究或攻击收益",
+        "affected_object": "该骰子",
+        "before_state": "骰子仍占据该位置",
+        "after_state": "骰子被处理，本位置没有额外收益",
+        "temporal_state": "未来房间阶段发生",
+        "context": "当前放置只有即时天空影响"
+      },
+      "requires": {"futureKind": "none"},
+      "materializer": "project_zero_room_benefit"
+    }
+  ]
+}

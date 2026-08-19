@@ -1,0 +1,197 @@
+{
+  "schema": "imagination_pipeline_validation_v0",
+  "case_count": 7,
+  "passed_count": 7,
+  "all_passed": true,
+  "formal_player_modified": false,
+  "activation_encoder": "deterministic_test_encoder_replaceable_by_real_gte_adapter",
+  "reused_grounding_submission": "../blind_rule_program_micro_v0/submission/submission.js",
+  "cases": [
+    {
+      "id": "full-arrow-city-chain",
+      "passed": true,
+      "error": null,
+      "status": "complete",
+      "reason": "explicit_complete:RULE-LANDED-CITY-DAMAGE",
+      "observed_world_unchanged": true,
+      "grounding_rules": [
+        "RULE-PLACE-DIE-COLUMN-MOVE",
+        "RULE-LANDED-ARROW-SHIFT",
+        "RULE-LANDED-CITY-DAMAGE"
+      ],
+      "relation_rejections": [
+        {
+          "iteration": 1,
+          "queryKind": "landed_arrow",
+          "trajectoryId": "RULE-000-PASSING-ARROW-DOES-NOT-SHIFT",
+          "activation": 0.9999999999999999,
+          "reason": "q_kind_mismatch:landed_arrow!=passed_arrow"
+        }
+      ],
+      "boundaries": [
+        {
+          "kind": "complete",
+          "reason": "explicit_complete:RULE-LANDED-CITY-DAMAGE",
+          "trajectoryId": "RULE-LANDED-CITY-DAMAGE"
+        }
+      ],
+      "attention_selected_count": 34,
+      "imagination_attention_spent": 3.6
+    },
+    {
+      "id": "normal-complete",
+      "passed": true,
+      "error": null,
+      "status": "complete",
+      "reason": "explicit_complete:RULE-LANDED-NORMAL-COMPLETE",
+      "observed_world_unchanged": true,
+      "grounding_rules": [
+        "RULE-PLACE-DIE-COLUMN-MOVE",
+        "RULE-LANDED-NORMAL-COMPLETE"
+      ],
+      "relation_rejections": [],
+      "boundaries": [
+        {
+          "kind": "complete",
+          "reason": "explicit_complete:RULE-LANDED-NORMAL-COMPLETE",
+          "trajectoryId": "RULE-LANDED-NORMAL-COMPLETE"
+        }
+      ],
+      "attention_selected_count": 32,
+      "imagination_attention_spent": 2
+    },
+    {
+      "id": "random-boundary",
+      "passed": true,
+      "error": null,
+      "status": "random",
+      "reason": "trajectory_boundary:RULE-LANDED-RANDOM-STOP",
+      "observed_world_unchanged": true,
+      "grounding_rules": [
+        "RULE-PLACE-DIE-COLUMN-MOVE",
+        "RULE-LANDED-RANDOM-STOP"
+      ],
+      "relation_rejections": [],
+      "boundaries": [
+        {
+          "kind": "random",
+          "reason": "trajectory_boundary:RULE-LANDED-RANDOM-STOP",
+          "trajectoryId": "RULE-LANDED-RANDOM-STOP"
+        }
+      ],
+      "attention_selected_count": 32,
+      "imagination_attention_spent": 2.2
+    },
+    {
+      "id": "choice-boundary",
+      "passed": true,
+      "error": null,
+      "status": "choice",
+      "reason": "trajectory_boundary:RULE-LANDED-CHOICE-STOP",
+      "observed_world_unchanged": true,
+      "grounding_rules": [
+        "RULE-PLACE-DIE-COLUMN-MOVE",
+        "RULE-LANDED-CHOICE-STOP"
+      ],
+      "relation_rejections": [],
+      "boundaries": [
+        {
+          "kind": "choice",
+          "reason": "trajectory_boundary:RULE-LANDED-CHOICE-STOP",
+          "trajectoryId": "RULE-LANDED-CHOICE-STOP"
+        }
+      ],
+      "attention_selected_count": 32,
+      "imagination_attention_spent": 2.2
+    },
+    {
+      "id": "unknown-boundary",
+      "passed": true,
+      "error": null,
+      "status": "unknown",
+      "reason": "no_activated_trajectory_passed_relation_gate",
+      "observed_world_unchanged": true,
+      "grounding_rules": [
+        "RULE-PLACE-DIE-COLUMN-MOVE"
+      ],
+      "relation_rejections": [
+        {
+          "iteration": 1,
+          "queryKind": "landed_unknown",
+          "trajectoryId": "RULE-LANDED-NORMAL-COMPLETE",
+          "activation": 0.5666666666666667,
+          "reason": "q_kind_mismatch:landed_unknown!=landed_normal"
+        },
+        {
+          "iteration": 1,
+          "queryKind": "landed_unknown",
+          "trajectoryId": "RULE-LANDED-RANDOM-STOP",
+          "activation": 0.5516836752405607,
+          "reason": "q_kind_mismatch:landed_unknown!=landed_random"
+        }
+      ],
+      "boundaries": [
+        {
+          "kind": "unknown",
+          "reason": "no_activated_trajectory_passed_relation_gate",
+          "queryKind": "landed_unknown",
+          "objectId": "ship-a"
+        }
+      ],
+      "attention_selected_count": 32,
+      "imagination_attention_spent": 1.4
+    },
+    {
+      "id": "imagination-attention-stop",
+      "passed": true,
+      "error": null,
+      "status": "attention_stop",
+      "reason": "imagination_attention_exhausted",
+      "observed_world_unchanged": true,
+      "grounding_rules": [
+        "RULE-PLACE-DIE-COLUMN-MOVE"
+      ],
+      "relation_rejections": [],
+      "boundaries": [
+        {
+          "kind": "attention_stop",
+          "reason": "imagination_attention_exhausted",
+          "trajectoryId": "RULE-PLACE-DIE-COLUMN-MOVE",
+          "point": "same_column_targets"
+        }
+      ],
+      "attention_selected_count": 34,
+      "imagination_attention_spent": 0
+    },
+    {
+      "id": "perception-attention-stop",
+      "passed": true,
+      "error": null,
+      "status": "attention_stop",
+      "reason": "grounding_required_unnoticed_fact",
+      "observed_world_unchanged": true,
+      "grounding_rules": [
+        "RULE-PLACE-DIE-COLUMN-MOVE"
+      ],
+      "relation_rejections": [
+        {
+          "iteration": 1,
+          "queryKind": "landed_arrow",
+          "trajectoryId": "RULE-000-PASSING-ARROW-DOES-NOT-SHIFT",
+          "activation": 0.9999999999999999,
+          "reason": "q_kind_mismatch:landed_arrow!=passed_arrow"
+        }
+      ],
+      "boundaries": [
+        {
+          "kind": "attention_stop",
+          "reason": "grounding_required_unnoticed_fact",
+          "trajectoryId": "RULE-LANDED-ARROW-SHIFT",
+          "atomId": "tile:B:4.targetColumn"
+        }
+      ],
+      "attention_selected_count": 18,
+      "imagination_attention_spent": 1.4
+    }
+  ]
+}

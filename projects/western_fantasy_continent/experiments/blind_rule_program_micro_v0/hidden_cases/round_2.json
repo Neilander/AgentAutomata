@@ -1,0 +1,64 @@
+[
+  {
+    "id": "nearest-three-way-tie-with-excluded-lower-values",
+    "rule_set": ["RULE-BASE-COLUMN-MOVE", "RULE-FROZEN-STAYS", "RULE-NEAREST-CITY-TIES"],
+    "state": {
+      "event": {"type": "place_die", "column": "Q", "amount": 4, "selection": "nearest_city", "_hidden_pick": ["t0", "t1", "t2"]},
+      "objects": [
+        {"id": "far", "column": "Q", "row": 0, "frozen": false, "city_distance": 12},
+        {"id": "t0", "column": "Q", "row": 1, "frozen": false, "city_distance": 3},
+        {"id": "ice", "column": "Q", "row": 2, "frozen": true, "city_distance": 0, "_hidden_should_move": false},
+        {"id": "other", "column": "R", "row": 3, "frozen": false, "city_distance": 1},
+        {"id": "t1", "column": "Q", "row": 4, "frozen": false, "city_distance": 3},
+        {"id": "far2", "column": "Q", "row": 5, "frozen": false, "city_distance": 9},
+        {"id": "t2", "column": "Q", "row": 6, "frozen": false, "city_distance": 3}
+      ]
+    },
+    "expected": [
+      {"object_id": "t0", "from_row": 1, "to_row": 5},
+      {"object_id": "t1", "from_row": 4, "to_row": 8},
+      {"object_id": "t2", "from_row": 6, "to_row": 10}
+    ]
+  },
+  {
+    "id": "nearest-unique-minimum-parameterized",
+    "rule_set": ["RULE-BASE-COLUMN-MOVE", "RULE-FROZEN-STAYS", "RULE-NEAREST-CITY-TIES"],
+    "state": {
+      "event": {"type": "place_die", "column": "LongColumn", "amount": -3, "selection": "nearest_city"},
+      "objects": [
+        {"id": "d8", "column": "LongColumn", "row": 20, "frozen": false, "city_distance": 8},
+        {"id": "d0", "column": "LongColumn", "row": -2, "frozen": false, "city_distance": 0},
+        {"id": "d2", "column": "LongColumn", "row": 5, "frozen": false, "city_distance": 2}
+      ]
+    },
+    "expected": [{"object_id": "d0", "from_row": -2, "to_row": -5}]
+  },
+  {
+    "id": "nearest-no-eligible-candidate",
+    "rule_set": ["RULE-BASE-COLUMN-MOVE", "RULE-FROZEN-STAYS", "RULE-NEAREST-CITY-TIES"],
+    "state": {
+      "event": {"type": "place_die", "column": "V", "amount": 2, "selection": "nearest_city"},
+      "objects": [
+        {"id": "ice", "column": "V", "row": 1, "frozen": true, "city_distance": 0},
+        {"id": "away", "column": "W", "row": 1, "frozen": false, "city_distance": 0}
+      ]
+    },
+    "expected": []
+  },
+  {
+    "id": "non-nearest-mode-preserves-all-eligible",
+    "rule_set": ["RULE-BASE-COLUMN-MOVE", "RULE-FROZEN-STAYS", "RULE-NEAREST-CITY-TIES"],
+    "state": {
+      "event": {"type": "place_die", "column": "S", "amount": 6, "selection": "all"},
+      "objects": [
+        {"id": "s0", "column": "S", "row": 2, "frozen": false},
+        {"id": "s1", "column": "S", "row": 7, "frozen": false},
+        {"id": "ice", "column": "S", "row": 9, "frozen": true}
+      ]
+    },
+    "expected": [
+      {"object_id": "s0", "from_row": 2, "to_row": 8},
+      {"object_id": "s1", "from_row": 7, "to_row": 13}
+    ]
+  }
+]

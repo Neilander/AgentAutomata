@@ -1,0 +1,49 @@
+{
+  "isolation_kind": "behavioral",
+  "os_level_isolation": false,
+  "honest_limit": "当前多 Agent 接口不提供子 Agent 文件系统 allowlist 或系统调用读取日志，因此不能声称 OS 级隔离，也不能独立证明它没有违反提示；本记录只证明提示边界、材料落盘顺序、提交快照与回复边界。",
+  "compiler_agent": "/root/blind_rule_program_test/isolated_compiler",
+  "allowed_write": "submission/submission.js",
+  "forbidden_categories": [
+    "研究交接",
+    "旧实验答案",
+    "oracle",
+    "隐藏案例与隐藏期望",
+    "artifacts",
+    "submission_history",
+    "其他仓库文件"
+  ],
+  "rounds": [
+    {
+      "round": 0,
+      "allowed_reads": ["public_bundle/CONTRACT.md", "public_bundle/round_0_base.md"],
+      "new_public_rule": "RULE-BASE-COLUMN-MOVE",
+      "visible_counterexample_count": 1,
+      "hidden_case_file_created_only_after_reply": "hidden_cases/round_0.json",
+      "reply_was_path_only": true
+    },
+    {
+      "round": 1,
+      "allowed_reads": ["public_bundle/CONTRACT.md", "public_bundle/round_0_base.md", "public_bundle/round_1_freeze.md", "submission/submission.js"],
+      "new_public_rule": "RULE-FROZEN-STAYS",
+      "visible_counterexample_count": 1,
+      "old_version_failure_confirmed_before_rule_delivery": true,
+      "hidden_case_file_created_only_after_reply": "hidden_cases/round_1.json",
+      "reply_was_path_only": true
+    },
+    {
+      "round": 2,
+      "allowed_reads": ["public_bundle/CONTRACT.md", "public_bundle/round_0_base.md", "public_bundle/round_1_freeze.md", "public_bundle/round_2_nearest_city_ties.md", "submission/submission.js"],
+      "new_public_rule": "RULE-NEAREST-CITY-TIES",
+      "visible_counterexample_count": 1,
+      "old_version_failure_confirmed_before_rule_delivery": true,
+      "hidden_case_file_created_only_after_reply": "hidden_cases/round_2.json",
+      "reply_was_path_only": true
+    }
+  ],
+  "preflight": {
+    "detail": "最初按 Python 拟定合同；编译者提交后发现 worktree 环境没有 Python 运行时。正式隐藏案例尚未生成时，把公开合同改为 Node.js 并要求同一编译者重做第0轮。废弃的预检提交仅保存在 audit/preflight_python_submission.py，不计入三轮正式结果。",
+    "formal_hidden_cases_existed_at_node_resubmission": false
+  },
+  "runtime_state_read_audit": "artifacts/validation.json 的 cases[*].reads 由 Proxy 捕获；隐藏键一旦读取会抛错；unknown-key enumeration、写入和删除由 Proxy 拒绝。"
+}

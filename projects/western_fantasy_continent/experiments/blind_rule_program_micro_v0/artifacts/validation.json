@@ -1,0 +1,578 @@
+{
+  "experiment": "blind_rule_program_micro_v0",
+  "round": 2,
+  "submission_path": "submission/submission.js",
+  "submission_sha256": "91d301ca099fab96662af38afe5c05320c30265aab096d37f3ecfd6758f730ae",
+  "revision": "round_2",
+  "source_rule_ids": [
+    "RULE-BASE-COLUMN-MOVE",
+    "RULE-FROZEN-STAYS",
+    "RULE-NEAREST-CITY-TIES"
+  ],
+  "expected_rule_ids": [
+    "RULE-BASE-COLUMN-MOVE",
+    "RULE-FROZEN-STAYS",
+    "RULE-NEAREST-CITY-TIES"
+  ],
+  "metadata_ok": true,
+  "static_security_errors": [],
+  "load_error": null,
+  "case_count": 10,
+  "passed_count": 10,
+  "all_passed": true,
+  "input_immutability_all": true,
+  "hidden_field_reads": [],
+  "unauthorized_state_reads": [],
+  "cases": [
+    {
+      "id": "base-many-objects-and-negative-amount",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE"
+      ],
+      "passed": true,
+      "actual": [
+        {
+          "object_id": "a0",
+          "from_row": 9,
+          "to_row": 7
+        },
+        {
+          "object_id": "a1",
+          "from_row": 0,
+          "to_row": -2
+        },
+        {
+          "object_id": "a2",
+          "from_row": 17,
+          "to_row": 15
+        }
+      ],
+      "expected": [
+        {
+          "object_id": "a0",
+          "from_row": 9,
+          "to_row": 7
+        },
+        {
+          "object_id": "a1",
+          "from_row": 0,
+          "to_row": -2
+        },
+        {
+          "object_id": "a2",
+          "from_row": 17,
+          "to_row": 15
+        }
+      ],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.objects[2]",
+        "state.objects[2].column",
+        "state.event.column",
+        "state.objects[2].frozen",
+        "state.objects[3]",
+        "state.objects[3].column",
+        "state.event.column",
+        "state.objects[3].frozen",
+        "state.objects[4]",
+        "state.objects[4].column",
+        "state.event.column",
+        "state.event.selection",
+        "state.event.selection",
+        "state.objects[0].id",
+        "state.objects[0].row",
+        "state.objects[0].row",
+        "state.event.amount",
+        "state.event.selection",
+        "state.objects[2].id",
+        "state.objects[2].row",
+        "state.objects[2].row",
+        "state.event.amount",
+        "state.event.selection",
+        "state.objects[3].id",
+        "state.objects[3].row",
+        "state.objects[3].row",
+        "state.event.amount"
+      ]
+    },
+    {
+      "id": "base-parameterized-column-and-amount",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE"
+      ],
+      "passed": true,
+      "actual": [
+        {
+          "object_id": "x",
+          "from_row": -4,
+          "to_row": 7
+        }
+      ],
+      "expected": [
+        {
+          "object_id": "x",
+          "from_row": -4,
+          "to_row": 7
+        }
+      ],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.event.selection",
+        "state.event.selection",
+        "state.objects[0].id",
+        "state.objects[0].row",
+        "state.objects[0].row",
+        "state.event.amount"
+      ]
+    },
+    {
+      "id": "base-wrong-event-empty",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE"
+      ],
+      "passed": true,
+      "actual": [],
+      "expected": [],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type"
+      ]
+    },
+    {
+      "id": "freeze-mixed-count-and-order",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE",
+        "RULE-FROZEN-STAYS"
+      ],
+      "passed": true,
+      "actual": [
+        {
+          "object_id": "m0",
+          "from_row": 2,
+          "to_row": 7
+        },
+        {
+          "object_id": "m1",
+          "from_row": 10,
+          "to_row": 15
+        },
+        {
+          "object_id": "m2",
+          "from_row": -5,
+          "to_row": 0
+        }
+      ],
+      "expected": [
+        {
+          "object_id": "m0",
+          "from_row": 2,
+          "to_row": 7
+        },
+        {
+          "object_id": "m1",
+          "from_row": 10,
+          "to_row": 15
+        },
+        {
+          "object_id": "m2",
+          "from_row": -5,
+          "to_row": 0
+        }
+      ],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.objects[1].frozen",
+        "state.objects[2]",
+        "state.objects[2].column",
+        "state.event.column",
+        "state.objects[3]",
+        "state.objects[3].column",
+        "state.event.column",
+        "state.objects[3].frozen",
+        "state.objects[4]",
+        "state.objects[4].column",
+        "state.event.column",
+        "state.objects[4].frozen",
+        "state.objects[5]",
+        "state.objects[5].column",
+        "state.event.column",
+        "state.objects[5].frozen",
+        "state.event.selection",
+        "state.event.selection",
+        "state.objects[0].id",
+        "state.objects[0].row",
+        "state.objects[0].row",
+        "state.event.amount",
+        "state.event.selection",
+        "state.objects[3].id",
+        "state.objects[3].row",
+        "state.objects[3].row",
+        "state.event.amount",
+        "state.event.selection",
+        "state.objects[5].id",
+        "state.objects[5].row",
+        "state.objects[5].row",
+        "state.event.amount"
+      ]
+    },
+    {
+      "id": "freeze-all-eligible-empty",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE",
+        "RULE-FROZEN-STAYS"
+      ],
+      "passed": true,
+      "actual": [],
+      "expected": [],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.objects[1].frozen",
+        "state.objects[2]",
+        "state.objects[2].column",
+        "state.event.column",
+        "state.event.selection"
+      ]
+    },
+    {
+      "id": "freeze-parameter-change",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE",
+        "RULE-FROZEN-STAYS"
+      ],
+      "passed": true,
+      "actual": [
+        {
+          "object_id": "go",
+          "from_row": 4,
+          "to_row": -3
+        }
+      ],
+      "expected": [
+        {
+          "object_id": "go",
+          "from_row": 4,
+          "to_row": -3
+        }
+      ],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.objects[1].frozen",
+        "state.event.selection",
+        "state.event.selection",
+        "state.objects[0].id",
+        "state.objects[0].row",
+        "state.objects[0].row",
+        "state.event.amount"
+      ]
+    },
+    {
+      "id": "nearest-three-way-tie-with-excluded-lower-values",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE",
+        "RULE-FROZEN-STAYS",
+        "RULE-NEAREST-CITY-TIES"
+      ],
+      "passed": true,
+      "actual": [
+        {
+          "object_id": "t0",
+          "from_row": 1,
+          "to_row": 5
+        },
+        {
+          "object_id": "t1",
+          "from_row": 4,
+          "to_row": 8
+        },
+        {
+          "object_id": "t2",
+          "from_row": 6,
+          "to_row": 10
+        }
+      ],
+      "expected": [
+        {
+          "object_id": "t0",
+          "from_row": 1,
+          "to_row": 5
+        },
+        {
+          "object_id": "t1",
+          "from_row": 4,
+          "to_row": 8
+        },
+        {
+          "object_id": "t2",
+          "from_row": 6,
+          "to_row": 10
+        }
+      ],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.objects[1].frozen",
+        "state.objects[2]",
+        "state.objects[2].column",
+        "state.event.column",
+        "state.objects[2].frozen",
+        "state.objects[3]",
+        "state.objects[3].column",
+        "state.event.column",
+        "state.objects[4]",
+        "state.objects[4].column",
+        "state.event.column",
+        "state.objects[4].frozen",
+        "state.objects[5]",
+        "state.objects[5].column",
+        "state.event.column",
+        "state.objects[5].frozen",
+        "state.objects[6]",
+        "state.objects[6].column",
+        "state.event.column",
+        "state.objects[6].frozen",
+        "state.event.selection",
+        "state.objects[0].city_distance",
+        "state.objects[1].city_distance",
+        "state.objects[1].city_distance",
+        "state.objects[4].city_distance",
+        "state.objects[5].city_distance",
+        "state.objects[6].city_distance",
+        "state.event.selection",
+        "state.objects[0].city_distance",
+        "state.event.selection",
+        "state.objects[1].city_distance",
+        "state.objects[1].id",
+        "state.objects[1].row",
+        "state.objects[1].row",
+        "state.event.amount",
+        "state.event.selection",
+        "state.objects[4].city_distance",
+        "state.objects[4].id",
+        "state.objects[4].row",
+        "state.objects[4].row",
+        "state.event.amount",
+        "state.event.selection",
+        "state.objects[5].city_distance",
+        "state.event.selection",
+        "state.objects[6].city_distance",
+        "state.objects[6].id",
+        "state.objects[6].row",
+        "state.objects[6].row",
+        "state.event.amount"
+      ]
+    },
+    {
+      "id": "nearest-unique-minimum-parameterized",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE",
+        "RULE-FROZEN-STAYS",
+        "RULE-NEAREST-CITY-TIES"
+      ],
+      "passed": true,
+      "actual": [
+        {
+          "object_id": "d0",
+          "from_row": -2,
+          "to_row": -5
+        }
+      ],
+      "expected": [
+        {
+          "object_id": "d0",
+          "from_row": -2,
+          "to_row": -5
+        }
+      ],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.objects[1].frozen",
+        "state.objects[2]",
+        "state.objects[2].column",
+        "state.event.column",
+        "state.objects[2].frozen",
+        "state.event.selection",
+        "state.objects[0].city_distance",
+        "state.objects[1].city_distance",
+        "state.objects[1].city_distance",
+        "state.objects[2].city_distance",
+        "state.event.selection",
+        "state.objects[0].city_distance",
+        "state.event.selection",
+        "state.objects[1].city_distance",
+        "state.objects[1].id",
+        "state.objects[1].row",
+        "state.objects[1].row",
+        "state.event.amount",
+        "state.event.selection",
+        "state.objects[2].city_distance"
+      ]
+    },
+    {
+      "id": "nearest-no-eligible-candidate",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE",
+        "RULE-FROZEN-STAYS",
+        "RULE-NEAREST-CITY-TIES"
+      ],
+      "passed": true,
+      "actual": [],
+      "expected": [],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.event.selection"
+      ]
+    },
+    {
+      "id": "non-nearest-mode-preserves-all-eligible",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE",
+        "RULE-FROZEN-STAYS",
+        "RULE-NEAREST-CITY-TIES"
+      ],
+      "passed": true,
+      "actual": [
+        {
+          "object_id": "s0",
+          "from_row": 2,
+          "to_row": 8
+        },
+        {
+          "object_id": "s1",
+          "from_row": 7,
+          "to_row": 13
+        }
+      ],
+      "expected": [
+        {
+          "object_id": "s0",
+          "from_row": 2,
+          "to_row": 8
+        },
+        {
+          "object_id": "s1",
+          "from_row": 7,
+          "to_row": 13
+        }
+      ],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.objects[1].frozen",
+        "state.objects[2]",
+        "state.objects[2].column",
+        "state.event.column",
+        "state.objects[2].frozen",
+        "state.event.selection",
+        "state.event.selection",
+        "state.objects[0].id",
+        "state.objects[0].row",
+        "state.objects[0].row",
+        "state.event.amount",
+        "state.event.selection",
+        "state.objects[1].id",
+        "state.objects[1].row",
+        "state.objects[1].row",
+        "state.event.amount"
+      ]
+    }
+  ]
+}

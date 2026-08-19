@@ -1,0 +1,311 @@
+{
+  "experiment": "blind_rule_program_micro_v0",
+  "round": 1,
+  "submission_path": "submission_history/round_1.js",
+  "submission_sha256": "b799f2ca3f4c83b986004a7a3f07fbd184ddb0ff1b228bc3bac7701c37d9c7b6",
+  "revision": "round_1",
+  "source_rule_ids": [
+    "RULE-BASE-COLUMN-MOVE",
+    "RULE-FROZEN-STAYS"
+  ],
+  "expected_rule_ids": [
+    "RULE-BASE-COLUMN-MOVE",
+    "RULE-FROZEN-STAYS"
+  ],
+  "metadata_ok": true,
+  "static_security_errors": [],
+  "load_error": null,
+  "case_count": 6,
+  "passed_count": 6,
+  "all_passed": true,
+  "input_immutability_all": true,
+  "hidden_field_reads": [],
+  "unauthorized_state_reads": [],
+  "cases": [
+    {
+      "id": "base-many-objects-and-negative-amount",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE"
+      ],
+      "passed": true,
+      "actual": [
+        {
+          "object_id": "a0",
+          "from_row": 9,
+          "to_row": 7
+        },
+        {
+          "object_id": "a1",
+          "from_row": 0,
+          "to_row": -2
+        },
+        {
+          "object_id": "a2",
+          "from_row": 17,
+          "to_row": 15
+        }
+      ],
+      "expected": [
+        {
+          "object_id": "a0",
+          "from_row": 9,
+          "to_row": 7
+        },
+        {
+          "object_id": "a1",
+          "from_row": 0,
+          "to_row": -2
+        },
+        {
+          "object_id": "a2",
+          "from_row": 17,
+          "to_row": 15
+        }
+      ],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[0].id",
+        "state.objects[0].row",
+        "state.objects[0].row",
+        "state.event.amount",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.objects[2]",
+        "state.objects[2].column",
+        "state.event.column",
+        "state.objects[2].frozen",
+        "state.objects[2].id",
+        "state.objects[2].row",
+        "state.objects[2].row",
+        "state.event.amount",
+        "state.objects[3]",
+        "state.objects[3].column",
+        "state.event.column",
+        "state.objects[3].frozen",
+        "state.objects[3].id",
+        "state.objects[3].row",
+        "state.objects[3].row",
+        "state.event.amount",
+        "state.objects[4]",
+        "state.objects[4].column",
+        "state.event.column"
+      ]
+    },
+    {
+      "id": "base-parameterized-column-and-amount",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE"
+      ],
+      "passed": true,
+      "actual": [
+        {
+          "object_id": "x",
+          "from_row": -4,
+          "to_row": 7
+        }
+      ],
+      "expected": [
+        {
+          "object_id": "x",
+          "from_row": -4,
+          "to_row": 7
+        }
+      ],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[0].id",
+        "state.objects[0].row",
+        "state.objects[0].row",
+        "state.event.amount",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column"
+      ]
+    },
+    {
+      "id": "base-wrong-event-empty",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE"
+      ],
+      "passed": true,
+      "actual": [],
+      "expected": [],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type"
+      ]
+    },
+    {
+      "id": "freeze-mixed-count-and-order",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE",
+        "RULE-FROZEN-STAYS"
+      ],
+      "passed": true,
+      "actual": [
+        {
+          "object_id": "m0",
+          "from_row": 2,
+          "to_row": 7
+        },
+        {
+          "object_id": "m1",
+          "from_row": 10,
+          "to_row": 15
+        },
+        {
+          "object_id": "m2",
+          "from_row": -5,
+          "to_row": 0
+        }
+      ],
+      "expected": [
+        {
+          "object_id": "m0",
+          "from_row": 2,
+          "to_row": 7
+        },
+        {
+          "object_id": "m1",
+          "from_row": 10,
+          "to_row": 15
+        },
+        {
+          "object_id": "m2",
+          "from_row": -5,
+          "to_row": 0
+        }
+      ],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[0].id",
+        "state.objects[0].row",
+        "state.objects[0].row",
+        "state.event.amount",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.objects[1].frozen",
+        "state.objects[2]",
+        "state.objects[2].column",
+        "state.event.column",
+        "state.objects[3]",
+        "state.objects[3].column",
+        "state.event.column",
+        "state.objects[3].frozen",
+        "state.objects[3].id",
+        "state.objects[3].row",
+        "state.objects[3].row",
+        "state.event.amount",
+        "state.objects[4]",
+        "state.objects[4].column",
+        "state.event.column",
+        "state.objects[4].frozen",
+        "state.objects[5]",
+        "state.objects[5].column",
+        "state.event.column",
+        "state.objects[5].frozen",
+        "state.objects[5].id",
+        "state.objects[5].row",
+        "state.objects[5].row",
+        "state.event.amount"
+      ]
+    },
+    {
+      "id": "freeze-all-eligible-empty",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE",
+        "RULE-FROZEN-STAYS"
+      ],
+      "passed": true,
+      "actual": [],
+      "expected": [],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.objects[1].frozen",
+        "state.objects[2]",
+        "state.objects[2].column",
+        "state.event.column"
+      ]
+    },
+    {
+      "id": "freeze-parameter-change",
+      "rule_set": [
+        "RULE-BASE-COLUMN-MOVE",
+        "RULE-FROZEN-STAYS"
+      ],
+      "passed": true,
+      "actual": [
+        {
+          "object_id": "go",
+          "from_row": 4,
+          "to_row": -3
+        }
+      ],
+      "expected": [
+        {
+          "object_id": "go",
+          "from_row": 4,
+          "to_row": -3
+        }
+      ],
+      "error": null,
+      "input_unchanged": true,
+      "reads": [
+        "state.event",
+        "state.event.type",
+        "state.objects",
+        "state.objects[0]",
+        "state.objects[0].column",
+        "state.event.column",
+        "state.objects[0].frozen",
+        "state.objects[0].id",
+        "state.objects[0].row",
+        "state.objects[0].row",
+        "state.event.amount",
+        "state.objects[1]",
+        "state.objects[1].column",
+        "state.event.column",
+        "state.objects[1].frozen"
+      ]
+    }
+  ]
+}

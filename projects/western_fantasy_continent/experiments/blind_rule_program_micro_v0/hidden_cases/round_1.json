@@ -1,0 +1,47 @@
+[
+  {
+    "id": "freeze-mixed-count-and-order",
+    "rule_set": ["RULE-BASE-COLUMN-MOVE", "RULE-FROZEN-STAYS"],
+    "state": {
+      "event": {"type": "place_die", "column": "D4", "amount": 5, "_hidden_expected_count": 3},
+      "objects": [
+        {"id": "m0", "column": "D4", "row": 2, "frozen": false},
+        {"id": "ice0", "column": "D4", "row": 3, "frozen": true, "_hidden_should_move": false},
+        {"id": "away", "column": "D5", "row": 3, "frozen": false},
+        {"id": "m1", "column": "D4", "row": 10, "frozen": false},
+        {"id": "ice1", "column": "D4", "row": 20, "frozen": true},
+        {"id": "m2", "column": "D4", "row": -5, "frozen": false}
+      ]
+    },
+    "expected": [
+      {"object_id": "m0", "from_row": 2, "to_row": 7},
+      {"object_id": "m1", "from_row": 10, "to_row": 15},
+      {"object_id": "m2", "from_row": -5, "to_row": 0}
+    ]
+  },
+  {
+    "id": "freeze-all-eligible-empty",
+    "rule_set": ["RULE-BASE-COLUMN-MOVE", "RULE-FROZEN-STAYS"],
+    "state": {
+      "event": {"type": "place_die", "column": "N", "amount": 1},
+      "objects": [
+        {"id": "n0", "column": "N", "row": 0, "frozen": true},
+        {"id": "n1", "column": "N", "row": 1, "frozen": true},
+        {"id": "other", "column": "M", "row": 1, "frozen": false}
+      ]
+    },
+    "expected": []
+  },
+  {
+    "id": "freeze-parameter-change",
+    "rule_set": ["RULE-BASE-COLUMN-MOVE", "RULE-FROZEN-STAYS"],
+    "state": {
+      "event": {"type": "place_die", "column": "AA", "amount": -7},
+      "objects": [
+        {"id": "go", "column": "AA", "row": 4, "frozen": false},
+        {"id": "stay", "column": "AA", "row": 4, "frozen": true}
+      ]
+    },
+    "expected": [{"object_id": "go", "from_row": 4, "to_row": -3}]
+  }
+]

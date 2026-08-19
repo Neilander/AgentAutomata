@@ -22,6 +22,14 @@
 
 [`reports/2026-08-19_1215_adaptive-grounding-program-iteration-v0.md`](reports/2026-08-19_1215_adaptive-grounding-program-iteration-v0.md)
 
+当前《我的超能力是无限刷装》游戏设计、灰谷村可玩版本、共享战斗与装备套装跨 Session 接力总览：
+
+[`../projects/western_fantasy_continent/GAMEPLAY_HANDOFF_2026-08-19.md`](../projects/western_fantasy_continent/GAMEPLAY_HANDOFF_2026-08-19.md)
+
+对应交接报告：
+
+[`reports/2026-08-19_1444_gameplay-session-handoff.md`](reports/2026-08-19_1444_gameplay-session-handoff.md)
+
 当前玩家认知、Decision 与 MindToy 跨 Session 研究接力总览：
 
 [`../projects/western_fantasy_continent/RESEARCH_HANDOFF_2026-08-19.md`](../projects/western_fantasy_continent/RESEARCH_HANDOFF_2026-08-19.md)

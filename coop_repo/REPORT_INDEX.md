@@ -4,6 +4,7 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-08-19
 
+- `2026-08-19_1444_gameplay-session-handoff.md`: 汇总《我的超能力是无限刷装》本次长 Session 的灰谷村第一章、资源与刷装循环、编队 UI、共享战斗、七套职业套装、测试结论和后续风险；明确区分当前 main、历史十五日 worktree 与玩家认知研究线。
 - `2026-08-19_1430_research-session-handoff.md`: 汇总玩家认知、Decision、五槽轨迹、注意力、规则实例化与MindToy主线；记录当前rollout约268MB的结构占比，并固定下一步为隔离Agent盲生成增量补丁。
 - `2026-08-19_1216_guardian-echo-long-battle-matrix.md`: 护佑回响强化为50%触发、18半径、70%复制量；共享战斗216场长战矩阵表明其是局部群体续航，密集/保核/分散单奶平均寿命分别+35.39%/+33.45%/+21.99%，并发现20v20多治疗者重叠放大风险。
 - `2026-08-19_1215_adaptive-grounding-program-iteration-v0.md`: 验证抽象Q后的参数化小程序可覆盖基础150例，并逐条吸收五类例外；每轮累计回归100%，最终组合400/400，复杂整组规则需要扩充通用归约能力，尚待隔离Agent盲生成补丁。

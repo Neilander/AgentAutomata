@@ -1,0 +1,76 @@
+{
+  "schema": "mind_structure_build_response_v0",
+  "selectedModel": "state_transition",
+  "selectionReason": "一次探测不仅给当前选项打分，还会依据更高、更低或一致反馈改变下一轮候选范围，所以最低充分结构是单步状态转移。",
+  "rejectedHigherComplexity": "只保留当前候选状态、一个中间探测和三个反馈后继，不展开完整搜索树。",
+  "evidenceIds": [
+    "attention:signal:candidate_range:0/gist",
+    "rule:ordered_feedback"
+  ],
+  "structure": {
+    "model": "state_transition",
+    "initialStateId": "current_candidates",
+    "horizon": 1,
+    "states": [
+      { "id": "current_candidates", "terminal": false, "valueEstimateId": "estimate:value:current_candidates" },
+      { "id": "lower_than_probe", "terminal": true, "valueEstimateId": "estimate:value:lower_than_probe" },
+      { "id": "equal_to_probe", "terminal": true, "valueEstimateId": "estimate:value:equal_to_probe" },
+      { "id": "higher_than_probe", "terminal": true, "valueEstimateId": "estimate:value:higher_than_probe" }
+    ],
+    "actions": [
+      { "id": "probe:rune_5", "fromStateId": "current_candidates", "transitionEstimateId": "estimate:probe_partition" }
+    ]
+  },
+  "estimationRequests": [
+    {
+      "id": "estimate:probe_partition",
+      "targetKind": "transition",
+      "targetId": "probe:rune_5",
+      "field": "outcomes",
+      "outputShape": "state_distribution",
+      "knowledgeRule": "derive_only_from_cited_knowledge",
+      "reason": "需要判断探测5后三个反馈分支会各留下多少候选，才能知道它是否有效缩小问题。",
+      "resolution": { "resolverId": "probe_partition", "probe": 5 }
+    },
+    {
+      "id": "estimate:value:current_candidates",
+      "targetKind": "state_value",
+      "targetId": "current_candidates",
+      "field": "subjectiveValue",
+      "outputShape": "scalar",
+      "knowledgeRule": "derive_only_from_cited_knowledge",
+      "reason": "作为探测前基线。",
+      "resolution": { "resolverId": "state_value", "probe": 5 }
+    },
+    {
+      "id": "estimate:value:lower_than_probe",
+      "targetKind": "state_value",
+      "targetId": "lower_than_probe",
+      "field": "subjectiveValue",
+      "outputShape": "scalar",
+      "knowledgeRule": "derive_only_from_cited_knowledge",
+      "reason": "比较更低反馈后问题缩小程度。",
+      "resolution": { "resolverId": "state_value", "probe": 5 }
+    },
+    {
+      "id": "estimate:value:equal_to_probe",
+      "targetKind": "state_value",
+      "targetId": "equal_to_probe",
+      "field": "subjectiveValue",
+      "outputShape": "scalar",
+      "knowledgeRule": "derive_only_from_cited_knowledge",
+      "reason": "表示直接找到目标。",
+      "resolution": { "resolverId": "state_value", "probe": 5 }
+    },
+    {
+      "id": "estimate:value:higher_than_probe",
+      "targetKind": "state_value",
+      "targetId": "higher_than_probe",
+      "field": "subjectiveValue",
+      "outputShape": "scalar",
+      "knowledgeRule": "derive_only_from_cited_knowledge",
+      "reason": "比较更高反馈后问题缩小程度。",
+      "resolution": { "resolverId": "state_value", "probe": 5 }
+    }
+  ]
+}

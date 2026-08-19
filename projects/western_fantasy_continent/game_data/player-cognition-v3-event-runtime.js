@@ -12,6 +12,7 @@ const {
   confirmationGeometricMultiplier,
   produceVerificationFeedback,
   composeFeedback,
+  composeFeedbackV2,
   applyCausalKnowledgeEvidence,
 } = require("./player-feedback-model");
 
@@ -179,6 +180,20 @@ function ingestEvent(state, rawEvent) {
     expectation: expectationFeedback,
     verification: verificationFeedback,
   });
+  const feedbackV2 = composeFeedbackV2({
+    legacyBundle: feedback,
+    evidence: feedbackEvidence(event, reception.H),
+    processContext: {
+      decision: { EDecision: event.process ? event.process.decisionCount : null },
+      reactive: { count: event.process ? event.process.reactiveCount : null },
+      mechanical: { seconds: event.process ? event.process.mechanicalSeconds : null },
+      verificationEffort: {
+        count: hypothesisEvidence.verifyCount,
+        value: processFeedback.verificationProcess,
+      },
+    },
+  });
+  assertFeedbackCompatibility(feedbackV2, event.id);
   const processDelta = processFeedback.value;
   const directR = resultFeedback.value;
   const verificationDelta = verificationFeedback.value;
@@ -219,6 +234,7 @@ function ingestEvent(state, rawEvent) {
     hypothesisVerification: hypothesisEvidence.rows,
     verificationFeedback,
     feedback,
+    feedbackV2,
     EVerify: hypothesisEvidence.verifyCount,
     learningOrder: "feedback_then_update",
   };
@@ -301,12 +317,38 @@ function applyDecision(stateInput, decision) {
   const process = { decisionCount: validation.EDecision, reactiveCount: 0, mechanicalSeconds: 0 };
   applyProcess(state, process);
   const processDelta = processEmotionOf({ process });
+  const processFeedback = produceProcessFeedback({ baseValue: processDelta });
+  const feedback = composeFeedback({
+    process: processFeedback,
+    result: produceResultFeedback({ enabled: false }),
+    expectation: produceExpectationFeedback({ value: 0 }),
+    verification: produceVerificationFeedback({}),
+  });
+  const decisionEventId = decision?.id || `decision:${state.trace.length + 1}`;
+  const feedbackV2 = composeFeedbackV2({
+    legacyBundle: feedback,
+    evidence: {
+      H: null,
+      eventId: decisionEventId,
+      subject: { id: "player", role: "player" },
+      environment: decision?.environment || {},
+      behavior: { kind: "choose_action", key: decision?.action || "none" },
+      result: { kind: "action_selected", action: decision?.action || null },
+    },
+    processContext: {
+      decision: { EDecision: validation.EDecision },
+      reactive: { count: 0 },
+      mechanical: { seconds: 0 },
+      verificationEffort: { count: 0, value: 0 },
+    },
+  });
+  assertFeedbackCompatibility(feedbackV2, decisionEventId);
   applyEmotion(state, processDelta, 0, 0);
   const hypothesis = decision?.hypothesis && validation.hypothesisValid
     ? createDecisionHypothesis(state, decision)
     : null;
   state.trace.push({
-    eventId: decision?.id || `decision:${state.trace.length + 1}`,
+    eventId: decisionEventId,
     time: Number(decision?.time || 0),
     type: "decision",
     accepted: true,
@@ -326,6 +368,8 @@ function applyDecision(stateInput, decision) {
     processEmotion: round(processDelta),
     EDecision: validation.EDecision,
     EVerify: 0,
+    feedback,
+    feedbackV2,
     acquiredEmotion: 0,
     expectationEmotion: 0,
     emotionDelta: round(processDelta),
@@ -875,6 +919,17 @@ function settleStructuredCausalHypothesis(state, {
     expectation: produceExpectationFeedback({ value: 0 }),
     verification: verificationFeedback,
   });
+  const feedbackV2 = composeFeedbackV2({
+    legacyBundle: feedback,
+    evidence: feedbackEvidence(event, 1),
+    processContext: {
+      verificationEffort: {
+        count: comparisonMade ? 1 : 0,
+        value: processFeedback.verificationProcess,
+      },
+    },
+  });
+  assertFeedbackCompatibility(feedbackV2, event.id || hypothesis.id);
   const before = round(state.emotion.value);
   applyEmotion(state, processFeedback.value, 0, 0, verificationFeedback.value);
 
@@ -946,6 +1001,7 @@ function settleStructuredCausalHypothesis(state, {
     hypothesisVerification: [verificationRow],
     verificationFeedback,
     feedback,
+    feedbackV2,
     EVerify: comparisonMade ? 1 : 0,
     causalKnowledgeUpdates,
     structuredMatcherAudit: structuredClone(matcherResult.audit || {}),
@@ -957,9 +1013,30 @@ function settleStructuredCausalHypothesis(state, {
     hypothesisId: hypothesis.id,
     status: everify.status,
     feedback: structuredClone(feedback),
+    feedbackV2: structuredClone(feedbackV2),
     causalKnowledgeUpdates,
     trace: structuredClone(trace),
   };
+}
+
+function feedbackEvidence(event, H) {
+  return {
+    H,
+    eventId: event?.id || null,
+    subject: event?.subject || null,
+    environment: event?.environment || null,
+    behavior: event?.behavior || null,
+    result: event?.result || null,
+    targets: event?.result?.target ? [event.result.target] : [],
+  };
+}
+
+function assertFeedbackCompatibility(feedbackV2, eventId) {
+  if (feedbackV2.compatibility.preservesLegacyTotal) return;
+  throw new Error(
+    `player feedback V2 changed legacy total for ${eventId || "unknown event"}: `
+      + `${feedbackV2.compatibility.oldTotal} -> ${feedbackV2.total}`,
+  );
 }
 
 function publicMatcherTarget(matcher) {

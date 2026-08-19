@@ -1,0 +1,441 @@
+{
+  "model": {
+    "name": "Alibaba-NLP/gte-multilingual-base",
+    "dimensions": 768,
+    "offline": true
+  },
+  "dataset": {
+    "character_count": 40,
+    "axis_count": 9,
+    "axes": [
+      "healing",
+      "shield",
+      "damage_reduction",
+      "death_prevention",
+      "control",
+      "burst_damage",
+      "sustained_damage",
+      "mobility",
+      "anti_heal"
+    ],
+    "coordinates_come_from_description_only": true,
+    "truth_tags_used_for_evaluation_only": true
+  },
+  "axis_auc": {
+    "healing": 0.96415770609319,
+    "shield": 0.989247311827957,
+    "damage_reduction": 0.7526881720430108,
+    "death_prevention": 0.4874551971326165,
+    "control": 1.0,
+    "burst_damage": 0.8817204301075269,
+    "sustained_damage": 0.9933333333333333,
+    "mobility": 0.9466666666666667,
+    "anti_heal": 0.5985663082437276
+  },
+  "mean_axis_auc": 0.8459816806053365,
+  "anchor_diagnostics": {
+    "healing": {
+      "positive_anchor_mean": 0.24730706709937364,
+      "negative_anchor_mean": -0.2407619455665053,
+      "anchor_separation": 0.48806901266587893
+    },
+    "shield": {
+      "positive_anchor_mean": 0.2747754636613287,
+      "negative_anchor_mean": -0.26515853707476533,
+      "anchor_separation": 0.539934000736094
+    },
+    "damage_reduction": {
+      "positive_anchor_mean": 0.2741212878883205,
+      "negative_anchor_mean": -0.2805944177481949,
+      "anchor_separation": 0.5547157056365154
+    },
+    "death_prevention": {
+      "positive_anchor_mean": 0.1793637333515342,
+      "negative_anchor_mean": -0.1758225633890237,
+      "anchor_separation": 0.3551862967405579
+    },
+    "control": {
+      "positive_anchor_mean": 0.2815257095513344,
+      "negative_anchor_mean": -0.28353230371013577,
+      "anchor_separation": 0.5650580132614702
+    },
+    "burst_damage": {
+      "positive_anchor_mean": 0.2761069883382786,
+      "negative_anchor_mean": -0.2784107581944429,
+      "anchor_separation": 0.5545177465327216
+    },
+    "sustained_damage": {
+      "positive_anchor_mean": 0.24012572527617612,
+      "negative_anchor_mean": -0.23479715354915034,
+      "anchor_separation": 0.47492287882532647
+    },
+    "mobility": {
+      "positive_anchor_mean": 0.25851122744332145,
+      "negative_anchor_mean": -0.2520817853649449,
+      "anchor_separation": 0.5105930128082663
+    },
+    "anti_heal": {
+      "positive_anchor_mean": 0.22309302988041677,
+      "negative_anchor_mean": -0.22554554492822812,
+      "anchor_separation": 0.4486385748086449
+    }
+  },
+  "inverse_retrieval": {
+    "top_k": 8,
+    "precision": 0.75,
+    "ranking": [
+      {
+        "id": "候选-28",
+        "score": 0.5574745526661589,
+        "desired": false
+      },
+      {
+        "id": "候选-27",
+        "score": 0.5181575185472052,
+        "desired": false
+      },
+      {
+        "id": "候选-36",
+        "score": 0.4516148282600756,
+        "desired": true
+      },
+      {
+        "id": "候选-15",
+        "score": 0.44935963005976554,
+        "desired": true
+      },
+      {
+        "id": "候选-12",
+        "score": 0.426866210507575,
+        "desired": true
+      },
+      {
+        "id": "候选-17",
+        "score": 0.42264894533106145,
+        "desired": true
+      },
+      {
+        "id": "候选-13",
+        "score": 0.40125898541692895,
+        "desired": true
+      },
+      {
+        "id": "候选-09",
+        "score": 0.39087246360010885,
+        "desired": true
+      }
+    ]
+  },
+  "same_word_different_meaning": {
+    "protect_lock_blood": {
+      "death_prevention": 0.7007532858998577,
+      "anti_heal": 0.6454872670944443,
+      "correct": true
+    },
+    "suppress_lock_blood": {
+      "death_prevention": 0.7205504960421301,
+      "anti_heal": 0.5714598275698645,
+      "correct": false
+    }
+  },
+  "oracle_guess": {
+    "accuracy": 1.0,
+    "mean_target_rank": 1.0,
+    "mean_target_probability": 0.9382701981912416
+  },
+  "latent_guess": {
+    "accuracy": 0.1,
+    "mean_target_rank": 8.525,
+    "mean_target_probability": 0.06590442030771848
+  },
+  "representative_latent_runs": [
+    {
+      "target": "候选-01",
+      "prediction": "候选-25",
+      "correct": false,
+      "target_rank": 7,
+      "target_probability": 0.0420030307329232,
+      "trace": [
+        {
+          "axis": "sustained_damage",
+          "answer": false,
+          "effective_candidates_before": 39.99999999999999,
+          "effective_candidates_after": 36.47836227800761,
+          "top_probability": 0.03646408135534849
+        },
+        {
+          "axis": "healing",
+          "answer": true,
+          "effective_candidates_before": 36.47836227800761,
+          "effective_candidates_after": 32.123127901861544,
+          "top_probability": 0.04958559502072342
+        },
+        {
+          "axis": "death_prevention",
+          "answer": false,
+          "effective_candidates_before": 32.123127901861544,
+          "effective_candidates_after": 28.837476558872844,
+          "top_probability": 0.07401559322136284
+        },
+        {
+          "axis": "burst_damage",
+          "answer": false,
+          "effective_candidates_before": 28.837476558872844,
+          "effective_candidates_after": 26.036503211204266,
+          "top_probability": 0.08037768796040126
+        },
+        {
+          "axis": "shield",
+          "answer": true,
+          "effective_candidates_before": 26.036503211204266,
+          "effective_candidates_after": 27.86840779102796,
+          "top_probability": 0.06110653609586483
+        },
+        {
+          "axis": "anti_heal",
+          "answer": false,
+          "effective_candidates_before": 27.86840779102796,
+          "effective_candidates_after": 25.060678313923162,
+          "top_probability": 0.07276021617470971
+        },
+        {
+          "axis": "control",
+          "answer": false,
+          "effective_candidates_before": 25.060678313923162,
+          "effective_candidates_after": 24.09727639564746,
+          "top_probability": 0.08000142028264394
+        },
+        {
+          "axis": "mobility",
+          "answer": false,
+          "effective_candidates_before": 24.09727639564746,
+          "effective_candidates_after": 19.995221237976263,
+          "top_probability": 0.11509365010097738
+        },
+        {
+          "axis": "damage_reduction",
+          "answer": false,
+          "effective_candidates_before": 19.995221237976263,
+          "effective_candidates_after": 15.325216347241218,
+          "top_probability": 0.16859899239775666
+        }
+      ]
+    },
+    {
+      "target": "候选-19",
+      "prediction": "候选-33",
+      "correct": false,
+      "target_rank": 7,
+      "target_probability": 0.04356227600527708,
+      "trace": [
+        {
+          "axis": "sustained_damage",
+          "answer": true,
+          "effective_candidates_before": 39.99999999999999,
+          "effective_candidates_after": 35.501017927394,
+          "top_probability": 0.046591301582366317
+        },
+        {
+          "axis": "healing",
+          "answer": false,
+          "effective_candidates_before": 35.501017927394,
+          "effective_candidates_after": 29.657053601354924,
+          "top_probability": 0.06045041875257825
+        },
+        {
+          "axis": "burst_damage",
+          "answer": false,
+          "effective_candidates_before": 29.657053601354924,
+          "effective_candidates_after": 28.70131806282624,
+          "top_probability": 0.07501175352609186
+        },
+        {
+          "axis": "death_prevention",
+          "answer": false,
+          "effective_candidates_before": 28.70131806282624,
+          "effective_candidates_after": 25.502900330788727,
+          "top_probability": 0.11302779633424864
+        },
+        {
+          "axis": "control",
+          "answer": false,
+          "effective_candidates_before": 25.502900330788727,
+          "effective_candidates_after": 19.09799563411026,
+          "top_probability": 0.15912402682373958
+        },
+        {
+          "axis": "mobility",
+          "answer": false,
+          "effective_candidates_before": 19.09799563411026,
+          "effective_candidates_after": 9.862964347938703,
+          "top_probability": 0.2775936224762999
+        },
+        {
+          "axis": "damage_reduction",
+          "answer": true,
+          "effective_candidates_before": 9.862964347938703,
+          "effective_candidates_after": 14.827482310873842,
+          "top_probability": 0.2033087780846905
+        },
+        {
+          "axis": "shield",
+          "answer": false,
+          "effective_candidates_before": 14.827482310873842,
+          "effective_candidates_after": 12.757137083371575,
+          "top_probability": 0.21465378312742128
+        },
+        {
+          "axis": "anti_heal",
+          "answer": false,
+          "effective_candidates_before": 12.757137083371575,
+          "effective_candidates_after": 11.314714254028319,
+          "top_probability": 0.22787937601834293
+        }
+      ]
+    },
+    {
+      "target": "候选-39",
+      "prediction": "候选-23",
+      "correct": false,
+      "target_rank": 9,
+      "target_probability": 0.02914728825021083,
+      "trace": [
+        {
+          "axis": "sustained_damage",
+          "answer": false,
+          "effective_candidates_before": 39.99999999999999,
+          "effective_candidates_after": 36.47836227800761,
+          "top_probability": 0.03646408135534849
+        },
+        {
+          "axis": "healing",
+          "answer": false,
+          "effective_candidates_before": 36.47836227800761,
+          "effective_candidates_after": 32.55767069467213,
+          "top_probability": 0.04995265710248043
+        },
+        {
+          "axis": "death_prevention",
+          "answer": true,
+          "effective_candidates_before": 32.55767069467213,
+          "effective_candidates_after": 30.338229465771402,
+          "top_probability": 0.06077740272149016
+        },
+        {
+          "axis": "burst_damage",
+          "answer": true,
+          "effective_candidates_before": 30.338229465771402,
+          "effective_candidates_after": 30.43060390950905,
+          "top_probability": 0.06062683713832252
+        },
+        {
+          "axis": "anti_heal",
+          "answer": false,
+          "effective_candidates_before": 30.43060390950905,
+          "effective_candidates_after": 26.78205705965967,
+          "top_probability": 0.08497923350894016
+        },
+        {
+          "axis": "control",
+          "answer": false,
+          "effective_candidates_before": 26.78205705965967,
+          "effective_candidates_after": 23.503002096363367,
+          "top_probability": 0.09486168098911794
+        },
+        {
+          "axis": "damage_reduction",
+          "answer": false,
+          "effective_candidates_before": 23.503002096363367,
+          "effective_candidates_after": 18.03046420987516,
+          "top_probability": 0.13396866631585422
+        },
+        {
+          "axis": "shield",
+          "answer": false,
+          "effective_candidates_before": 18.03046420987516,
+          "effective_candidates_after": 12.198739296617168,
+          "top_probability": 0.21500598975310659
+        },
+        {
+          "axis": "mobility",
+          "answer": false,
+          "effective_candidates_before": 12.198739296617168,
+          "effective_candidates_after": 10.017510953290506,
+          "top_probability": 0.25475137293332417
+        }
+      ]
+    },
+    {
+      "target": "候选-40",
+      "prediction": "候选-21",
+      "correct": false,
+      "target_rank": 5,
+      "target_probability": 0.06367698134247397,
+      "trace": [
+        {
+          "axis": "sustained_damage",
+          "answer": false,
+          "effective_candidates_before": 39.99999999999999,
+          "effective_candidates_after": 36.47836227800761,
+          "top_probability": 0.03646408135534849
+        },
+        {
+          "axis": "healing",
+          "answer": false,
+          "effective_candidates_before": 36.47836227800761,
+          "effective_candidates_after": 32.55767069467213,
+          "top_probability": 0.04995265710248043
+        },
+        {
+          "axis": "death_prevention",
+          "answer": false,
+          "effective_candidates_before": 32.55767069467213,
+          "effective_candidates_after": 28.38358899662644,
+          "top_probability": 0.08133940373004764
+        },
+        {
+          "axis": "burst_damage",
+          "answer": false,
+          "effective_candidates_before": 28.38358899662644,
+          "effective_candidates_after": 23.671679250042995,
+          "top_probability": 0.11575336491234427
+        },
+        {
+          "axis": "shield",
+          "answer": false,
+          "effective_candidates_before": 23.671679250042995,
+          "effective_candidates_after": 17.461665696328343,
+          "top_probability": 0.16013669362707253
+        },
+        {
+          "axis": "mobility",
+          "answer": false,
+          "effective_candidates_before": 17.461665696328343,
+          "effective_candidates_after": 11.198539430725262,
+          "top_probability": 0.23518327995686994
+        },
+        {
+          "axis": "damage_reduction",
+          "answer": false,
+          "effective_candidates_before": 11.198539430725262,
+          "effective_candidates_after": 9.838965667344715,
+          "top_probability": 0.22458177571042742
+        },
+        {
+          "axis": "control",
+          "answer": true,
+          "effective_candidates_before": 9.838965667344715,
+          "effective_candidates_after": 9.857689902432249,
+          "top_probability": 0.24244095772270333
+        },
+        {
+          "axis": "anti_heal",
+          "answer": true,
+          "effective_candidates_before": 9.857689902432249,
+          "effective_candidates_after": 9.586740448394663,
+          "top_probability": 0.24680150253743596
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,384 @@
+{
+  "schema": "latent_wakeup_retrieval_v0",
+  "model": "Alibaba-NLP/gte-multilingual-base",
+  "question": "Can a local before-after trend recall a relation, transport it onto the affected object, and wake the correct next action-attention preset?",
+  "contract": [
+    "程序注意力先确认哪个对象真正受到作用",
+    "局部前后状态只负责形成变化箭头",
+    "变化箭头召回关系原型，再搬运到受影响对象",
+    "投影点只选择下一条记忆预设，不执行正式规则",
+    "没有受影响对象或没有预设时保持不唤醒/疑问"
+  ],
+  "positive_cases": [
+    {
+      "id": "ufs_ship_hits_bomb",
+      "before": "飞船位于危险装置的上方，两者还没有接触",
+      "after": "飞船下降到危险装置所在格，两者发生了碰撞",
+      "local_before": "危险装置还没有受到飞船接触",
+      "local_after": "危险装置受到下降飞船的碰撞",
+      "expected_relation": "contact",
+      "object": "bomb",
+      "expected_wakeup": "bomb_contacted",
+      "predicted_relation": "contact",
+      "relation_correct": true,
+      "whole_scene_relation_scores": {
+        "contact": 0.4794519366095926,
+        "move_down": 0.5079357341706388,
+        "heat": 0.16596535813348834,
+        "remove": 0.244500358008476,
+        "inspect": 0.352475497209818
+      },
+      "relation_scores": {
+        "contact": 0.5065732407455161,
+        "move_down": 0.3949982925923621,
+        "heat": 0.2239211652451366,
+        "remove": 0.17004620991492134,
+        "inspect": 0.424906077428191
+      },
+      "predicted_wakeup": "bomb_contacted",
+      "wakeup_correct": true,
+      "candidate_scores": {
+        "bomb_contacted": 0.6011047348023313,
+        "bomb_moved": 0.20002288128452414,
+        "bomb_heated": 0.3243525456526529,
+        "bomb_inspected": 0.42642246543904216,
+        "bomb_untouched": -0.21649720897288172
+      },
+      "wakeup_margin": 0.17468226936328912,
+      "accepted": true,
+      "naive_transported_endpoint_scores": {
+        "bomb_contacted": 0.6293607692167145,
+        "bomb_moved": 0.600362818899151,
+        "bomb_heated": 0.5405462720342807,
+        "bomb_inspected": 0.573022705167983,
+        "bomb_untouched": 0.38658229027632063
+      },
+      "awakened_chain": [
+        "检查炸弹触发条件",
+        "预想炸弹爆炸",
+        "继续关注爆炸范围内的对象"
+      ]
+    },
+    {
+      "id": "cart_hits_bomb_paraphrase",
+      "before": "装有爆炸物的箱子独自放在路中，矿车还在远处",
+      "after": "矿车驶到箱子的位置并顶住了它",
+      "local_before": "装有爆炸物的箱子尚未受到外物接触",
+      "local_after": "装有爆炸物的箱子被驶来的矿车顶住",
+      "expected_relation": "contact",
+      "object": "bomb",
+      "expected_wakeup": "bomb_contacted",
+      "predicted_relation": "contact",
+      "relation_correct": true,
+      "whole_scene_relation_scores": {
+        "contact": 0.19705323952223416,
+        "move_down": 0.15755640502467122,
+        "heat": 0.2707599360662388,
+        "remove": -0.020492093900363835,
+        "inspect": 0.3000895089441093
+      },
+      "relation_scores": {
+        "contact": 0.40723710303880534,
+        "move_down": 0.010618310913296753,
+        "heat": 0.14129991735173586,
+        "remove": 0.08119161524264533,
+        "inspect": 0.2610632859157639
+      },
+      "predicted_wakeup": "bomb_contacted",
+      "wakeup_correct": true,
+      "candidate_scores": {
+        "bomb_contacted": 0.4190494164439342,
+        "bomb_moved": 0.09690242284149914,
+        "bomb_heated": 0.2729617603163814,
+        "bomb_inspected": 0.2431074216016727,
+        "bomb_untouched": -0.1116120650122142
+      },
+      "wakeup_margin": 0.14608765612755276,
+      "accepted": true,
+      "naive_transported_endpoint_scores": {
+        "bomb_contacted": 0.6293607692167145,
+        "bomb_moved": 0.600362818899151,
+        "bomb_heated": 0.5405462720342807,
+        "bomb_inspected": 0.573022705167983,
+        "bomb_untouched": 0.38658229027632063
+      },
+      "awakened_chain": [
+        "检查炸弹触发条件",
+        "预想炸弹爆炸",
+        "继续关注爆炸范围内的对象"
+      ]
+    },
+    {
+      "id": "ship_enters_arrow",
+      "before": "飞船还在箭头标记上方，箭头格目前是空的",
+      "after": "飞船下降后占据了箭头标记所在的格子",
+      "local_before": "箭头标记没有被任何单位接触",
+      "local_after": "箭头标记被下降的飞船压住",
+      "expected_relation": "contact",
+      "object": "arrow_tile",
+      "expected_wakeup": "arrow_tile_entered",
+      "predicted_relation": "contact",
+      "relation_correct": true,
+      "whole_scene_relation_scores": {
+        "contact": 0.32116761176329395,
+        "move_down": 0.41190279625161313,
+        "heat": 0.168150681523272,
+        "remove": 0.09463173377716624,
+        "inspect": 0.2645165126925122
+      },
+      "relation_scores": {
+        "contact": 0.5352709180168793,
+        "move_down": 0.20574855912164575,
+        "heat": 0.19431086836275088,
+        "remove": 0.11518337440791578,
+        "inspect": 0.3303485253558801
+      },
+      "predicted_wakeup": "arrow_tile_entered",
+      "wakeup_correct": true,
+      "candidate_scores": {
+        "arrow_tile_entered": 0.6187438007321379,
+        "arrow_tile_removed": 0.19831016644261232,
+        "arrow_tile_inspected": 0.3888016430246678,
+        "arrow_tile_empty": 0.003376929788217851
+      },
+      "wakeup_margin": 0.22994215770747006,
+      "accepted": true,
+      "naive_transported_endpoint_scores": {
+        "arrow_tile_entered": 0.5799830462565234,
+        "arrow_tile_removed": 0.5241109518871726,
+        "arrow_tile_inspected": 0.6598406676868298,
+        "arrow_tile_empty": 0.5065088568939216
+      },
+      "awakened_chain": [
+        "读取箭头方向",
+        "预想该单位沿箭头方向横移",
+        "关注新的落点"
+      ]
+    },
+    {
+      "id": "bomb_is_heated",
+      "before": "炸弹放在关闭的喷火机关旁边，温度没有变化",
+      "after": "喷火机关启动，火焰持续烘烤炸弹",
+      "local_before": "炸弹没有受到热源影响",
+      "local_after": "炸弹受到火焰持续加热",
+      "expected_relation": "heat",
+      "object": "bomb",
+      "expected_wakeup": "bomb_heated",
+      "predicted_relation": "contact",
+      "relation_correct": false,
+      "whole_scene_relation_scores": {
+        "contact": 0.5056116893724445,
+        "move_down": 0.1985991715529699,
+        "heat": 0.4769625692515025,
+        "remove": 0.0319298968800662,
+        "inspect": 0.2747048747218169
+      },
+      "relation_scores": {
+        "contact": 0.49153827326995614,
+        "move_down": -0.006253677608670041,
+        "heat": 0.48588452933638016,
+        "remove": -0.06953192765090697,
+        "inspect": 0.2485165439073913
+      },
+      "predicted_wakeup": "bomb_heated",
+      "wakeup_correct": true,
+      "candidate_scores": {
+        "bomb_contacted": 0.484900322834824,
+        "bomb_moved": -0.01367765127802552,
+        "bomb_heated": 0.7859179041705838,
+        "bomb_inspected": 0.2783169365410211,
+        "bomb_untouched": -0.5072170220777222
+      },
+      "wakeup_margin": 0.30101758133575984,
+      "accepted": true,
+      "naive_transported_endpoint_scores": {
+        "bomb_contacted": 0.6293607692167145,
+        "bomb_moved": 0.600362818899151,
+        "bomb_heated": 0.5405462720342807,
+        "bomb_inspected": 0.573022705167983,
+        "bomb_untouched": 0.38658229027632063
+      },
+      "awakened_chain": [
+        "检查炸弹是否因高温变得不稳定"
+      ]
+    },
+    {
+      "id": "bomb_is_inspected",
+      "before": "玩家还没有查看角落里的炸弹",
+      "after": "玩家停下来仔细观察炸弹的引信结构",
+      "local_before": "炸弹的结构尚未被玩家查看",
+      "local_after": "炸弹的引信结构被玩家仔细观察",
+      "expected_relation": "inspect",
+      "object": "bomb",
+      "expected_wakeup": "bomb_inspected",
+      "predicted_relation": "inspect",
+      "relation_correct": true,
+      "whole_scene_relation_scores": {
+        "contact": 0.2591823955687735,
+        "move_down": 0.034975680766358666,
+        "heat": 0.2485483516773362,
+        "remove": -0.0259780427971577,
+        "inspect": 0.5542189064585648
+      },
+      "relation_scores": {
+        "contact": 0.3026776012659316,
+        "move_down": 0.09686713185312552,
+        "heat": 0.3436248878666936,
+        "remove": -0.09613816412831083,
+        "inspect": 0.6179715057042019
+      },
+      "predicted_wakeup": "bomb_inspected",
+      "wakeup_correct": true,
+      "candidate_scores": {
+        "bomb_contacted": 0.421742803730179,
+        "bomb_moved": 0.10928962072041312,
+        "bomb_heated": 0.3655491730378965,
+        "bomb_inspected": 0.7160013957563846,
+        "bomb_untouched": -0.07208623843165694
+      },
+      "wakeup_margin": 0.2942585920262056,
+      "accepted": true,
+      "naive_transported_endpoint_scores": {
+        "bomb_contacted": 0.4793676061489642,
+        "bomb_moved": 0.44680340094036464,
+        "bomb_heated": 0.4711687797590448,
+        "bomb_inspected": 0.5742374093631457,
+        "bomb_untouched": 0.49532370778074536
+      },
+      "awakened_chain": [
+        "读取炸弹可见信息"
+      ]
+    },
+    {
+      "id": "bomb_is_carried_away",
+      "before": "炸弹仍然放在房间中央",
+      "after": "机械臂把炸弹从房间中央取走",
+      "local_before": "炸弹仍在原来的位置",
+      "local_after": "炸弹被机械臂从原位置取走",
+      "expected_relation": "remove",
+      "object": "bomb",
+      "expected_wakeup": "bomb_moved",
+      "predicted_relation": "remove",
+      "relation_correct": true,
+      "whole_scene_relation_scores": {
+        "contact": 0.397021018487579,
+        "move_down": 0.24013546768477528,
+        "heat": 0.25093235397787084,
+        "remove": 0.4184128939290938,
+        "inspect": 0.2902337700789999
+      },
+      "relation_scores": {
+        "contact": 0.2644323799841848,
+        "move_down": 0.14979321451255706,
+        "heat": 0.16769414126819893,
+        "remove": 0.4650379837484132,
+        "inspect": 0.09159697411180011
+      },
+      "predicted_wakeup": "bomb_moved",
+      "wakeup_correct": true,
+      "candidate_scores": {
+        "bomb_contacted": 0.1602179251847384,
+        "bomb_moved": 0.7251634194015671,
+        "bomb_heated": 0.1308438290498105,
+        "bomb_inspected": 0.10069966610584513,
+        "bomb_untouched": -0.269201427402413
+      },
+      "wakeup_margin": 0.5649454942168287,
+      "accepted": true,
+      "naive_transported_endpoint_scores": {
+        "bomb_contacted": 0.6371636756212722,
+        "bomb_moved": 0.6148508128101038,
+        "bomb_heated": 0.5354514917730965,
+        "bomb_inspected": 0.5580943023522829,
+        "bomb_untouched": 0.6543892928143071
+      },
+      "awakened_chain": [
+        "更新炸弹位置"
+      ]
+    }
+  ],
+  "no_wake_cases": [
+    {
+      "id": "ship_descends_in_other_column",
+      "reason": "飞机虽然下降，但注意力终点没有炸弹；不应构造炸弹局部事件",
+      "object": null,
+      "wakeup": null,
+      "correct": true,
+      "gate": "no_confirmed_affected_object_or_no_memory"
+    },
+    {
+      "id": "ship_passes_over_bomb",
+      "reason": "炸弹只在可见路径中而不在后果落点；只看见，不等于受到作用",
+      "object": null,
+      "wakeup": null,
+      "correct": true,
+      "gate": "no_confirmed_affected_object_or_no_memory"
+    },
+    {
+      "id": "distance_unknown",
+      "reason": "不知道飞机下降几格，无法确认终点与炸弹重合；应保留疑问而不是唤醒爆炸链",
+      "object": null,
+      "wakeup": null,
+      "correct": true,
+      "gate": "no_confirmed_affected_object_or_no_memory"
+    },
+    {
+      "id": "unknown_rune_contact",
+      "reason": "即使检测到接触，记忆中没有未知符文的结果预设；应查规则或等待经验",
+      "object": "unknown_rune",
+      "wakeup": null,
+      "correct": true,
+      "gate": "no_confirmed_affected_object_or_no_memory"
+    },
+    {
+      "id": "bomb_gets_wet_without_learned_preset",
+      "reason": "炸弹受潮是确定变化，但记忆里没有受潮预设，不能硬选碰撞或加热",
+      "object": "bomb",
+      "local_before": "炸弹表面保持干燥",
+      "local_after": "水流淋湿了炸弹表面",
+      "scores": {
+        "bomb_contacted": 0.30085377832587523,
+        "bomb_moved": 0.05442379975783159,
+        "bomb_heated": 0.21717334521532672,
+        "bomb_inspected": 0.04371806632060705
+      },
+      "best_candidate": "bomb_contacted",
+      "best_score": 0.30085377832587523,
+      "margin": 0.08368043311054851,
+      "wakeup": null,
+      "correct": true,
+      "gate": "similarity_rejection"
+    },
+    {
+      "id": "bomb_is_painted_without_learned_preset",
+      "reason": "炸弹被涂色与现有触发链无关，应保持未知",
+      "object": "bomb",
+      "local_before": "炸弹外壳没有涂料",
+      "local_after": "角色把炸弹外壳涂成蓝色",
+      "scores": {
+        "bomb_contacted": 0.48614456359525754,
+        "bomb_moved": 0.1792928545624965,
+        "bomb_heated": 0.33430927655744413,
+        "bomb_inspected": 0.36214270464973275
+      },
+      "best_candidate": "bomb_contacted",
+      "best_score": 0.48614456359525754,
+      "margin": 0.12400185894552479,
+      "wakeup": "bomb_contacted",
+      "correct": false,
+      "gate": "similarity_rejection"
+    }
+  ],
+  "summary": {
+    "case_count": 6,
+    "relation_top1": 0.8333333333333334,
+    "wakeup_top1": 1.0,
+    "end_to_end_top1": 0.8333333333333334,
+    "no_wake_contract_cases": 6,
+    "no_wake_accuracy": 0.8333333333333334,
+    "wakeup_thresholds": {
+      "minimum_score": 0.35,
+      "minimum_margin": 0.08
+    }
+  }
+}

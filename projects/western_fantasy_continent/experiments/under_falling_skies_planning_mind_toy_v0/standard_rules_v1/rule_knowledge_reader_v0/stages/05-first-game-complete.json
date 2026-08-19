@@ -1,0 +1,67 @@
+{
+  "schema": "ufs_incremental_rule_cognition_stage_v1",
+  "stage": 5,
+  "sourcePages": [9],
+  "availability": "before_first_game",
+  "manualBoundary": "规则书在本页明确允许玩家停止阅读并开始第一局",
+  "conceptsAdded": [
+    { "id": "final_research_space", "label": "最终11点研究格", "definition": "研究轨道顶部、只能由基地下半部多格研究房到达的最终格" },
+    { "id": "ship_spawn_priority", "label": "飞船生成优先级", "definition": "母舰阶段按颜色、空列和与列内最高飞船距离决定投放点的规则" },
+    { "id": "spawn_tie_choice", "label": "生成平局选择", "definition": "生成规则仍留下多个合法投放点时由玩家选择" }
+  ],
+  "environmentFactsAdded": [
+    { "id": "first_game_reading_boundary", "fact": "首局所需规则到第9页结束；后续内容不是首局玩家的初始知识" },
+    { "id": "white_ship_destruction_difference", "fact": "白色飞船撞城后返回母舰，但被战斗机击毁时从版图移除；紫色飞船被击毁后等待重生" }
+  ],
+  "knowledgeAdded": [
+    {
+      "id": "research_top_is_immediate_win",
+      "subject": "研究标记",
+      "environment": "研究轨道",
+      "behavior": "到达顶部",
+      "result": "玩家立即获胜",
+      "confidence": 0.98,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "final_research_requires_lower_multi_room",
+      "subject": "玩家",
+      "environment": "尝试进入最终11点研究格",
+      "behavior": "启动基地下半部的多格研究房",
+      "result": "这是到达最终研究格的唯一房间类型",
+      "confidence": 0.98,
+      "source": "explicit_rulebook_note"
+    },
+    {
+      "id": "spawn_empty_columns_first",
+      "subject": "待生成飞船",
+      "environment": "母舰阶段生成步骤",
+      "behavior": "先生成紫色飞船，并优先选择没有飞船的列",
+      "result": "飞船被放入符合优先级的投放点",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "spawn_farthest_from_highest_ship",
+      "subject": "待生成飞船",
+      "environment": "每列都已有飞船且仍有空投放点",
+      "behavior": "选择与该列最高飞船距离最大的投放点",
+      "result": "飞船被放入该投放点；规则仍平局时玩家自由选择",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    }
+  ],
+  "behaviorsAdded": [
+    { "id": "choose_spawn_tie", "label": "在生成优先级完全相同的投放点之间选择", "knownConstraints": ["先生成紫色再生成白色", "只能在规则留下的平局选项中选择"] }
+  ],
+  "openQuestions": [
+    "怎样组合这些规则形成稳定的胜利策略？",
+    "不同开局骰子和敌机位置下，各资源的当前边际价值是多少？"
+  ],
+  "blockedInferences": [
+    "规则明确最终需要下半部多格研究房，但没有告诉玩家最佳挖掘速度",
+    "规则没有给出能源、研究、防御和挖掘的固定价值权重",
+    "规则没有给出稳赢开局、最优骰序或标准获胜路线",
+    "首局玩家不知道第10页后的城市能力、机器人和战役规则"
+  ]
+}

@@ -1,0 +1,15 @@
+"use strict";
+const assert=require("assert");
+const MAP=require("../fixtures/roswell-threat-0-map");
+const ENGINE=require("../standard-engine");
+const API=require("./player-api");
+let state=ENGINE.createGame(MAP,123);
+const observation=API.publicObservation(MAP,state);
+assert.strictEqual(API.assertObservationSafe(observation).ok,true);
+assert.strictEqual(Object.hasOwn(observation,"rngState"),false);
+assert.strictEqual(Object.hasOwn(observation,"seed"),false);
+const legal=API.publicLegalActions(MAP,state);
+assert.ok(legal.length>0);
+state=API.applyPublicAction(MAP,state,legal[0].id);
+assert.strictEqual(state.history.at(-1).type,"worker_placed");
+console.log(JSON.stringify({status:"PASS",openingActions:legal.length,observationKeys:Object.keys(observation)},null,2));

@@ -239,6 +239,152 @@ function composeFeedback({ process, result, expectation, verification }) {
   };
 }
 
+function composeFeedbackV2({
+  legacyBundle = null,
+  process,
+  result,
+  expectation,
+  verification,
+  evidence = {},
+  processContext = {},
+  stateTransitions = {},
+} = {}) {
+  const legacy = legacyBundle
+    ? structuredClone(legacyBundle)
+    : composeFeedback({ process, result, expectation, verification });
+  const splitExpectation = splitExpectationAndConfirmation(legacy.channels?.A);
+  const channels = {
+    process: {
+      ...structuredClone(legacy.channels?.process || produceProcessFeedback({})),
+      components: normalizeProcessComponents(processContext),
+    },
+    R: structuredClone(legacy.channels?.R || produceResultFeedback({ enabled: false })),
+    A: splitExpectation.A,
+    C: splitExpectation.C,
+    EVerify: structuredClone(legacy.channels?.EVerify || produceVerificationFeedback({})),
+  };
+  const total = round(
+    Number(channels.process.value || 0)
+      + Number(channels.R.value || 0)
+      + Number(channels.A.value || 0)
+      + Number(channels.C.value || 0)
+      + Number(channels.EVerify.value || 0),
+  );
+  const oldTotal = round(legacy.total);
+  return {
+    schema: "player_feedback_bundle_v2",
+    evidence: normalizeFeedbackEvidence(evidence),
+    channels,
+    stateTransitions: normalizeStateTransitions(stateTransitions),
+    total,
+    compatibility: {
+      legacySchema: legacy.schema || "player_feedback_bundle_v1",
+      oldTotal,
+      oldAValue: round(legacy.channels?.A?.value),
+      totalDelta: round(total - oldTotal),
+      preservesLegacyTotal: total === oldTotal,
+      legacyACombinedConfirmation: splitExpectation.hadConfirmation,
+    },
+  };
+}
+
+function splitExpectationAndConfirmation(expectationInput = {}) {
+  const legacy = structuredClone(expectationInput || produceExpectationFeedback({}));
+  const formula = legacy.details?.formula;
+  const confirmation = formula?.confirmation && typeof formula.confirmation === "object"
+    ? structuredClone(formula.confirmation)
+    : null;
+  const hadConfirmation = Boolean(confirmation && isFiniteValue(confirmation.value));
+  const confirmationValue = hadConfirmation ? Number(confirmation.value) : 0;
+  const mismatchValue = isFiniteValue(formula?.mismatchValue)
+    ? Number(formula.mismatchValue)
+    : hadConfirmation
+      ? Number(legacy.value || 0) - confirmationValue
+      : Number(legacy.value || 0);
+  const details = legacy.details ? structuredClone(legacy.details) : null;
+  if (details?.formula) {
+    delete details.formula.confirmation;
+    details.formula.value = round(mismatchValue);
+  }
+  return {
+    hadConfirmation,
+    A: {
+      ...legacy,
+      channel: "A",
+      value: round(mismatchValue),
+      details,
+      legacyCombinedValue: round(legacy.value),
+    },
+    C: hadConfirmation
+      ? {
+        ...confirmation,
+        channel: "C",
+        value: round(confirmationValue),
+        status: "resolved",
+        sourceExpectationStatus: legacy.status || "unresolved",
+      }
+      : {
+        channel: "C",
+        value: 0,
+        status: "not_applicable",
+        sourceExpectationStatus: legacy.status || "unresolved",
+      },
+  };
+}
+
+function normalizeProcessComponents(input = {}) {
+  const decision = input.decision && typeof input.decision === "object" ? input.decision : {};
+  return {
+    decision: {
+      EDecision: optionalNumber(decision.EDecision),
+      QDecision: optionalNumber(decision.QDecision),
+      decisionAuthorship: optionalNumber(decision.decisionAuthorship),
+      decisionContentAppraisal: decision.decisionContentAppraisal
+        ? structuredClone(decision.decisionContentAppraisal)
+        : null,
+      insightEvent: decision.insightEvent ? structuredClone(decision.insightEvent) : null,
+    },
+    reactive: {
+      count: optionalNumber(input.reactive?.count),
+    },
+    mechanical: {
+      seconds: optionalNumber(input.mechanical?.seconds),
+    },
+    verificationEffort: {
+      count: optionalNumber(input.verificationEffort?.count),
+      value: optionalNumber(input.verificationEffort?.value),
+    },
+  };
+}
+
+function normalizeFeedbackEvidence(input = {}) {
+  return {
+    H: optionalNumber(input.H),
+    eventId: input.eventId || null,
+    subject: input.subject ? structuredClone(input.subject) : null,
+    environment: input.environment ? structuredClone(input.environment) : null,
+    behavior: input.behavior ? structuredClone(input.behavior) : null,
+    result: input.result ? structuredClone(input.result) : null,
+    targets: Array.isArray(input.targets) ? structuredClone(input.targets) : [],
+  };
+}
+
+function normalizeStateTransitions(input = {}) {
+  return {
+    agencyBefore: optionalNumber(input.agencyBefore),
+    agencyPlanned: optionalNumber(input.agencyPlanned),
+    agencyAfter: optionalNumber(input.agencyAfter),
+    planningRelief: optionalNumber(input.planningRelief),
+    learningControl: optionalNumber(input.learningControl),
+    stucknessBefore: optionalNumber(input.stucknessBefore),
+    stucknessAfter: optionalNumber(input.stucknessAfter),
+  };
+}
+
+function optionalNumber(value) {
+  return isFiniteValue(value) ? round(Number(value)) : null;
+}
+
 function applyCausalKnowledgeEvidence(rows, hypothesis, verificationRowInput, event, config = {}) {
   const evidence = Number(verificationRowInput?.derived?.knowledgeEvidence || 0);
   if (!hypothesis || !verificationRowInput?.comparisonMade || Math.abs(evidence) < 0.000001) return null;
@@ -369,6 +515,8 @@ module.exports = {
   confirmationGeometricMultiplier,
   produceVerificationFeedback,
   composeFeedback,
+  composeFeedbackV2,
+  splitExpectationAndConfirmation,
   applyCausalKnowledgeEvidence,
   summarizeCausalKnowledge,
 };

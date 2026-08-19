@@ -1,0 +1,104 @@
+{
+  "schema": "ufs_incremental_rule_cognition_stage_v1",
+  "stage": 3,
+  "sourcePages": [5, 6],
+  "conceptsAdded": [
+    { "id": "aa_room", "label": "防空房", "definition": "让同列飞船少下降一格，房间阶段无效果" },
+    { "id": "arrow_space", "label": "箭头格", "definition": "飞船停留后可能被移动到箭头目标的天空格" },
+    { "id": "mothership_down_space", "label": "母舰下降格", "definition": "飞船停留后使母舰立即下降一行的天空格" },
+    { "id": "explosion_space", "label": "爆炸格", "definition": "使停留飞船能够在房间阶段被战斗机击毁的天空格" },
+    { "id": "room_energy_cost", "label": "房间能源成本", "definition": "启动某些房间时必须支付的能源" },
+    { "id": "room_value", "label": "房间值", "definition": "骰子点数加减房间修正后的效果强度" },
+    { "id": "multi_space_room", "label": "多格房间", "definition": "必须填满所有格子，房间值由全部骰子与修正共同形成" },
+    { "id": "energy_room", "label": "能源房", "definition": "按房间值增加能源的房间" },
+    { "id": "fighter_room", "label": "战斗机房", "definition": "按房间值击毁爆炸格上符合数字条件的敌机" },
+    { "id": "research_room", "label": "研究房", "definition": "按房间值支付研究轨道连续格成本并推进研究的房间" }
+  ],
+  "environmentFactsAdded": [
+    { "id": "room_resolution_order_is_free", "fact": "房间阶段可以用任意顺序结算已放骰子" },
+    { "id": "passed_sky_spaces_do_not_trigger", "fact": "飞船只触发最终停留格，经过的天空格不触发" },
+    { "id": "damage_ship_returns", "fact": "击中城市的飞船造成1点伤害后返回母舰，回合末可能重新生成" }
+  ],
+  "knowledgeAdded": [
+    {
+      "id": "aa_reduces_descent",
+      "subject": "玩家",
+      "environment": "骰子阶段把骰子放入防空房所在列",
+      "behavior": "放置骰子",
+      "result": "该列飞船下降骰子点数减1；若骰子为1则不下降也不触发效果",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "ship_city_hit",
+      "subject": "敌机",
+      "environment": "下降到天空区域下方",
+      "behavior": "击中城市",
+      "result": "城市伤害增加1，敌机返回母舰等待重新生成",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "room_requires_energy",
+      "subject": "玩家",
+      "environment": "房间阶段结算带能源成本的房间",
+      "behavior": "支付标示能源",
+      "result": "房间效果可以发生；不支付或无法支付则移除骰子且无效果",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "multi_room_requires_all_spaces",
+      "subject": "玩家",
+      "environment": "多格房间",
+      "behavior": "在全部格子放置骰子",
+      "result": "可以用骰子点数总和加减修正形成房间值；缺任一格则所有相关骰子无效果",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "energy_room_generates_energy",
+      "subject": "玩家",
+      "environment": "房间阶段结算能源房",
+      "behavior": "移除骰子并应用房间值",
+      "result": "能源增加房间值但不超过轨道上限",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "fighter_room_destroys_eligible_ships",
+      "subject": "玩家",
+      "environment": "敌机停在带数字的爆炸格",
+      "behavior": "结算战斗机房",
+      "result": "击毁所有爆炸格数字不大于房间值的敌机",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "research_room_advances_track",
+      "subject": "玩家",
+      "environment": "房间阶段结算研究房",
+      "behavior": "选择向上推进连续研究格",
+      "result": "可推进一格或多格，但经过与到达格数字总和不能超过房间值",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    }
+  ],
+  "behaviorsAdded": [
+    { "id": "resolve_room", "label": "选择下一颗骰子或完整多格房间进行结算", "knownConstraints": ["顺序自由", "可能需要能源", "结算后移除骰子"] },
+    { "id": "skip_room_die", "label": "放弃某颗骰子的房间效果", "knownConstraints": ["仍须移除骰子"] },
+    { "id": "generate_energy", "label": "启动能源房增加能源", "knownConstraints": ["不超过能源轨道上限"] },
+    { "id": "shoot_explosion_ships", "label": "启动战斗机房击毁符合爆炸格数字的敌机", "knownConstraints": ["只影响爆炸格上的飞船"] },
+    { "id": "advance_research", "label": "启动研究房并选择可支付的连续研究格", "knownConstraints": ["连续格数字总和不超过房间值"] }
+  ],
+  "openQuestions": [
+    "移动挖掘机需要支付什么？",
+    "母舰阶段如何移动和重新生成飞船？",
+    "普通难度之外还有哪些难度变化？"
+  ],
+  "blockedInferences": [
+    "知道能源能启动房间，但不知道当前局面应保存多少能源",
+    "知道多格研究房需要填满，但不知道哪些回合值得为它预留骰子",
+    "不知道让飞船落到爆炸格是否一定比单纯减缓下降更好"
+  ]
+}

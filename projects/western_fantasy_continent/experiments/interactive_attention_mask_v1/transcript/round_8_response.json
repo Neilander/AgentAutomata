@@ -1,0 +1,109 @@
+{
+  "schema": "masked_attention_response_v1",
+  "round": 8,
+  "previousResponseHash": "71b512cd2f5d2012d382bcdd9d15e94d33757c375e10ffb17493f61f42a4e2f9",
+  "requestHash": "c0ff3a431009c7a33fbc9a501ae1a3256bf6433a4efdd5af1ef5d4e35ea99fc5",
+  "responses": [
+    {
+      "caseId": "arrow_city",
+      "command": {
+        "caseId": "arrow_city",
+        "kind": "act",
+        "operation": "finish_case",
+        "target": "case",
+        "reason": "唯一飞船已造成1点城市伤害并返回母舰等待区，灰骰无重投后续，全部确定性动作链已结束。",
+        "expectedWakeup": "S02_TERMINAL_CELL_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "finished",
+        "detail": {
+          "finalState": {
+            "shipPositions": {
+              "ship-a": "mothership-waiting"
+            },
+            "cityHp": 2,
+            "mothershipPosition": null,
+            "outcome": null,
+            "unplacedDiceState": "none"
+          }
+        }
+      }
+    },
+    {
+      "caseId": "mothership_skull",
+      "command": {
+        "caseId": "mothership_skull",
+        "kind": "act",
+        "operation": "finish_case",
+        "target": "case",
+        "reason": "骷髅新行已导致loss终局，立即失败边界已到达，不再执行包括右侧动作在内的任何后续。",
+        "expectedWakeup": "S03_IMMEDIATE_FAILURE_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "finished",
+        "detail": {
+          "finalState": {
+            "shipPositions": {
+              "ship-a": "sky-c0-r1"
+            },
+            "cityHp": 3,
+            "mothershipPosition": "mothership-r1",
+            "outcome": "loss",
+            "unplacedDiceState": "none"
+          }
+        }
+      }
+    },
+    {
+      "caseId": "white_random_stop",
+      "command": {
+        "caseId": "white_random_stop",
+        "kind": "act",
+        "operation": "finish_case",
+        "target": "case",
+        "reason": "白骰已触发对die-b的重投，响应明确新点数未知；确定性预想在随机边界停止，不猜测结果。",
+        "expectedWakeup": "S04_RANDOM_REROLL_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "finished",
+        "detail": {
+          "finalState": {
+            "shipPositions": {
+              "ship-a": "sky-c0-r1"
+            },
+            "cityHp": 3,
+            "mothershipPosition": null,
+            "outcome": null,
+            "unplacedDiceState": "rerolled_result_unknown"
+          }
+        }
+      }
+    },
+    {
+      "caseId": "two_ship_split",
+      "command": {
+        "caseId": "two_ship_split",
+        "kind": "focus",
+        "operation": "inspect_ship_cell",
+        "target": "ship-b",
+        "reason": "ship-a的城市命中链已结束，但同列ship-b已下降至sky-c0-r2且尚未结算；现在单独检查ship-b的最终停留格。",
+        "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY，依据ship-b终点决定其落点动作或无动作边界"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "shipId": "ship-b",
+          "position": "sky-c0-r2",
+          "feature": {
+            "kind": "explosion"
+          }
+        }
+      }
+    }
+  ],
+  "responseHash": "51adb84205a0097c2cffb450f6821a63254623000ff91c15f1d05cf75c780ae4"
+}

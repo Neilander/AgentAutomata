@@ -1,0 +1,44 @@
+{
+  "schema": "ufs_incremental_rule_cognition_stage_v1",
+  "stage": 1,
+  "sourcePages": [1, 2],
+  "readerProfile": "close_reading_new_player",
+  "conceptsAdded": [
+    { "id": "city", "label": "城市", "definition": "玩家需要保护的对象" },
+    { "id": "research", "label": "研究", "definition": "能够推进并最终完成的胜利目标" },
+    { "id": "mothership", "label": "外星母舰", "definition": "会威胁并最终摧毁基地的对象" },
+    { "id": "energy", "label": "能源", "definition": "由独立轨道和标记记录的资源" },
+    { "id": "damage", "label": "城市伤害", "definition": "由独立轨道和标记记录的危险状态" },
+    { "id": "excavator", "label": "挖掘机", "definition": "拥有独立起始位置的基地组件" },
+    { "id": "worker_die_white", "label": "白骰", "definition": "第一局使用的两颗白色骰子" },
+    { "id": "worker_die_gray", "label": "灰骰", "definition": "第一局使用的三颗灰色骰子" }
+  ],
+  "environmentFactsAdded": [
+    { "id": "first_game_dice", "fact": "第一局使用2颗白骰和3颗灰骰" },
+    { "id": "tracked_state", "fact": "研究、能源和伤害各有轨道与起始标记，挖掘机也有起始位置" }
+  ],
+  "knowledgeAdded": [
+    {
+      "id": "win_by_research_before_destruction",
+      "subject": "玩家",
+      "environment": "城市尚未被母舰摧毁",
+      "behavior": "完成研究",
+      "result": "赢得游戏",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    }
+  ],
+  "behaviorsAdded": [],
+  "openQuestions": [
+    "骰子怎样使用？",
+    "能源有什么用途？",
+    "伤害如何产生？",
+    "挖掘机如何移动？",
+    "母舰如何推进并摧毁基地？"
+  ],
+  "blockedInferences": [
+    "不知道研究、能源、防御或挖掘哪一个在开局收益最高",
+    "不知道白骰与灰骰存在任何功能差异",
+    "不知道任何最优开局或骰子摆放技巧"
+  ]
+}

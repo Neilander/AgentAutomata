@@ -1,0 +1,95 @@
+{
+  "schema": "ufs_incremental_rule_cognition_stage_v1",
+  "stage": 2,
+  "sourcePages": [3, 4],
+  "conceptsAdded": [
+    { "id": "enemy_ship", "label": "外星飞船", "definition": "从天空区域向城市下降的威胁" },
+    { "id": "drop_point", "label": "投放点", "definition": "紫色飞船在开局出现的位置" },
+    { "id": "sky_tile", "label": "天空板", "definition": "飞船下降并可能触发效果的区域" },
+    { "id": "base_column", "label": "基地列", "definition": "放置骰子并使同列飞船下降的五个纵列之一" },
+    { "id": "excavated_space", "label": "已挖掘格", "definition": "挖掘机身后、允许通常骰子放置的基地格" },
+    { "id": "unexcavated_space", "label": "未挖掘格", "definition": "挖掘机前方、尚未开放的基地格" },
+    { "id": "round_phase", "label": "回合阶段", "definition": "骰子、房间、母舰三个按顺序发生的阶段" }
+  ],
+  "environmentFactsAdded": [
+    { "id": "tutorial_map_setup", "fact": "第一局使用Roswell蓝面、基地A+B指定面、四块天空简单面和每个投放点一艘紫色飞船" },
+    { "id": "reserve_white_ships", "fact": "四艘白色飞船放在一旁，游戏中可能生成" },
+    { "id": "easy_and_normal_setup", "fact": "全简单面是简单难度；随机翻转一块天空板是普通难度" },
+    { "id": "round_order", "fact": "每回合依次经历骰子阶段、房间阶段、母舰阶段" }
+  ],
+  "knowledgeAdded": [
+    {
+      "id": "lose_by_damage_track",
+      "subject": "城市伤害标记",
+      "environment": "伤害轨道",
+      "behavior": "到达轨道底部",
+      "result": "玩家失败",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "lose_by_mothership_skull",
+      "subject": "外星母舰",
+      "environment": "天空区域",
+      "behavior": "下降到骷髅标记行",
+      "result": "玩家失败",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "die_moves_same_column_ships",
+      "subject": "玩家",
+      "environment": "骰子阶段",
+      "behavior": "把一颗骰子放入基地的一列",
+      "result": "该列全部飞船按骰子点数下降，并可能触发落点效果",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "white_die_rerolls_remaining",
+      "subject": "玩家",
+      "environment": "仍有未放置骰子的骰子阶段",
+      "behavior": "放置白骰",
+      "result": "所有尚未放置的骰子重新投掷",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "excavation_placement_requirement",
+      "subject": "玩家",
+      "environment": "想把骰子放到挖掘机前方的未挖掘格",
+      "behavior": "选择点数不小于路径距离的骰子，且本回合尚未使用其他未挖掘格",
+      "result": "该放置合法，并可在房间阶段用于移动挖掘机",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    }
+  ],
+  "behaviorsAdded": [
+    {
+      "id": "place_die_in_column",
+      "label": "选择一颗未放骰子和一个合法基地格",
+      "knownConstraints": ["每列最终一颗骰子", "通常必须是已挖掘格", "骰子放下后会移动同列飞船"]
+    },
+    {
+      "id": "place_one_excavation_die",
+      "label": "把最多一颗足点数骰子放到挖掘机前方",
+      "knownConstraints": ["骰子点数不小于路径距离", "仍遵守每列一颗"]
+    },
+    {
+      "id": "save_white_die_for_last",
+      "label": "把一颗白骰留到最后以减少一次重投",
+      "knownConstraints": ["这是规则书明确提示的可选次序，不是玩家自行发现的攻略"]
+    }
+  ],
+  "openQuestions": [
+    "天空格上的图标分别会产生什么效果？",
+    "房间如何启动，是否需要能源？",
+    "挖掘机在房间阶段怎样移动？",
+    "母舰阶段具体会发生什么？"
+  ],
+  "blockedInferences": [
+    "不知道应该优先把大骰放在哪一列",
+    "不知道白骰重投在什么局面有利或有害",
+    "不知道下降飞船、推进研究和挖掘之间的最优交换关系"
+  ]
+}

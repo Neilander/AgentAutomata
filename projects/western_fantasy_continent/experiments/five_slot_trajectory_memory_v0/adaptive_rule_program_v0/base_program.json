@@ -1,0 +1,47 @@
+{
+  "schema": "adaptive_grounding_program_v0",
+  "programId": "same-column-ship-descent",
+  "version": 1,
+  "sourceRuleIds": ["R01"],
+  "trigger": {
+    "op": "eq",
+    "args": [
+      {"path": "event.type"},
+      {"const": "die_placed"}
+    ]
+  },
+  "globalBindings": {
+    "N": {"path": "event.die.value"}
+  },
+  "targetSource": {"path": "state.ships"},
+  "targetAlias": "candidate",
+  "targetPredicate": {
+    "op": "eq",
+    "args": [
+      {"path": "candidate.column"},
+      {"path": "event.die.column"}
+    ]
+  },
+  "localBindings": {
+    "distance": {"var": "N"}
+  },
+  "effects": [
+    {
+      "target": "candidate",
+      "field": "row",
+      "value": {
+        "op": "add",
+        "args": [
+          {"path": "candidate.row"},
+          {"var": "distance"}
+        ]
+      }
+    }
+  ],
+  "revisionHistory": [
+    {
+      "sourceRuleId": "R01",
+      "description": "基础程序：放置骰子后选择同列飞船并按点数下降"
+    }
+  ]
+}

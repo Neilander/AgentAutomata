@@ -1,0 +1,60 @@
+{
+  "schema": "ai_rule_wakeup_candidate_evidence_v0",
+  "note": "AI只能对矩阵已经召回的行逐槽举证，不能输出下一动作。",
+  "rows": [
+    {
+      "queryId": "P03",
+      "candidateEdgeId": "arrow-landing-to-horizontal-move",
+      "slotVerdicts": {
+        "affected_object": "supported",
+        "change_trend": "supported",
+        "cause_relation": "supported",
+        "temporal_state": "supported",
+        "context": "supported"
+      },
+      "evidenceQuotes": {
+        "affected_object": "最后落到横向箭头图标上的敌机和落点",
+        "change_trend": "敌机结束下降并停住在箭头位置",
+        "cause_relation": "本次下降的终点正好是箭头格",
+        "temporal_state": "已经走完下降距离，开始处理终点",
+        "context": "UFS天空区域的落点符号"
+      }
+    },
+    {
+      "queryId": "N01-passed-arrow-not-final",
+      "candidateEdgeId": "arrow-landing-to-horizontal-move",
+      "slotVerdicts": {
+        "affected_object": "contradicted",
+        "change_trend": "contradicted",
+        "cause_relation": "contradicted",
+        "temporal_state": "contradicted",
+        "context": "contradicted"
+      },
+      "evidenceQuotes": {
+        "affected_object": "从箭头格上方经过但最终停在别处的飞船",
+        "change_trend": "飞船越过箭头位置并继续下降到普通格",
+        "cause_relation": "箭头格只是经过路径而不是最终落点",
+        "temporal_state": "下降已经结束，终点不在箭头上",
+        "context": "UFS只结算最终停留格，不结算经过格"
+      }
+    },
+    {
+      "queryId": "N02-gray-die-not-white",
+      "candidateEdgeId": "place-die-to-descend-ships",
+      "slotVerdicts": {
+        "affected_object": "supported",
+        "change_trend": "supported",
+        "cause_relation": "supported",
+        "temporal_state": "supported",
+        "context": "supported"
+      },
+      "evidenceQuotes": {
+        "affected_object": "刚被放置的灰色骰子和目标基地列",
+        "change_trend": "普通灰骰从未放置变为占据一个基地格",
+        "cause_relation": "玩家选择放置一颗灰骰而不是白骰",
+        "temporal_state": "骰子阶段刚完成放置",
+        "context": "UFS普通骰放置，不包含白骰重投"
+      }
+    }
+  ]
+}

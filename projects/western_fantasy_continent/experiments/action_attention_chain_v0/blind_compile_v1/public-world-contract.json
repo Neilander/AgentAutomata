@@ -1,0 +1,24 @@
+{
+  "schema": "ufs_public_world_contract_v1",
+  "initialActions": [
+    { "type": "compute", "key": "placedRoomTags", "value": "所放房间的标签数组" },
+    { "type": "place", "entityId": "当前骰子", "targetUnitId": "所放基地格" }
+  ],
+  "entityKinds": {
+    "die": { "state": ["value"], "tags": ["gray或white"] },
+    "ship": { "count": "同列可能不止一架，不能依赖ID" },
+    "mothership": { "stableId": "mothership" },
+    "city": { "stableId": "city", "state": ["hp"] }
+  },
+  "unitKinds": ["base_slot", "sky_cell", "mothership_track", "waiting_zone"],
+  "unitTags": ["base_room", "aa_room", "sky", "arrow_right", "mothership_down", "explosion", "city_hit", "skull"],
+  "connections": [
+    { "kind": "same_column", "meaning": "基地列连接该列天空" },
+    { "kind": "sky_down", "direction": "down" },
+    { "kind": "sky_horizontal", "directions": ["left", "right"] },
+    { "kind": "mothership_down", "direction": "down" }
+  ],
+  "fixedSemanticIds": ["city", "mothership", "mothership-waiting"],
+  "runtimeNote": "动作执行后的action/result/entity/targetUnit/resultUnit/memory会成为下一条Glue Unit的trigger输入。"
+}
+

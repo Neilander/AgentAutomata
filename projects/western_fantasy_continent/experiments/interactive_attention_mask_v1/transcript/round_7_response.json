@@ -1,0 +1,88 @@
+{
+  "schema": "masked_attention_response_v1",
+  "round": 7,
+  "previousResponseHash": "8b94386a1311e8d008629e26ae9d9a38233ac978cae54e08efa067b9d83ea674",
+  "requestHash": "486eca93ae9cbaa3d251fd4962474f627744b8d42c7b6268a85f7da01d0bab2b",
+  "responses": [
+    {
+      "caseId": "arrow_city",
+      "command": {
+        "caseId": "arrow_city",
+        "kind": "act",
+        "operation": "resolve_city_hit",
+        "target": "ship-a",
+        "reason": "ship-a经箭头横移后的新最终停留格已明确揭示为城市命中，应让城市受1点伤害并将该飞船送回母舰等待区。",
+        "expectedWakeup": "A05_DAMAGE_CITY_AND_RETURN与S02_TERMINAL_CELL_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "shipId": "ship-a",
+          "cityHp": 2,
+          "shipPosition": "mothership-waiting"
+        }
+      }
+    },
+    {
+      "caseId": "mothership_skull",
+      "command": {
+        "caseId": "mothership_skull",
+        "kind": "act",
+        "operation": "declare_loss",
+        "target": "game",
+        "reason": "母舰下降后的新行已揭示为骷髅行，因此玩家立即失败；已揭示的右侧gain-1-tech动作按规则不结算。",
+        "expectedWakeup": "G04_MOTHERSHIP_TO_FAILURE与S03_IMMEDIATE_FAILURE_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "terminal",
+        "detail": {
+          "outcome": "loss"
+        }
+      }
+    },
+    {
+      "caseId": "white_random_stop",
+      "command": {
+        "caseId": "white_random_stop",
+        "kind": "act",
+        "operation": "reroll_unplaced_dice",
+        "target": "unplaced-dice",
+        "reason": "白骰引发的唯一飞船链已完成，尚未放置骰子集合已揭示为die-b；现在执行重投，并在随机新点数出现前停止确定性预想。",
+        "expectedWakeup": "A06_REROLL_UNPLACED_WHITE_DIE_BOUNDARY与S04_RANDOM_REROLL_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "random_boundary",
+        "detail": {
+          "diceIds": [
+            "die-b"
+          ],
+          "newValues": "unknown"
+        }
+      }
+    },
+    {
+      "caseId": "two_ship_split",
+      "command": {
+        "caseId": "two_ship_split",
+        "kind": "act",
+        "operation": "resolve_city_hit",
+        "target": "ship-a",
+        "reason": "ship-a经箭头横移后的新最终停留格已揭示为城市命中，本轮只结算它的城市伤害与返回；ship-b仍待后续处理。",
+        "expectedWakeup": "A05_DAMAGE_CITY_AND_RETURN；ship-a链结束后继续处理ship-b"
+      },
+      "result": {
+        "ok": true,
+        "type": "state_change",
+        "detail": {
+          "shipId": "ship-a",
+          "cityHp": 2,
+          "shipPosition": "mothership-waiting"
+        }
+      }
+    }
+  ],
+  "responseHash": "71b512cd2f5d2012d382bcdd9d15e94d33757c375e10ffb17493f61f42a4e2f9"
+}

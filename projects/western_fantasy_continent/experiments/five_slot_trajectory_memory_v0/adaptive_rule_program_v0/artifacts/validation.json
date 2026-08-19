@@ -1,0 +1,3753 @@
+{
+  "schema": "adaptive_rule_program_validation_v0",
+  "integrity": {
+    "programAuthorship": "current AI authored base and four revisions from frozen source rules",
+    "notBlindLlmEvaluation": true,
+    "interpreterIsRuleAgnostic": true,
+    "oracleIsIndependentCodePath": true,
+    "inputsMutatedByPreview": false
+  },
+  "tests": {
+    "run": 7,
+    "failures": 0,
+    "errors": 0
+  },
+  "caseCounts": {
+    "base": 150,
+    "aa": 100,
+    "frozen": 100,
+    "heavy": 100,
+    "boosted": 100,
+    "combined": 300,
+    "focus": 100
+  },
+  "baseCoverage": {
+    "cases": 150,
+    "correct": 150,
+    "accuracy": 1.0,
+    "meanAttentionReads": 8.253333333333334,
+    "failureExamples": []
+  },
+  "revisions": [
+    {
+      "revisionId": "V2-aa-reduction",
+      "sourceRuleId": "R02",
+      "operation": "replace_global_binding",
+      "newSuite": "aa",
+      "beforeRevision": {
+        "cases": 100,
+        "correct": 0,
+        "accuracy": 0.0,
+        "meanAttentionReads": 11.48,
+        "failureExamples": [
+          {
+            "caseId": "aa-000",
+            "activeRuleIds": [
+              "R01",
+              "R02"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D0",
+                "column": 3,
+                "value": 2
+              },
+              "roomType": "aa"
+            },
+            "beforeShips": [
+              {
+                "id": "S0-0",
+                "column": 2,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 3,
+                "row": 6,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 4,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 3,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 4,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S0-5",
+                "column": 4,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-6",
+                "column": 1,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 3,
+                "row": 2,
+                "traits": []
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S0-0",
+                "column": 2,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 3,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 4,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 3,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 4,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S0-5",
+                "column": 4,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-6",
+                "column": 1,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 3,
+                "row": 3,
+                "traits": []
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S0-0",
+                "column": 2,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 3,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 4,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 3,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 4,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S0-5",
+                "column": 4,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-6",
+                "column": 1,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 3,
+                "row": 4,
+                "traits": []
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S0-0]",
+              "event.die.column",
+              "candidate.column[candidate=S0-1]",
+              "candidate.column[candidate=S0-2]",
+              "candidate.column[candidate=S0-3]",
+              "candidate.column[candidate=S0-4]",
+              "candidate.column[candidate=S0-5]",
+              "candidate.column[candidate=S0-6]",
+              "candidate.column[candidate=S0-forced]",
+              "candidate.row[candidate=S0-1]",
+              "candidate.row[candidate=S0-3]",
+              "candidate.row[candidate=S0-forced]"
+            ]
+          },
+          {
+            "caseId": "aa-001",
+            "activeRuleIds": [
+              "R01",
+              "R02"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D1",
+                "column": 4,
+                "value": 6
+              },
+              "roomType": "aa"
+            },
+            "beforeShips": [
+              {
+                "id": "S1-0",
+                "column": 1,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 1,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 0,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 4,
+                "row": 3,
+                "traits": []
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S1-0",
+                "column": 1,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 1,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 0,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 4,
+                "row": 8,
+                "traits": []
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S1-0",
+                "column": 1,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 1,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 0,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 4,
+                "row": 9,
+                "traits": []
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S1-0]",
+              "event.die.column",
+              "candidate.column[candidate=S1-1]",
+              "candidate.column[candidate=S1-2]",
+              "candidate.column[candidate=S1-forced]",
+              "candidate.row[candidate=S1-forced]"
+            ]
+          },
+          {
+            "caseId": "aa-002",
+            "activeRuleIds": [
+              "R01",
+              "R02"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D2",
+                "column": 0,
+                "value": 4
+              },
+              "roomType": "aa"
+            },
+            "beforeShips": [
+              {
+                "id": "S2-0",
+                "column": 3,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 4,
+                "row": 6,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 4,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 0,
+                "row": 12,
+                "traits": []
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S2-0",
+                "column": 3,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 4,
+                "row": 6,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 4,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 0,
+                "row": 15,
+                "traits": []
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S2-0",
+                "column": 3,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 4,
+                "row": 6,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 4,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 0,
+                "row": 16,
+                "traits": []
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S2-0]",
+              "event.die.column",
+              "candidate.column[candidate=S2-1]",
+              "candidate.column[candidate=S2-2]",
+              "candidate.column[candidate=S2-forced]",
+              "candidate.row[candidate=S2-forced]"
+            ]
+          }
+        ]
+      },
+      "afterRevision": {
+        "cases": 100,
+        "correct": 100,
+        "accuracy": 1.0,
+        "meanAttentionReads": 12.48,
+        "failureExamples": []
+      },
+      "cumulativeRegression": {
+        "cases": 250,
+        "correct": 250,
+        "accuracy": 1.0,
+        "meanAttentionReads": 10.544,
+        "failureExamples": []
+      },
+      "baseRegression": {
+        "cases": 150,
+        "correct": 150,
+        "accuracy": 1.0,
+        "meanAttentionReads": 9.253333333333334,
+        "failureExamples": []
+      },
+      "programBytesAfter": 1151
+    },
+    {
+      "revisionId": "V3-frozen-exclusion",
+      "sourceRuleId": "R03",
+      "operation": "and_target_predicate",
+      "newSuite": "frozen",
+      "beforeRevision": {
+        "cases": 100,
+        "correct": 0,
+        "accuracy": 0.0,
+        "meanAttentionReads": 12.1,
+        "failureExamples": [
+          {
+            "caseId": "frozen-000",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D0",
+                "column": 1,
+                "value": 4
+              },
+              "roomType": "normal"
+            },
+            "beforeShips": [
+              {
+                "id": "S0-0",
+                "column": 3,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 4,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 0,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 3,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 2,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 1,
+                "row": 9,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S0-0",
+                "column": 3,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 4,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 0,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 3,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 2,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 1,
+                "row": 9,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S0-0",
+                "column": 3,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 4,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 0,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 3,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 2,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 1,
+                "row": 13,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S0-0]",
+              "event.die.column",
+              "candidate.column[candidate=S0-1]",
+              "candidate.column[candidate=S0-2]",
+              "candidate.column[candidate=S0-3]",
+              "candidate.column[candidate=S0-4]",
+              "candidate.column[candidate=S0-forced]",
+              "candidate.row[candidate=S0-forced]"
+            ]
+          },
+          {
+            "caseId": "frozen-001",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D1",
+                "column": 2,
+                "value": 3
+              },
+              "roomType": "aa"
+            },
+            "beforeShips": [
+              {
+                "id": "S1-0",
+                "column": 0,
+                "row": 6,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 1,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 0,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S1-3",
+                "column": 0,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 2,
+                "row": 1,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S1-0",
+                "column": 0,
+                "row": 6,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 1,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 0,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S1-3",
+                "column": 0,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 2,
+                "row": 1,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S1-0",
+                "column": 0,
+                "row": 6,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 1,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 0,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S1-3",
+                "column": 0,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 2,
+                "row": 3,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S1-0]",
+              "event.die.column",
+              "candidate.column[candidate=S1-1]",
+              "candidate.column[candidate=S1-2]",
+              "candidate.column[candidate=S1-3]",
+              "candidate.column[candidate=S1-forced]",
+              "candidate.row[candidate=S1-forced]"
+            ]
+          },
+          {
+            "caseId": "frozen-002",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D2",
+                "column": 0,
+                "value": 4
+              },
+              "roomType": "normal"
+            },
+            "beforeShips": [
+              {
+                "id": "S2-0",
+                "column": 2,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 4,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 0,
+                "row": 14,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S2-0",
+                "column": 2,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 4,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 0,
+                "row": 14,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S2-0",
+                "column": 2,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 4,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 0,
+                "row": 18,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S2-0]",
+              "event.die.column",
+              "candidate.column[candidate=S2-1]",
+              "candidate.column[candidate=S2-forced]",
+              "candidate.row[candidate=S2-forced]"
+            ]
+          }
+        ]
+      },
+      "afterRevision": {
+        "cases": 100,
+        "correct": 100,
+        "accuracy": 1.0,
+        "meanAttentionReads": 16.45,
+        "failureExamples": []
+      },
+      "cumulativeRegression": {
+        "cases": 350,
+        "correct": 350,
+        "accuracy": 1.0,
+        "meanAttentionReads": 15.351428571428572,
+        "failureExamples": []
+      },
+      "baseRegression": {
+        "cases": 150,
+        "correct": 150,
+        "accuracy": 1.0,
+        "meanAttentionReads": 12.886666666666667,
+        "failureExamples": []
+      },
+      "programBytesAfter": 1455
+    },
+    {
+      "revisionId": "V4-heavy-distance",
+      "sourceRuleId": "R04",
+      "operation": "replace_local_binding",
+      "newSuite": "heavy",
+      "beforeRevision": {
+        "cases": 100,
+        "correct": 0,
+        "accuracy": 0.0,
+        "meanAttentionReads": 18.41,
+        "failureExamples": [
+          {
+            "caseId": "heavy-000",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03",
+              "R04"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D0",
+                "column": 1,
+                "value": 4
+              },
+              "roomType": "normal"
+            },
+            "beforeShips": [
+              {
+                "id": "S0-0",
+                "column": 4,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 1,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 3,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 1,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 0,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S0-5",
+                "column": 4,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 1,
+                "row": 9,
+                "traits": [
+                  "heavy"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S0-0",
+                "column": 4,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 1,
+                "row": 16,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 3,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 1,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 0,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S0-5",
+                "column": 4,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 1,
+                "row": 11,
+                "traits": [
+                  "heavy"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S0-0",
+                "column": 4,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 1,
+                "row": 16,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 3,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 1,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 0,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S0-5",
+                "column": 4,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 1,
+                "row": 13,
+                "traits": [
+                  "heavy"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S0-0]",
+              "event.die.column",
+              "candidate.traits[candidate=S0-0]",
+              "candidate.column[candidate=S0-1]",
+              "candidate.traits[candidate=S0-1]",
+              "candidate.column[candidate=S0-2]",
+              "candidate.traits[candidate=S0-2]",
+              "candidate.column[candidate=S0-3]",
+              "candidate.traits[candidate=S0-3]",
+              "candidate.column[candidate=S0-4]",
+              "candidate.traits[candidate=S0-4]",
+              "candidate.column[candidate=S0-5]",
+              "candidate.traits[candidate=S0-5]",
+              "candidate.column[candidate=S0-forced]",
+              "candidate.traits[candidate=S0-forced]",
+              "candidate.row[candidate=S0-1]",
+              "candidate.row[candidate=S0-3]",
+              "candidate.row[candidate=S0-forced]"
+            ]
+          },
+          {
+            "caseId": "heavy-001",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03",
+              "R04"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D1",
+                "column": 1,
+                "value": 6
+              },
+              "roomType": "normal"
+            },
+            "beforeShips": [
+              {
+                "id": "S1-0",
+                "column": 1,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 0,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 1,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 1,
+                "row": 3,
+                "traits": [
+                  "heavy"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S1-0",
+                "column": 1,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 0,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 1,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 1,
+                "row": 6,
+                "traits": [
+                  "heavy"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S1-0",
+                "column": 1,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 0,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 1,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 1,
+                "row": 9,
+                "traits": [
+                  "heavy"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S1-0]",
+              "event.die.column",
+              "candidate.traits[candidate=S1-0]",
+              "candidate.column[candidate=S1-1]",
+              "candidate.traits[candidate=S1-1]",
+              "candidate.column[candidate=S1-2]",
+              "candidate.traits[candidate=S1-2]",
+              "candidate.column[candidate=S1-forced]",
+              "candidate.traits[candidate=S1-forced]",
+              "candidate.row[candidate=S1-0]",
+              "candidate.row[candidate=S1-2]",
+              "candidate.row[candidate=S1-forced]"
+            ]
+          },
+          {
+            "caseId": "heavy-002",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03",
+              "R04"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D2",
+                "column": 0,
+                "value": 4
+              },
+              "roomType": "aa"
+            },
+            "beforeShips": [
+              {
+                "id": "S2-0",
+                "column": 3,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 1,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 2,
+                "row": 11,
+                "traits": []
+              },
+              {
+                "id": "S2-3",
+                "column": 0,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S2-4",
+                "column": 4,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S2-5",
+                "column": 3,
+                "row": 11,
+                "traits": []
+              },
+              {
+                "id": "S2-6",
+                "column": 0,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 0,
+                "row": 6,
+                "traits": [
+                  "heavy"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S2-0",
+                "column": 3,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 1,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 2,
+                "row": 11,
+                "traits": []
+              },
+              {
+                "id": "S2-3",
+                "column": 0,
+                "row": 6,
+                "traits": []
+              },
+              {
+                "id": "S2-4",
+                "column": 4,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S2-5",
+                "column": 3,
+                "row": 11,
+                "traits": []
+              },
+              {
+                "id": "S2-6",
+                "column": 0,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 0,
+                "row": 7,
+                "traits": [
+                  "heavy"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S2-0",
+                "column": 3,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 1,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 2,
+                "row": 11,
+                "traits": []
+              },
+              {
+                "id": "S2-3",
+                "column": 0,
+                "row": 6,
+                "traits": []
+              },
+              {
+                "id": "S2-4",
+                "column": 4,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S2-5",
+                "column": 3,
+                "row": 11,
+                "traits": []
+              },
+              {
+                "id": "S2-6",
+                "column": 0,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 0,
+                "row": 9,
+                "traits": [
+                  "heavy"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S2-0]",
+              "event.die.column",
+              "candidate.traits[candidate=S2-0]",
+              "candidate.column[candidate=S2-1]",
+              "candidate.traits[candidate=S2-1]",
+              "candidate.column[candidate=S2-2]",
+              "candidate.traits[candidate=S2-2]",
+              "candidate.column[candidate=S2-3]",
+              "candidate.traits[candidate=S2-3]",
+              "candidate.column[candidate=S2-4]",
+              "candidate.traits[candidate=S2-4]",
+              "candidate.column[candidate=S2-5]",
+              "candidate.traits[candidate=S2-5]",
+              "candidate.column[candidate=S2-6]",
+              "candidate.traits[candidate=S2-6]",
+              "candidate.column[candidate=S2-forced]",
+              "candidate.traits[candidate=S2-forced]",
+              "candidate.row[candidate=S2-3]",
+              "candidate.row[candidate=S2-6]",
+              "candidate.row[candidate=S2-forced]"
+            ]
+          }
+        ]
+      },
+      "afterRevision": {
+        "cases": 100,
+        "correct": 100,
+        "accuracy": 1.0,
+        "meanAttentionReads": 18.41,
+        "failureExamples": []
+      },
+      "cumulativeRegression": {
+        "cases": 450,
+        "correct": 450,
+        "accuracy": 1.0,
+        "meanAttentionReads": 16.031111111111112,
+        "failureExamples": []
+      },
+      "baseRegression": {
+        "cases": 150,
+        "correct": 150,
+        "accuracy": 1.0,
+        "meanAttentionReads": 12.886666666666667,
+        "failureExamples": []
+      },
+      "programBytesAfter": 1836
+    },
+    {
+      "revisionId": "V5-boost-after-modifiers",
+      "sourceRuleId": "R05",
+      "operation": "wrap_local_binding",
+      "newSuite": "boosted",
+      "beforeRevision": {
+        "cases": 100,
+        "correct": 0,
+        "accuracy": 0.0,
+        "meanAttentionReads": 18.23,
+        "failureExamples": [
+          {
+            "caseId": "boosted-000",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03",
+              "R04",
+              "R05"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D0",
+                "column": 4,
+                "value": 2
+              },
+              "roomType": "aa"
+            },
+            "beforeShips": [
+              {
+                "id": "S0-0",
+                "column": 0,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 2,
+                "row": 1,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 2,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 4,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 3,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S0-5",
+                "column": 1,
+                "row": 1,
+                "traits": []
+              },
+              {
+                "id": "S0-6",
+                "column": 3,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 4,
+                "row": 3,
+                "traits": [
+                  "boosted"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S0-0",
+                "column": 0,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 2,
+                "row": 1,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 2,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 4,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 3,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S0-5",
+                "column": 1,
+                "row": 1,
+                "traits": []
+              },
+              {
+                "id": "S0-6",
+                "column": 3,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 4,
+                "row": 5,
+                "traits": [
+                  "boosted"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S0-0",
+                "column": 0,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 2,
+                "row": 1,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 2,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 4,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 3,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S0-5",
+                "column": 1,
+                "row": 1,
+                "traits": []
+              },
+              {
+                "id": "S0-6",
+                "column": 3,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S0-forced",
+                "column": 4,
+                "row": 4,
+                "traits": [
+                  "boosted"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S0-0]",
+              "event.die.column",
+              "candidate.traits[candidate=S0-0]",
+              "candidate.column[candidate=S0-1]",
+              "candidate.traits[candidate=S0-1]",
+              "candidate.column[candidate=S0-2]",
+              "candidate.traits[candidate=S0-2]",
+              "candidate.column[candidate=S0-3]",
+              "candidate.traits[candidate=S0-3]",
+              "candidate.column[candidate=S0-4]",
+              "candidate.traits[candidate=S0-4]",
+              "candidate.column[candidate=S0-5]",
+              "candidate.traits[candidate=S0-5]",
+              "candidate.column[candidate=S0-6]",
+              "candidate.traits[candidate=S0-6]",
+              "candidate.column[candidate=S0-forced]",
+              "candidate.traits[candidate=S0-forced]",
+              "candidate.row[candidate=S0-3]",
+              "candidate.row[candidate=S0-forced]"
+            ]
+          },
+          {
+            "caseId": "boosted-001",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03",
+              "R04",
+              "R05"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D1",
+                "column": 4,
+                "value": 2
+              },
+              "roomType": "normal"
+            },
+            "beforeShips": [
+              {
+                "id": "S1-0",
+                "column": 0,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 0,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 2,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S1-3",
+                "column": 0,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S1-4",
+                "column": 1,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S1-5",
+                "column": 4,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 4,
+                "row": 9,
+                "traits": [
+                  "boosted",
+                  "heavy"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S1-0",
+                "column": 0,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 0,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 2,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S1-3",
+                "column": 0,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S1-4",
+                "column": 1,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S1-5",
+                "column": 4,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 4,
+                "row": 11,
+                "traits": [
+                  "boosted",
+                  "heavy"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S1-0",
+                "column": 0,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 0,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 2,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S1-3",
+                "column": 0,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S1-4",
+                "column": 1,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S1-5",
+                "column": 4,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S1-forced",
+                "column": 4,
+                "row": 10,
+                "traits": [
+                  "boosted",
+                  "heavy"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S1-0]",
+              "event.die.column",
+              "candidate.traits[candidate=S1-0]",
+              "candidate.column[candidate=S1-1]",
+              "candidate.traits[candidate=S1-1]",
+              "candidate.column[candidate=S1-2]",
+              "candidate.traits[candidate=S1-2]",
+              "candidate.column[candidate=S1-3]",
+              "candidate.traits[candidate=S1-3]",
+              "candidate.column[candidate=S1-4]",
+              "candidate.traits[candidate=S1-4]",
+              "candidate.column[candidate=S1-5]",
+              "candidate.traits[candidate=S1-5]",
+              "candidate.column[candidate=S1-forced]",
+              "candidate.traits[candidate=S1-forced]",
+              "candidate.row[candidate=S1-5]",
+              "candidate.row[candidate=S1-forced]"
+            ]
+          },
+          {
+            "caseId": "boosted-002",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03",
+              "R04",
+              "R05"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D2",
+                "column": 2,
+                "value": 1
+              },
+              "roomType": "normal"
+            },
+            "beforeShips": [
+              {
+                "id": "S2-0",
+                "column": 0,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 0,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 2,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S2-3",
+                "column": 4,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S2-4",
+                "column": 1,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S2-5",
+                "column": 3,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S2-6",
+                "column": 4,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 2,
+                "row": 7,
+                "traits": [
+                  "boosted"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S2-0",
+                "column": 0,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 0,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 2,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-3",
+                "column": 4,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S2-4",
+                "column": 1,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S2-5",
+                "column": 3,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S2-6",
+                "column": 4,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 2,
+                "row": 9,
+                "traits": [
+                  "boosted"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S2-0",
+                "column": 0,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 0,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 2,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-3",
+                "column": 4,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S2-4",
+                "column": 1,
+                "row": 5,
+                "traits": []
+              },
+              {
+                "id": "S2-5",
+                "column": 3,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S2-6",
+                "column": 4,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S2-forced",
+                "column": 2,
+                "row": 8,
+                "traits": [
+                  "boosted"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S2-0]",
+              "event.die.column",
+              "candidate.traits[candidate=S2-0]",
+              "candidate.column[candidate=S2-1]",
+              "candidate.traits[candidate=S2-1]",
+              "candidate.column[candidate=S2-2]",
+              "candidate.traits[candidate=S2-2]",
+              "candidate.column[candidate=S2-3]",
+              "candidate.traits[candidate=S2-3]",
+              "candidate.column[candidate=S2-4]",
+              "candidate.traits[candidate=S2-4]",
+              "candidate.column[candidate=S2-5]",
+              "candidate.traits[candidate=S2-5]",
+              "candidate.column[candidate=S2-6]",
+              "candidate.traits[candidate=S2-6]",
+              "candidate.column[candidate=S2-forced]",
+              "candidate.traits[candidate=S2-forced]",
+              "candidate.row[candidate=S2-2]",
+              "candidate.row[candidate=S2-forced]"
+            ]
+          }
+        ]
+      },
+      "afterRevision": {
+        "cases": 100,
+        "correct": 100,
+        "accuracy": 1.0,
+        "meanAttentionReads": 18.23,
+        "failureExamples": []
+      },
+      "cumulativeRegression": {
+        "cases": 550,
+        "correct": 550,
+        "accuracy": 1.0,
+        "meanAttentionReads": 16.43090909090909,
+        "failureExamples": []
+      },
+      "baseRegression": {
+        "cases": 150,
+        "correct": 150,
+        "accuracy": 1.0,
+        "meanAttentionReads": 12.886666666666667,
+        "failureExamples": []
+      },
+      "programBytesAfter": 2219
+    },
+    {
+      "revisionId": "V6-focus-frontmost-group",
+      "sourceRuleId": "R06",
+      "operation": "set_target_reducer",
+      "newSuite": "focus",
+      "beforeRevision": {
+        "cases": 100,
+        "correct": 0,
+        "accuracy": 0.0,
+        "meanAttentionReads": 25.99,
+        "failureExamples": [
+          {
+            "caseId": "focus-000",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03",
+              "R04",
+              "R05",
+              "R06"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D0",
+                "column": 3,
+                "value": 1
+              },
+              "roomType": "focus"
+            },
+            "beforeShips": [
+              {
+                "id": "S0-0",
+                "column": 1,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 4,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 0,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 0,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 4,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-back",
+                "column": 3,
+                "row": 6,
+                "traits": []
+              },
+              {
+                "id": "S0-front-a",
+                "column": 3,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-front-b",
+                "column": 3,
+                "row": 9,
+                "traits": [
+                  "boosted"
+                ]
+              },
+              {
+                "id": "S0-frozen",
+                "column": 3,
+                "row": 10,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S0-0",
+                "column": 1,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 4,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 0,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 0,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 4,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-back",
+                "column": 3,
+                "row": 6,
+                "traits": []
+              },
+              {
+                "id": "S0-front-a",
+                "column": 3,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S0-front-b",
+                "column": 3,
+                "row": 11,
+                "traits": [
+                  "boosted"
+                ]
+              },
+              {
+                "id": "S0-frozen",
+                "column": 3,
+                "row": 10,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S0-0",
+                "column": 1,
+                "row": 9,
+                "traits": []
+              },
+              {
+                "id": "S0-1",
+                "column": 4,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S0-2",
+                "column": 0,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-3",
+                "column": 0,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S0-4",
+                "column": 4,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S0-back",
+                "column": 3,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S0-front-a",
+                "column": 3,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S0-front-b",
+                "column": 3,
+                "row": 11,
+                "traits": [
+                  "boosted"
+                ]
+              },
+              {
+                "id": "S0-frozen",
+                "column": 3,
+                "row": 10,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S0-0]",
+              "event.die.column",
+              "candidate.traits[candidate=S0-0]",
+              "candidate.column[candidate=S0-1]",
+              "candidate.traits[candidate=S0-1]",
+              "candidate.column[candidate=S0-2]",
+              "candidate.traits[candidate=S0-2]",
+              "candidate.column[candidate=S0-3]",
+              "candidate.traits[candidate=S0-3]",
+              "candidate.column[candidate=S0-4]",
+              "candidate.traits[candidate=S0-4]",
+              "candidate.column[candidate=S0-back]",
+              "candidate.traits[candidate=S0-back]",
+              "candidate.column[candidate=S0-front-a]",
+              "candidate.traits[candidate=S0-front-a]",
+              "candidate.column[candidate=S0-front-b]",
+              "candidate.traits[candidate=S0-front-b]",
+              "candidate.column[candidate=S0-frozen]",
+              "candidate.traits[candidate=S0-frozen]",
+              "candidate.row[candidate=S0-back]",
+              "candidate.row[candidate=S0-front-a]",
+              "candidate.row[candidate=S0-front-b]"
+            ]
+          },
+          {
+            "caseId": "focus-001",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03",
+              "R04",
+              "R05",
+              "R06"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D1",
+                "column": 1,
+                "value": 4
+              },
+              "roomType": "focus"
+            },
+            "beforeShips": [
+              {
+                "id": "S1-0",
+                "column": 3,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 0,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 0,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S1-3",
+                "column": 0,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S1-4",
+                "column": 0,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S1-back",
+                "column": 1,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S1-front-a",
+                "column": 1,
+                "row": 11,
+                "traits": [
+                  "heavy"
+                ]
+              },
+              {
+                "id": "S1-front-b",
+                "column": 1,
+                "row": 11,
+                "traits": []
+              },
+              {
+                "id": "S1-frozen",
+                "column": 1,
+                "row": 12,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S1-0",
+                "column": 3,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 0,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 0,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S1-3",
+                "column": 0,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S1-4",
+                "column": 0,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S1-back",
+                "column": 1,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S1-front-a",
+                "column": 1,
+                "row": 13,
+                "traits": [
+                  "heavy"
+                ]
+              },
+              {
+                "id": "S1-front-b",
+                "column": 1,
+                "row": 15,
+                "traits": []
+              },
+              {
+                "id": "S1-frozen",
+                "column": 1,
+                "row": 12,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S1-0",
+                "column": 3,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S1-1",
+                "column": 0,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S1-2",
+                "column": 0,
+                "row": 13,
+                "traits": []
+              },
+              {
+                "id": "S1-3",
+                "column": 0,
+                "row": 2,
+                "traits": []
+              },
+              {
+                "id": "S1-4",
+                "column": 0,
+                "row": 0,
+                "traits": []
+              },
+              {
+                "id": "S1-back",
+                "column": 1,
+                "row": 12,
+                "traits": []
+              },
+              {
+                "id": "S1-front-a",
+                "column": 1,
+                "row": 13,
+                "traits": [
+                  "heavy"
+                ]
+              },
+              {
+                "id": "S1-front-b",
+                "column": 1,
+                "row": 15,
+                "traits": []
+              },
+              {
+                "id": "S1-frozen",
+                "column": 1,
+                "row": 12,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S1-0]",
+              "event.die.column",
+              "candidate.traits[candidate=S1-0]",
+              "candidate.column[candidate=S1-1]",
+              "candidate.traits[candidate=S1-1]",
+              "candidate.column[candidate=S1-2]",
+              "candidate.traits[candidate=S1-2]",
+              "candidate.column[candidate=S1-3]",
+              "candidate.traits[candidate=S1-3]",
+              "candidate.column[candidate=S1-4]",
+              "candidate.traits[candidate=S1-4]",
+              "candidate.column[candidate=S1-back]",
+              "candidate.traits[candidate=S1-back]",
+              "candidate.column[candidate=S1-front-a]",
+              "candidate.traits[candidate=S1-front-a]",
+              "candidate.column[candidate=S1-front-b]",
+              "candidate.traits[candidate=S1-front-b]",
+              "candidate.column[candidate=S1-frozen]",
+              "candidate.traits[candidate=S1-frozen]",
+              "candidate.row[candidate=S1-back]",
+              "candidate.row[candidate=S1-front-a]",
+              "candidate.row[candidate=S1-front-b]"
+            ]
+          },
+          {
+            "caseId": "focus-002",
+            "activeRuleIds": [
+              "R01",
+              "R02",
+              "R03",
+              "R04",
+              "R05",
+              "R06"
+            ],
+            "event": {
+              "type": "die_placed",
+              "die": {
+                "id": "D2",
+                "column": 4,
+                "value": 4
+              },
+              "roomType": "focus"
+            },
+            "beforeShips": [
+              {
+                "id": "S2-0",
+                "column": 1,
+                "row": 1,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 2,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 0,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S2-3",
+                "column": 0,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S2-4",
+                "column": 0,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-5",
+                "column": 2,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S2-6",
+                "column": 3,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-back",
+                "column": 4,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S2-front-a",
+                "column": 4,
+                "row": 13,
+                "traits": [
+                  "heavy"
+                ]
+              },
+              {
+                "id": "S2-front-b",
+                "column": 4,
+                "row": 13,
+                "traits": [
+                  "boosted"
+                ]
+              },
+              {
+                "id": "S2-frozen",
+                "column": 4,
+                "row": 14,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "expectedShips": [
+              {
+                "id": "S2-0",
+                "column": 1,
+                "row": 1,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 2,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 0,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S2-3",
+                "column": 0,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S2-4",
+                "column": 0,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-5",
+                "column": 2,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S2-6",
+                "column": 3,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-back",
+                "column": 4,
+                "row": 10,
+                "traits": []
+              },
+              {
+                "id": "S2-front-a",
+                "column": 4,
+                "row": 15,
+                "traits": [
+                  "heavy"
+                ]
+              },
+              {
+                "id": "S2-front-b",
+                "column": 4,
+                "row": 18,
+                "traits": [
+                  "boosted"
+                ]
+              },
+              {
+                "id": "S2-frozen",
+                "column": 4,
+                "row": 14,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "actualShips": [
+              {
+                "id": "S2-0",
+                "column": 1,
+                "row": 1,
+                "traits": []
+              },
+              {
+                "id": "S2-1",
+                "column": 2,
+                "row": 4,
+                "traits": []
+              },
+              {
+                "id": "S2-2",
+                "column": 0,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S2-3",
+                "column": 0,
+                "row": 3,
+                "traits": []
+              },
+              {
+                "id": "S2-4",
+                "column": 0,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-5",
+                "column": 2,
+                "row": 7,
+                "traits": []
+              },
+              {
+                "id": "S2-6",
+                "column": 3,
+                "row": 8,
+                "traits": []
+              },
+              {
+                "id": "S2-back",
+                "column": 4,
+                "row": 14,
+                "traits": []
+              },
+              {
+                "id": "S2-front-a",
+                "column": 4,
+                "row": 15,
+                "traits": [
+                  "heavy"
+                ]
+              },
+              {
+                "id": "S2-front-b",
+                "column": 4,
+                "row": 18,
+                "traits": [
+                  "boosted"
+                ]
+              },
+              {
+                "id": "S2-frozen",
+                "column": 4,
+                "row": 14,
+                "traits": [
+                  "frozen"
+                ]
+              }
+            ],
+            "attentionReads": [
+              "event.type",
+              "event.roomType",
+              "event.die.value",
+              "state.ships",
+              "candidate.column[candidate=S2-0]",
+              "event.die.column",
+              "candidate.traits[candidate=S2-0]",
+              "candidate.column[candidate=S2-1]",
+              "candidate.traits[candidate=S2-1]",
+              "candidate.column[candidate=S2-2]",
+              "candidate.traits[candidate=S2-2]",
+              "candidate.column[candidate=S2-3]",
+              "candidate.traits[candidate=S2-3]",
+              "candidate.column[candidate=S2-4]",
+              "candidate.traits[candidate=S2-4]",
+              "candidate.column[candidate=S2-5]",
+              "candidate.traits[candidate=S2-5]",
+              "candidate.column[candidate=S2-6]",
+              "candidate.traits[candidate=S2-6]",
+              "candidate.column[candidate=S2-back]",
+              "candidate.traits[candidate=S2-back]",
+              "candidate.column[candidate=S2-front-a]",
+              "candidate.traits[candidate=S2-front-a]",
+              "candidate.column[candidate=S2-front-b]",
+              "candidate.traits[candidate=S2-front-b]",
+              "candidate.column[candidate=S2-frozen]",
+              "candidate.traits[candidate=S2-frozen]",
+              "candidate.row[candidate=S2-back]",
+              "candidate.row[candidate=S2-front-a]",
+              "candidate.row[candidate=S2-front-b]"
+            ]
+          }
+        ]
+      },
+      "afterRevision": {
+        "cases": 100,
+        "correct": 100,
+        "accuracy": 1.0,
+        "meanAttentionReads": 25.99,
+        "failureExamples": []
+      },
+      "cumulativeRegression": {
+        "cases": 650,
+        "correct": 650,
+        "accuracy": 1.0,
+        "meanAttentionReads": 17.90153846153846,
+        "failureExamples": []
+      },
+      "baseRegression": {
+        "cases": 150,
+        "correct": 150,
+        "accuracy": 1.0,
+        "meanAttentionReads": 12.886666666666667,
+        "failureExamples": []
+      },
+      "programBytesAfter": 2624
+    }
+  ],
+  "finalCombinedGeneralization": {
+    "cases": 400,
+    "correct": 400,
+    "accuracy": 1.0,
+    "meanAttentionReads": 18.335,
+    "failureExamples": []
+  },
+  "versions": [
+    {
+      "version": 1,
+      "introducedBy": "R01 base rule",
+      "programBytes": 746,
+      "baseRegression": {
+        "cases": 150,
+        "correct": 150,
+        "accuracy": 1.0,
+        "meanAttentionReads": 8.253333333333334,
+        "failureExamples": []
+      },
+      "program": {
+        "schema": "adaptive_grounding_program_v0",
+        "programId": "same-column-ship-descent",
+        "version": 1,
+        "sourceRuleIds": [
+          "R01"
+        ],
+        "trigger": {
+          "op": "eq",
+          "args": [
+            {
+              "path": "event.type"
+            },
+            {
+              "const": "die_placed"
+            }
+          ]
+        },
+        "globalBindings": {
+          "N": {
+            "path": "event.die.value"
+          }
+        },
+        "targetSource": {
+          "path": "state.ships"
+        },
+        "targetAlias": "candidate",
+        "targetPredicate": {
+          "op": "eq",
+          "args": [
+            {
+              "path": "candidate.column"
+            },
+            {
+              "path": "event.die.column"
+            }
+          ]
+        },
+        "localBindings": {
+          "distance": {
+            "var": "N"
+          }
+        },
+        "effects": [
+          {
+            "target": "candidate",
+            "field": "row",
+            "value": {
+              "op": "add",
+              "args": [
+                {
+                  "path": "candidate.row"
+                },
+                {
+                  "var": "distance"
+                }
+              ]
+            }
+          }
+        ],
+        "revisionHistory": [
+          {
+            "sourceRuleId": "R01",
+            "description": "基础程序：放置骰子后选择同列飞船并按点数下降"
+          }
+        ]
+      }
+    },
+    {
+      "version": 2,
+      "introducedBy": "V2-aa-reduction",
+      "programBytes": 1151,
+      "program": {
+        "schema": "adaptive_grounding_program_v0",
+        "programId": "same-column-ship-descent",
+        "version": 2,
+        "sourceRuleIds": [
+          "R01",
+          "R02"
+        ],
+        "trigger": {
+          "op": "eq",
+          "args": [
+            {
+              "path": "event.type"
+            },
+            {
+              "const": "die_placed"
+            }
+          ]
+        },
+        "globalBindings": {
+          "N": {
+            "op": "if",
+            "condition": {
+              "op": "eq",
+              "args": [
+                {
+                  "path": "event.roomType"
+                },
+                {
+                  "const": "aa"
+                }
+              ]
+            },
+            "then": {
+              "op": "max",
+              "args": [
+                {
+                  "const": 0
+                },
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "path": "event.die.value"
+                    },
+                    {
+                      "const": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            "else": {
+              "path": "event.die.value"
+            }
+          }
+        },
+        "targetSource": {
+          "path": "state.ships"
+        },
+        "targetAlias": "candidate",
+        "targetPredicate": {
+          "op": "eq",
+          "args": [
+            {
+              "path": "candidate.column"
+            },
+            {
+              "path": "event.die.column"
+            }
+          ]
+        },
+        "localBindings": {
+          "distance": {
+            "var": "N"
+          }
+        },
+        "effects": [
+          {
+            "target": "candidate",
+            "field": "row",
+            "value": {
+              "op": "add",
+              "args": [
+                {
+                  "path": "candidate.row"
+                },
+                {
+                  "var": "distance"
+                }
+              ]
+            }
+          }
+        ],
+        "revisionHistory": [
+          {
+            "sourceRuleId": "R01",
+            "description": "基础程序：放置骰子后选择同列飞船并按点数下降"
+          },
+          {
+            "revisionId": "V2-aa-reduction",
+            "sourceRuleId": "R02",
+            "description": "把全局有效距离N改为防空房减一且不低于零",
+            "operation": "replace_global_binding"
+          }
+        ]
+      }
+    },
+    {
+      "version": 3,
+      "introducedBy": "V3-frozen-exclusion",
+      "programBytes": 1455,
+      "program": {
+        "schema": "adaptive_grounding_program_v0",
+        "programId": "same-column-ship-descent",
+        "version": 3,
+        "sourceRuleIds": [
+          "R01",
+          "R02",
+          "R03"
+        ],
+        "trigger": {
+          "op": "eq",
+          "args": [
+            {
+              "path": "event.type"
+            },
+            {
+              "const": "die_placed"
+            }
+          ]
+        },
+        "globalBindings": {
+          "N": {
+            "op": "if",
+            "condition": {
+              "op": "eq",
+              "args": [
+                {
+                  "path": "event.roomType"
+                },
+                {
+                  "const": "aa"
+                }
+              ]
+            },
+            "then": {
+              "op": "max",
+              "args": [
+                {
+                  "const": 0
+                },
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "path": "event.die.value"
+                    },
+                    {
+                      "const": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            "else": {
+              "path": "event.die.value"
+            }
+          }
+        },
+        "targetSource": {
+          "path": "state.ships"
+        },
+        "targetAlias": "candidate",
+        "targetPredicate": {
+          "op": "and",
+          "args": [
+            {
+              "op": "eq",
+              "args": [
+                {
+                  "path": "candidate.column"
+                },
+                {
+                  "path": "event.die.column"
+                }
+              ]
+            },
+            {
+              "op": "not",
+              "args": [
+                {
+                  "op": "contains",
+                  "args": [
+                    {
+                      "path": "candidate.traits"
+                    },
+                    {
+                      "const": "frozen"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "localBindings": {
+          "distance": {
+            "var": "N"
+          }
+        },
+        "effects": [
+          {
+            "target": "candidate",
+            "field": "row",
+            "value": {
+              "op": "add",
+              "args": [
+                {
+                  "path": "candidate.row"
+                },
+                {
+                  "var": "distance"
+                }
+              ]
+            }
+          }
+        ],
+        "revisionHistory": [
+          {
+            "sourceRuleId": "R01",
+            "description": "基础程序：放置骰子后选择同列飞船并按点数下降"
+          },
+          {
+            "revisionId": "V2-aa-reduction",
+            "sourceRuleId": "R02",
+            "description": "把全局有效距离N改为防空房减一且不低于零",
+            "operation": "replace_global_binding"
+          },
+          {
+            "revisionId": "V3-frozen-exclusion",
+            "sourceRuleId": "R03",
+            "description": "在既有同列筛选后追加冻结排除条件",
+            "operation": "and_target_predicate"
+          }
+        ]
+      }
+    },
+    {
+      "version": 4,
+      "introducedBy": "V4-heavy-distance",
+      "programBytes": 1836,
+      "program": {
+        "schema": "adaptive_grounding_program_v0",
+        "programId": "same-column-ship-descent",
+        "version": 4,
+        "sourceRuleIds": [
+          "R01",
+          "R02",
+          "R03",
+          "R04"
+        ],
+        "trigger": {
+          "op": "eq",
+          "args": [
+            {
+              "path": "event.type"
+            },
+            {
+              "const": "die_placed"
+            }
+          ]
+        },
+        "globalBindings": {
+          "N": {
+            "op": "if",
+            "condition": {
+              "op": "eq",
+              "args": [
+                {
+                  "path": "event.roomType"
+                },
+                {
+                  "const": "aa"
+                }
+              ]
+            },
+            "then": {
+              "op": "max",
+              "args": [
+                {
+                  "const": 0
+                },
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "path": "event.die.value"
+                    },
+                    {
+                      "const": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            "else": {
+              "path": "event.die.value"
+            }
+          }
+        },
+        "targetSource": {
+          "path": "state.ships"
+        },
+        "targetAlias": "candidate",
+        "targetPredicate": {
+          "op": "and",
+          "args": [
+            {
+              "op": "eq",
+              "args": [
+                {
+                  "path": "candidate.column"
+                },
+                {
+                  "path": "event.die.column"
+                }
+              ]
+            },
+            {
+              "op": "not",
+              "args": [
+                {
+                  "op": "contains",
+                  "args": [
+                    {
+                      "path": "candidate.traits"
+                    },
+                    {
+                      "const": "frozen"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "localBindings": {
+          "distance": {
+            "op": "if",
+            "condition": {
+              "op": "contains",
+              "args": [
+                {
+                  "path": "candidate.traits"
+                },
+                {
+                  "const": "heavy"
+                }
+              ]
+            },
+            "then": {
+              "op": "floor_divide",
+              "args": [
+                {
+                  "var": "N"
+                },
+                {
+                  "const": 2
+                }
+              ]
+            },
+            "else": {
+              "var": "N"
+            }
+          }
+        },
+        "effects": [
+          {
+            "target": "candidate",
+            "field": "row",
+            "value": {
+              "op": "add",
+              "args": [
+                {
+                  "path": "candidate.row"
+                },
+                {
+                  "var": "distance"
+                }
+              ]
+            }
+          }
+        ],
+        "revisionHistory": [
+          {
+            "sourceRuleId": "R01",
+            "description": "基础程序：放置骰子后选择同列飞船并按点数下降"
+          },
+          {
+            "revisionId": "V2-aa-reduction",
+            "sourceRuleId": "R02",
+            "description": "把全局有效距离N改为防空房减一且不低于零",
+            "operation": "replace_global_binding"
+          },
+          {
+            "revisionId": "V3-frozen-exclusion",
+            "sourceRuleId": "R03",
+            "description": "在既有同列筛选后追加冻结排除条件",
+            "operation": "and_target_predicate"
+          },
+          {
+            "revisionId": "V4-heavy-distance",
+            "sourceRuleId": "R04",
+            "description": "按每个目标的重型状态包装局部distance，而非改写全局N",
+            "operation": "replace_local_binding"
+          }
+        ]
+      }
+    },
+    {
+      "version": 5,
+      "introducedBy": "V5-boost-after-modifiers",
+      "programBytes": 2219,
+      "program": {
+        "schema": "adaptive_grounding_program_v0",
+        "programId": "same-column-ship-descent",
+        "version": 5,
+        "sourceRuleIds": [
+          "R01",
+          "R02",
+          "R03",
+          "R04",
+          "R05"
+        ],
+        "trigger": {
+          "op": "eq",
+          "args": [
+            {
+              "path": "event.type"
+            },
+            {
+              "const": "die_placed"
+            }
+          ]
+        },
+        "globalBindings": {
+          "N": {
+            "op": "if",
+            "condition": {
+              "op": "eq",
+              "args": [
+                {
+                  "path": "event.roomType"
+                },
+                {
+                  "const": "aa"
+                }
+              ]
+            },
+            "then": {
+              "op": "max",
+              "args": [
+                {
+                  "const": 0
+                },
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "path": "event.die.value"
+                    },
+                    {
+                      "const": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            "else": {
+              "path": "event.die.value"
+            }
+          }
+        },
+        "targetSource": {
+          "path": "state.ships"
+        },
+        "targetAlias": "candidate",
+        "targetPredicate": {
+          "op": "and",
+          "args": [
+            {
+              "op": "eq",
+              "args": [
+                {
+                  "path": "candidate.column"
+                },
+                {
+                  "path": "event.die.column"
+                }
+              ]
+            },
+            {
+              "op": "not",
+              "args": [
+                {
+                  "op": "contains",
+                  "args": [
+                    {
+                      "path": "candidate.traits"
+                    },
+                    {
+                      "const": "frozen"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "localBindings": {
+          "distance": {
+            "op": "add",
+            "args": [
+              {
+                "op": "if",
+                "condition": {
+                  "op": "contains",
+                  "args": [
+                    {
+                      "path": "candidate.traits"
+                    },
+                    {
+                      "const": "heavy"
+                    }
+                  ]
+                },
+                "then": {
+                  "op": "floor_divide",
+                  "args": [
+                    {
+                      "var": "N"
+                    },
+                    {
+                      "const": 2
+                    }
+                  ]
+                },
+                "else": {
+                  "var": "N"
+                }
+              },
+              {
+                "op": "if",
+                "condition": {
+                  "op": "contains",
+                  "args": [
+                    {
+                      "path": "candidate.traits"
+                    },
+                    {
+                      "const": "boosted"
+                    }
+                  ]
+                },
+                "then": {
+                  "const": 1
+                },
+                "else": {
+                  "const": 0
+                }
+              }
+            ]
+          }
+        },
+        "effects": [
+          {
+            "target": "candidate",
+            "field": "row",
+            "value": {
+              "op": "add",
+              "args": [
+                {
+                  "path": "candidate.row"
+                },
+                {
+                  "var": "distance"
+                }
+              ]
+            }
+          }
+        ],
+        "revisionHistory": [
+          {
+            "sourceRuleId": "R01",
+            "description": "基础程序：放置骰子后选择同列飞船并按点数下降"
+          },
+          {
+            "revisionId": "V2-aa-reduction",
+            "sourceRuleId": "R02",
+            "description": "把全局有效距离N改为防空房减一且不低于零",
+            "operation": "replace_global_binding"
+          },
+          {
+            "revisionId": "V3-frozen-exclusion",
+            "sourceRuleId": "R03",
+            "description": "在既有同列筛选后追加冻结排除条件",
+            "operation": "and_target_predicate"
+          },
+          {
+            "revisionId": "V4-heavy-distance",
+            "sourceRuleId": "R04",
+            "description": "按每个目标的重型状态包装局部distance，而非改写全局N",
+            "operation": "replace_local_binding"
+          },
+          {
+            "revisionId": "V5-boost-after-modifiers",
+            "sourceRuleId": "R05",
+            "description": "在当前distance外层追加加速一格，保留之前防空和重型修正",
+            "operation": "wrap_local_binding"
+          }
+        ]
+      }
+    },
+    {
+      "version": 6,
+      "introducedBy": "V6-focus-frontmost-group",
+      "programBytes": 2624,
+      "program": {
+        "schema": "adaptive_grounding_program_v0",
+        "programId": "same-column-ship-descent",
+        "version": 6,
+        "sourceRuleIds": [
+          "R01",
+          "R02",
+          "R03",
+          "R04",
+          "R05",
+          "R06"
+        ],
+        "trigger": {
+          "op": "eq",
+          "args": [
+            {
+              "path": "event.type"
+            },
+            {
+              "const": "die_placed"
+            }
+          ]
+        },
+        "globalBindings": {
+          "N": {
+            "op": "if",
+            "condition": {
+              "op": "eq",
+              "args": [
+                {
+                  "path": "event.roomType"
+                },
+                {
+                  "const": "aa"
+                }
+              ]
+            },
+            "then": {
+              "op": "max",
+              "args": [
+                {
+                  "const": 0
+                },
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "path": "event.die.value"
+                    },
+                    {
+                      "const": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            "else": {
+              "path": "event.die.value"
+            }
+          }
+        },
+        "targetSource": {
+          "path": "state.ships"
+        },
+        "targetAlias": "candidate",
+        "targetPredicate": {
+          "op": "and",
+          "args": [
+            {
+              "op": "eq",
+              "args": [
+                {
+                  "path": "candidate.column"
+                },
+                {
+                  "path": "event.die.column"
+                }
+              ]
+            },
+            {
+              "op": "not",
+              "args": [
+                {
+                  "op": "contains",
+                  "args": [
+                    {
+                      "path": "candidate.traits"
+                    },
+                    {
+                      "const": "frozen"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "localBindings": {
+          "distance": {
+            "op": "add",
+            "args": [
+              {
+                "op": "if",
+                "condition": {
+                  "op": "contains",
+                  "args": [
+                    {
+                      "path": "candidate.traits"
+                    },
+                    {
+                      "const": "heavy"
+                    }
+                  ]
+                },
+                "then": {
+                  "op": "floor_divide",
+                  "args": [
+                    {
+                      "var": "N"
+                    },
+                    {
+                      "const": 2
+                    }
+                  ]
+                },
+                "else": {
+                  "var": "N"
+                }
+              },
+              {
+                "op": "if",
+                "condition": {
+                  "op": "contains",
+                  "args": [
+                    {
+                      "path": "candidate.traits"
+                    },
+                    {
+                      "const": "boosted"
+                    }
+                  ]
+                },
+                "then": {
+                  "const": 1
+                },
+                "else": {
+                  "const": 0
+                }
+              }
+            ]
+          }
+        },
+        "effects": [
+          {
+            "target": "candidate",
+            "field": "row",
+            "value": {
+              "op": "add",
+              "args": [
+                {
+                  "path": "candidate.row"
+                },
+                {
+                  "var": "distance"
+                }
+              ]
+            }
+          }
+        ],
+        "revisionHistory": [
+          {
+            "sourceRuleId": "R01",
+            "description": "基础程序：放置骰子后选择同列飞船并按点数下降"
+          },
+          {
+            "revisionId": "V2-aa-reduction",
+            "sourceRuleId": "R02",
+            "description": "把全局有效距离N改为防空房减一且不低于零",
+            "operation": "replace_global_binding"
+          },
+          {
+            "revisionId": "V3-frozen-exclusion",
+            "sourceRuleId": "R03",
+            "description": "在既有同列筛选后追加冻结排除条件",
+            "operation": "and_target_predicate"
+          },
+          {
+            "revisionId": "V4-heavy-distance",
+            "sourceRuleId": "R04",
+            "description": "按每个目标的重型状态包装局部distance，而非改写全局N",
+            "operation": "replace_local_binding"
+          },
+          {
+            "revisionId": "V5-boost-after-modifiers",
+            "sourceRuleId": "R05",
+            "description": "在当前distance外层追加加速一格，保留之前防空和重型修正",
+            "operation": "wrap_local_binding"
+          },
+          {
+            "revisionId": "V6-focus-frontmost-group",
+            "sourceRuleId": "R06",
+            "description": "原语言只能逐个筛选；新增通用目标组归约，在聚焦房间保留row最大的全部并列目标",
+            "operation": "set_target_reducer"
+          }
+        ],
+        "targetReducer": {
+          "when": {
+            "op": "eq",
+            "args": [
+              {
+                "path": "event.roomType"
+              },
+              {
+                "const": "focus"
+              }
+            ]
+          },
+          "kind": "max",
+          "key": {
+            "path": "candidate.row"
+          },
+          "keepTies": true
+        }
+      }
+    }
+  ],
+  "conclusionChecks": {
+    "baseRuleCoversAllParameterVariations": true,
+    "eachNewRuleExposesPreviousProgramFailure": true,
+    "eachRevisionFixesItsNewSuite": true,
+    "noCumulativeRegression": true,
+    "finalCombinedSuitePasses": true
+  },
+  "honestBoundary": [
+    "This validates a restricted program and incremental patch architecture, not autonomous blind LLM patch generation.",
+    "Synthetic frozen/heavy/boosted modifiers are stress rules, not claims about official UFS rules.",
+    "The next experiment must let an isolated Agent generate patches without seeing evaluation cases."
+  ]
+}

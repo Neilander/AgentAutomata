@@ -1,0 +1,291 @@
+{
+  "schema": "glue_program_v1",
+  "steps": [
+    {
+      "sourceRuleId": "R01",
+      "interpretation": "骰子被放入基地列后，关注该列的全部飞船，并让每架飞船沿天空向下移动该骰子的点数。",
+      "units": [
+        {
+          "id": "base-column-ships-descend-by-die-value",
+          "sourceRuleId": "R01",
+          "trigger": {
+            "action.type": "place",
+            "entity.type": "die",
+            "resultUnit.type": "base_slot"
+          },
+          "attention": {
+            "region": {
+              "mode": "flood",
+              "seed": "$result.to",
+              "maxDepth": 12,
+              "connectionKinds": [
+                "same_column",
+                "sky_down"
+              ]
+            },
+            "query": {
+              "mode": "all",
+              "keep": {
+                "type": "ship"
+              }
+            },
+            "forEachMatch": true
+          },
+          "emit": [
+            {
+              "type": "move_along",
+              "entityId": "${match.entityId}",
+              "connectionKind": "sky_down",
+              "direction": "down",
+              "distance": "$entity.value"
+            }
+          ],
+          "priority": 0,
+          "schedule": "immediate"
+        }
+      ]
+    },
+    {
+      "sourceRuleId": "R02",
+      "interpretation": "骰子放入防空房时，将同一放置触发点为该列各飞船生成的下降距离减1且下限为0，使1点骰不产生飞船移动。",
+      "units": [
+        {
+          "id": "aa-room-reduces-pending-column-descent",
+          "sourceRuleId": "R02",
+          "trigger": {
+            "action.type": "place",
+            "entity.type": "die",
+            "resultUnit.type": "base_slot",
+            "memory.placedRoomTags.contains": "aa_room"
+          },
+          "attention": {
+            "region": {
+              "mode": "flood",
+              "seed": "$result.to",
+              "maxDepth": 12,
+              "connectionKinds": [
+                "same_column",
+                "sky_down"
+              ]
+            },
+            "query": {
+              "mode": "all",
+              "keep": {
+                "type": "ship"
+              }
+            },
+            "forEachMatch": true
+          },
+          "emit": [
+            {
+              "type": "adjust",
+              "target": "pending_action",
+              "match": {
+                "type": "move_along",
+                "entityId": "${match.entityId}",
+                "connectionKind": "sky_down",
+                "causeActionId": "$action.id"
+              },
+              "field": "distance",
+              "delta": -1,
+              "min": 0,
+              "suppressWhenAtMin": true
+            }
+          ],
+          "priority": 10,
+          "schedule": "immediate"
+        }
+      ]
+    },
+    {
+      "sourceRuleId": "R03",
+      "interpretation": "飞船移动时只把最终停留格作为结算格，不为途经天空格产生触发。",
+      "units": [
+        {
+          "id": "ship-movement-resolves-final-cell-only",
+          "sourceRuleId": "R03",
+          "trigger": {
+            "action.type": "move_along",
+            "entity.type": "ship"
+          },
+          "emit": [
+            {
+              "type": "adjust",
+              "target": "current_action",
+              "field": "resolutionMode",
+              "value": "final_unit_only",
+              "suppressIntermediateUnitTriggers": true
+            }
+          ],
+          "priority": 20,
+          "schedule": "immediate"
+        }
+      ]
+    },
+    {
+      "sourceRuleId": "R04",
+      "interpretation": "飞船最终停在母舰下降格时，立即令母舰下降一行并跳过该行右侧动作；该下降若抵达骷髅行，则立即产生玩家失败结果。",
+      "units": [
+        {
+          "id": "ship-on-mothership-down-cell-moves-mothership",
+          "sourceRuleId": "R04",
+          "trigger": {
+            "action.type": "move_along",
+            "entity.type": "ship",
+            "resultUnit.tags.contains": "mothership_down"
+          },
+          "emit": [
+            {
+              "type": "move_along",
+              "entityId": "mothership",
+              "connectionKind": "mothership_down",
+              "direction": "down",
+              "distance": 1,
+              "skipResultUnitTags": [
+                "arrow_right"
+              ]
+            }
+          ],
+          "priority": 0,
+          "schedule": "immediate"
+        },
+        {
+          "id": "mothership-arrival-at-skull-causes-immediate-loss",
+          "sourceRuleId": "R04",
+          "trigger": {
+            "action.type": "move_along",
+            "entity.id": "mothership",
+            "resultUnit.tags.contains": "skull"
+          },
+          "emit": [
+            {
+              "type": "outcome",
+              "result": "player_loss",
+              "timing": "immediate"
+            }
+          ],
+          "priority": 100,
+          "schedule": "immediate"
+        }
+      ]
+    },
+    {
+      "sourceRuleId": "R05",
+      "interpretation": "飞船最终停在箭头格时，沿该箭头在同一行指向的方向找到目标列并搬移过去，使新落点成为下一次结算的最终停留格。",
+      "units": [
+        {
+          "id": "ship-on-right-arrow-relocates-across-row",
+          "sourceRuleId": "R05",
+          "trigger": {
+            "action.type": "move_along",
+            "entity.type": "ship",
+            "resultUnit.tags.contains": "arrow_right"
+          },
+          "attention": {
+            "region": {
+              "mode": "rays",
+              "seed": "$result.to",
+              "connectionKinds": [
+                "sky_horizontal"
+              ],
+              "directions": [
+                "right"
+              ]
+            },
+            "query": {
+              "mode": "first",
+              "target": "unit",
+              "keep": {
+                "type": "sky_cell"
+              }
+            }
+          },
+          "emit": [
+            {
+              "type": "relocate",
+              "entityId": "$entity.id",
+              "targetUnitId": "$match.unitId",
+              "resolutionMode": "final_unit_only"
+            }
+          ],
+          "priority": 0,
+          "schedule": "immediate"
+        }
+      ]
+    },
+    {
+      "sourceRuleId": "R06",
+      "interpretation": "骰子阶段中，飞船最终停在爆炸格不会立即产生任何新动作。",
+      "units": []
+    },
+    {
+      "sourceRuleId": "R07",
+      "interpretation": "飞船下降越过天空并击中城市后，城市受到1点伤害，同时该飞船被搬回母舰等待重新生成的区域。",
+      "units": [
+        {
+          "id": "city-hit-damages-city-and-returns-ship",
+          "sourceRuleId": "R07",
+          "trigger": {
+            "action.type": "move_along",
+            "entity.type": "ship",
+            "resultUnit.tags.contains": "city_hit"
+          },
+          "emit": [
+            {
+              "type": "damage",
+              "entityId": "city",
+              "amount": 1
+            },
+            {
+              "type": "relocate",
+              "entityId": "$entity.id",
+              "targetUnitId": "mothership-waiting",
+              "state": "waiting_for_respawn"
+            }
+          ],
+          "priority": 0,
+          "schedule": "immediate"
+        }
+      ]
+    },
+    {
+      "sourceRuleId": "R08",
+      "interpretation": "白骰被放置后，对所有尚未放置的骰子发起一次重投随机边界；因结果尚未发生，确定性推演在此停止。",
+      "units": [
+        {
+          "id": "white-die-placement-rerolls-unplaced-dice",
+          "sourceRuleId": "R08",
+          "trigger": {
+            "action.type": "place",
+            "entity.type": "die",
+            "entity.tags.contains": "white"
+          },
+          "attention": {
+            "region": {
+              "mode": "unit",
+              "seed": "$result.to"
+            },
+            "query": {
+              "mode": "all",
+              "keep": {
+                "type": "die",
+                "state.placed": false
+              }
+            }
+          },
+          "emit": [
+            {
+              "type": "random",
+              "operation": "reroll",
+              "entityIds": "$matches.entityIds",
+              "resultStatus": "pending",
+              "boundary": "stop_deterministic_simulation"
+            }
+          ],
+          "priority": 0,
+          "schedule": "immediate"
+        }
+      ]
+    }
+  ]
+}

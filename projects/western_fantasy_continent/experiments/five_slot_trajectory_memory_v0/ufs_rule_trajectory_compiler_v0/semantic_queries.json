@@ -1,0 +1,115 @@
+{
+  "schema": "five_slot_rule_paraphrase_queries_v0",
+  "queries": [
+    {
+      "id": "P01",
+      "expectedEdgeId": "place-die-to-descend-ships",
+      "q": {
+        "affected_object": "刚拿出的工人骰、准备占用的基地位置和上方这一列",
+        "change_trend": "骰子从手里变成已经落在基地格",
+        "cause_relation": "玩家把这颗骰子安排到一个房间格",
+        "temporal_state": "骰子阶段刚完成一次落子",
+        "context": "UFS对局里选择工人骰位置"
+      }
+    },
+    {
+      "id": "P02",
+      "expectedEdgeId": "place-die-to-descend-ships",
+      "q": {
+        "affected_object": "一颗未使用骰与它选中的基地列",
+        "change_trend": "骰子由可用变为放在选定格子",
+        "cause_relation": "玩家决定使用这颗骰子占格",
+        "temporal_state": "本轮放置动作已经发生",
+        "context": "地下基地上安排骰子的阶段"
+      }
+    },
+    {
+      "id": "P03",
+      "expectedEdgeId": "arrow-landing-to-horizontal-move",
+      "q": {
+        "affected_object": "最后落到横向箭头图标上的敌机和落点",
+        "change_trend": "敌机结束下降并停住在箭头位置",
+        "cause_relation": "本次下降的终点正好是箭头格",
+        "temporal_state": "已经走完下降距离，开始处理终点",
+        "context": "UFS天空区域的落点符号"
+      }
+    },
+    {
+      "id": "P04",
+      "expectedEdgeId": "arrow-landing-to-horizontal-move",
+      "q": {
+        "affected_object": "降落在左右移动标记上的一架飞船",
+        "change_trend": "飞船由移动状态变为最终占据箭头格",
+        "cause_relation": "箭头图标成为它这次移动的最终位置",
+        "temporal_state": "下落移动完成后检查格子",
+        "context": "天空板敌机终点效果"
+      }
+    },
+    {
+      "id": "P05",
+      "expectedEdgeId": "white-die-to-reroll",
+      "q": {
+        "affected_object": "这颗白色工人骰和桌上还没用的骰子",
+        "change_trend": "白骰从可用变为已经放到基地",
+        "cause_relation": "玩家此刻选择先放白骰",
+        "temporal_state": "白骰行动刚结算完毕",
+        "context": "UFS会让剩余骰重新投掷的特殊骰子"
+      }
+    },
+    {
+      "id": "P06",
+      "expectedEdgeId": "white-die-to-reroll",
+      "q": {
+        "affected_object": "白骰以及尚未占格的其他骰子",
+        "change_trend": "白色骰子由手中进入一个基地格",
+        "cause_relation": "这次操作使用的是白色骰子",
+        "temporal_state": "放下白骰之后、继续选骰之前",
+        "context": "工人骰阶段的重投联动"
+      }
+    },
+    {
+      "id": "P07",
+      "expectedEdgeId": "city-contact-to-damage",
+      "q": {
+        "affected_object": "飞到城市位置的敌机和城市本身",
+        "change_trend": "敌机从天空区域进入城市所在处",
+        "cause_relation": "敌机下降后的终点到达城市",
+        "temporal_state": "移动结束时处理撞城",
+        "context": "UFS基地遭到敌机接触"
+      }
+    },
+    {
+      "id": "P08",
+      "expectedEdgeId": "city-contact-to-damage",
+      "q": {
+        "affected_object": "抵达最下方城市的飞船和城市状态",
+        "change_trend": "飞船由城市上方变成接触城市",
+        "cause_relation": "本次向下移动让飞船走到城市",
+        "temporal_state": "飞船停止下降并开始结算接触",
+        "context": "城市防线被敌机突破"
+      }
+    },
+    {
+      "id": "P09",
+      "expectedEdgeId": "explosion-landing-to-stop",
+      "q": {
+        "affected_object": "停在带爆炸数字位置的敌机和该格",
+        "change_trend": "敌机结束下降并留在爆炸数字上",
+        "cause_relation": "下降终点与爆炸门槛格重合",
+        "temporal_state": "完成移动后检查这个最终位置",
+        "context": "战斗机房之后可以瞄准的天空位置"
+      }
+    },
+    {
+      "id": "P10",
+      "expectedEdgeId": "explosion-landing-to-stop",
+      "q": {
+        "affected_object": "最终占据爆炸标记的外星飞船",
+        "change_trend": "飞船从下落变为停留在数字格",
+        "cause_relation": "这一个爆炸数字格是实际终点",
+        "temporal_state": "敌机移动链抵达落点",
+        "context": "UFS天空板的爆炸数字并非即时爆炸"
+      }
+    }
+  ]
+}

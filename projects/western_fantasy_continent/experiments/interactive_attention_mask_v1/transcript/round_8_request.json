@@ -1,0 +1,38 @@
+{
+  "schema": "masked_attention_request_v1",
+  "round": 8,
+  "commands": [
+    {
+      "caseId": "arrow_city",
+      "kind": "act",
+      "operation": "finish_case",
+      "target": "case",
+      "reason": "唯一飞船已造成1点城市伤害并返回母舰等待区，灰骰无重投后续，全部确定性动作链已结束。",
+      "expectedWakeup": "S02_TERMINAL_CELL_STOP"
+    },
+    {
+      "caseId": "mothership_skull",
+      "kind": "act",
+      "operation": "finish_case",
+      "target": "case",
+      "reason": "骷髅新行已导致loss终局，立即失败边界已到达，不再执行包括右侧动作在内的任何后续。",
+      "expectedWakeup": "S03_IMMEDIATE_FAILURE_STOP"
+    },
+    {
+      "caseId": "white_random_stop",
+      "kind": "act",
+      "operation": "finish_case",
+      "target": "case",
+      "reason": "白骰已触发对die-b的重投，响应明确新点数未知；确定性预想在随机边界停止，不猜测结果。",
+      "expectedWakeup": "S04_RANDOM_REROLL_STOP"
+    },
+    {
+      "caseId": "two_ship_split",
+      "kind": "focus",
+      "operation": "inspect_ship_cell",
+      "target": "ship-b",
+      "reason": "ship-a的城市命中链已结束，但同列ship-b已下降至sky-c0-r2且尚未结算；现在单独检查ship-b的最终停留格。",
+      "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY，依据ship-b终点决定其落点动作或无动作边界"
+    }
+  ]
+}

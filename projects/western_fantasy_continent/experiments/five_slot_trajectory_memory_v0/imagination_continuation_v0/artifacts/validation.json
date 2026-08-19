@@ -1,0 +1,751 @@
+{
+  "schema": "imagination_continuation_validation_v0",
+  "tests": {
+    "run": 10,
+    "failures": 0,
+    "errors": 0
+  },
+  "scenarios": [
+    {
+      "initialEvent": "die_placed",
+      "budget": 12.0,
+      "familiarity": 0.4,
+      "result": {
+        "schema": "imagination_continuation_result_v0",
+        "goals": [
+          {
+            "goal_id": "protect_city",
+            "object_concept": "城市",
+            "state_concept": "伤害",
+            "desired_direction": 0,
+            "urgency": 1.0,
+            "horizon": "current_round"
+          }
+        ],
+        "attention": {
+          "initial": 12.0,
+          "spent": 5.328,
+          "remaining": 6.671999999999999
+        },
+        "processedOutcomes": 5,
+        "trace": [
+          {
+            "eventId": "die_placed",
+            "outcomeId": "same_column_descent",
+            "kind": "automatic",
+            "depth": 0,
+            "priority": 1.5,
+            "activation": 0.9,
+            "salience": 0.6,
+            "familiarity": 0.4,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "scan-column",
+                "description": "注意骰子正上方同列飞船",
+                "cost": 0.74
+              },
+              {
+                "pointId": "project-landing",
+                "description": "沿下降路径检查每架飞船的最终落点",
+                "cost": 0.74
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 10.52,
+            "result": "continue",
+            "nextEventIds": [
+              "ship_a_arrow",
+              "ship_b_quiet"
+            ]
+          },
+          {
+            "eventId": "ship_a_arrow",
+            "outcomeId": "arrow_horizontal_move",
+            "kind": "automatic",
+            "depth": 1,
+            "priority": 1.58,
+            "activation": 0.88,
+            "salience": 0.7,
+            "familiarity": 0.4,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "read-arrow",
+                "description": "注意最终落点箭头的方向",
+                "cost": 0.74
+              },
+              {
+                "pointId": "follow-arrow",
+                "description": "检查箭头目标位置",
+                "cost": 0.74
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 9.04,
+            "result": "continue",
+            "nextEventIds": [
+              "ship_a_city"
+            ]
+          },
+          {
+            "eventId": "ship_a_city",
+            "outcomeId": "city_contact_damage",
+            "kind": "automatic",
+            "depth": 2,
+            "priority": 2.86,
+            "activation": 0.91,
+            "salience": 0.95,
+            "familiarity": 0.4,
+            "goalMatches": [
+              {
+                "goal_id": "protect_city",
+                "point_id": "predict-damage",
+                "relevance": 1.0,
+                "effect": "threat"
+              }
+            ],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "notice-city",
+                "description": "注意飞船已经到达城市",
+                "cost": 0.74
+              },
+              {
+                "pointId": "predict-damage",
+                "description": "注意城市伤害将增加",
+                "cost": 0.74
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 7.559999999999999,
+            "result": "continue",
+            "nextEventIds": [
+              "city_damaged"
+            ]
+          },
+          {
+            "eventId": "city_damaged",
+            "outcomeId": "city_branch_complete",
+            "kind": "complete",
+            "depth": 3,
+            "priority": 2.75,
+            "activation": 0.85,
+            "salience": 0.9,
+            "familiarity": 0.4,
+            "goalMatches": [
+              {
+                "goal_id": "protect_city",
+                "point_id": "confirm-city",
+                "relevance": 1.0,
+                "effect": "threat"
+              }
+            ],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "confirm-city",
+                "description": "确认城市受伤后的公开状态",
+                "cost": 0.444
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 7.115999999999999,
+            "result": "complete"
+          },
+          {
+            "eventId": "ship_b_quiet",
+            "outcomeId": "ordinary_sky_stops",
+            "kind": "complete",
+            "depth": 1,
+            "priority": 0.96,
+            "activation": 0.76,
+            "salience": 0.2,
+            "familiarity": 0.4,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "check-quiet",
+                "description": "确认普通落点没有即时后果",
+                "cost": 0.444
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 6.671999999999999,
+            "result": "complete"
+          }
+        ],
+        "boundaries": [],
+        "boundaryKinds": [],
+        "completions": [
+          {
+            "eventId": "city_damaged",
+            "outcomeId": "city_branch_complete",
+            "kind": "complete",
+            "reason": "城市伤害与飞船等待区变化已经结算",
+            "depth": 3
+          },
+          {
+            "eventId": "ship_b_quiet",
+            "outcomeId": "ordinary_sky_stops",
+            "kind": "complete",
+            "reason": "普通天空格没有继续粘连的即时效果",
+            "depth": 1
+          }
+        ]
+      }
+    },
+    {
+      "initialEvent": "die_placed",
+      "budget": 2.2,
+      "familiarity": 0.4,
+      "result": {
+        "schema": "imagination_continuation_result_v0",
+        "goals": [
+          {
+            "goal_id": "protect_city",
+            "object_concept": "城市",
+            "state_concept": "伤害",
+            "desired_direction": 0,
+            "urgency": 1.0,
+            "horizon": "current_round"
+          }
+        ],
+        "attention": {
+          "initial": 2.2,
+          "spent": 1.924,
+          "remaining": 0.2760000000000002
+        },
+        "processedOutcomes": 3,
+        "trace": [
+          {
+            "eventId": "die_placed",
+            "outcomeId": "same_column_descent",
+            "kind": "automatic",
+            "depth": 0,
+            "priority": 1.5,
+            "activation": 0.9,
+            "salience": 0.6,
+            "familiarity": 0.4,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "scan-column",
+                "description": "注意骰子正上方同列飞船",
+                "cost": 0.74
+              },
+              {
+                "pointId": "project-landing",
+                "description": "沿下降路径检查每架飞船的最终落点",
+                "cost": 0.74
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 0.7200000000000002,
+            "result": "continue",
+            "nextEventIds": [
+              "ship_a_arrow",
+              "ship_b_quiet"
+            ]
+          },
+          {
+            "eventId": "ship_a_arrow",
+            "outcomeId": "arrow_horizontal_move",
+            "kind": "automatic",
+            "depth": 1,
+            "priority": 1.58,
+            "activation": 0.88,
+            "salience": 0.7,
+            "familiarity": 0.4,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [],
+            "missedAttentionPoints": [
+              {
+                "pointId": "read-arrow",
+                "description": "注意最终落点箭头的方向",
+                "requiredCost": 0.74
+              },
+              {
+                "pointId": "follow-arrow",
+                "description": "检查箭头目标位置",
+                "requiredCost": 0.74
+              }
+            ],
+            "remainingAttention": 0.7200000000000002,
+            "result": "attention_stop"
+          },
+          {
+            "eventId": "ship_b_quiet",
+            "outcomeId": "ordinary_sky_stops",
+            "kind": "complete",
+            "depth": 1,
+            "priority": 0.96,
+            "activation": 0.76,
+            "salience": 0.2,
+            "familiarity": 0.4,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "check-quiet",
+                "description": "确认普通落点没有即时后果",
+                "cost": 0.444
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 0.2760000000000002,
+            "result": "complete"
+          }
+        ],
+        "boundaries": [
+          {
+            "kind": "attention_stop",
+            "eventId": "ship_a_arrow",
+            "outcomeId": "arrow_horizontal_move",
+            "reason": "remaining attention could not inspect every required internal point",
+            "inspectedPointIds": [],
+            "missedPointIds": [
+              "read-arrow",
+              "follow-arrow"
+            ],
+            "remainingAttention": 0.7200000000000002
+          }
+        ],
+        "boundaryKinds": [
+          "attention_stop"
+        ],
+        "completions": [
+          {
+            "eventId": "ship_b_quiet",
+            "outcomeId": "ordinary_sky_stops",
+            "kind": "complete",
+            "reason": "普通天空格没有继续粘连的即时效果",
+            "depth": 1
+          }
+        ]
+      }
+    },
+    {
+      "initialEvent": "die_placed",
+      "budget": 4.0,
+      "familiarity": 1.0,
+      "result": {
+        "schema": "imagination_continuation_result_v0",
+        "goals": [
+          {
+            "goal_id": "protect_city",
+            "object_concept": "城市",
+            "state_concept": "伤害",
+            "desired_direction": 0,
+            "urgency": 1.0,
+            "horizon": "current_round"
+          }
+        ],
+        "attention": {
+          "initial": 4.0,
+          "spent": 2.52,
+          "remaining": 1.4799999999999995
+        },
+        "processedOutcomes": 5,
+        "trace": [
+          {
+            "eventId": "die_placed",
+            "outcomeId": "same_column_descent",
+            "kind": "automatic",
+            "depth": 0,
+            "priority": 1.5,
+            "activation": 0.9,
+            "salience": 0.6,
+            "familiarity": 1.0,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "scan-column",
+                "description": "注意骰子正上方同列飞船",
+                "cost": 0.35
+              },
+              {
+                "pointId": "project-landing",
+                "description": "沿下降路径检查每架飞船的最终落点",
+                "cost": 0.35
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 3.3,
+            "result": "continue",
+            "nextEventIds": [
+              "ship_a_arrow",
+              "ship_b_quiet"
+            ]
+          },
+          {
+            "eventId": "ship_a_arrow",
+            "outcomeId": "arrow_horizontal_move",
+            "kind": "automatic",
+            "depth": 1,
+            "priority": 1.58,
+            "activation": 0.88,
+            "salience": 0.7,
+            "familiarity": 1.0,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "read-arrow",
+                "description": "注意最终落点箭头的方向",
+                "cost": 0.35
+              },
+              {
+                "pointId": "follow-arrow",
+                "description": "检查箭头目标位置",
+                "cost": 0.35
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 2.5999999999999996,
+            "result": "continue",
+            "nextEventIds": [
+              "ship_a_city"
+            ]
+          },
+          {
+            "eventId": "ship_a_city",
+            "outcomeId": "city_contact_damage",
+            "kind": "automatic",
+            "depth": 2,
+            "priority": 2.86,
+            "activation": 0.91,
+            "salience": 0.95,
+            "familiarity": 1.0,
+            "goalMatches": [
+              {
+                "goal_id": "protect_city",
+                "point_id": "predict-damage",
+                "relevance": 1.0,
+                "effect": "threat"
+              }
+            ],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "notice-city",
+                "description": "注意飞船已经到达城市",
+                "cost": 0.35
+              },
+              {
+                "pointId": "predict-damage",
+                "description": "注意城市伤害将增加",
+                "cost": 0.35
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 1.8999999999999995,
+            "result": "continue",
+            "nextEventIds": [
+              "city_damaged"
+            ]
+          },
+          {
+            "eventId": "city_damaged",
+            "outcomeId": "city_branch_complete",
+            "kind": "complete",
+            "depth": 3,
+            "priority": 2.75,
+            "activation": 0.85,
+            "salience": 0.9,
+            "familiarity": 1.0,
+            "goalMatches": [
+              {
+                "goal_id": "protect_city",
+                "point_id": "confirm-city",
+                "relevance": 1.0,
+                "effect": "threat"
+              }
+            ],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "confirm-city",
+                "description": "确认城市受伤后的公开状态",
+                "cost": 0.21
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 1.6899999999999995,
+            "result": "complete"
+          },
+          {
+            "eventId": "ship_b_quiet",
+            "outcomeId": "ordinary_sky_stops",
+            "kind": "complete",
+            "depth": 1,
+            "priority": 0.96,
+            "activation": 0.76,
+            "salience": 0.2,
+            "familiarity": 1.0,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "check-quiet",
+                "description": "确认普通落点没有即时后果",
+                "cost": 0.21
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 1.4799999999999995,
+            "result": "complete"
+          }
+        ],
+        "boundaries": [],
+        "boundaryKinds": [],
+        "completions": [
+          {
+            "eventId": "city_damaged",
+            "outcomeId": "city_branch_complete",
+            "kind": "complete",
+            "reason": "城市伤害与飞船等待区变化已经结算",
+            "depth": 3
+          },
+          {
+            "eventId": "ship_b_quiet",
+            "outcomeId": "ordinary_sky_stops",
+            "kind": "complete",
+            "reason": "普通天空格没有继续粘连的即时效果",
+            "depth": 1
+          }
+        ]
+      }
+    },
+    {
+      "initialEvent": "white_die_placed",
+      "budget": 5.0,
+      "familiarity": 0.4,
+      "result": {
+        "schema": "imagination_continuation_result_v0",
+        "goals": [
+          {
+            "goal_id": "protect_city",
+            "object_concept": "城市",
+            "state_concept": "伤害",
+            "desired_direction": 0,
+            "urgency": 1.0,
+            "horizon": "current_round"
+          }
+        ],
+        "attention": {
+          "initial": 5.0,
+          "spent": 1.924,
+          "remaining": 3.0759999999999996
+        },
+        "processedOutcomes": 3,
+        "trace": [
+          {
+            "eventId": "white_die_placed",
+            "outcomeId": "reroll_unplaced_dice",
+            "kind": "random",
+            "depth": 0,
+            "priority": 1.65,
+            "activation": 0.9,
+            "salience": 0.75,
+            "familiarity": 0.4,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "notice-reroll",
+                "description": "注意其余未放置骰子将被重掷",
+                "cost": 0.74
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 4.26,
+            "result": "random"
+          },
+          {
+            "eventId": "white_die_placed",
+            "outcomeId": "white_ship_descent",
+            "kind": "automatic",
+            "depth": 0,
+            "priority": 1.48,
+            "activation": 0.88,
+            "salience": 0.6,
+            "familiarity": 0.4,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "white-column",
+                "description": "注意白骰同列飞船",
+                "cost": 0.74
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 3.5199999999999996,
+            "result": "continue",
+            "nextEventIds": [
+              "white_ship_quiet"
+            ]
+          },
+          {
+            "eventId": "white_ship_quiet",
+            "outcomeId": "white_ship_stable",
+            "kind": "complete",
+            "depth": 1,
+            "priority": 0.95,
+            "activation": 0.75,
+            "salience": 0.2,
+            "familiarity": 0.4,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "confirm-white-quiet",
+                "description": "确认飞船普通落点没有即时后果",
+                "cost": 0.444
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 3.0759999999999996,
+            "result": "complete"
+          }
+        ],
+        "boundaries": [
+          {
+            "kind": "random",
+            "eventId": "white_die_placed",
+            "outcomeId": "reroll_unplaced_dice",
+            "reason": "exact continuation depends on an unresolved random result",
+            "randomSummary": "每颗未放置骰子的具体新点数要等实际重掷，已知范围为1到6"
+          }
+        ],
+        "boundaryKinds": [
+          "random"
+        ],
+        "completions": [
+          {
+            "eventId": "white_ship_quiet",
+            "outcomeId": "white_ship_stable",
+            "kind": "complete",
+            "reason": "同列飞船停在普通天空格，确定分支结束",
+            "depth": 1
+          }
+        ]
+      }
+    },
+    {
+      "initialEvent": "unknown_mothership_icon",
+      "budget": 2.0,
+      "familiarity": 0.0,
+      "result": {
+        "schema": "imagination_continuation_result_v0",
+        "goals": [
+          {
+            "goal_id": "protect_city",
+            "object_concept": "城市",
+            "state_concept": "伤害",
+            "desired_direction": 0,
+            "urgency": 1.0,
+            "horizon": "current_round"
+          }
+        ],
+        "attention": {
+          "initial": 2.0,
+          "spent": 1.0,
+          "remaining": 1.0
+        },
+        "processedOutcomes": 1,
+        "trace": [
+          {
+            "eventId": "unknown_mothership_icon",
+            "outcomeId": "mothership_icon_lookup",
+            "kind": "unknown",
+            "depth": 0,
+            "priority": 1.52,
+            "activation": 0.82,
+            "salience": 0.7,
+            "familiarity": 0.0,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "inspect-icon",
+                "description": "注意母舰停留行的陌生图标",
+                "cost": 1.0
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 1.0,
+            "result": "unknown"
+          }
+        ],
+        "boundaries": [
+          {
+            "kind": "unknown",
+            "eventId": "unknown_mothership_icon",
+            "outcomeId": "mothership_icon_lookup",
+            "reason": "the player lacks a rule needed for the next transition",
+            "missingKnowledge": "需要查阅该母舰图标的作用对象和变化量"
+          }
+        ],
+        "boundaryKinds": [
+          "unknown"
+        ],
+        "completions": []
+      }
+    },
+    {
+      "initialEvent": "spawn_tie",
+      "budget": 2.0,
+      "familiarity": 0.4,
+      "result": {
+        "schema": "imagination_continuation_result_v0",
+        "goals": [
+          {
+            "goal_id": "protect_city",
+            "object_concept": "城市",
+            "state_concept": "伤害",
+            "desired_direction": 0,
+            "urgency": 1.0,
+            "horizon": "current_round"
+          }
+        ],
+        "attention": {
+          "initial": 2.0,
+          "spent": 0.74,
+          "remaining": 1.26
+        },
+        "processedOutcomes": 1,
+        "trace": [
+          {
+            "eventId": "spawn_tie",
+            "outcomeId": "choose_spawn_column",
+            "kind": "choice",
+            "depth": 0,
+            "priority": 1.38,
+            "activation": 0.78,
+            "salience": 0.6,
+            "familiarity": 0.4,
+            "goalMatches": [],
+            "inspectedAttentionPoints": [
+              {
+                "pointId": "notice-tie",
+                "description": "注意有两个同样合法的出生列",
+                "cost": 0.74
+              }
+            ],
+            "missedAttentionPoints": [],
+            "remainingAttention": 1.26,
+            "result": "choice"
+          }
+        ],
+        "boundaries": [
+          {
+            "kind": "choice",
+            "eventId": "spawn_tie",
+            "outcomeId": "choose_spawn_column",
+            "reason": "automatic imagination reached a player decision",
+            "alternatives": [
+              "在第2列生成",
+              "在第4列生成"
+            ]
+          }
+        ],
+        "boundaryKinds": [
+          "choice"
+        ],
+        "completions": []
+      }
+    }
+  ]
+}

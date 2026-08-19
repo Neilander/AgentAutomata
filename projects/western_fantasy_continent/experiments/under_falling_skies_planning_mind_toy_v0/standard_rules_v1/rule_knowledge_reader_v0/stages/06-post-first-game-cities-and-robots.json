@@ -1,0 +1,63 @@
+{
+  "schema": "ufs_incremental_rule_cognition_stage_v1",
+  "stage": 6,
+  "sourcePages": [10, 11],
+  "availability": "after_first_game_or_explicit_continued_reading",
+  "conceptsAdded": [
+    { "id": "city_ability", "label": "城市能力", "definition": "除Roswell外，不同城市在整局中修改规则的特殊能力" },
+    { "id": "damaged_city_side", "label": "受损城市面", "definition": "输掉未受损面后可尝试、拥有更强能力的城市另一面" },
+    { "id": "threat_level", "label": "威胁等级", "definition": "翻到威胁面的天空板数量，范围0到4" },
+    { "id": "robot_die", "label": "机器人骰", "definition": "安装后留在基地、只在房间阶段工作的蓝骰" },
+    { "id": "exhausted_robot", "label": "已耗尽机器人", "definition": "本房间阶段已经使用、不能再次使用的机器人" },
+    { "id": "robot_room", "label": "机器人房", "definition": "按房间值制造并安装机器人骰的房间" }
+  ],
+  "environmentFactsAdded": [
+    { "id": "threat_level_setup", "fact": "威胁等级等于随机翻到威胁面的天空板数量；0为简单，1为标准，最高4" },
+    { "id": "city_base_pair", "fact": "每座城市指定一对基地板，不同基地可能有不同伤害与能源轨道" },
+    { "id": "robot_limit", "fact": "机器人上限为2，但玩家可随时移除机器人" }
+  ],
+  "knowledgeAdded": [
+    {
+      "id": "robot_installation",
+      "subject": "玩家",
+      "environment": "结算机器人房且存在已挖掘的空房间格",
+      "behavior": "把蓝骰设为不高于6的房间值并安装",
+      "result": "获得一个本回合已耗尽、后续回合可工作的机器人",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "robot_repeated_room_effect",
+      "subject": "机器人",
+      "environment": "后续回合的房间阶段且机器人未耗尽",
+      "behavior": "像工人骰一样结算所在房间",
+      "result": "产生房间效果，机器人值减少1并在本阶段耗尽；值为1时使用后移除",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    },
+    {
+      "id": "buried_robot_removed",
+      "subject": "机器人",
+      "environment": "母舰行动令挖掘机后退，使机器人位置重新变成未挖掘",
+      "behavior": "被埋入未挖掘区域",
+      "result": "机器人从版图移除",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    }
+  ],
+  "behaviorsAdded": [
+    { "id": "choose_city", "label": "在独立游戏中选择一座城市", "knownConstraints": ["使用城市指定的基地组合", "应用该面城市能力"] },
+    { "id": "choose_threat_level", "label": "选择威胁等级并随机翻转对应数量天空板", "knownConstraints": ["0到4", "规则建议寻找自己觉得有趣的等级"] },
+    { "id": "install_robot", "label": "结算机器人房并把新机器人安装到已挖掘空格", "knownConstraints": ["新机器人本回合不能用", "总数上限2"] },
+    { "id": "remove_robot", "label": "随时移除一个机器人", "knownConstraints": ["可为新的安装腾出机器人数量或房间位置"] }
+  ],
+  "openQuestions": [
+    "具体城市能力分别是什么？",
+    "战役如何组织多局游戏？"
+  ],
+  "blockedInferences": [
+    "首局模拟不得使用本阶段任何知识",
+    "不知道哪座城市、威胁等级或机器人布局最优",
+    "规则只说明机器人效率结构，没有给出何时制造机器人的固定答案"
+  ]
+}

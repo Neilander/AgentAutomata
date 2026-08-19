@@ -1,0 +1,396 @@
+{
+  "schema": "llm_team_need_direction_evaluation_v1",
+  "generationBoundary": {
+    "generator": "independent context-free Codex subagent V2",
+    "forkTurns": "none",
+    "onlyRequestFileRead": true,
+    "candidateTeamVectorsVisibleToGenerator": false,
+    "validationBattlesVisibleToGenerator": false,
+    "oneFrozenResponsePerScenario": true
+  },
+  "summary": {
+    "scenarioCount": 8,
+    "selectedBeatsBaselineVector": 8,
+    "selectedBeatsPoolMeanVector": 8,
+    "top5BeatsPoolWinRate": 8,
+    "selectedTurnedLossIntoWin": 6
+  },
+  "rows": [
+    {
+      "scenarioId": "survive_fire_burst",
+      "direction": {
+        "damage": 0.2288,
+        "protection": 0.6864,
+        "tempo": 0.1831,
+        "burst": 0.5034,
+        "control": 0.0915,
+        "execution": 0.4119
+      },
+      "rawWeights": {
+        "damage": 10,
+        "protection": 30,
+        "buff": 3,
+        "tempo": 8,
+        "burst": 22,
+        "sustained_damage": 2,
+        "area_damage": 3,
+        "control": 4,
+        "execution": 18
+      },
+      "confidence": 0.78,
+      "reasoning": "全员倒下且敌方仍有三人，伤害还明显集中到关键承伤较弱的位置，因此首要需求是提高整体保护；同时以爆发和单点处决尽快削减敌方人数，避免敌方伤害与护盾价值持续累积。",
+      "uncertainty": "可见信息没有给出倒下顺序、实际承伤时长或敌方各单位威胁差异，无法判断应更偏向短窗爆发还是更长期的输出。",
+      "baseline": {
+        "teamId": "team-003",
+        "formation": "骑士 / 牧师 / 法师 / 游侠",
+        "knowledgeScore": 0.0233,
+        "validationScore": -0.1813,
+        "validationOutcome": "loss"
+      },
+      "selected": {
+        "teamId": "team-037",
+        "formation": "狂战士 / 牧师 / 狂战士 / 牧师",
+        "knowledgeScore": 0.9341,
+        "validationScore": 1.0529,
+        "validationOutcome": "loss"
+      },
+      "validation": {
+        "selectedBeatsBaselineVector": true,
+        "selectedBeatsPoolMeanVector": true,
+        "top5WinRate": 0.6,
+        "poolWinRate": 0.14,
+        "top5BeatsPoolWinRate": true,
+        "selectedTurnedLossIntoWin": false
+      }
+    },
+    {
+      "scenarioId": "break_frost_control",
+      "direction": {
+        "damage": 0.3845,
+        "protection": 0.1442,
+        "tempo": 0.2883,
+        "burst": 0.5527,
+        "control": 0.1922,
+        "execution": 0.6247
+      },
+      "rawWeights": {
+        "damage": 16,
+        "protection": 6,
+        "buff": 3,
+        "tempo": 12,
+        "burst": 23,
+        "sustained_damage": 3,
+        "area_damage": 3,
+        "control": 8,
+        "execution": 26
+      },
+      "confidence": 0.81,
+      "reasoning": "我方已经击倒两名敌人，说明距离突破不远；敌方多次提供护盾且展示多种限制效果，下一次更需要单点处决与爆发把已受压目标及时收掉，并以一定启动速度和控制争取有效输出窗口。",
+      "uncertainty": "陈述只显示效果名称和使用频次，无法确认控制持续时间、护盾覆盖对象，也无法判断最后存活目标是否因保护还是控制而未被击倒。",
+      "baseline": {
+        "teamId": "team-003",
+        "formation": "骑士 / 牧师 / 法师 / 游侠",
+        "knowledgeScore": -0.0039,
+        "validationScore": -0.2379,
+        "validationOutcome": "loss"
+      },
+      "selected": {
+        "teamId": "team-017",
+        "formation": "狂战士 / 游侠 / 炼金师 / 游侠",
+        "knowledgeScore": 1.5026,
+        "validationScore": 1.4571,
+        "validationOutcome": "win"
+      },
+      "validation": {
+        "selectedBeatsBaselineVector": true,
+        "selectedBeatsPoolMeanVector": true,
+        "top5WinRate": 0.8,
+        "poolWinRate": 0.3,
+        "top5BeatsPoolWinRate": true,
+        "selectedTurnedLossIntoWin": true
+      }
+    },
+    {
+      "scenarioId": "break_holy_sustain",
+      "direction": {
+        "damage": 0.371,
+        "protection": 0.2782,
+        "tempo": 0.1855,
+        "burst": 0.5797,
+        "control": 0.1159,
+        "execution": 0.626
+      },
+      "rawWeights": {
+        "damage": 16,
+        "protection": 12,
+        "buff": 2,
+        "tempo": 8,
+        "burst": 25,
+        "sustained_damage": 3,
+        "area_damage": 2,
+        "control": 5,
+        "execution": 27
+      },
+      "confidence": 0.84,
+      "reasoning": "敌方多次治疗并多次提供护盾，而我方最终未能形成有效减员，因此优先寻找单点处决和爆发以压缩敌方回复窗口；同时补入保护，缓解当前队伍明显缺乏生存能力且全员倒下的问题。",
+      "uncertainty": "没有敌方治疗量、护盾量和目标分布，无法判断输出突破应主要依赖瞬时集中，还是稳定总伤害也足以压过回复。",
+      "baseline": {
+        "teamId": "team-012",
+        "formation": "游侠 / 炼金师 / 术士 / 刺客",
+        "knowledgeScore": 0.367,
+        "validationScore": 0.2435,
+        "validationOutcome": "loss"
+      },
+      "selected": {
+        "teamId": "team-017",
+        "formation": "狂战士 / 游侠 / 炼金师 / 游侠",
+        "knowledgeScore": 1.2847,
+        "validationScore": 1.2435,
+        "validationOutcome": "win"
+      },
+      "validation": {
+        "selectedBeatsBaselineVector": true,
+        "selectedBeatsPoolMeanVector": true,
+        "top5WinRate": 1.0,
+        "poolWinRate": 0.56,
+        "top5BeatsPoolWinRate": true,
+        "selectedTurnedLossIntoWin": true
+      }
+    },
+    {
+      "scenarioId": "survive_fast_pressure",
+      "direction": {
+        "damage": 0.5256,
+        "protection": 0.2628,
+        "tempo": 0.5973,
+        "burst": 0.4778,
+        "control": 0.1433,
+        "execution": 0.1911
+      },
+      "rawWeights": {
+        "damage": 22,
+        "protection": 11,
+        "buff": 2,
+        "tempo": 25,
+        "burst": 20,
+        "sustained_damage": 3,
+        "area_damage": 3,
+        "control": 6,
+        "execution": 8
+      },
+      "confidence": 0.79,
+      "reasoning": "现有队伍虽已多次施加护盾，仍被不同攻击方式集中压垮且敌方剩余三人；需求应从已有保护与增益转向更快启动，并补足总体伤害和爆发，尽早削弱来袭压力。",
+      "uncertainty": "未给出战斗时长和首个倒下时点，因而不能确定失败完全发生在前期，也无法判断敌方压力是否集中于单一可处决目标。",
+      "baseline": {
+        "teamId": "team-021",
+        "formation": "牧师 / 吟游诗人 / 骑士 / 术士",
+        "knowledgeScore": -0.9435,
+        "validationScore": -0.9319,
+        "validationOutcome": "loss"
+      },
+      "selected": {
+        "teamId": "team-001",
+        "formation": "法师 / 法师 / 法师 / 法师",
+        "knowledgeScore": 1.4303,
+        "validationScore": 1.5041,
+        "validationOutcome": "win"
+      },
+      "validation": {
+        "selectedBeatsBaselineVector": true,
+        "selectedBeatsPoolMeanVector": true,
+        "top5WinRate": 0.8,
+        "poolWinRate": 0.38,
+        "top5BeatsPoolWinRate": true,
+        "selectedTurnedLossIntoWin": true
+      }
+    },
+    {
+      "scenarioId": "counter_poison_snowball",
+      "direction": {
+        "damage": 0.3345,
+        "protection": 0.1195,
+        "tempo": 0.5734,
+        "burst": 0.4778,
+        "control": 0.1672,
+        "execution": 0.5256
+      },
+      "rawWeights": {
+        "damage": 14,
+        "protection": 5,
+        "buff": 3,
+        "tempo": 24,
+        "burst": 20,
+        "sustained_damage": 2,
+        "area_damage": 3,
+        "control": 7,
+        "execution": 22
+      },
+      "confidence": 0.77,
+      "reasoning": "在我方已有反复治疗和护盾的情况下仍全员倒下，敌方又持续展示毒相关效果与护盾能力，因此更应以前期启动、单点处决和爆发尽快完成减员，阻止持续压力继续滚大。",
+      "uncertainty": "没有持续效果的层数、伤害节奏或净化结果，无法确认失败是否由毒性累积主导，也不能确定优先击杀是否一定比进一步强化保护更有效。",
+      "baseline": {
+        "teamId": "team-021",
+        "formation": "牧师 / 吟游诗人 / 骑士 / 术士",
+        "knowledgeScore": -0.9492,
+        "validationScore": -0.9297,
+        "validationOutcome": "loss"
+      },
+      "selected": {
+        "teamId": "team-017",
+        "formation": "狂战士 / 游侠 / 炼金师 / 游侠",
+        "knowledgeScore": 1.5491,
+        "validationScore": 1.4957,
+        "validationOutcome": "win"
+      },
+      "validation": {
+        "selectedBeatsBaselineVector": true,
+        "selectedBeatsPoolMeanVector": true,
+        "top5WinRate": 0.8,
+        "poolWinRate": 0.2,
+        "top5BeatsPoolWinRate": true,
+        "selectedTurnedLossIntoWin": true
+      }
+    },
+    {
+      "scenarioId": "survive_fire_without_healer",
+      "direction": {
+        "damage": 0.3823,
+        "protection": 0.6689,
+        "tempo": 0.5017,
+        "burst": 0.2867,
+        "control": 0.1433,
+        "execution": 0.1911
+      },
+      "rawWeights": {
+        "damage": 16,
+        "protection": 28,
+        "buff": 3,
+        "tempo": 21,
+        "burst": 12,
+        "sustained_damage": 3,
+        "area_damage": 3,
+        "control": 6,
+        "execution": 8
+      },
+      "confidence": 0.76,
+      "reasoning": "我方虽由多个单位提供过护盾，最终仍全员倒下且敌方保留三人，说明生存链条需要显著加强；同时当前队伍启动和总体伤害偏弱，应加快形成压力，避免只靠较慢的群体与持续伤害拖入不利交换。",
+      "uncertainty": "陈述没有治疗事件、护盾吸收量或火焰效果的实际伤害占比，无法判断所需保护更偏向恢复还是更厚的预防性护盾。",
+      "baseline": {
+        "teamId": "team-005",
+        "formation": "术士 / 骑士 / 骑士 / 术士",
+        "knowledgeScore": -0.5421,
+        "validationScore": -0.6206,
+        "validationOutcome": "loss"
+      },
+      "selected": {
+        "teamId": "team-017",
+        "formation": "狂战士 / 游侠 / 炼金师 / 游侠",
+        "knowledgeScore": 0.7894,
+        "validationScore": 0.7579,
+        "validationOutcome": "win"
+      },
+      "validation": {
+        "selectedBeatsBaselineVector": true,
+        "selectedBeatsPoolMeanVector": true,
+        "top5WinRate": 0.4,
+        "poolWinRate": 0.14,
+        "top5BeatsPoolWinRate": true,
+        "selectedTurnedLossIntoWin": true
+      }
+    },
+    {
+      "scenarioId": "escape_control_lock",
+      "direction": {
+        "damage": 0.4789,
+        "protection": 0.1676,
+        "tempo": 0.5986,
+        "burst": 0.5268,
+        "control": 0.1916,
+        "execution": 0.2395
+      },
+      "rawWeights": {
+        "damage": 20,
+        "protection": 7,
+        "buff": 3,
+        "tempo": 25,
+        "burst": 22,
+        "sustained_damage": 2,
+        "area_damage": 3,
+        "control": 8,
+        "execution": 10
+      },
+      "confidence": 0.82,
+      "reasoning": "敌方三人均保持完整生命，而敌方同时展示限制效果、治疗与多次护盾，说明我方压力未能有效转化；最需要提升启动、爆发和总体伤害，尽快打开缺口，并以少量控制争取输出窗口。",
+      "uncertainty": "可见陈述无法直接证明我方被控制了多久，也未说明零生命损失是护盾吸收、治疗回满还是我方输出时机不足所致。",
+      "baseline": {
+        "teamId": "team-005",
+        "formation": "术士 / 骑士 / 骑士 / 术士",
+        "knowledgeScore": -0.6971,
+        "validationScore": -0.8493,
+        "validationOutcome": "loss"
+      },
+      "selected": {
+        "teamId": "team-001",
+        "formation": "法师 / 法师 / 法师 / 法师",
+        "knowledgeScore": 1.5205,
+        "validationScore": 1.5887,
+        "validationOutcome": "loss"
+      },
+      "validation": {
+        "selectedBeatsBaselineVector": true,
+        "selectedBeatsPoolMeanVector": true,
+        "top5WinRate": 0.8,
+        "poolWinRate": 0.3,
+        "top5BeatsPoolWinRate": true,
+        "selectedTurnedLossIntoWin": false
+      }
+    },
+    {
+      "scenarioId": "stabilize_poison_glass_team",
+      "direction": {
+        "damage": 0.4169,
+        "protection": 0.7412,
+        "tempo": 0.1853,
+        "burst": 0.2779,
+        "control": 0.1158,
+        "execution": 0.3706
+      },
+      "rawWeights": {
+        "damage": 18,
+        "protection": 32,
+        "buff": 3,
+        "tempo": 8,
+        "burst": 12,
+        "sustained_damage": 3,
+        "area_damage": 3,
+        "control": 5,
+        "execution": 16
+      },
+      "confidence": 0.85,
+      "reasoning": "当前队伍保护能力明显薄弱，战斗中主要伤害又集中到多个脆弱位置并最终全员倒下，因此保护是首要补强方向；已击倒两名敌人说明进攻并非完全失效，再以总体伤害和单点处决提高收尾稳定性。",
+      "uncertainty": "没有倒下顺序、敌方剩余单位身份或持续伤害明细，无法判断只增加保护能否稳定获胜，也无法确认应优先强化处决还是爆发。",
+      "baseline": {
+        "teamId": "team-012",
+        "formation": "游侠 / 炼金师 / 术士 / 刺客",
+        "knowledgeScore": -0.3057,
+        "validationScore": -0.3851,
+        "validationOutcome": "loss"
+      },
+      "selected": {
+        "teamId": "team-037",
+        "formation": "狂战士 / 牧师 / 狂战士 / 牧师",
+        "knowledgeScore": 0.9001,
+        "validationScore": 0.9466,
+        "validationOutcome": "win"
+      },
+      "validation": {
+        "selectedBeatsBaselineVector": true,
+        "selectedBeatsPoolMeanVector": true,
+        "top5WinRate": 1.0,
+        "poolWinRate": 0.2,
+        "top5BeatsPoolWinRate": true,
+        "selectedTurnedLossIntoWin": true
+      }
+    }
+  ]
+}

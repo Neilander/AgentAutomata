@@ -1,0 +1,36 @@
+{
+  "schema": "ufs_incremental_rule_cognition_stage_v1",
+  "stage": 8,
+  "sourcePages": [15, 16],
+  "availability": "after_campaign_components_are_known",
+  "conceptsAdded": [
+    { "id": "custom_standalone_battle", "label": "自定义独立战斗", "definition": "自由组合城市、情景、角色和天空板的非战役游戏" },
+    { "id": "difficulty_stars", "label": "难度星级", "definition": "黑星增加、黄星抵消后得到的游戏难度" },
+    { "id": "epicness", "label": "史诗度", "definition": "黑星和黄星数量相加得到的内容规模指标，不等于净难度" }
+  ],
+  "environmentFactsAdded": [
+    { "id": "custom_component_freedom", "fact": "独立游戏可自由选择城市面、情景、角色及升级状态、基础或高级天空板" },
+    { "id": "difficulty_formula", "fact": "净难度为黑星总数减黄星总数；史诗度为两类星总数相加" },
+    { "id": "page_16_packing_only", "fact": "第16页只是收纳警告，没有新增玩法知识" }
+  ],
+  "knowledgeAdded": [
+    {
+      "id": "components_change_difficulty_stars",
+      "subject": "自定义独立游戏配置",
+      "environment": "计算难度",
+      "behavior": "加入威胁天空板或情景，并用受损城市或角色调整",
+      "result": "黑星提高难度，黄星抵消难度；升级角色每名抵消1，受损城市和未升级角色各抵消0.5",
+      "confidence": 0.95,
+      "source": "explicit_rulebook"
+    }
+  ],
+  "behaviorsAdded": [
+    { "id": "build_custom_battle", "label": "从已公开的战役组件中自由组合独立战斗", "knownConstraints": ["可不使用情景或角色", "配置后按星级计算难度和史诗度"] }
+  ],
+  "openQuestions": [],
+  "blockedInferences": [
+    "星级只表达规则规定的配置难度，不等于某个具体玩家的真实胜率",
+    "规则没有提供最优自定义组合",
+    "首局和普通独立游戏不应提前获得尚未公开战役组件的具体能力"
+  ]
+}

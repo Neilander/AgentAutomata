@@ -1,0 +1,129 @@
+{
+  "schema": "masked_attention_response_v1",
+  "round": 1,
+  "previousResponseHash": null,
+  "requestHash": "4c3277d914b3aa3dcdb77e7a669f4c4c38eab0d401f93ffde7239bf7ababc7f1",
+  "responses": [
+    {
+      "caseId": "arrow_city",
+      "command": {
+        "caseId": "arrow_city",
+        "kind": "focus",
+        "operation": "inspect_base_cell",
+        "target": "base-c0",
+        "reason": "先确认初始放骰所用基地格的局部修正，才能从骰值1计算实际下降格数，避免猜测飞船是否移动。",
+        "expectedWakeup": "A01_PLACE_DIE_AND_DESCEND_COLUMN；若修正后为0则唤醒N01_ZERO_DESCENT_NO_LANDING与S01_ZERO_MOVE_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "baseCellId": "base-c0",
+          "columnId": "column-0",
+          "kind": "normal"
+        }
+      }
+    },
+    {
+      "caseId": "air_defense_zero",
+      "command": {
+        "caseId": "air_defense_zero",
+        "kind": "focus",
+        "operation": "inspect_base_cell",
+        "target": "base-c0",
+        "reason": "先确认初始放骰所用基地格的局部修正，才能从骰值1计算实际下降格数，避免猜测飞船是否移动。",
+        "expectedWakeup": "A01_PLACE_DIE_AND_DESCEND_COLUMN；若修正后为0则唤醒N01_ZERO_DESCENT_NO_LANDING与S01_ZERO_MOVE_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "baseCellId": "base-c0",
+          "columnId": "column-0",
+          "kind": "air_defense"
+        }
+      }
+    },
+    {
+      "caseId": "mothership_skull",
+      "command": {
+        "caseId": "mothership_skull",
+        "kind": "focus",
+        "operation": "inspect_base_cell",
+        "target": "base-c0",
+        "reason": "先确认初始放骰所用基地格的局部修正，才能从骰值1计算实际下降格数，避免猜测飞船是否移动。",
+        "expectedWakeup": "A01_PLACE_DIE_AND_DESCEND_COLUMN；若修正后为0则唤醒N01_ZERO_DESCENT_NO_LANDING与S01_ZERO_MOVE_STOP"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "baseCellId": "base-c0",
+          "columnId": "column-0",
+          "kind": "normal"
+        }
+      }
+    },
+    {
+      "caseId": "path_not_endpoint",
+      "command": {
+        "caseId": "path_not_endpoint",
+        "kind": "focus",
+        "operation": "inspect_base_cell",
+        "target": "base-c0",
+        "reason": "先确认初始放骰所用基地格的局部修正，才能从骰值2计算实际下降格数；路径格特征不能在此时被猜测或触发。",
+        "expectedWakeup": "A01_PLACE_DIE_AND_DESCEND_COLUMN，随后按G02_DESCENT_TO_FINAL_CHECK只检查最终停留格"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "baseCellId": "base-c0",
+          "columnId": "column-0",
+          "kind": "normal"
+        }
+      }
+    },
+    {
+      "caseId": "white_random_stop",
+      "command": {
+        "caseId": "white_random_stop",
+        "kind": "focus",
+        "operation": "inspect_base_cell",
+        "target": "base-c0",
+        "reason": "白骰重投必须等全部飞船结算后；当前先确认基地格修正以计算本次下降，不能提前跳到随机边界。",
+        "expectedWakeup": "A01_PLACE_DIE_AND_DESCEND_COLUMN；完整结算后才可能唤醒A06_REROLL_UNPLACED_WHITE_DIE_BOUNDARY"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "baseCellId": "base-c0",
+          "columnId": "column-0",
+          "kind": "normal"
+        }
+      }
+    },
+    {
+      "caseId": "two_ship_split",
+      "command": {
+        "caseId": "two_ship_split",
+        "kind": "focus",
+        "operation": "inspect_base_cell",
+        "target": "base-c0",
+        "reason": "先确认基地格修正以计算统一的实际下降格数；之后还需关注该列全部飞船，逐艘结算而不猜测其数量和位置。",
+        "expectedWakeup": "A01_PLACE_DIE_AND_DESCEND_COLUMN与G01_PLACE_TO_EACH_SHIP"
+      },
+      "result": {
+        "ok": true,
+        "type": "observation",
+        "detail": {
+          "baseCellId": "base-c0",
+          "columnId": "column-0",
+          "kind": "normal"
+        }
+      }
+    }
+  ],
+  "responseHash": "8329cc1a1ce57ce17f1111593a42990a28579493bb6b61b6c594a91a2efcf28d"
+}

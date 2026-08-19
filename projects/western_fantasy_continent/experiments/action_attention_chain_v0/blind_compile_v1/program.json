@@ -1,0 +1,237 @@
+{
+  "schema": "glue_program_v1",
+  "steps": [
+    {
+      "sourceRuleId": "R01",
+      "interpretation": "骰子放入基地列后，对该列每架飞船分别准备一个等于骰子点数的下降量，再执行沿天空向下移动。",
+      "units": [
+        {
+          "id": "prepare-column-ships-descent-from-die",
+          "sourceRuleId": "R01",
+          "trigger": {
+            "action.type": "place",
+            "entity.type": "die",
+            "resultUnit.kind": "base_slot"
+          },
+          "attention": {
+            "region": {
+              "mode": "flood",
+              "seed": "$result.to",
+              "maxDepth": 12,
+              "connectionKinds": ["same_column", "sky_down"]
+            },
+            "query": {
+              "mode": "all",
+              "keep": {
+                "type": "ship"
+              }
+            },
+            "forEachMatch": true
+          },
+          "emit": [
+            {
+              "type": "compute",
+              "key": "ship-descent-${match.entityId}",
+              "value": "$entity.state.value"
+            },
+            {
+              "type": "notice",
+              "entityId": "${match.entityId}",
+              "label": "准备执行飞船下降"
+            }
+          ],
+          "priority": 0,
+          "schedule": "immediate"
+        },
+        {
+          "id": "execute-prepared-ship-descent",
+          "sourceRuleId": "R01",
+          "trigger": {
+            "action.type": "notice",
+            "action.label": "准备执行飞船下降"
+          },
+          "emit": [
+            {
+              "type": "move_along",
+              "entityId": "$action.entityId",
+              "connectionKind": "sky_down",
+              "distanceFrom": "ship-descent-${action.entityId}",
+              "direction": "down"
+            }
+          ],
+          "priority": -100,
+          "schedule": "immediate"
+        }
+      ]
+    },
+    {
+      "sourceRuleId": "R02",
+      "interpretation": "若骰子放入防空房，则在飞船实际下降前把该飞船的临时下降量减1并限制为不低于0。",
+      "units": [
+        {
+          "id": "reduce-prepared-descent-in-aa-room",
+          "sourceRuleId": "R02",
+          "trigger": {
+            "action.type": "notice",
+            "action.label": "准备执行飞船下降",
+            "memory.placedRoomTags": {
+              "includes": "aa_room"
+            }
+          },
+          "emit": [
+            {
+              "type": "adjust",
+              "key": "ship-descent-${action.entityId}",
+              "delta": -1,
+              "min": 0
+            }
+          ],
+          "priority": 100,
+          "schedule": "immediate"
+        }
+      ]
+    },
+    {
+      "sourceRuleId": "R03",
+      "interpretation": "飞船移动只在最终停留格产生一次完成结果，路径中的天空格不产生额外动作。",
+      "units": []
+    },
+    {
+      "sourceRuleId": "R04",
+      "interpretation": "飞船最终停在母舰下降格时令母舰立即向下移动一行；母舰最终抵达骷髅行时立即产生失败结果，不为该行右侧动作生成结算。",
+      "units": [
+        {
+          "id": "descend-mothership-from-ship-landing",
+          "sourceRuleId": "R04",
+          "trigger": {
+            "action.type": "move_along",
+            "entity.type": "ship",
+            "resultUnit.tags": {
+              "includes": "mothership_down"
+            }
+          },
+          "emit": [
+            {
+              "type": "move_along",
+              "entityId": "mothership",
+              "connectionKind": "mothership_down",
+              "distance": 1,
+              "direction": "down"
+            }
+          ],
+          "priority": 0,
+          "schedule": "immediate"
+        },
+        {
+          "id": "lose-when-mothership-reaches-skull-row",
+          "sourceRuleId": "R04",
+          "trigger": {
+            "action.type": "move_along",
+            "entity.id": "mothership",
+            "resultUnit.tags": {
+              "includes": "skull"
+            }
+          },
+          "emit": [
+            {
+              "type": "outcome",
+              "outcome": "loss",
+              "reason": "母舰抵达骷髅行"
+            }
+          ],
+          "priority": 100,
+          "schedule": "immediate"
+        }
+      ]
+    },
+    {
+      "sourceRuleId": "R05",
+      "interpretation": "飞船最终停在右箭头格时，沿同一行向右移动到箭头所指的格子；该移动完成后，新停留格可继续触发结算。",
+      "units": [
+        {
+          "id": "move-ship-along-right-arrow",
+          "sourceRuleId": "R05",
+          "trigger": {
+            "action.type": "move_along",
+            "entity.type": "ship",
+            "resultUnit.tags": {
+              "includes": "arrow_right"
+            }
+          },
+          "emit": [
+            {
+              "type": "move_along",
+              "entityId": "$result.entityId",
+              "connectionKind": "sky_horizontal",
+              "distance": 1,
+              "direction": "right"
+            }
+          ],
+          "priority": 0,
+          "schedule": "immediate"
+        }
+      ]
+    },
+    {
+      "sourceRuleId": "R06",
+      "interpretation": "骰子阶段飞船最终停在爆炸格不会立即产生新动作。",
+      "units": []
+    },
+    {
+      "sourceRuleId": "R07",
+      "interpretation": "飞船最终下降到城市命中格时，对城市造成1点伤害，并把该飞船移回母舰等待区。",
+      "units": [
+        {
+          "id": "resolve-ship-city-hit",
+          "sourceRuleId": "R07",
+          "trigger": {
+            "action.type": "move_along",
+            "entity.type": "ship",
+            "resultUnit.tags": {
+              "includes": "city_hit"
+            }
+          },
+          "emit": [
+            {
+              "type": "damage",
+              "entityId": "city",
+              "amount": 1
+            },
+            {
+              "type": "relocate",
+              "entityId": "$result.entityId",
+              "targetUnitId": "mothership-waiting"
+            }
+          ],
+          "priority": 0,
+          "schedule": "immediate"
+        }
+      ]
+    },
+    {
+      "sourceRuleId": "R08",
+      "interpretation": "白骰放置完成后，尚未放置骰子的重投结果属于尚未发生的随机边界，确定性模拟在此停止。",
+      "units": [
+        {
+          "id": "reroll-unplaced-dice-after-white-die",
+          "sourceRuleId": "R08",
+          "trigger": {
+            "action.type": "place",
+            "entity.type": "die",
+            "entity.tags": {
+              "includes": "white"
+            }
+          },
+          "emit": [
+            {
+              "type": "random",
+              "reason": "所有尚未放置的骰子重新投掷，结果尚未发生"
+            }
+          ],
+          "priority": 0,
+          "schedule": "chain_end"
+        }
+      ]
+    }
+  ]
+}

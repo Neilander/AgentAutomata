@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Under Falling Skies 天空与城市录入器</title>
+  <link rel="stylesheet" href="base-map-editor.css">
+  <link rel="stylesheet" href="sky-city-map-editor.css">
+</head>
+<body>
+  <main class="app-shell sky-editor-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">STANDARD MAP DATA TOOL · REMAINING PARTS</p>
+        <h1>天空板＋Roswell 录入器</h1>
+        <p class="subtitle">从最上方天空板开始录入。中央五列记录飞船落点，右侧记录母舰轨道；最后填写城市生命、能源和研究轨道。</p>
+      </div>
+      <div class="top-actions">
+        <button id="saveButton" class="button secondary" type="button">保存到浏览器</button>
+        <button id="copyButton" class="button secondary" type="button">复制 JSON</button>
+        <button id="exportButton" class="button primary" type="button">导出 JSON</button>
+        <label class="button ghost" for="importInput">导入</label>
+        <input id="importInput" type="file" accept="application/json,.json" hidden>
+      </div>
+    </header>
+
+    <nav class="section-nav" aria-label="录入区域">
+      <button class="section-tab active" data-section="skySection" type="button"><b>01</b> 四块天空板</button>
+      <button class="section-tab" data-section="citySection" type="button"><b>02</b> Roswell 与两侧数值</button>
+      <button class="section-tab" data-section="outputSection" type="button"><b>03</b> 检查与导出</button>
+    </nav>
+
+    <section id="skySection" class="editor-section active-section">
+      <section class="workspace sky-workspace">
+        <section class="board-panel" aria-label="天空板编辑区">
+          <div class="panel-heading">
+            <div>
+              <span class="step-label">从上往下排列</span>
+              <h2>天空飞行区</h2>
+            </div>
+            <div id="tileTabs" class="board-tabs tile-tabs" role="tablist" aria-label="天空板"></div>
+          </div>
+
+          <div class="tile-meta">
+            <label>
+              <span>板块名称</span>
+              <input id="tileLabel" type="text" maxlength="40">
+            </label>
+            <label>
+              <span>使用面</span>
+              <select id="tileSide">
+                <option value="easy">简单面（蓝色）</option>
+                <option value="threatening">威胁面（红色）</option>
+              </select>
+            </label>
+            <label>
+              <span>从上到下的位置</span>
+              <select id="tileOrder"></select>
+            </label>
+          </div>
+
+          <div class="sky-column-labels" aria-hidden="true">
+            <span>第1列</span><span>第2列</span><span>第3列</span><span>第4列</span><span>第5列</span><span>右侧母舰轨道</span>
+          </div>
+          <div id="skyRows" class="sky-rows" aria-label="五列天空格与母舰轨道"></div>
+
+          <div class="board-controls">
+            <span class="fixed-row-note">每块天空板固定 4 行</span>
+            <span class="selection-hint">点中央格子录落点；点右侧窄格录母舰经过这一行的效果。</span>
+          </div>
+
+          <aside class="legend sky-legend" aria-label="天空格图例">
+            <span><i class="sky-symbol explosion">✦</i>爆炸数字</span>
+            <span><i class="sky-symbol arrow">←</i>向左</span>
+            <span><i class="sky-symbol arrow">→</i>向右</span>
+            <span><i class="sky-symbol mothership">⌄</i>母舰下降</span>
+            <span><i class="sky-symbol skull">☠</i>母舰到此失败</span>
+          </aside>
+        </section>
+
+        <aside class="editor-panel sky-inspector" aria-label="所选天空位置属性">
+          <div class="panel-heading compact">
+            <div>
+              <span class="step-label">填写所见图标</span>
+              <h2 id="inspectorTitle">尚未选择</h2>
+            </div>
+            <span id="selectionBadge" class="selection-count">未选择</span>
+          </div>
+
+          <div id="skyEmptySelection" class="empty-state">
+            <div class="empty-icon">⌁</div>
+            <p>点击左侧一个天空格或右侧轨道格。</p>
+            <small>不用判断规则含义，只需照着实体板上的图标录入。</small>
+          </div>
+
+          <form id="skyCellForm" class="cell-form hidden">
+            <label>
+              <span>这个天空格是什么</span>
+              <select id="skyCellType">
+                <option value="empty">空白</option>
+                <option value="explosion">爆炸图标＋数字</option>
+                <option value="arrow_left">向左箭头</option>
+                <option value="arrow_right">向右箭头</option>
+                <option value="mothership_down">母舰下降图标</option>
+              </select>
+            </label>
+            <label id="skyAmountField" class="hidden">
+              <span id="skyAmountLabel">数字</span>
+              <input id="skyCellAmount" type="number" min="1" step="1">
+              <small>填写图标旁印刷的数字；没有数字的母舰下降默认填 1。</small>
+            </label>
+            <button class="button primary wide" type="submit">应用到这个格子</button>
+          </form>
+
+          <form id="railForm" class="rail-form hidden">
+            <p class="form-intro">同一行可以同时出现多个效果。勾选实体板上能看到的图标，再填数字。</p>
+            <label class="check-row skull-check">
+              <input id="railSkull" type="checkbox">
+              <span><b>☠ 骷髅失败行</b><small>母舰到达这里立即失败；整张地图只能标一行。</small></span>
+            </label>
+            <div id="railActions" class="rail-actions"></div>
+            <button class="button primary wide" type="submit">应用到这一行</button>
+          </form>
+        </aside>
+      </section>
+    </section>
+
+    <section id="citySection" class="editor-section">
+      <section class="city-layout">
+        <section class="city-hero" aria-label="城市基本信息">
+          <div>
+            <span class="step-label">城市板</span>
+            <h2>Roswell</h2>
+            <p>城市板决定使用哪组基地，也承载伤害与能源信息。这里只录程序计算真正需要的数字。</p>
+          </div>
+          <div class="city-badge">ROSWELL</div>
+        </section>
+
+        <section class="city-form-grid">
+          <article class="data-panel">
+            <h3>城市身份</h3>
+            <label><span>城市编号</span><input id="cityId" type="text" value="roswell"></label>
+            <label><span>显示名称</span><input id="cityLabel" type="text" value="Roswell"></label>
+            <label>
+              <span>首轮特殊骰值</span>
+              <select id="firstRoll">
+                <option value="">没有特殊规则</option>
+                <option value="1">固定为 1</option><option value="2">固定为 2</option><option value="3">固定为 3</option>
+                <option value="4">固定为 4</option><option value="5">固定为 5</option><option value="6">固定为 6</option>
+              </select>
+            </label>
+          </article>
+
+          <article class="data-panel damage-panel">
+            <h3>生命／伤害轨道</h3>
+            <label>
+              <span>承受多少点伤害后失败</span>
+              <input id="maxDamage" type="number" min="1" step="1" placeholder="照红色伤害轨道填写">
+              <small>也就是引擎里的最大伤害；不需要逐格画出来。</small>
+            </label>
+          </article>
+
+          <article class="data-panel energy-panel">
+            <h3>能源轨道</h3>
+            <div class="two-columns">
+              <label><span>初始能源</span><input id="startEnergy" type="number" min="0" step="1"></label>
+              <label><span>能源上限</span><input id="maxEnergy" type="number" min="1" step="1"></label>
+            </div>
+            <label><span>机器人上限</span><input id="robotLimit" type="number" min="0" step="1" value="2"></label>
+          </article>
+
+          <article class="data-panel research-panel">
+            <h3>左侧研究轨道</h3>
+            <label>
+              <span>从起点到终点，每一步所需数值</span>
+              <input id="researchCosts" type="text" placeholder="例如：2, 3, 1, 4, 1, 3">
+              <small>按研究标记前进方向依次填写，用逗号隔开。</small>
+            </label>
+            <label class="check-row compact-check">
+              <input id="finalRequiresMultiSpace" type="checkbox" checked>
+              <span><b>最后一格必须使用多格研究室</b><small>基础规则如此；若组件另有说明再取消。</small></span>
+            </label>
+          </article>
+        </section>
+      </section>
+    </section>
+
+    <section id="outputSection" class="editor-section">
+      <section class="output-panel standalone-output">
+        <div class="panel-heading compact">
+          <div>
+            <span class="step-label">实时检查</span>
+            <h2>天空＋城市数据</h2>
+          </div>
+          <span id="completionBadge" class="status-badge neutral">尚未录入</span>
+        </div>
+        <div id="validationMessages" class="validation-messages"></div>
+        <details open>
+          <summary>查看将要导出的 JSON</summary>
+          <pre id="jsonPreview"></pre>
+        </details>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="sky-city-map-model.js"></script>
+  <script src="sky-city-map-editor.js"></script>
+</body>
+</html>

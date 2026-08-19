@@ -1,0 +1,540 @@
+{
+  "schema": "blind_agent_wakeup_predictions_v0",
+  "memorySchema": "blind_agent_player_memory_v0",
+  "cases": [
+    {
+      "id": "arrow_to_city_recursive",
+      "actionTrace": [
+        {
+          "step": 1,
+          "action": "把灰色1点骰die-a放入普通基地格base-c0",
+          "actor": "player",
+          "stateChange": "die-a被放入第0列；该格不是防空房，实际下降量为1。"
+        },
+        {
+          "step": 2,
+          "action": "第0列飞船下降1格",
+          "actor": "ship-a",
+          "stateChange": "ship-a从sky-c0-r0下降到sky-c0-r1。"
+        },
+        {
+          "step": 3,
+          "action": "结算最终停留格sky-c0-r1的向右箭头",
+          "actor": "ship-a",
+          "stateChange": "ship-a沿同一行移动到箭头所指的sky-c1-r1，并把该格作为新的最终停留格。"
+        },
+        {
+          "step": 4,
+          "action": "结算新最终停留格的城市命中",
+          "actor": "ship-a",
+          "stateChange": "城市受到1点伤害，生命从3降到2；ship-a返回mothership-waiting等待重新生成。"
+        }
+      ],
+      "attentionTrace": [
+        {
+          "order": 1,
+          "objectOrRegion": "die-a、base-c0与第0列",
+          "why": "放骰后先确定点数、列和防空房修正。",
+          "observation": "点数为1，base-c0不是防空房，因此该列全部飞船下降1格。",
+          "wokeMemory": "die_placement_wakes_column_descent"
+        },
+        {
+          "order": 2,
+          "objectOrRegion": "ship-a下降后的sky-c0-r1",
+          "why": "移动完成后只查看最终停留格。",
+          "observation": "最终格是向右箭头格，指向同一行的sky-c1-r1。",
+          "wokeMemory": "movement_wakes_final_stop_only、arrow_space_wakes_new_final_stop"
+        },
+        {
+          "order": 3,
+          "objectOrRegion": "箭头目标sky-c1-r1",
+          "why": "箭头移动产生了新的最终停留格，必须继续检查。",
+          "observation": "新最终格是城市命中格。",
+          "wokeMemory": "movement_wakes_final_stop_only、city_contact_wakes_damage_and_return"
+        },
+        {
+          "order": 4,
+          "objectOrRegion": "城市与ship-a",
+          "why": "城市命中要求结算伤害和飞船返回。",
+          "observation": "城市生命降为2，ship-a进入mothership-waiting，动作链自然结束。",
+          "wokeMemory": null
+        }
+      ],
+      "activatedRuleIds": [
+        "R01",
+        "R03",
+        "R05",
+        "R07"
+      ],
+      "activatedMemoryIds": [
+        "die_placement_wakes_column_descent",
+        "movement_wakes_final_stop_only",
+        "arrow_space_wakes_new_final_stop",
+        "city_contact_wakes_damage_and_return"
+      ],
+      "finalState": {
+        "shipPositions": {
+          "ship-a": "mothership-waiting"
+        },
+        "cityHp": 2,
+        "mothershipPosition": null,
+        "outcome": null,
+        "unplacedDiceState": "none"
+      },
+      "stopReason": "箭头的新终点已继续结算为城市命中；伤害与飞船返回完成后没有被唤醒的即时后续动作。",
+      "uncertainties": []
+    },
+    {
+      "id": "air_defense_zero_move",
+      "actionTrace": [
+        {
+          "step": 1,
+          "action": "把灰色1点骰die-a放入防空房base-c0",
+          "actor": "player",
+          "stateChange": "die-a被放入第0列防空房；1点减1后实际下降量为0。"
+        },
+        {
+          "step": 2,
+          "action": "应用零格下降并停止飞船效果检查",
+          "actor": "ship-a",
+          "stateChange": "ship-a不移动，仍在sky-c0-r0；不触发任何飞船效果。"
+        }
+      ],
+      "attentionTrace": [
+        {
+          "order": 1,
+          "objectOrRegion": "die-a与base-c0",
+          "why": "需要先计算防空房修正后的实际下降量。",
+          "observation": "1点骰放入防空房，实际下降量为0。",
+          "wokeMemory": "die_placement_wakes_column_descent、air_defense_one_means_no_ship_effect"
+        },
+        {
+          "order": 2,
+          "objectOrRegion": "ship-a当前位置sky-c0-r0",
+          "why": "确认零格移动没有改变飞船位置。",
+          "observation": "ship-a没有移动，因此不查看或结算sky-c0-r1的箭头格。",
+          "wokeMemory": null
+        }
+      ],
+      "activatedRuleIds": [
+        "R01",
+        "R02"
+      ],
+      "activatedMemoryIds": [
+        "die_placement_wakes_column_descent",
+        "air_defense_one_means_no_ship_effect"
+      ],
+      "finalState": {
+        "shipPositions": {
+          "ship-a": "sky-c0-r0"
+        },
+        "cityHp": 3,
+        "mothershipPosition": null,
+        "outcome": null,
+        "unplacedDiceState": "none"
+      },
+      "stopReason": "防空房把1点下降降为0；已知飞船不移动且不触发飞船效果，动作链结束。",
+      "uncertainties": []
+    },
+    {
+      "id": "mothership_drop_to_skull",
+      "actionTrace": [
+        {
+          "step": 1,
+          "action": "把灰色1点骰die-a放入普通基地格base-c0",
+          "actor": "player",
+          "stateChange": "die-a被放入第0列；实际下降量为1。"
+        },
+        {
+          "step": 2,
+          "action": "第0列飞船下降1格",
+          "actor": "ship-a",
+          "stateChange": "ship-a从sky-c0-r0下降到sky-c0-r1。"
+        },
+        {
+          "step": 3,
+          "action": "结算最终停留格的母舰下降",
+          "actor": "mothership",
+          "stateChange": "母舰从mothership-r0立即下降一行到mothership-r1；不结算右侧的获得1科技动作。"
+        },
+        {
+          "step": 4,
+          "action": "检查母舰新行",
+          "actor": "system",
+          "stateChange": "mothership-r1是骷髅行，玩家立即失败。"
+        }
+      ],
+      "attentionTrace": [
+        {
+          "order": 1,
+          "objectOrRegion": "die-a、base-c0与第0列",
+          "why": "确定该列飞船的实际下降量。",
+          "observation": "普通基地格无减值，ship-a应下降1格。",
+          "wokeMemory": "die_placement_wakes_column_descent"
+        },
+        {
+          "order": 2,
+          "objectOrRegion": "ship-a最终停留格sky-c0-r1",
+          "why": "只结算飞船移动后的最终停留格。",
+          "observation": "该格是母舰下降格。",
+          "wokeMemory": "movement_wakes_final_stop_only、mothership_space_wakes_drop"
+        },
+        {
+          "order": 3,
+          "objectOrRegion": "母舰从mothership-r0到mothership-r1",
+          "why": "母舰下降后立即检查新行是否为骷髅行。",
+          "observation": "新行是骷髅行；右侧获得1科技动作可见但不结算。",
+          "wokeMemory": "mothership_row_side_action_not_resolved"
+        },
+        {
+          "order": 4,
+          "objectOrRegion": "结局状态",
+          "why": "抵达骷髅行要求立即判负。",
+          "observation": "outcome为loss，停止后续推演。",
+          "wokeMemory": null
+        }
+      ],
+      "activatedRuleIds": [
+        "R01",
+        "R03",
+        "R04"
+      ],
+      "activatedMemoryIds": [
+        "die_placement_wakes_column_descent",
+        "movement_wakes_final_stop_only",
+        "mothership_space_wakes_drop",
+        "mothership_row_side_action_not_resolved"
+      ],
+      "finalState": {
+        "shipPositions": {
+          "ship-a": "sky-c0-r1"
+        },
+        "cityHp": 3,
+        "mothershipPosition": "mothership-r1",
+        "outcome": "loss",
+        "unplacedDiceState": "none"
+      },
+      "stopReason": "母舰抵达骷髅行，玩家立即失败。",
+      "uncertainties": []
+    },
+    {
+      "id": "explosion_has_no_dice_effect",
+      "actionTrace": [
+        {
+          "step": 1,
+          "action": "把灰色1点骰die-a放入普通基地格base-c0",
+          "actor": "player",
+          "stateChange": "die-a被放入第0列；实际下降量为1。"
+        },
+        {
+          "step": 2,
+          "action": "第0列飞船下降1格",
+          "actor": "ship-a",
+          "stateChange": "ship-a从sky-c0-r0下降到sky-c0-r1。"
+        },
+        {
+          "step": 3,
+          "action": "检查爆炸格的骰子阶段即时效果",
+          "actor": "system",
+          "stateChange": "sky-c0-r1在骰子阶段没有立即效果；状态不再改变。"
+        }
+      ],
+      "attentionTrace": [
+        {
+          "order": 1,
+          "objectOrRegion": "die-a、base-c0与第0列",
+          "why": "计算实际下降量。",
+          "observation": "普通基地格使ship-a下降1格。",
+          "wokeMemory": "die_placement_wakes_column_descent"
+        },
+        {
+          "order": 2,
+          "objectOrRegion": "ship-a最终停留格sky-c0-r1",
+          "why": "移动结束后只看最终停留格。",
+          "observation": "该格是爆炸格。",
+          "wokeMemory": "movement_wakes_final_stop_only、explosion_has_no_immediate_dice_phase_effect"
+        },
+        {
+          "order": 3,
+          "objectOrRegion": "当前骰子阶段的爆炸格",
+          "why": "确认规则是否给出即时后果。",
+          "observation": "没有即时效果，也没有可继续确定执行的动作。",
+          "wokeMemory": "stop_when_rule_has_no_immediate_effect"
+        }
+      ],
+      "activatedRuleIds": [
+        "R01",
+        "R03",
+        "R06"
+      ],
+      "activatedMemoryIds": [
+        "die_placement_wakes_column_descent",
+        "movement_wakes_final_stop_only",
+        "explosion_has_no_immediate_dice_phase_effect",
+        "stop_when_rule_has_no_immediate_effect"
+      ],
+      "finalState": {
+        "shipPositions": {
+          "ship-a": "sky-c0-r1"
+        },
+        "cityHp": 3,
+        "mothershipPosition": null,
+        "outcome": null,
+        "unplacedDiceState": "none"
+      },
+      "stopReason": "飞船最终停在爆炸格；骰子阶段已知无即时效果，按记忆边界停止。",
+      "uncertainties": []
+    },
+    {
+      "id": "white_die_random_boundary",
+      "actionTrace": [
+        {
+          "step": 1,
+          "action": "把白色1点骰die-a放入普通基地格base-c0",
+          "actor": "player",
+          "stateChange": "die-a被放入第0列；实际下降量为1，并唤醒尚未放置骰子的重投。"
+        },
+        {
+          "step": 2,
+          "action": "第0列飞船下降1格",
+          "actor": "ship-a",
+          "stateChange": "ship-a从sky-c0-r0下降到普通天空格sky-c0-r1。"
+        },
+        {
+          "step": 3,
+          "action": "检查ship-a的最终停留格",
+          "actor": "system",
+          "stateChange": "sky-c0-r1是普通天空格，没有被当前记忆唤醒的即时后续动作。"
+        },
+        {
+          "step": 4,
+          "action": "重新投掷所有尚未放置的骰子",
+          "actor": "system",
+          "stateChange": "die-b被重新投掷；原当前值5不再作为确定结果，新结果尚未知。"
+        }
+      ],
+      "attentionTrace": [
+        {
+          "order": 1,
+          "objectOrRegion": "die-a、base-c0与第0列",
+          "why": "确定飞船下降量并识别白骰。",
+          "observation": "ship-a下降1格；die-a为白色，因此之后必须关注尚未放置的骰子。",
+          "wokeMemory": "die_placement_wakes_column_descent、white_die_wakes_reroll_boundary"
+        },
+        {
+          "order": 2,
+          "objectOrRegion": "ship-a最终停留格sky-c0-r1",
+          "why": "完成下降后检查最终停留格。",
+          "observation": "该格是普通天空格，没有进一步即时效果。",
+          "wokeMemory": "movement_wakes_final_stop_only"
+        },
+        {
+          "order": 3,
+          "objectOrRegion": "尚未放置的骰子集合",
+          "why": "白骰放置会让所有尚未放置骰子重投。",
+          "observation": "集合中有die-b，其原当前值为5；die-b进入重投。",
+          "wokeMemory": "white_die_wakes_reroll_boundary"
+        },
+        {
+          "order": 4,
+          "objectOrRegion": "die-b尚未出现的重投结果",
+          "why": "检查能否继续确定性预想。",
+          "observation": "新点数尚未发生，不能继续确定模拟。",
+          "wokeMemory": "stop_before_white_die_reroll_result"
+        }
+      ],
+      "activatedRuleIds": [
+        "R01",
+        "R03",
+        "R08"
+      ],
+      "activatedMemoryIds": [
+        "die_placement_wakes_column_descent",
+        "movement_wakes_final_stop_only",
+        "white_die_wakes_reroll_boundary",
+        "stop_before_white_die_reroll_result"
+      ],
+      "finalState": {
+        "shipPositions": {
+          "ship-a": "sky-c0-r1"
+        },
+        "cityHp": 3,
+        "mothershipPosition": null,
+        "outcome": null,
+        "unplacedDiceState": "rerolled_result_unknown"
+      },
+      "stopReason": "白骰已使die-b重投，但随机的新结果尚未出现；在确定性边界处停止。",
+      "uncertainties": [
+        "die-b重投后的点数未知，因此不能推演它之后的放置与后果。"
+      ]
+    },
+    {
+      "id": "path_city_endpoint_explosion",
+      "actionTrace": [
+        {
+          "step": 1,
+          "action": "把灰色2点骰die-a放入普通基地格base-c0",
+          "actor": "player",
+          "stateChange": "die-a被放入第0列；实际下降量为2。"
+        },
+        {
+          "step": 2,
+          "action": "第0列飞船下降2格",
+          "actor": "ship-a",
+          "stateChange": "ship-a从sky-c0-r0经过sky-c0-r1，最终停在sky-c0-r2；经过的城市命中格不触发。"
+        },
+        {
+          "step": 3,
+          "action": "检查最终爆炸格的骰子阶段即时效果",
+          "actor": "system",
+          "stateChange": "sky-c0-r2在骰子阶段没有立即效果；城市生命保持3。"
+        }
+      ],
+      "attentionTrace": [
+        {
+          "order": 1,
+          "objectOrRegion": "die-a、base-c0与第0列",
+          "why": "计算整次下降的实际格数。",
+          "observation": "ship-a应完整下降2格。",
+          "wokeMemory": "die_placement_wakes_column_descent"
+        },
+        {
+          "order": 2,
+          "objectOrRegion": "ship-a的完整移动路径与最终位置",
+          "why": "区分可见的路径格和可结算的最终停留格。",
+          "observation": "sky-c0-r1只是经过的城市命中格，不触发；真正终点是sky-c0-r2。",
+          "wokeMemory": "passed_sky_spaces_do_not_trigger、movement_wakes_final_stop_only"
+        },
+        {
+          "order": 3,
+          "objectOrRegion": "最终停留格sky-c0-r2",
+          "why": "只结算最终停留格。",
+          "observation": "终点是爆炸格，在骰子阶段没有立即效果。",
+          "wokeMemory": "explosion_has_no_immediate_dice_phase_effect、stop_when_rule_has_no_immediate_effect"
+        }
+      ],
+      "activatedRuleIds": [
+        "R01",
+        "R03",
+        "R06"
+      ],
+      "activatedMemoryIds": [
+        "die_placement_wakes_column_descent",
+        "passed_sky_spaces_do_not_trigger",
+        "movement_wakes_final_stop_only",
+        "explosion_has_no_immediate_dice_phase_effect",
+        "stop_when_rule_has_no_immediate_effect"
+      ],
+      "finalState": {
+        "shipPositions": {
+          "ship-a": "sky-c0-r2"
+        },
+        "cityHp": 3,
+        "mothershipPosition": null,
+        "outcome": null,
+        "unplacedDiceState": "none"
+      },
+      "stopReason": "路径中的城市命中格不触发；最终爆炸格在骰子阶段无即时效果，动作链结束。",
+      "uncertainties": []
+    },
+    {
+      "id": "two_ships_split_consequences",
+      "actionTrace": [
+        {
+          "step": 1,
+          "action": "把灰色1点骰die-a放入普通基地格base-c0",
+          "actor": "player",
+          "stateChange": "die-a被放入第0列；实际下降量为1。"
+        },
+        {
+          "step": 2,
+          "action": "第0列全部飞船同时下降1格",
+          "actor": "ship-a、ship-b",
+          "stateChange": "ship-a从sky-c0-r0到sky-c0-r1；ship-b从sky-c0-r1到sky-c0-r2。"
+        },
+        {
+          "step": 3,
+          "action": "结算ship-a最终停留格的向右箭头",
+          "actor": "ship-a",
+          "stateChange": "ship-a从sky-c0-r1沿同一行移动到sky-c1-r1，并把该格作为新的最终停留格。"
+        },
+        {
+          "step": 4,
+          "action": "结算ship-a新最终停留格的城市命中",
+          "actor": "ship-a",
+          "stateChange": "城市受到1点伤害，生命从3降到2；ship-a返回mothership-waiting。"
+        },
+        {
+          "step": 5,
+          "action": "检查ship-b最终停留的爆炸格",
+          "actor": "system",
+          "stateChange": "ship-b留在sky-c0-r2；爆炸格在骰子阶段没有立即效果。"
+        }
+      ],
+      "attentionTrace": [
+        {
+          "order": 1,
+          "objectOrRegion": "die-a、base-c0与第0列的ship-a、ship-b",
+          "why": "放骰会让所选列全部飞船同时下降。",
+          "observation": "普通基地格无减值，两艘飞船都下降1格。",
+          "wokeMemory": "die_placement_wakes_column_descent"
+        },
+        {
+          "order": 2,
+          "objectOrRegion": "两艘飞船各自的最终停留格",
+          "why": "同时移动完成后逐一检查每艘飞船的终点。",
+          "observation": "ship-a终点sky-c0-r1是箭头格；ship-b终点sky-c0-r2是爆炸格。",
+          "wokeMemory": "movement_wakes_final_stop_only、arrow_space_wakes_new_final_stop、explosion_has_no_immediate_dice_phase_effect"
+        },
+        {
+          "order": 3,
+          "objectOrRegion": "ship-a的箭头目标sky-c1-r1",
+          "why": "箭头产生新的最终停留格，必须递归检查。",
+          "observation": "新最终格是城市命中格。",
+          "wokeMemory": "movement_wakes_final_stop_only、city_contact_wakes_damage_and_return"
+        },
+        {
+          "order": 4,
+          "objectOrRegion": "城市与ship-a",
+          "why": "结算城市命中后果。",
+          "observation": "城市生命降到2，ship-a返回mothership-waiting。",
+          "wokeMemory": null
+        },
+        {
+          "order": 5,
+          "objectOrRegion": "ship-b所在的sky-c0-r2",
+          "why": "确认爆炸格在当前骰子阶段是否还有即时动作。",
+          "observation": "没有即时效果；ship-b保持在该格。",
+          "wokeMemory": "stop_when_rule_has_no_immediate_effect"
+        }
+      ],
+      "activatedRuleIds": [
+        "R01",
+        "R03",
+        "R05",
+        "R06",
+        "R07"
+      ],
+      "activatedMemoryIds": [
+        "die_placement_wakes_column_descent",
+        "movement_wakes_final_stop_only",
+        "arrow_space_wakes_new_final_stop",
+        "city_contact_wakes_damage_and_return",
+        "explosion_has_no_immediate_dice_phase_effect",
+        "stop_when_rule_has_no_immediate_effect"
+      ],
+      "finalState": {
+        "shipPositions": {
+          "ship-a": "mothership-waiting",
+          "ship-b": "sky-c0-r2"
+        },
+        "cityHp": 2,
+        "mothershipPosition": null,
+        "outcome": null,
+        "unplacedDiceState": "none"
+      },
+      "stopReason": "两艘飞船的分支均已结算：ship-a经箭头命中城市并返回，ship-b停在骰子阶段无即时效果的爆炸格。",
+      "uncertainties": []
+    }
+  ]
+}

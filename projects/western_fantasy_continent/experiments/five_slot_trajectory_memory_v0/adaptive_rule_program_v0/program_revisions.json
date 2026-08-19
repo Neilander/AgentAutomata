@@ -1,0 +1,128 @@
+{
+  "schema": "adaptive_grounding_program_revisions_v0",
+  "note": "这些补丁由当前AI逐条读取冻结规则后生成；程序只允许受限操作并检查来源引用，不是独立盲测。",
+  "revisions": [
+    {
+      "revisionId": "V2-aa-reduction",
+      "sourceRuleId": "R02",
+      "sourceQuote": "如果骰子放在防空房间，飞船的有效下降距离在骰子点数基础上减少一格，最低为零。",
+      "description": "把全局有效距离N改为防空房减一且不低于零",
+      "operation": "replace_global_binding",
+      "name": "N",
+      "expression": {
+        "op": "if",
+        "condition": {
+          "op": "eq",
+          "args": [
+            {"path": "event.roomType"},
+            {"const": "aa"}
+          ]
+        },
+        "then": {
+          "op": "max",
+          "args": [
+            {"const": 0},
+            {
+              "op": "subtract",
+              "args": [
+                {"path": "event.die.value"},
+                {"const": 1}
+              ]
+            }
+          ]
+        },
+        "else": {"path": "event.die.value"}
+      }
+    },
+    {
+      "revisionId": "V3-frozen-exclusion",
+      "sourceRuleId": "R03",
+      "sourceQuote": "带有冻结状态的飞船不会因放置骰子而下降；同列的其他飞船照常移动。",
+      "description": "在既有同列筛选后追加冻结排除条件",
+      "operation": "and_target_predicate",
+      "predicate": {
+        "op": "not",
+        "args": [
+          {
+            "op": "contains",
+            "args": [
+              {"path": "candidate.traits"},
+              {"const": "frozen"}
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "revisionId": "V4-heavy-distance",
+      "sourceRuleId": "R04",
+      "sourceQuote": "带有重型状态的飞船只移动有效下降距离的一半，出现小数时向下取整。",
+      "description": "按每个目标的重型状态包装局部distance，而非改写全局N",
+      "operation": "replace_local_binding",
+      "name": "distance",
+      "expression": {
+        "op": "if",
+        "condition": {
+          "op": "contains",
+          "args": [
+            {"path": "candidate.traits"},
+            {"const": "heavy"}
+          ]
+        },
+        "then": {
+          "op": "floor_divide",
+          "args": [
+            {"var": "N"},
+            {"const": 2}
+          ]
+        },
+        "else": {"var": "N"}
+      }
+    },
+    {
+      "revisionId": "V5-boost-after-modifiers",
+      "sourceRuleId": "R05",
+      "sourceQuote": "带有加速状态的飞船在应用其他距离修正后，再额外向下移动一格。",
+      "description": "在当前distance外层追加加速一格，保留之前防空和重型修正",
+      "operation": "wrap_local_binding",
+      "name": "distance",
+      "template": {
+        "op": "add",
+        "args": [
+          {"previous": true},
+          {
+            "op": "if",
+            "condition": {
+              "op": "contains",
+              "args": [
+                {"path": "candidate.traits"},
+                {"const": "boosted"}
+              ]
+            },
+            "then": {"const": 1},
+            "else": {"const": 0}
+          }
+        ]
+      }
+    },
+    {
+      "revisionId": "V6-focus-frontmost-group",
+      "sourceRuleId": "R06",
+      "sourceQuote": "如果骰子放在聚焦房间，同列且能够移动的飞船中只有最靠近城市的飞船下降；多架飞船处在同一最前行时，它们一起下降。",
+      "description": "原语言只能逐个筛选；新增通用目标组归约，在聚焦房间保留row最大的全部并列目标",
+      "operation": "set_target_reducer",
+      "reducer": {
+        "when": {
+          "op": "eq",
+          "args": [
+            {"path": "event.roomType"},
+            {"const": "focus"}
+          ]
+        },
+        "kind": "max",
+        "key": {"path": "candidate.row"},
+        "keepTies": true
+      }
+    }
+  ]
+}

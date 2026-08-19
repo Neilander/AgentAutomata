@@ -1,0 +1,109 @@
+{
+  "schema": "ai_initial_attention_and_wakeup_model_v1",
+  "compiledBy": "Codex AI first-pass interpretation",
+  "frozenForEvaluation": true,
+  "sourceRules": [
+    "飞船只结算最终停留格，经过的天空格不触发。",
+    "飞船最终停在母舰下降格时，母舰立即下降一行。",
+    "飞船最终停在箭头格时，按箭头移动，再结算新的最终停留格。",
+    "爆炸格在骰子阶段没有立即效果。",
+    "飞船击中城市时，城市受到1点伤害，飞船返回等待区。",
+    "母舰抵达骷髅行时立即失败。"
+  ],
+  "attentionPresets": {
+    "directed_move": {
+      "attend": ["actor", "origin", "traversed_path", "endpoint", "features_on_attended_units"],
+      "salience": {
+        "actor": 1.0,
+        "endpoint": 1.0,
+        "endpoint_feature": 1.0,
+        "path_feature": 0.45,
+        "origin": 0.35
+      },
+      "consequenceEligible": ["endpoint_feature"],
+      "localChange": "目标特征从未被行动主体占据，变为被行动主体最终停留并接触"
+    },
+    "inspect": {
+      "attend": ["actor", "focus_feature"],
+      "salience": {"actor": 0.4, "focus_feature": 1.0},
+      "consequenceEligible": ["focus_feature"],
+      "localChange": "目标特征从尚未查看，变为被行动主体观察"
+    }
+  },
+  "retrieval": {
+    "objectWeight": 0.8,
+    "trendWeight": 0.2,
+    "minimumObjectScore": 0.7,
+    "minimumScore": 0.6,
+    "minimumMargin": 0.025,
+    "topK": 3
+  },
+  "memoryPresets": [
+    {
+      "id": "ship_lands_right_arrow",
+      "sourceRule": "飞船最终停在箭头格时，按箭头移动，再结算新的最终停留格。",
+      "targetExamples": ["向右箭头格", "指示单位向右横移的导航格", "画着右向尖头的天空地块"],
+      "triggerExamples": [
+        ["飞船尚未停在向右箭头格", "飞船最终落在向右箭头格并压住标记"],
+        ["右向导航格当前没有飞船", "下降的飞船占据了右向导航格"],
+        ["带右箭头的地块仍然空着", "外星载具移动后停在带右箭头的地块"]
+      ],
+      "requires": {"actorType": "ship", "relation": "endpoint_overlap"},
+      "emit": [
+        {"operator": "move", "actorRef": "$actor", "connectionKind": "sky_horizontal", "direction": "right", "distance": 1, "cause": "arrow"}
+      ]
+    },
+    {
+      "id": "ship_lands_mothership_down",
+      "sourceRule": "飞船最终停在母舰下降格时，母舰立即下降一行。",
+      "targetExamples": ["母舰下降格", "使母舰下降一行的信号格", "带有母舰下移图案的天空地块"],
+      "triggerExamples": [
+        ["飞船尚未进入母舰下降格", "飞船最终停在母舰下降格"],
+        ["母舰下移信号格上没有飞船", "下降的飞船压住了母舰下移信号格"]
+      ],
+      "requires": {"actorType": "ship", "relation": "endpoint_overlap"},
+      "emit": [
+        {"operator": "move", "actorRef": "mothership", "connectionKind": "mothership_down", "direction": "down", "distance": 1, "cause": "mothership_signal"}
+      ]
+    },
+    {
+      "id": "ship_hits_city",
+      "sourceRule": "飞船击中城市时，城市受到1点伤害，飞船返回等待区。",
+      "targetExamples": ["城市命中格", "天空区域下方的城市位置", "飞船会撞击城市的底部区域"],
+      "triggerExamples": [
+        ["飞船还没有到达城市", "飞船下降到底部并撞击城市"],
+        ["城市上方没有外星飞船", "外星飞船最终落到城市所在位置"]
+      ],
+      "requires": {"actorType": "ship", "relation": "endpoint_overlap"},
+      "emit": [
+        {"operator": "damage", "actorRef": "city", "amount": 1},
+        {"operator": "relocate", "actorRef": "$actor", "targetUnitId": "mothership-waiting"}
+      ]
+    },
+    {
+      "id": "ship_lands_explosion_no_immediate_effect",
+      "sourceRule": "爆炸格在骰子阶段没有立即效果。",
+      "targetExamples": ["爆炸格", "画着爆炸图案的天空地块", "骰子阶段不会立即结算的爆炸标记"],
+      "triggerExamples": [
+        ["爆炸格上没有飞船", "飞船最终停在爆炸格"],
+        ["爆炸图案地块仍然空着", "下降的外星飞船占据爆炸图案地块"]
+      ],
+      "requires": {"actorType": "ship", "relation": "endpoint_overlap", "stage": "dice"},
+      "emit": [],
+      "knownNoImmediateEffect": true
+    },
+    {
+      "id": "mothership_reaches_skull",
+      "sourceRule": "母舰抵达骷髅行时立即失败。",
+      "targetExamples": ["骷髅行", "带有骷髅图案的母舰轨道位置", "母舰抵达后会失败的终点行"],
+      "triggerExamples": [
+        ["母舰尚未抵达骷髅行", "母舰下降并最终抵达骷髅行"],
+        ["骷髅轨道位置上还没有母舰", "母舰移动后停在骷髅轨道位置"]
+      ],
+      "requires": {"actorType": "mothership", "relation": "endpoint_overlap"},
+      "emit": [
+        {"operator": "outcome", "outcome": "loss", "reason": "母舰抵达骷髅行"}
+      ]
+    }
+  ]
+}

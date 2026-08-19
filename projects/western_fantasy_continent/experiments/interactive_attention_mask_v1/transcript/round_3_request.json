@@ -1,0 +1,54 @@
+{
+  "schema": "masked_attention_request_v1",
+  "round": 3,
+  "commands": [
+    {
+      "caseId": "arrow_city",
+      "kind": "act",
+      "operation": "resolve_column_descent",
+      "target": "column-0",
+      "reason": "普通基地格、灰色1点骰及列内ship-a的位置均已揭示，现在按实际下降1执行该列下降。",
+      "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY：下降后应只关注ship-a的新最终停留格"
+    },
+    {
+      "caseId": "air_defense_zero",
+      "kind": "act",
+      "operation": "resolve_column_descent",
+      "target": "column-0",
+      "reason": "防空房、灰色1点骰及列内ship-a均已揭示；修正后实际下降为0，应结算为不移动且不触发落点效果。",
+      "expectedWakeup": "N01_ZERO_DESCENT_NO_LANDING与S01_ZERO_MOVE_STOP"
+    },
+    {
+      "caseId": "mothership_skull",
+      "kind": "act",
+      "operation": "resolve_column_descent",
+      "target": "column-0",
+      "reason": "普通基地格、灰色1点骰及列内ship-a的位置均已揭示，现在按实际下降1执行该列下降。",
+      "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY：下降后应只关注ship-a的新最终停留格"
+    },
+    {
+      "caseId": "path_not_endpoint",
+      "kind": "act",
+      "operation": "resolve_column_descent",
+      "target": "column-0",
+      "reason": "普通基地格、灰色2点骰及ship-a起点均已揭示，现在按实际下降2执行；路径经过格不触发。",
+      "expectedWakeup": "G02_DESCENT_TO_FINAL_CHECK：只检查ship-a下降后的最终停留格"
+    },
+    {
+      "caseId": "white_random_stop",
+      "kind": "act",
+      "operation": "resolve_column_descent",
+      "target": "column-0",
+      "reason": "普通基地格、白色1点骰及列内ship-a的位置均已揭示，现在先按实际下降1完成飞船移动，尚不提前重投。",
+      "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY；飞船链结束后才检查白骰重投条件"
+    },
+    {
+      "caseId": "two_ship_split",
+      "kind": "act",
+      "operation": "resolve_column_descent",
+      "target": "column-0",
+      "reason": "普通基地格、灰色1点骰以及ship-a和ship-b的位置均已揭示，现在按实际下降1同时移动该列两艘飞船。",
+      "expectedWakeup": "A02_RESOLVE_FINAL_LANDING_ONLY：下降后需分别关注两艘飞船各自的新最终停留格"
+    }
+  ]
+}

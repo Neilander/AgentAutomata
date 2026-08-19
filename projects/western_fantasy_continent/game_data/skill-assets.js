@@ -14,6 +14,7 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 285,
         "power": 46,
         "armor": 7,
+        "magicResist": 4,
         "range": 35,
         "icon": "fizzing-flask",
         "kit": {
@@ -30,6 +31,7 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 282,
         "power": 57,
         "armor": 7,
+        "magicResist": 4,
         "range": 12,
         "icon": "daggers",
         "kit": {
@@ -46,6 +48,7 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 285,
         "power": 45,
         "armor": 7,
+        "magicResist": 4,
         "range": 36,
         "icon": "guitar",
         "kit": {
@@ -62,6 +65,7 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 330,
         "power": 58,
         "armor": 7,
+        "magicResist": 4,
         "range": 12,
         "icon": "axe-swing",
         "kit": {
@@ -78,6 +82,7 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 350,
         "power": 34,
         "armor": 13,
+        "magicResist": 7,
         "range": 11,
         "icon": "checked-shield",
         "kit": {
@@ -94,6 +99,7 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 225,
         "power": 50,
         "armor": 4,
+        "magicResist": 2,
         "range": 38,
         "icon": "fireball",
         "kit": {
@@ -110,6 +116,7 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 285,
         "power": 30,
         "armor": 6,
+        "magicResist": 3,
         "range": 35,
         "icon": "checked-shield",
         "kit": {
@@ -126,6 +133,7 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 285,
         "power": 58,
         "armor": 7,
+        "magicResist": 4,
         "range": 38,
         "icon": "arrow-flights",
         "kit": {
@@ -142,6 +150,7 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 320,
         "power": 61,
         "armor": 8,
+        "magicResist": 4,
         "range": 34,
         "icon": "poison-bottle",
         "kit": {
@@ -158,6 +167,7 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 345,
         "power": 53,
         "armor": 11,
+        "magicResist": 6,
         "range": 13,
         "icon": "hammer-drop",
         "kit": {

@@ -20,8 +20,8 @@ const FORMATION_LABELS = [
 ];
 const AFFIX_DEFS = {
   might: { label: "武力", category: "major" }, fortitude: { label: "坚韧", category: "major" }, agility: { label: "敏捷", category: "major" },
-  arcana: { label: "奥术", category: "major" }, rhythm: { label: "节律", category: "major" }, resilience: { label: "韧性", category: "major" },
-  maxHp: { label: "生命", category: "basic" }, physicalPower: { label: "物攻", category: "basic" }, magicPower: { label: "法强", category: "basic" }, armor: { label: "护甲", category: "basic" },
+  arcana: { label: "奥术", category: "major" }, rhythm: { label: "节律", category: "major" }, resilience: { label: "韧性", category: "major" }, warding: { label: "灵御", category: "major" },
+  maxHp: { label: "生命", category: "basic" }, physicalPower: { label: "物攻", category: "basic" }, magicPower: { label: "法强", category: "basic" }, armor: { label: "护甲", category: "basic" }, magicResist: { label: "魔抗", category: "basic" },
   attackSpeed: { label: "攻速", category: "basic", percent: true }, skillHaste: { label: "技能急速", category: "basic", percent: true }, effectPower: { label: "效果强度", category: "specialist", percent: true },
   effectResist: { label: "效果抗性", category: "basic", percent: true }, receivedHealing: { label: "受治愈增幅", category: "specialist", percent: true }, healPower: { label: "治疗强度", category: "specialist" },
   shieldPower: { label: "护盾强度", category: "specialist" }, dotAmp: { label: "DOT 增幅", category: "specialist" }, controlPower: { label: "控制强度", category: "specialist" },
@@ -34,13 +34,13 @@ const AFFIX_DEFS = {
 };
 const SLOT_DATA = {
   weapon: { label: "武器", baseOptions: [["physicalPower"], ["magicPower"]], affixPool: ["might", "agility", "arcana", "attackSpeed", "critChance", "critDamage", "lifeSteal", "shieldBreak", "armorBreak", "fireAmp", "poisonAmp", "shadowAmp", "arcaneAmp", "executeDamage", "lowHpDamage", "markPower"] },
-  helm: { label: "头盔", baseStats: ["maxHp", "armor"], affixPool: ["arcana", "rhythm", "resilience", "skillHaste", "effectPower", "effectResist", "healPower", "controlPower", "critChance", "fireAmp", "poisonAmp", "arcaneAmp", "markPower", "stealthDuration", "cleanseEfficiency", "auraPower"] },
-  chest: { label: "胸甲", baseStats: ["maxHp", "armor"], affixPool: ["fortitude", "resilience", "effectResist", "receivedHealing", "shieldPower", "lowHpHealingReceived", "counterDamage", "cleanseEfficiency"] },
+  helm: { label: "头盔", baseStats: ["maxHp", "armor"], affixPool: ["arcana", "rhythm", "resilience", "warding", "magicResist", "skillHaste", "effectPower", "effectResist", "healPower", "controlPower", "critChance", "fireAmp", "poisonAmp", "arcaneAmp", "markPower", "stealthDuration", "cleanseEfficiency", "auraPower"] },
+  chest: { label: "胸甲", baseStats: ["maxHp", "armor"], affixPool: ["fortitude", "resilience", "warding", "magicResist", "effectResist", "receivedHealing", "shieldPower", "lowHpHealingReceived", "counterDamage", "cleanseEfficiency"] },
   gloves: { label: "护手", baseStats: ["physicalPower", "armor"], affixPool: ["might", "agility", "attackSpeed", "critChance", "critDamage", "lifeSteal", "shieldBreak", "armorBreak", "markPower", "executeDamage", "lowHpDamage", "counterDamage"] },
-  legs: { label: "腿甲", baseStats: ["maxHp", "armor"], affixPool: ["fortitude", "resilience", "agility", "effectResist", "receivedHealing", "skillHaste", "lowHpHealingReceived", "cleanseEfficiency", "counterDamage"] },
+  legs: { label: "腿甲", baseStats: ["maxHp", "armor"], affixPool: ["fortitude", "resilience", "warding", "agility", "magicResist", "effectResist", "receivedHealing", "skillHaste", "lowHpHealingReceived", "cleanseEfficiency", "counterDamage"] },
   boots: { label: "靴子", baseStats: ["maxHp", "armor"], affixPool: ["agility", "rhythm", "resilience", "attackSpeed", "skillHaste", "effectResist", "initiative", "controlPower", "stealthDuration", "auraPower"] },
-  ring: { label: "戒指", baseOptions: [["physicalPower"], ["magicPower"]], affixPool: ["might", "fortitude", "agility", "arcana", "rhythm", "resilience", "skillHaste", "effectPower", "effectResist", "dotAmp", "controlPower", "healPower", "shieldPower", "fireAmp", "poisonAmp", "shadowAmp", "markPower", "executeDamage", "lowHpDamage", "lowHpHealingReceived", "auraPower"] },
-  charm: { label: "护符", baseOptions: [["maxHp"], ["magicPower"]], affixPool: ["might", "fortitude", "agility", "arcana", "rhythm", "resilience", "effectPower", "receivedHealing", "dotAmp", "healPower", "shieldPower", "controlPower", "fireAmp", "poisonAmp", "shadowAmp", "arcaneAmp", "stealthDuration", "cleanseEfficiency", "auraPower", "counterDamage"] },
+  ring: { label: "戒指", baseOptions: [["physicalPower"], ["magicPower"]], affixPool: ["might", "fortitude", "agility", "arcana", "rhythm", "resilience", "warding", "magicResist", "skillHaste", "effectPower", "effectResist", "dotAmp", "controlPower", "healPower", "shieldPower", "fireAmp", "poisonAmp", "shadowAmp", "markPower", "executeDamage", "lowHpDamage", "lowHpHealingReceived", "auraPower"] },
+  charm: { label: "护符", baseOptions: [["maxHp"], ["magicPower"]], affixPool: ["might", "fortitude", "agility", "arcana", "rhythm", "resilience", "warding", "magicResist", "effectPower", "receivedHealing", "dotAmp", "healPower", "shieldPower", "controlPower", "fireAmp", "poisonAmp", "shadowAmp", "arcaneAmp", "stealthDuration", "cleanseEfficiency", "auraPower", "counterDamage"] },
 };
 const SLOT_LABELS = Object.fromEntries(Object.entries(SLOT_DATA).map(([id, slot]) => [id, slot.label]));
 const RARITY_DATA = [
@@ -773,7 +773,7 @@ function rollEquipmentLevel(state, zoneId, level) {
 
 function rollDirectStatValue(state, stat, equipmentLevel) {
   const variance = .92 + rand(state) * .16;
-  const scales = { physicalPower: .5, magicPower: .5, maxHp: 2.8, armor: .08 };
+  const scales = { physicalPower: .5, magicPower: .5, maxHp: 2.8, armor: .08, magicResist: .08 };
   return Math.max(1, Math.round(equipmentLevel * (scales[stat] || .12) * variance));
 }
 
@@ -804,7 +804,7 @@ function rollAffixes(state, slot, rarity, equipmentLevel) {
 }
 
 function itemScore(baseStats, affixes, rarity) {
-  const base = Object.entries(baseStats).reduce((sum, [stat, value]) => sum + value * ({ maxHp: .08, armor: 1.8, physicalPower: .7, magicPower: .7 }[stat] || .2), 0);
+  const base = Object.entries(baseStats).reduce((sum, [stat, value]) => sum + value * ({ maxHp: .08, armor: 1.8, magicResist: 1.8, physicalPower: .7, magicPower: .7 }[stat] || .2), 0);
   const affix = affixes.reduce((sum, row) => sum + row.value * (row.category === "major" ? 2.4 : row.percent ? .8 : 1), 0);
   return Math.max(1, Math.round((base + affix) * rarity.value));
 }
@@ -881,6 +881,7 @@ function roleSpec(role, name, slotIndex, scales = {}) {
     physicalPower: Math.round(magic ? power * 0.28 : power),
     magicPower: Math.round(magic ? power : power * 0.28),
     armor: Math.round((kit.armor || 8) * (scales.armor || 1)),
+    magicResist: Math.round((kit.magicResist || 0) * (scales.magicResist || scales.armor || 1)),
     range: kit.range || 14,
     small1: scales.small1 || kit.kit.small1,
     small2: scales.small2 || kit.kit.small2,
@@ -902,6 +903,7 @@ function heroCombatSpec(state, heroId, slotIndex) {
   spec.maxHp += Math.round(bundle.maxHpAdd || 0);
   spec.hp = spec.maxHp;
   spec.armor += Math.round(bundle.armorAdd || 0);
+  spec.magicResist += Math.round(bundle.magicResistAdd || 0);
   spec.attackSpeedMult = bundle.attackSpeedMult || 1;
   spec.skillHasteMult = bundle.skillHasteMult || 1;
   spec.effectPowerMult = bundle.effectPowerMult || 1;

@@ -75,6 +75,7 @@ function validateRoleKits() {
     assert(Number.isFinite(role.hp) && role.hp > 0, `${roleId}.hp must be positive`);
     assert(Number.isFinite(role.power) && role.power > 0, `${roleId}.power must be positive`);
     assert(Number.isFinite(role.armor), `${roleId}.armor must be numeric`);
+    assert(Number.isFinite(role.magicResist), `${roleId}.magicResist must be numeric`);
     assert(Number.isFinite(role.range) && role.range > 0, `${roleId}.range must be positive`);
     assert(role.kit?.small1 && role.kit?.small2 && role.kit?.passive && role.kit?.ultimate, `${roleId} kit must include 2 small skills, passive, ultimate`);
   }

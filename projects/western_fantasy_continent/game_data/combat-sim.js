@@ -328,6 +328,7 @@ class CombatSimulation {
         physicalPower: spec.physicalPower ?? spec.power ?? role.power,
         magicPower: spec.magicPower ?? spec.power ?? role.power,
         armor: spec.armor ?? role.armor,
+        magicResist: spec.magicResist ?? role.magicResist ?? 0,
         range: spec.range ?? role.range,
         attackSpeedMult: spec.attackSpeedMult ?? 1,
         skillHasteMult: spec.skillHasteMult ?? 1,
@@ -413,6 +414,8 @@ class CombatSimulation {
       }
       if (Number.isFinite(effect.armorAdd)) unit.armor += effect.armorAdd;
       if (Number.isFinite(effect.armorMult)) unit.armor = Math.round(unit.armor * effect.armorMult);
+      if (Number.isFinite(effect.magicResistAdd)) unit.magicResist += effect.magicResistAdd;
+      if (Number.isFinite(effect.magicResistMult)) unit.magicResist = Math.round(unit.magicResist * effect.magicResistMult);
       if (Number.isFinite(effect.rangeAdd)) unit.range += effect.rangeAdd;
       if (Number.isFinite(effect.attackSpeedMult)) unit.attackSpeedMult *= effect.attackSpeedMult;
       if (Number.isFinite(effect.skillHasteMult)) unit.skillHasteMult *= effect.skillHasteMult;
@@ -442,6 +445,7 @@ class CombatSimulation {
       unit.physicalPower = Math.round(unit.physicalPower * (0.95 + this.rng() * 0.1));
       unit.magicPower = Math.round(unit.magicPower * (0.95 + this.rng() * 0.1));
       unit.armor = Math.round(unit.armor * (0.96 + this.rng() * 0.08));
+      unit.magicResist = Math.round(unit.magicResist * (0.96 + this.rng() * 0.08));
       unit.skillCd.small1 += this.rng() * 1.2;
       unit.skillCd.small2 += this.rng() * 1.5;
       unit.skillCd.ultimate += this.rng() * 3;
@@ -824,7 +828,8 @@ class CombatSimulation {
     const context = { amount: value, type, label, visual, scaleWith };
     this.runtimeField?.beforeHit?.(source, target, context);
     value = context.amount;
-    const mitigated = Math.max(1, value - target.armor * (type === "physical" ? 0.72 : 0.38));
+    const directDefense = type === "physical" ? target.armor : target.magicResist;
+    const mitigated = Math.max(1, value - directDefense * 0.72);
     if (source?.hiddenTimer > 0 && this.isAlive(target)) {
       target.forcedTargetId = source.id;
       target.forcedTargetTimer = Math.max(target.forcedTargetTimer || 0, source.hiddenRetaliateTimer ?? 2.2);

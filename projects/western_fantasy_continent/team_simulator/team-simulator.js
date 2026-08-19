@@ -505,6 +505,7 @@ function makeUnits(side, heroes) {
     line: form[index].line,
     maxHp: hero.hp,
     hpNow: hero.hp,
+    magicResist: hero.magicResist ?? Math.round((hero.armor || 0) * 0.53),
     shield: 0,
     burn: { stacks: 0, time: 0, tick: 1 },
     poison: { stacks: 0, time: 0, tick: 1 },
@@ -711,7 +712,8 @@ function whirlwind(unit) {
 function damage(source, target, amount, type, visible = true) {
   if (!alive(target)) return;
   const hpBefore = target.hpNow;
-  let value = Math.max(1, amount - target.armor * (type === "physical" ? 0.7 : 0.35));
+  const directDefense = type === "physical" ? target.armor : target.magicResist;
+  let value = Math.max(1, amount - directDefense * 0.7);
   if (source?.passive === "破阵步" && target.line === "前排") value *= 1.06;
   if (source?.passive === "血怒引擎") value *= 1 + (1 - source.hpNow / source.maxHp) * (BERSERKER_PASSIVE.maxDamageAmp ?? 0.45);
   if (source?.passive === "破绽毒刃" && (target.hpNow / target.maxHp < 0.38 || target.poison.stacks > 0 || target.burn.stacks > 0)) value *= 1.06;

@@ -5,7 +5,7 @@ const BUILD_LAYER_MECHANIC_CURVES = (typeof require === "function" ? require("./
   mechanicCurveValue: (_id, value) => Number(value) || 0,
 };
 
-const ATTR_ORDER = ["might", "fortitude", "agility", "arcana", "rhythm", "resilience"];
+const ATTR_ORDER = ["might", "fortitude", "agility", "arcana", "rhythm", "resilience", "warding"];
 
 const ATTRS = {
   might: "武力",
@@ -14,6 +14,7 @@ const ATTRS = {
   arcana: "奥术",
   rhythm: "节律",
   resilience: "韧性",
+  warding: "灵御",
 };
 
 const ROLE_ATTRS = {
@@ -36,6 +37,7 @@ const ATTRIBUTE_STAT_WEIGHTS = {
   arcana: { magicPower: 2.65, skillHaste: 0.006 },
   rhythm: { skillHaste: 0.02, effectPower: 0.04 },
   resilience: { armor: 0.5, effectResist: 0.012 },
+  warding: { magicResist: 0.5, hp: 3 },
 };
 
 function createModifierBundle(source = "unknown") {
@@ -45,6 +47,7 @@ function createModifierBundle(source = "unknown") {
     physicalPowerAdd: 0,
     magicPowerAdd: 0,
     armorAdd: 0,
+    magicResistAdd: 0,
     rangeAdd: 0,
     attackSpeedMult: 1,
     skillHasteMult: 1,
@@ -113,6 +116,7 @@ function addAttributeYield(bundle, attr, yieldValue) {
   bundle.physicalPowerAdd += (row.physicalPower || 0) * yieldValue;
   bundle.magicPowerAdd += (row.magicPower || 0) * yieldValue;
   bundle.armorAdd += (row.armor || 0) * yieldValue;
+  bundle.magicResistAdd += (row.magicResist || 0) * yieldValue;
   bundle.attackSpeedMult *= 1 + (row.attackSpeed || 0) * yieldValue;
   bundle.skillHasteMult *= 1 + (row.skillHaste || 0) * yieldValue;
   bundle.effectPowerMult *= 1 + (row.effectPower || 0) * yieldValue;
@@ -137,6 +141,9 @@ function applyStatValue(bundle, stat, value, source = "stat") {
     case "defense":
     case "armor":
       bundle.armorAdd += value * 0.8;
+      break;
+    case "magicResist":
+      bundle.magicResistAdd += value * 0.8;
       break;
     case "range":
       bundle.rangeAdd += value;
@@ -249,6 +256,7 @@ function mergeModifierBundles(...bundles) {
     merged.physicalPowerAdd += bundle.physicalPowerAdd || 0;
     merged.magicPowerAdd += bundle.magicPowerAdd || 0;
     merged.armorAdd += bundle.armorAdd || 0;
+    merged.magicResistAdd += bundle.magicResistAdd || 0;
     merged.rangeAdd += bundle.rangeAdd || 0;
     merged.attackSpeedMult *= bundle.attackSpeedMult || 1;
     merged.skillHasteMult *= bundle.skillHasteMult || 1;
@@ -283,6 +291,7 @@ function applyCombatModifiers(baseSpec, bundle) {
   const basePhysical = next.physicalPower ?? basePower;
   const baseMagic = next.magicPower ?? basePower;
   const baseArmor = next.armor ?? roleBase.armor ?? 0;
+  const baseMagicResist = next.magicResist ?? roleBase.magicResist ?? 0;
 
   next.maxHp = Math.max(1, Math.round(baseHp + (bundle.maxHpAdd || 0)));
   next.hp = next.maxHp;
@@ -290,6 +299,7 @@ function applyCombatModifiers(baseSpec, bundle) {
   next.magicPower = round(baseMagic + (bundle.magicPowerAdd || 0), 2);
   next.power = Math.round(Math.max(next.power || basePower, next.physicalPower, next.magicPower));
   next.armor = round(baseArmor + (bundle.armorAdd || 0), 2);
+  next.magicResist = round(baseMagicResist + (bundle.magicResistAdd || 0), 2);
   next.range = round((next.range ?? roleBase.range ?? 0) + (bundle.rangeAdd || 0), 2);
   next.attackSpeedMult = round((next.attackSpeedMult || 1) * (bundle.attackSpeedMult || 1), 3);
   next.skillHasteMult = round((next.skillHasteMult || 1) * (bundle.skillHasteMult || 1), 3);
@@ -325,6 +335,7 @@ function finalizeBundle(bundle) {
   bundle.physicalPowerAdd = round(bundle.physicalPowerAdd, 3);
   bundle.magicPowerAdd = round(bundle.magicPowerAdd, 3);
   bundle.armorAdd = round(bundle.armorAdd, 3);
+  bundle.magicResistAdd = round(bundle.magicResistAdd, 3);
   bundle.rangeAdd = round(bundle.rangeAdd, 3);
   bundle.attackSpeedMult = round(clamp(bundle.attackSpeedMult, 0.2, 3), 4);
   bundle.skillHasteMult = round(clamp(bundle.skillHasteMult, 0.2, 3), 4);

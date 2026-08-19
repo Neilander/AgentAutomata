@@ -349,7 +349,7 @@ function registerGearDrops(state, count) {
 }
 
 function rollDirectStatValue(state, stat, equipmentLevel) {
-  const scales = { physicalPower: .5, magicPower: .5, maxHp: 2.8, armor: .08 };
+  const scales = { physicalPower: .5, magicPower: .5, maxHp: 2.8, armor: .08, magicResist: .08 };
   return Math.max(1, Math.round(equipmentLevel * (scales[stat] || .12) * (.92 + rand(state) * .16)));
 }
 
@@ -396,7 +396,7 @@ function roleSpec(role, name, slotIndex, scales = {}) {
   return {
     role, name, roleName: kit.role || role,
     hp: Math.round((kit.hp || 300) * (scales.hp || 1)), maxHp: Math.round((kit.hp || 300) * (scales.hp || 1)), power,
-    physicalPower: Math.round(magic ? power * .28 : power), magicPower: Math.round(magic ? power : power * .28), armor: Math.round((kit.armor || 8) * (scales.armor || 1)),
+    physicalPower: Math.round(magic ? power * .28 : power), magicPower: Math.round(magic ? power : power * .28), armor: Math.round((kit.armor || 8) * (scales.armor || 1)), magicResist: Math.round((kit.magicResist || 0) * (scales.magicResist || scales.armor || 1)),
     range: kit.range || 14, small1: scales.small1 || kit.kit.small1, small2: scales.small2 || kit.kit.small2, passive: scales.passive || kit.kit.passive, ultimate: scales.ultimate || kit.kit.ultimate,
     slotIndex, unitKind: scales.unitKind || "",
   };
@@ -415,7 +415,7 @@ function applyEquipmentToCombatSpec(state, targetId, spec) {
   const bundle = BUILD_LAYERS.buildEquipmentModifierBundle(items);
   spec.maxHp += Math.round(bundle.maxHpAdd || 0); spec.hp = spec.maxHp;
   spec.physicalPower += Math.round(bundle.physicalPowerAdd || 0); spec.magicPower += Math.round(bundle.magicPowerAdd || 0); spec.power = Math.max(spec.physicalPower, spec.magicPower);
-  spec.armor += Math.round(bundle.armorAdd || 0); spec.attackSpeedMult = bundle.attackSpeedMult || 1; spec.skillHasteMult = bundle.skillHasteMult || 1;
+  spec.armor += Math.round(bundle.armorAdd || 0); spec.magicResist += Math.round(bundle.magicResistAdd || 0); spec.attackSpeedMult = bundle.attackSpeedMult || 1; spec.skillHasteMult = bundle.skillHasteMult || 1;
   spec.effectPowerMult = bundle.effectPowerMult || 1; spec.effectResistPct = Math.min(.65, bundle.effectResistPct || 0); spec.receivedHealingMult = bundle.receivedHealingMult || 1;
   spec.mechanicModifiers = clone(bundle.mechanicModifiers || {});
   return spec;
@@ -1179,7 +1179,7 @@ function skillNumericDetails(key, definition) {
 function combatPowerVisible(spec) {
   const mainPower = Math.max(Number(spec.physicalPower || 0), Number(spec.magicPower || 0));
   const tempoBonus = Math.max(0, Number(spec.attackSpeedMult || 1) - 1) + Math.max(0, Number(spec.skillHasteMult || 1) - 1);
-  return Math.max(1, Math.round(Number(spec.maxHp || 0) + mainPower * 5 + Number(spec.armor || 0) * 10 + tempoBonus * 200));
+  return Math.max(1, Math.round(Number(spec.maxHp || 0) + mainPower * 5 + Number(spec.armor || 0) * 10 + Number(spec.magicResist || 0) * 10 + tempoBonus * 200));
 }
 
 function combatProfileVisible(spec) {
@@ -1191,6 +1191,7 @@ function combatProfileVisible(spec) {
       physicalPower: spec.physicalPower,
       magicPower: spec.magicPower,
       armor: spec.armor,
+      magicResist: spec.magicResist,
       attackSpeedPct: Math.round(((spec.attackSpeedMult || 1) - 1) * 100),
       skillHastePct: Math.round(((spec.skillHasteMult || 1) - 1) * 100),
     },

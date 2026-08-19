@@ -30,6 +30,10 @@
 
 [`reports/2026-08-19_1444_gameplay-session-handoff.md`](reports/2026-08-19_1444_gameplay-session-handoff.md)
 
+当前最新一级属性“魔抗”、七大属性“灵御”与物理/法术直伤分离：
+
+[`reports/2026-08-19_1729_magic-resistance-and-warding-attribute.md`](reports/2026-08-19_1729_magic-resistance-and-warding-attribute.md)
+
 当前玩家认知、Decision 与 MindToy 跨 Session 研究接力总览：
 
 [`../projects/western_fantasy_continent/RESEARCH_HANDOFF_2026-08-19.md`](../projects/western_fantasy_continent/RESEARCH_HANDOFF_2026-08-19.md)

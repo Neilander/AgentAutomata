@@ -364,7 +364,7 @@ const GAME_SKILL_DATA = (() => {
         fantasy: "普攻狂暴",
         arenaFantasy: roleKits.berserker.fantasy,
         icon: roleKits.berserker.icon,
-        stats: { hp: roleKits.berserker.hp, power: roleKits.berserker.power, armor: roleKits.berserker.armor, range: roleKits.berserker.range },
+        stats: { hp: roleKits.berserker.hp, power: roleKits.berserker.power, armor: roleKits.berserker.armor, magicResist: roleKits.berserker.magicResist, range: roleKits.berserker.range },
         kit: { small: [roleKits.berserker.kit.small1, roleKits.berserker.kit.small2], passive: roleKits.berserker.kit.passive, ultimate: roleKits.berserker.kit.ultimate },
       },
     },

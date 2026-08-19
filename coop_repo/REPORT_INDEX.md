@@ -4,6 +4,7 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-08-19
 
+- `2026-08-19_1729_magic-resistance-and-warding-attribute.md`: 新增一级属性魔抗与大属性灵御（主魔抗、副生命）；权威共享战斗分离物理/法术直伤防线，DOT继续走效果抗性，灰谷面板和装备掉落同步接入，专项及套装/灰谷回归通过。
 - `2026-08-19_1444_gameplay-session-handoff.md`: 汇总《我的超能力是无限刷装》本次长 Session 的灰谷村第一章、资源与刷装循环、编队 UI、共享战斗、七套职业套装、测试结论和后续风险；明确区分当前 main、历史十五日 worktree 与玩家认知研究线。
 - `2026-08-19_1430_research-session-handoff.md`: 汇总玩家认知、Decision、五槽轨迹、注意力、规则实例化与MindToy主线；记录当前rollout约268MB的结构占比，并固定下一步为隔离Agent盲生成增量补丁。
 - `2026-08-19_1216_guardian-echo-long-battle-matrix.md`: 护佑回响强化为50%触发、18半径、70%复制量；共享战斗216场长战矩阵表明其是局部群体续航，密集/保核/分散单奶平均寿命分别+35.39%/+33.45%/+21.99%，并发现20v20多治疗者重叠放大风险。

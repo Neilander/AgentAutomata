@@ -134,6 +134,7 @@ function buildToCombatBonus(build, archetypeId) {
     physicalPowerAdd: 0,
     magicPowerAdd: 0,
     armorAdd: 0,
+    magicResistAdd: 0,
     attackSpeedMult: 1,
     skillHasteMult: 1,
     effectPowerMult: 1,
@@ -154,6 +155,7 @@ function buildToCombatBonus(build, archetypeId) {
   bonus.physicalPowerAdd = round(bonus.physicalPowerAdd);
   bonus.magicPowerAdd = round(bonus.magicPowerAdd);
   bonus.armorAdd = round(bonus.armorAdd);
+  bonus.magicResistAdd = round(bonus.magicResistAdd);
   bonus.attackSpeedMult = round(clamp(bonus.attackSpeedMult, 0.75, 1.55));
   bonus.skillHasteMult = round(clamp(bonus.skillHasteMult, 0.75, 1.55));
   bonus.effectPowerMult = round(clamp(bonus.effectPowerMult, 0.8, 1.5));
@@ -219,6 +221,7 @@ function applyStatBonus(bonus, stat, value) {
   else if (stat === "attack") bonus.physicalPowerAdd += value;
   else if (stat === "magicPower") bonus.magicPowerAdd += value;
   else if (stat === "defense") bonus.armorAdd += value * 0.8;
+  else if (stat === "magicResist") bonus.magicResistAdd += value * 0.8;
   else if (stat === "attackSpeed") bonus.attackSpeedMult *= 1 + value * 0.012;
   else if (stat === "skillHaste") bonus.skillHasteMult *= 1 + value * 0.012;
   else if (stat === "effectPower") bonus.effectPowerMult *= 1 + value * 0.012;
@@ -254,6 +257,10 @@ function applyAffixBonus(bonus, affix, archetypeId) {
       bonus.armorAdd += value * 0.7;
       bonus.effectResistPct += value * 0.006;
       break;
+    case "warding":
+      bonus.magicResistAdd += value * 0.7;
+      bonus.maxHpAdd += value * 4;
+      break;
     case "attack":
       bonus.physicalPowerAdd += value * 1.35;
       break;
@@ -265,6 +272,9 @@ function applyAffixBonus(bonus, affix, archetypeId) {
       break;
     case "defense":
       bonus.armorAdd += value * 0.9;
+      break;
+    case "magicResist":
+      bonus.magicResistAdd += value * 0.9;
       break;
     case "attackSpeed":
       bonus.attackSpeedMult *= 1 + value * 0.014;
@@ -400,7 +410,7 @@ function renderReport(report) {
     lines.push("");
     lines.push(`- 翻盘对手：${row.flippedWins.join(", ") || "无"}`);
     lines.push(`- 回退对手：${row.flippedLosses.join(", ") || "无"}`);
-    lines.push(`- 装备 bonus：HP +${row.equipmentBonus.maxHpAdd}, 物攻 +${row.equipmentBonus.physicalPowerAdd}, 法强 +${row.equipmentBonus.magicPowerAdd}, 护甲 +${row.equipmentBonus.armorAdd}, 攻速 x${row.equipmentBonus.attackSpeedMult}, 技能急速 x${row.equipmentBonus.skillHasteMult}, 效果 x${row.equipmentBonus.effectPowerMult}, 受治愈 x${row.equipmentBonus.receivedHealingMult}`);
+    lines.push(`- 装备 bonus：HP +${row.equipmentBonus.maxHpAdd}, 物攻 +${row.equipmentBonus.physicalPowerAdd}, 法强 +${row.equipmentBonus.magicPowerAdd}, 护甲 +${row.equipmentBonus.armorAdd}, 魔抗 +${row.equipmentBonus.magicResistAdd}, 攻速 x${row.equipmentBonus.attackSpeedMult}, 技能急速 x${row.equipmentBonus.skillHasteMult}, 效果 x${row.equipmentBonus.effectPowerMult}, 受治愈 x${row.equipmentBonus.receivedHealingMult}`);
     lines.push("");
   }
   lines.push("## 局限");

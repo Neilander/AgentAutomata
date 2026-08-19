@@ -6,7 +6,7 @@ const BUILD_LAYERS = require("./build-layers");
 
 const OUT_FILE = path.join(__dirname, "..", "design", "attribute-build-route-simulation-v2.md");
 const SEEDS = 8;
-const ATTR_ORDER = ["might", "fortitude", "agility", "arcana", "rhythm", "resilience"];
+const ATTR_ORDER = ["might", "fortitude", "agility", "arcana", "rhythm", "resilience", "warding"];
 
 const ATTRS = {
   might: "武力",
@@ -15,6 +15,7 @@ const ATTRS = {
   arcana: "奥术",
   rhythm: "节律",
   resilience: "韧性",
+  warding: "灵御",
 };
 
 const ROLE_ATTRS = {
@@ -65,6 +66,7 @@ const ATTR_BONUS = {
   arcana: { magicPower: 2.65, skillHaste: 0.006 },
   rhythm: { skillHaste: 0.02, effectPower: 0.04 },
   resilience: { armor: 0.5, effectResist: 0.012 },
+  warding: { magicResist: 0.5, hp: 3 },
 };
 
 function run() {
@@ -88,7 +90,7 @@ function analyzeRole(role, roles) {
   if (viable.length > 5) issues.push("有效路线过多，路线区分可能不明显");
   if (routes.some((route) => route.kind === "wrong" && route.rank <= 2 && route.winRate >= 0.45)) issues.push("红队错属性路线进入前二");
   if (best.kind === "survival" && !["knight", "priest"].includes(role)) issues.push("纯生存路线成为最优，可能压制职业幻想");
-  if (best.winRate - routes[routes.length - 1].winRate < 0.18) issues.push("十种路线差距过小");
+  if (best.winRate - routes[routes.length - 1].winRate < 0.18) issues.push("各路线差距过小");
   return { role, routes, viable, niches, issues };
 }
 
@@ -134,9 +136,10 @@ function buildRoutes(role) {
     route("main3_secondary7", "3主7副", { [main]: 3, [secondary]: 7 }, "expected"),
     route("pure_fortitude", "10坚韧", { fortitude: 10 }, "survival"),
     route("pure_resilience", "10韧性", { resilience: 10 }, "survival"),
+    route("pure_warding", "10灵御", { warding: 10 }, "survival"),
     route("pure_speed", `10${ATTRS[speed]}`, { [speed]: 10 }, "speed"),
     route("wrong_output", `10${ATTRS[wrong]}`, { [wrong]: 10 }, "wrong"),
-    route("spread", "全分散", { might: 2, fortitude: 2, agility: 2, arcana: 2, rhythm: 1, resilience: 1 }, "redteam"),
+    route("spread", "全分散", { might: 2, fortitude: 2, agility: 2, arcana: 1, rhythm: 1, resilience: 1, warding: 1 }, "redteam"),
   ];
   const seen = new Set();
   const unique = [];
@@ -175,6 +178,7 @@ function unitSpec(role, points, routeLabel) {
     magicPower: round(base.power + bonus.magicPower, 2),
     attackType: MAGIC_ROLES.has(role) ? "arcane" : "physical",
     armor: round(base.armor + bonus.armor, 2),
+    magicResist: round(base.magicResist + bonus.magicResist, 2),
     range: base.range,
     attackSpeedMult: round(1 + bonus.attackSpeed, 3),
     skillHasteMult: round(1 + bonus.skillHaste, 3),
@@ -191,6 +195,7 @@ function buildBonus(points) {
     physicalPower: bundle.physicalPowerAdd,
     magicPower: bundle.magicPowerAdd,
     armor: bundle.armorAdd,
+    magicResist: bundle.magicResistAdd,
     attackSpeed: bundle.attackSpeedMult - 1,
     skillHaste: bundle.skillHasteMult - 1,
     effectPower: bundle.effectPowerMult - 1,
@@ -211,7 +216,7 @@ function renderReport(rows) {
   lines.push("");
   lines.push("## 测试方法");
   lines.push("");
-  lines.push("- 每个职业生成最多 10 种 10 点加点路线：主属性、副属性、主副混点、纯生存、纯速度、错属性红队、全分散。");
+  lines.push("- 每个职业生成最多 11 种 10 点加点路线：主属性、副属性、主副混点、纯生存、纯速度、错属性红队、全分散。");
   lines.push("- 对手也不是裸数值，而是对应职业的 `7主/3副` 标准路线。");
   lines.push("- 每条路线打所有职业的 1v1，每个对局跑 8 个固定 seed。");
   lines.push("- 有效路线定义：平均胜率不低于 35%，且距离本职业最佳路线不超过 12 个百分点。");
@@ -226,8 +231,9 @@ function renderReport(rows) {
   lines.push("| 奥术 | 每点 `magicPower +2.65`，`skillHaste +0.6%` |");
   lines.push("| 节律 | 每点 `skillHaste +2.0%`，`effectPower +4%` |");
   lines.push("| 韧性 | 每点 `armor +0.5`，`effectResist +1.2%` |");
+  lines.push("| 灵御 | 每点 `magicResist +0.5`，`hp +3` |");
   lines.push("");
-  lines.push("说明：当前正式战斗仍没有完整的物理/法术分离、DOT 增幅、控制强度公式。本次只给模拟器增加了默认不生效的测试字段，用来近似攻速、急速、效果强度、效果抗性。");
+  lines.push("说明：当前正式战斗已将物理直伤和法术直伤分别交给护甲、魔抗减免；DOT 仍由效果抗性处理。本次其余测试字段继续近似攻速、急速、效果强度与效果抗性。");
   lines.push("");
   lines.push("## 总览");
   lines.push("");

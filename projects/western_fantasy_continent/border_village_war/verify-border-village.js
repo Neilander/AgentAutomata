@@ -71,7 +71,7 @@ function verifyIntroAndInformationBoundary() {
   assert(current.actions.some((row) => row.kind === "combat" && row.label.includes("占领后解锁1个建设位")), "Known raid does not advertise territorial reward");
   assert(current.actions.some((row) => row.kind === "combat" && row.label.includes("实战训练")), "Training battle is not visible");
   assert(!JSON.stringify(current).includes("精钢") && !JSON.stringify(current).includes("铁料"), "Removed material resources remain player-visible");
-  assert(current.party.heroes.every((hero) => hero.skills.length === 4 && Number.isFinite(hero.stats.maxHp) && Number.isFinite(hero.stats.armor)), "Equipment UI lacks public combat skills or current numerical stats");
+  assert(current.party.heroes.every((hero) => hero.skills.length === 4 && Number.isFinite(hero.stats.maxHp) && Number.isFinite(hero.stats.armor) && Number.isFinite(hero.stats.magicResist)), "Equipment UI lacks public combat skills or current numerical stats");
   assert.equal(current.party.characterTargets.length, current.party.equipmentTargets.length + current.war.untrainedUnits, "Militia are missing from the browsable character list");
   assert.equal(current.party.militiaUnits.length, current.war.untrainedUnits, "Militia character records do not match the current untrained-unit count");
   assert(current.party.militiaUnits.every((unit) => unit.kind === "militia" && unit.equipmentLocked && unit.equipment.length === 8 && unit.equipment.every((slot) => slot.locked && !slot.item)), "Militia equipment slots are not visibly and structurally locked");

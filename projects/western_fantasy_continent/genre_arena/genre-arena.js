@@ -498,7 +498,7 @@ function makeTeam(side, specs) {
     return {
       id: state.nextId++, side, index, ...spec,
       name: role.name, roleName: role.role, maxHp: role.hp, hp: role.hp, power: role.power,
-      armor: role.armor, range: role.range, homeX: slot.x, homeY: slot.y, line: slot.line, x: slot.x, y: slot.y,
+      armor: role.armor, magicResist: role.magicResist ?? 0, range: role.range, homeX: slot.x, homeY: slot.y, line: slot.line, x: slot.x, y: slot.y,
       attackCd: 0.6 + index * 0.08,
       skillCd: {
         small1: openingCooldown(spec.small1, 1 + index * 0.35),
@@ -686,7 +686,8 @@ function hit(source, target, amount, type, label, visual = true) {
     hpRatio,
   }) || 1;
   if (target.guardTimer > 0) value *= 0.72;
-  const mitigated = Math.max(1, value - target.armor * (type === "physical" ? 0.72 : 0.38));
+  const directDefense = type === "physical" ? target.armor : target.magicResist;
+  const mitigated = Math.max(1, value - directDefense * 0.72);
   takeDamage(source, target, mitigated, type, visual, label);
   if (visual) log(`${source.name} ${label} ${target.name}。`);
 }

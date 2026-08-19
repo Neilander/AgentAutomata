@@ -36,11 +36,13 @@ const AFFIXES = [
   major("arcana", "奥术", ["head", "rightHand", "leftHand", "twoHand", "trinket"], { output: 0.9, mechanic: 0.35 }),
   major("rhythm", "节律", ["head", "boots", "leftHand", "twoHand", "trinket"], { tempo: 1.15, mechanic: 0.25 }),
   major("resilience", "韧性", ["head", "chest", "legs", "leftHand", "boots", "trinket"], { survival: 0.9, mechanic: 0.35 }),
+  major("warding", "灵御", ["head", "chest", "legs", "leftHand", "trinket"], { survival: 1.15 }),
 
   basic("attack", "攻击", ["rightHand", "twoHand", "gloves"], { output: 1 }),
   basic("magicPower", "法强", ["rightHand", "twoHand", "head", "leftHand"], { output: 0.85, mechanic: 0.2 }),
   basic("hp", "生命", ["chest", "legs", "leftHand", "head"], { survival: 1 }),
   basic("defense", "防御", ["chest", "legs", "leftHand"], { survival: 1 }),
+  basic("magicResist", "魔抗", ["head", "chest", "legs", "leftHand", "trinket"], { survival: 1 }),
   basic("attackSpeed", "攻速", ["gloves", "boots", "rightHand"], { tempo: 0.75, output: 0.45 }, ["multiplicative"]),
   basic("skillHaste", "技能急速", ["head", "boots", "leftHand", "trinket"], { tempo: 1 }, ["multiplicative"]),
   basic("effectResist", "效果抗性", ["head", "chest", "legs", "boots", "leftHand"], { survival: 0.55, mechanic: 0.45 }),
@@ -220,7 +222,7 @@ const ARCHETYPES = {
     },
     required: ["defense", "shieldPower", "counterDamage"],
     requiredGroups: [
-      group("承伤基础", ["defense", "fortitude", "resilience"]),
+      group("承伤基础", ["defense", "magicResist", "fortitude", "resilience", "warding"]),
       group("护盾承载", ["shieldPower", "sustainFlow"]),
       group("反击兑现", ["counterDamage", "sustainFlow"]),
     ],

@@ -29,7 +29,7 @@
   const RARITY_ORDER = { "炼狱": 8, "黑金": 7, "永恒": 6, "神话": 5, "传说": 4, "史诗": 3, "稀有": 2, "普通": 1 };
   const SLOT_ICONS = { "武器": "⚔", "头盔": "⌃", "胸甲": "⬡", "护手": "✦", "腿甲": "▥", "靴子": "⌄", "戒指": "○", "护符": "◇" };
   const RESOURCE_LABELS = { gold: "金币", food: "粮食", population: "实际人口", populationCap: "人口上限" };
-  const STAT_LABELS = { physicalPower: "物理威力", magicPower: "魔法威力", maxHp: "生命", armor: "护甲", attackSpeedPct: "攻击速度", skillHastePct: "技能急速" };
+  const STAT_LABELS = { physicalPower: "物理威力", magicPower: "魔法威力", maxHp: "生命", armor: "护甲", magicResist: "魔抗", attackSpeedPct: "攻击速度", skillHastePct: "技能急速" };
   const PLOT_POSITIONS = [[430, 520], [295, 650], [570, 690], [835, 680], [1060, 560], [1020, 405], [865, 300]];
   const RAID_POSITIONS = { foragers: [245, 240], beastPen: [620, 125], shaman: [1100, 225] };
   const CHALLENGE_POSITION = [1240, 690];

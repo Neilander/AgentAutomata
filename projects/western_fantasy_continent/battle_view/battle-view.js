@@ -790,6 +790,7 @@
         hp: Math.round(spec.maxHp || spec.hp || stats.hp || kit.hp || 300),
         power: Math.round(spec.power ?? stats.power ?? kit.power ?? 45),
         armor: Math.round(spec.armor ?? stats.armor ?? kit.armor ?? 8),
+        magicResist: Math.round(spec.magicResist ?? stats.magicResist ?? kit.magicResist ?? 0),
         range: spec.range ?? stats.range ?? kit.range ?? 12,
         smallKeys: [
           spec.smallKeys?.[0] || spec.small1 || kit.kit?.small1,
@@ -956,7 +957,8 @@
     damage(source, target, amount, type, visible = true) {
       if (!this.alive(target)) return;
       const hpBefore = target.hpNow;
-      let value = Math.max(1, amount - target.armor * (type === "physical" ? 0.7 : 0.35));
+      const directDefense = type === "physical" ? target.armor : target.magicResist;
+      let value = Math.max(1, amount - directDefense * 0.7);
       if (source?.passive === "破阵步" && target.line === "前排") value *= 1.12;
       if (source?.passive === "血怒引擎") value *= 1 + (1 - source.hpNow / source.maxHp) * (BERSERKER_PASSIVE.maxDamageAmp ?? 0.45);
       if (source?.passive === "破绽毒刃" && (target.poison.stacks > 0 || target.burn.stacks > 0)) value *= 1.18;

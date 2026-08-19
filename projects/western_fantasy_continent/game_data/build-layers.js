@@ -45,6 +45,7 @@ function createModifierBundle(source = "unknown") {
     physicalPowerAdd: 0,
     magicPowerAdd: 0,
     armorAdd: 0,
+    rangeAdd: 0,
     attackSpeedMult: 1,
     skillHasteMult: 1,
     effectPowerMult: 1,
@@ -99,6 +100,9 @@ function buildEquipmentModifierBundle(items = []) {
   for (const [key, value] of Object.entries(EQUIPMENT_SETS?.buildSetMechanicModifiers?.(items) || {})) {
     addMechanicModifier(bundle, key, value);
   }
+  for (const [stat, value] of Object.entries(EQUIPMENT_SETS?.buildSetStatBonuses?.(items) || {})) {
+    applyStatValue(bundle, stat, Number(value) || 0, "equipment-set");
+  }
   return finalizeBundle(bundle);
 }
 
@@ -133,6 +137,9 @@ function applyStatValue(bundle, stat, value, source = "stat") {
     case "defense":
     case "armor":
       bundle.armorAdd += value * 0.8;
+      break;
+    case "range":
+      bundle.rangeAdd += value;
       break;
     case "attackSpeed":
       bundle.attackSpeedMult *= 1 + value * 0.012;
@@ -242,6 +249,7 @@ function mergeModifierBundles(...bundles) {
     merged.physicalPowerAdd += bundle.physicalPowerAdd || 0;
     merged.magicPowerAdd += bundle.magicPowerAdd || 0;
     merged.armorAdd += bundle.armorAdd || 0;
+    merged.rangeAdd += bundle.rangeAdd || 0;
     merged.attackSpeedMult *= bundle.attackSpeedMult || 1;
     merged.skillHasteMult *= bundle.skillHasteMult || 1;
     merged.effectPowerMult *= bundle.effectPowerMult || 1;
@@ -282,7 +290,7 @@ function applyCombatModifiers(baseSpec, bundle) {
   next.magicPower = round(baseMagic + (bundle.magicPowerAdd || 0), 2);
   next.power = Math.round(Math.max(next.power || basePower, next.physicalPower, next.magicPower));
   next.armor = round(baseArmor + (bundle.armorAdd || 0), 2);
-  next.range = next.range ?? roleBase.range;
+  next.range = round((next.range ?? roleBase.range ?? 0) + (bundle.rangeAdd || 0), 2);
   next.attackSpeedMult = round((next.attackSpeedMult || 1) * (bundle.attackSpeedMult || 1), 3);
   next.skillHasteMult = round((next.skillHasteMult || 1) * (bundle.skillHasteMult || 1), 3);
   next.effectPowerMult = round((next.effectPowerMult || 1) * (bundle.effectPowerMult || 1), 3);
@@ -317,6 +325,7 @@ function finalizeBundle(bundle) {
   bundle.physicalPowerAdd = round(bundle.physicalPowerAdd, 3);
   bundle.magicPowerAdd = round(bundle.magicPowerAdd, 3);
   bundle.armorAdd = round(bundle.armorAdd, 3);
+  bundle.rangeAdd = round(bundle.rangeAdd, 3);
   bundle.attackSpeedMult = round(clamp(bundle.attackSpeedMult, 0.2, 3), 4);
   bundle.skillHasteMult = round(clamp(bundle.skillHasteMult, 0.2, 3), 4);
   bundle.effectPowerMult = round(clamp(bundle.effectPowerMult, 0.2, 3), 4);

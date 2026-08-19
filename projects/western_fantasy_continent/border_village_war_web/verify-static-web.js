@@ -32,6 +32,7 @@ assert(html.indexOf("../fifteen_day_demo/fifteen-day-core.js") < html.indexOf(".
 assert(web.includes("AgentAutomataCamera2D.createCamera2D") && web.includes("fitBounds") && web.includes("panByScreen"), "Map does not use the shared camera");
 assert(web.includes('id: "mock:verdant-circle"') && web.includes('kind: "mock_battle"') && web.includes('GAME.natureSetMockPlan(action.mockVariant || "set")'), "Initial village lacks the repeatable Verdant Circle mock battle");
 assert(web.includes('mockVariant: "baseline"') && web.includes('mockVariant: "set"') && web.includes("六件套相对无套装") && web.includes("mockResults.baseline") && web.includes("mockResults.set"), "Verdant Circle mock lacks a same-seed baseline/set comparison or visible deltas");
+assert(web.includes("盐枝输出速度") && web.includes("adaptedDpsMultiplier"), "Verdant Circle comparison hides the adapted damage dealer's output-rate multiplier");
 assert(battleViewSource.includes("battle-vfx-bloom-burst") && css.includes(".mock-comparison"), "Verdant comparison or bloom feedback is not visibly emphasized");
 assert(web.includes("view().actions.find((row) => row.id === actionId) || location.actions.find((row) => row.id === actionId)"), "Node-local mock actions render but cannot be resolved when clicked");
 assert(web.includes("setSignals.plant") && web.includes("setSignals.grow") && web.includes("setSignals.bloom") && web.includes("setSignals.spread"), "Mock battle result does not report real set trigger counts");

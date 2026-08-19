@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>快速条目</title>
+  <style>
+    :root { color-scheme: light; --ink:#20242b; --muted:#6e7581; --line:#e2e5ea; --accent:#315efb; --paper:#fff; --bg:#f4f5f8; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.65 "Microsoft YaHei UI","Segoe UI",sans-serif; }
+    .shell { width:min(920px, calc(100% - 32px)); margin:42px auto 80px; }
+    header { display:flex; gap:18px; align-items:end; justify-content:space-between; margin-bottom:22px; }
+    h1 { margin:0; font-size:28px; letter-spacing:-.03em; }
+    .count { margin-top:4px; color:var(--muted); }
+    input { width:min(360px, 100%); padding:11px 14px; border:1px solid var(--line); border-radius:10px; background:#fff; font:inherit; outline:none; }
+    input:focus { border-color:var(--accent); box-shadow:0 0 0 3px #315efb18; }
+    .list { display:grid; gap:12px; }
+    article { padding:20px 22px; background:var(--paper); border:1px solid var(--line); border-radius:14px; box-shadow:0 4px 15px #252a3410; }
+    .row { display:flex; align-items:start; justify-content:space-between; gap:15px; }
+    h2 { margin:0; font-size:18px; line-height:1.45; overflow-wrap:anywhere; }
+    time { display:block; margin-top:4px; color:var(--muted); font-size:12px; }
+    .body { margin:15px 0 0; white-space:pre-wrap; overflow-wrap:anywhere; color:#363c45; }
+    button { flex:none; border:1px solid var(--line); border-radius:8px; background:#fff; padding:7px 11px; color:#4a5260; cursor:pointer; }
+    button:hover { border-color:#aeb6c3; color:var(--ink); }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .rename { display:flex; gap:8px; align-items:center; margin-top:10px; }
+    .rename input { width:min(420px, 100%); }
+    .error { margin-top:8px; color:#b42318; font-size:13px; }
+    .empty { padding:70px 20px; text-align:center; color:var(--muted); background:#fff; border:1px dashed #ccd1d9; border-radius:14px; }
+    @media (max-width:650px) { header { align-items:stretch; flex-direction:column; } input { width:100%; } .shell { margin-top:24px; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div><h1>快速条目</h1><div class="count" id="count">正在读取…</div></div>
+      <input id="search" type="search" placeholder="搜索名称或正文" autocomplete="off" aria-label="搜索条目">
+    </header>
+    <section class="list" id="list"></section>
+  </main>
+  <script>
+    const list = document.querySelector('#list');
+    const count = document.querySelector('#count');
+    const search = document.querySelector('#search');
+    let entries = [];
+    let sessionToken = '';
+    let editingId = null;
+
+    function dateText(value) {
+      const date = new Date(value);
+      return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat('zh-CN', {dateStyle:'medium', timeStyle:'short'}).format(date);
+    }
+    async function copyText(text, button) {
+      try { await navigator.clipboard.writeText(text); }
+      catch (_) {
+        const area = document.createElement('textarea'); area.value = text; document.body.append(area); area.select(); document.execCommand('copy'); area.remove();
+      }
+      const old = button.textContent; button.textContent = '已复制'; setTimeout(() => button.textContent = old, 1000);
+    }
+    async function saveName(item, value) {
+      const name = value.trim();
+      if (!name) throw new Error('条目名称不能为空');
+      const url = `/api/entries/rename?id=${encodeURIComponent(item.id)}&name=${encodeURIComponent(name)}`;
+      const response = await fetch(url, { method:'POST', headers:{'X-Quick-Capture-Token':sessionToken} });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      item.name = payload.name;
+      item.updatedAt = payload.updatedAt;
+      editingId = null;
+      render();
+    }
+    function render() {
+      const query = search.value.trim().toLocaleLowerCase();
+      const visible = entries.filter(item => `${item.name}\n${item.body}`.toLocaleLowerCase().includes(query));
+      count.textContent = query ? `找到 ${visible.length} 条，共 ${entries.length} 条` : `共 ${entries.length} 条`;
+      list.replaceChildren();
+      if (!visible.length) {
+        const empty = document.createElement('div'); empty.className = 'empty'; empty.textContent = entries.length ? '没有匹配的条目' : '还没有条目。先划选文字并按记录快捷键。'; list.append(empty); return;
+      }
+      for (const item of visible) {
+        const card = document.createElement('article');
+        const row = document.createElement('div'); row.className = 'row';
+        const meta = document.createElement('div');
+        const title = document.createElement('h2'); title.textContent = item.name;
+        const time = document.createElement('time'); time.dateTime = item.createdAt; time.textContent = dateText(item.createdAt);
+        const actions = document.createElement('div'); actions.className = 'actions';
+        const edit = document.createElement('button'); edit.type = 'button'; edit.textContent = '修改名称'; edit.addEventListener('click', () => { editingId = item.id; render(); });
+        const button = document.createElement('button'); button.type = 'button'; button.textContent = '复制正文'; button.addEventListener('click', () => copyText(item.body, button));
+        const body = document.createElement('p'); body.className = 'body'; body.textContent = item.body;
+        actions.append(edit, button); meta.append(title, time); row.append(meta, actions); card.append(row);
+        if (editingId === item.id) {
+          const editor = document.createElement('div'); editor.className = 'rename';
+          const input = document.createElement('input'); input.value = item.name; input.setAttribute('aria-label', '新的条目名称');
+          const save = document.createElement('button'); save.type = 'button'; save.textContent = '保存名称';
+          const cancel = document.createElement('button'); cancel.type = 'button'; cancel.textContent = '取消';
+          const error = document.createElement('div'); error.className = 'error';
+          const commit = async () => {
+            save.disabled = true; error.textContent = '';
+            try { await saveName(item, input.value); }
+            catch (problem) { error.textContent = `保存失败：${problem.message}`; save.disabled = false; }
+          };
+          save.addEventListener('click', commit);
+          cancel.addEventListener('click', () => { editingId = null; render(); });
+          input.addEventListener('keydown', event => { if (event.key === 'Enter') commit(); if (event.key === 'Escape') { editingId = null; render(); } });
+          editor.append(input, save, cancel); card.append(editor, error); setTimeout(() => { input.focus(); input.select(); }, 0);
+        }
+        card.append(body); list.append(card);
+      }
+    }
+    search.addEventListener('input', render);
+    Promise.all([fetch('/api/session'), fetch('/api/entries')]).then(async ([sessionResponse, entriesResponse]) => {
+      if (!sessionResponse.ok || !entriesResponse.ok) throw new Error(`HTTP ${sessionResponse.status}/${entriesResponse.status}`);
+      const session = await sessionResponse.json();
+      sessionToken = session.token;
+      return entriesResponse.json();
+    }).then(data => { entries = Array.isArray(data) ? data : []; render(); })
+      .catch(error => { count.textContent = '读取失败'; list.innerHTML = `<div class="empty">无法读取条目：${String(error.message)}</div>`; });
+  </script>
+</body>
+</html>

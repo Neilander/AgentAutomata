@@ -194,6 +194,10 @@ Combat must be visible. A large part of the game fantasy is watching auto-battle
 
 The accepted profession / magic-school / equipment-set framework is recorded in [`design/combat_profession_magic_school_framework_v1.md`](design/combat_profession_magic_school_framework_v1.md). Physical skills come from professions; magic skills carry optional school tags; characters are not forced to have a school. The first implemented school set is the Nature-school six-piece set `繁生之环`, with a repeatable mock battle in the initial village.
 
+The first eight-set catalog and its grounded combat loops are recorded in [`design/equipment_set_catalog_v1_grounded.md`](design/equipment_set_catalog_v1_grounded.md); the earlier `v0` is only the initial effect-list draft. Its target high-rarity order is Epic → Legendary → Dark Gold → Eternal, with sets beginning at Legendary and Eternal temporarily serving as the highest rarity. This catalog is design-only; the older prototype rarity names and only-implemented Verdant Circle set have not yet been migrated.
+
+The current role-first pass is recorded in [`design/combat_role_set_framework_v0.md`](design/combat_role_set_framework_v0.md). It defines eight readable battlefield roles and designs each first set as a simple base reinforcement plus a visible battlefield-function reinforcement. The currently confirmed role sets are melee `万夫之勇`, shield `叹息之墙`, bow `鹰眼校准／天穹之箭`, cavalry shared `冲锋`, guardian protective-effect echoes, and mage `流星火雨`; these remain design-only.
+
 ### Equipment Farming
 
 Existing prototypes:

@@ -2,6 +2,62 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-08-19
+
+- `2026-08-19_1430_research-session-handoff.md`: 汇总玩家认知、Decision、五槽轨迹、注意力、规则实例化与MindToy主线；记录当前rollout约268MB的结构占比，并固定下一步为隔离Agent盲生成增量补丁。
+- `2026-08-19_1216_guardian-echo-long-battle-matrix.md`: 护佑回响强化为50%触发、18半径、70%复制量；共享战斗216场长战矩阵表明其是局部群体续航，密集/保核/分散单奶平均寿命分别+35.39%/+33.45%/+21.99%，并发现20v20多治疗者重叠放大风险。
+- `2026-08-19_1215_adaptive-grounding-program-iteration-v0.md`: 验证抽象Q后的参数化小程序可覆盖基础150例，并逐条吸收五类例外；每轮累计回归100%，最终组合400/400，复杂整组规则需要扩充通用归约能力，尚待隔离Agent盲生成补丁。
+- `2026-08-19_1138_meteor-rain-3_38x-retune.md`: 保持20次触发与7个固定落点，单颗流星提高至`28+0.8×法强`；受保护长局火法本人由无套2592.19升至8770.32，即3.38倍。
+- `2026-08-19_1111_role-set-output-retune-and-tankiness.md`: 共享战斗中万夫之勇、骑兵、鹰眼重标至约2.47/2.82/4.81倍，火雨改为20次触发；五档围攻测得护佑回响平均有效坦度+15.5%、叹息之墙+29.7%。
+- `2026-08-19_0024_shared-combat-six-role-sets.md`: 六套职业装备依次接入正式套装计数、build-layers 与共享 combat；每套独立验证通过后再开发下一套，最终六套同场、繁生、村庄、技能资产与信号回归全部通过。
+- `2026-08-19_0017_imagination-continuation-and-stop-controller-v0.md`: 隔离实现连续设想两道门；确定/并行后果继续，选择/随机/未知/注意力不足明确停止，正常结束必须有明确记忆；10/10新测试及旧轨迹11/11、注意力12/12回归通过。
+
+## 2026-08-18
+
+- `2026-08-18_2352_fire-mage-meteor-rain-set.md`：确认现有`magicPower`可直接承接法强；魔法师累计10次火焰伤害后选择7个固定落点，各自延迟0.5—1.5秒爆发，火雨自身不递归计数。
+- `2026-08-18_2322_ufs-rule-object-activation-accuracy-latency.md`: 用真实GTE在10类21种查询中测试规则→当前对象激活；注意力池成对排序84.92%、整组Top-K 66.67%，新查询约91ms而10万缓存候选矩阵约15.69ms，确认向量适合候选唤醒但仍需关系举证。
+- `2026-08-18_1809_ufs-rule-to-five-slot-trajectory-v0.md`: 隔离验证AI把六句UFS规则拆成严格五槽轨迹；变量、分段粘连、随机范围和缺失规则出口通过，真实GTE改写10/10，并以逐槽举证修正“经过箭头”否定句的高分误召回。
+- `2026-08-18_1605_ufs-adjustable-attention-space-v0.md`: 隔离封装153项UFS公开状态、动作初始注意、规则阅读预设、AI复盘增减/扩展/撤销和有限预算；12/12测试及旧接线回归通过，尚未接入玩家策略。
+
+## 2026-08-17
+
+- `2026-08-17_1734_quick-capture-entry-rename.md`: 划词记录网页增加条目名称内联编辑；保留正文和创建时间，以一次性本地令牌保护写接口，并通过JSONL、HTTP改名和403拒绝自测。
+- `2026-08-17_1225_ufs-delayed-room-benefit.md`: 放置同时展开即时天空链与未来房间链；208个候选的即时状态和能源/研究/战斗/挖掘/组合准备投影均与事后引擎反事实一致，选择由纯保守防空转向研究与挖掘收益权衡。
+- `2026-08-17_0102_ufs-five-slot-one-turn-wiring.md`: 接通UFS实际对象绑定、五槽Top-3连续唤醒和安全目标比较；3个真实开局208个合法位置产生496次记忆唤醒，所有预想状态与事后引擎一致，空记忆无法展开；当前仅为一次放骰MVP。
+
+## 2026-08-15
+
+- `2026-08-15_2340_matrix-wakeup-activation.md`：把语义唤醒改为一次`30×1536`矩阵乘法同时激活5条记忆；16次真实查询与旧逐条公式误差仅`8.88e-16`，开发8/8、冻结留出6/7行为完全不变。
+- `2026-08-15_1844_semantic-wakeup-mvp-v1.md`：完成AI一次性注意力设置的在线语义唤醒MVP；无对象分支运行器递归完成箭头→城市和母舰→骷髅，开发8/8、冻结留出6/7，唯一失败是高度换词的右箭头未过语义门槛。
+- `2026-08-15_1829_role-first-sets-cavalry-guardian.md`：建立八大定位首套装备主文档；盾兵统一读取光环／护盾／控制，骑兵以移动距离进入共享冲锋并与不可突破交互，护佑者按每个原始目标独立触发不可递归的范围回响，奇谋兵仍待讨论。
+- `2026-08-15_1752_latent-wakeup-action-glue-integration.md`：把局部变化召回真正接入`imagination_v2`；消融、不同上游复用、炸弹连续后果、箭头分支、路径非终点和未知符文共6项通过，原始召回5/6经事实校验后胶水选择6/6。
+- `2026-08-15_1727_latent-local-change-wakeup.md`：把变化箭头接到下一动作预设召回；局部对象箭头对已学预设6/6召回正确，不应唤醒5/6，证明其适合作联想候选键但未知变化仍需规则二次校验。
+- `2026-08-15_1622_latent-transition-arrow-universality.md`：用本地GTE隔离验证192条、24类跨游戏状态变化；变化箭头跨语境识别87.50%，多条归一化共同方向配合统一步长搬运96.35%，383候选全局检索Top-1 94.27%，确认方向可作动作预设召回键但不能替代规则演算。
+
+## 2026-08-13
+
+- `2026-08-13_1752_action-attention-imagination-v2.md`：纠正V1规则执行器偏差；V2用可复用动作入口、路径注意力、预测出口和独立胶水在假想世界展开后果，同一飞船下降成功粘到放骰与随机移动两种上游，5项测试通过。
+
+- `2026-08-13_1655_subagent-sentence-glue-compilation.md`：建立封闭可粘连Action合同；子Agent逐句盲编译UFS由宽松合同3/12提升至11/12，再依据单一失败证据局部修正至18/18。
+
+- `2026-08-13_1601_action-chain-drives-ufs-engine.md`：动作—注意力链接入正式UFS引擎；Roswell真实放置、随机追加移动、爆炸后相邻列连锁、规则拆卸与声明顺序重组共5项测试通过。
+
+- `2026-08-13_0210_ufs-rule-to-attention-chain-first-compile.md`：当前AI仅依据8句玩家可见UFS规则首次编译9条动作—注意力粘接规则；10个边界测试通过，并由真实规则补出锚点、参数夹取、链尾动作、已知结果四类通用接口。
+
+- `2026-08-13_0139_action-attention-chain-v0.md`：隔离实现通用“注意力区域→条件筛选→动作粘接→新区域/终点”运行器；车、UFS、卡牌三类案例通过，UFS对照验证漏掉无显眼世界变化的AA修正时主链仍流畅但结果错误。
+
+- `2026-08-13_0140_bow-family-and-sky-arrow-lock.md`：建立弓箭手、游侠、猎人的弓系职业族；鹰眼套改为持续命中积累锁定、被控制打断归零、达标后锁定区域并触发天穹之箭，具体数值与三／六件权限待定。
+
+## 2026-08-12
+
+- `2026-08-12_1526_grounded-eight-set-combat-loops.md`：八套从效果清单改为可推演自动战斗循环；逐套定义可见状态、建立／兑现、AI规则、具体战斗、大小规模体验、失败克制与底层依赖，尚未开发。
+
+- `2026-08-12_1329_first-eight-equipment-set-catalog.md`：设计传说2、暗金2、永恒4共八套；永恒暂为最高稀有度，史诗以下无套装，八套均以职业／学派细节筛选BD并赋予明确军职，尚未开发。
+
+- `2026-08-12_1248_set-design-role-and-build-specificity.md`：记录“机制筛选角色、强化赋予军职”；禁止反复使用三次攻击／施法等泛用计数器，套装应读取学派状态、职业动作与战场关系形成真实BD。
+
+- `2026-08-12_1208_verdant-six-piece-power-and-old-design-copy.md`：繁生之环六件套改为构筑级强度，适配盐枝输出速度达到无套装的2.40倍；旧十五日阶段事件框架原样归档到main，不合并旧程序。
+
 ## 2026-08-11
 
 - `2026-08-11_1802_verdant-ab-and-green-bloom.md`：繁生之环演武改为同角色同种子的无套装/六件套 A/B；战后显示直接差值，绽放改为绿色花瓣与扩散光。
@@ -804,6 +860,19 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 - `2026-06-29_1155_shadow-assassin-survival-tuning.md`: completed a 3-attempt survivability tuning budget for the hidden/shadow assassin, adding hidden extension and one low-HP fade while recording waterline risk.
 - `2026-06-29_1116_shadow-assassin-validation.md`: validates the new hidden/shadow assassin branch, including baseline strength, route performance, waterline results, and next reset/exit-payoff recommendation.
 - `2026-06-29_1116_latest-pull-assassin-shadow-bridge.md`: bridges the top-level coop entry point to the project-local 2026-06-29 assassin hidden/shadow burst report from the latest pull.
+
+## 2026-08-16
+
+- `2026-08-16_2219_fully-noticed-five-slot-ingestion.md`: 假设玩家完整看见每一步，建立不猜测的五槽写入接口；5000旧案例展开8265个互动步骤并全部写入，最终5730条不同连接，下一步骤抽查500/500，UFS四步顺序与真实GTE回归通过。
+- `2026-08-16_2145_five-slot-memory-bulk-validation.md`: 用此前冻结条例建立5000条不同五槽记忆；原经历重放500/500，已见因果独立召回95.00%（固定100条对照54.67%），缓存后1000查询1.60秒且保存恢复一致；未知因果拒绝仅23.75%，因此定位为经历唤醒而非规则真值判断。
+- `2026-08-16_2101_five-slot-trajectory-memory-v0.md`: 实现可新建、保存和恢复的五槽向量轨迹记忆类；每条`q`由对象、变化、原因、时间、上下文五个语义向量拼成，真实GTE为3840维，空实例、连续连接、持久化及三类语义区分全部通过。
+- `2026-08-16_1629_sequential-analogy-learning-10k.md`: 冻结5000学习+5000评测唯一经历并跑完50轮；理想解析上限由31%升至最终82%但未稳定过80%，真实语言Agent前两轮仅16%/11%，定位自然语言轨迹压缩为当前主要瓶颈。
+- `2026-08-16_1422_one-shot-fuzzy-analogy-transfer.md`: 每类只保留一条源经历，用角色归一化变化的矩阵类比与目标重绑定，在一次性42例中取得39例；对比证明模糊变化结构优于普通文本查询，同时记录人工槽位解析的边界。
+- `2026-08-16_1312_hard-trajectory-memory-matrix-retrieval.md`: 隔离实现硬轨迹矩阵检索，完成V0/V1共95个一次性留出案例、102次重放、多步/跨轨迹/冲突/陌生规则与5万片段规模测试；V1为32/37，明确其是记忆唤醒器而非几何预言机。
+- `2026-08-16_1730_ufs-matrix-planning-player-final.md`: 建立只读公开状态的 UFS 程序规划玩家，修复规划/执行出生错位与研究 15 假终点；训练 22/30、开发 19/30，冻结最终 100 局 58 胜，未向策略泄露种子、未来骰子或标准答案。
+- `2026-08-16_0046_interactive-attention-mask-v1.md`: 交互遮罩主实验以 10 轮、0 拒绝跑通 6/6，并首次程序性保证先关注后动作；但无规则无记忆机械消融也为 6/6，证明当前接口语义泄漏过强，尚不能把成功归因于注意力或规则记忆。
+- `2026-08-16_0014_blind-agent-action-wakeup-experiment.md`: 两阶段盲测 AI 先读 8 条规则形成动作—注意力—粘连记忆，再只凭初始动作推演 7 个场景；程序 7/7，独立审查为 5 例无歧义、2 例条件正确，并明确下一步需用交互式遮罩证明注意力因果性。
+- `2026-08-16_2010_codex-quick-capture.md`: 新增零依赖 Windows 外置划词记录工具；默认全局快捷键呼出命名窗口并打开本地搜索/复制页，JSONL 私有数据隔离，存储、回环网页与快捷键注册/冲突自测通过。
 
 ## 2026-06-28
 

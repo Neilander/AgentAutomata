@@ -415,10 +415,12 @@
     let comparisonHtml = "";
     if (pendingCombat.mock) {
       const variant = pendingCombat.mockVariant || "set";
-      mockResults[variant] = { damage: Math.round(result.metrics.leftDamage || 0), healing: Math.round(result.metrics.leftHealing || 0), defeated: pendingCombat.rightTeam.length - result.metrics.rightAlive, duration: Number(result.duration || 0) };
+      const adaptedUnit = (result.units || []).find((unit) => unit.name === "自然术士·盐枝");
+      const adaptedDps = Number(adaptedUnit?.damageDone || 0) / Math.max(0.01, Number(result.duration || 0));
+      mockResults[variant] = { damage: Math.round(result.metrics.leftDamage || 0), healing: Math.round(result.metrics.leftHealing || 0), defeated: pendingCombat.rightTeam.length - result.metrics.rightAlive, duration: Number(result.duration || 0), adaptedDps };
       if (mockResults.baseline && mockResults.set) {
-        const delta = { damage: mockResults.set.damage - mockResults.baseline.damage, healing: mockResults.set.healing - mockResults.baseline.healing, defeated: mockResults.set.defeated - mockResults.baseline.defeated, duration: mockResults.set.duration - mockResults.baseline.duration };
-        comparisonHtml = `<p class="mock-comparison"><strong>六件套相对无套装</strong><span>伤害 ${delta.damage >= 0 ? "+" : ""}${delta.damage}</span><span>治疗 ${delta.healing >= 0 ? "+" : ""}${delta.healing}</span><span>击倒 ${delta.defeated >= 0 ? "+" : ""}${delta.defeated}</span><span>用时 ${delta.duration >= 0 ? "+" : ""}${delta.duration.toFixed(1)}s</span></p>`;
+        const delta = { damage: mockResults.set.damage - mockResults.baseline.damage, healing: mockResults.set.healing - mockResults.baseline.healing, defeated: mockResults.set.defeated - mockResults.baseline.defeated, duration: mockResults.set.duration - mockResults.baseline.duration, adaptedDpsMultiplier: mockResults.set.adaptedDps / Math.max(0.01, mockResults.baseline.adaptedDps) };
+        comparisonHtml = `<p class="mock-comparison"><strong>六件套相对无套装</strong><span>盐枝输出速度 ×${delta.adaptedDpsMultiplier.toFixed(2)}</span><span>伤害 ${delta.damage >= 0 ? "+" : ""}${delta.damage}</span><span>治疗 ${delta.healing >= 0 ? "+" : ""}${delta.healing}</span><span>击倒 ${delta.defeated >= 0 ? "+" : ""}${delta.defeated}</span><span>用时 ${delta.duration >= 0 ? "+" : ""}${delta.duration.toFixed(1)}s</span></p>`;
       }
     }
     const combatMetrics = `<div class="combat-result-metrics"><span>总伤害<b>${Math.round(result.metrics.leftDamage || 0)}</b></span><span>总治疗<b>${Math.round(result.metrics.leftHealing || 0)}</b></span><span>击倒<b>${pendingCombat.rightTeam.length - result.metrics.rightAlive}/${pendingCombat.rightTeam.length}</b></span><span>用时<b>${Number(result.duration || 0).toFixed(1)}s</b></span></div>`;

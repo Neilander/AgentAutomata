@@ -15,6 +15,60 @@ const ICON_BASE = "https://game-icons.net/icons/000000/ffffff/1x1/lorc";
 const BERSERKER_MODEL = SKILL_DATA.berserkerModel || {};
 const BERSERKER_RATIOS = BERSERKER_MODEL.ratios || {};
 const BERSERKER_PASSIVE = BERSERKER_MODEL.passive || {};
+const VERDANT_CIRCLE = Object.freeze({
+  baseEnemyPowerPerGrowth: 0.55,
+  sixPieceEnemyPowerPerGrowth: 1,
+  baseAllyHpPerGrowth: 0.04,
+  sixPieceAllyHpPerGrowth: 0.05,
+  sixPieceSplashRatio: 0.5,
+  sixPieceSplashTargets: 2,
+  sixPieceOverflowShieldRatio: 1,
+  sixPieceNatureOutputMult: 1.35,
+  propagatedGrowth: 2,
+  spreadCooldown: 6,
+});
+const MYRIAD_VALOR = Object.freeze({
+  powerPerHitRatio: 0.095,
+});
+const METEOR_FIRE_RAIN = Object.freeze({
+  triggerHits: 20,
+  strikeCount: 7,
+  minDelay: 0.5,
+  maxDelay: 1.5,
+  radius: 8,
+  flatDamage: 28,
+  powerRatio: 0.8,
+});
+const GUARDIAN_ECHO = Object.freeze({
+  chance: 0.5,
+  radius: 18,
+  valueRatio: 0.7,
+});
+const EAGLE_EYE = Object.freeze({
+  lockThreshold: 6,
+  quietDelay: 0.9,
+  radius: 9,
+  volleys: 8,
+  flatDamage: 7,
+  powerRatio: 0.45,
+});
+const CAVALRY_CHARGE = Object.freeze({
+  distanceThreshold: 16,
+  readyPowerMult: 1.35,
+  readyMoveMult: 1.3,
+  breakthroughDistance: 12,
+  pathRadius: 4.5,
+  flatDamage: 42,
+  powerRatio: 2.9,
+  blockedDelay: 1.2,
+});
+const SIGHING_WALL = Object.freeze({
+  radius: 13,
+  pulseInterval: 20,
+  shieldFlat: 55,
+  shieldPowerRatio: 0.8,
+  interceptStun: 1.4,
+});
 
 const FORMATION = {
   left: [{ x: 18, y: 36, line: "前排" }, { x: 18, y: 64, line: "前排" }, { x: 2, y: 32, line: "后排" }, { x: 2, y: 68, line: "后排" }],
@@ -67,8 +121,10 @@ class CombatSimulation {
     this.randomizeStats = options.randomizeStats !== false;
     this.currentActionSource = null;
     this.currentSchoolCast = null;
+    this.pendingSetEffects = [];
     this.runtimeFieldEffectId = options.fieldEffectId || options.runtimeFieldEffect || null;
     this.runtimeField = RUNTIME_FIELDS?.createRuntimeField?.(this.runtimeFieldEffectId, this) || null;
+    this.obstacles = structuredClone(options.obstacles || []);
   }
 
   api() {
@@ -111,6 +167,7 @@ class CombatSimulation {
     this.nextId = 1;
     this.logs = [];
     this.signalBus.clear();
+    this.pendingSetEffects = [];
     this.units = [...this.makeTeam("left", leftTeam), ...this.makeTeam("right", rightTeam)];
     if (this.randomizeStats) this.applyStatSwing();
     this.runtimeField?.setup?.();
@@ -134,6 +191,7 @@ class CombatSimulation {
     this.nextId = 1;
     this.logs = [];
     this.signalBus.clear();
+    this.pendingSetEffects = [];
     this.units = [...this.makeTeam("left", leftTeam), ...this.makeTeam("right", firstSmallWave.rightTeam || [])];
     if (this.randomizeStats) this.applyStatSwing();
     this.runtimeField?.setup?.();
@@ -311,6 +369,17 @@ class CombatSimulation {
         forcedTargetId: null,
         forcedTargetTimer: 0,
         verdantSpreadCd: 0,
+        myriadValorStacks: 0,
+        myriadValorBasePower: spec.physicalPower ?? spec.power ?? role.power,
+        meteorFireHits: 0,
+        eagleEyeLock: 0,
+        eagleEyeTargetId: null,
+        eagleEyeControlLatched: false,
+        cavalryDistance: 0,
+        cavalryChargeReady: false,
+        cavalryMovingTimer: 0,
+        sighingWallCooldown: 0,
+        stunTimer: 0,
         natureSeeds: {},
         assassinFocusTargetId: null,
         lastTargetSignalId: null,
@@ -321,6 +390,7 @@ class CombatSimulation {
         rageStacks: 0,
         icon: spec.icon?.startsWith?.("http") ? spec.icon : `${ICON_BASE}/${spec.icon || role.icon || "crossed-swords"}.svg`,
       };
+      this.applyEquipmentSetFoundations(unit);
       this.applyPassiveStats(unit);
       unit.hp = unit.maxHp;
       return unit;
@@ -380,10 +450,14 @@ class CombatSimulation {
 
   update(dt) {
     this.time += dt;
+    this.tickScheduledSetEffects();
     this.runtimeField?.beforeUpdate?.(dt);
     for (const unit of this.actionOrder()) {
       this.tickStatuses(unit, dt);
       this.tickTimers(unit, dt);
+      this.tickEquipmentSetAuras(unit);
+      this.handleEagleEyeControl(unit);
+      if (unit.stunTimer > 0) continue;
       const target = this.chooseTarget(unit);
       if (!target) continue;
       this.emitTargetSignal(unit, target);
@@ -416,17 +490,37 @@ class CombatSimulation {
   tickTimers(unit, dt) {
     for (const key of ["small1", "small2", "ultimate"]) unit.skillCd[key] = Math.max(0, unit.skillCd[key] - dt * (unit.skillHasteMult || 1));
     unit.attackCd -= dt * (unit.hasteTimer > 0 ? (unit.hasteMultiplier || 1.45) : 1) * (unit.attackSpeedMult || 1);
-    for (const key of ["slowTimer", "guardTimer", "hiddenTimer", "shadowBurstCd", "shieldVulnerableTimer", "tauntTimer", "duelTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer", "forcedTargetTimer", "verdantSpreadCd"]) {
+    for (const key of ["slowTimer", "guardTimer", "hiddenTimer", "shadowBurstCd", "shieldVulnerableTimer", "tauntTimer", "duelTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer", "forcedTargetTimer", "verdantSpreadCd", "sighingWallCooldown", "stunTimer"]) {
       unit[key] = Math.max(0, unit[key] - dt);
     }
     if (unit.forcedTargetTimer <= 0) unit.forcedTargetId = null;
     unit.counterCd = Math.max(0, (unit.counterCd || 0) - dt);
+    unit.cavalryMovingTimer = Math.max(0, (unit.cavalryMovingTimer || 0) - dt);
   }
 
   tickStatuses(unit, dt) {
     this.tickDot(unit, unit.poison, dt, 2.1, "poison");
     this.tickDot(unit, unit.burn, dt, 2.15, "burn");
     this.tickNatureSeeds(unit, dt);
+  }
+
+  tickEquipmentSetAuras(unit) {
+    if (!unit?.mechanicModifiers?.["set:sighingWall:unyieldingBoundary"] || (unit.sighingWallCooldown || 0) > 0) return;
+    unit.sighingWallCooldown = SIGHING_WALL.pulseInterval;
+    const allies = this.alliesOf(unit).filter((ally) => this.isAlive(ally) && this.getDistance(unit, ally) <= SIGHING_WALL.radius);
+    const amount = SIGHING_WALL.shieldFlat + this.effectivePower(unit, "magic") * SIGHING_WALL.shieldPowerRatio;
+    this.emitSignal({
+      kind: "status",
+      tags: ["status", "equipmentSet", "sighingWall", "wallPulse"],
+      source: SIGNALS.unitRef(unit),
+      target: SIGNALS.unitRef(unit),
+      amount: allies.length,
+      skillName: "叹息之墙",
+      meta: { radius: SIGHING_WALL.radius, interval: SIGHING_WALL.pulseInterval, targets: allies.map(SIGNALS.unitRef) },
+    });
+    this.withAction(unit, { tags: ["equipmentSet", "sighingWall", "wallPulse", "shield", "area"], skillName: "叹息之墙" }, () => {
+      for (const ally of allies) this.shield(ally, amount, "叹息之墙", unit);
+    });
   }
 
   tickDot(unit, dot, dt, perStack, type) {
@@ -441,6 +535,15 @@ class CombatSimulation {
       });
     }
     if (dot.time <= 0) Object.assign(dot, status());
+  }
+
+  applyEquipmentSetFoundations(unit) {
+    if (!unit.mechanicModifiers?.["set:cavalryCharge:foundation"]) return;
+    const moveSpeed = Math.max(0, Number(unit.mechanicModifiers.moveSpeed) || 0) / 100;
+    const conversion = Math.max(0, Number(unit.mechanicModifiers.moveSpeedAttackConversion) || 0) / 100;
+    unit.cavalryMoveSpeedMult = 1 + moveSpeed;
+    unit.attackSpeedMult *= 1 + moveSpeed * conversion;
+    unit.cavalryMovingDamageReduction = clamp((Number(unit.mechanicModifiers.movingDamageReduction) || 0) / 100, 0, 0.8);
   }
 
   tickNatureSeeds(unit, dt) {
@@ -479,18 +582,33 @@ class CombatSimulation {
   bloomNatureSeed(source, target, seed, immediate) {
     if (!source || !target || !this.isAlive(target)) return;
     const growth = Math.max(1, Math.min(3, Number(seed.growth) || 1));
+    const sixPiece = Boolean(source.mechanicModifiers?.["set:verdantCircle:propagation"]);
     this.emitNatureSeedSignal("seedBloom", source, target, seed, { immediate });
     this.withAction(source, { tags: ["equipmentSet", "verdantCircle", "nature", "seedBloom"], skillName: "繁生之环·绽放", meta: { growth, immediate } }, () => {
-      if (source.side === target.side) this.healUnit(target, target.maxHp * 0.04 * growth, "繁生之环·绽放", source);
-      else this.takeDamage(source, target, this.effectivePower(source, "magic") * 0.55 * growth, "nature", "繁生之环·绽放");
+      if (source.side === target.side) {
+        const healRatio = sixPiece ? VERDANT_CIRCLE.sixPieceAllyHpPerGrowth : VERDANT_CIRCLE.baseAllyHpPerGrowth;
+        const overflow = this.healUnit(target, target.maxHp * healRatio * growth, "繁生之环·绽放", source);
+        if (sixPiece && overflow > 0) this.shield(target, overflow * VERDANT_CIRCLE.sixPieceOverflowShieldRatio, "繁生之环·余蕴", source);
+      } else {
+        const powerRatio = sixPiece ? VERDANT_CIRCLE.sixPieceEnemyPowerPerGrowth : VERDANT_CIRCLE.baseEnemyPowerPerGrowth;
+        const bloomDamage = this.effectivePower(source, "magic") * powerRatio * growth;
+        this.takeDamage(source, target, bloomDamage, "nature", "繁生之环·绽放");
+        if (sixPiece && growth >= 3) {
+          this.units
+            .filter((candidate) => candidate.side === target.side && candidate.id !== target.id && this.isAlive(candidate))
+            .sort(this.byDistance(target))
+            .slice(0, VERDANT_CIRCLE.sixPieceSplashTargets)
+            .forEach((candidate) => this.takeDamage(source, candidate, bloomDamage * VERDANT_CIRCLE.sixPieceSplashRatio, "nature", "繁生之环·花潮"));
+        }
+      }
     });
     if (!immediate || !seed.canSpread || (source.verdantSpreadCd || 0) > 0) return;
     const spreadTarget = this.units
       .filter((candidate) => candidate.side === target.side && candidate.id !== target.id && this.isAlive(candidate) && !candidate.natureSeeds?.[source.id])
       .sort(this.byDistance(target))[0];
     if (!spreadTarget) return;
-    source.verdantSpreadCd = 6;
-    spreadTarget.natureSeeds[source.id] = { sourceId: source.id, growth: 1, time: 6, canSpread: false, setId: "verdantCircle" };
+    source.verdantSpreadCd = VERDANT_CIRCLE.spreadCooldown;
+    spreadTarget.natureSeeds[source.id] = { sourceId: source.id, growth: VERDANT_CIRCLE.propagatedGrowth, time: 6, canSpread: false, setId: "verdantCircle" };
     this.emitNatureSeedSignal("seedSpread", source, spreadTarget, spreadTarget.natureSeeds[source.id], { origin: SIGNALS.unitRef(target) });
   }
 
@@ -717,6 +835,23 @@ class CombatSimulation {
   takeDamage(source, target, amount, type, label = "") {
     if (!this.isAlive(target)) return;
     const hpBefore = target.hp;
+    const natureAction = type === "nature" || type === "poison" || source?._actionSignal?.tags?.includes("nature");
+    if (natureAction && source?.mechanicModifiers?.["set:verdantCircle:propagation"] && !source?._actionSignal?.tags?.includes("equipmentSet")) {
+      amount *= VERDANT_CIRCLE.sixPieceNatureOutputMult;
+    }
+    if (target.cavalryMovingTimer > 0 && target.mechanicModifiers?.["set:cavalryCharge:foundation"]) {
+      const prevented = amount * (target.cavalryMovingDamageReduction || 0);
+      amount -= prevented;
+      if (prevented > 0) this.emitSignal({
+        kind: "status",
+        tags: ["status", "equipmentSet", "cavalryCharge", "movingDamageReduction"],
+        source: SIGNALS.unitRef(target),
+        target: SIGNALS.unitRef(target),
+        amount: prevented,
+        skillName: "驰骋减伤",
+        meta: { reduction: target.cavalryMovingDamageReduction },
+      });
+    }
     let remaining = amount;
     let blocked = 0;
     if (target.shield > 0) {
@@ -740,6 +875,9 @@ class CombatSimulation {
         meta: { rawAmount: amount, blocked, shieldAfter: target.shield || 0, ...source?._actionSignal?.meta },
       });
     }
+    if (remaining > 0 || blocked > 0) this.growMyriadValor(source, target);
+    if (remaining > 0 || blocked > 0) this.countMeteorFireHit(source, target, type);
+    if (remaining > 0 || blocked > 0) this.buildEagleEyeLock(source, target);
     if (source) {
       source.damageDone += amount;
       let leechRate = 0;
@@ -831,7 +969,7 @@ class CombatSimulation {
   }
 
   healUnit(unit, amount, label = "治疗", source = this.currentActionSource) {
-    if (!unit || !this.isAlive(unit)) return;
+    if (!unit || !this.isAlive(unit)) return 0;
     this.touchSchoolTarget(source, unit);
     const context = { amount, label };
     this.runtimeField?.beforeHeal?.(source, unit, context);
@@ -856,7 +994,178 @@ class CombatSimulation {
         hpAfter: unit.hp,
         meta: { overflow },
       });
+      this.maybeGuardianEcho("heal", source, unit, { amount: value * GUARDIAN_ECHO.valueRatio, label });
     }
+    return overflow;
+  }
+
+  growMyriadValor(source, target) {
+    if (!source || !target || source.side === target.side || !this.isAlive(source)) return;
+    if (!source.mechanicModifiers?.["set:myriadValor:battleGrowth"]) return;
+    if (source._actionSignal?.tags?.includes("equipmentSet")) return;
+    source.myriadValorStacks = (source.myriadValorStacks || 0) + 1;
+    this.emitSignal({
+      kind: "status",
+      tags: this.actionTags(source, ["status", "buff", "equipmentSet", "myriadValor", "battleGrowth"]).filter(Boolean),
+      source: SIGNALS.unitRef(source),
+      target: SIGNALS.unitRef(source),
+      amount: source.myriadValorStacks,
+      skillName: "万夫之勇",
+      meta: {
+        stacks: source.myriadValorStacks,
+        hitTarget: SIGNALS.unitRef(target),
+        physicalPowerGain: round((source.myriadValorBasePower || source.physicalPower || 0) * MYRIAD_VALOR.powerPerHitRatio * source.myriadValorStacks),
+      },
+    });
+  }
+
+  countMeteorFireHit(source, target, type) {
+    if (!source || !target || source.side === target.side || !this.isAlive(source)) return;
+    if (!source.mechanicModifiers?.["set:meteorFireRain:skyfall"]) return;
+    if (!['fire', 'burn'].includes(type)) return;
+    if (source._actionSignal?.tags?.includes("equipmentSet") || source._actionSignal?.tags?.includes("meteorRain")) return;
+    source.meteorFireHits = (source.meteorFireHits || 0) + 1;
+    this.emitSignal({
+      kind: "status",
+      tags: this.actionTags(source, ["status", "equipmentSet", "meteorFireRain", "fireCount"]).filter(Boolean),
+      source: SIGNALS.unitRef(source),
+      target: SIGNALS.unitRef(target),
+      amount: source.meteorFireHits,
+      skillName: "流星火雨·蓄势",
+      meta: { fireHits: source.meteorFireHits, triggerHits: METEOR_FIRE_RAIN.triggerHits },
+    });
+    while (source.meteorFireHits >= METEOR_FIRE_RAIN.triggerHits) {
+      source.meteorFireHits -= METEOR_FIRE_RAIN.triggerHits;
+      this.scheduleMeteorFireRain(source);
+    }
+  }
+
+  scheduleMeteorFireRain(source) {
+    const enemies = this.enemiesOf(source).filter((enemy) => this.isAlive(enemy));
+    if (!enemies.length) return;
+    for (let index = 0; index < METEOR_FIRE_RAIN.strikeCount; index += 1) {
+      const anchor = enemies[index % enemies.length];
+      const position = {
+        x: round(clamp(anchor.x + (this.rng() - 0.5) * 8, 7, 93)),
+        y: round(clamp(anchor.y + (this.rng() - 0.5) * 8, 12, 88)),
+      };
+      const delay = METEOR_FIRE_RAIN.minDelay + this.rng() * (METEOR_FIRE_RAIN.maxDelay - METEOR_FIRE_RAIN.minDelay);
+      const strike = { kind: "meteor", sourceId: source.id, position, dueAt: this.time + delay, index: index + 1 };
+      this.pendingSetEffects.push(strike);
+      this.emitSignal({
+        kind: "status",
+        tags: ["status", "equipmentSet", "meteorFireRain", "meteorWarning"],
+        source: SIGNALS.unitRef(source),
+        amount: round(delay),
+        skillName: "流星火雨·落点",
+        meta: { index: strike.index, position, delay: round(delay), dueAt: round(strike.dueAt), radius: METEOR_FIRE_RAIN.radius },
+      });
+    }
+  }
+
+  tickScheduledSetEffects() {
+    if (!this.pendingSetEffects.length) return;
+    const ready = this.pendingSetEffects.filter((effect) => effect.dueAt <= this.time);
+    this.pendingSetEffects = this.pendingSetEffects.filter((effect) => effect.dueAt > this.time);
+    for (const effect of ready) {
+      if (effect.kind === "skyArrow") {
+        this.resolveSkyArrowZone(effect);
+        continue;
+      }
+      const source = this.units.find((unit) => unit.id === effect.sourceId);
+      if (!source) continue;
+      const targets = this.enemiesOf(source).filter((target) => this.isAlive(target) && this.getDistance(effect.position, target) <= METEOR_FIRE_RAIN.radius);
+      this.emitSignal({
+        kind: "status",
+        tags: ["status", "equipmentSet", "meteorFireRain", "meteorImpact"],
+        source: SIGNALS.unitRef(source),
+        amount: targets.length,
+        skillName: "流星火雨",
+        meta: { index: effect.index, position: effect.position, radius: METEOR_FIRE_RAIN.radius, targets: targets.map(SIGNALS.unitRef) },
+      });
+      this.withAction(source, { tags: ["equipmentSet", "meteorFireRain", "meteorRain", "fire", "area"], skillName: "流星火雨", meta: { position: effect.position, radius: METEOR_FIRE_RAIN.radius } }, () => {
+        for (const target of targets) {
+          this.hit(source, target, METEOR_FIRE_RAIN.flatDamage + this.effectivePower(source, "magic") * METEOR_FIRE_RAIN.powerRatio, "fire", "流星火雨", false, "magic");
+        }
+      });
+    }
+  }
+
+  buildEagleEyeLock(source, target) {
+    if (!source || !target || source.side === target.side || !this.isAlive(source)) return;
+    if (!source.mechanicModifiers?.["set:eagleEye:skyArrow"]) return;
+    if (source._actionSignal?.tags?.includes("equipmentSet")) return;
+    if (source.eagleEyeTargetId && source.eagleEyeTargetId !== target.id) this.resetEagleEyeLock(source, "targetChanged");
+    source.eagleEyeTargetId = target.id;
+    const gain = source._actionSignal?.tags?.includes("trap") ? 2 : 1;
+    source.eagleEyeLock = (source.eagleEyeLock || 0) + gain;
+    this.emitSignal({
+      kind: "status",
+      tags: this.actionTags(source, ["status", "equipmentSet", "eagleEye", "lockGain"]).filter(Boolean),
+      source: SIGNALS.unitRef(source),
+      target: SIGNALS.unitRef(target),
+      amount: gain,
+      skillName: "鹰眼校准",
+      meta: { lock: source.eagleEyeLock, threshold: EAGLE_EYE.lockThreshold, gain },
+    });
+    if (source.eagleEyeLock < EAGLE_EYE.lockThreshold) return;
+    source.eagleEyeLock -= EAGLE_EYE.lockThreshold;
+    this.scheduleSkyArrow(source, target);
+  }
+
+  resetEagleEyeLock(source, reason) {
+    if (!source || !(source.eagleEyeLock > 0)) return;
+    const before = source.eagleEyeLock;
+    source.eagleEyeLock = 0;
+    this.emitSignal({
+      kind: "status",
+      tags: ["status", "equipmentSet", "eagleEye", "lockReset"],
+      source: SIGNALS.unitRef(source),
+      target: SIGNALS.unitRef(source),
+      amount: before,
+      skillName: "鹰眼校准·中断",
+      meta: { reason, lockBefore: before },
+    });
+  }
+
+  handleEagleEyeControl(unit) {
+    if (!unit?.mechanicModifiers?.["set:eagleEye:skyArrow"]) return;
+    const controlled = (unit.slowTimer || 0) > 0 || (unit.tauntTimer || 0) > 0;
+    if (controlled && !unit.eagleEyeControlLatched) this.resetEagleEyeLock(unit, "controlled");
+    unit.eagleEyeControlLatched = controlled;
+  }
+
+  scheduleSkyArrow(source, target) {
+    const position = { x: round(target.x), y: round(target.y) };
+    this.pendingSetEffects.push({ kind: "skyArrow", sourceId: source.id, position, dueAt: this.time + EAGLE_EYE.quietDelay });
+    this.emitSignal({
+      kind: "status",
+      tags: ["status", "equipmentSet", "eagleEye", "skyArrowWarning"],
+      source: SIGNALS.unitRef(source),
+      target: SIGNALS.unitRef(target),
+      amount: EAGLE_EYE.quietDelay,
+      skillName: "天穹之箭·锁定",
+      meta: { position, delay: EAGLE_EYE.quietDelay, radius: EAGLE_EYE.radius },
+    });
+  }
+
+  resolveSkyArrowZone(effect) {
+    const source = this.units.find((unit) => unit.id === effect.sourceId);
+    if (!source) return;
+    const targets = this.enemiesOf(source).filter((target) => this.isAlive(target) && this.getDistance(effect.position, target) <= EAGLE_EYE.radius);
+    this.emitSignal({
+      kind: "status",
+      tags: ["status", "equipmentSet", "eagleEye", "skyArrowImpact"],
+      source: SIGNALS.unitRef(source),
+      amount: targets.length,
+      skillName: "天穹之箭",
+      meta: { position: effect.position, radius: EAGLE_EYE.radius, volleys: EAGLE_EYE.volleys, targets: targets.map(SIGNALS.unitRef) },
+    });
+    this.withAction(source, { tags: ["equipmentSet", "eagleEye", "skyArrow", "physical", "area"], skillName: "天穹之箭", meta: { position: effect.position, volleys: EAGLE_EYE.volleys } }, () => {
+      for (let volley = 0; volley < EAGLE_EYE.volleys; volley += 1) {
+        for (const target of targets) this.hit(source, target, EAGLE_EYE.flatDamage + this.effectivePower(source, "physical") * EAGLE_EYE.powerRatio, "physical", "天穹之箭", false, "physical");
+      }
+    });
   }
 
   shield(unit, amount, label, source = this.currentActionSource) {
@@ -880,6 +1189,7 @@ class CombatSimulation {
       shield: unit.shield,
     });
     this.runtimeField?.afterShield?.(source, unit, { amount: value, label, shield: unit.shield });
+    this.maybeGuardianEcho("shield", source, unit, { amount: value * GUARDIAN_ECHO.valueRatio, label });
   }
 
   breakShield(source, target, amount, label = "破盾") {
@@ -916,7 +1226,35 @@ class CombatSimulation {
       meta: { statusType, cleared },
     });
     if (healPerStack > 0) this.healUnit(target, cleared * healPerStack, label, source);
+    this.maybeGuardianEcho("cleanse", source, target, { statusType, amount, label });
     return cleared;
+  }
+
+  maybeGuardianEcho(kind, source, anchor, payload = {}) {
+    if (!source || !anchor || !this.isAlive(source)) return false;
+    if (!source.mechanicModifiers?.["set:guardianEcho:resonance"]) return false;
+    if (source._actionSignal?.tags?.includes("guardianEcho")) return false;
+    if (this.rng() >= GUARDIAN_ECHO.chance) return false;
+    const allies = this.alliesOf(source).filter((ally) => this.isAlive(ally) && this.getDistance(anchor, ally) <= GUARDIAN_ECHO.radius);
+    this.emitSignal({
+      kind: "status",
+      tags: this.actionTags(source, ["status", "equipmentSet", "guardianEcho", "echoProc", kind]).filter(Boolean),
+      source: SIGNALS.unitRef(source),
+      target: SIGNALS.unitRef(anchor),
+      amount: allies.length,
+      skillName: "护佑回响",
+      meta: { kind, radius: GUARDIAN_ECHO.radius, targets: allies.map(SIGNALS.unitRef), originalLabel: payload.label || "" },
+    });
+    this.withAction(source, { tags: ["equipmentSet", "guardianEcho", "echo", kind], skillName: "护佑回响", meta: { echoKind: kind, anchor: SIGNALS.unitRef(anchor) } }, () => {
+      if (kind === "heal") {
+        for (const ally of allies) this.healUnit(ally, payload.amount || 0, "护佑回响", source);
+      } else if (kind === "shield") {
+        for (const ally of allies) this.shield(ally, payload.amount || 0, "护佑回响", source);
+      } else if (kind === "cleanse") {
+        for (const ally of allies) this.cleanseStatus(source, ally, payload.statusType, payload.amount || 1, 0, "护佑回响");
+      }
+    });
+    return true;
   }
 
   delayReadySkill(unit, amount, label = "冷却裂隙") {
@@ -1145,12 +1483,16 @@ class CombatSimulation {
     const distance = this.getDistance(unit, target);
     if (distance <= unit.range * 0.92) return;
     const fieldMoveMult = this.runtimeField?.moveSpeedMult?.(unit) ?? 1;
-    const step = dt * (unit.roleName === "刺客" ? 10 : unit.slowTimer > 0 ? 4.2 : 7) * fieldMoveMult;
+    const cavalryMove = (unit.cavalryMoveSpeedMult || 1) * (unit.cavalryChargeReady ? CAVALRY_CHARGE.readyMoveMult : 1);
+    const step = dt * (unit.roleName === "刺客" ? 10 : unit.slowTimer > 0 ? 4.2 : 7) * fieldMoveMult * cavalryMove;
     const dx = target.x - unit.x;
     const dy = target.y - unit.y;
     const move = Math.min(step, Math.max(0, distance - unit.range * 0.9));
+    const before = { x: unit.x, y: unit.y };
     unit.x = clamp(unit.x + (dx / distance) * move, 7, 93);
     unit.y = clamp(unit.y + (dy / distance) * move, 12, 88);
+    this.recordCavalryMovement(unit, before, unit, "advance");
+    this.tryCavalryBreakthrough(unit, target);
   }
 
   chargeToTarget(unit, target, effect = {}) {
@@ -1163,8 +1505,19 @@ class CombatSimulation {
     const dy = target.y - unit.y;
     const travel = Math.min(maxDistance, Math.max(0, distance - stopRange));
     const before = { x: unit.x, y: unit.y };
-    unit.x = clamp(unit.x + (dx / distance) * travel, 7, 93);
-    unit.y = clamp(unit.y + (dy / distance) * travel, 12, 88);
+    const plannedEnd = {
+      x: clamp(unit.x + (dx / distance) * travel, 7, 93),
+      y: clamp(unit.y + (dy / distance) * travel, 12, 88),
+    };
+    const wall = this.findSighingWallInterceptor(unit, before, plannedEnd);
+    if (wall) {
+      this.interruptChargeAtWall(unit, wall, "skillCharge", before, plannedEnd);
+      return;
+    }
+    unit.x = plannedEnd.x;
+    unit.y = plannedEnd.y;
+    this.recordCavalryMovement(unit, before, unit, "skillCharge");
+    this.tryCavalryBreakthrough(unit, target);
     unit.attackCd = Math.min(unit.attackCd, effect.attackCd ?? 0.15);
     const impactCount = Number.isFinite(effect.impactCount) ? effect.impactCount : 0;
     if (impactCount > 0) {
@@ -1199,6 +1552,101 @@ class CombatSimulation {
       skillKey: unit?._actionSignal?.skillKey || null,
       skillName: effect.label || unit?._actionSignal?.skillName || "charge",
       meta: { before, after: { x: unit.x, y: unit.y }, stopRange, impactCount },
+    });
+  }
+
+  recordCavalryMovement(unit, before, after, movementKind = "move") {
+    if (!unit?.mechanicModifiers?.["set:cavalryCharge:foundation"]) return;
+    const distance = this.getDistance(before, after);
+    if (!(distance > 0)) return;
+    unit.cavalryMovingTimer = Math.max(unit.cavalryMovingTimer || 0, 0.3);
+    if (!unit.mechanicModifiers?.["set:cavalryCharge:breakthrough"] || unit.cavalryChargeReady) return;
+    unit.cavalryDistance = (unit.cavalryDistance || 0) + distance;
+    if (unit.cavalryDistance < CAVALRY_CHARGE.distanceThreshold) return;
+    unit.cavalryChargeReady = true;
+    this.emitSignal({
+      kind: "status",
+      tags: ["status", "equipmentSet", "cavalryCharge", "chargeReady"],
+      source: SIGNALS.unitRef(unit),
+      target: SIGNALS.unitRef(unit),
+      amount: round(unit.cavalryDistance),
+      skillName: "冲锋",
+      meta: { movementKind, threshold: CAVALRY_CHARGE.distanceThreshold },
+    });
+  }
+
+  tryCavalryBreakthrough(unit, target) {
+    if (!unit?.cavalryChargeReady || !target || !this.isAlive(target)) return false;
+    if (this.getDistance(unit, target) > Math.max(unit.range + 2, 14)) return false;
+    const distance = Math.max(0.001, this.getDistance(unit, target));
+    const direction = { x: (target.x - unit.x) / distance, y: (target.y - unit.y) / distance };
+    const start = { x: unit.x, y: unit.y };
+    const end = {
+      x: clamp(start.x + direction.x * CAVALRY_CHARGE.breakthroughDistance, 7, 93),
+      y: clamp(start.y + direction.y * CAVALRY_CHARGE.breakthroughDistance, 12, 88),
+    };
+    const wall = this.findSighingWallInterceptor(unit, start, end);
+    if (wall) {
+      unit.cavalryChargeReady = false;
+      unit.cavalryDistance = 0;
+      this.interruptChargeAtWall(unit, wall, "setBreakthrough", start, end);
+      return false;
+    }
+    const obstacle = this.obstacles.find((entry) => segmentPointDistance(start, end, entry) <= (entry.radius || 3));
+    if (obstacle) {
+      unit.cavalryChargeReady = false;
+      unit.cavalryDistance = 0;
+      unit.attackCd = Math.max(unit.attackCd, CAVALRY_CHARGE.blockedDelay);
+      this.emitSignal({
+        kind: "status",
+        tags: ["status", "equipmentSet", "cavalryCharge", "chargeBlocked", "obstacle"],
+        source: SIGNALS.unitRef(unit),
+        target: SIGNALS.unitRef(unit),
+        amount: CAVALRY_CHARGE.blockedDelay,
+        skillName: "冲锋受阻",
+        meta: { reason: "obstacle", obstacle, start, end },
+      });
+      return false;
+    }
+    const hitTargets = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy) && segmentPointDistance(start, end, enemy) <= CAVALRY_CHARGE.pathRadius);
+    unit.x = end.x;
+    unit.y = end.y;
+    unit.cavalryChargeReady = false;
+    unit.cavalryDistance = 0;
+    this.withAction(unit, { tags: ["equipmentSet", "cavalryCharge", "breakthrough", "movement", "physical", "area"], skillName: "冲锋突破", meta: { start, end } }, () => {
+      for (const enemy of hitTargets) this.hit(unit, enemy, CAVALRY_CHARGE.flatDamage + this.effectivePower(unit, "physical") * CAVALRY_CHARGE.powerRatio, "physical", "冲锋突破", false, "physical");
+    });
+    this.emitSignal({
+      kind: "movement",
+      tags: ["movement", "equipmentSet", "cavalryCharge", "breakthrough"],
+      source: SIGNALS.unitRef(unit),
+      target: SIGNALS.unitRef(target),
+      amount: round(this.getDistance(start, end)),
+      skillName: "冲锋突破",
+      meta: { start, end, hitTargets: hitTargets.map(SIGNALS.unitRef), ignoresUnitCollision: true },
+    });
+    return true;
+  }
+
+  findSighingWallInterceptor(charger, start, end) {
+    return this.enemiesOf(charger).find((unit) => (
+      this.isAlive(unit)
+      && unit.mechanicModifiers?.["set:sighingWall:unyieldingBoundary"]
+      && segmentPointDistance(start, end, unit) <= SIGHING_WALL.radius
+    ));
+  }
+
+  interruptChargeAtWall(charger, wall, chargeKind, start, end) {
+    charger.stunTimer = Math.max(charger.stunTimer || 0, SIGHING_WALL.interceptStun);
+    charger.attackCd = Math.max(charger.attackCd, SIGHING_WALL.interceptStun);
+    this.emitSignal({
+      kind: "status",
+      tags: ["status", "equipmentSet", "sighingWall", "chargeIntercept", "stun"],
+      source: SIGNALS.unitRef(wall),
+      target: SIGNALS.unitRef(charger),
+      amount: SIGHING_WALL.interceptStun,
+      skillName: "叹息之墙·截断",
+      meta: { chargeKind, radius: SIGHING_WALL.radius, start, attemptedEnd: end },
     });
   }
 
@@ -1305,7 +1753,11 @@ class CombatSimulation {
     const base = type === "physical"
       ? (unit.physicalPower ?? unit.power)
       : (unit.magicPower ?? unit.power);
-    return base + (unit.bonusPowerTimer > 0 ? unit.bonusPower || 14 : 0);
+    const myriadGain = type === "physical" && unit?.mechanicModifiers?.["set:myriadValor:battleGrowth"]
+      ? (unit.myriadValorBasePower || unit.physicalPower || 0) * MYRIAD_VALOR.powerPerHitRatio * (unit.myriadValorStacks || 0)
+      : 0;
+    const cavalryPowerMult = type === "physical" && unit?.cavalryChargeReady ? CAVALRY_CHARGE.readyPowerMult : 1;
+    return (base + myriadGain + (unit.bonusPowerTimer > 0 ? unit.bonusPower || 14 : 0)) * cavalryPowerMult;
   }
   statusCount(unit) { return unit.poison.stacks + unit.burn.stacks + (unit.slowTimer > 0 ? 2 : 0) + (unit.mark || 0); }
   carryAlly(unit) {
@@ -1363,19 +1815,23 @@ class CombatSimulation {
   }
   passiveHealMultiplier(source, target) {
     if (!source) return 1;
-    return this.passiveEffects(source, "passiveHealAmp").reduce((multiplier, effect) => {
+    const passive = this.passiveEffects(source, "passiveHealAmp").reduce((multiplier, effect) => {
       if (effect.selfOnly && source.id !== target?.id) return multiplier;
       if (effect.targetLine && target?.line !== effect.targetLine) return multiplier;
       return multiplier * (1 + (effect.amp || 0));
     }, 1);
+    const setAmp = source.mechanicModifiers?.["set:guardianEcho:foundation"] ? 1.2 : 1;
+    return passive * setAmp;
   }
   passiveShieldMultiplier(source, target) {
     if (!source) return 1;
-    return this.passiveEffects(source, "passiveShieldAmp").reduce((multiplier, effect) => {
+    const passive = this.passiveEffects(source, "passiveShieldAmp").reduce((multiplier, effect) => {
       if (effect.selfOnly && source.id !== target?.id) return multiplier;
       if (effect.targetLine && target?.line !== effect.targetLine) return multiplier;
       return multiplier * (1 + (effect.amp || 0));
     }, 1);
+    const setAmp = source.mechanicModifiers?.["set:sighingWall:foundation"] ? 1.2 : 1;
+    return passive * setAmp;
   }
   emitSignal(signal) { this.signalBus.emit({ time: this.time, ...signal }); }
   activeWindows(unit) {
@@ -1407,6 +1863,15 @@ class CombatSimulation {
 function status() { return { stacks: 0, time: 0, tick: 1, source: null }; }
 function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
 function round(value, digits = 3) { return Number(value.toFixed(digits)); }
+
+function segmentPointDistance(start, end, point) {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const lengthSq = dx * dx + dy * dy;
+  if (lengthSq <= 0) return Math.hypot(point.x - start.x, point.y - start.y);
+  const t = clamp(((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSq, 0, 1);
+  return Math.hypot(point.x - (start.x + dx * t), point.y - (start.y + dy * t));
+}
 
 function seededRandom(seedText) {
   let seed = 2166136261;

@@ -1,9 +1,27 @@
 # Coop Report Index
 
+- `2026-08-24_2120_ufs-v4-root-audit-and-omission-propagation.md`: 主Agent确认V4策略确受裁剪注意限制，修正“移动已想完但终点类型漏看”不应撤销动作；V4封存决定复放已进入房间并抵达研究推进选择（预算4、最多2格），相关+合同回归108/108通过。
+- `2026-08-24_2114_ufs-attention-limited-live-playtest-v4.md`: 全新Agent只凭41/153+裁剪视图执行唯一Attempt；自主提交研究、双格能源、防空和通道路线，最后白骰通道放置因`next_endpoint_not_noticed`封卷，未进入研究推进或真正触发母舰下降格，隔离/时序合同8/8通过。
+- `2026-08-24_2058_ufs-mothership-landing-trajectory-handoff.md`: 封卷审计确认V3并非漏看，而是旧天空层未识别母舰下降格；新增落点五槽路由并交给已有读规则轨迹和JSON程序，V3复放从错误unknown恢复为正确白骰随机边界，目标回归34/34通过。
+- `2026-08-24_2047_ufs-attention-limited-live-playtest-v3.md`: 全新Agent只读41/153+注意裁剪视图，以自身工作记忆连续完成两格能源房；第三步白5尝试研究房时在放置轨迹关系门返回unknown，未抵达新研究推进操作口并按唯一Attempt封卷，隔离/时序合同5/5通过。
+- `2026-08-24_2033_ufs-attention-limited-live-playtest-v2.md`: 全新Agent只读每步41/153+项注意裁剪视图，逐response完成5次放骰、随机、能源与研究启动；能源2→6后研究扣至4，但研究效果边界无操作口而按唯一Attempt协议封卷，合同5/5通过。
+
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
 ## 2026-08-24
 
+- `2026-08-24_2120_ufs-v4-root-audit-and-omission-propagation.md`: 主Agent确认V4策略确受裁剪注意限制，修正“移动已想完但终点类型漏看”不应撤销动作；V4封存决定复放已进入房间并抵达研究推进选择（预算4、最多2格），相关+合同回归108/108通过。
+- `2026-08-24_2114_ufs-attention-limited-live-playtest-v4.md`: 全新Agent只凭41/153+裁剪视图执行唯一Attempt；自主提交研究、双格能源、防空和通道路线，最后白骰通道放置因`next_endpoint_not_noticed`封卷，未进入研究推进或真正触发母舰下降格，隔离/时序合同8/8通过。
+- `2026-08-24_2047_ufs-attention-limited-live-playtest-v3.md`: 全新Agent只读41/153+注意裁剪视图，以自身工作记忆连续完成两格能源房；第三步白5尝试研究房时在放置轨迹关系门返回unknown，未抵达新研究推进操作口并按唯一Attempt封卷，隔离/时序合同5/5通过。
+- `2026-08-24_2033_ufs-attention-limited-live-playtest-v2.md`: 全新Agent只读每步41/153+项注意裁剪视图，逐response完成5次放骰、随机、能源与研究启动；能源2→6后研究扣至4，但研究效果边界无操作口而按唯一Attempt协议封卷，合同5/5通过。
+- `2026-08-24_1925_ufs-live-agent-playtest-root-audit.md`: 主Agent复核现场试玩的逐步时序与规划质量；确认预想确实改变前两次选择，并定位普通隧道缺少`placement_room_state`轨迹，同时指出决策Agent仍读完整observation而非被153项概率注意强制裁剪。
+- `2026-08-24_1916_ufs-live-agent-playtest-unknown-boundary.md`: 全新盲测Agent按response逐步比较候选并只提交一个operation；前两步由预想排除母舰风险并补齐能源房，第三步自然选择普通隧道后真实停在`unknown: no_rule_for:placement_room_state`，未绕过或重试；时序/重放/污染合同4/4通过，暴露隧道放置认知接线缺口。
+- `2026-08-24_1857_ufs-one-round-interactive-session-api.md`: 新增`start→advance(operation)`逐choice会话，7类操作口逐步返回新脑内环境，随机/生成真实暂停、JSON checkpoint可恢复、非法调用原子拒绝；旧Agent样本改为13次逐操作复放，相关Node回归97/97。
+- `2026-08-24_1625_ufs-isolated-agent-autonomous-round-v0.md`: 隔离子Agent不使用旧固定回合答案，顺序完成5次放骰、房间/支付/挖掘/跳过与真实生成二选一；完整注意认知链到新回合，0 attention_stop/unknown，专项6/6，事后oracle确认全部动作合法且最终状态一致，同时诚实保留“一次性选择表复放”脚手架边界。
+- `2026-08-24_1604_ufs-short-term-attention-carryover.md`: 完整153+项注意新增两步短期痕迹，旧焦点只提高下步概率并快速衰减，新动作仍可打断；200种子旧焦点注意率181/200对36/200，100种子有/无粘连均100%完成，相关回归84/84。
+- `2026-08-24_1457_ufs-full-probabilistic-attention-integration.md`: 默认单步与连续回合改接完整153+项概率注意，动作只加权而不删除周边背景，放置后的天空链也不再二次使用小Top-N；自然漏看爆炸格后形成错误推断并继续，Node相关回归81/81、Python注意14/14。
+- `2026-08-24_1426_ufs-missed-attention-wrong-inference-compatibility.md`: 注入战斗机房漏看紫机后，AI形成可解释的错误Q结果并沿错误脑内世界完成后续母舰阶段；预期与oracle分歧、专项6/6、相关回归75/75，证明下游兼容错误但全局概率注意仍未接入。
+- `2026-08-24_1400_ufs-fixed-one-round-continuous-imagination.md`: 固定非策略选择下接通5次放骰、白骰随机恢复、能源/战斗机房、挖掘、母舰与两种生成优先级，脑内状态与正式oracle逐字段一致；新增5/5、相关全回归74/74，下一步才替换为主动策略选择。
 - `2026-08-24_1322_ufs-twenty-event-auto-q-wiring.md`: 沿用现有工程把其余20类普通游戏事件接入注意→五槽Q→25×3840真实GTE轨迹→关系门→JSON程序；输入不再直接提供qKind或规则来源，新接线26/26、既有回归39/39，合计65/65通过。
 
 ## 2026-08-22

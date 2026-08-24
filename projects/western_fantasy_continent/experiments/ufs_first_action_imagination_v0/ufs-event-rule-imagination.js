@@ -273,6 +273,24 @@ function makeAttention(facts, maxItems) {
   };
 }
 
+function makeExternalAttention(facts, noticedPaths) {
+  if (!Array.isArray(noticedPaths)) throw new TypeError("externalAttention.noticedPaths must be an array");
+  const allowed = new Set(noticedPaths);
+  const selected = facts.filter((fact) => allowed.has(fact.path));
+  const byPath = new Map(selected.map((fact) => [fact.path, fact]));
+  return {
+    totalPublicAtoms: facts.length,
+    maxItems: selected.length,
+    ranked: facts,
+    selected,
+    has(path) { return byPath.has(path); },
+    read(path) {
+      if (!byPath.has(path)) throw new Error(`external full attention did not expose: ${path}`);
+      return clone(byPath.get(path).value);
+    },
+  };
+}
+
 function relationMatches(trajectory, qKind) {
   return trajectory.relation?.qKind === qKind;
 }
@@ -294,7 +312,7 @@ class UfsEventRuleImagination {
     this.topK = topK;
   }
 
-  run({ event, observedState, perceptionBudget = 100 }) {
+  run({ event, observedState, perceptionBudget = 100, externalAttention = null }) {
     const observedBefore = clone(observedState);
     const qKind = inferQKind({ event, observedState });
     const projector = EVENT_PROJECTORS[qKind];
@@ -309,13 +327,16 @@ class UfsEventRuleImagination {
       };
     }
     const facts = projector({ event, observedState });
-    const attention = makeAttention(facts, perceptionBudget);
+    const attention = externalAttention
+      ? makeExternalAttention(facts, externalAttention.noticedPaths)
+      : makeAttention(facts, perceptionBudget);
     const requiredPaths = facts.map((fact) => fact.path);
     const missingForQ = requiredPaths.filter((path) => !attention.has(path));
     const trace = {
       eventDetection: { eventType: event.type, qKind },
       q: null,
       attention: {
+        mode: externalAttention ? "external_full_attention" : "legacy_local_attention",
         totalPublicAtoms: attention.totalPublicAtoms,
         budget: attention.maxItems,
         selected: attention.selected.map((fact) => fact.path),
@@ -402,5 +423,6 @@ module.exports = {
   inferQKind,
   UfsEventRuleImagination,
   makeAttention,
+  makeExternalAttention,
   relationMatches,
 };

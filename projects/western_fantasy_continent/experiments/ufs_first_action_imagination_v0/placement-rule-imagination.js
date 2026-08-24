@@ -119,6 +119,52 @@ function makeAttention(atoms, maxItems) {
   };
 }
 
+function globalSourcesForAtom(atomId, publicState, selectedAction, room) {
+  if (atomId === "event.type") return [];
+  if (atomId.startsWith("event.die")) return [`die:${selectedAction.dieId}`];
+  if (atomId === "event.cellId" || atomId === "cell.column") {
+    return [`base_cell:${selectedAction.cellId}`];
+  }
+  if (atomId === "cell.roomId") {
+    return [`base_cell:${selectedAction.cellId}`, `room:${room.id}`];
+  }
+  if (atomId.startsWith("room.cell:")) {
+    const match = /^room\.cell:(.+)\.(occupied|dieValue)$/.exec(atomId);
+    if (!match) return [`room:${room.id}`];
+    const cellId = match[1];
+    const sources = [`room:${room.id}`, `base_cell:${cellId}`];
+    if (cellId === selectedAction.cellId) sources.push(`die:${selectedAction.dieId}`);
+    const placement = publicState.placements.find((row) => row.cellId === cellId && !row.resolved);
+    if (placement) sources.push(`placement:${placement.id}`);
+    return sources;
+  }
+  if (atomId.startsWith("room.")) return [`room:${room.id}`];
+  return [];
+}
+
+function makeFullAttention(atoms, allocation, publicState, selectedAction, room) {
+  if (!allocation || !Array.isArray(allocation.noticedItemIds)) {
+    throw new TypeError("globalAttention must be a full attention allocation");
+  }
+  const noticed = new Set(allocation.noticedItemIds);
+  const selected = atoms.filter((atom) => globalSourcesForAtom(
+    atom.id, publicState, selectedAction, room,
+  ).every((itemId) => noticed.has(itemId)));
+  const byId = new Map(selected.map((atom) => [atom.id, atom]));
+  return {
+    totalPublicAtoms: atoms.length,
+    maxItems: selected.length,
+    selected,
+    has(id) { return byId.has(id); },
+    read(id, reads = null) {
+      const atom = byId.get(id);
+      if (!atom) throw new PlacementAttentionError(id);
+      if (reads) reads.push(id);
+      return structuredClone(atom.value);
+    },
+  };
+}
+
 function buildQueries(attention) {
   const common = ["event.type", "event.dieValue", "cell.roomId", "room.type", "room.cellIds"];
   if (!common.every((id) => attention.has(id))) return [];
@@ -166,7 +212,7 @@ class PlacementRuleImagination {
     memory = new PrecompiledGteTrajectoryMemory(PLACEMENT_TRAJECTORIES),
     programLibrary = loadDefaultLibrary(),
     programInterpreter = new JsonCognitiveProgramInterpreter(),
-    topK = 3,
+    topK = 6,
     activationThreshold = 0.55,
   } = {}) {
     this.memory = memory;
@@ -181,19 +227,31 @@ class PlacementRuleImagination {
     publicMap,
     selectedAction,
     perceptionBudget = 30,
+    globalAttention = null,
   }) {
     const { die, cell, room } = locateSelection(publicState, publicMap, selectedAction);
-    const attention = makeAttention(
-      buildPlacementAtoms(publicState, selectedAction, die, cell, room),
-      perceptionBudget,
-    );
+    const atoms = buildPlacementAtoms(publicState, selectedAction, die, cell, room);
+    const attention = globalAttention
+      ? makeFullAttention(atoms, globalAttention, publicState, selectedAction, room)
+      : makeAttention(atoms, perceptionBudget);
     const queries = buildQueries(attention);
     const imaginedConsequences = { movement: null, room: null };
     const trace = {
       attention: {
+        mode: globalAttention ? "external_full_attention" : "legacy_local_attention",
         totalPublicAtoms: attention.totalPublicAtoms,
         budget: attention.maxItems,
         selected: attention.selected.map((atom) => atom.id),
+        ...(globalAttention ? {
+          fullSpaceItemCount: globalAttention.spaceItemCount,
+          fullCapacity: globalAttention.capacity,
+          fullNoticedItemIds: globalAttention.noticedItemIds,
+          fullOmittedItemIds: globalAttention.omittedItemIds,
+          fullCarryoverAppliedItemIds: globalAttention.carryoverAppliedItemIds,
+          attentionTraceBefore: globalAttention.traceBefore,
+          attentionTraceAfter: globalAttention.traceAfter,
+          fullField: globalAttention.field,
+        } : {}),
       },
       queries: queries.map((query) => ({ kind: query.metadata.kind, q: query.q })),
       activations: [],

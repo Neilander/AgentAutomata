@@ -6,15 +6,15 @@
   "followingMatrixFile": "following_matrix.f32",
   "coarseMatrixFile": "coarse_matrix.f32",
   "currentShape": [
-    25,
+    26,
     3840
   ],
   "followingShape": [
-    25,
+    26,
     3840
   ],
   "coarseShape": [
-    25,
+    26,
     768
   ],
   "records": [
@@ -90,6 +90,25 @@
         "cause_relation": "被占据的是防空房而非可结算房间",
         "temporal_state": "放置后等待房间阶段",
         "context": "规则记忆唤醒的房间状态"
+      },
+      "support": 1.0,
+      "observations": 1
+    },
+    {
+      "recordId": "read-rule-tunnel-placement-to-no-room-output",
+      "current": {
+        "affected_object": "base room containing placed die",
+        "change_trend": "occupancy and future room effect pending",
+        "cause_relation": "die occupied one room cell",
+        "temporal_state": "after placement before room phase",
+        "context": "imagined candidate action"
+      },
+      "following": {
+        "affected_object": "通道格中的骰子与房间阶段产出",
+        "change_trend": "骰子保持占位但不会产生普通房间阶段效果",
+        "cause_relation": "被占据的是通道格而非能源、战斗机或研究房",
+        "temporal_state": "放置后等待房间阶段",
+        "context": "规则记忆唤醒的通道状态"
       },
       "support": 1.0,
       "observations": 1

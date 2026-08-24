@@ -18,6 +18,9 @@ const {
 const {
   UfsFirstActionImagination,
 } = require("./ufs-first-action-imagination");
+const { UfsFullAttentionProvider } = require("./ufs-full-attention-provider");
+const liveInitialState = require("./public_initial_state.json");
+const livePublicMap = require("./public-map");
 const {
   PLACEMENT_TRAJECTORIES,
   PlacementRuleImagination,
@@ -121,6 +124,14 @@ for (const label of Object.keys(EXPECTED)) {
     assert.equal(result.imaginedConsequences.room.roomValue, expected.roomValue);
     assert.equal(result.imaginedConsequences.room.sourceRuleId, expected.roomRuleId);
     assert.equal(result.trace.placementRules.queries.length, 2);
+    assert.equal(result.trace.placementRules.attention.mode, "external_full_attention");
+    assert.ok(result.trace.placementRules.attention.fullSpaceItemCount >= 153);
+    assert.ok(result.trace.placementRules.attention.fullOmittedItemIds.length > 100);
+    assert.equal(result.trace.sky.attention.mode, "external_full_attention");
+    assert.equal(
+      result.trace.sky.attention.fullSpaceItemCount,
+      result.trace.placementRules.attention.fullSpaceItemCount,
+    );
     assert.equal(result.trace.placementRules.groundings.length, 2);
     assert.ok(result.trace.placementRules.groundings.every((row) => row.committed));
     assert.ok(result.trace.placementRules.groundings.every((row) => row.reads.length > 0));
@@ -190,10 +201,10 @@ test("core imagination module has no formal-engine dependency", () => {
 
 test("placement memory is loaded from a frozen AI current-to-following trajectory set", () => {
   const validation = validateGeneratedBundle();
-  assert.equal(validation.sourceCount, 24);
-  assert.equal(validation.edgeCount, 25);
-  assert.equal(validation.firstActionEdgeCount, 5);
-  assert.equal(PLACEMENT_TRAJECTORIES.length, 5);
+  assert.equal(validation.sourceCount, 25);
+  assert.equal(validation.edgeCount, 26);
+  assert.equal(validation.firstActionEdgeCount, 6);
+  assert.equal(PLACEMENT_TRAJECTORIES.length, 6);
   assert.ok(PLACEMENT_TRAJECTORIES.every(
     (trajectory) => trajectory.generationOrigin === "ai_rule_reading",
   ));
@@ -202,6 +213,105 @@ test("placement memory is loaded from a frozen AI current-to-following trajector
   ));
   const generatedIds = new Set(generatedBundle.edges.map((edge) => edge.edgeId));
   assert.ok(PLACEMENT_TRAJECTORIES.every((trajectory) => generatedIds.has(trajectory.id)));
+});
+
+test("an ordinary tunnel placement awakens a no-output room trajectory instead of unknown", () => {
+  const result = new UfsFirstActionImagination().run({
+    publicState: structuredClone(liveInitialState),
+    publicMap: livePublicMap,
+    selectedAction: {
+      type: "place_die",
+      dieId: "r1-gray-0",
+      dieColor: "gray",
+      dieValue: 2,
+      cellId: "A-r2-c3",
+    },
+    attentionSeed: 20260824,
+  });
+
+  assert.equal(result.status, "choice");
+  assert.equal(result.reason, "next_player_decision");
+  assert.equal(result.imaginedConsequences.room.roomType, "tunnel");
+  assert.equal(result.imaginedConsequences.room.roomValue, null);
+  assert.equal(result.imaginedConsequences.room.roomPhaseStatus, "no_room_phase_output");
+  assert.equal(result.imaginedConsequences.room.sourceRuleId, "tunnel_no_room_output");
+  const grounding = result.trace.placementRules.groundings.find(
+    (row) => row.queryKind === "placement_room_state",
+  );
+  assert.equal(grounding.trajectoryId, "read-rule-tunnel-placement-to-no-room-output");
+  assert.equal(grounding.programId, "tunnel-room-no-output-v1");
+});
+
+test("a noticed mothership landing delegates to the rule-read trajectory and JSON program", () => {
+  const result = new UfsFirstActionImagination().run({
+    publicState: structuredClone(liveInitialState),
+    publicMap: livePublicMap,
+    selectedAction: {
+      type: "place_die",
+      dieId: "r1-white-3",
+      dieColor: "white",
+      dieValue: 5,
+      cellId: "A-r2-c2",
+    },
+    attentionSeed: 20260824,
+  });
+
+  assert.equal(result.status, "choice");
+  assert.equal(result.reason, "next_player_decision");
+  assert.equal(result.imaginedState.mothershipRow, 0);
+  assert.equal(result.trace.sky.boundaries.at(-1).trajectoryId, "RULE-LANDED-MOTHERSHIP-DELEGATE");
+  assert.equal(result.trace.landingEvents.length, 1);
+  assert.equal(result.trace.landingEvents[0].status, "automatic");
+  assert.equal(
+    result.trace.landingEvents[0].cognitiveTrace.eventDetection.qKind,
+    "ship_final_mothership_space",
+  );
+  assert.equal(
+    result.trace.landingEvents[0].cognitiveTrace.grounding.trajectoryId,
+    "read-rule-mothership-space-to-mothership-descent",
+  );
+  assert.equal(
+    result.trace.landingEvents[0].cognitiveTrace.grounding.programId,
+    "mothership-down-space",
+  );
+});
+
+test("an unnoticed mothership endpoint is omitted instead of leaking its hidden effect", () => {
+  const selectedAction = {
+    type: "place_die",
+    dieId: "r1-white-3",
+    dieColor: "white",
+    dieValue: 5,
+    cellId: "A-r2-c2",
+  };
+  const provider = new UfsFullAttentionProvider();
+  provider.beginEpisode();
+  const globalAttention = provider.noticePlacement({
+    publicState: structuredClone(liveInitialState),
+    publicMap: livePublicMap,
+    selectedAction,
+    randomSeed: 20260824,
+  });
+  globalAttention.noticedItemIds = globalAttention.noticedItemIds.filter(
+    (itemId) => itemId !== "sky_cell:5:1",
+  );
+  globalAttention.omittedItemIds = [
+    ...new Set([...globalAttention.omittedItemIds, "sky_cell:5:1"]),
+  ];
+
+  const result = new UfsFirstActionImagination().run({
+    publicState: structuredClone(liveInitialState),
+    publicMap: livePublicMap,
+    selectedAction,
+    globalAttention,
+  });
+
+  assert.equal(result.status, "choice");
+  assert.equal(result.imaginedState.mothershipRow, -1);
+  assert.equal(result.trace.landingEvents.length, 0);
+  assert.ok(result.trace.sky.boundaries.some(
+    (row) => row.reason === "unnoticed_endpoint_effect_omitted_from_imagination",
+  ));
 });
 
 test("repeated validation strengthens one GTE connection without duplicating its matrix row", () => {
@@ -232,10 +342,26 @@ test("without noticed room facts, room consequence is not produced", () => {
     scenarioLabel: "A",
     publicState: scenario.publicState,
   });
+  const allocation = new UfsFullAttentionProvider({ mode: "all" }).noticePlacement({
+    publicState: scenario.publicState,
+    publicMap: scenario.publicMap,
+    selectedAction: selection.action,
+    randomSeed: 1,
+  });
+  const targetRoomId = scenario.publicMap.base.cells.find(
+    (cell) => cell.id === selection.action.cellId,
+  ).roomId;
+  const omittedRoomId = `room:${targetRoomId}`;
+  allocation.noticedItemIds = allocation.noticedItemIds.filter((id) => id !== omittedRoomId);
+  allocation.omittedItemIds = [omittedRoomId];
+  allocation.field = allocation.field.map((row) => ({
+    ...row,
+    noticed: row.itemId === omittedRoomId ? false : row.noticed,
+  }));
   const result = new UfsFirstActionImagination().run({
     ...scenario,
     selectedAction: selection.action,
-    placementPerceptionBudget: 4,
+    globalAttention: allocation,
   });
   assert.equal(result.status, "attention_stop");
   assert.equal(result.reason, "no_complete_placement_q");

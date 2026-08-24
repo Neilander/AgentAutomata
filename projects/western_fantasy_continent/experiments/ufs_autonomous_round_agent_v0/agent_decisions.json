@@ -1,0 +1,24 @@
+{
+  "schema": "ufs_isolated_agent_round_decisions_v0",
+  "decisionAuthor": "isolated_subagent:/root/autonomous_ufs_round",
+  "decisionMethod": "sequential judgment cards based on page-1-9 knowledge and current public/cognitive state",
+  "forbiddenSources": ["one-round-fixture.js", "formal-engine output during cognition"],
+  "attentionSeed": 20260824,
+  "placements": [
+    { "cardId": "P1", "dieId": "r1-gray-2", "cellId": "A-r2-c5" },
+    { "cardId": "P2", "dieId": "r1-gray-1", "cellId": "A-r2-c4" },
+    { "cardId": "P3", "dieId": "r1-white-3", "cellId": "A-r2-c1" },
+    { "cardId": "P4", "dieId": "r1-white-4", "cellId": "A-r3-c3" },
+    { "cardId": "P5", "dieId": "r1-gray-0", "cellId": "A-r1-c2" }
+  ],
+  "roomActions": [
+    { "cardId": "R1", "type": "resolve_room", "roomId": "A-upper-energy", "pay": true },
+    { "cardId": "R2", "type": "skip_worker", "placementId": "r1-white-3@A-r2-c1" },
+    { "cardId": "R3", "type": "excavate", "placementId": "r1-white-4@A-r3-c3" },
+    { "cardId": "R4", "type": "skip_worker", "placementId": "r1-gray-0@A-r1-c2" },
+    { "cardId": "R5", "type": "end_rooms" }
+  ],
+  "spawnChoices": {
+    "white-1": { "cardId": "S1", "dropPointId": "DP-C1" }
+  }
+}

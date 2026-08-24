@@ -180,6 +180,45 @@ function buildAttentionField(world, action, actionInstance, {
   };
 }
 
+function fullAttentionSources(atomId, action) {
+  if (atomId === "event.column") return [`base_cell:${action.cellId}`];
+  if (atomId.startsWith("event.")) return [`die:${action.dieId}`];
+  if (atomId === "city.health") return ["track:damage"];
+  const objectMatch = /^object:([^.]*)\./.exec(atomId);
+  if (objectMatch) return [`ship:${objectMatch[1]}`];
+  const tileMatch = /^tile:C(\d+):(-?\d+)\./.exec(atomId);
+  if (tileMatch) {
+    const column = Number(tileMatch[1]) - 1;
+    const row = Number(tileMatch[2]);
+    return row >= 0 && row <= 15 ? [`sky_cell:${row}:${column}`] : ["track:damage"];
+  }
+  return [];
+}
+
+function buildExternalAttentionField(world, action, allocation) {
+  if (!allocation || !Array.isArray(allocation.noticedItemIds)) {
+    throw new TypeError("externalAttention must be a full attention allocation");
+  }
+  const noticed = new Set(allocation.noticedItemIds);
+  const atoms = [...createAtomRegistry(world, action).values()];
+  const selected = atoms.filter((atom) => fullAttentionSources(atom.id, action)
+    .every((itemId) => noticed.has(itemId)));
+  const selectedById = new Map(selected.map((atom) => [atom.id, atom]));
+  return {
+    maxItems: selected.length,
+    totalPublicAtoms: atoms.length,
+    ranked: atoms,
+    selected,
+    selectedById,
+    has(id) { return selectedById.has(id); },
+    read(id, readTrace = null) {
+      if (!selectedById.has(id)) throw new AttentionAccessError(id);
+      if (readTrace) readTrace.push(id);
+      return selectedById.get(id).value;
+    },
+  };
+}
+
 function hasObjectFields(attention, objectId, fields) {
   return fields.every((field) => attention.has(`object:${objectId}.${field}`));
 }
@@ -422,6 +461,7 @@ function landingKindToQKind(tileKind) {
     arrow: "landed_arrow",
     city: "landed_city",
     normal: "landed_normal",
+    mothership: "landed_mothership",
     random: "landed_random",
     choice: "landed_choice",
   };
@@ -487,15 +527,18 @@ class ImaginationPipeline {
     perceptionBudget = 40,
     imaginationBudget = 20,
     attentionAdjustments = {},
+    externalAttention = null,
   }) {
     const observedBefore = JSON.stringify(world);
     const imaginedWorld = clone(world);
     const actionInstance = instantiateActionPattern(action);
-    const attention = buildAttentionField(world, action, actionInstance, {
-      maxItems: perceptionBudget,
-      goal,
-      adjustments: attentionAdjustments,
-    });
+    const attention = externalAttention
+      ? buildExternalAttentionField(world, action, externalAttention)
+      : buildAttentionField(world, action, actionInstance, {
+        maxItems: perceptionBudget,
+        goal,
+        adjustments: attentionAdjustments,
+      });
     const attentionAccount = new ImaginationAttentionAccount(imaginationBudget);
     let currentQueries = attentionToInitialQueries(world, action, attention);
     const seenQueryKeys = new Set();
@@ -503,6 +546,7 @@ class ImaginationPipeline {
       schema: "imagination_pipeline_trace_v0",
       actionInstance,
       attention: {
+        mode: externalAttention ? "external_full_attention" : "legacy_local_attention",
         totalPublicAtoms: attention.totalPublicAtoms,
         budget: attention.maxItems,
         selected: attention.selected.map((atom) => ({
@@ -510,6 +554,15 @@ class ImaginationPipeline {
           activation: atom.activation,
           contributions: atom.contributions,
         })),
+        ...(externalAttention ? {
+          fullSpaceItemCount: externalAttention.spaceItemCount,
+          fullCapacity: externalAttention.capacity,
+          fullNoticedItemIds: externalAttention.noticedItemIds,
+          fullOmittedItemIds: externalAttention.omittedItemIds,
+          fullCarryoverAppliedItemIds: externalAttention.carryoverAppliedItemIds,
+          attentionTraceBefore: externalAttention.traceBefore,
+          attentionTraceAfter: externalAttention.traceAfter,
+        } : {}),
       },
       initialQueryCount: currentQueries.length,
       activations: [],
@@ -658,9 +711,11 @@ class ImaginationPipeline {
         const derived = deriveQueriesFromPatches(imaginedWorld, preview.patches, attention);
         if (derived.missingAttention.length > 0) {
           trace.boundaries.push({
-            kind: "attention_stop",
-            reason: "next_endpoint_not_noticed",
+            kind: "complete",
+            reason: "unnoticed_endpoint_effect_omitted_from_imagination",
             missingAtoms: derived.missingAttention,
+            inferenceQuality: "attention_limited_possible_error",
+            assumption: "no_additional_landing_effect_was_imagined",
           });
         }
         nextQueries.push(...derived.queries);
@@ -707,6 +762,7 @@ module.exports = {
   ImaginationPipeline,
   instantiateActionPattern,
   buildAttentionField,
+  buildExternalAttentionField,
   attentionToInitialQueries,
   relationCheck,
   validateTrajectoryContracts,

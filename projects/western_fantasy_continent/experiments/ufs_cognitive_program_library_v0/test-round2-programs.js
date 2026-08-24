@@ -23,10 +23,14 @@ function execute(programId, values) {
   return new JsonCognitiveProgramInterpreter().execute(row.program, { attention: attention(values) });
 }
 
-test("all three blind submissions pass input and ID audits", () => {
+test("all three blind submissions pass audits and coexist with the later tunnel gap fix", () => {
   for (const batch of BATCHES) assert.doesNotThrow(() => auditBatch(batch));
   assert.equal(BATCHES.flatMap((row) => row.submission.programs).length, 20);
-  assert.equal(loadDefaultLibrary().list().length, 25);
+  const library = loadDefaultLibrary();
+  assert.equal(library.list().length, 26);
+  const tunnel = library.get("tunnel-room-no-output-v1");
+  assert.equal(tunnel.provenance.author, "root_gap_fix");
+  assert.equal(tunnel.provenance.triggeringExperiment, "ufs_live_agent_playtest_v1");
 });
 
 test("sky programs bind reroll, final arrow, mothership space, and city contact", () => {

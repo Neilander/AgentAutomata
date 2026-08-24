@@ -4,7 +4,7 @@ const PROGRAM_KEYS = Object.freeze([
   "programId", "revision", "sourceRuleIds", "trigger", "requiredReads", "bindings", "output",
 ]);
 const RELATION_KEYS = new Set(["roomTypes", "excludedRoomTypes", "cellCount", "minimumCellCount"]);
-const ROOM_TYPES = new Set(["aa", "energy", "fighter", "research"]);
+const ROOM_TYPES = new Set(["aa", "tunnel", "energy", "fighter", "research"]);
 const Q_KINDS = new Set([
   "placement_movement", "placement_room_state",
   "white_die_placed", "ship_final_arrow", "ship_final_mothership_space", "ship_city_contact",

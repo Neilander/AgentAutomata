@@ -147,13 +147,49 @@ test("imagination attention exhaustion prevents an unthought effect from committ
 
 test("limited perception blocks a grounding read instead of leaking an unnoticed fact", () => {
   const { result } = runScenario({}, { perceptionBudget: 18 });
-  assert.equal(result.status, "attention_stop");
+  assert.ok(["attention_stop", "complete"].includes(result.status));
   assert.ok(result.trace.boundaries.some((boundary) => (
     boundary.reason === "grounding_required_unnoticed_fact"
-    || boundary.reason === "next_endpoint_not_noticed"
+    || boundary.reason === "unnoticed_endpoint_effect_omitted_from_imagination"
     || boundary.reason === "no_complete_initial_q"
   )));
   assert.equal(result.imaginedWorld.city.health, 3);
+});
+
+test("an unnoticed landing endpoint becomes a possible wrong inference instead of cancelling movement", () => {
+  const scenario = createScenario({ endpointKind: "arrow", amount: 2 });
+  scenario.action.cellId = "synthetic";
+  scenario.action.column = "C2";
+  for (const object of scenario.world.objects) {
+    object.column = object.column === "B" ? "C2" : "C3";
+  }
+  for (const tile of scenario.world.tiles) {
+    tile.column = tile.column === "B" ? "C2" : "C3";
+    if (tile.targetColumn) tile.targetColumn = tile.targetColumn === "B" ? "C2" : "C3";
+  }
+  const noticedItemIds = ["die:die-3", "base_cell:synthetic", "ship:ship-a"];
+  const result = new ImaginationPipeline().run({
+    ...scenario,
+    externalAttention: {
+      noticedItemIds,
+      spaceItemCount: 153,
+      capacity: 41,
+      omittedItemIds: ["sky_cell:4:1"],
+      carryoverAppliedItemIds: [],
+      traceBefore: [],
+      traceAfter: [],
+    },
+  });
+
+  assert.equal(result.status, "complete");
+  assert.equal(result.reason, "unnoticed_endpoint_effect_omitted_from_imagination");
+  assert.equal(objectById(result.imaginedWorld, "ship-a").row, 4);
+  assert.equal(objectById(result.imaginedWorld, "ship-a").column, "C2");
+  const boundary = result.trace.boundaries.find(
+    (row) => row.reason === "unnoticed_endpoint_effect_omitted_from_imagination",
+  );
+  assert.equal(boundary.inferenceQuality, "attention_limited_possible_error");
+  assert.equal(boundary.assumption, "no_additional_landing_effect_was_imagined");
 });
 
 test("an empty activation port yields unknown and leaves imagined state unchanged", () => {

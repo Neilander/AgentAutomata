@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import math
+import random
 import uuid
 from dataclasses import asdict, dataclass, field
 from typing import Any, Iterable
@@ -432,6 +433,7 @@ class AttentionFieldBuilder:
         contributions: dict[str, list[AttentionContribution]],
     ) -> None:
         if context.action != "place_die":
+            self._apply_generic_action_focus(context, contributions)
             return
         focus = context.focus
         die_id = focus.get("die_id")
@@ -449,6 +451,8 @@ class AttentionFieldBuilder:
                 amount, reason = 0.91, "放置动作的目标格"
             elif item.item_id == f"room:{room_id}":
                 amount, reason = 0.66, "目标格所属房间"
+            elif item.kind in {"base_cell", "placement", "robot"} and f"room:{room_id}" in item.tags:
+                amount, reason = 0.46, "目标房间内的其他格与已有占用"
             elif item.kind == "ship" and f"column:{column}" in item.tags:
                 amount, reason = 0.81, "目标格上方同列飞船"
             elif item.kind == "sky_cell" and f"column:{column}" in item.tags:
@@ -470,6 +474,33 @@ class AttentionFieldBuilder:
                 amount, reason = 0.06, "放置时保留的弱资源背景"
             if amount:
                 contributions[item.item_id].append(AttentionContribution("base:place_die", amount, reason))
+
+    def _apply_generic_action_focus(
+        self,
+        context: AttentionContext,
+        contributions: dict[str, list[AttentionContribution]],
+    ) -> None:
+        """Boost action-related items without removing the rest of the field."""
+        focus = context.focus
+        primary_ids = set(focus.get("focus_item_ids", []))
+        secondary_ids = set(focus.get("secondary_item_ids", []))
+        focus_kinds = set(focus.get("focus_kinds", []))
+        focus_tags = set(focus.get("focus_tags", []))
+        for item in self.space.items:
+            amount = 0.0
+            reason = ""
+            if item.item_id in primary_ids:
+                amount, reason = 0.76, "当前动作直接涉及的公开状态部分"
+            elif item.item_id in secondary_ids:
+                amount, reason = 0.46, "当前动作可能影响的相邻公开状态部分"
+            elif item.kind in focus_kinds:
+                amount, reason = 0.34, "当前动作强调的公开状态类别"
+            elif focus_tags.intersection(item.tags):
+                amount, reason = 0.24, "当前动作沿公开关系扩展的注意"
+            if amount:
+                contributions[item.item_id].append(
+                    AttentionContribution(f"base:{context.action}", amount, reason)
+                )
 
 
 def _selector_matches(selector: dict[str, Any], item: AttentionItem, context: AttentionContext) -> bool:
@@ -547,6 +578,52 @@ class AttentionBudgetAllocator:
         )
 
 
+class ProbabilisticAttentionAllocator(AttentionBudgetAllocator):
+    """Weighted finite attention; every nonzero background item can be noticed."""
+
+    def allocate(
+        self,
+        field: tuple[ActivatedItem, ...],
+        attention_level: float,
+        random_seed: int,
+    ) -> AttentionAllocation:
+        if not isinstance(random_seed, int):
+            raise TypeError("random_seed must be an integer")
+        if not math.isfinite(attention_level) or not 0 <= attention_level <= 1:
+            raise ValueError("attention_level must be between 0 and 1")
+        capacity = round(
+            self.minimum_capacity
+            + attention_level * (self.maximum_capacity - self.minimum_capacity)
+        )
+        randomizer = random.Random(random_seed)
+        ranked = []
+        for row in field:
+            # Squaring activation makes action boosts matter strongly, while
+            # BACKGROUND remains nonzero and therefore never becomes impossible.
+            weight = max(1e-9, row.activation ** 2)
+            key = -math.log(max(1e-12, randomizer.random())) / weight
+            ranked.append((key, row))
+        sampled = [row for _, row in sorted(ranked, key=lambda pair: pair[0])[: min(capacity, len(field))]]
+        sampled.sort(key=lambda row: (-row.activation, row.item.item_id))
+        noticed = tuple(
+            NoticedItem(
+                item_id=row.item.item_id,
+                kind=row.item.kind,
+                value=copy.deepcopy(row.item.value),
+                activation=row.activation,
+                clarity=_clarity(row.activation),
+                tags=row.item.tags,
+            )
+            for row in sampled
+        )
+        return AttentionAllocation(
+            attention_level=attention_level,
+            capacity=capacity,
+            noticed=noticed,
+            omitted_count=max(0, len(field) - len(noticed)),
+        )
+
+
 def _clarity(activation: float) -> str:
     if activation >= 0.8:
         return "precise"
@@ -563,6 +640,7 @@ class UfsAttentionModule:
         self.profile = profile or UfsAttentionProfile()
         self.field_builder = AttentionFieldBuilder(self.space, self.profile)
         self.allocator = AttentionBudgetAllocator()
+        self.probabilistic_allocator = ProbabilisticAttentionAllocator()
 
     def inspect_attention(self, context: AttentionContext) -> list[dict[str, Any]]:
         return [
@@ -578,3 +656,13 @@ class UfsAttentionModule:
 
     def notice(self, context: AttentionContext, attention_level: float) -> AttentionAllocation:
         return self.allocator.allocate(self.field_builder.build(context), attention_level)
+
+    def notice_probabilistic(
+        self,
+        context: AttentionContext,
+        attention_level: float,
+        random_seed: int,
+    ) -> AttentionAllocation:
+        return self.probabilistic_allocator.allocate(
+            self.field_builder.build(context), attention_level, random_seed
+        )

@@ -199,6 +199,132 @@
       ]
     },
     {
+      "programId": "tunnel-room-no-output-v1",
+      "revisions": [
+        {
+          "program": {
+            "programId": "tunnel-room-no-output-v1",
+            "revision": 1,
+            "sourceRuleIds": [
+              "tunnel_no_room_output"
+            ],
+            "trigger": {
+              "qKind": "placement_room_state",
+              "relation": {
+                "roomTypes": [
+                  "tunnel"
+                ]
+              }
+            },
+            "requiredReads": [
+              "room.id",
+              "room.type",
+              "room.cellIds",
+              "room.energyCost",
+              "room.cell:${cellId}.occupied"
+            ],
+            "bindings": {
+              "roomId": {
+                "op": "read",
+                "path": "room.id"
+              },
+              "roomType": {
+                "op": "read",
+                "path": "room.type"
+              },
+              "cells": {
+                "op": "read",
+                "path": "room.cellIds"
+              },
+              "occupiedCells": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "cells"
+                },
+                "as": "cellId",
+                "where": {
+                  "op": "read_template",
+                  "template": "room.cell:${cellId}.occupied"
+                }
+              },
+              "missingCells": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "cells"
+                },
+                "as": "cellId",
+                "where": {
+                  "op": "not",
+                  "value": {
+                    "op": "read_template",
+                    "template": "room.cell:${cellId}.occupied"
+                  }
+                }
+              },
+              "complete": {
+                "op": "eq",
+                "left": {
+                  "op": "length",
+                  "value": {
+                    "op": "var",
+                    "name": "missingCells"
+                  }
+                },
+                "right": 0
+              },
+              "energyCost": {
+                "op": "read",
+                "path": "room.energyCost"
+              }
+            },
+            "output": {
+              "kind": "set_noticed_room_state",
+              "fields": {
+                "roomId": {
+                  "op": "var",
+                  "name": "roomId"
+                },
+                "roomType": {
+                  "op": "var",
+                  "name": "roomType"
+                },
+                "occupiedCells": {
+                  "op": "var",
+                  "name": "occupiedCells"
+                },
+                "missingCells": {
+                  "op": "var",
+                  "name": "missingCells"
+                },
+                "complete": {
+                  "op": "var",
+                  "name": "complete"
+                },
+                "roomValue": null,
+                "energyCost": {
+                  "op": "var",
+                  "name": "energyCost"
+                },
+                "roomPhaseStatus": "no_room_phase_output"
+              }
+            }
+          },
+          "provenance": {
+            "author": "root_gap_fix",
+            "authoringMode": "public_map_and_rule_contract",
+            "allowedInputs": [
+              "rule_reading_trajectory_v0/source_rules.json",
+              "standard_rules_v1/fixtures/roswell-base-ab.js"
+            ],
+            "installedAfterLiveUnknown": true,
+            "triggeringExperiment": "ufs_live_agent_playtest_v1"
+          }
+        }
+      ]
+    },
+    {
       "programId": "arrow-final-landing",
       "revisions": [
         {

@@ -6,6 +6,8 @@ const {
 const {
   PlacementRuleImagination,
 } = require("./placement-rule-imagination");
+const { UfsEventRuleImagination } = require("./ufs-event-rule-imagination");
+const { UfsFullAttentionProvider } = require("./ufs-full-attention-provider");
 
 function clone(value) {
   return structuredClone(value);
@@ -91,13 +93,28 @@ function applyPlacementToImaginedState(publicState, publicMap, selectedAction, c
   return imaginedState;
 }
 
+function skyCellAt(publicMap, rowIndex, column) {
+  return publicMap.sky.rows.find((row) => row.index === rowIndex)?.cells?.[column] || null;
+}
+
+function movedShips(before, after) {
+  return after.ships.filter((ship) => {
+    const prior = before.ships.find((candidate) => candidate.id === ship.id);
+    return prior && (prior.column !== ship.column || prior.row !== ship.row);
+  });
+}
+
 class UfsFirstActionImagination {
   constructor({
     pipeline = new ImaginationPipeline(),
     placementRuleImagination = new PlacementRuleImagination(),
+    eventRuleImagination = new UfsEventRuleImagination(),
+    attentionProvider = new UfsFullAttentionProvider(),
   } = {}) {
     this.pipeline = pipeline;
     this.placementRuleImagination = placementRuleImagination;
+    this.eventRuleImagination = eventRuleImagination;
+    this.attentionProvider = attentionProvider;
   }
 
   run({
@@ -105,14 +122,24 @@ class UfsFirstActionImagination {
     publicMap,
     selectedAction,
     placementPerceptionBudget = 30,
+    globalAttention = null,
+    attentionSeed = 20260824,
   }) {
     const observedBefore = clone(publicState);
     if (publicState.phase !== "dice") throw new Error("first-action imagination requires dice phase");
+    if (!globalAttention) this.attentionProvider.beginEpisode();
+    const effectiveGlobalAttention = globalAttention || this.attentionProvider.noticePlacement({
+      publicState,
+      publicMap,
+      selectedAction,
+      randomSeed: attentionSeed,
+    });
     const placementThought = this.placementRuleImagination.run({
       publicState,
       publicMap,
       selectedAction,
       perceptionBudget: placementPerceptionBudget,
+      globalAttention: effectiveGlobalAttention,
     });
     const { die, cell, room } = placementThought.context;
     if (placementThought.status !== "automatic") {
@@ -142,12 +169,14 @@ class UfsFirstActionImagination {
       action: {
         type: "place_die",
         dieId: die.id,
+        cellId: selectedAction.cellId,
         column: columnLabel(cell.column),
         amount: actualDescent,
         selection: "all",
       },
       perceptionBudget: 40,
       imaginationBudget: 20,
+      externalAttention: effectiveGlobalAttention,
     });
     const imaginedState = applyPlacementToImaginedState(
       publicState,
@@ -157,10 +186,44 @@ class UfsFirstActionImagination {
       room,
       skyResult,
     );
+    const landingEvents = [];
+    let landingBoundary = null;
+    if (skyResult.status === "complete") {
+      const noticedItems = new Set(effectiveGlobalAttention.noticedItemIds || []);
+      for (const ship of movedShips(publicState, imaginedState)) {
+        const landingItemId = `sky_cell:${ship.row}:${ship.column}`;
+        if (!noticedItems.has(landingItemId)) continue;
+        const landingCell = skyCellAt(publicMap, ship.row, ship.column);
+        if (landingCell?.effect?.type !== "mothership_down") continue;
+        const result = this.eventRuleImagination.run({
+          event: { type: "ship_landed", shipId: ship.id },
+          observedState: {
+            tile: { kind: "mothership_down" },
+            mothership: { row: imaginedState.mothershipRow },
+          },
+          externalAttention: {
+            noticedPaths: noticedItems.has("track:mothershipRow") ? ["mothership.row"] : [],
+          },
+        });
+        landingEvents.push({
+          shipId: ship.id,
+          tile: { row: ship.row, column: ship.column, kind: "mothership_down" },
+          status: result.status,
+          reason: result.reason,
+          patch: clone(result.patch),
+          cognitiveTrace: clone(result.trace),
+        });
+        if (result.status !== "automatic" || result.patch?.kind !== "move_mothership") {
+          landingBoundary = { status: result.status, reason: result.reason };
+          break;
+        }
+        imaginedState.mothershipRow = result.patch.toRow;
+      }
+    }
     const remainingDice = imaginedState.dice.filter((candidate) => !candidate.placed);
-    let status = skyResult.status;
-    let reason = skyResult.reason;
-    if (skyResult.status === "complete" && remainingDice.length > 0) {
+    let status = landingBoundary?.status || skyResult.status;
+    let reason = landingBoundary?.reason || skyResult.reason;
+    if (!landingBoundary && skyResult.status === "complete" && remainingDice.length > 0) {
       status = "choice";
       reason = "next_player_decision";
     }
@@ -174,6 +237,12 @@ class UfsFirstActionImagination {
       imaginedConsequences: {
         movement: placementThought.imaginedConsequences.movement,
         skyStatus: skyResult.status,
+        landingEvents: landingEvents.map((row) => ({
+          shipId: row.shipId,
+          tile: row.tile,
+          status: row.status,
+          patch: row.patch,
+        })),
         room: placementThought.imaginedConsequences.room,
       },
       observedWorldUnchanged,
@@ -188,6 +257,7 @@ class UfsFirstActionImagination {
       trace: {
         placementRules: placementThought.trace,
         sky: skyResult.trace,
+        landingEvents,
         boundary: {
           kind: status,
           reason,

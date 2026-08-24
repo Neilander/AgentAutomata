@@ -243,7 +243,7 @@ def main() -> None:
         "honestBoundary": [
             "矩阵只负责提出Top-K联想候选；关系、否定和当前对象仍要经过逐槽证据与grounding。",
             "初始轨迹来自规则书第1—9页既有知识，允许后续因新规则和实际反馈补边、修边或降低支持度。",
-            "本产物证明当前冻结轨迹可以由真实GTE编译和激活，不证明25条已经覆盖首局所有可能局面。",
+            f"本产物证明当前冻结轨迹可以由真实GTE编译和激活，不证明{len(drafts)}条已经覆盖首局所有可能局面。",
         ],
     }
     validation_path = artifact_dir / "gte_matrix_validation.json"

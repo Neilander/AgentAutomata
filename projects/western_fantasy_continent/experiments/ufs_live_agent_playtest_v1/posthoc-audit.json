@@ -1,0 +1,22 @@
+{
+  "schema": "ufs_live_agent_playtest_posthoc_audit_v1",
+  "sealedTerminal": {
+    "status": "unknown",
+    "reason": "no_rule_for:placement_room_state",
+    "actionCount": 3,
+    "appliedPlacementCount": 2,
+    "availableOperations": []
+  },
+  "formalOracle": {
+    "run": false,
+    "reason": "The cognitive session stopped before a complete round; comparing an incomplete terminal to a formal end-of-round state would answer the wrong question."
+  },
+  "checks": [
+    "machine transcript has one start followed by three one-operation advances",
+    "choice files contain no future operation arrays",
+    "deterministic replay reaches the same unknown boundary",
+    "experiment source imports neither old answer artifacts nor formal engine/oracle"
+  ],
+  "contaminationBoundary": "Not OS-isolated; controlled by the pre-seal read whitelist and append-only chronological artifacts."
+}
+

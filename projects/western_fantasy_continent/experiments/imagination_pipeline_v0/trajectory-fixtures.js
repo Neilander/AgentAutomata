@@ -30,6 +30,13 @@ function qFor(kind) {
       temporal_state: "completed",
       context: "imagined consequence",
     },
+    landed_mothership: {
+      affected_object: "ship and mothership",
+      change_trend: "mothership-space consequence pending",
+      cause_relation: "ship ended movement on a mothership descent tile",
+      temporal_state: "ready for the rule-read event trajectory",
+      context: "imagined consequence",
+    },
     landed_random: {
       affected_object: "ship",
       change_trend: "random result pending",
@@ -110,6 +117,17 @@ const TRAJECTORIES = Object.freeze([
     program: "no_effect",
     outcomeKind: "complete",
     internalAttentionPoints: ["normal_endpoint"],
+    familiarity: 0.8,
+  },
+  {
+    id: "RULE-LANDED-MOTHERSHIP-DELEGATE",
+    sourceRuleId: "mothership_down_space",
+    sourceQuote: "A ship ending on a mothership descent tile delegates to the rule-read event trajectory.",
+    triggerQ: qFor("landed_mothership"),
+    relation: { qKind: "landed_mothership", tileKind: "mothership" },
+    program: "no_effect",
+    outcomeKind: "complete",
+    internalAttentionPoints: ["mothership_endpoint", "rule_read_event_handoff"],
     familiarity: 0.8,
   },
   {

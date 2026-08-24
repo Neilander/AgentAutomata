@@ -126,6 +126,34 @@
       }
     },
     {
+      "edgeId": "read-rule-tunnel-placement-to-no-room-output",
+      "sourceRuleId": "tunnel_no_room_output",
+      "state": "ready",
+      "current": {
+        "affected_object": "base room containing placed die",
+        "change_trend": "occupancy and future room effect pending",
+        "cause_relation": "die occupied one room cell",
+        "temporal_state": "after placement before room phase",
+        "context": "imagined candidate action"
+      },
+      "following": {
+        "affected_object": "通道格中的骰子与房间阶段产出",
+        "change_trend": "骰子保持占位但不会产生普通房间阶段效果",
+        "cause_relation": "被占据的是通道格而非能源、战斗机或研究房",
+        "temporal_state": "放置后等待房间阶段",
+        "context": "规则记忆唤醒的通道状态"
+      },
+      "sourceGrounding": {"all": ["通道格没有能源、战斗机或研究房效果；骰子放在已挖掘通道上时，房间阶段没有普通房间产出。"]},
+      "metadata": {
+        "useInFirstAction": true,
+        "runtimeGrounding": {
+          "qKind": "placement_room_state",
+          "roomTypes": ["tunnel"],
+          "program": "room_has_no_phase_output"
+        }
+      }
+    },
+    {
       "edgeId": "read-rule-multi-room-placement-to-completeness",
       "sourceRuleId": "multi_room_requires_all_spaces",
       "state": "ready",

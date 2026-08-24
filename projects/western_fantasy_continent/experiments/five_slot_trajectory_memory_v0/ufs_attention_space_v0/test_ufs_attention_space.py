@@ -203,6 +203,45 @@ class UfsAttentionSpaceTests(unittest.TestCase):
         self.assertTrue(normal_ids.issubset(high_ids))
         self.assertGreater(low.omitted_count, high.omitted_count)
 
+    def test_generic_action_focus_boosts_related_items_and_keeps_background(self) -> None:
+        module = UfsAttentionModule(self.public_input)
+        context = AttentionContext(
+            phase="rooms",
+            action="resolve_energy",
+            focus={
+                "focus_item_ids": ["room:A-upper-energy", "track:energy"],
+                "secondary_item_ids": ["base_cell:A-r2-c5"],
+                "focus_kinds": ["placement"],
+            },
+        )
+        field = self._field_for_context(module, context)
+        self.assertEqual(field["room:A-upper-energy"], 0.8)
+        self.assertEqual(field["track:energy"], 0.8)
+        self.assertEqual(field["base_cell:A-r2-c5"], 0.5)
+        self.assertEqual(field["sky_cell:15:4"], 0.04)
+
+    def test_probabilistic_notice_is_seeded_and_never_deletes_background(self) -> None:
+        module = UfsAttentionModule(self.public_input)
+        first = module.notice_probabilistic(self.context, 0.8, 7)
+        repeated = module.notice_probabilistic(self.context, 0.8, 7)
+        different = module.notice_probabilistic(self.context, 0.8, 8)
+        first_ids = {row.item_id for row in first.noticed}
+        self.assertEqual(first_ids, {row.item_id for row in repeated.noticed})
+        self.assertNotEqual(first_ids, {row.item_id for row in different.noticed})
+        self.assertEqual(first.capacity, 41)
+        self.assertEqual(len(first.noticed), 41)
+        self.assertEqual(first.omitted_count, len(module.space.items) - 41)
+        field = self._field(module)
+        self.assertTrue(all(value > 0 for value in field.values()))
+
+        background_seen = any(
+            "sky_cell:15:4" in {
+                row.item_id for row in module.notice_probabilistic(self.context, 0.8, seed).noticed
+            }
+            for seed in range(1, 301)
+        )
+        self.assertTrue(background_seen)
+
     def test_invalid_ai_adjustment_cannot_smuggle_an_answer(self) -> None:
         profile = UfsAttentionProfile()
         with self.assertRaises(ValueError):
@@ -219,6 +258,10 @@ class UfsAttentionSpaceTests(unittest.TestCase):
                 AttentionScope(action="place_die"),
                 "读取未来",
             )
+
+    @staticmethod
+    def _field_for_context(module: UfsAttentionModule, context: AttentionContext) -> dict[str, float]:
+        return {row["itemId"]: row["activation"] for row in module.inspect_attention(context)}
 
     def test_random_adjustment_sequences_preserve_field_invariants(self) -> None:
         randomizer = random.Random(20260818)

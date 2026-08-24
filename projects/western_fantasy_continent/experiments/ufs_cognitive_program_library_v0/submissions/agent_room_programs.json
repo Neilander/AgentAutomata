@@ -1,0 +1,510 @@
+{
+  "schema": "ufs_cognitive_json_program_submission_v0",
+  "authoringAudit": {
+    "allowedInputsUsed": [
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/rules.json",
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/TASK.md"
+    ],
+    "otherRepositoryFilesRead": false
+  },
+  "programs": [
+    {
+      "programId": "room-energy-payment",
+      "revision": 1,
+      "sourceRuleIds": [
+        "room_requires_energy"
+      ],
+      "trigger": {
+        "qKind": "room_payment",
+        "relation": {}
+      },
+      "requiredReads": [
+        "room.energyCost",
+        "player.energy"
+      ],
+      "bindings": {
+        "energyCost": {
+          "op": "read",
+          "path": "room.energyCost"
+        },
+        "energyAvailable": {
+          "op": "read",
+          "path": "player.energy"
+        },
+        "canPay": {
+          "op": "gte",
+          "left": {
+            "op": "var",
+            "name": "energyAvailable"
+          },
+          "right": {
+            "op": "var",
+            "name": "energyCost"
+          }
+        }
+      },
+      "output": {
+        "kind": "room_payment_choice",
+        "fields": {
+          "energyCost": {
+            "op": "var",
+            "name": "energyCost"
+          },
+          "canPay": {
+            "op": "var",
+            "name": "canPay"
+          },
+          "stopKind": "choice"
+        }
+      }
+    },
+    {
+      "programId": "energy-room-resolution",
+      "revision": 1,
+      "sourceRuleIds": [
+        "energy_room_generates_energy"
+      ],
+      "trigger": {
+        "qKind": "energy_room_resolution",
+        "relation": {}
+      },
+      "requiredReads": [
+        "room.value",
+        "player.energy",
+        "player.energyCap"
+      ],
+      "bindings": {
+        "energyBefore": {
+          "op": "read",
+          "path": "player.energy"
+        },
+        "roomValue": {
+          "op": "read",
+          "path": "room.value"
+        },
+        "energyCap": {
+          "op": "read",
+          "path": "player.energyCap"
+        },
+        "energyAfter": {
+          "op": "min",
+          "values": [
+            {
+              "op": "add",
+              "values": [
+                {
+                  "op": "var",
+                  "name": "energyBefore"
+                },
+                {
+                  "op": "var",
+                  "name": "roomValue"
+                }
+              ]
+            },
+            {
+              "op": "var",
+              "name": "energyCap"
+            }
+          ]
+        },
+        "gain": {
+          "op": "subtract",
+          "left": {
+            "op": "var",
+            "name": "energyAfter"
+          },
+          "right": {
+            "op": "var",
+            "name": "energyBefore"
+          }
+        }
+      },
+      "output": {
+        "kind": "energy_room_result",
+        "fields": {
+          "energyBefore": {
+            "op": "var",
+            "name": "energyBefore"
+          },
+          "gain": {
+            "op": "var",
+            "name": "gain"
+          },
+          "energyAfter": {
+            "op": "var",
+            "name": "energyAfter"
+          },
+          "removeDie": true,
+          "stopKind": "automatic"
+        }
+      }
+    },
+    {
+      "programId": "fighter-room-resolution",
+      "revision": 1,
+      "sourceRuleIds": [
+        "fighter_room_destroys_eligible_ships"
+      ],
+      "trigger": {
+        "qKind": "fighter_room_resolution",
+        "relation": {}
+      },
+      "requiredReads": [
+        "room.value",
+        "explosionShip.ids",
+        "explosionShip:${shipId}.threshold"
+      ],
+      "bindings": {
+        "roomValue": {
+          "op": "read",
+          "path": "room.value"
+        },
+        "shipIds": {
+          "op": "read",
+          "path": "explosionShip.ids"
+        },
+        "eligibleShipIds": {
+          "op": "filter",
+          "items": {
+            "op": "var",
+            "name": "shipIds"
+          },
+          "as": "shipId",
+          "where": {
+            "op": "lte",
+            "left": {
+              "op": "read_template",
+              "template": "explosionShip:${shipId}.threshold"
+            },
+            "right": {
+              "op": "var",
+              "name": "roomValue"
+            }
+          }
+        }
+      },
+      "output": {
+        "kind": "fighter_room_result",
+        "fields": {
+          "eligibleShipIds": {
+            "op": "var",
+            "name": "eligibleShipIds"
+          },
+          "roomValue": {
+            "op": "var",
+            "name": "roomValue"
+          },
+          "removeDie": true,
+          "stopKind": "automatic"
+        }
+      }
+    },
+    {
+      "programId": "research-room-choice",
+      "revision": 1,
+      "sourceRuleIds": [
+        "research_room_advances_track"
+      ],
+      "trigger": {
+        "qKind": "research_room_resolution",
+        "relation": {}
+      },
+      "requiredReads": [
+        "room.value",
+        "research.costsAhead"
+      ],
+      "bindings": {
+        "budget": {
+          "op": "read",
+          "path": "room.value"
+        },
+        "continuousCosts": {
+          "op": "read",
+          "path": "research.costsAhead"
+        }
+      },
+      "output": {
+        "kind": "research_room_choice",
+        "fields": {
+          "budget": {
+            "op": "var",
+            "name": "budget"
+          },
+          "continuousCosts": {
+            "op": "var",
+            "name": "continuousCosts"
+          },
+          "stopKind": "choice"
+        }
+      }
+    },
+    {
+      "programId": "unexcavated-placement-legality",
+      "revision": 1,
+      "sourceRuleIds": [
+        "excavation_placement_requirement"
+      ],
+      "trigger": {
+        "qKind": "excavation_placement",
+        "relation": {}
+      },
+      "requiredReads": [
+        "event.dieValue",
+        "excavation.pathDistance",
+        "round.usedUnexcavatedPlacement"
+      ],
+      "bindings": {
+        "dieValue": {
+          "op": "read",
+          "path": "event.dieValue"
+        },
+        "pathDistance": {
+          "op": "read",
+          "path": "excavation.pathDistance"
+        },
+        "otherUnexcavatedAlreadyUsed": {
+          "op": "read",
+          "path": "round.usedUnexcavatedPlacement"
+        },
+        "legal": {
+          "op": "and",
+          "values": [
+            {
+              "op": "gte",
+              "left": {
+                "op": "var",
+                "name": "dieValue"
+              },
+              "right": {
+                "op": "var",
+                "name": "pathDistance"
+              }
+            },
+            {
+              "op": "not",
+              "value": {
+                "op": "var",
+                "name": "otherUnexcavatedAlreadyUsed"
+              }
+            }
+          ]
+        }
+      },
+      "output": {
+        "kind": "excavation_placement_legality",
+        "fields": {
+          "dieValue": {
+            "op": "var",
+            "name": "dieValue"
+          },
+          "pathDistance": {
+            "op": "var",
+            "name": "pathDistance"
+          },
+          "otherUnexcavatedAlreadyUsed": {
+            "op": "var",
+            "name": "otherUnexcavatedAlreadyUsed"
+          },
+          "legal": {
+            "op": "var",
+            "name": "legal"
+          },
+          "stopKind": "automatic"
+        }
+      }
+    },
+    {
+      "programId": "excavation-resolution",
+      "revision": 1,
+      "sourceRuleIds": [
+        "excavate_cost_and_result"
+      ],
+      "trigger": {
+        "qKind": "excavation_resolution",
+        "relation": {}
+      },
+      "requiredReads": [
+        "event.dieId",
+        "excavation.targetIndex",
+        "excavation.pathIndicesBehind"
+      ],
+      "bindings": {
+        "removeDieId": {
+          "op": "read",
+          "path": "event.dieId"
+        },
+        "excavatorTargetIndex": {
+          "op": "read",
+          "path": "excavation.targetIndex"
+        },
+        "newlyExcavatedIndices": {
+          "op": "read",
+          "path": "excavation.pathIndicesBehind"
+        }
+      },
+      "output": {
+        "kind": "excavation_result",
+        "fields": {
+          "energyDelta": -1,
+          "removeDieId": {
+            "op": "var",
+            "name": "removeDieId"
+          },
+          "excavatorTargetIndex": {
+            "op": "var",
+            "name": "excavatorTargetIndex"
+          },
+          "newlyExcavatedIndices": {
+            "op": "var",
+            "name": "newlyExcavatedIndices"
+          },
+          "stopKind": "automatic"
+        }
+      }
+    },
+    {
+      "programId": "research-room-order-choice",
+      "revision": 1,
+      "sourceRuleIds": [
+        "research_order_changes_usefulness",
+        "research_room_advances_track"
+      ],
+      "trigger": {
+        "qKind": "research_order",
+        "relation": {}
+      },
+      "requiredReads": [
+        "research.pendingRoomIds",
+        "research.room:${roomId}.value",
+        "research.costsAhead"
+      ],
+      "bindings": {
+        "pendingRoomIds": {
+          "op": "read",
+          "path": "research.pendingRoomIds"
+        },
+        "rooms": {
+          "op": "map",
+          "items": {
+            "op": "var",
+            "name": "pendingRoomIds"
+          },
+          "as": "roomId",
+          "value": {
+            "roomId": {
+              "op": "var",
+              "name": "roomId"
+            },
+            "value": {
+              "op": "read_template",
+              "template": "research.room:${roomId}.value"
+            }
+          }
+        },
+        "continuousCosts": {
+          "op": "read",
+          "path": "research.costsAhead"
+        }
+      },
+      "output": {
+        "kind": "research_order_choice",
+        "fields": {
+          "rooms": {
+            "op": "var",
+            "name": "rooms"
+          },
+          "continuousCosts": {
+            "op": "var",
+            "name": "continuousCosts"
+          },
+          "combineValues": false,
+          "stopKind": "choice"
+        }
+      }
+    },
+    {
+      "programId": "final-research-room-restriction",
+      "revision": 1,
+      "sourceRuleIds": [
+        "final_research_requires_lower_multi_room"
+      ],
+      "trigger": {
+        "qKind": "final_research_constraint",
+        "relation": {}
+      },
+      "requiredReads": [
+        "research.targetCost",
+        "room.type",
+        "room.zone",
+        "room.cellCount"
+      ],
+      "bindings": {
+        "targetCost": {
+          "op": "read",
+          "path": "research.targetCost"
+        },
+        "roomType": {
+          "op": "read",
+          "path": "room.type"
+        },
+        "roomZone": {
+          "op": "read",
+          "path": "room.zone"
+        },
+        "roomCellCount": {
+          "op": "read",
+          "path": "room.cellCount"
+        },
+        "currentRoomEligible": {
+          "op": "and",
+          "values": [
+            {
+              "op": "eq",
+              "left": {
+                "op": "var",
+                "name": "roomType"
+              },
+              "right": "research"
+            },
+            {
+              "op": "eq",
+              "left": {
+                "op": "var",
+                "name": "roomZone"
+              },
+              "right": "lower"
+            },
+            {
+              "op": "gte",
+              "left": {
+                "op": "var",
+                "name": "roomCellCount"
+              },
+              "right": 2
+            }
+          ]
+        }
+      },
+      "output": {
+        "kind": "final_research_constraint",
+        "fields": {
+          "targetCost": {
+            "op": "var",
+            "name": "targetCost"
+          },
+          "requiresRoomType": "research",
+          "requiresZone": "lower",
+          "requiresMinimumCells": 2,
+          "currentRoomEligible": {
+            "op": "var",
+            "name": "currentRoomEligible"
+          },
+          "stopKind": "automatic"
+        }
+      }
+    }
+  ]
+}

@@ -2,6 +2,30 @@
 
 Reports are append-only handoff records. Prefer the timestamped report path over relying on a mutable "latest" pointer.
 
+## 2026-08-24
+
+- `2026-08-24_1322_ufs-twenty-event-auto-q-wiring.md`: 沿用现有工程把其余20类普通游戏事件接入注意→五槽Q→25×3840真实GTE轨迹→关系门→JSON程序；输入不再直接提供qKind或规则来源，新接线26/26、既有回归39/39，合计65/65通过。
+
+## 2026-08-22
+
+- `2026-08-22_1900_ufs-all-json-programs-real-slices.md`: 三名隔离Agent分批只读规则与DSL生成剩余20个JSON认知程序，主流程封卷后统一验收并装入25程序库；天空、房间/挖掘、母舰/生成/终局及真实状态切片共39/39含上游回归通过，下一步把正式UFS游戏对象自动投影为Q与注意路径。
+- `2026-08-22_1810_ufs-cognitive-json-program-library-blind-author.md`: 建立可store/get/revise/save/load且保留历史的认知JSON小程序库；隔离Agent只读四条规则与公共DSL自主生成5个程序，主流程事后实现解释器并删除预写ground，隐藏A/B/C、边界、越权与版本测试合计16/16通过，剩余20条与反馈自动修订待后续。
+- `2026-08-22_1700_ufs-node-real-gte-matrix-reinforcement.md`: Node一步设想默认切换为真实GTE预编译矩阵，A/B/C激活trace确认不再走确定性编码；重复确认使support 1→3、observations 1→2且不复制矩阵行，10/10通过，任意新措辞在线编码与反馈自动调用仍待接入。
+- `2026-08-22_1615_ufs-page9-initial-gte-trajectory-matrix.md`: 将首局第1—9页冻结来源扩至24条、AI初始五槽边扩至25条，并用真实GTE编译25×3840 current/following及25×768粗筛矩阵；原始头25/25、五类改写查询5/5进入正确候选，当前仍待Node端直接加载和其余20条真实场景接线。
+- `2026-08-22_1535_ufs-rule-read-trajectories-real-first-step.md`: 冻结第3—6页12条规则输入，由Codex规则阅读生成13条严格`q当前→q后续`，第一步运行时加载其中5条替代内嵌手写轨迹；真实A/B/C与四类消融9/9通过，当前仍待第7—9页、其余8条真实接线和独立模型稳定性盲测。
+- `2026-08-22_1212_ufs-room-imagination-grounding-correction.md`: 用户指出旧roomProjection是适配器直算旁路；现删除房间与防空直算，改为注意→双五槽Q→Top-3/激活门→关系门→受控grounding→临时patch，8/8含无注意/空记忆/仅移动/低激活消融通过，全新独立评审accept；本报告取代1124报告中的房间认知声明。
+- `2026-08-22_1124_ufs-first-action-imagination-choice-stop.md`: 将真实状态实验已选第一步接入现有问题1—6设想流水线；自动展开占格、下降、落点与房间承诺后，三例均在`choice / next_player_decision`停止且`nextAction=null`，引擎事后oracle与独立复审accept，尚未验收白骰随机、母舰、箭头和撞城。
+- `2026-08-22_0201_ufs-real-state-candidate-discovery-exam.md`: 从正式Roswell A+B威胁0状态生成三道真实骰子决策题，撤掉候选与落点脚手架；隔离Agent自行归组26/81/27个合法动作并锁定三次合法放置，正式引擎复放即时预测全对，独立评审accept，尚未验证视觉注意和完整回合连续决策。
+
+## 2026-08-21
+
+- `2026-08-21_2354_ufs-candidate-judgment-closed-book-exam.md`: 复用既有第1—9页规则知识，主Agent冻结六场景试卷与盲评分标准，隔离答题者依次选择能源/研究/防空/战斗机/能源/研究并获独立评审accept；证明给定候选与公开状态时可完成知识实例化，尚未证明代码已自动生成判断卡或候选。
+- `2026-08-21_1851_ufs-page9-three-reader-strategy-experiment.md`: 三位隔离阅读者只读UFS首局规则第1—9页，分别产出宏观策略、资源结构与20条条件式具体策略；主Agent完成来源审计并将这些策略定位为主动下一步的候选生成样本，尚未接入真实局面决策。
+
+## 2026-08-20
+
+- `2026-08-20_1706_imagination-pipeline-walkthrough-web.md`: 为问题1—6模拟玩家拼接建立可交互基础网页；六段流程图、十步点击审计、双世界棋盘、五槽Q、激活/拒绝、读取/补丁与停止边界均可见，原拼接、网页合同、Chrome桌面/移动QA及正式玩家回归通过。
+
 ## 2026-08-19
 
 - `2026-08-19_1729_magic-resistance-and-warding-attribute.md`: 新增一级属性魔抗与大属性灵御（主魔抗、副生命）；权威共享战斗分离物理/法术直伤防线，DOT继续走效果抗性，灰谷面板和装备掉落同步接入，专项及套装/灰谷回归通过。

@@ -1,0 +1,507 @@
+{
+  "schema": "ufs_cognitive_json_program_submission_v0",
+  "authoringAudit": {
+    "allowedInputsUsed": [
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/rules.json",
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/TASK.md"
+    ],
+    "otherRepositoryFilesRead": false
+  },
+  "programs": [
+    {
+      "programId": "research-completion-before-destruction",
+      "revision": 1,
+      "sourceRuleIds": [
+        "win_by_research_before_destruction"
+      ],
+      "trigger": {
+        "qKind": "research_completion",
+        "relation": {}
+      },
+      "requiredReads": [
+        "research.complete",
+        "city.destroyed"
+      ],
+      "bindings": {
+        "researchComplete": {
+          "op": "read",
+          "path": "research.complete"
+        },
+        "cityDestroyed": {
+          "op": "read",
+          "path": "city.destroyed"
+        },
+        "isWin": {
+          "op": "and",
+          "values": [
+            {
+              "op": "var",
+              "name": "researchComplete"
+            },
+            {
+              "op": "not",
+              "value": {
+                "op": "var",
+                "name": "cityDestroyed"
+              }
+            }
+          ]
+        }
+      },
+      "output": {
+        "kind": "terminal_check",
+        "fields": {
+          "terminal": {
+            "op": "var",
+            "name": "isWin"
+          },
+          "result": {
+            "op": "if",
+            "condition": {
+              "op": "var",
+              "name": "isWin"
+            },
+            "then": "win",
+            "else": "ongoing"
+          },
+          "reason": "research_completed_before_city_destruction",
+          "stopKind": {
+            "op": "if",
+            "condition": {
+              "op": "var",
+              "name": "isWin"
+            },
+            "then": "complete",
+            "else": "automatic"
+          }
+        }
+      }
+    },
+    {
+      "programId": "damage-track-loss",
+      "revision": 1,
+      "sourceRuleIds": [
+        "lose_by_damage_track"
+      ],
+      "trigger": {
+        "qKind": "damage_threshold",
+        "relation": {}
+      },
+      "requiredReads": [
+        "damage.atBottom"
+      ],
+      "bindings": {
+        "isLoss": {
+          "op": "read",
+          "path": "damage.atBottom"
+        }
+      },
+      "output": {
+        "kind": "terminal_check",
+        "fields": {
+          "terminal": {
+            "op": "var",
+            "name": "isLoss"
+          },
+          "result": {
+            "op": "if",
+            "condition": {
+              "op": "var",
+              "name": "isLoss"
+            },
+            "then": "loss",
+            "else": "ongoing"
+          },
+          "reason": "damage_track_reached_bottom",
+          "stopKind": {
+            "op": "if",
+            "condition": {
+              "op": "var",
+              "name": "isLoss"
+            },
+            "then": "complete",
+            "else": "automatic"
+          }
+        }
+      }
+    },
+    {
+      "programId": "mothership-skull-loss",
+      "revision": 1,
+      "sourceRuleIds": [
+        "lose_by_mothership_skull"
+      ],
+      "trigger": {
+        "qKind": "mothership_threshold",
+        "relation": {}
+      },
+      "requiredReads": [
+        "mothership.onSkullRow"
+      ],
+      "bindings": {
+        "isLoss": {
+          "op": "read",
+          "path": "mothership.onSkullRow"
+        }
+      },
+      "output": {
+        "kind": "terminal_check",
+        "fields": {
+          "terminal": {
+            "op": "var",
+            "name": "isLoss"
+          },
+          "result": {
+            "op": "if",
+            "condition": {
+              "op": "var",
+              "name": "isLoss"
+            },
+            "then": "loss",
+            "else": "ongoing"
+          },
+          "reason": "mothership_reached_skull_row",
+          "stopKind": {
+            "op": "if",
+            "condition": {
+              "op": "var",
+              "name": "isLoss"
+            },
+            "then": "complete",
+            "else": "automatic"
+          }
+        }
+      }
+    },
+    {
+      "programId": "mothership-phase-descent",
+      "revision": 1,
+      "sourceRuleIds": [
+        "mothership_descends_each_round"
+      ],
+      "trigger": {
+        "qKind": "mothership_phase_start",
+        "relation": {}
+      },
+      "requiredReads": [
+        "mothership.row",
+        "sky.row:${nextRow}.shipIds"
+      ],
+      "bindings": {
+        "fromRow": {
+          "op": "read",
+          "path": "mothership.row"
+        },
+        "nextRow": {
+          "op": "add",
+          "values": [
+            {
+              "op": "var",
+              "name": "fromRow"
+            },
+            1
+          ]
+        },
+        "collectedShipIds": {
+          "op": "read_template",
+          "template": "sky.row:${nextRow}.shipIds"
+        }
+      },
+      "output": {
+        "kind": "mothership_phase_descent",
+        "fields": {
+          "fromRow": {
+            "op": "var",
+            "name": "fromRow"
+          },
+          "toRow": {
+            "op": "var",
+            "name": "nextRow"
+          },
+          "collectedShipIds": {
+            "op": "var",
+            "name": "collectedShipIds"
+          },
+          "stopKind": "automatic"
+        }
+      }
+    },
+    {
+      "programId": "mothership-row-action",
+      "revision": 1,
+      "sourceRuleIds": [
+        "mothership_action_applies_row_effect"
+      ],
+      "trigger": {
+        "qKind": "mothership_row_action",
+        "relation": {}
+      },
+      "requiredReads": [
+        "mothership.rowAction.type",
+        "mothership.rowAction.value"
+      ],
+      "bindings": {
+        "actionType": {
+          "op": "read",
+          "path": "mothership.rowAction.type"
+        },
+        "amount": {
+          "op": "read",
+          "path": "mothership.rowAction.value"
+        }
+      },
+      "output": {
+        "kind": "mothership_row_action",
+        "fields": {
+          "actionType": {
+            "op": "var",
+            "name": "actionType"
+          },
+          "amount": {
+            "op": "var",
+            "name": "amount"
+          },
+          "stopKind": "automatic"
+        }
+      }
+    },
+    {
+      "programId": "research-top-win",
+      "revision": 1,
+      "sourceRuleIds": [
+        "research_top_is_immediate_win"
+      ],
+      "trigger": {
+        "qKind": "research_top",
+        "relation": {}
+      },
+      "requiredReads": [
+        "research.atTop"
+      ],
+      "bindings": {
+        "isWin": {
+          "op": "read",
+          "path": "research.atTop"
+        }
+      },
+      "output": {
+        "kind": "terminal_check",
+        "fields": {
+          "terminal": {
+            "op": "var",
+            "name": "isWin"
+          },
+          "result": {
+            "op": "if",
+            "condition": {
+              "op": "var",
+              "name": "isWin"
+            },
+            "then": "win",
+            "else": "ongoing"
+          },
+          "reason": "research_reached_top",
+          "stopKind": {
+            "op": "if",
+            "condition": {
+              "op": "var",
+              "name": "isWin"
+            },
+            "then": "complete",
+            "else": "automatic"
+          }
+        }
+      }
+    },
+    {
+      "programId": "spawn-empty-columns",
+      "revision": 1,
+      "sourceRuleIds": [
+        "spawn_empty_columns_first"
+      ],
+      "trigger": {
+        "qKind": "spawn_priority_empty",
+        "relation": {}
+      },
+      "requiredReads": [
+        "spawn.shipId",
+        "sky.columnIds",
+        "sky.column:${columnId}.shipIds",
+        "sky.column:${columnId}.dropPointId"
+      ],
+      "bindings": {
+        "shipId": {
+          "op": "read",
+          "path": "spawn.shipId"
+        },
+        "columnIds": {
+          "op": "read",
+          "path": "sky.columnIds"
+        },
+        "emptyColumnIds": {
+          "op": "filter",
+          "items": {
+            "op": "var",
+            "name": "columnIds"
+          },
+          "as": "columnId",
+          "where": {
+            "op": "eq",
+            "left": {
+              "op": "length",
+              "value": {
+                "op": "read_template",
+                "template": "sky.column:${columnId}.shipIds"
+              }
+            },
+            "right": 0
+          }
+        },
+        "candidateDropPointIds": {
+          "op": "map",
+          "items": {
+            "op": "var",
+            "name": "emptyColumnIds"
+          },
+          "as": "columnId",
+          "value": {
+            "op": "read_template",
+            "template": "sky.column:${columnId}.dropPointId"
+          }
+        },
+        "hasChoice": {
+          "op": "gte",
+          "left": {
+            "op": "length",
+            "value": {
+              "op": "var",
+              "name": "candidateDropPointIds"
+            }
+          },
+          "right": 2
+        }
+      },
+      "output": {
+        "kind": "spawn_candidates",
+        "fields": {
+          "shipId": {
+            "op": "var",
+            "name": "shipId"
+          },
+          "candidateDropPointIds": {
+            "op": "var",
+            "name": "candidateDropPointIds"
+          },
+          "stopKind": {
+            "op": "if",
+            "condition": {
+              "op": "var",
+              "name": "hasChoice"
+            },
+            "then": "choice",
+            "else": "automatic"
+          }
+        }
+      }
+    },
+    {
+      "programId": "spawn-farthest-drop-point",
+      "revision": 1,
+      "sourceRuleIds": [
+        "spawn_farthest_from_highest_ship"
+      ],
+      "trigger": {
+        "qKind": "spawn_priority_farthest",
+        "relation": {}
+      },
+      "requiredReads": [
+        "spawn.shipId",
+        "spawn.availableDropPointIds",
+        "spawn.dropPoint:${dropPointId}.distanceFromHighestShip"
+      ],
+      "bindings": {
+        "shipId": {
+          "op": "read",
+          "path": "spawn.shipId"
+        },
+        "availableDropPointIds": {
+          "op": "read",
+          "path": "spawn.availableDropPointIds"
+        },
+        "distances": {
+          "op": "map",
+          "items": {
+            "op": "var",
+            "name": "availableDropPointIds"
+          },
+          "as": "dropPointId",
+          "value": {
+            "op": "read_template",
+            "template": "spawn.dropPoint:${dropPointId}.distanceFromHighestShip"
+          }
+        },
+        "maximumDistance": {
+          "op": "max",
+          "values": {
+            "op": "var",
+            "name": "distances"
+          }
+        },
+        "candidateDropPointIds": {
+          "op": "filter",
+          "items": {
+            "op": "var",
+            "name": "availableDropPointIds"
+          },
+          "as": "dropPointId",
+          "where": {
+            "op": "eq",
+            "left": {
+              "op": "read_template",
+              "template": "spawn.dropPoint:${dropPointId}.distanceFromHighestShip"
+            },
+            "right": {
+              "op": "var",
+              "name": "maximumDistance"
+            }
+          }
+        },
+        "hasChoice": {
+          "op": "gte",
+          "left": {
+            "op": "length",
+            "value": {
+              "op": "var",
+              "name": "candidateDropPointIds"
+            }
+          },
+          "right": 2
+        }
+      },
+      "output": {
+        "kind": "spawn_candidates",
+        "fields": {
+          "shipId": {
+            "op": "var",
+            "name": "shipId"
+          },
+          "candidateDropPointIds": {
+            "op": "var",
+            "name": "candidateDropPointIds"
+          },
+          "stopKind": {
+            "op": "if",
+            "condition": {
+              "op": "var",
+              "name": "hasChoice"
+            },
+            "then": "choice",
+            "else": "automatic"
+          }
+        }
+      }
+    }
+  ]
+}

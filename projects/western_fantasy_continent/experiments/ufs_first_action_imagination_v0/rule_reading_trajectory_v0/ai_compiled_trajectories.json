@@ -1,0 +1,591 @@
+{
+  "schema": "ai_five_slot_rule_trajectory_drafts_v1",
+  "generation": {
+    "producer": "Codex rule-reading pass",
+    "input": "source_rules.json only",
+    "scenarioAccessDuringGeneration": false,
+    "engineAccessDuringGeneration": false,
+    "note": "五槽轨迹由规则阅读阶段生成；运行真实场景时只加载本冻结文件，不重新读取规则原文。"
+  },
+  "edges": [
+    {
+      "edgeId": "read-rule-place-die-to-same-column-descent",
+      "sourceRuleId": "die_moves_same_column_ships",
+      "state": "ready",
+      "current": {
+        "affected_object": "same-column ships",
+        "change_trend": "descent amount pending",
+        "cause_relation": "die placed in one base column",
+        "temporal_state": "ready to happen",
+        "context": "imagined candidate action"
+      },
+      "following": {
+        "affected_object": "该基地列中的全部飞船",
+        "change_trend": "按刚放置骰子的点数向城市方向下降",
+        "cause_relation": "同列基地格刚刚放入一颗骰子",
+        "temporal_state": "放置完成后立即发生",
+        "context": "规则记忆唤醒的脑内后续"
+      },
+      "variableRelations": [{
+        "output": "descent_amount",
+        "operation": "identity",
+        "inputs": ["die_value"],
+        "description": "普通房间列的下降量等于骰子点数"
+      }],
+      "sourceGrounding": {"all": ["玩家在骰子阶段把一颗骰子放入基地的一列后，该列全部飞船按骰子点数下降，并可能触发最终落点效果。"]},
+      "metadata": {
+        "useInFirstAction": true,
+        "runtimeGrounding": {
+          "qKind": "placement_movement",
+          "excludedRoomTypes": ["aa"],
+          "program": "ordinary_descent"
+        }
+      }
+    },
+    {
+      "edgeId": "read-rule-aa-placement-to-reduced-descent",
+      "sourceRuleId": "aa_room",
+      "state": "ready",
+      "current": {
+        "affected_object": "same-column ships",
+        "change_trend": "descent amount pending",
+        "cause_relation": "die placed in one base column",
+        "temporal_state": "ready to happen",
+        "context": "imagined candidate action"
+      },
+      "following": {
+        "affected_object": "防空房同列的全部飞船",
+        "change_trend": "下降量比骰子点数少1；骰值为1时保持不动",
+        "cause_relation": "骰子被放进防空房所在列",
+        "temporal_state": "放置完成后立即发生",
+        "context": "规则记忆唤醒的防空后续"
+      },
+      "variableRelations": [{
+        "output": "descent_amount",
+        "operation": "subtract",
+        "inputs": ["die_value", "aa_reduction"],
+        "description": "防空列下降量等于骰子点数减去防空减值"
+      }],
+      "sourceGrounding": {"all": ["防空房让同列飞船少下降一格；若骰子为1则不下降也不触发效果；防空房在房间阶段无效果。"]},
+      "metadata": {
+        "useInFirstAction": true,
+        "runtimeGrounding": {
+          "qKind": "placement_movement",
+          "roomTypes": ["aa"],
+          "program": "aa_descent"
+        }
+      }
+    },
+    {
+      "edgeId": "read-rule-place-white-die-to-reroll",
+      "sourceRuleId": "white_die_rerolls_remaining",
+      "state": "ready",
+      "current": {
+        "affected_object": "刚放置的白骰与其余未放骰子",
+        "change_trend": "白骰从未放置变为占据基地格",
+        "cause_relation": "玩家选择放置白色骰子",
+        "temporal_state": "白骰放置刚完成",
+        "context": "骰子阶段的规则设想"
+      },
+      "following": {
+        "affected_object": "所有尚未放置骰子的点数",
+        "change_trend": "当前点数变为未知的新随机点数",
+        "cause_relation": "一颗白骰已经完成放置",
+        "temporal_state": "下一次玩家选择之前",
+        "context": "随机结果尚未实际出现"
+      },
+      "sourceGrounding": {"all": ["玩家放置白骰后，所有尚未放置的骰子重新投掷。"]},
+      "metadata": {"outcomeKind": "random", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-aa-placement-to-no-room-output",
+      "sourceRuleId": "aa_room",
+      "state": "ready",
+      "current": {
+        "affected_object": "base room containing placed die",
+        "change_trend": "occupancy and future room effect pending",
+        "cause_relation": "die occupied one room cell",
+        "temporal_state": "after placement before room phase",
+        "context": "imagined candidate action"
+      },
+      "following": {
+        "affected_object": "防空房中的骰子与房间阶段产出",
+        "change_trend": "骰子保持占位但不会产生房间阶段效果",
+        "cause_relation": "被占据的是防空房而非可结算房间",
+        "temporal_state": "放置后等待房间阶段",
+        "context": "规则记忆唤醒的房间状态"
+      },
+      "sourceGrounding": {"all": ["防空房让同列飞船少下降一格；若骰子为1则不下降也不触发效果；防空房在房间阶段无效果。"]},
+      "metadata": {
+        "useInFirstAction": true,
+        "runtimeGrounding": {
+          "qKind": "placement_room_state",
+          "roomTypes": ["aa"],
+          "program": "room_has_no_phase_output"
+        }
+      }
+    },
+    {
+      "edgeId": "read-rule-multi-room-placement-to-completeness",
+      "sourceRuleId": "multi_room_requires_all_spaces",
+      "state": "ready",
+      "current": {
+        "affected_object": "base room containing placed die",
+        "change_trend": "occupancy and future room effect pending",
+        "cause_relation": "die occupied one room cell",
+        "temporal_state": "after placement before room phase",
+        "context": "imagined candidate action"
+      },
+      "following": {
+        "affected_object": "该多格房间的全部格子与相关骰子",
+        "change_trend": "形成完整可结算状态或缺格无效果状态",
+        "cause_relation": "多格房必须填满所有格子才形成房间值",
+        "temporal_state": "放置后、房间阶段结算前",
+        "context": "规则记忆唤醒的房间完整性"
+      },
+      "sourceGrounding": {"all": ["多格房间必须填满所有格子，房间值由全部骰子点数与房间修正共同形成；缺任一格则所有相关骰子无效果。"]},
+      "metadata": {
+        "useInFirstAction": true,
+        "runtimeGrounding": {
+          "qKind": "placement_room_state",
+          "minimumCellCount": 2,
+          "program": "inspect_multi_room"
+        }
+      }
+    },
+    {
+      "edgeId": "read-rule-single-room-placement-to-room-value",
+      "sourceRuleId": "room_value",
+      "state": "ready",
+      "current": {
+        "affected_object": "base room containing placed die",
+        "change_trend": "occupancy and future room effect pending",
+        "cause_relation": "die occupied one room cell",
+        "temporal_state": "after placement before room phase",
+        "context": "imagined candidate action"
+      },
+      "following": {
+        "affected_object": "被占据单格房间的效果强度",
+        "change_trend": "形成骰子点数加减房间修正的待结算房间值",
+        "cause_relation": "一颗骰子占据了该单格房间",
+        "temporal_state": "放置后、房间阶段结算前",
+        "context": "规则记忆唤醒的房间值"
+      },
+      "sourceGrounding": {"all": ["房间值是骰子点数加减房间修正后的效果强度。"]},
+      "metadata": {
+        "useInFirstAction": true,
+        "runtimeGrounding": {
+          "qKind": "placement_room_state",
+          "cellCount": 1,
+          "roomTypes": ["energy", "fighter", "research"],
+          "program": "inspect_single_room"
+        }
+      }
+    },
+    {
+      "edgeId": "read-rule-final-arrow-landing-to-horizontal-move",
+      "sourceRuleId": "passed_sky_spaces_do_not_trigger",
+      "state": "ready",
+      "current": {
+        "affected_object": "最终停在箭头格的飞船",
+        "change_trend": "下降结束并占据箭头格",
+        "cause_relation": "飞船最终位置而非经过位置与箭头重合",
+        "temporal_state": "检查最终落点时",
+        "context": "天空移动的规则设想"
+      },
+      "following": {
+        "affected_object": "该飞船的位置",
+        "change_trend": "沿箭头方向移动到目标格",
+        "cause_relation": "最终停留的箭头格触发移动",
+        "temporal_state": "落点检查后立即发生",
+        "context": "规则记忆唤醒的箭头后续"
+      },
+      "sourceGrounding": {"all": ["飞船只触发最终停留格，经过的天空格不触发。最终停在箭头格的飞船沿箭头移动。"]},
+      "metadata": {"outcomeKind": "automatic", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-mothership-space-to-mothership-descent",
+      "sourceRuleId": "mothership_down_space",
+      "state": "ready",
+      "current": {
+        "affected_object": "最终停在母舰下降格的飞船与母舰",
+        "change_trend": "飞船停留并使母舰效果待触发",
+        "cause_relation": "飞船最终落点与母舰下降格重合",
+        "temporal_state": "检查最终落点时",
+        "context": "天空移动的规则设想"
+      },
+      "following": {
+        "affected_object": "外星母舰所在行",
+        "change_trend": "立即向城市方向下降一行",
+        "cause_relation": "飞船最终停在母舰下降格",
+        "temporal_state": "落点检查后立即发生",
+        "context": "规则记忆唤醒的母舰后续"
+      },
+      "sourceGrounding": {"all": ["飞船最终停在母舰下降格后，使母舰立即下降一行。"]},
+      "metadata": {"outcomeKind": "automatic", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-city-contact-to-damage-and-return",
+      "sourceRuleId": "ship_city_hit",
+      "state": "ready",
+      "current": {
+        "affected_object": "到达城市的敌机与城市",
+        "change_trend": "敌机由天空变为接触城市",
+        "cause_relation": "敌机下降到天空区域下方",
+        "temporal_state": "飞船移动结束时",
+        "context": "城市受击的规则设想"
+      },
+      "following": {
+        "affected_object": "城市伤害状态与该敌机的位置",
+        "change_trend": "城市伤害增加1且敌机返回母舰等待区",
+        "cause_relation": "敌机已经击中城市",
+        "temporal_state": "城市接触后立即发生",
+        "context": "规则记忆唤醒的受击后续"
+      },
+      "sourceGrounding": {"all": ["敌机下降到天空区域下方并击中城市后，城市伤害增加1，敌机返回母舰等待重新生成。"]},
+      "metadata": {"outcomeKind": "automatic", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-room-cost-to-effect-or-failure",
+      "sourceRuleId": "room_requires_energy",
+      "state": "ready",
+      "current": {
+        "affected_object": "带能源成本的待结算房间与玩家能源",
+        "change_trend": "房间等待支付或放弃",
+        "cause_relation": "玩家进入该房间的结算时点",
+        "temporal_state": "房间效果发生前",
+        "context": "房间阶段的规则设想"
+      },
+      "following": {
+        "affected_object": "玩家能源、房间效果与其中骰子",
+        "change_trend": "支付后效果可发生；不支付则骰子移除且无效果",
+        "cause_relation": "玩家能否并是否支付房间标示能源",
+        "temporal_state": "房间结算选择之后",
+        "context": "需要玩家选择的分支后续"
+      },
+      "sourceGrounding": {"all": ["房间阶段结算带能源成本的房间时，支付标示能源后房间效果可以发生；不支付或无法支付则移除骰子且无效果。"]},
+      "metadata": {"outcomeKind": "choice", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-energy-room-to-energy-gain",
+      "sourceRuleId": "energy_room_generates_energy",
+      "state": "ready",
+      "current": {
+        "affected_object": "已选择结算的能源房与其中骰子",
+        "change_trend": "房间值已经形成并等待应用",
+        "cause_relation": "玩家选择结算该能源房",
+        "temporal_state": "房间阶段结算中",
+        "context": "能源房的规则设想"
+      },
+      "following": {
+        "affected_object": "玩家能源与能源房中的骰子",
+        "change_trend": "能源增加房间值且骰子被移除",
+        "cause_relation": "能源房效果被应用",
+        "temporal_state": "能源房结算后",
+        "context": "规则记忆唤醒的房间后续"
+      },
+      "sourceGrounding": {"all": ["房间阶段结算能源房时，移除骰子并应用房间值，能源增加房间值但不超过轨道上限。"]},
+      "metadata": {"outcomeKind": "automatic", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-fighter-room-to-eligible-destruction",
+      "sourceRuleId": "fighter_room_destroys_eligible_ships",
+      "state": "ready",
+      "current": {
+        "affected_object": "已选择结算的战斗机房与爆炸格敌机",
+        "change_trend": "房间值与爆炸格数字等待比较",
+        "cause_relation": "玩家选择结算战斗机房",
+        "temporal_state": "房间阶段结算中",
+        "context": "战斗机房的规则设想"
+      },
+      "following": {
+        "affected_object": "爆炸格数字不大于房间值的全部敌机",
+        "change_trend": "从天空中的停留状态变为被击毁",
+        "cause_relation": "战斗机房值达到对应爆炸格数字",
+        "temporal_state": "战斗机房结算后",
+        "context": "规则记忆唤醒的攻击后续"
+      },
+      "sourceGrounding": {"all": ["敌机停在带数字的爆炸格时，结算战斗机房会击毁所有爆炸格数字不大于房间值的敌机。"]},
+      "metadata": {"outcomeKind": "automatic", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-research-room-to-track-advance",
+      "sourceRuleId": "research_room_advances_track",
+      "state": "ready",
+      "current": {
+        "affected_object": "已选择结算的研究房与研究轨道连续格",
+        "change_trend": "房间值与连续研究成本等待比较",
+        "cause_relation": "玩家选择结算研究房",
+        "temporal_state": "房间阶段结算中",
+        "context": "研究房的规则设想"
+      },
+      "following": {
+        "affected_object": "研究标记的位置",
+        "change_trend": "按可承担的连续格成本向上推进",
+        "cause_relation": "所选连续研究格成本总和不超过房间值",
+        "temporal_state": "玩家选择推进距离后",
+        "context": "需要选择具体推进格数的后续"
+      },
+      "sourceGrounding": {"all": ["房间阶段结算研究房时，可以选择向上推进连续研究格，但经过与到达格数字总和不能超过房间值。"]},
+      "metadata": {"outcomeKind": "choice", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-complete-research-before-destruction-to-win",
+      "sourceRuleId": "win_by_research_before_destruction",
+      "state": "ready",
+      "current": {
+        "affected_object": "玩家研究进度与尚未被摧毁的城市",
+        "change_trend": "研究从未完成变为完成",
+        "cause_relation": "玩家在城市仍存在时完成研究",
+        "temporal_state": "完成研究的当下",
+        "context": "首局目标的规则设想"
+      },
+      "following": {
+        "affected_object": "本局游戏状态",
+        "change_trend": "由进行中变为玩家获胜",
+        "cause_relation": "研究已经在城市毁灭前完成",
+        "temporal_state": "研究完成后立即发生",
+        "context": "规则记忆唤醒的胜利终点"
+      },
+      "sourceGrounding": {"all": ["城市尚未被母舰摧毁时，玩家完成研究就赢得游戏。"]},
+      "metadata": {"outcomeKind": "complete", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-damage-track-bottom-to-loss",
+      "sourceRuleId": "lose_by_damage_track",
+      "state": "ready",
+      "current": {
+        "affected_object": "城市伤害标记与伤害轨道底部",
+        "change_trend": "伤害标记到达失败位置",
+        "cause_relation": "城市累计伤害推进了伤害标记",
+        "temporal_state": "伤害变化完成时",
+        "context": "城市毁灭的规则设想"
+      },
+      "following": {
+        "affected_object": "本局游戏状态",
+        "change_trend": "由进行中变为玩家失败",
+        "cause_relation": "伤害标记已经到达轨道底部",
+        "temporal_state": "到达失败位置后立即发生",
+        "context": "规则记忆唤醒的失败终点"
+      },
+      "sourceGrounding": {"all": ["城市伤害标记到达伤害轨道底部时，玩家失败。"]},
+      "metadata": {"outcomeKind": "complete", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-mothership-skull-row-to-loss",
+      "sourceRuleId": "lose_by_mothership_skull",
+      "state": "ready",
+      "current": {
+        "affected_object": "外星母舰与骷髅标记行",
+        "change_trend": "母舰下降并到达骷髅行",
+        "cause_relation": "母舰持续向城市方向推进",
+        "temporal_state": "母舰下降完成时",
+        "context": "母舰威胁的规则设想"
+      },
+      "following": {
+        "affected_object": "本局游戏状态",
+        "change_trend": "由进行中变为玩家失败",
+        "cause_relation": "母舰已经进入骷髅标记行",
+        "temporal_state": "到达骷髅行后立即发生",
+        "context": "规则记忆唤醒的失败终点"
+      },
+      "sourceGrounding": {"all": ["外星母舰下降到骷髅标记行时，玩家失败。"]},
+      "metadata": {"outcomeKind": "complete", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-unexcavated-placement-to-legal-excavation-candidate",
+      "sourceRuleId": "excavation_placement_requirement",
+      "state": "ready",
+      "current": {
+        "affected_object": "待放骰子、挖掘机与前方未挖掘格",
+        "change_trend": "未挖掘格等待合法性判断",
+        "cause_relation": "玩家想把骰子放到挖掘机前方",
+        "temporal_state": "骰子实际放置之前",
+        "context": "挖掘放置的规则设想"
+      },
+      "following": {
+        "affected_object": "该骰子放置与未挖掘格",
+        "change_trend": "满足距离和本回合唯一性后变为合法挖掘候选",
+        "cause_relation": "骰子点数不小于路径距离且未用其他未挖掘格",
+        "temporal_state": "合法性检查完成后",
+        "context": "规则记忆唤醒的放置约束"
+      },
+      "sourceGrounding": {"all": ["玩家想把骰子放到挖掘机前方的未挖掘格时，必须选择点数不小于路径距离的骰子，且本回合尚未使用其他未挖掘格；满足后该放置合法并可在房间阶段用于移动挖掘机。"]},
+      "metadata": {"outcomeKind": "choice", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-pay-energy-to-excavate",
+      "sourceRuleId": "excavate_cost_and_result",
+      "state": "ready",
+      "current": {
+        "affected_object": "合法未挖掘格上的骰子、玩家能源与挖掘机",
+        "change_trend": "挖掘行动等待支付和执行",
+        "cause_relation": "房间阶段存在合法挖掘骰子",
+        "temporal_state": "选择挖掘之后、结算之前",
+        "context": "挖掘行动的规则设想"
+      },
+      "following": {
+        "affected_object": "玩家能源、该骰子、挖掘机与身后路径",
+        "change_trend": "能源减少1、骰子移除、挖掘机前进且身后变为已挖掘",
+        "cause_relation": "玩家支付1能源执行合法挖掘",
+        "temporal_state": "挖掘结算后",
+        "context": "规则记忆唤醒的挖掘后续"
+      },
+      "variableRelations": [{
+        "output": "energy_after",
+        "operation": "subtract",
+        "inputs": ["energy_before", "excavation_cost"],
+        "description": "挖掘后的能源等于当前能源减去规则成本"
+      }],
+      "sourceGrounding": {"all": ["房间阶段存在一颗合法放在未挖掘格的骰子时，玩家支付1能源并移除该骰子，挖掘机移动到该格，身后路径全部变为已挖掘。"]},
+      "metadata": {"outcomeKind": "automatic", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-research-room-order-to-different-reach",
+      "sourceRuleId": "research_order_changes_usefulness",
+      "state": "ready",
+      "current": {
+        "affected_object": "多个待结算研究房与连续研究格成本",
+        "change_trend": "不同房间的独立房间值等待排序使用",
+        "cause_relation": "玩家拥有多个研究房可选择结算顺序",
+        "temporal_state": "房间阶段研究结算之前",
+        "context": "研究顺序的规则设想"
+      },
+      "following": {
+        "affected_object": "各研究房的可推进距离",
+        "change_trend": "随结算顺序产生不同推进结果或使某房间失效",
+        "cause_relation": "各房间值不能相加且面对的连续格成本会变化",
+        "temporal_state": "选择并执行结算顺序后",
+        "context": "规则记忆唤醒的顺序影响"
+      },
+      "sourceGrounding": {"all": ["玩家拥有多个研究房且轨道连续格成本不同时，研究房分别结算，房间值不能跨房间相加；不同结算顺序可能推进不同距离或让一个房间无法推进。"]},
+      "metadata": {"outcomeKind": "choice", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-mothership-phase-to-next-row",
+      "sourceRuleId": "mothership_descends_each_round",
+      "state": "ready",
+      "current": {
+        "affected_object": "外星母舰与下一行中的飞船",
+        "change_trend": "母舰阶段开始并准备下降",
+        "cause_relation": "回合进入母舰阶段第一步",
+        "temporal_state": "母舰下降之前",
+        "context": "母舰阶段的规则设想"
+      },
+      "following": {
+        "affected_object": "外星母舰位置与新到达行中的飞船",
+        "change_trend": "母舰下降到下一行并收回该行飞船",
+        "cause_relation": "母舰阶段第一步自动执行",
+        "temporal_state": "母舰下降完成后",
+        "context": "规则记忆唤醒的母舰移动"
+      },
+      "sourceGrounding": {"all": ["母舰阶段第一步，外星母舰下降到下一行，收回该行飞船，并接近骷髅失败行。"]},
+      "metadata": {"outcomeKind": "automatic", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-mothership-row-to-row-action",
+      "sourceRuleId": "mothership_action_applies_row_effect",
+      "state": "ready",
+      "current": {
+        "affected_object": "刚下降的外星母舰与所在行行动图标",
+        "change_trend": "母舰移动结束并等待行行动",
+        "cause_relation": "母舰到达新行",
+        "temporal_state": "母舰下降后、生成飞船前",
+        "context": "母舰行动的规则设想"
+      },
+      "following": {
+        "affected_object": "挖掘机、研究、白色飞船或城市伤害",
+        "change_trend": "按当前行图标发生后退、增加或受伤中的对应变化",
+        "cause_relation": "母舰执行所在行投放点旁的行动",
+        "temporal_state": "行行动结算后",
+        "context": "具体图标决定对象与变化的规则后续"
+      },
+      "sourceGrounding": {"all": ["母舰阶段下降后，外星母舰执行所在行投放点旁的母舰行动，可能令挖掘机后退、研究倒退、增加白色飞船或使城市受伤。"]},
+      "metadata": {"outcomeKind": "automatic", "useInFirstAction": false, "requiresGroundingChoice": "mothership_row_icon"}
+    },
+    {
+      "edgeId": "read-rule-research-track-top-to-immediate-win",
+      "sourceRuleId": "research_top_is_immediate_win",
+      "state": "ready",
+      "current": {
+        "affected_object": "研究标记与研究轨道顶部",
+        "change_trend": "研究标记推进并到达顶部",
+        "cause_relation": "研究房结算使研究完成",
+        "temporal_state": "研究推进完成时",
+        "context": "首局胜利条件的规则设想"
+      },
+      "following": {
+        "affected_object": "本局游戏状态",
+        "change_trend": "由进行中变为玩家立即获胜",
+        "cause_relation": "研究标记已经到达研究轨道顶部",
+        "temporal_state": "到达顶部后立即发生",
+        "context": "规则记忆唤醒的胜利终点"
+      },
+      "sourceGrounding": {"all": ["研究标记到达研究轨道顶部时，玩家立即获胜。"]},
+      "metadata": {"outcomeKind": "complete", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-final-research-to-lower-multi-room-requirement",
+      "sourceRuleId": "final_research_requires_lower_multi_room",
+      "state": "ready",
+      "current": {
+        "affected_object": "最终11点研究格与可用研究房",
+        "change_trend": "玩家尝试进入最终研究格",
+        "cause_relation": "研究标记接近轨道顶部",
+        "temporal_state": "选择研究房结算之前",
+        "context": "最终研究门槛的规则设想"
+      },
+      "following": {
+        "affected_object": "基地下半部多格研究房",
+        "change_trend": "成为到达最终11点研究格的唯一可用房间类型",
+        "cause_relation": "最终研究格存在专属房间限制",
+        "temporal_state": "形成候选研究行动时",
+        "context": "规则记忆唤醒的胜利前置条件"
+      },
+      "sourceGrounding": {"all": ["玩家尝试进入最终11点研究格时，必须启动基地下半部的多格研究房；这是到达最终研究格的唯一房间类型。"]},
+      "metadata": {"outcomeKind": "constraint", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-spawn-to-empty-columns-first",
+      "sourceRuleId": "spawn_empty_columns_first",
+      "state": "ready",
+      "current": {
+        "affected_object": "待生成紫色飞船、各基地列与投放点",
+        "change_trend": "紫色飞船等待选择投放位置",
+        "cause_relation": "母舰阶段进入飞船生成步骤",
+        "temporal_state": "紫色飞船实际生成之前",
+        "context": "飞船生成优先级的规则设想"
+      },
+      "following": {
+        "affected_object": "没有飞船的列中符合优先级的投放点",
+        "change_trend": "接收并放置待生成的紫色飞船",
+        "cause_relation": "生成规则优先选择空列",
+        "temporal_state": "生成位置确定后",
+        "context": "规则记忆唤醒的首层生成约束"
+      },
+      "sourceGrounding": {"all": ["母舰阶段生成步骤先生成紫色飞船，并优先选择没有飞船的列，把飞船放入符合优先级的投放点。"]},
+      "metadata": {"outcomeKind": "automatic_or_tie_choice", "useInFirstAction": false}
+    },
+    {
+      "edgeId": "read-rule-full-columns-to-farthest-spawn",
+      "sourceRuleId": "spawn_farthest_from_highest_ship",
+      "state": "ready",
+      "current": {
+        "affected_object": "待生成飞船、已有飞船的各列与空投放点",
+        "change_trend": "每列已有飞船时等待比较投放距离",
+        "cause_relation": "空列优先规则无法继续区分投放点",
+        "temporal_state": "飞船实际生成之前",
+        "context": "飞船生成次级优先级的规则设想"
+      },
+      "following": {
+        "affected_object": "距离各列最高飞船最远的投放点",
+        "change_trend": "成为生成位置；仍平局时留下玩家选择",
+        "cause_relation": "生成规则比较投放点与列内最高飞船的距离",
+        "temporal_state": "距离比较完成后",
+        "context": "规则记忆唤醒的次级生成约束"
+      },
+      "sourceGrounding": {"all": ["每列都已有飞船且仍有空投放点时，待生成飞船选择与该列最高飞船距离最大的投放点；规则仍平局时玩家自由选择。"]},
+      "metadata": {"outcomeKind": "automatic_or_tie_choice", "useInFirstAction": false}
+    }
+  ]
+}

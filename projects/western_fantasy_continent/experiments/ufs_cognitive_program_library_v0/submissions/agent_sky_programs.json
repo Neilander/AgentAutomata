@@ -1,0 +1,189 @@
+{
+  "schema": "ufs_cognitive_json_program_submission_v0",
+  "authoringAudit": {
+    "allowedInputsUsed": [
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/sky/rules.json",
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/sky/TASK.md"
+    ],
+    "otherRepositoryFilesRead": false
+  },
+  "programs": [
+    {
+      "programId": "white-die-reroll",
+      "revision": 1,
+      "sourceRuleIds": [
+        "white_die_rerolls_remaining"
+      ],
+      "trigger": {
+        "qKind": "white_die_placed",
+        "relation": {}
+      },
+      "requiredReads": [
+        "dice.ids",
+        "dice:${dieId}.placed"
+      ],
+      "bindings": {
+        "allDieIds": {
+          "op": "read",
+          "path": "dice.ids"
+        },
+        "unplacedDieIds": {
+          "op": "filter",
+          "items": {
+            "op": "var",
+            "name": "allDieIds"
+          },
+          "as": "dieId",
+          "where": {
+            "op": "eq",
+            "left": {
+              "op": "read_template",
+              "template": "dice:${dieId}.placed"
+            },
+            "right": false
+          }
+        }
+      },
+      "output": {
+        "kind": "randomize_unplaced_dice",
+        "fields": {
+          "dieIds": {
+            "op": "var",
+            "name": "unplacedDieIds"
+          },
+          "field": "value",
+          "valueState": "random_unknown",
+          "stopKind": "random",
+          "stopReason": "waiting_for_actual_reroll"
+        }
+      }
+    },
+    {
+      "programId": "arrow-final-landing",
+      "revision": 1,
+      "sourceRuleIds": [
+        "passed_sky_spaces_do_not_trigger"
+      ],
+      "trigger": {
+        "qKind": "ship_final_arrow",
+        "relation": {}
+      },
+      "requiredReads": [
+        "event.shipId",
+        "tile.arrow.targetColumn",
+        "tile.arrow.targetRow"
+      ],
+      "bindings": {
+        "shipId": {
+          "op": "read",
+          "path": "event.shipId"
+        },
+        "targetColumn": {
+          "op": "read",
+          "path": "tile.arrow.targetColumn"
+        },
+        "targetRow": {
+          "op": "read",
+          "path": "tile.arrow.targetRow"
+        }
+      },
+      "output": {
+        "kind": "move_ship",
+        "fields": {
+          "shipId": {
+            "op": "var",
+            "name": "shipId"
+          },
+          "column": {
+            "op": "var",
+            "name": "targetColumn"
+          },
+          "row": {
+            "op": "var",
+            "name": "targetRow"
+          },
+          "stopKind": "automatic"
+        }
+      }
+    },
+    {
+      "programId": "mothership-down-space",
+      "revision": 1,
+      "sourceRuleIds": [
+        "mothership_down_space"
+      ],
+      "trigger": {
+        "qKind": "ship_final_mothership_space",
+        "relation": {}
+      },
+      "requiredReads": [
+        "mothership.row"
+      ],
+      "bindings": {
+        "fromRow": {
+          "op": "read",
+          "path": "mothership.row"
+        },
+        "toRow": {
+          "op": "add",
+          "values": [
+            {
+              "op": "var",
+              "name": "fromRow"
+            },
+            1
+          ]
+        }
+      },
+      "output": {
+        "kind": "move_mothership",
+        "fields": {
+          "fromRow": {
+            "op": "var",
+            "name": "fromRow"
+          },
+          "toRow": {
+            "op": "var",
+            "name": "toRow"
+          },
+          "delta": 1,
+          "stopKind": "automatic"
+        }
+      }
+    },
+    {
+      "programId": "city-contact",
+      "revision": 1,
+      "sourceRuleIds": [
+        "ship_city_hit"
+      ],
+      "trigger": {
+        "qKind": "ship_city_contact",
+        "relation": {}
+      },
+      "requiredReads": [
+        "event.shipId"
+      ],
+      "bindings": {
+        "shipId": {
+          "op": "read",
+          "path": "event.shipId"
+        }
+      },
+      "output": {
+        "kind": "city_contact",
+        "fields": {
+          "shipId": {
+            "op": "var",
+            "name": "shipId"
+          },
+          "damageDelta": 1,
+          "shipDestination": "mothership_queue",
+          "stopKind": "automatic"
+        }
+      }
+    }
+  ]
+}

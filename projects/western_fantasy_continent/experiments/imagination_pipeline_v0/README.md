@@ -61,3 +61,16 @@ node projects/western_fantasy_continent/experiments/imagination_pipeline_v0/run-
 ```
 
 `run-local.ps1` 会执行所有 JavaScript 语法检查、Node 测试和七个场景的机器可读验证，并把结果写入 `artifacts/validation.json`。任何中间 Node 命令失败都会让 PowerShell 入口以失败退出，不会被后续命令掩盖。
+
+## 可交互 Walkthrough
+
+`walkthrough/index.html` 是这条问题 1—6 拼接的基础审计网页。它把完整箭头城市案例拆成十个可前后点击的步骤，逐步显示：
+
+- 六段拼接总流程；
+- 当前步骤输入与产出；
+- `observedWorld` / `imaginedWorld` 棋盘对照；
+- 五槽 Q、矩阵激活、关系拒绝、受控读取与世界补丁；
+- 连续设想的停止边界；
+- 可展开的原始 JSON。
+
+页面数据由 `walkthrough/build-walkthrough-data.js` 直接运行当前流水线生成，不另写一套演示逻辑。页面可以离线直接打开；详细用法与扩展边界见 `walkthrough/README.md`。

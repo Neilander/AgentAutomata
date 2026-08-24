@@ -1,0 +1,2172 @@
+{
+  "schema": "ufs_cognitive_program_library_v0",
+  "entries": [
+    {
+      "programId": "aa-descent-v1",
+      "revisions": [
+        {
+          "program": {
+            "programId": "aa-descent-v1",
+            "revision": 1,
+            "sourceRuleIds": [
+              "die_moves_same_column_ships",
+              "aa_room"
+            ],
+            "trigger": {
+              "qKind": "placement_movement",
+              "relation": {
+                "roomTypes": [
+                  "aa"
+                ]
+              }
+            },
+            "requiredReads": [
+              "event.dieValue"
+            ],
+            "bindings": {
+              "dieValue": {
+                "op": "read",
+                "path": "event.dieValue"
+              },
+              "reducedDescent": {
+                "op": "subtract",
+                "left": {
+                  "op": "var",
+                  "name": "dieValue"
+                },
+                "right": 1
+              },
+              "movementAmount": {
+                "op": "max",
+                "values": [
+                  0,
+                  {
+                    "op": "var",
+                    "name": "reducedDescent"
+                  }
+                ]
+              }
+            },
+            "output": {
+              "kind": "set_movement_amount",
+              "fields": {
+                "amount": {
+                  "op": "var",
+                  "name": "movementAmount"
+                }
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_01",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/AUTHORING_CONTRACT.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/frozen_rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/submission-template.json"
+            ],
+            "installedAfterBlindSubmission": true,
+            "submission": "submissions/agent_01_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "aa-room-no-output-v1",
+      "revisions": [
+        {
+          "program": {
+            "programId": "aa-room-no-output-v1",
+            "revision": 1,
+            "sourceRuleIds": [
+              "aa_room"
+            ],
+            "trigger": {
+              "qKind": "placement_room_state",
+              "relation": {
+                "roomTypes": [
+                  "aa"
+                ]
+              }
+            },
+            "requiredReads": [
+              "room.id",
+              "room.type",
+              "room.cellIds",
+              "room.energyCost",
+              "room.cell:${cellId}.occupied"
+            ],
+            "bindings": {
+              "roomId": {
+                "op": "read",
+                "path": "room.id"
+              },
+              "roomType": {
+                "op": "read",
+                "path": "room.type"
+              },
+              "cells": {
+                "op": "read",
+                "path": "room.cellIds"
+              },
+              "occupiedCells": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "cells"
+                },
+                "as": "cellId",
+                "where": {
+                  "op": "read_template",
+                  "template": "room.cell:${cellId}.occupied"
+                }
+              },
+              "missingCells": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "cells"
+                },
+                "as": "cellId",
+                "where": {
+                  "op": "not",
+                  "value": {
+                    "op": "read_template",
+                    "template": "room.cell:${cellId}.occupied"
+                  }
+                }
+              },
+              "complete": {
+                "op": "eq",
+                "left": {
+                  "op": "length",
+                  "value": {
+                    "op": "var",
+                    "name": "missingCells"
+                  }
+                },
+                "right": 0
+              },
+              "energyCost": {
+                "op": "read",
+                "path": "room.energyCost"
+              }
+            },
+            "output": {
+              "kind": "set_noticed_room_state",
+              "fields": {
+                "roomId": {
+                  "op": "var",
+                  "name": "roomId"
+                },
+                "roomType": {
+                  "op": "var",
+                  "name": "roomType"
+                },
+                "occupiedCells": {
+                  "op": "var",
+                  "name": "occupiedCells"
+                },
+                "missingCells": {
+                  "op": "var",
+                  "name": "missingCells"
+                },
+                "complete": {
+                  "op": "var",
+                  "name": "complete"
+                },
+                "roomValue": null,
+                "energyCost": {
+                  "op": "var",
+                  "name": "energyCost"
+                },
+                "roomPhaseStatus": "no_room_phase_output"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_01",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/AUTHORING_CONTRACT.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/frozen_rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/submission-template.json"
+            ],
+            "installedAfterBlindSubmission": true,
+            "submission": "submissions/agent_01_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "arrow-final-landing",
+      "revisions": [
+        {
+          "program": {
+            "programId": "arrow-final-landing",
+            "revision": 1,
+            "sourceRuleIds": [
+              "passed_sky_spaces_do_not_trigger"
+            ],
+            "trigger": {
+              "qKind": "ship_final_arrow",
+              "relation": {}
+            },
+            "requiredReads": [
+              "event.shipId",
+              "tile.arrow.targetColumn",
+              "tile.arrow.targetRow"
+            ],
+            "bindings": {
+              "shipId": {
+                "op": "read",
+                "path": "event.shipId"
+              },
+              "targetColumn": {
+                "op": "read",
+                "path": "tile.arrow.targetColumn"
+              },
+              "targetRow": {
+                "op": "read",
+                "path": "tile.arrow.targetRow"
+              }
+            },
+            "output": {
+              "kind": "move_ship",
+              "fields": {
+                "shipId": {
+                  "op": "var",
+                  "name": "shipId"
+                },
+                "column": {
+                  "op": "var",
+                  "name": "targetColumn"
+                },
+                "row": {
+                  "op": "var",
+                  "name": "targetRow"
+                },
+                "stopKind": "automatic"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_sky",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/sky/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/sky/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_sky_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "city-contact",
+      "revisions": [
+        {
+          "program": {
+            "programId": "city-contact",
+            "revision": 1,
+            "sourceRuleIds": [
+              "ship_city_hit"
+            ],
+            "trigger": {
+              "qKind": "ship_city_contact",
+              "relation": {}
+            },
+            "requiredReads": [
+              "event.shipId"
+            ],
+            "bindings": {
+              "shipId": {
+                "op": "read",
+                "path": "event.shipId"
+              }
+            },
+            "output": {
+              "kind": "city_contact",
+              "fields": {
+                "shipId": {
+                  "op": "var",
+                  "name": "shipId"
+                },
+                "damageDelta": 1,
+                "shipDestination": "mothership_queue",
+                "stopKind": "automatic"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_sky",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/sky/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/sky/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_sky_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "damage-track-loss",
+      "revisions": [
+        {
+          "program": {
+            "programId": "damage-track-loss",
+            "revision": 1,
+            "sourceRuleIds": [
+              "lose_by_damage_track"
+            ],
+            "trigger": {
+              "qKind": "damage_threshold",
+              "relation": {}
+            },
+            "requiredReads": [
+              "damage.atBottom"
+            ],
+            "bindings": {
+              "isLoss": {
+                "op": "read",
+                "path": "damage.atBottom"
+              }
+            },
+            "output": {
+              "kind": "terminal_check",
+              "fields": {
+                "terminal": {
+                  "op": "var",
+                  "name": "isLoss"
+                },
+                "result": {
+                  "op": "if",
+                  "condition": {
+                    "op": "var",
+                    "name": "isLoss"
+                  },
+                  "then": "loss",
+                  "else": "ongoing"
+                },
+                "reason": "damage_track_reached_bottom",
+                "stopKind": {
+                  "op": "if",
+                  "condition": {
+                    "op": "var",
+                    "name": "isLoss"
+                  },
+                  "then": "complete",
+                  "else": "automatic"
+                }
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_phase",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_phase_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "energy-room-resolution",
+      "revisions": [
+        {
+          "program": {
+            "programId": "energy-room-resolution",
+            "revision": 1,
+            "sourceRuleIds": [
+              "energy_room_generates_energy"
+            ],
+            "trigger": {
+              "qKind": "energy_room_resolution",
+              "relation": {}
+            },
+            "requiredReads": [
+              "room.value",
+              "player.energy",
+              "player.energyCap"
+            ],
+            "bindings": {
+              "energyBefore": {
+                "op": "read",
+                "path": "player.energy"
+              },
+              "roomValue": {
+                "op": "read",
+                "path": "room.value"
+              },
+              "energyCap": {
+                "op": "read",
+                "path": "player.energyCap"
+              },
+              "energyAfter": {
+                "op": "min",
+                "values": [
+                  {
+                    "op": "add",
+                    "values": [
+                      {
+                        "op": "var",
+                        "name": "energyBefore"
+                      },
+                      {
+                        "op": "var",
+                        "name": "roomValue"
+                      }
+                    ]
+                  },
+                  {
+                    "op": "var",
+                    "name": "energyCap"
+                  }
+                ]
+              },
+              "gain": {
+                "op": "subtract",
+                "left": {
+                  "op": "var",
+                  "name": "energyAfter"
+                },
+                "right": {
+                  "op": "var",
+                  "name": "energyBefore"
+                }
+              }
+            },
+            "output": {
+              "kind": "energy_room_result",
+              "fields": {
+                "energyBefore": {
+                  "op": "var",
+                  "name": "energyBefore"
+                },
+                "gain": {
+                  "op": "var",
+                  "name": "gain"
+                },
+                "energyAfter": {
+                  "op": "var",
+                  "name": "energyAfter"
+                },
+                "removeDie": true,
+                "stopKind": "automatic"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_room",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_room_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "excavation-resolution",
+      "revisions": [
+        {
+          "program": {
+            "programId": "excavation-resolution",
+            "revision": 1,
+            "sourceRuleIds": [
+              "excavate_cost_and_result"
+            ],
+            "trigger": {
+              "qKind": "excavation_resolution",
+              "relation": {}
+            },
+            "requiredReads": [
+              "event.dieId",
+              "excavation.targetIndex",
+              "excavation.pathIndicesBehind"
+            ],
+            "bindings": {
+              "removeDieId": {
+                "op": "read",
+                "path": "event.dieId"
+              },
+              "excavatorTargetIndex": {
+                "op": "read",
+                "path": "excavation.targetIndex"
+              },
+              "newlyExcavatedIndices": {
+                "op": "read",
+                "path": "excavation.pathIndicesBehind"
+              }
+            },
+            "output": {
+              "kind": "excavation_result",
+              "fields": {
+                "energyDelta": -1,
+                "removeDieId": {
+                  "op": "var",
+                  "name": "removeDieId"
+                },
+                "excavatorTargetIndex": {
+                  "op": "var",
+                  "name": "excavatorTargetIndex"
+                },
+                "newlyExcavatedIndices": {
+                  "op": "var",
+                  "name": "newlyExcavatedIndices"
+                },
+                "stopKind": "automatic"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_room",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_room_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "fighter-room-resolution",
+      "revisions": [
+        {
+          "program": {
+            "programId": "fighter-room-resolution",
+            "revision": 1,
+            "sourceRuleIds": [
+              "fighter_room_destroys_eligible_ships"
+            ],
+            "trigger": {
+              "qKind": "fighter_room_resolution",
+              "relation": {}
+            },
+            "requiredReads": [
+              "room.value",
+              "explosionShip.ids",
+              "explosionShip:${shipId}.threshold"
+            ],
+            "bindings": {
+              "roomValue": {
+                "op": "read",
+                "path": "room.value"
+              },
+              "shipIds": {
+                "op": "read",
+                "path": "explosionShip.ids"
+              },
+              "eligibleShipIds": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "shipIds"
+                },
+                "as": "shipId",
+                "where": {
+                  "op": "lte",
+                  "left": {
+                    "op": "read_template",
+                    "template": "explosionShip:${shipId}.threshold"
+                  },
+                  "right": {
+                    "op": "var",
+                    "name": "roomValue"
+                  }
+                }
+              }
+            },
+            "output": {
+              "kind": "fighter_room_result",
+              "fields": {
+                "eligibleShipIds": {
+                  "op": "var",
+                  "name": "eligibleShipIds"
+                },
+                "roomValue": {
+                  "op": "var",
+                  "name": "roomValue"
+                },
+                "removeDie": true,
+                "stopKind": "automatic"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_room",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_room_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "final-research-room-restriction",
+      "revisions": [
+        {
+          "program": {
+            "programId": "final-research-room-restriction",
+            "revision": 1,
+            "sourceRuleIds": [
+              "final_research_requires_lower_multi_room"
+            ],
+            "trigger": {
+              "qKind": "final_research_constraint",
+              "relation": {}
+            },
+            "requiredReads": [
+              "research.targetCost",
+              "room.type",
+              "room.zone",
+              "room.cellCount"
+            ],
+            "bindings": {
+              "targetCost": {
+                "op": "read",
+                "path": "research.targetCost"
+              },
+              "roomType": {
+                "op": "read",
+                "path": "room.type"
+              },
+              "roomZone": {
+                "op": "read",
+                "path": "room.zone"
+              },
+              "roomCellCount": {
+                "op": "read",
+                "path": "room.cellCount"
+              },
+              "currentRoomEligible": {
+                "op": "and",
+                "values": [
+                  {
+                    "op": "eq",
+                    "left": {
+                      "op": "var",
+                      "name": "roomType"
+                    },
+                    "right": "research"
+                  },
+                  {
+                    "op": "eq",
+                    "left": {
+                      "op": "var",
+                      "name": "roomZone"
+                    },
+                    "right": "lower"
+                  },
+                  {
+                    "op": "gte",
+                    "left": {
+                      "op": "var",
+                      "name": "roomCellCount"
+                    },
+                    "right": 2
+                  }
+                ]
+              }
+            },
+            "output": {
+              "kind": "final_research_constraint",
+              "fields": {
+                "targetCost": {
+                  "op": "var",
+                  "name": "targetCost"
+                },
+                "requiresRoomType": "research",
+                "requiresZone": "lower",
+                "requiresMinimumCells": 2,
+                "currentRoomEligible": {
+                  "op": "var",
+                  "name": "currentRoomEligible"
+                },
+                "stopKind": "automatic"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_room",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_room_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "mothership-down-space",
+      "revisions": [
+        {
+          "program": {
+            "programId": "mothership-down-space",
+            "revision": 1,
+            "sourceRuleIds": [
+              "mothership_down_space"
+            ],
+            "trigger": {
+              "qKind": "ship_final_mothership_space",
+              "relation": {}
+            },
+            "requiredReads": [
+              "mothership.row"
+            ],
+            "bindings": {
+              "fromRow": {
+                "op": "read",
+                "path": "mothership.row"
+              },
+              "toRow": {
+                "op": "add",
+                "values": [
+                  {
+                    "op": "var",
+                    "name": "fromRow"
+                  },
+                  1
+                ]
+              }
+            },
+            "output": {
+              "kind": "move_mothership",
+              "fields": {
+                "fromRow": {
+                  "op": "var",
+                  "name": "fromRow"
+                },
+                "toRow": {
+                  "op": "var",
+                  "name": "toRow"
+                },
+                "delta": 1,
+                "stopKind": "automatic"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_sky",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/sky/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/sky/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_sky_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "mothership-phase-descent",
+      "revisions": [
+        {
+          "program": {
+            "programId": "mothership-phase-descent",
+            "revision": 1,
+            "sourceRuleIds": [
+              "mothership_descends_each_round"
+            ],
+            "trigger": {
+              "qKind": "mothership_phase_start",
+              "relation": {}
+            },
+            "requiredReads": [
+              "mothership.row",
+              "sky.row:${nextRow}.shipIds"
+            ],
+            "bindings": {
+              "fromRow": {
+                "op": "read",
+                "path": "mothership.row"
+              },
+              "nextRow": {
+                "op": "add",
+                "values": [
+                  {
+                    "op": "var",
+                    "name": "fromRow"
+                  },
+                  1
+                ]
+              },
+              "collectedShipIds": {
+                "op": "read_template",
+                "template": "sky.row:${nextRow}.shipIds"
+              }
+            },
+            "output": {
+              "kind": "mothership_phase_descent",
+              "fields": {
+                "fromRow": {
+                  "op": "var",
+                  "name": "fromRow"
+                },
+                "toRow": {
+                  "op": "var",
+                  "name": "nextRow"
+                },
+                "collectedShipIds": {
+                  "op": "var",
+                  "name": "collectedShipIds"
+                },
+                "stopKind": "automatic"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_phase",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_phase_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "mothership-row-action",
+      "revisions": [
+        {
+          "program": {
+            "programId": "mothership-row-action",
+            "revision": 1,
+            "sourceRuleIds": [
+              "mothership_action_applies_row_effect"
+            ],
+            "trigger": {
+              "qKind": "mothership_row_action",
+              "relation": {}
+            },
+            "requiredReads": [
+              "mothership.rowAction.type",
+              "mothership.rowAction.value"
+            ],
+            "bindings": {
+              "actionType": {
+                "op": "read",
+                "path": "mothership.rowAction.type"
+              },
+              "amount": {
+                "op": "read",
+                "path": "mothership.rowAction.value"
+              }
+            },
+            "output": {
+              "kind": "mothership_row_action",
+              "fields": {
+                "actionType": {
+                  "op": "var",
+                  "name": "actionType"
+                },
+                "amount": {
+                  "op": "var",
+                  "name": "amount"
+                },
+                "stopKind": "automatic"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_phase",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_phase_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "mothership-skull-loss",
+      "revisions": [
+        {
+          "program": {
+            "programId": "mothership-skull-loss",
+            "revision": 1,
+            "sourceRuleIds": [
+              "lose_by_mothership_skull"
+            ],
+            "trigger": {
+              "qKind": "mothership_threshold",
+              "relation": {}
+            },
+            "requiredReads": [
+              "mothership.onSkullRow"
+            ],
+            "bindings": {
+              "isLoss": {
+                "op": "read",
+                "path": "mothership.onSkullRow"
+              }
+            },
+            "output": {
+              "kind": "terminal_check",
+              "fields": {
+                "terminal": {
+                  "op": "var",
+                  "name": "isLoss"
+                },
+                "result": {
+                  "op": "if",
+                  "condition": {
+                    "op": "var",
+                    "name": "isLoss"
+                  },
+                  "then": "loss",
+                  "else": "ongoing"
+                },
+                "reason": "mothership_reached_skull_row",
+                "stopKind": {
+                  "op": "if",
+                  "condition": {
+                    "op": "var",
+                    "name": "isLoss"
+                  },
+                  "then": "complete",
+                  "else": "automatic"
+                }
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_phase",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_phase_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "multi-room-completeness-v1",
+      "revisions": [
+        {
+          "program": {
+            "programId": "multi-room-completeness-v1",
+            "revision": 1,
+            "sourceRuleIds": [
+              "multi_room_requires_all_spaces",
+              "room_value"
+            ],
+            "trigger": {
+              "qKind": "placement_room_state",
+              "relation": {
+                "excludedRoomTypes": [
+                  "aa"
+                ],
+                "minimumCellCount": 2
+              }
+            },
+            "requiredReads": [
+              "room.id",
+              "room.type",
+              "room.cellIds",
+              "room.modifier",
+              "room.energyCost",
+              "room.cell:${cellId}.occupied",
+              "room.cell:${cellId}.dieValue"
+            ],
+            "bindings": {
+              "roomId": {
+                "op": "read",
+                "path": "room.id"
+              },
+              "roomType": {
+                "op": "read",
+                "path": "room.type"
+              },
+              "cells": {
+                "op": "read",
+                "path": "room.cellIds"
+              },
+              "occupiedCells": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "cells"
+                },
+                "as": "cellId",
+                "where": {
+                  "op": "read_template",
+                  "template": "room.cell:${cellId}.occupied"
+                }
+              },
+              "missingCells": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "cells"
+                },
+                "as": "cellId",
+                "where": {
+                  "op": "not",
+                  "value": {
+                    "op": "read_template",
+                    "template": "room.cell:${cellId}.occupied"
+                  }
+                }
+              },
+              "complete": {
+                "op": "eq",
+                "left": {
+                  "op": "length",
+                  "value": {
+                    "op": "var",
+                    "name": "missingCells"
+                  }
+                },
+                "right": 0
+              },
+              "dieValues": {
+                "op": "map",
+                "items": {
+                  "op": "var",
+                  "name": "occupiedCells"
+                },
+                "as": "cellId",
+                "value": {
+                  "op": "read_template",
+                  "template": "room.cell:${cellId}.dieValue"
+                }
+              },
+              "modifier": {
+                "op": "read",
+                "path": "room.modifier"
+              },
+              "roomValue": {
+                "op": "if",
+                "condition": {
+                  "op": "var",
+                  "name": "complete"
+                },
+                "then": {
+                  "op": "add",
+                  "values": [
+                    {
+                      "op": "sum",
+                      "items": {
+                        "op": "var",
+                        "name": "dieValues"
+                      }
+                    },
+                    {
+                      "op": "var",
+                      "name": "modifier"
+                    }
+                  ]
+                },
+                "else": null
+              },
+              "energyCost": {
+                "op": "read",
+                "path": "room.energyCost"
+              },
+              "roomPhaseStatus": {
+                "op": "if",
+                "condition": {
+                  "op": "var",
+                  "name": "complete"
+                },
+                "then": "ready_but_not_resolved",
+                "else": "setup_only_incomplete"
+              }
+            },
+            "output": {
+              "kind": "set_noticed_room_state",
+              "fields": {
+                "roomId": {
+                  "op": "var",
+                  "name": "roomId"
+                },
+                "roomType": {
+                  "op": "var",
+                  "name": "roomType"
+                },
+                "occupiedCells": {
+                  "op": "var",
+                  "name": "occupiedCells"
+                },
+                "missingCells": {
+                  "op": "var",
+                  "name": "missingCells"
+                },
+                "complete": {
+                  "op": "var",
+                  "name": "complete"
+                },
+                "roomValue": {
+                  "op": "var",
+                  "name": "roomValue"
+                },
+                "energyCost": {
+                  "op": "var",
+                  "name": "energyCost"
+                },
+                "roomPhaseStatus": {
+                  "op": "var",
+                  "name": "roomPhaseStatus"
+                }
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_01",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/AUTHORING_CONTRACT.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/frozen_rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/submission-template.json"
+            ],
+            "installedAfterBlindSubmission": true,
+            "submission": "submissions/agent_01_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "ordinary-descent-v1",
+      "revisions": [
+        {
+          "program": {
+            "programId": "ordinary-descent-v1",
+            "revision": 1,
+            "sourceRuleIds": [
+              "die_moves_same_column_ships"
+            ],
+            "trigger": {
+              "qKind": "placement_movement",
+              "relation": {
+                "excludedRoomTypes": [
+                  "aa"
+                ]
+              }
+            },
+            "requiredReads": [
+              "event.dieValue"
+            ],
+            "bindings": {
+              "dieValue": {
+                "op": "read",
+                "path": "event.dieValue"
+              }
+            },
+            "output": {
+              "kind": "set_movement_amount",
+              "fields": {
+                "amount": {
+                  "op": "var",
+                  "name": "dieValue"
+                }
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_01",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/AUTHORING_CONTRACT.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/frozen_rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/submission-template.json"
+            ],
+            "installedAfterBlindSubmission": true,
+            "submission": "submissions/agent_01_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "research-completion-before-destruction",
+      "revisions": [
+        {
+          "program": {
+            "programId": "research-completion-before-destruction",
+            "revision": 1,
+            "sourceRuleIds": [
+              "win_by_research_before_destruction"
+            ],
+            "trigger": {
+              "qKind": "research_completion",
+              "relation": {}
+            },
+            "requiredReads": [
+              "research.complete",
+              "city.destroyed"
+            ],
+            "bindings": {
+              "researchComplete": {
+                "op": "read",
+                "path": "research.complete"
+              },
+              "cityDestroyed": {
+                "op": "read",
+                "path": "city.destroyed"
+              },
+              "isWin": {
+                "op": "and",
+                "values": [
+                  {
+                    "op": "var",
+                    "name": "researchComplete"
+                  },
+                  {
+                    "op": "not",
+                    "value": {
+                      "op": "var",
+                      "name": "cityDestroyed"
+                    }
+                  }
+                ]
+              }
+            },
+            "output": {
+              "kind": "terminal_check",
+              "fields": {
+                "terminal": {
+                  "op": "var",
+                  "name": "isWin"
+                },
+                "result": {
+                  "op": "if",
+                  "condition": {
+                    "op": "var",
+                    "name": "isWin"
+                  },
+                  "then": "win",
+                  "else": "ongoing"
+                },
+                "reason": "research_completed_before_city_destruction",
+                "stopKind": {
+                  "op": "if",
+                  "condition": {
+                    "op": "var",
+                    "name": "isWin"
+                  },
+                  "then": "complete",
+                  "else": "automatic"
+                }
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_phase",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_phase_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "research-room-choice",
+      "revisions": [
+        {
+          "program": {
+            "programId": "research-room-choice",
+            "revision": 1,
+            "sourceRuleIds": [
+              "research_room_advances_track"
+            ],
+            "trigger": {
+              "qKind": "research_room_resolution",
+              "relation": {}
+            },
+            "requiredReads": [
+              "room.value",
+              "research.costsAhead"
+            ],
+            "bindings": {
+              "budget": {
+                "op": "read",
+                "path": "room.value"
+              },
+              "continuousCosts": {
+                "op": "read",
+                "path": "research.costsAhead"
+              }
+            },
+            "output": {
+              "kind": "research_room_choice",
+              "fields": {
+                "budget": {
+                  "op": "var",
+                  "name": "budget"
+                },
+                "continuousCosts": {
+                  "op": "var",
+                  "name": "continuousCosts"
+                },
+                "stopKind": "choice"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_room",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_room_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "research-room-order-choice",
+      "revisions": [
+        {
+          "program": {
+            "programId": "research-room-order-choice",
+            "revision": 1,
+            "sourceRuleIds": [
+              "research_order_changes_usefulness",
+              "research_room_advances_track"
+            ],
+            "trigger": {
+              "qKind": "research_order",
+              "relation": {}
+            },
+            "requiredReads": [
+              "research.pendingRoomIds",
+              "research.room:${roomId}.value",
+              "research.costsAhead"
+            ],
+            "bindings": {
+              "pendingRoomIds": {
+                "op": "read",
+                "path": "research.pendingRoomIds"
+              },
+              "rooms": {
+                "op": "map",
+                "items": {
+                  "op": "var",
+                  "name": "pendingRoomIds"
+                },
+                "as": "roomId",
+                "value": {
+                  "roomId": {
+                    "op": "var",
+                    "name": "roomId"
+                  },
+                  "value": {
+                    "op": "read_template",
+                    "template": "research.room:${roomId}.value"
+                  }
+                }
+              },
+              "continuousCosts": {
+                "op": "read",
+                "path": "research.costsAhead"
+              }
+            },
+            "output": {
+              "kind": "research_order_choice",
+              "fields": {
+                "rooms": {
+                  "op": "var",
+                  "name": "rooms"
+                },
+                "continuousCosts": {
+                  "op": "var",
+                  "name": "continuousCosts"
+                },
+                "combineValues": false,
+                "stopKind": "choice"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_room",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_room_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "research-top-win",
+      "revisions": [
+        {
+          "program": {
+            "programId": "research-top-win",
+            "revision": 1,
+            "sourceRuleIds": [
+              "research_top_is_immediate_win"
+            ],
+            "trigger": {
+              "qKind": "research_top",
+              "relation": {}
+            },
+            "requiredReads": [
+              "research.atTop"
+            ],
+            "bindings": {
+              "isWin": {
+                "op": "read",
+                "path": "research.atTop"
+              }
+            },
+            "output": {
+              "kind": "terminal_check",
+              "fields": {
+                "terminal": {
+                  "op": "var",
+                  "name": "isWin"
+                },
+                "result": {
+                  "op": "if",
+                  "condition": {
+                    "op": "var",
+                    "name": "isWin"
+                  },
+                  "then": "win",
+                  "else": "ongoing"
+                },
+                "reason": "research_reached_top",
+                "stopKind": {
+                  "op": "if",
+                  "condition": {
+                    "op": "var",
+                    "name": "isWin"
+                  },
+                  "then": "complete",
+                  "else": "automatic"
+                }
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_phase",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_phase_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "room-energy-payment",
+      "revisions": [
+        {
+          "program": {
+            "programId": "room-energy-payment",
+            "revision": 1,
+            "sourceRuleIds": [
+              "room_requires_energy"
+            ],
+            "trigger": {
+              "qKind": "room_payment",
+              "relation": {}
+            },
+            "requiredReads": [
+              "room.energyCost",
+              "player.energy"
+            ],
+            "bindings": {
+              "energyCost": {
+                "op": "read",
+                "path": "room.energyCost"
+              },
+              "energyAvailable": {
+                "op": "read",
+                "path": "player.energy"
+              },
+              "canPay": {
+                "op": "gte",
+                "left": {
+                  "op": "var",
+                  "name": "energyAvailable"
+                },
+                "right": {
+                  "op": "var",
+                  "name": "energyCost"
+                }
+              }
+            },
+            "output": {
+              "kind": "room_payment_choice",
+              "fields": {
+                "energyCost": {
+                  "op": "var",
+                  "name": "energyCost"
+                },
+                "canPay": {
+                  "op": "var",
+                  "name": "canPay"
+                },
+                "stopKind": "choice"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_room",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_room_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "single-room-value-v1",
+      "revisions": [
+        {
+          "program": {
+            "programId": "single-room-value-v1",
+            "revision": 1,
+            "sourceRuleIds": [
+              "room_value"
+            ],
+            "trigger": {
+              "qKind": "placement_room_state",
+              "relation": {
+                "excludedRoomTypes": [
+                  "aa"
+                ],
+                "cellCount": 1
+              }
+            },
+            "requiredReads": [
+              "room.id",
+              "room.type",
+              "room.cellIds",
+              "room.modifier",
+              "room.energyCost",
+              "room.cell:${cellId}.occupied",
+              "room.cell:${cellId}.dieValue"
+            ],
+            "bindings": {
+              "roomId": {
+                "op": "read",
+                "path": "room.id"
+              },
+              "roomType": {
+                "op": "read",
+                "path": "room.type"
+              },
+              "cells": {
+                "op": "read",
+                "path": "room.cellIds"
+              },
+              "occupiedCells": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "cells"
+                },
+                "as": "cellId",
+                "where": {
+                  "op": "read_template",
+                  "template": "room.cell:${cellId}.occupied"
+                }
+              },
+              "missingCells": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "cells"
+                },
+                "as": "cellId",
+                "where": {
+                  "op": "not",
+                  "value": {
+                    "op": "read_template",
+                    "template": "room.cell:${cellId}.occupied"
+                  }
+                }
+              },
+              "complete": {
+                "op": "eq",
+                "left": {
+                  "op": "length",
+                  "value": {
+                    "op": "var",
+                    "name": "missingCells"
+                  }
+                },
+                "right": 0
+              },
+              "dieValues": {
+                "op": "map",
+                "items": {
+                  "op": "var",
+                  "name": "occupiedCells"
+                },
+                "as": "cellId",
+                "value": {
+                  "op": "read_template",
+                  "template": "room.cell:${cellId}.dieValue"
+                }
+              },
+              "dieValue": {
+                "op": "first",
+                "items": {
+                  "op": "var",
+                  "name": "dieValues"
+                }
+              },
+              "modifier": {
+                "op": "read",
+                "path": "room.modifier"
+              },
+              "roomValue": {
+                "op": "if",
+                "condition": {
+                  "op": "var",
+                  "name": "complete"
+                },
+                "then": {
+                  "op": "add",
+                  "values": [
+                    {
+                      "op": "var",
+                      "name": "dieValue"
+                    },
+                    {
+                      "op": "var",
+                      "name": "modifier"
+                    }
+                  ]
+                },
+                "else": null
+              },
+              "energyCost": {
+                "op": "read",
+                "path": "room.energyCost"
+              },
+              "roomPhaseStatus": {
+                "op": "if",
+                "condition": {
+                  "op": "var",
+                  "name": "complete"
+                },
+                "then": "ready_but_not_resolved",
+                "else": "setup_only_incomplete"
+              }
+            },
+            "output": {
+              "kind": "set_noticed_room_state",
+              "fields": {
+                "roomId": {
+                  "op": "var",
+                  "name": "roomId"
+                },
+                "roomType": {
+                  "op": "var",
+                  "name": "roomType"
+                },
+                "occupiedCells": {
+                  "op": "var",
+                  "name": "occupiedCells"
+                },
+                "missingCells": {
+                  "op": "var",
+                  "name": "missingCells"
+                },
+                "complete": {
+                  "op": "var",
+                  "name": "complete"
+                },
+                "roomValue": {
+                  "op": "var",
+                  "name": "roomValue"
+                },
+                "energyCost": {
+                  "op": "var",
+                  "name": "energyCost"
+                },
+                "roomPhaseStatus": {
+                  "op": "var",
+                  "name": "roomPhaseStatus"
+                }
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_01",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/AUTHORING_CONTRACT.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/frozen_rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/submission-template.json"
+            ],
+            "installedAfterBlindSubmission": true,
+            "submission": "submissions/agent_01_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "spawn-empty-columns",
+      "revisions": [
+        {
+          "program": {
+            "programId": "spawn-empty-columns",
+            "revision": 1,
+            "sourceRuleIds": [
+              "spawn_empty_columns_first"
+            ],
+            "trigger": {
+              "qKind": "spawn_priority_empty",
+              "relation": {}
+            },
+            "requiredReads": [
+              "spawn.shipId",
+              "sky.columnIds",
+              "sky.column:${columnId}.shipIds",
+              "sky.column:${columnId}.dropPointId"
+            ],
+            "bindings": {
+              "shipId": {
+                "op": "read",
+                "path": "spawn.shipId"
+              },
+              "columnIds": {
+                "op": "read",
+                "path": "sky.columnIds"
+              },
+              "emptyColumnIds": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "columnIds"
+                },
+                "as": "columnId",
+                "where": {
+                  "op": "eq",
+                  "left": {
+                    "op": "length",
+                    "value": {
+                      "op": "read_template",
+                      "template": "sky.column:${columnId}.shipIds"
+                    }
+                  },
+                  "right": 0
+                }
+              },
+              "candidateDropPointIds": {
+                "op": "map",
+                "items": {
+                  "op": "var",
+                  "name": "emptyColumnIds"
+                },
+                "as": "columnId",
+                "value": {
+                  "op": "read_template",
+                  "template": "sky.column:${columnId}.dropPointId"
+                }
+              },
+              "hasChoice": {
+                "op": "gte",
+                "left": {
+                  "op": "length",
+                  "value": {
+                    "op": "var",
+                    "name": "candidateDropPointIds"
+                  }
+                },
+                "right": 2
+              }
+            },
+            "output": {
+              "kind": "spawn_candidates",
+              "fields": {
+                "shipId": {
+                  "op": "var",
+                  "name": "shipId"
+                },
+                "candidateDropPointIds": {
+                  "op": "var",
+                  "name": "candidateDropPointIds"
+                },
+                "stopKind": {
+                  "op": "if",
+                  "condition": {
+                    "op": "var",
+                    "name": "hasChoice"
+                  },
+                  "then": "choice",
+                  "else": "automatic"
+                }
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_phase",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_phase_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "spawn-farthest-drop-point",
+      "revisions": [
+        {
+          "program": {
+            "programId": "spawn-farthest-drop-point",
+            "revision": 1,
+            "sourceRuleIds": [
+              "spawn_farthest_from_highest_ship"
+            ],
+            "trigger": {
+              "qKind": "spawn_priority_farthest",
+              "relation": {}
+            },
+            "requiredReads": [
+              "spawn.shipId",
+              "spawn.availableDropPointIds",
+              "spawn.dropPoint:${dropPointId}.distanceFromHighestShip"
+            ],
+            "bindings": {
+              "shipId": {
+                "op": "read",
+                "path": "spawn.shipId"
+              },
+              "availableDropPointIds": {
+                "op": "read",
+                "path": "spawn.availableDropPointIds"
+              },
+              "distances": {
+                "op": "map",
+                "items": {
+                  "op": "var",
+                  "name": "availableDropPointIds"
+                },
+                "as": "dropPointId",
+                "value": {
+                  "op": "read_template",
+                  "template": "spawn.dropPoint:${dropPointId}.distanceFromHighestShip"
+                }
+              },
+              "maximumDistance": {
+                "op": "max",
+                "values": {
+                  "op": "var",
+                  "name": "distances"
+                }
+              },
+              "candidateDropPointIds": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "availableDropPointIds"
+                },
+                "as": "dropPointId",
+                "where": {
+                  "op": "eq",
+                  "left": {
+                    "op": "read_template",
+                    "template": "spawn.dropPoint:${dropPointId}.distanceFromHighestShip"
+                  },
+                  "right": {
+                    "op": "var",
+                    "name": "maximumDistance"
+                  }
+                }
+              },
+              "hasChoice": {
+                "op": "gte",
+                "left": {
+                  "op": "length",
+                  "value": {
+                    "op": "var",
+                    "name": "candidateDropPointIds"
+                  }
+                },
+                "right": 2
+              }
+            },
+            "output": {
+              "kind": "spawn_candidates",
+              "fields": {
+                "shipId": {
+                  "op": "var",
+                  "name": "shipId"
+                },
+                "candidateDropPointIds": {
+                  "op": "var",
+                  "name": "candidateDropPointIds"
+                },
+                "stopKind": {
+                  "op": "if",
+                  "condition": {
+                    "op": "var",
+                    "name": "hasChoice"
+                  },
+                  "then": "choice",
+                  "else": "automatic"
+                }
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_phase",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/phase/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_phase_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "unexcavated-placement-legality",
+      "revisions": [
+        {
+          "program": {
+            "programId": "unexcavated-placement-legality",
+            "revision": 1,
+            "sourceRuleIds": [
+              "excavation_placement_requirement"
+            ],
+            "trigger": {
+              "qKind": "excavation_placement",
+              "relation": {}
+            },
+            "requiredReads": [
+              "event.dieValue",
+              "excavation.pathDistance",
+              "round.usedUnexcavatedPlacement"
+            ],
+            "bindings": {
+              "dieValue": {
+                "op": "read",
+                "path": "event.dieValue"
+              },
+              "pathDistance": {
+                "op": "read",
+                "path": "excavation.pathDistance"
+              },
+              "otherUnexcavatedAlreadyUsed": {
+                "op": "read",
+                "path": "round.usedUnexcavatedPlacement"
+              },
+              "legal": {
+                "op": "and",
+                "values": [
+                  {
+                    "op": "gte",
+                    "left": {
+                      "op": "var",
+                      "name": "dieValue"
+                    },
+                    "right": {
+                      "op": "var",
+                      "name": "pathDistance"
+                    }
+                  },
+                  {
+                    "op": "not",
+                    "value": {
+                      "op": "var",
+                      "name": "otherUnexcavatedAlreadyUsed"
+                    }
+                  }
+                ]
+              }
+            },
+            "output": {
+              "kind": "excavation_placement_legality",
+              "fields": {
+                "dieValue": {
+                  "op": "var",
+                  "name": "dieValue"
+                },
+                "pathDistance": {
+                  "op": "var",
+                  "name": "pathDistance"
+                },
+                "otherUnexcavatedAlreadyUsed": {
+                  "op": "var",
+                  "name": "otherUnexcavatedAlreadyUsed"
+                },
+                "legal": {
+                  "op": "var",
+                  "name": "legal"
+                },
+                "stopKind": "automatic"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_room",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/room/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_room_programs.json"
+          }
+        }
+      ]
+    },
+    {
+      "programId": "white-die-reroll",
+      "revisions": [
+        {
+          "program": {
+            "programId": "white-die-reroll",
+            "revision": 1,
+            "sourceRuleIds": [
+              "white_die_rerolls_remaining"
+            ],
+            "trigger": {
+              "qKind": "white_die_placed",
+              "relation": {}
+            },
+            "requiredReads": [
+              "dice.ids",
+              "dice:${dieId}.placed"
+            ],
+            "bindings": {
+              "allDieIds": {
+                "op": "read",
+                "path": "dice.ids"
+              },
+              "unplacedDieIds": {
+                "op": "filter",
+                "items": {
+                  "op": "var",
+                  "name": "allDieIds"
+                },
+                "as": "dieId",
+                "where": {
+                  "op": "eq",
+                  "left": {
+                    "op": "read_template",
+                    "template": "dice:${dieId}.placed"
+                  },
+                  "right": false
+                }
+              }
+            },
+            "output": {
+              "kind": "randomize_unplaced_dice",
+              "fields": {
+                "dieIds": {
+                  "op": "var",
+                  "name": "unplacedDieIds"
+                },
+                "field": "value",
+                "valueState": "random_unknown",
+                "stopKind": "random",
+                "stopReason": "waiting_for_actual_reroll"
+              }
+            }
+          },
+          "provenance": {
+            "author": "isolated_agent_sky",
+            "authoringMode": "rules_and_public_contract_only",
+            "allowedInputs": [
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/DSL_V2.md",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/submission-template.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/sky/rules.json",
+              "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle_round2/sky/TASK.md"
+            ],
+            "installedAfterAllBlindSubmissions": true,
+            "submission": "submissions/agent_sky_programs.json"
+          }
+        }
+      ]
+    }
+  ]
+}

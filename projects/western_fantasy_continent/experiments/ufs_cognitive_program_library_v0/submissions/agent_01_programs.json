@@ -1,0 +1,546 @@
+{
+  "schema": "ufs_cognitive_json_program_submission_v0",
+  "authoringAudit": {
+    "allowedInputsUsed": [
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/AUTHORING_CONTRACT.md",
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/frozen_rules.json",
+      "projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/public_bundle/submission-template.json"
+    ],
+    "otherRepositoryFilesRead": false
+  },
+  "programs": [
+    {
+      "programId": "ordinary-descent-v1",
+      "revision": 1,
+      "sourceRuleIds": [
+        "die_moves_same_column_ships"
+      ],
+      "trigger": {
+        "qKind": "placement_movement",
+        "relation": {
+          "excludedRoomTypes": [
+            "aa"
+          ]
+        }
+      },
+      "requiredReads": [
+        "event.dieValue"
+      ],
+      "bindings": {
+        "dieValue": {
+          "op": "read",
+          "path": "event.dieValue"
+        }
+      },
+      "output": {
+        "kind": "set_movement_amount",
+        "fields": {
+          "amount": {
+            "op": "var",
+            "name": "dieValue"
+          }
+        }
+      }
+    },
+    {
+      "programId": "aa-descent-v1",
+      "revision": 1,
+      "sourceRuleIds": [
+        "die_moves_same_column_ships",
+        "aa_room"
+      ],
+      "trigger": {
+        "qKind": "placement_movement",
+        "relation": {
+          "roomTypes": [
+            "aa"
+          ]
+        }
+      },
+      "requiredReads": [
+        "event.dieValue"
+      ],
+      "bindings": {
+        "dieValue": {
+          "op": "read",
+          "path": "event.dieValue"
+        },
+        "reducedDescent": {
+          "op": "subtract",
+          "left": {
+            "op": "var",
+            "name": "dieValue"
+          },
+          "right": 1
+        },
+        "movementAmount": {
+          "op": "max",
+          "values": [
+            0,
+            {
+              "op": "var",
+              "name": "reducedDescent"
+            }
+          ]
+        }
+      },
+      "output": {
+        "kind": "set_movement_amount",
+        "fields": {
+          "amount": {
+            "op": "var",
+            "name": "movementAmount"
+          }
+        }
+      }
+    },
+    {
+      "programId": "aa-room-no-output-v1",
+      "revision": 1,
+      "sourceRuleIds": [
+        "aa_room"
+      ],
+      "trigger": {
+        "qKind": "placement_room_state",
+        "relation": {
+          "roomTypes": [
+            "aa"
+          ]
+        }
+      },
+      "requiredReads": [
+        "room.id",
+        "room.type",
+        "room.cellIds",
+        "room.energyCost",
+        "room.cell:${cellId}.occupied"
+      ],
+      "bindings": {
+        "roomId": {
+          "op": "read",
+          "path": "room.id"
+        },
+        "roomType": {
+          "op": "read",
+          "path": "room.type"
+        },
+        "cells": {
+          "op": "read",
+          "path": "room.cellIds"
+        },
+        "occupiedCells": {
+          "op": "filter",
+          "items": {
+            "op": "var",
+            "name": "cells"
+          },
+          "as": "cellId",
+          "where": {
+            "op": "read_template",
+            "template": "room.cell:${cellId}.occupied"
+          }
+        },
+        "missingCells": {
+          "op": "filter",
+          "items": {
+            "op": "var",
+            "name": "cells"
+          },
+          "as": "cellId",
+          "where": {
+            "op": "not",
+            "value": {
+              "op": "read_template",
+              "template": "room.cell:${cellId}.occupied"
+            }
+          }
+        },
+        "complete": {
+          "op": "eq",
+          "left": {
+            "op": "length",
+            "value": {
+              "op": "var",
+              "name": "missingCells"
+            }
+          },
+          "right": 0
+        },
+        "energyCost": {
+          "op": "read",
+          "path": "room.energyCost"
+        }
+      },
+      "output": {
+        "kind": "set_noticed_room_state",
+        "fields": {
+          "roomId": {
+            "op": "var",
+            "name": "roomId"
+          },
+          "roomType": {
+            "op": "var",
+            "name": "roomType"
+          },
+          "occupiedCells": {
+            "op": "var",
+            "name": "occupiedCells"
+          },
+          "missingCells": {
+            "op": "var",
+            "name": "missingCells"
+          },
+          "complete": {
+            "op": "var",
+            "name": "complete"
+          },
+          "roomValue": null,
+          "energyCost": {
+            "op": "var",
+            "name": "energyCost"
+          },
+          "roomPhaseStatus": "no_room_phase_output"
+        }
+      }
+    },
+    {
+      "programId": "multi-room-completeness-v1",
+      "revision": 1,
+      "sourceRuleIds": [
+        "multi_room_requires_all_spaces",
+        "room_value"
+      ],
+      "trigger": {
+        "qKind": "placement_room_state",
+        "relation": {
+          "excludedRoomTypes": [
+            "aa"
+          ],
+          "minimumCellCount": 2
+        }
+      },
+      "requiredReads": [
+        "room.id",
+        "room.type",
+        "room.cellIds",
+        "room.modifier",
+        "room.energyCost",
+        "room.cell:${cellId}.occupied",
+        "room.cell:${cellId}.dieValue"
+      ],
+      "bindings": {
+        "roomId": {
+          "op": "read",
+          "path": "room.id"
+        },
+        "roomType": {
+          "op": "read",
+          "path": "room.type"
+        },
+        "cells": {
+          "op": "read",
+          "path": "room.cellIds"
+        },
+        "occupiedCells": {
+          "op": "filter",
+          "items": {
+            "op": "var",
+            "name": "cells"
+          },
+          "as": "cellId",
+          "where": {
+            "op": "read_template",
+            "template": "room.cell:${cellId}.occupied"
+          }
+        },
+        "missingCells": {
+          "op": "filter",
+          "items": {
+            "op": "var",
+            "name": "cells"
+          },
+          "as": "cellId",
+          "where": {
+            "op": "not",
+            "value": {
+              "op": "read_template",
+              "template": "room.cell:${cellId}.occupied"
+            }
+          }
+        },
+        "complete": {
+          "op": "eq",
+          "left": {
+            "op": "length",
+            "value": {
+              "op": "var",
+              "name": "missingCells"
+            }
+          },
+          "right": 0
+        },
+        "dieValues": {
+          "op": "map",
+          "items": {
+            "op": "var",
+            "name": "occupiedCells"
+          },
+          "as": "cellId",
+          "value": {
+            "op": "read_template",
+            "template": "room.cell:${cellId}.dieValue"
+          }
+        },
+        "modifier": {
+          "op": "read",
+          "path": "room.modifier"
+        },
+        "roomValue": {
+          "op": "if",
+          "condition": {
+            "op": "var",
+            "name": "complete"
+          },
+          "then": {
+            "op": "add",
+            "values": [
+              {
+                "op": "sum",
+                "items": {
+                  "op": "var",
+                  "name": "dieValues"
+                }
+              },
+              {
+                "op": "var",
+                "name": "modifier"
+              }
+            ]
+          },
+          "else": null
+        },
+        "energyCost": {
+          "op": "read",
+          "path": "room.energyCost"
+        },
+        "roomPhaseStatus": {
+          "op": "if",
+          "condition": {
+            "op": "var",
+            "name": "complete"
+          },
+          "then": "ready_but_not_resolved",
+          "else": "setup_only_incomplete"
+        }
+      },
+      "output": {
+        "kind": "set_noticed_room_state",
+        "fields": {
+          "roomId": {
+            "op": "var",
+            "name": "roomId"
+          },
+          "roomType": {
+            "op": "var",
+            "name": "roomType"
+          },
+          "occupiedCells": {
+            "op": "var",
+            "name": "occupiedCells"
+          },
+          "missingCells": {
+            "op": "var",
+            "name": "missingCells"
+          },
+          "complete": {
+            "op": "var",
+            "name": "complete"
+          },
+          "roomValue": {
+            "op": "var",
+            "name": "roomValue"
+          },
+          "energyCost": {
+            "op": "var",
+            "name": "energyCost"
+          },
+          "roomPhaseStatus": {
+            "op": "var",
+            "name": "roomPhaseStatus"
+          }
+        }
+      }
+    },
+    {
+      "programId": "single-room-value-v1",
+      "revision": 1,
+      "sourceRuleIds": [
+        "room_value"
+      ],
+      "trigger": {
+        "qKind": "placement_room_state",
+        "relation": {
+          "excludedRoomTypes": [
+            "aa"
+          ],
+          "cellCount": 1
+        }
+      },
+      "requiredReads": [
+        "room.id",
+        "room.type",
+        "room.cellIds",
+        "room.modifier",
+        "room.energyCost",
+        "room.cell:${cellId}.occupied",
+        "room.cell:${cellId}.dieValue"
+      ],
+      "bindings": {
+        "roomId": {
+          "op": "read",
+          "path": "room.id"
+        },
+        "roomType": {
+          "op": "read",
+          "path": "room.type"
+        },
+        "cells": {
+          "op": "read",
+          "path": "room.cellIds"
+        },
+        "occupiedCells": {
+          "op": "filter",
+          "items": {
+            "op": "var",
+            "name": "cells"
+          },
+          "as": "cellId",
+          "where": {
+            "op": "read_template",
+            "template": "room.cell:${cellId}.occupied"
+          }
+        },
+        "missingCells": {
+          "op": "filter",
+          "items": {
+            "op": "var",
+            "name": "cells"
+          },
+          "as": "cellId",
+          "where": {
+            "op": "not",
+            "value": {
+              "op": "read_template",
+              "template": "room.cell:${cellId}.occupied"
+            }
+          }
+        },
+        "complete": {
+          "op": "eq",
+          "left": {
+            "op": "length",
+            "value": {
+              "op": "var",
+              "name": "missingCells"
+            }
+          },
+          "right": 0
+        },
+        "dieValues": {
+          "op": "map",
+          "items": {
+            "op": "var",
+            "name": "occupiedCells"
+          },
+          "as": "cellId",
+          "value": {
+            "op": "read_template",
+            "template": "room.cell:${cellId}.dieValue"
+          }
+        },
+        "dieValue": {
+          "op": "first",
+          "items": {
+            "op": "var",
+            "name": "dieValues"
+          }
+        },
+        "modifier": {
+          "op": "read",
+          "path": "room.modifier"
+        },
+        "roomValue": {
+          "op": "if",
+          "condition": {
+            "op": "var",
+            "name": "complete"
+          },
+          "then": {
+            "op": "add",
+            "values": [
+              {
+                "op": "var",
+                "name": "dieValue"
+              },
+              {
+                "op": "var",
+                "name": "modifier"
+              }
+            ]
+          },
+          "else": null
+        },
+        "energyCost": {
+          "op": "read",
+          "path": "room.energyCost"
+        },
+        "roomPhaseStatus": {
+          "op": "if",
+          "condition": {
+            "op": "var",
+            "name": "complete"
+          },
+          "then": "ready_but_not_resolved",
+          "else": "setup_only_incomplete"
+        }
+      },
+      "output": {
+        "kind": "set_noticed_room_state",
+        "fields": {
+          "roomId": {
+            "op": "var",
+            "name": "roomId"
+          },
+          "roomType": {
+            "op": "var",
+            "name": "roomType"
+          },
+          "occupiedCells": {
+            "op": "var",
+            "name": "occupiedCells"
+          },
+          "missingCells": {
+            "op": "var",
+            "name": "missingCells"
+          },
+          "complete": {
+            "op": "var",
+            "name": "complete"
+          },
+          "roomValue": {
+            "op": "var",
+            "name": "roomValue"
+          },
+          "energyCost": {
+            "op": "var",
+            "name": "energyCost"
+          },
+          "roomPhaseStatus": {
+            "op": "var",
+            "name": "roomPhaseStatus"
+          }
+        }
+      }
+    }
+  ]
+}

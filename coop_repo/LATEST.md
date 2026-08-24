@@ -38,6 +38,102 @@
 
 [`../projects/western_fantasy_continent/RESEARCH_HANDOFF_2026-08-19.md`](../projects/western_fantasy_continent/RESEARCH_HANDOFF_2026-08-19.md)
 
+当前最新问题1—6设想流水线可交互 Walkthrough 网页：
+
+[`../projects/western_fantasy_continent/experiments/imagination_pipeline_v0/walkthrough/index.html`](../projects/western_fantasy_continent/experiments/imagination_pipeline_v0/walkthrough/index.html)
+
+对应交接报告：
+
+[`reports/2026-08-20_1706_imagination-pipeline-walkthrough-web.md`](reports/2026-08-20_1706_imagination-pipeline-walkthrough-web.md)
+
+当前最新UFS第1—9页三阅读者策略实验：
+
+[`../projects/western_fantasy_continent/experiments/ufs_page9_strategy_reading_v0/README.md`](../projects/western_fantasy_continent/experiments/ufs_page9_strategy_reading_v0/README.md)
+
+对应交接报告：
+
+[`reports/2026-08-21_1851_ufs-page9-three-reader-strategy-experiment.md`](reports/2026-08-21_1851_ufs-page9-three-reader-strategy-experiment.md)
+
+当前最新UFS候选成本—条件—收益闭卷判断实验：
+
+[`../projects/western_fantasy_continent/experiments/ufs_candidate_judgment_exam_v0/README.md`](../projects/western_fantasy_continent/experiments/ufs_candidate_judgment_exam_v0/README.md)
+
+对应交接报告：
+
+[`reports/2026-08-21_2354_ufs-candidate-judgment-closed-book-exam.md`](reports/2026-08-21_2354_ufs-candidate-judgment-closed-book-exam.md)
+
+当前最新UFS真实状态候选发现与判断实验：
+
+[`../projects/western_fantasy_continent/experiments/ufs_real_state_candidate_exam_v0/README.md`](../projects/western_fantasy_continent/experiments/ufs_real_state_candidate_exam_v0/README.md)
+
+对应交接报告：
+
+[`reports/2026-08-22_0201_ufs-real-state-candidate-discovery-exam.md`](reports/2026-08-22_0201_ufs-real-state-candidate-discovery-exam.md)
+
+当前最新UFS第一步选择接入单步脑内设想：
+
+[`../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/README.md`](../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/README.md)
+
+对应交接报告：
+
+[`reports/2026-08-22_1124_ufs-first-action-imagination-choice-stop.md`](reports/2026-08-22_1124_ufs-first-action-imagination-choice-stop.md)
+
+当前最新UFS房间结果脑内规则演算纠正（取代上一版roomProjection能力声明）：
+
+[`../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/README.md`](../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/README.md)
+
+对应纠正报告：
+
+[`reports/2026-08-22_1212_ufs-room-imagination-grounding-correction.md`](reports/2026-08-22_1212_ufs-room-imagination-grounding-correction.md)
+
+当前最新UFS读规则生成五槽轨迹并接入真实第一步：
+
+[`../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/rule_reading_trajectory_v0/README.md`](../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/rule_reading_trajectory_v0/README.md)
+
+对应交接报告：
+
+[`reports/2026-08-22_1535_ufs-rule-read-trajectories-real-first-step.md`](reports/2026-08-22_1535_ufs-rule-read-trajectories-real-first-step.md)
+
+当前最新UFS第1—9页初始五槽轨迹与真实GTE矩阵：
+
+[`../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/rule_reading_trajectory_v0/README.md`](../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/rule_reading_trajectory_v0/README.md)
+
+对应交接报告：
+
+[`reports/2026-08-22_1615_ufs-page9-initial-gte-trajectory-matrix.md`](reports/2026-08-22_1615_ufs-page9-initial-gte-trajectory-matrix.md)
+
+当前最新Node一步设想真实GTE矩阵替换与连接加强：
+
+[`../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/rule_reading_trajectory_v0/README.md`](../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/rule_reading_trajectory_v0/README.md)
+
+对应交接报告：
+
+[`reports/2026-08-22_1700_ufs-node-real-gte-matrix-reinforcement.md`](reports/2026-08-22_1700_ufs-node-real-gte-matrix-reinforcement.md)
+
+当前最新UFS认知JSON小程序库与隔离Agent盲开发：
+
+[`../projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/README.md`](../projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/README.md)
+
+对应交接报告：
+
+[`reports/2026-08-22_1810_ufs-cognitive-json-program-library-blind-author.md`](reports/2026-08-22_1810_ufs-cognitive-json-program-library-blind-author.md)
+
+当前最新UFS全部25个认知JSON程序与真实局面切片：
+
+[`../projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/README.md`](../projects/western_fantasy_continent/experiments/ufs_cognitive_program_library_v0/README.md)
+
+对应交接报告：
+
+[`reports/2026-08-22_1900_ufs-all-json-programs-real-slices.md`](reports/2026-08-22_1900_ufs-all-json-programs-real-slices.md)
+
+当前最新UFS其余20类事件自动形成五槽Q并唤醒程序：
+
+[`../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/README.md`](../projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/README.md)
+
+对应交接报告：
+
+[`reports/2026-08-24_1322_ufs-twenty-event-auto-q-wiring.md`](reports/2026-08-24_1322_ufs-twenty-event-auto-q-wiring.md)
+
 对应交接报告：
 
 [`reports/2026-08-19_1430_research-session-handoff.md`](reports/2026-08-19_1430_research-session-handoff.md)
@@ -122,6 +218,6 @@
 
 [`reports/2026-08-19_1216_guardian-echo-long-battle-matrix.md`](reports/2026-08-19_1216_guardian-echo-long-battle-matrix.md)
 
-Last updated: 2026-08-19
+Last updated: 2026-08-24
 
-当前重点：参数化规则小程序已覆盖基础150例，并顺序吸收防空、冻结、重型、加速及整组相对选择五类新规则；每次修订后旧例无回归，最终组合400/400，封闭试运行会自动记录注意力读取。下一步做隔离Agent盲生成补丁，当前结果只证明架构可行，尚未证明自主学习能力。
+当前重点：UFS第1—9页25条轨迹与25个JSON程序已全部可从普通游戏事件和公开局面自动形成Q后唤醒；20类新事件与边界26/26、全回归65/65。下一步按用户范围另行进入连续玩家循环，反馈学习仍暂缓。

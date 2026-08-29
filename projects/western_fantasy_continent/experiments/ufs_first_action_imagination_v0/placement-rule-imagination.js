@@ -13,6 +13,10 @@ const {
   JsonCognitiveProgramInterpreter,
   selectProgram,
 } = require("../ufs_cognitive_program_library_v0/json-program-interpreter");
+const {
+  InformationGapResolver,
+  PUBLIC_SLOT_LOCATOR_KNOWLEDGE,
+} = require("./information-gap-resolver");
 
 function qFor(kind) {
   const rows = {
@@ -106,7 +110,9 @@ function makeAttention(atoms, maxItems) {
   return {
     totalPublicAtoms: atoms.length,
     maxItems,
+    ranked: atoms,
     selected,
+    selectedById: byId,
     has(id) {
       return byId.has(id);
     },
@@ -154,7 +160,9 @@ function makeFullAttention(atoms, allocation, publicState, selectedAction, room)
   return {
     totalPublicAtoms: atoms.length,
     maxItems: selected.length,
+    ranked: atoms,
     selected,
+    selectedById: byId,
     has(id) { return byId.has(id); },
     read(id, reads = null) {
       const atom = byId.get(id);
@@ -163,6 +171,26 @@ function makeFullAttention(atoms, allocation, publicState, selectedAction, room)
       return structuredClone(atom.value);
     },
   };
+}
+
+function recoverPlacementFacts({ atoms, attention, missingAtoms, resolver, trace, queryablePaths }) {
+  const missing = [...new Set(missingAtoms.filter((atomId) => !attention.has(atomId)))];
+  if (missing.length === 0) return null;
+  const resolution = resolver.resolve({
+    missingSlots: missing,
+    facts: atoms.map((atom) => ({ path: atom.id, value: atom.value })),
+    queryablePaths,
+  });
+  for (const recovered of resolution.resolved) {
+    const atom = atoms.find((candidate) => candidate.id === recovered.slot);
+    if (!atom || attention.has(atom.id)) continue;
+    attention.selectedById.set(atom.id, atom);
+    attention.selected.push(atom);
+    trace.attention.queryAcquired.push({ id: atom.id, source: recovered.source });
+  }
+  trace.informationRecoveries.push(resolution);
+  trace.confusions.push(...resolution.confusions);
+  return resolution;
 }
 
 function buildQueries(attention) {
@@ -214,12 +242,16 @@ class PlacementRuleImagination {
     programInterpreter = new JsonCognitiveProgramInterpreter(),
     topK = 6,
     activationThreshold = 0.55,
+    informationGapResolver = new InformationGapResolver({
+      knowledge: PUBLIC_SLOT_LOCATOR_KNOWLEDGE,
+    }),
   } = {}) {
     this.memory = memory;
     this.programLibrary = programLibrary;
     this.programInterpreter = programInterpreter;
     this.topK = topK;
     this.activationThreshold = activationThreshold;
+    this.informationGapResolver = informationGapResolver;
   }
 
   run({
@@ -234,7 +266,7 @@ class PlacementRuleImagination {
     const attention = globalAttention
       ? makeFullAttention(atoms, globalAttention, publicState, selectedAction, room)
       : makeAttention(atoms, perceptionBudget);
-    const queries = buildQueries(attention);
+    let queries = buildQueries(attention);
     const imaginedConsequences = { movement: null, room: null };
     const trace = {
       attention: {
@@ -252,23 +284,38 @@ class PlacementRuleImagination {
           attentionTraceAfter: globalAttention.traceAfter,
           fullField: globalAttention.field,
         } : {}),
+        queryAcquired: [],
       },
       queries: queries.map((query) => ({ kind: query.metadata.kind, q: query.q })),
       activations: [],
       relationRejections: [],
       groundings: [],
+      informationRecoveries: [],
+      confusions: [],
     };
     if (queries.length === 0) {
+      const required = ["event.type", "event.dieValue", "cell.roomId", "room.type", "room.cellIds"];
+      recoverPlacementFacts({
+        atoms,
+        attention,
+        missingAtoms: required,
+        resolver: this.informationGapResolver,
+        trace,
+        queryablePaths: globalAttention?.queryableAtomIds ?? null,
+      });
+      queries = buildQueries(attention);
+      trace.queries = queries.map((query) => ({ kind: query.metadata.kind, q: query.q }));
+    }
+    if (queries.length === 0) {
       return {
-        status: "attention_stop",
-        reason: "no_complete_placement_q",
+        status: "automatic",
+        reason: "confusion_continued_without_complete_placement_q",
         imaginedConsequences,
         context: { die, cell, room },
         trace,
       };
     }
-    try {
-      for (const query of queries) {
+    for (const query of queries) {
         const candidates = this.memory.query(query.q, { topK: this.topK });
         trace.activations.push({
           queryKind: query.metadata.kind,
@@ -318,10 +365,28 @@ class PlacementRuleImagination {
             trace,
           };
         }
-        const preview = this.programInterpreter.execute(
-          programSelection.selected.program,
-          { attention },
-        );
+        let preview = null;
+        while (!preview) {
+          try {
+            preview = this.programInterpreter.execute(
+              programSelection.selected.program,
+              { attention },
+            );
+          } catch (error) {
+            if (!(error instanceof PlacementAttentionError)) throw error;
+            const recovery = recoverPlacementFacts({
+              atoms,
+              attention,
+              missingAtoms: [error.atomId],
+              resolver: this.informationGapResolver,
+              trace,
+              queryablePaths: globalAttention?.queryableAtomIds ?? null,
+            });
+            if (recovery?.complete) continue;
+            break;
+          }
+        }
+        if (!preview) continue;
         preview.patch.sourceRuleId = accepted.trajectory.sourceRuleId;
         applyPatch(imaginedConsequences, preview.patch);
         trace.groundings.push({
@@ -338,23 +403,12 @@ class PlacementRuleImagination {
           patch: preview.patch,
           committed: true,
         });
-      }
-    } catch (error) {
-      if (error instanceof PlacementAttentionError) {
-        return {
-          status: "attention_stop",
-          reason: "grounding_required_unnoticed_room_fact",
-          missingAtom: error.atomId,
-          imaginedConsequences,
-          context: { die, cell, room },
-          trace,
-        };
-      }
-      throw error;
     }
     return {
       status: "automatic",
-      reason: "placement_rules_grounded",
+      reason: trace.confusions.length > 0
+        ? "placement_rules_grounded_with_confusion"
+        : "placement_rules_grounded",
       imaginedConsequences,
       context: { die, cell, room },
       trace,

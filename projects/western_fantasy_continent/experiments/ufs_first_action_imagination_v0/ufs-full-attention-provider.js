@@ -8,6 +8,7 @@ function safePublicInput(publicState, publicMap) {
   const observation = Object.fromEntries([
     "round", "phase", "energy", "damage", "researchIndex", "excavatorIndex",
     "mothershipRow", "outcome", "dice", "ships", "waitingShips", "placements", "robots",
+    "uncertainties",
   ].map((key) => [key, clone(publicState[key] ?? null)]));
   for (const collection of ["dice", "ships", "waitingShips", "placements", "robots"]) {
     if (!Array.isArray(observation[collection])) observation[collection] = [];
@@ -83,6 +84,13 @@ function eventContext(event, scope, fullWorld, publicMap) {
       focus.focus_kinds.push("ship");
     } else if (scope.stage === "threshold") {
       focus.secondary_item_ids.push("track:damage");
+    } else if (scope.stage === "row_action") {
+      const row = publicMap.sky.rows.find((candidate) => candidate.index === fullWorld.mothershipRow);
+      row?.mothershipActions?.forEach((candidate, index) => {
+        if (!scope.actionType || candidate.type === scope.actionType) {
+          focus.focus_item_ids.push(`mothership_action:${row.index}:${index}`);
+        }
+      });
     } else if (scope.stage === "spawn") {
       focus.focus_item_ids.push(`waiting_ship:${scope.shipId}`);
       focus.focus_kinds.push("ship", "waiting_ship");
@@ -153,6 +161,12 @@ function choiceContext(fullWorld, publicMap, pending, lastAction = null) {
       "track:phase", "track:energy", "track:damage", "track:researchIndex",
       "track:excavatorIndex", "track:mothershipRow", "track:outcome",
     );
+    if (["new_round", "won", "lost"].includes(fullWorld.phase)) {
+      const currentRow = publicMap.sky.rows.find((row) => row.index === fullWorld.mothershipRow);
+      currentRow?.mothershipActions?.forEach((_action, index) => {
+        focus.focus_item_ids.push(`mothership_action:${currentRow.index}:${index}`);
+      });
+    }
   }
   if (lastAction?.dieId) focus.focus_item_ids.push(`die:${lastAction.dieId}`);
   if (lastAction?.cellId) focus.secondary_item_ids.push(`base_cell:${lastAction.cellId}`);
@@ -241,6 +255,14 @@ function buildFullItems(publicInput) {
         ),
       });
     });
+    (row.mothershipActions || []).forEach((action, index) => {
+      items.push({
+        itemId: `mothership_action:${row.index}:${index}`,
+        kind: "mothership_action",
+        value: { row: row.index, index, type: action.type, amount: action.amount },
+        tags: tags(`row:${row.index}`, `action_type:${action.type}`),
+      });
+    });
   }
   if (new Set(items.map((item) => item.itemId)).size !== items.length) {
     throw new Error("full attention item ids must be unique");
@@ -263,6 +285,7 @@ function projectChoiceAttention({ allocation, publicInput }) {
     schema: "ufs_attention_limited_decision_observation_v0",
     observation: {
       ...tracks,
+      uncertainties: clone(publicInput.observation.uncertainties || []),
       dice: byKind("die"),
       ships: byKind("ship"),
       waitingShips: byKind("waiting_ship"),
@@ -275,6 +298,7 @@ function projectChoiceAttention({ allocation, publicInput }) {
       rooms: byKind("room"),
       baseCells: byKind("base_cell"),
       skyCells: byKind("sky_cell"),
+      mothershipActions: byKind("mothership_action"),
     },
     noticedItems: noticedItems.map((item) => ({
       itemId: item.itemId,
@@ -337,6 +361,41 @@ function seededRandom(seed) {
   };
 }
 
+function feedbackScopeMatches(scope, context) {
+  const includes = (singular, plural, value) => {
+    const expected = scope?.[singular] ?? scope?.[plural];
+    if (expected == null) return true;
+    return (Array.isArray(expected) ? expected : [expected]).includes(value);
+  };
+  if (!includes("action", "actions", context.action)) return false;
+  if (!includes("phase", "phases", context.phase)) return false;
+  if (!includes("goal", "goals", context.goal)) return false;
+  const requiredTags = scope?.tags || [];
+  return requiredTags.every((tag) => (context.tags || []).includes(tag));
+}
+
+function feedbackSelectorMatches(selector, item) {
+  const itemIds = selector?.itemIds ?? selector?.item_ids;
+  if (itemIds && !itemIds.includes(item.itemId)) return false;
+  if (selector?.kinds && !selector.kinds.includes(item.kind)) return false;
+  if (selector?.tags && !selector.tags.every((tag) => item.tags.includes(tag))) return false;
+  return Boolean(itemIds || selector?.kinds || selector?.tags);
+}
+
+function feedbackAdjustmentFor(item, context, adjustments) {
+  const applied = adjustments.filter((row) => (
+    feedbackScopeMatches(row.scope, context)
+    && feedbackSelectorMatches(row.selector, item)
+  ));
+  const total = applied.reduce((sum, row) => (
+    sum + (row.operation === "decrease" ? -row.amount : row.amount)
+  ), 0);
+  return {
+    total: Number(total.toFixed(6)),
+    adjustmentIds: applied.map((row) => row.adjustmentId),
+  };
+}
+
 function allocateFullAttention({
   publicInput,
   context,
@@ -344,17 +403,24 @@ function allocateFullAttention({
   randomSeed,
   mode,
   carryover = {},
+  learnedAttentionAdjustments = [],
 }) {
   const items = buildFullItems(publicInput);
   const field = items.map((item) => {
     const baseActivation = activationFor(item, context, items);
     const carryoverActivation = Math.max(0, Number(carryover[item.itemId] || 0));
+    const learned = feedbackAdjustmentFor(item, context, learnedAttentionAdjustments);
     return {
       itemId: item.itemId,
       kind: item.kind,
       baseActivation,
       carryoverActivation: Number(carryoverActivation.toFixed(6)),
-      activation: Number(Math.min(1, baseActivation + carryoverActivation).toFixed(6)),
+      learnedAttentionAdjustment: learned.total,
+      learnedAttentionAdjustmentIds: learned.adjustmentIds,
+      activation: Number(Math.max(0, Math.min(
+        1,
+        baseActivation + carryoverActivation + learned.total,
+      )).toFixed(6)),
     };
   });
   const capacity = mode === "all"
@@ -437,7 +503,15 @@ function projectEventAttention({ allocation, event, observedState, scope, fullWo
   } else if (event.type === "mothership_threshold_check") {
     if (has(allocation, "track:mothershipRow")) expose("mothership.onSkullRow");
   } else if (event.type === "mothership_descent_completed") {
-    if (has(allocation, "track:mothershipRow")) {
+    const row = publicMap.sky.rows.find((candidate) => candidate.index === fullWorld.mothershipRow);
+    const actionIndex = row?.mothershipActions?.findIndex((candidate) => (
+      candidate.type === state.mothership?.rowAction?.type
+      && candidate.amount === state.mothership?.rowAction?.value
+    ));
+    const actionItemId = actionIndex >= 0
+      ? `mothership_action:${fullWorld.mothershipRow}:${actionIndex}`
+      : null;
+    if (has(allocation, "track:mothershipRow") && actionItemId && has(allocation, actionItemId)) {
       expose("mothership.rowAction.type", "mothership.rowAction.value");
     }
   } else if (event.type === "spawn_started") {
@@ -489,6 +563,7 @@ class UfsFullAttentionProvider {
     traceStrength = 0.18,
     traceDecay = 0.35,
     traceSteps = 2,
+    learnedAttentionAdjustments = [],
   } = {}) {
     if (!["probabilistic", "all"].includes(mode)) throw new Error(`unknown full attention mode: ${mode}`);
     if (!(traceStrength >= 0 && traceStrength <= 1)) throw new RangeError("traceStrength must be between 0 and 1");
@@ -499,7 +574,17 @@ class UfsFullAttentionProvider {
     this.traceStrength = traceStrength;
     this.traceDecay = traceDecay;
     this.traceSteps = traceSteps;
+    this.setLearnedAttentionAdjustments(learnedAttentionAdjustments);
     this.attentionTrace = new Map();
+  }
+
+  setLearnedAttentionAdjustments(adjustments) {
+    if (!Array.isArray(adjustments)) throw new TypeError("learned attention adjustments must be an array");
+    this.learnedAttentionAdjustments = clone(adjustments);
+  }
+
+  learnedAttentionSnapshot() {
+    return clone(this.learnedAttentionAdjustments);
   }
 
   beginEpisode() {
@@ -557,6 +642,7 @@ class UfsFullAttentionProvider {
       randomSeed,
       mode: this.mode,
       carryover: this._carryover(),
+      learnedAttentionAdjustments: this.learnedAttentionAdjustments,
     });
     allocation.traceBefore = this.traceSnapshot();
     this._commitTrace(allocation);

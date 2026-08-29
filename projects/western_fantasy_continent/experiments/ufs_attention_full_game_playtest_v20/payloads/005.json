@@ -1,0 +1,34 @@
+{
+  "type": "place_die",
+  "dieId": "r1-gray-2",
+  "cellId": "A-r2-c3",
+  "predictions": [
+    {
+      "because": "placing on a visible tunnel cell should create a later excavation option in room phase",
+      "expectations": [
+        {
+          "itemId": "die:r1-gray-2",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "room:A-upper-tunnel",
+          "field": "filled",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "no visible ship is in this column, so I expect no visible ship to descend from this placement",
+      "expectations": [
+        {
+          "itemId": "ships:visible",
+          "field": "row",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

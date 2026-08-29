@@ -1,0 +1,29 @@
+{
+  "type": "choose_spawn",
+  "shipId": "white-2",
+  "dropPointId": "DP-C1",
+  "predictions": [
+    {
+      "because": "forced spawn should place white-2 into the sky",
+      "expectations": [
+        {
+          "itemId": "ship:white-2",
+          "field": "present",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "white-2 should leave the waiting pool after spawn",
+      "expectations": [
+        {
+          "itemId": "ship:white-2",
+          "field": "waiting",
+          "change": "equals",
+          "value": false
+        }
+      ]
+    }
+  ]
+}

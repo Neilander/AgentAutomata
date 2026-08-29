@@ -1,0 +1,34 @@
+{
+  "type": "place_die",
+  "dieId": "r2-white-4",
+  "cellId": "A-r2-c4",
+  "predictions": [
+    {
+      "because": "placing white die should mark it placed on energy and then trigger a reroll boundary for unplaced dice",
+      "expectations": [
+        {
+          "itemId": "die:r2-white-4",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "phase:game",
+          "field": "phase",
+          "change": "changed"
+        }
+      ]
+    },
+    {
+      "because": "visible purple-3 is in column three, so I expect its row to increase by two",
+      "expectations": [
+        {
+          "itemId": "ship:purple-3",
+          "field": "row",
+          "change": "increase",
+          "value": 2
+        }
+      ]
+    }
+  ]
+}

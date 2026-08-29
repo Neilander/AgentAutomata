@@ -1,0 +1,40 @@
+{
+  "type": "place_die",
+  "dieId": "r1-gray-1",
+  "cellId": "A-r2-c5",
+  "predictions": [
+    {
+      "because": "placing the second die in a two-cell energy room should occupy the cell and complete the room for later resolution",
+      "expectations": [
+        {
+          "itemId": "die:r1-gray-1",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "cell:A-r2-c5",
+          "field": "occupied",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "room:A-upper-energy",
+          "field": "filled",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "I do not currently see a ship in column 4, though attention may have omitted one",
+      "expectations": [
+        {
+          "itemId": "ships:column:4",
+          "field": "row",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

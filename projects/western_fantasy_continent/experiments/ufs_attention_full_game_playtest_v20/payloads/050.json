@@ -1,0 +1,35 @@
+{
+  "type": "place_die",
+  "dieId": "r4-gray-1",
+  "cellId": "A-r3-c1",
+  "predictions": [
+    {
+      "because": "placing on deeper visible cell should create an excavation candidate rather than immediate room benefit",
+      "expectations": [
+        {
+          "itemId": "die:r4-gray-1",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "placement:r4-gray-1@A-r3-c1",
+          "field": "excavationCandidate",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "visible purple-0 is in column zero, so I expect a small row increase",
+      "expectations": [
+        {
+          "itemId": "ship:purple-0",
+          "field": "row",
+          "change": "increase",
+          "value": 1
+        }
+      ]
+    }
+  ]
+}

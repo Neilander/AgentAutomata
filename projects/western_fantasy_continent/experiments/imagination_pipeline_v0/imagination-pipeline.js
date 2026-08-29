@@ -3,6 +3,10 @@
 const path = require("node:path");
 const { MatrixTrajectoryMemory } = require("./five-slot-activation");
 const { qFor, TRAJECTORIES } = require("./trajectory-fixtures");
+const {
+  InformationGapResolver,
+  PUBLIC_SLOT_LOCATOR_KNOWLEDGE,
+} = require("../ufs_first_action_imagination_v0/information-gap-resolver");
 
 const DEFAULT_GROUNDER_PATH = path.resolve(
   __dirname,
@@ -503,6 +507,69 @@ function groupSelections(selections) {
   return [...groups.values()];
 }
 
+function normalizeCityCrossings(world, patches) {
+  return patches.map((patch) => {
+    if (patch.kind !== "move_object" || patch.fromColumn !== patch.toColumn) return patch;
+    const cityTile = world.tiles
+      .filter((tile) => tile.kind === "city" && tile.column === patch.toColumn)
+      .sort((left, right) => left.row - right.row)
+      .find((tile) => tile.row > patch.fromRow && tile.row < patch.toRow);
+    if (!cityTile) return patch;
+    return {
+      ...patch,
+      intendedToRow: patch.toRow,
+      toRow: cityTile.row,
+      crossedCityBoundary: true,
+    };
+  });
+}
+
+function recoverAttentionFacts({ attention, missingAtoms, resolver, trace, queryableAtomIds = null }) {
+  const uniqueMissing = unique(missingAtoms.filter((atomId) => !attention.has(atomId)));
+  if (uniqueMissing.length === 0) return null;
+  const resolution = resolver.resolve({
+    missingSlots: uniqueMissing,
+    facts: attention.ranked.map((atom) => ({ path: atom.id, value: atom.value })),
+    queryablePaths: queryableAtomIds,
+  });
+  for (const recovered of resolution.resolved) {
+    const atom = attention.ranked.find((candidate) => candidate.id === recovered.slot);
+    if (!atom || attention.has(atom.id)) continue;
+    attention.selectedById.set(atom.id, atom);
+    attention.selected.push(atom);
+    trace.attention.queryAcquired.push({
+      id: atom.id,
+      source: recovered.source,
+    });
+  }
+  trace.informationRecoveries.push(resolution);
+  trace.confusions.push(...resolution.confusions);
+  return resolution;
+}
+
+function reconcileUncertainties(imaginedWorld, recoveries, confusions, attention) {
+  const hadUncertainties = Array.isArray(imaginedWorld.uncertainties);
+  const resolvedSlots = new Set(recoveries.flatMap((row) => (
+    row.resolved || []
+  )).map((row) => row.slot));
+  for (const row of imaginedWorld.uncertainties || []) {
+    if (row?.slot && attention.has(row.slot)) resolvedSlots.add(row.slot);
+  }
+  const rows = [
+    ...(Array.isArray(imaginedWorld.uncertainties) ? imaginedWorld.uncertainties : [])
+      .filter((row) => !resolvedSlots.has(row.slot)),
+    ...confusions.map((row) => clone(row.value)),
+  ];
+  const bySlot = new Map();
+  for (const row of rows) {
+    const key = row?.slot || JSON.stringify(row);
+    bySlot.set(key, row);
+  }
+  if (hadUncertainties || bySlot.size > 0) {
+    imaginedWorld.uncertainties = [...bySlot.values()];
+  }
+}
+
 class ImaginationPipeline {
   constructor({
     trajectories = TRAJECTORIES,
@@ -511,6 +578,9 @@ class ImaginationPipeline {
     activationThreshold = 0.55,
     topK = 4,
     maxIterations = 12,
+    informationGapResolver = new InformationGapResolver({
+      knowledge: PUBLIC_SLOT_LOCATOR_KNOWLEDGE,
+    }),
   } = {}) {
     validateTrajectoryContracts(trajectories);
     this.memory = memory || new MatrixTrajectoryMemory(trajectories);
@@ -518,6 +588,7 @@ class ImaginationPipeline {
     this.activationThreshold = activationThreshold;
     this.topK = topK;
     this.maxIterations = maxIterations;
+    this.informationGapResolver = informationGapResolver;
   }
 
   run({
@@ -563,16 +634,47 @@ class ImaginationPipeline {
           attentionTraceBefore: externalAttention.traceBefore,
           attentionTraceAfter: externalAttention.traceAfter,
         } : {}),
+        queryAcquired: [],
       },
       initialQueryCount: currentQueries.length,
       activations: [],
       relationRejections: [],
       groundings: [],
       boundaries: [],
+      informationRecoveries: [],
+      confusions: [],
     };
 
     if (currentQueries.length === 0) {
-      trace.boundaries.push({ kind: "attention_stop", reason: "no_complete_initial_q" });
+      const requiredEvent = ["event.type", "event.column", "event.amount", "event.selection"];
+      const missingEvent = requiredEvent.filter((id) => !attention.has(id));
+      recoverAttentionFacts({
+        attention,
+        missingAtoms: missingEvent,
+        resolver: this.informationGapResolver,
+        trace,
+        queryableAtomIds: externalAttention?.queryableAtomIds ?? null,
+      });
+      currentQueries = attentionToInitialQueries(world, action, attention);
+      const eventWasNoticed = requiredEvent.every((id) => attention.has(id));
+      if (eventWasNoticed) {
+        if (currentQueries.length === 0) {
+          trace.boundaries.push({
+            kind: "complete",
+            reason: "no_noticed_same_column_object_assumed_empty",
+            inferenceQuality: "attention_limited_possible_error",
+            assumption: "no_ship_movement_was_imagined",
+          });
+        }
+      } else {
+        trace.boundaries.push({
+          kind: "complete",
+          reason: "confusion_ignored_incomplete_initial_q",
+          missingAtoms: missingEvent.filter((id) => !attention.has(id)),
+          inferenceQuality: "known_information_gap",
+          assumption: "action_effect_was_left_unknown_before_the_next_decision",
+        });
+      }
     }
 
     for (let iteration = 0; currentQueries.length > 0 && iteration < this.maxIterations; iteration += 1) {
@@ -645,33 +747,48 @@ class ImaginationPipeline {
       const nextQueries = [];
       for (const group of groupSelections(selections)) {
         let preview;
-        try {
-          preview = previewTrajectoryProgram({
-            trajectory: group.trajectory,
-            queries: group.queries,
-            imaginedWorld,
-            action,
-            attention,
-            blindGrounder: this.blindGrounder,
-          });
-        } catch (error) {
-          if (error instanceof AttentionAccessError) {
-            trace.boundaries.push({
-              kind: "attention_stop",
-              reason: "grounding_required_unnoticed_fact",
-              trajectoryId: group.trajectory.id,
-              atomId: error.atomId,
+        while (!preview) {
+          try {
+            preview = previewTrajectoryProgram({
+              trajectory: group.trajectory,
+              queries: group.queries,
+              imaginedWorld,
+              action,
+              attention,
+              blindGrounder: this.blindGrounder,
             });
-            continue;
+          } catch (error) {
+            if (error instanceof AttentionAccessError) {
+              const recovery = recoverAttentionFacts({
+                attention,
+                missingAtoms: [error.atomId],
+                resolver: this.informationGapResolver,
+                trace,
+                queryableAtomIds: externalAttention?.queryableAtomIds ?? null,
+              });
+              if (recovery?.complete) continue;
+              trace.boundaries.push({
+                kind: "complete",
+                reason: "confusion_ignored_missing_grounding_fact",
+                trajectoryId: group.trajectory.id,
+                atomId: error.atomId,
+                inferenceQuality: "known_information_gap",
+                assumption: "this_rule_effect_was_left_unknown_before_the_next_decision",
+              });
+              break;
+            }
+            throw error;
           }
-          throw error;
         }
+        if (!preview) continue;
+        preview.patches = normalizeCityCrossings(imaginedWorld, preview.patches);
 
         const continuation = attentionAccount.inspect(group.trajectory);
         const groundingTrace = {
           iteration,
           trajectoryId: group.trajectory.id,
           queryKinds: group.queries.map((query) => query.metadata.kind),
+          objectIds: unique(group.queries.map((query) => query.metadata.objectId).filter(Boolean)),
           reads: preview.reads,
           patches: preview.patches,
           continuation,
@@ -708,15 +825,25 @@ class ImaginationPipeline {
           continue;
         }
 
-        const derived = deriveQueriesFromPatches(imaginedWorld, preview.patches, attention);
+        let derived = deriveQueriesFromPatches(imaginedWorld, preview.patches, attention);
         if (derived.missingAttention.length > 0) {
-          trace.boundaries.push({
-            kind: "complete",
-            reason: "unnoticed_endpoint_effect_omitted_from_imagination",
+          recoverAttentionFacts({
+            attention,
             missingAtoms: derived.missingAttention,
-            inferenceQuality: "attention_limited_possible_error",
-            assumption: "no_additional_landing_effect_was_imagined",
+            resolver: this.informationGapResolver,
+            trace,
+            queryableAtomIds: externalAttention?.queryableAtomIds ?? null,
           });
+          derived = deriveQueriesFromPatches(imaginedWorld, preview.patches, attention);
+          if (derived.missingAttention.length > 0) {
+            trace.boundaries.push({
+              kind: "complete",
+              reason: "confusion_ignored_unnoticed_endpoint_effect",
+              missingAtoms: derived.missingAttention,
+              inferenceQuality: "known_information_gap",
+              assumption: "no_additional_landing_effect_was_imagined",
+            });
+          }
         }
         nextQueries.push(...derived.queries);
         if (preview.patches.length === 0 && derived.queries.length === 0) {
@@ -733,6 +860,12 @@ class ImaginationPipeline {
     if (currentQueries.length > 0) {
       trace.boundaries.push({ kind: "unknown", reason: "max_iterations_reached" });
     }
+    reconcileUncertainties(
+      imaginedWorld,
+      trace.informationRecoveries,
+      trace.confusions,
+      attention,
+    );
     const observedWorldUnchanged = JSON.stringify(world) === observedBefore;
     if (!observedWorldUnchanged) throw new Error("pipeline mutated observedWorld");
     const boundaryPriority = ["attention_stop", "choice", "random", "unknown", "complete"];

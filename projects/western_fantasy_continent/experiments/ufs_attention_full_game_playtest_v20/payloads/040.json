@@ -1,0 +1,34 @@
+{
+  "type": "place_die",
+  "dieId": "r3-gray-2",
+  "cellId": "A-r2-c1",
+  "predictions": [
+    {
+      "because": "placing final die should enter room phase with fighter resolvable",
+      "expectations": [
+        {
+          "itemId": "die:r3-gray-2",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "phase:game",
+          "field": "phase",
+          "change": "changed"
+        }
+      ]
+    },
+    {
+      "because": "visible purple-1 in column zero should descend by three",
+      "expectations": [
+        {
+          "itemId": "ship:purple-1",
+          "field": "row",
+          "change": "increase",
+          "value": 3
+        }
+      ]
+    }
+  ]
+}

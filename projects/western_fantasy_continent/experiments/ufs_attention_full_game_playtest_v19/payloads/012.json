@@ -1,0 +1,27 @@
+{
+  "type": "resolve_room",
+  "roomId": "A-upper-fighter",
+  "pay": true,
+  "predictions": [
+    {
+      "because": "fighter room has energy cost 1",
+      "expectations": [
+        {
+          "itemId": "track:energy",
+          "field": "value",
+          "change": "decrease"
+        }
+      ]
+    },
+    {
+      "because": "fighter fire should affect visible ships in or near its column if the targeting rule applies",
+      "expectations": [
+        {
+          "itemId": "ships:column:0",
+          "field": "state",
+          "change": "changed"
+        }
+      ]
+    }
+  ]
+}

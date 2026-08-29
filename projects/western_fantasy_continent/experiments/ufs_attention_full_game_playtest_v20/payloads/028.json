@@ -1,0 +1,27 @@
+{
+  "type": "resolve_room",
+  "roomId": "A-upper-fighter",
+  "pay": true,
+  "predictions": [
+    {
+      "because": "fighter room has energy cost, so resolving it should reduce energy",
+      "expectations": [
+        {
+          "itemId": "resource:energy",
+          "field": "amount",
+          "change": "decrease"
+        }
+      ]
+    },
+    {
+      "because": "fighter value should affect visible ships, but exact target binding is uncertain",
+      "expectations": [
+        {
+          "itemId": "ships:visible",
+          "field": "count",
+          "change": "changed"
+        }
+      ]
+    }
+  ]
+}

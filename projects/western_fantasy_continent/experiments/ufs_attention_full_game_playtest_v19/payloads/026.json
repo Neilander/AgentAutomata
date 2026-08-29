@@ -1,0 +1,28 @@
+{
+  "type": "resolve_room",
+  "roomId": "A-start-tunnel",
+  "pay": true,
+  "predictions": [
+    {
+      "because": "resolving a tunnel room should advance the excavator or open deeper spaces",
+      "expectations": [
+        {
+          "itemId": "track:excavatorIndex",
+          "field": "value",
+          "change": "increase"
+        }
+      ]
+    },
+    {
+      "because": "the tunnel room should be resolved after use",
+      "expectations": [
+        {
+          "itemId": "room:A-start-tunnel",
+          "field": "resolved",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

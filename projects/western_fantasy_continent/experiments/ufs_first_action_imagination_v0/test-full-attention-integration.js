@@ -45,30 +45,63 @@ function byId(allocation, itemId) {
   return row;
 }
 
-test("the initial public game is represented by the complete 153-item attention field", () => {
+test("the initial public game includes printed mothership actions in the complete attention field", () => {
   const publicState = engine.createGame(map, 1);
   const before = structuredClone(publicState);
   const publicInput = safePublicInput(publicState, map);
   const items = buildFullItems(publicInput);
 
-  assert.equal(items.length, 153);
+  assert.equal(items.length, 161);
   assert.equal(items.filter((item) => item.kind === "sky_cell").length, 80);
   assert.equal(items.filter((item) => item.kind === "base_cell").length, 30);
   assert.equal(items.filter((item) => item.kind === "room").length, 25);
-  assert.equal(new Set(items.map((item) => item.itemId)).size, 153);
+  assert.equal(items.filter((item) => item.kind === "mothership_action").length, 8);
+  assert.deepEqual(
+    items.find((item) => item.itemId === "mothership_action:6:0").value,
+    { row: 6, index: 0, type: "research_back", amount: 1 },
+  );
+  assert.equal(new Set(items.map((item) => item.itemId)).size, 161);
   assert.deepEqual(publicState, before);
   assert.equal(Object.hasOwn(publicInput, "seed"), false);
   assert.equal(Object.hasOwn(publicInput, "rngState"), false);
   assert.equal(Object.hasOwn(publicInput, "history"), false);
 });
 
+test("a noticed mothership rail icon is available to cognition and the player map view", () => {
+  const publicState = engine.createGame(map, 1);
+  publicState.mothershipRow = 6;
+  const provider = new UfsFullAttentionProvider({ mode: "all" });
+  provider.beginEpisode();
+  const event = provider.noticeEvent({
+    fullWorld: publicState,
+    publicMap: map,
+    event: { type: "mothership_descent_completed" },
+    observedState: { mothership: { rowAction: { type: "research_back", value: 1 } } },
+    scope: { phase: "mothership", stage: "row_action", actionType: "research_back" },
+    randomSeed: 1,
+  });
+  assert.ok(event.attentionAudit.noticedItemIds.includes("mothership_action:6:0"));
+  assert.ok(event.noticedPaths.includes("mothership.rowAction.type"));
+
+  const choice = provider.noticeChoice({
+    fullWorld: publicState,
+    publicMap: map,
+    pending: { type: "place_die" },
+    randomSeed: 2,
+  });
+  assert.deepEqual(
+    choice.mapView.mothershipActions.find((row) => row.row === 6),
+    { row: 6, index: 0, type: "research_back", amount: 1 },
+  );
+});
+
 test("an action boosts its related items without deleting the surrounding field", () => {
   const allocation = initialPlacement(20260824, "probabilistic");
 
-  assert.equal(allocation.spaceItemCount, 153);
+  assert.equal(allocation.spaceItemCount, 161);
   assert.equal(allocation.capacity, 41);
   assert.equal(allocation.noticedItemIds.length, 41);
-  assert.equal(allocation.omittedItemIds.length, 112);
+  assert.equal(allocation.omittedItemIds.length, 120);
   assert.equal(byId(allocation, "die:r1-gray-0").activation, 0.95);
   assert.equal(byId(allocation, "base_cell:A-r2-c2").activation, 0.95);
   assert.equal(byId(allocation, "room:A-upper-research").activation, 0.7);
@@ -220,7 +253,7 @@ test("a natural probabilistic omission can create a wrong inference and still co
     publicMap: map,
     script: ROUND_ONE_SCRIPT,
     randomObservations: ROUND_ONE_RANDOM_OBSERVATIONS,
-    attentionSeed: 65,
+    attentionSeed: 69,
   });
   const fighter = result.trace.roomSteps.find((row) => (
     row.stage === "effect" && row.action?.roomId === "A-upper-fighter"

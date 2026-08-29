@@ -1,0 +1,28 @@
+{
+  "type": "resolve_room",
+  "roomId": "A-upper-tunnel",
+  "pay": true,
+  "predictions": [
+    {
+      "because": "tunnel resolution may change excavator or path state, based on my current imperfect rule understanding",
+      "expectations": [
+        {
+          "itemId": "track:excavatorIndex",
+          "field": "value",
+          "change": "changed"
+        }
+      ]
+    },
+    {
+      "because": "the tunnel worker should be resolved after use",
+      "expectations": [
+        {
+          "itemId": "room:A-upper-tunnel",
+          "field": "resolved",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

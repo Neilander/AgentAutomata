@@ -1,0 +1,34 @@
+{
+  "type": "place_die",
+  "dieId": "r2-gray-1",
+  "cellId": "A-r2-c5",
+  "predictions": [
+    {
+      "because": "second energy cell should make A-upper-energy filled for later resolution",
+      "expectations": [
+        {
+          "itemId": "die:r2-gray-1",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "room:A-upper-energy",
+          "field": "filled",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "no visible ship is in column four, so I expect visible ship rows to stay unchanged",
+      "expectations": [
+        {
+          "itemId": "ships:visible",
+          "field": "row",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

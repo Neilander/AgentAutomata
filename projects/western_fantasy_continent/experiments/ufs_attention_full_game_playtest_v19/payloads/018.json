@@ -1,0 +1,34 @@
+{
+  "type": "place_die",
+  "dieId": "r2-gray-2",
+  "cellId": "A-r3-c5",
+  "predictions": [
+    {
+      "because": "placing a die on the visible tunnel cell should create a worker placement there",
+      "expectations": [
+        {
+          "itemId": "die:r2-gray-2",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "cell:A-r3-c5",
+          "field": "occupied",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "a visible ship is in column 4, so it should descend by the die value",
+      "expectations": [
+        {
+          "itemId": "ships:column:4",
+          "field": "row",
+          "change": "increase"
+        }
+      ]
+    }
+  ]
+}

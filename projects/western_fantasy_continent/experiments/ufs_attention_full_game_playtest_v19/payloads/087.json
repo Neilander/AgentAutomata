@@ -1,0 +1,38 @@
+{
+  "type": "resolve_room",
+  "roomId": "A-upper-research",
+  "pay": true,
+  "predictions": [
+    {
+      "because": "white 6 in a paid research room should create a research advance choice",
+      "expectations": [
+        {
+          "itemId": "track:researchIndex",
+          "field": "value",
+          "change": "increase"
+        }
+      ]
+    },
+    {
+      "because": "upper research costs 2 energy and current energy is exactly enough",
+      "expectations": [
+        {
+          "itemId": "resource:energy",
+          "field": "amount",
+          "change": "decrease"
+        }
+      ]
+    },
+    {
+      "because": "the research room should be resolved after use",
+      "expectations": [
+        {
+          "itemId": "room:A-upper-research",
+          "field": "resolved",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

@@ -80,11 +80,16 @@ class UfsAttentionPlayerSession {
     };
   }
 
-  static restore(checkpoint, { attentionProvider = new UfsFullAttentionProvider() } = {}) {
+  static restore(checkpoint, {
+    attentionProvider = new UfsFullAttentionProvider(),
+    runtime = null,
+  } = {}) {
     if (checkpoint?.schema !== "ufs_attention_limited_player_checkpoint_v0") {
       throw new TypeError("invalid attention-limited player checkpoint");
     }
-    const coreSession = UfsOneRoundSession.restore(checkpoint.core);
+    const coreSession = runtime
+      ? UfsOneRoundSession.restore(checkpoint.core, { runtime })
+      : UfsOneRoundSession.restore(checkpoint.core);
     attentionProvider.restoreTrace(checkpoint.attentionTrace);
     const session = new UfsAttentionPlayerSession({
       publicMap: checkpoint.core.publicMap,

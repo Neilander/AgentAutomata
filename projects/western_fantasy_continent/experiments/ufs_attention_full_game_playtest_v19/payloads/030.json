@@ -1,0 +1,26 @@
+{
+  "type": "end_rooms",
+  "predictions": [
+    {
+      "because": "no room candidates remain, so ending rooms should leave the room phase",
+      "expectations": [
+        {
+          "itemId": "phase:rooms",
+          "field": "active",
+          "change": "equals",
+          "value": false
+        }
+      ]
+    },
+    {
+      "because": "end of room phase should progress toward the next round or spawn choices",
+      "expectations": [
+        {
+          "itemId": "round:current",
+          "field": "value",
+          "change": "changed"
+        }
+      ]
+    }
+  ]
+}

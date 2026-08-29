@@ -13,6 +13,10 @@ const {
   JsonCognitiveProgramInterpreter,
   selectProgram,
 } = require("../ufs_cognitive_program_library_v0/json-program-interpreter");
+const {
+  InformationGapResolver,
+  PUBLIC_SLOT_LOCATOR_KNOWLEDGE,
+} = require("./information-gap-resolver");
 
 function clone(value) {
   return structuredClone(value);
@@ -291,6 +295,27 @@ function makeExternalAttention(facts, noticedPaths) {
   };
 }
 
+function attentionWithRecoveredFacts(attention, recovered) {
+  const selected = [...attention.selected];
+  const byPath = new Map(selected.map((fact) => [fact.path, fact]));
+  for (const row of recovered) {
+    if (byPath.has(row.slot)) continue;
+    const rankedFact = attention.ranked.find((fact) => fact.path === row.slot);
+    const fact = rankedFact || { path: row.slot, value: clone(row.value), activation: 1 };
+    selected.push(fact);
+    byPath.set(fact.path, fact);
+  }
+  return {
+    ...attention,
+    selected,
+    has(path) { return byPath.has(path); },
+    read(path) {
+      if (!byPath.has(path)) throw new Error(`recovered event attention did not expose: ${path}`);
+      return clone(byPath.get(path).value);
+    },
+  };
+}
+
 function relationMatches(trajectory, qKind) {
   return trajectory.relation?.qKind === qKind;
 }
@@ -301,6 +326,9 @@ class UfsEventRuleImagination {
     memory = null,
     programLibrary = loadDefaultLibrary(),
     programInterpreter = new JsonCognitiveProgramInterpreter(),
+    informationGapResolver = new InformationGapResolver({
+      knowledge: PUBLIC_SLOT_LOCATOR_KNOWLEDGE,
+    }),
     activationThreshold = 0.55,
     topK = 4,
   } = {}) {
@@ -308,6 +336,7 @@ class UfsEventRuleImagination {
     this.memory = memory || new PrecompiledGteTrajectoryMemory(trajectories);
     this.programLibrary = programLibrary;
     this.programInterpreter = programInterpreter;
+    this.informationGapResolver = informationGapResolver;
     this.activationThreshold = activationThreshold;
     this.topK = topK;
   }
@@ -327,29 +356,33 @@ class UfsEventRuleImagination {
       };
     }
     const facts = projector({ event, observedState });
-    const attention = externalAttention
+    const initialAttention = externalAttention
       ? makeExternalAttention(facts, externalAttention.noticedPaths)
       : makeAttention(facts, perceptionBudget);
     const requiredPaths = facts.map((fact) => fact.path);
-    const missingForQ = requiredPaths.filter((path) => !attention.has(path));
+    const missingForQ = requiredPaths.filter((path) => !initialAttention.has(path));
+    const informationRecovery = this.informationGapResolver.resolve({
+      missingSlots: missingForQ,
+      facts,
+      queryablePaths: externalAttention?.queryablePaths ?? requiredPaths,
+      stateItems: externalAttention?.stateItems || [],
+      explorationHints: externalAttention?.explorationHints || {},
+    });
+    const attention = attentionWithRecoveredFacts(initialAttention, informationRecovery.resolved);
+    const unresolvedForQ = informationRecovery.confusions.map((row) => row.slot);
     const trace = {
       eventDetection: { eventType: event.type, qKind },
       q: null,
       attention: {
         mode: externalAttention ? "external_full_attention" : "legacy_local_attention",
-        totalPublicAtoms: attention.totalPublicAtoms,
-        budget: attention.maxItems,
-        selected: attention.selected.map((fact) => fact.path),
+        totalPublicAtoms: initialAttention.totalPublicAtoms,
+        budget: initialAttention.maxItems,
+        selected: initialAttention.selected.map((fact) => fact.path),
+        queryAcquired: informationRecovery.resolved.map((row) => row.slot),
       },
+      informationRecovery,
       candidates: [], relationRejections: [], grounding: null,
     };
-    if (missingForQ.length > 0) {
-      return {
-        status: "attention_stop", reason: "incomplete_event_q_attention", patch: null,
-        observedWorldUnchanged: JSON.stringify(observedState) === JSON.stringify(observedBefore),
-        trace: { ...trace, missingForQ },
-      };
-    }
     const qHeads = this.trajectories.filter((trajectory) => relationMatches(trajectory, qKind));
     if (qHeads.length !== 1) {
       return {
@@ -394,6 +427,33 @@ class UfsEventRuleImagination {
         status: programSelection.candidates.length === 0 ? "unknown" : "ambiguous",
         reason: "no_unique_json_program_for_activated_trajectory", patch: null,
         observedWorldUnchanged: JSON.stringify(observedState) === JSON.stringify(observedBefore), trace,
+      };
+    }
+    if (unresolvedForQ.length > 0) {
+      const patch = {
+        kind: "uncertain_event_effect",
+        qKind,
+        missingSlots: unresolvedForQ,
+        confusions: clone(informationRecovery.confusions),
+        awakenedFollowingQ: clone(accepted.trajectory.followingQ),
+        stopKind: "automatic",
+      };
+      trace.grounding = {
+        trajectoryId: accepted.trajectory.id,
+        sourceRuleId: accepted.trajectory.sourceRuleId,
+        awakenedFollowingQ: clone(accepted.trajectory.followingQ),
+        programId: programSelection.selected.program.programId,
+        programRevision: programSelection.selected.program.revision,
+        reads: [],
+        patch: clone(patch),
+        skippedBecause: "confusion_after_single_query_and_exploration",
+      };
+      return {
+        status: "automatic",
+        reason: "confusion_continued_without_missing_information",
+        patch,
+        observedWorldUnchanged: JSON.stringify(observedState) === JSON.stringify(observedBefore),
+        trace: { ...trace, missingForQ, unresolvedForQ },
       };
     }
     const preview = this.programInterpreter.execute(programSelection.selected.program, { attention });

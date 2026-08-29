@@ -1,0 +1,33 @@
+{
+  "type": "place_die",
+  "dieId": "r3-gray-0",
+  "cellId": "A-r2-c4",
+  "predictions": [
+    {
+      "because": "placing gray four on energy should mark it placed and partially fill A-upper-energy",
+      "expectations": [
+        {
+          "itemId": "die:r3-gray-0",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "room:A-upper-energy",
+          "field": "filled",
+          "change": "changed"
+        }
+      ]
+    },
+    {
+      "because": "no visible ship is in column three, so visible ship rows should remain unchanged",
+      "expectations": [
+        {
+          "itemId": "ships:visible",
+          "field": "row",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "type": "place_die",
+  "dieId": "r4-white-4",
+  "cellId": "A-r2-c3",
+  "predictions": [
+    {
+      "because": "placing white one on tunnel should create a tunnel room candidate and trigger reroll",
+      "expectations": [
+        {
+          "itemId": "die:r4-white-4",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "room:A-upper-tunnel",
+          "field": "filled",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "purple-2 is visible in column two, so I expect its row to increase by one",
+      "expectations": [
+        {
+          "itemId": "ship:purple-2",
+          "field": "row",
+          "change": "increase",
+          "value": 1
+        }
+      ]
+    }
+  ]
+}

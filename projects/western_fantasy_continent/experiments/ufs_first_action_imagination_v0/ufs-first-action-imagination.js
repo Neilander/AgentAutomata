@@ -13,6 +13,19 @@ function clone(value) {
   return structuredClone(value);
 }
 
+function normalizeUncertainty(row) {
+  return row?.value?.schema === "unknown_information_v0" ? row.value : row;
+}
+
+function mergeUncertainties(...groups) {
+  const bySlot = new Map();
+  for (const row of groups.flat().filter(Boolean).map(normalizeUncertainty)) {
+    const key = row?.slot || JSON.stringify(row);
+    bySlot.set(key, clone(row));
+  }
+  return [...bySlot.values()];
+}
+
 function columnLabel(column) {
   return `C${column + 1}`;
 }
@@ -59,10 +72,11 @@ function buildSkyWorld(publicState, publicMap) {
     city: {
       health: publicMap.city.maxDamage - publicState.damage,
     },
+    uncertainties: clone(publicState.uncertainties || []),
   };
 }
 
-function applyPlacementToImaginedState(publicState, publicMap, selectedAction, cell, room, skyResult) {
+function applySelectedPlacementShell(publicState, selectedAction, cell, room) {
   const imaginedState = clone(publicState);
   const die = imaginedState.dice.find((candidate) => candidate.id === selectedAction.dieId);
   die.placed = true;
@@ -80,6 +94,11 @@ function applyPlacementToImaginedState(publicState, publicMap, selectedAction, c
     removesRobotId: null,
     resolved: false,
   });
+  return imaginedState;
+}
+
+function applyPlacementToImaginedState(publicState, publicMap, selectedAction, cell, room, skyResult) {
+  const imaginedState = applySelectedPlacementShell(publicState, selectedAction, cell, room);
   for (const ship of imaginedState.ships) {
     const imaginedShip = skyResult.imaginedWorld.objects.find((object) => object.id === ship.id);
     if (!imaginedShip) throw new Error(`imagined sky lost ship: ${ship.id}`);
@@ -89,6 +108,10 @@ function applyPlacementToImaginedState(publicState, publicMap, selectedAction, c
   imaginedState.damage = Math.max(
     0,
     publicMap.city.maxDamage - skyResult.imaginedWorld.city.health,
+  );
+  imaginedState.uncertainties = mergeUncertainties(
+    publicState.uncertainties || [],
+    skyResult.imaginedWorld.uncertainties || [],
   );
   return imaginedState;
 }
@@ -102,6 +125,12 @@ function movedShips(before, after) {
     const prior = before.ships.find((candidate) => candidate.id === ship.id);
     return prior && (prior.column !== ship.column || prior.row !== ship.row);
   });
+}
+
+function cityContactShipIds(skyResult) {
+  return [...new Set((skyResult.trace.groundings || [])
+    .filter((row) => row.committed && row.trajectoryId === "RULE-LANDED-CITY-DAMAGE")
+    .flatMap((row) => row.objectIds || []))];
 }
 
 class UfsFirstActionImagination {
@@ -162,7 +191,57 @@ class UfsFirstActionImagination {
         },
       };
     }
-    const actualDescent = placementThought.imaginedConsequences.movement.amount;
+    let excavationPlacementLegality = null;
+    if (cell.unlockIndex > publicState.excavatorIndex) {
+      excavationPlacementLegality = this.eventRuleImagination.run({
+        event: { type: "excavation_placement_considered", dieValue: die.value },
+        observedState: {
+          excavation: { pathDistance: cell.unlockIndex - publicState.excavatorIndex },
+          round: {
+            usedUnexcavatedPlacement: publicState.placements.some(
+              (placement) => !placement.resolved && placement.excavationCandidate,
+            ),
+          },
+        },
+      });
+      if (excavationPlacementLegality.status !== "automatic"
+        || excavationPlacementLegality.patch?.kind !== "excavation_placement_legality") {
+        throw new Error(`excavation placement legality was not resolved: ${selectedAction.cellId}`);
+      }
+      if (!excavationPlacementLegality.patch.legal) {
+        throw new Error(`illegal_unexcavated_placement:${selectedAction.cellId}`);
+      }
+    }
+    const actualDescent = placementThought.imaginedConsequences.movement?.amount;
+    if (!Number.isInteger(actualDescent)) {
+      const imaginedState = applySelectedPlacementShell(publicState, selectedAction, cell, room);
+      imaginedState.uncertainties = mergeUncertainties(
+        publicState.uncertainties || [],
+        placementThought.trace.confusions || [],
+      );
+      const remainingDice = imaginedState.dice.filter((candidate) => !candidate.placed);
+      const observedWorldUnchanged = JSON.stringify(publicState) === JSON.stringify(observedBefore);
+      return {
+        schema: "ufs_first_action_imagination_result_v0",
+        status: "choice",
+        reason: "next_player_decision_with_uncertain_automatic_consequence",
+        selectedAction: clone(selectedAction),
+        imaginedConsequences: placementThought.imaginedConsequences,
+        observedWorldUnchanged,
+        imaginedState,
+        remainingDice,
+        stoppedBeforeSecondAction: true,
+        nextAction: null,
+        trace: {
+          placementRules: placementThought.trace,
+          sky: null,
+          boundary: {
+            kind: "choice",
+            reason: "confusion_did_not_end_decision_flow",
+          },
+        },
+      };
+    }
     const skyWorld = buildSkyWorld(publicState, publicMap);
     const skyResult = this.pipeline.run({
       world: skyWorld,
@@ -190,34 +269,71 @@ class UfsFirstActionImagination {
     let landingBoundary = null;
     if (skyResult.status === "complete") {
       const noticedItems = new Set(effectiveGlobalAttention.noticedItemIds || []);
-      for (const ship of movedShips(publicState, imaginedState)) {
-        const landingItemId = `sky_cell:${ship.row}:${ship.column}`;
-        if (!noticedItems.has(landingItemId)) continue;
-        const landingCell = skyCellAt(publicMap, ship.row, ship.column);
-        if (landingCell?.effect?.type !== "mothership_down") continue;
+      const queriedAtoms = new Set(
+        (skyResult.trace.attention.queryAcquired || []).map((row) => row.id),
+      );
+      for (const shipId of cityContactShipIds(skyResult)) {
+        const ship = imaginedState.ships.find((candidate) => candidate.id === shipId);
+        if (!ship) continue;
         const result = this.eventRuleImagination.run({
-          event: { type: "ship_landed", shipId: ship.id },
-          observedState: {
-            tile: { kind: "mothership_down" },
-            mothership: { row: imaginedState.mothershipRow },
-          },
-          externalAttention: {
-            noticedPaths: noticedItems.has("track:mothershipRow") ? ["mothership.row"] : [],
-          },
+          event: { type: "ship_landed", shipId },
+          observedState: { tile: { kind: "city" } },
         });
         landingEvents.push({
-          shipId: ship.id,
-          tile: { row: ship.row, column: ship.column, kind: "mothership_down" },
+          shipId,
+          tile: { row: publicMap.sky.cityRow, column: ship.column, kind: "city" },
           status: result.status,
           reason: result.reason,
           patch: clone(result.patch),
+          damageApplication: "already_committed_by_landed_city_trajectory",
           cognitiveTrace: clone(result.trace),
         });
-        if (result.status !== "automatic" || result.patch?.kind !== "move_mothership") {
+        if (result.status !== "automatic" || result.patch?.kind !== "city_contact") {
           landingBoundary = { status: result.status, reason: result.reason };
           break;
         }
-        imaginedState.mothershipRow = result.patch.toRow;
+        imaginedState.ships = imaginedState.ships.filter((candidate) => candidate.id !== shipId);
+        imaginedState.waitingShips ||= [];
+        imaginedState.waitingShips.push({ id: ship.id, color: ship.color });
+      }
+      if (!landingBoundary) {
+        for (const ship of movedShips(publicState, imaginedState)) {
+          const landingItemId = `sky_cell:${ship.row}:${ship.column}`;
+          const landingKindAtom = `tile:${columnLabel(ship.column)}:${ship.row}.kind`;
+          if (!noticedItems.has(landingItemId) && !queriedAtoms.has(landingKindAtom)) continue;
+          const landingCell = skyCellAt(publicMap, ship.row, ship.column);
+          if (landingCell?.effect?.type !== "mothership_down") continue;
+          const result = this.eventRuleImagination.run({
+            event: { type: "ship_landed", shipId: ship.id },
+            observedState: {
+              tile: { kind: "mothership_down" },
+              mothership: { row: imaginedState.mothershipRow },
+            },
+            externalAttention: {
+              noticedPaths: noticedItems.has("track:mothershipRow") ? ["mothership.row"] : [],
+            },
+          });
+          landingEvents.push({
+            shipId: ship.id,
+            tile: { row: ship.row, column: ship.column, kind: "mothership_down" },
+            status: result.status,
+            reason: result.reason,
+            patch: clone(result.patch),
+            cognitiveTrace: clone(result.trace),
+          });
+          if (result.status === "automatic" && result.patch?.kind === "uncertain_event_effect") {
+            imaginedState.uncertainties = mergeUncertainties(
+              imaginedState.uncertainties || [],
+              result.patch.confusions || [],
+            );
+            continue;
+          }
+          if (result.status !== "automatic" || result.patch?.kind !== "move_mothership") {
+            landingBoundary = { status: result.status, reason: result.reason };
+            break;
+          }
+          imaginedState.mothershipRow = result.patch.toRow;
+        }
       }
     }
     const remainingDice = imaginedState.dice.filter((candidate) => !candidate.placed);
@@ -256,6 +372,11 @@ class UfsFirstActionImagination {
       nextAction: null,
       trace: {
         placementRules: placementThought.trace,
+        excavationPlacementLegality: excavationPlacementLegality ? {
+          status: excavationPlacementLegality.status,
+          patch: clone(excavationPlacementLegality.patch),
+          cognitiveTrace: clone(excavationPlacementLegality.trace),
+        } : null,
         sky: skyResult.trace,
         landingEvents,
         boundary: {

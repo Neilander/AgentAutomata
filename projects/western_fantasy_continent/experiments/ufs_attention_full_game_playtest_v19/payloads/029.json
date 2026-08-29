@@ -1,0 +1,27 @@
+{
+  "type": "skip_worker",
+  "placementId": "r2-gray-1@A-r2-c4",
+  "predictions": [
+    {
+      "because": "skipping an unresolved incomplete room worker should remove or mark that placement resolved without resource gain",
+      "expectations": [
+        {
+          "itemId": "placement:r2-gray-1@A-r2-c4",
+          "field": "resolved",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "an incomplete energy room should not increase energy",
+      "expectations": [
+        {
+          "itemId": "track:energy",
+          "field": "value",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "type": "place_die",
+  "dieId": "r3-gray-1",
+  "cellId": "A-r1-c3",
+  "predictions": [
+    {
+      "because": "placing gray three on visible AA c3 should mark the die placed and create an AA room candidate",
+      "expectations": [
+        {
+          "itemId": "die:r3-gray-1",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "room:A-aa-c3",
+          "field": "filled",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "purple-2 is visible in column two and should move after this placement, though arrow handling is uncertain",
+      "expectations": [
+        {
+          "itemId": "ship:purple-2",
+          "field": "row",
+          "change": "changed"
+        },
+        {
+          "itemId": "ship:purple-2",
+          "field": "column",
+          "change": "changed"
+        }
+      ]
+    }
+  ]
+}

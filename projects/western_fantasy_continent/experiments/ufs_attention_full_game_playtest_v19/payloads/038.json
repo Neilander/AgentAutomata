@@ -1,0 +1,35 @@
+{
+  "type": "place_die",
+  "dieId": "r3-white-3",
+  "cellId": "A-r1-c2",
+  "predictions": [
+    {
+      "because": "placing the final die should occupy AA-c2",
+      "expectations": [
+        {
+          "itemId": "die:r3-white-3",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "cell:A-r1-c2",
+          "field": "occupied",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "all dice will be placed after this action, so the game should move to room actions",
+      "expectations": [
+        {
+          "itemId": "phase:rooms",
+          "field": "active",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

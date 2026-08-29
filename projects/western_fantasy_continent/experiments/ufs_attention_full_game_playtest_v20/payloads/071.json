@@ -1,0 +1,35 @@
+{
+  "type": "place_die",
+  "dieId": "r5-white-4",
+  "cellId": "A-r1-c3",
+  "predictions": [
+    {
+      "because": "placing white two on AA c3 should mark it placed and trigger reroll",
+      "expectations": [
+        {
+          "itemId": "die:r5-white-4",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "room:A-aa-c3",
+          "field": "filled",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "purple-1 is visible in column two, so I expect it to descend by two",
+      "expectations": [
+        {
+          "itemId": "ship:purple-1",
+          "field": "row",
+          "change": "increase",
+          "value": 2
+        }
+      ]
+    }
+  ]
+}

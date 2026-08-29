@@ -9,11 +9,12 @@ const initialPublicState = require("../ufs_autonomous_round_agent_v0/public_init
 const decisions = require("../ufs_autonomous_round_agent_v0/agent_decisions.json");
 const random = require("../ufs_autonomous_round_agent_v0/external_random_observations.json");
 const { UfsOneRoundSession } = require("./ufs-one-round-session");
+const { roomActionCandidates } = require("./ufs-one-round-imagination");
 
-function begin() {
+function begin(state = initialPublicState) {
   const session = new UfsOneRoundSession({ publicMap });
   const response = session.start({
-    initialPublicState,
+    initialPublicState: state,
     attentionSeed: decisions.attentionSeed,
   });
   return { session, response };
@@ -128,6 +129,99 @@ test("room resolution requires explicit payment while skip remains a separate po
   assert.match(rejected.reason, /explicit_pay_true_or_skip/);
   assert.equal(JSON.stringify(rejected.checkpoint), before);
   assert.ok(rejected.availableOperations.includes("skip_worker"));
+});
+
+test("room action boundary names legal, incomplete, and no-output candidates", () => {
+  const { session } = begin();
+  let response;
+  for (const selected of decisions.placements) {
+    response = session.advance({ type: "place_die", dieId: selected.dieId, cellId: selected.cellId });
+    if (response.status === "random") {
+      response = session.advance({
+        type: "submit_random_observation",
+        values: random.observations[`after:${response.pending.afterDieId}`],
+      });
+    }
+  }
+
+  assert.deepEqual(response.pending.candidates.resolvableRoomIds, [
+    "A-upper-energy", "A-upper-fighter",
+  ]);
+  assert.deepEqual(response.pending.candidates.incompleteRoomIds, ["A-path-fighter"]);
+  assert.deepEqual(response.pending.candidates.noOutputRoomIds, ["A-aa-c2"]);
+  assert.deepEqual(response.pending.candidates.unrememberedRoomIds, []);
+  assert.deepEqual(response.pending.candidates.excavationPlacementIds, [
+    "r1-white-4@A-r3-c3",
+  ]);
+  assert.equal(response.pending.candidates.excavationEnergyCost, 1);
+  assert.deepEqual(response.pending.candidates.unaffordableExcavationPlacementIds, []);
+
+  const before = JSON.stringify(response.checkpoint);
+  const noOutput = session.advance({ type: "resolve_room", roomId: "A-aa-c2", pay: true });
+  assert.equal(noOutput.reason, "invalid_action:room_has_no_room_phase_effect:A-aa-c2");
+  assert.equal(JSON.stringify(noOutput.checkpoint), before);
+  const incomplete = session.advance({ type: "resolve_room", roomId: "A-path-fighter", pay: true });
+  assert.equal(incomplete.reason, "invalid_action:room_incomplete:A-path-fighter");
+  assert.equal(JSON.stringify(incomplete.checkpoint), before);
+});
+
+test("zero energy makes excavation visibly unaffordable and rejects it atomically", () => {
+  const zeroEnergyState = structuredClone(initialPublicState);
+  zeroEnergyState.energy = 0;
+  const { session } = begin(zeroEnergyState);
+  let response;
+  for (const selected of decisions.placements) {
+    response = session.advance({ type: "place_die", dieId: selected.dieId, cellId: selected.cellId });
+    if (response.status === "random") {
+      response = session.advance({
+        type: "submit_random_observation",
+        values: random.observations[`after:${response.pending.afterDieId}`],
+      });
+    }
+  }
+
+  const placementId = "r1-white-4@A-r3-c3";
+  assert.deepEqual(response.pending.candidates.excavationPlacementIds, []);
+  assert.deepEqual(response.pending.candidates.unaffordableExcavationPlacementIds, [placementId]);
+  const before = JSON.stringify(response.checkpoint);
+  const rejected = session.advance({ type: "excavate", placementId });
+  assert.equal(rejected.status, "rejected");
+  assert.equal(rejected.reason, `invalid_action:insufficient_energy_for_excavation:${placementId}`);
+  assert.equal(rejected.observation.energy, 0);
+  assert.equal(JSON.stringify(rejected.checkpoint), before);
+});
+
+test("a second unexcavated placement in one round is rejected by the learned legality rule", () => {
+  const { session } = begin();
+  let response = session.advance({ type: "place_die", dieId: "r1-gray-0", cellId: "A-r3-c4" });
+  assert.notEqual(response.status, "rejected");
+  const before = JSON.stringify(response.checkpoint);
+  response = session.advance({ type: "place_die", dieId: "r1-white-3", cellId: "B-r1-c1" });
+  assert.equal(response.status, "rejected");
+  assert.equal(response.reason, "invalid_action:illegal_unexcavated_placement:B-r1-c1");
+  assert.equal(JSON.stringify(response.checkpoint), before);
+});
+
+test("a stale shallower excavation is obsolete instead of moving the excavator backward", () => {
+  const indexes = {
+    cellById: new Map(publicMap.base.cells.map((cell) => [cell.id, cell])),
+    roomById: new Map(publicMap.base.rooms.map((room) => [room.id, room])),
+  };
+  const world = {
+    energy: 2,
+    excavatorIndex: 10,
+    placements: [{
+      id: "legacy-shallow",
+      cellId: "B-r1-c1",
+      excavationCandidate: true,
+      resolved: false,
+    }],
+    robots: [],
+  };
+  const candidates = roomActionCandidates(world, indexes, new Map());
+  assert.deepEqual(candidates.excavationPlacementIds, []);
+  assert.deepEqual(candidates.unaffordableExcavationPlacementIds, []);
+  assert.deepEqual(candidates.obsoleteExcavationPlacementIds, ["legacy-shallow"]);
 });
 
 test("research effect exposes a legal advance choice and resumes without a half-resolved worker", () => {

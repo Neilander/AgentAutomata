@@ -1,0 +1,41 @@
+{
+  "type": "choose_spawn",
+  "shipId": "purple-1",
+  "dropPointId": "DP-C4",
+  "predictions": [
+    {
+      "id": "p074_spawn_visible",
+      "kind": "state_delta",
+      "expectations": [
+        {
+          "itemId": "ship:purple-1",
+          "field": "present",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "itemId": "ship:purple-1",
+          "field": "waiting",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "confidence": 0.88,
+      "basis": "public spawn contract requires choosing one listed drop point for purple-1"
+    },
+    {
+      "id": "p074_keep_pressure_split",
+      "kind": "state_delta",
+      "expectations": [
+        {
+          "itemId": "ship:purple-1",
+          "field": "column",
+          "op": "eq",
+          "value": 3
+        }
+      ],
+      "confidence": 0.65,
+      "basis": "choosing DP-C4 should place the ship in its matching public column and avoid adding pressure to column 2"
+    }
+  ]
+}

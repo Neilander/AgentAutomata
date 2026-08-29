@@ -188,6 +188,39 @@ function testPurpleSpawnsBeforeWhiteAndEmptyColumnsFirst() {
   assert.equal(white.column, 2);
 }
 
+function testDeferredRandomAndIncrementalSpawnControllerHooks() {
+  let state = ENGINE.createGame(MAP, 1601);
+  const white = state.dice.find((die) => die.color === "white");
+  const placement = ENGINE.legalWorkerPlacements(MAP, state, white.id)[0];
+  const beforeValues = state.dice.filter((die) => die.id !== white.id).map((die) => die.value);
+  state = ENGINE.applyWorkerPlacement(MAP, state, placement, { rerollMode: "deferred" });
+  assert.deepEqual(
+    state.dice.filter((die) => !die.placed).map((die) => die.value),
+    beforeValues,
+    "deferred random must wait for the external environment result",
+  );
+
+  state.phase = "mothership";
+  state.mothershipRow = 0;
+  state.waitingShips = [{ id: "purple-deferred", color: "purple" }];
+  state.ships = [];
+  state = ENGINE.resolveMothership(MAP, state, { startNextRound: false, deferSpawns: true });
+  assert.equal(state.phase, "spawning");
+  let next = ENGINE.nextSpawnChoice(MAP, state);
+  assert.equal(next.waiting.id, "purple-deferred");
+  while (next) {
+    state = ENGINE.applySpawnChoice(MAP, state, {
+      shipId: next.waiting.id,
+      column: next.candidates[0],
+    });
+    next = ENGINE.nextSpawnChoice(MAP, state);
+  }
+  assert.equal(ENGINE.nextSpawnChoice(MAP, state), null);
+  state = ENGINE.finishDeferredMothership(state);
+  assert.equal(state.phase, "new_round");
+  assert.equal(state.ships.some((ship) => ship.id === "purple-deferred"), true);
+}
+
 function testCityFirstRollHook() {
   const map = structuredClone(MAP);
   map.city.firstRoll = { type: "set_die", color: "white", ordinal: 0, value: 6 };
@@ -251,6 +284,7 @@ const tests = [
   testRobotInstallUseDecayAndUnblock,
   testMothershipActionsSpawnAndBuryRobot,
   testPurpleSpawnsBeforeWhiteAndEmptyColumnsFirst,
+  testDeferredRandomAndIncrementalSpawnControllerHooks,
   testCityFirstRollHook,
 ];
 

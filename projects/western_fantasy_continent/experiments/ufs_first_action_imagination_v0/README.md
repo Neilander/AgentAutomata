@@ -10,7 +10,7 @@
 
 ```text
 固定放置5颗骰子
-→ 每次动作先在完整153+项全场注意力中分配激活和有限预算
+→ 每次动作先在完整161+项全场注意力中分配激活和有限预算
 → 被注意到的部分形成五槽Q→真实GTE轨迹→JSON程序→脑内后果
 → 白骰重投在 random 边界停止，由外部可见结果恢复
 → 全部放完进入房间阶段
@@ -29,15 +29,15 @@
 
 骰子全放完后的阶段切换、跳过工人、结束房间属于控制流程，不冒充读规则生成的轨迹；trace中明确标为`trajectoryDriven: false`。当前“击毁紫机后物理棋子回到母舰队列”由世界状态reducer解释对象生命周期，尚不是一条独立五槽轨迹。
 
-## 完整153+项概率注意已经接入
+## 完整161+项概率注意已经接入
 
-`ufs-full-attention-provider.js`把已有UFS全场注意合同接到Node连续设想：初始公开局面固定展开为153项，包括8条公共状态、5颗骰子、5架飞船、25个房间、30个基地格和80个天空格。回合中新增放置、待生成飞船等公开对象后，空间会自然增长，本固定回合最高为158项。
+`ufs-full-attention-provider.js`把已有UFS全场注意合同接到Node连续设想：初始公开局面固定展开为161项，包括8条公共状态、5颗骰子、5架飞船、25个房间、30个基地格、80个天空格和8个母舰轨道行动图标。回合中新增放置、待生成飞船等公开对象后，空间会自然增长，本固定回合最高为166项。
 
 每项都有至少`0.04`的背景激活，不相关项不会从注意空间中消失。当前动作只是在完整场上加权：所选骰子和目标格最高，目标房间、同列飞船和路径其次，其余房间、骰子、天空格仍保留非零被注意概率。默认注意等级`0.8`给出41项有限预算，以激活度平方为权重做可复现的无放回概率抽样。
 
-放置、放置后的飞船下降/落点链，以及房间、挖掘、母舰、生成等事件都先经过这张完整注意场，再把真正被注意的状态投影成Q。同一次放置的天空链直接复用同一份153+项注意结果：飞船字段映射到全场飞船项，落点字段映射到全场天空格，城市字段映射到伤害轨道；不再二次运行微型Top-N。旧局部入口只保留在底层隔离函数中供历史单元测试使用，不是默认玩家路径。
+放置、放置后的飞船下降/落点链，以及房间、挖掘、母舰、生成等事件都先经过这张完整注意场，再把真正被注意的状态投影成Q。同一次放置的天空链直接复用同一份161+项注意结果：飞船字段映射到全场飞船项，落点字段映射到全场天空格，城市字段映射到伤害轨道；母舰结算则必须注意到当前行及该行的行动图标。旧局部入口只保留在底层隔离函数中供历史单元测试使用，不是默认玩家路径。
 
-固定种子65自然产生了一个错误推断：AI注意到`purple-0`，却漏掉它所在的`sky_cell:3:0`爆炸格，于是战斗机房错误输出`eligibleShipIds=[]`。紫机留在脑内第3行，后续母舰阶段继续沿错误世界运行，只生成白机。这次遗漏来自153+项概率分配，不是测试手动指定。
+固定种子69自然产生了一个错误推断：AI注意到`purple-0`，却漏掉它所在的`sky_cell:3:0`爆炸格，于是战斗机房错误输出`eligibleShipIds=[]`。紫机留在脑内第3行，后续母舰阶段继续沿错误世界运行，只生成白机。这次遗漏来自161+项概率分配，不是测试手动指定。
 
 原有`eventPerception`定点漏看仍保留为下游错误传播的精确回归口，但默认玩家已经使用全局概率注意。
 
@@ -69,15 +69,35 @@ if (step.status === "random") {
 }
 ```
 
-当前操作口为`place_die / submit_random_observation / resolve_room / choose_research_advance / excavate / skip_worker / end_rooms / choose_spawn`。研究房JSON程序先返回房间预算和连续研究格成本，玩家再用`choose_research_advance(roomId, advanceSteps)`选择实际推进格数；超过当前预算允许的最大格数会被原子拒绝。错误阶段调用、缺参数、非法对象和非法生成点返回`rejected`，不会改变checkpoint。每次响应包含新的玩家脑内环境、pending边界、当前操作口、trace增量和纯JSON checkpoint；checkpoint可以跨进程恢复。正式引擎和旧固定fixture都不在会话核心依赖中。
+当前操作口为`place_die / submit_random_observation / resolve_room / choose_research_advance / excavate / skip_worker / end_rooms / choose_spawn`。每次完整试玩响应除了`availableOperations`名称，还公开一一对应的`operationContracts`，列明必填字段、固定ID、公开候选或数值上下界；Agent不需要查源码或旧协议来猜payload。研究房JSON程序先返回房间预算和连续研究格成本，玩家再提交`{"type":"choose_research_advance","roomId":"…","advanceSteps":1}`选择实际推进格数；即使最大推进为0，合同也会明确公开`roomId`和`advanceSteps: 0..0`。超过当前预算允许的最大格数会被原子拒绝。生成选择必须提交当前pending公开的候选：`{"type":"choose_spawn","shipId":"…","dropPointId":"DP-C3"}`。`node attention-player-cli.js help`会列出所有最小payload。错误阶段调用、缺参数、非法对象和非法生成点返回`rejected`，不会改变checkpoint。每次响应包含新的玩家脑内环境、pending边界、当前操作口、trace增量和纯JSON checkpoint；checkpoint可以跨进程恢复。正式引擎和旧固定fixture都不在会话核心依赖中。
+
+房间阶段的`pending.candidates`会把当前对象分为`resolvableRoomIds / incompleteRoomIds / noOutputRoomIds / unrememberedRoomIds / excavationPlacementIds / unaffordableExcavationPlacementIds / obsoleteExcavationPlacementIds / skippablePlacementIds`。这不是替玩家选择，而是把棋盘上本来就公开的合法操作目标交给操作口：两格能源房只填一格会列入`incompleteRoomIds`，防空与普通通道会列入`noOutputRoomIds`；挖掘会公开`excavationEnergyCost=1`，0能源时只列入`unaffordableExcavationPlacementIds`，已经不在挖掘机前方的旧目标列入`obsoleteExcavationPlacementIds`。放置到未挖掘格时会经过已有`excavation_placement`五槽轨迹和JSON程序，第二个未挖掘放置或点数不足会原子拒绝；若历史checkpoint仍含多个挖掘位，结算一个后也不能用较浅目标把挖掘进度倒退。
+
+长局试玩采用分段闸门：先玩到第3回合结束，停在`waiting_for_next_round_roll`，再运行`node audit-three-round-gate.js <试玩目录> 3`。它会检查机器记录连续性、命令退出码、负能源、挖掘候选冲突、安全暂停边界，并恢复host checkpoint复核真实状态；只有`stageGatePassed=true`才继续同一局。若玩家误越过闸门，可传入边界序号（例如`... <试玩目录> 3 41`）；审计器会只用该公开记录前缀从头确定性复放、逐响应比对并在内存中导出/恢复当时checkpoint，不把当前较晚状态冒充三回合状态。
 
 V0会话内部为保证与旧控制器一致，会依据checkpoint从回合开头确定性复放已发生的操作，再推进新操作；对调用AI而言已经是严格的一步一环境接口，后续可再把内部优化为原地状态机，不改变外部合同。
 
 策略Agent现在应使用`ufs-attention-player-session.js`，而不是直接读取宿主会话response。宿主
 会话仍私下保存完整脑内世界、trace和checkpoint；玩家包装器在每个choice边界重新从完整
-153+项注意场分配41项预算，只返回真正noticed的轨道、骰子、飞船、房间、基地格和天空格。
-玩家response不含checkpoint、完整地图或traceDelta，非法操作也不会重抽注意。注意痕迹会随
+161+项注意场分配41项预算，只返回真正noticed的轨道、骰子、飞船、房间、基地格、天空格和母舰轨道行动图标。
+玩家response不含checkpoint、完整地图或traceDelta，非法操作也不会重抽注意。公开`attention.seed`只回显本次episode实际采用的抽样seed，便于封卷实验审计。注意痕迹会随
 玩家checkpoint保存并恢复，因此跨进程继续时仍保留两步短期粘连。
+
+两个CLI现在采用双层输出。策略Agent读取的stdout、`current-player-view.json`和
+`machine-transcript.jsonl`只保留实际可见的`observation / mapView`、选择边界、操作口及
+`spaceItemCount / capacity / noticedCount / omittedCount / seed`注意摘要，不再重复输出
+`noticedItems`和两步注意痕迹。完整的noticed项目与`traceBefore / traceAfter`仍逐步写入
+state目录下私有的`attention-audit-transcript.jsonl`供宿主事后审计；封卷玩家不得读取该文件。
+这只缩短Agent上下文，不改变161+项注意抽样、41项预算或短期粘连。
+
+需要跨回合一直玩到胜负时，使用`full-game-attention-player-cli.js`。它在原有一回合认知链
+抵达`new_round`后，不再把整局标为完成，而是公开一个`next_round_roll`随机边界；调用
+`random`取得下一轮五颗真实骰子后，保留能源、伤害、研究、挖掘机、母舰、飞船和机器人，
+清空上一轮工人并进入同一套注意→Q→轨迹→JSON程序流程。只有研究胜利、城市毁坏或母舰
+抵达骷髅线才返回终局`complete`。短期注意痕迹在回合边界清空；策略Agent自己的规则知识、
+目标和工作记忆由同一Agent跨回合保留。
+
+母舰轨道的8个印刷行动图标现在也是独立注意项，并在noticed时进入`mapView.mothershipActions`。例如母舰抵达第6行后，`research_back:1`会通过注意→五槽Q→轨迹→JSON程序把研究从1降到0；这属于规则后果，不是跨回合丢档。结算后当前行图标会作为反馈焦点粘连到下一次观察，使玩家有机会看见数值变化的原因，同时仍保留概率漏看的可能。
 
 ```js
 const player = new UfsAttentionPlayerSession({ publicMap });
@@ -95,7 +115,7 @@ view = player.advance({ type: "place_die", dieId, cellId });
 ## 当前链路
 
 ```text
-完整公开游戏状态（初始153项，回合中动态增长）
+完整公开游戏状态（初始161项，回合中动态增长）
 → 当前动作提高相关项激活，所有周边项保留背景激活
 → 有限预算概率抽样出本步真正注意到的状态
 → 上一轮答卷的 SELECTION
@@ -130,7 +150,9 @@ room_resolution + stage=effect + room.type=energy
 → 形成临时脑内能源patch
 ```
 
-飞船落点根据已注意到的公开 `tile.kind` 区分箭头、母舰下降格与城市；生成事件根据各列是否为空自动区分空列优先与最远投放点。轨迹程序所需事实缺失时返回`attention_stop`；如果移动已经想完、只是下一落点类型没被注意，则记录`unnoticed_endpoint_effect_omitted_from_imagination`并允许遗漏效果继续传播。真正未知事件仍返回`unknown`，随机和选择不会替玩家补结果。
+飞船落点根据已注意到的公开 `tile.kind` 区分箭头、母舰下降格与城市；生成事件根据各列是否为空自动区分空列优先与最远投放点。若形成Q或执行轨迹时发现某个明确槽缺失，`information-gap-resolver.js`先查询知识：知识能给答案就直接使用，知识只给定位方式就只查看对应公开槽；没有定位知识时最多进行一次带目标、有限预算的状态探索。两次都失败则保存`unknown_information_v0`与困惑，跳过依赖该值的效果，但仍抵达下一次玩家决策，不再把信息缺失当成硬停止。真正未知事件仍返回`unknown`，随机和选择不会替玩家补结果。
+
+天空流水线产生的困惑会合并进UFS脑内状态，并作为玩家已经知道的自我不确定性直接出现在下一次`observation.uncertainties`中；它不占用新一轮随机注意预算。同一槽后来被正常注意或定向查询成功时会从困惑列表移除。纵向下降不再只查数学终点：若`fromRow → intendedToRow`穿过城市行，移动先截到城市接触点，形成`landed_city`五槽Q并只结算一次伤害；随后由规则阅读生成的`city-contact`事件轨迹把该飞船送回母舰等待队列，因此不会再产生地图外`row17`落点。
 
 这里没有 `roomProjection` 直算捷径。以状态A为例，“能源房缺C4”来自 `multi_room_requires_all_spaces` 被五槽Q唤醒后，grounding读取C4/C5占用情况产生的临时脑内结果。没有房间注意或没有规则记忆时，这个结果不会出现。
 
@@ -150,12 +172,82 @@ room_resolution + stage=effect + room.type=energy
 - `nextAction = null`
 - 真实公开状态没有被修改。
 
+## 反馈学习层（原7项 + 有效性闸门）
+
+`ufs-feedback-learning.js` 现在承接玩家可见的实际反馈，但只写入认知结果，不保存独立的“候选价值分”。核心写入仍是：
+
+```text
+q当前 → q实际后续
+```
+
+当前实现包括：
+
+- 正常正确后果不存在就创建，已存在则更新出现次数、支持度、最近时间、来源和可信度。
+- 高激活旧轨迹预测错误时，不削弱或删除旧轨迹；必须带区分当前情况的上下文，另建更具体的新轨迹，并记录纠正对象和不匹配的五槽。
+- 同一`q当前`可保留多个随机后续，分别统计总次数、近期权重、中心、常见范围、历史范围和近期偏移。
+- 陌生内容先保留`q当前 → 查规则`出口；查到以后新增具体后果，通用查询出口不删除。
+- 经常连续出现的两段轨迹会记录连续次数、粘连强度、自动化程度以及逐渐降低的注意/查规则成本。
+- 漏看只会形成对应动作、阶段和上下文中的注意增量或关系扩展；接入现有161+项完整注意场后，其他状态仍保留原来的非零背景注意。
+- 教程、查规则、单次经历、多次经历和玩家猜测分别记录来源，可信度随来源和重复验证更新。
+- 只有“玩家可见 + 已提交或知识查询 + 系统完整性通过”的证据可以学习。非法操作、隐藏信息、未审计结果和已知系统bug进入隔离记录，不修改轨迹或注意力。
+
+新轨迹会先标为`pending_matrix_compile`，同一五槽与上下文可以立即由反馈层精确召回；批量GTE编译后用`markMatrixCompiled`记录矩阵版本。模糊语义召回仍以已编译矩阵为准，不能把尚未编译的新经历冒充已经进入真实GTE矩阵。
+
+研究房零收益的测试案例现在明确要求行动前预测“能源减少、研究不前进”；正式结果可见且与票据匹配后才记录新轨迹。相同结果若事前没有预测，则不会创建学习记录。下次召回这个后果以后，原有成本—条件—收益判断自然会排除它；没有额外的`candidateValue=-3`之类分数。
+
+完整试玩外层现已由正式规则引擎掌管真实状态、合法操作、随机边界、房间结算、母舰阶段和下一环境；认知核心仍不导入正式引擎，只并行产生玩家的脑内预测。`UfsFormalFeedbackOracle`保留历史名称，但在完整试玩中已经是权威游戏会话；`UfsFullGameFeedbackBridge`会在正式操作提交前，把脑内唤醒轨迹和策略Agent显式写下的0—3条预测编成`ufs_prediction_ticket_v1`。每张票据保存关注对象、预期变化、理由和稳定结算截止点；跨白骰、研究选择与生成选择时进入checkpoint继续等待。正式结果到达后，只核对玩家本步确实注意到的票据目标：完全匹配才确认，明确相反才纠正，没看到则保持未解决。没有行动前票据时，即使结果发生也不学习。
+
+已验证完整会话中的四类路径：已有五槽轨迹被逐票验证后只强化对应连接；显式正确预测可以形成新后果轨迹；显式错误预测在玩家看到正式反例后形成纠正后果；没有预测或没有看到验证目标时保持不学习。研究进度4、房间预算2、下一需求4时，只有行动前写下“能源下降、研究不动”的票据，正式零推进结果才会进入反馈记忆，不产生候选价值分。
+
+母舰下降格回归保留了一个自然认知错误：正式引擎收回新到达行上的4架飞机，脑内预测只移动母舰。现在权威host仍正确收回飞机，下一步合法操作和玩家环境继续来自正式状态；错误`imaginedWorld`只能作为行动前预测，不能污染棋盘。V1不再因为“本步一共有3条预测”就全部拒绝：目标互不重叠且被看见的票据可独立确认；两张错误票据争夺同一反馈目标时才标记`overlapping_prediction_tickets_make_mismatch_attribution_ambiguous`并保持不学习。
+
+## 初始玩家生成器与学习隔离
+
+`ufs-player-generator.js`把玩家拆成三层，不再用一个整局checkpoint同时表示“初始知识、个人学习和当前游戏”：
+
+```text
+冻结初始模板
+├─ 第1—9页规则来源与AI生成五槽轨迹
+├─ 当前GTE矩阵文件
+├─ 统一JSON认知程序库
+└─ 161+项注意策略
+
+玩家个人档案
+├─ 反馈新轨迹与连接强化
+├─ 情境注意调整
+├─ 预测历史账本
+└─ 玩家ID、血缘、版本和episode历史
+
+当前游戏checkpoint
+├─ 正式棋盘与随机/选择边界
+├─ 本局脑内状态
+└─ 尚未到截止点的预测票据
+```
+
+冻结模板会对规则、五槽轨迹、GTE矩阵和程序库7份资产计算SHA-256总指纹；资产改变后旧玩家档案不会静默加载。`fresh`只复制冻结初始知识，个人学习为空；`continue`必须同时匹配玩家ID、模板指纹和档案revision；`fork`复制父玩家某一明确revision的个人学习，但之后双方各自更新。每次`player-capture`只把个人认知写回玩家档案，不把正式棋盘混入；有尚未完成的预测票据时拒绝capture。capture后该state目录封存，同一玩家用更新后的档案在新目录开始下一episode。
+
+```powershell
+# 创建两个互不共享学习的新玩家
+node ufs-player-cli.js fresh players/alice.json alice 20260830
+node ufs-player-cli.js fresh players/bob.json bob 20260831
+
+# alice开始一局；advance/random会校验并继续同一玩家
+node full-game-attention-player-cli.js player-start runs/alice-001 players/alice.json
+node full-game-attention-player-cli.js advance runs/alice-001 choice.json
+
+# 把本局学习写回alice并封存该局
+node full-game-attention-player-cli.js player-capture runs/alice-001 players/alice.json
+
+# 从alice当前学习快照创建独立对照玩家
+node ufs-player-cli.js fork players/alice.json players/alice-control.json alice-control
+```
+
 ## 文件
 
 - `EXPERIMENT_PROTOCOL.md`：冻结范围、知识边界和通过条件。
 - `selection-adapter.js`：上一轮自然语言选择→唯一结构化动作。
 - `experiment-fixtures.js`：只为实验提供去除seed/history/rng的公开状态。
-- `ufs-full-attention-provider.js`：完整153+项公开状态、动作加权、有限预算概率抽样和事件注意投影。
+- `ufs-full-attention-provider.js`：完整161+项公开状态、动作加权、有限预算概率抽样和事件注意投影。
 - `full_attention_bridge.py`：同一注意合同与原Python模块之间的调试/校验桥；连续Node运行时不启动子进程。
 - `placement-rule-imagination.js`：从完整注意结果形成两个五槽Q，再进入规则矩阵、关系门和受控grounding；旧局部排序不在默认玩家路径。
 - `rule_reading_trajectory_v0/`：第1—9页规则输入及现场缺口补边、26条严格轨迹、真实GTE矩阵、Node矩阵读取与连接加强overlay；当前一步实验装入6条放置相关轨迹。
@@ -165,14 +257,26 @@ room_resolution + stage=effect + room.type=energy
 - `ufs-one-round-imagination.js`：应用脑内patch、管理随机/选择边界、推进房间和母舰阶段的一回合控制器。
 - `ufs-one-round-session.js`：`start → advance`单操作会话、操作口校验、环境响应和JSON checkpoint恢复。
 - `ufs-attention-player-session.js`：宿主完整状态与策略注意视图之间的强制边界；策略response不泄漏checkpoint或完整地图。
-- `attention-player-cli.js`：封卷Agent逐步试玩入口；宿主checkpoint留在state目录，标准输出只返回注意裁剪后的玩家视图。
+- `attention-player-cli.js`：封卷Agent逐步试玩入口；宿主checkpoint和完整注意审计留在state目录，标准输出只返回精简的注意裁剪玩家视图。
+- `full-game-attention-player-cli.js`：跨回合逐步试玩入口；沿用同一精简玩家视图与私有完整注意审计合同。
+- `ufs-feedback-learning.js`：反馈有效性闸门、五槽后果学习、多后续统计、区分性纠错、查询出口、轨迹粘连、来源可信度与情境注意修正。
+- `test-ufs-feedback-learning.js`：原7项反馈需求、系统bug隔离、研究零收益区分轨迹和完整注意场接入回归。
+- `ufs-formal-feedback-oracle.js`：认知核心之外的权威正式游戏会话；生成合法操作与下一环境，管理随机、研究和生成边界，并保存checkpoint。
+- `ufs-full-game-feedback-bridge.js`：本步预测提取、正式结果可见性门、确认/纠错/注意更新和重复轨迹去重。
+- `ufs-prediction-ticket.js`：行动前0—3条显式/自动预测票据、验证目标、跨边界截止和逐项配对。
+- `test-prediction-ticket.js`：正确、错误、漏看、重叠歧义、随机延期、checkpoint与原子拒绝回归。
+- `ufs-player-generator.js`：冻结初始模板指纹、独立玩家档案，以及fresh/continue/fork/capture接口。
+- `ufs-player-cli.js`：创建、分叉和检查玩家档案；不覆盖已有新档案。
+- `test-player-generator.js`：玩家间学习隔离、同玩家续玩、分叉独立、revision/模板闸门和真实CLI回归。
+- `test-full-game-feedback-bridge.js`：完整会话连接强化、研究零收益、单一错误注意修正及多因果歧义拒绝。
+- `compact-attention-response.js`：删除玩家视图中与`observation / mapView`重复的noticed清单和内部注意痕迹，保留决策事实与注意预算摘要。
 - `one-round-fixture.js`：明确标注为非策略的5骰、房间顺序、生成选择与外部随机观察。
 - `test-first-action-imagination.js`：三状态后果、停止边界、无注意/空记忆消融和引擎事后oracle。
 - `test-event-rule-imagination.js`：20个端到端事件和6个安全/停止边界。
 - `test-one-round-imagination.js`：完整回合oracle、认知链证据、随机停止和控制/轨迹分界。
 - `test-one-round-session.js`：逐操作推进、随机门、研究推进选择、拒绝不变性、checkpoint恢复和依赖隔离。
-- `test-attention-player-session.js`：41/153注意裁剪、可见值来源、短期粘连、私有checkpoint恢复和拒绝不重抽。
-- `test-full-attention-integration.js`：153项构成、非零周边背景、动作加权、概率抽样、全流程禁用局部注意和自然漏看错误。
+- `test-attention-player-session.js`：41/161注意裁剪、可见值来源、短期粘连、私有checkpoint恢复和拒绝不重抽。
+- `test-full-attention-integration.js`：161项构成、母舰轨道图标、非零周边背景、动作加权、概率抽样、全流程禁用局部注意和自然漏看错误。
 - `run-demo.js`：输出三条简明机器轨迹。
 - `run-one-round-demo.js`：输出完整一回合的简明步骤与最终脑内状态。
 - `INDEPENDENT_REVIEW.md`：旧直投影版本的历史评审，已被用户审计推翻，不再代表当前实现。
@@ -187,12 +291,14 @@ node --test projects/western_fantasy_continent/experiments/ufs_first_action_imag
 node --test projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/test-one-round-session.js
 node --test projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/test-attention-player-session.js
 node --test projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/test-full-attention-integration.js
+node --test projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/test-ufs-feedback-learning.js
+node --test projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/test-full-game-feedback-bridge.js
 node projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/run-demo.js
 node projects/western_fantasy_continent/experiments/ufs_first_action_imagination_v0/run-one-round-demo.js
 ```
 
 ## 能说明什么
 
-现在“主动选出的第一步”与“问题1—6脑内设想”之间有了可执行接线，而且默认入口已经是完整153+项概率注意。飞机与房间结果都必须经全场注意、AI读规则生成的 `q当前→q后续`、真实GTE矩阵唤醒、统一库中的AI生成JSON程序和受限解释器产生；确定的自动后果继续，新的主动决策不替玩家生成。重复确认可以增加连接support/observations而不复制矩阵行，但反馈自动调用尚未接入。
+现在“主动选出的第一步”与“问题1—6脑内设想”之间有了可执行接线，而且默认入口已经是完整161+项概率注意。脑内的飞机、房间和母舰轨道预测仍必须经全场注意、AI读规则生成的 `q当前→q后续`、真实GTE矩阵唤醒、统一库中的AI生成JSON程序和受限解释器产生；但实际操作只提交给正式引擎，确定后果、合法操作和下一环境均以正式结果为准。重复确认可以增加连接support/observations而不复制矩阵行，具体反例可以形成带上下文的新轨迹。
 
-本实验仍是隔离认知接线，没有接入正式 `player_agent_api_loop_v1` 的真实反馈循环；但固定选择下已经从5次放骰连续设想到下一回合边界，noticed对象也会以轻量、快速衰减的方式影响后两步注意。当前参数是可审计的工程假设，不是经过人体实验标定的正确模型。下一步若进入策略，不应修改这个后果控制器，而应把固定脚本替换成每个`choice`边界上的候选判断模块。
+本实验仍未接入正式 `player_agent_api_loop_v1`，但隔离完整试玩已完成正式世界与脑内世界的职责分离：正式引擎是唯一host，认知流程只是预测器，玩家只能读取正式状态经过概率注意后的观察。固定选择下可以完成整回合并进入下一回合，认知错误不能再修改真实棋盘。noticed对象仍会以轻量、快速衰减的方式影响后两步注意；这些参数是可审计的工程假设，不是经过人体实验标定的正确模型。下一步可以先跑3回合正式host闸门，再让策略Agent进行完整终局试玩。

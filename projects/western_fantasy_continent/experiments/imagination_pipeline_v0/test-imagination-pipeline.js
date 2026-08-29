@@ -145,15 +145,73 @@ test("imagination attention exhaustion prevents an unthought effect from committ
   assert.equal(result.trace.groundings[0].committed, false);
 });
 
-test("limited perception blocks a grounding read instead of leaking an unnoticed fact", () => {
+test("limited perception performs a targeted query for a required grounding fact", () => {
   const { result } = runScenario({}, { perceptionBudget: 18 });
-  assert.ok(["attention_stop", "complete"].includes(result.status));
-  assert.ok(result.trace.boundaries.some((boundary) => (
-    boundary.reason === "grounding_required_unnoticed_fact"
-    || boundary.reason === "unnoticed_endpoint_effect_omitted_from_imagination"
-    || boundary.reason === "no_complete_initial_q"
-  )));
-  assert.equal(result.imaginedWorld.city.health, 3);
+  assert.equal(result.status, "complete");
+  assert.ok(result.trace.informationRecoveries.length > 0);
+  assert.ok(result.trace.attention.queryAcquired.length > 0);
+  assert.equal(result.trace.confusions.length, 0);
+  assert.equal(result.imaginedWorld.city.health, 2);
+});
+
+test("descent crossing the city row contacts the city instead of inventing an off-board tile", () => {
+  const scenario = createScenario({ endpointKind: "normal", amount: 3 });
+  scenario.world.objects = [{
+    id: "ship-a", column: "B", row: 14, frozen: false, city_distance: 2,
+  }];
+  scenario.world.tiles = [{ column: "B", row: 16, kind: "city" }];
+  scenario.world.uncertainties = [{
+    schema: "unknown_information_v0",
+    slot: "tile:B:16.kind",
+    known: false,
+    reason: "previously_unknown",
+  }];
+  scenario.action.amount = 3;
+  const result = new ImaginationPipeline().run({
+    ...scenario,
+    perceptionBudget: 40,
+    imaginationBudget: 20,
+  });
+
+  assert.equal(result.status, "complete");
+  assert.equal(objectById(result.imaginedWorld, "ship-a").row, 16);
+  assert.equal(result.imaginedWorld.city.health, 2);
+  assert.deepEqual(result.imaginedWorld.uncertainties, []);
+  const movement = result.trace.groundings.find(
+    (row) => row.trajectoryId === "RULE-PLACE-DIE-COLUMN-MOVE",
+  );
+  assert.equal(movement.patches[0].intendedToRow, 17);
+  assert.equal(movement.patches[0].toRow, 16);
+  assert.equal(movement.patches[0].crossedCityBoundary, true);
+  const city = result.trace.groundings.find(
+    (row) => row.trajectoryId === "RULE-LANDED-CITY-DAMAGE",
+  );
+  assert.deepEqual(city.objectIds, ["ship-a"]);
+});
+
+test("a noticed placement with no noticed same-column ship assumes no movement instead of stopping", () => {
+  const scenario = createScenario();
+  scenario.action.cellId = "synthetic";
+  scenario.world.objects = scenario.world.objects.filter((object) => object.column !== scenario.action.column);
+  const before = structuredClone(scenario.world);
+  const result = new ImaginationPipeline().run({
+    ...scenario,
+    externalAttention: {
+      noticedItemIds: ["die:die-3", "base_cell:synthetic"],
+      spaceItemCount: 153,
+      capacity: 41,
+      omittedItemIds: [],
+      carryoverAppliedItemIds: [],
+      traceBefore: [],
+      traceAfter: [],
+    },
+  });
+
+  assert.equal(result.status, "complete");
+  assert.equal(result.reason, "no_noticed_same_column_object_assumed_empty");
+  assert.deepEqual(result.imaginedWorld, before);
+  assert.equal(result.trace.initialQueryCount, 0);
+  assert.equal(result.trace.boundaries[0].inferenceQuality, "attention_limited_possible_error");
 });
 
 test("an unnoticed landing endpoint becomes a possible wrong inference instead of cancelling movement", () => {
@@ -178,18 +236,21 @@ test("an unnoticed landing endpoint becomes a possible wrong inference instead o
       carryoverAppliedItemIds: [],
       traceBefore: [],
       traceAfter: [],
+      queryableAtomIds: [],
     },
   });
 
   assert.equal(result.status, "complete");
-  assert.equal(result.reason, "unnoticed_endpoint_effect_omitted_from_imagination");
+  assert.equal(result.reason, "confusion_ignored_unnoticed_endpoint_effect");
   assert.equal(objectById(result.imaginedWorld, "ship-a").row, 4);
   assert.equal(objectById(result.imaginedWorld, "ship-a").column, "C2");
   const boundary = result.trace.boundaries.find(
-    (row) => row.reason === "unnoticed_endpoint_effect_omitted_from_imagination",
+    (row) => row.reason === "confusion_ignored_unnoticed_endpoint_effect",
   );
-  assert.equal(boundary.inferenceQuality, "attention_limited_possible_error");
+  assert.equal(boundary.inferenceQuality, "known_information_gap");
   assert.equal(boundary.assumption, "no_additional_landing_effect_was_imagined");
+  assert.equal(result.trace.confusions[0].status, "confused");
+  assert.equal(result.imaginedWorld.uncertainties[0].known, false);
 });
 
 test("an empty activation port yields unknown and leaves imagined state unchanged", () => {

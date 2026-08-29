@@ -1,0 +1,29 @@
+{
+  "type": "choose_spawn",
+  "shipId": "purple-0",
+  "dropPointId": "DP-C2",
+  "predictions": [
+    {
+      "because": "choosing a spawn point should place the waiting ship back into the sky",
+      "expectations": [
+        {
+          "itemId": "ship:purple-0",
+          "field": "present",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "the spawned ship should no longer be in the waiting pool",
+      "expectations": [
+        {
+          "itemId": "ship:purple-0",
+          "field": "waiting",
+          "change": "equals",
+          "value": false
+        }
+      ]
+    }
+  ]
+}

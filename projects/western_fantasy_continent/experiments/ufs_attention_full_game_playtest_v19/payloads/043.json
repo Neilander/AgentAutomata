@@ -1,0 +1,28 @@
+{
+  "type": "resolve_room",
+  "roomId": "A-upper-tunnel",
+  "pay": true,
+  "predictions": [
+    {
+      "because": "tunnel resolution is expected to interact with excavation progress or path state",
+      "expectations": [
+        {
+          "itemId": "track:excavatorIndex",
+          "field": "value",
+          "change": "changed"
+        }
+      ]
+    },
+    {
+      "because": "the tunnel room should be marked resolved after use",
+      "expectations": [
+        {
+          "itemId": "room:A-upper-tunnel",
+          "field": "resolved",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "type": "place_die",
+  "dieId": "r4-gray-0",
+  "cellId": "A-r2-c5",
+  "predictions": [
+    {
+      "because": "placing gray six on unlocked energy should mark die placed and partially fill energy room",
+      "expectations": [
+        {
+          "itemId": "die:r4-gray-0",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "room:A-upper-energy",
+          "field": "filled",
+          "change": "changed"
+        }
+      ]
+    },
+    {
+      "because": "no visible ship is in column four, so visible ship rows should remain unchanged",
+      "expectations": [
+        {
+          "itemId": "ships:visible",
+          "field": "row",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

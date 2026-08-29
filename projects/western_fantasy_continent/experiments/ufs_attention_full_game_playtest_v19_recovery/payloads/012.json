@@ -1,0 +1,28 @@
+{
+  "type": "resolve_room",
+  "roomId": "A-aa-c3",
+  "pay": true,
+  "predictions": [
+    {
+      "because": "resolving a free AA room should consume its worker/placement",
+      "expectations": [
+        {
+          "itemId": "room:A-aa-c3",
+          "field": "resolved",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "AA only matters if there is a target in its firing column, which is uncertain from the public view",
+      "expectations": [
+        {
+          "itemId": "ships:column:2",
+          "field": "state",
+          "change": "changed"
+        }
+      ]
+    }
+  ]
+}

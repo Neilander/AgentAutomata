@@ -1,0 +1,27 @@
+{
+  "type": "resolve_room",
+  "roomId": "A-upper-research",
+  "pay": true,
+  "predictions": [
+    {
+      "because": "Research room costs energy, so paying should reduce current energy.",
+      "expectations": [
+        {
+          "itemId": "track:energy",
+          "field": "value",
+          "change": "decrease"
+        }
+      ]
+    },
+    {
+      "because": "A filled research room should advance the research track at least a little.",
+      "expectations": [
+        {
+          "itemId": "track:researchIndex",
+          "field": "value",
+          "change": "increase"
+        }
+      ]
+    }
+  ]
+}

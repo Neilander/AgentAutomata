@@ -1,0 +1,40 @@
+{
+  "type": "choose_spawn",
+  "shipId": "purple-2",
+  "dropPointId": "DP-C2",
+  "predictions": [
+    {
+      "because": "only listed spawn choice should place purple-2 into sky",
+      "expectations": [
+        {
+          "itemId": "ship:purple-2",
+          "field": "present",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "after choosing its only drop point purple-2 should leave waiting",
+      "expectations": [
+        {
+          "itemId": "ship:purple-2",
+          "field": "waiting",
+          "change": "equals",
+          "value": false
+        }
+      ]
+    },
+    {
+      "because": "DP-C2 should map to column 1",
+      "expectations": [
+        {
+          "itemId": "ship:purple-2",
+          "field": "column",
+          "change": "equals",
+          "value": 1
+        }
+      ]
+    }
+  ]
+}

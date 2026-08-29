@@ -1,5 +1,40 @@
 # Coop Report Index
 
+- `2026-08-29_0135_ufs-v20-full-game-root-audit-and-capture.md`: 修复公开操作合同和脑内白船ID碰撞；V20 fresh玩家三回合闸门及完整Round 8正式loss主审通过，106/106主动行动有预测，捕获54条轨迹、9条连接到独立revision 1档案。
+- `2026-08-29_0029_ufs-v18-fresh-player-public-contract-blocker.md`: V18首次使用fresh独立玩家档案开始现场预测学习试玩；17条公开机器记录停在R1研究二段选择，`choose_research_advance`的零推进payload多种自然字段均被正式层读为undefined，三回合闸门未达成，保留为公开操作合同缺口样本。
+- `2026-08-28_2203_ufs-initial-player-generator-v1.md`: 将冻结初始知识、玩家个人学习和当前局checkpoint分离；提供fresh/continue/fork/capture、资产指纹与revision闸门，真实CLI隔离链通过，UFS全量回归130/130，V17三回合反馈重放继续通过。
+- `2026-08-28_1929_ufs-prediction-driven-feedback-v1.md`: 实现行动前0—3张预测票据、逐目标注意反馈配对、跨边界延期、重叠歧义拒绝和未解决账本；UFS回归122/122通过，V17复放41步0拒绝，37张显式票据中18确认、1纠正、18因漏看保持未解决。
+- `2026-08-28_1850_ufs-v16-authoritative-stage1-root-audit.md`: Root验收正式host架构下的干净V16三回合试玩；42条公开记录、41次正式accepted、0 rejected、29次脑内/正式差异、0正式投影违规，gate与checkpoint复放通过。架构验证成功，但反馈仍有22次无预测、7次多预测歧义。
+- `2026-08-28_1848_ufs-v16-clean-authoritative-stage1-three-round-playtest.md`: 强模型V16全新干净Attempt，42条零退出公开记录完成3回合并停在Round 4掷骰前，0 rejected，public verifier通过；最终能源7、伤害0、研究0、挖掘0、母舰4。
+- `2026-08-28_1835_ufs-v15-authoritative-stage1-three-round-playtest.md`: 正式host首次V15三回合Attempt到达边界，但第002条命令层非零退出导致严格证据失败；保留为失败样本，不作为通过基准。
+- `2026-08-28_1752_ufs-authoritative-formal-game-loop.md`: 完整试玩改为正式引擎唯一host；AI脑内只负责设想，合法操作和下一环境来自正式状态，正式反馈经161+项注意后重建下一次脑内起点。自然错误不能污染棋盘，全注意可立即纠正脑内；UFS回归112/112及正式引擎合同通过。
+- `2026-08-28_1713_ufs-full-game-feedback-bridge.md`: 将反馈学习接入完整试玩会话；正式规则旁路提供实际结果，正确预测强化已有连接、研究零收益形成具体五槽轨迹，多因果错误安全拒绝归因；完整回归108/108通过。当前正式状态仍只作反馈旁路，下一步需拆分正式世界与玩家脑内世界。
+- `2026-08-28_1639_ufs-feedback-learning-v0.md`: 实现UFS反馈学习原7项与系统错误隔离闸门；以`q当前→q实际后续`创建/强化和区分性纠错轨迹，支持随机多后续、查规则出口、轨迹粘连、来源可信度及情境注意修正，研究零收益不使用候选价值分；完整认知回归103/103通过，长局自动反馈配对与GTE自动编译仍待接线。
+- `2026-08-28_1512_ufs-v14-clean-full-playtest-root-audit.md`: root独立验收最终修复版V14；三回合seq038闸门严格通过后同一Attempt续玩，79条公开操作在当前代码下逐响应完整复放到R6正式loss，0负能源、0双挖掘、0挖掘倒退、0 attention_stop，确认整局流水线可用；AI研究11/挖掘8但未控制母舰压力。
+- `2026-08-28_1509_ufs-v14-full-playtest.md`: V14修复后同一Attempt完整续玩；固定seed `2026082814`、沿用`state_attempt_2026082814_v14`从三回合闸门seq038继续到seq079公开`complete/loss`，原因`mothership_reached_skull_row`，全79条记录exitCode=0且public非null；严格公开证据校验通过，保留seq017占用列与seq074研究payload字段两次玩家rejected并在同局恢复。
+- `2026-08-28_1456_ufs-v14-stage1-three-round-playtest.md`: V14修复后干净阶段试玩；固定seed `2026082814`、唯一state `state_attempt_2026082814_v14`，38条公开机器记录停在sequence038的R4掷骰边界，所有命令exitCode=0且public非null；公开校验通过，保留一次占用列rejected并在同局恢复，等待root运行三回合闸门审计后再决定是否续玩。
+- `2026-08-28_1411_ufs-v13-root-audit-and-followup-fixes.md`: root审计V13三回合闸门与R8终局；修复rejected后random无法恢复、每回合可放多个未挖掘骰并由深挖回退到浅挖两处系统bug，把已有挖掘合法性五槽轨迹/JSON程序接入真实放置口并隔离过期浅目标；最终相关回归126/126通过，V13因中途受旧bug影响只作为bug证据而非最终策略基准。
+- `2026-08-28_1406_ufs-v13-full-playtest.md`: V13固定seed `2026082813`同一Attempt完整试玩；三回合闸门seq041通过并保留越界/恢复证据，最终124条机器记录到R8公开`complete/loss`，原因`mothership_reached_skull_row`；公开证据校验通过，区分seq074玩家payload误用、seq075已修复CLI恢复bug、seq076合法恢复，并记录seq053-054挖掘进度回退风险。
+- `2026-08-28_1332_ufs-excavation-energy-and-staged-playtest-gate.md`: 修复V12的0能源仍可挖掘并降到-1；候选现在区分可支付/能源不足，强行提交原子拒绝，并新增三回合安全暂停、机器记录与checkpoint恢复审计闸门；相关回归123/123通过。
+- `2026-08-27_1859_ufs-v12-root-audit.md`: root验收V12为有效99步完整试玩并确认候选卡有效；无效房间结算拒绝降为0且两格能源房成功结算，但step025后能量0仍允许step026再次挖掘而变成-1，后续0费能源房“付不起”是下游症状；V12报告中的research_back疑点属于把静态地图图标误当已触发事件。
+- `2026-08-27_1856_ufs-v12-strong-full-game-playtest.md`: 强模型公开限定V12完整试玩；新seed `2026082712`，唯一sealed Attempt连续99条机器记录跑到R7规则明确loss（母舰到骷髅行），证据校验通过且无普通边界自停；确认两格`A-upper-energy`填满后可结算，同时暴露负能量时可结算候选与`unaffordable`拒绝矛盾、spawn payload字段易错和一次`research_back`可见效果待审计。
+- `2026-08-27_1752_ufs-v11-room-rail-diagnosis-correction.md`: 纠正V11主审误判；能源房是未填满而非程序缺失，AA/通道本来无房间产出，研究归零来自母舰第6行`research_back:1`而非丢档；新增房间合法候选卡与母舰8个轨道行动注意项，注意空间161项/预算41，相关回归106/106通过。
+- `2026-08-27_1724_ufs-v11-root-audit.md`: root验收V11为首个有效完整强模型试玩；73步无attention_stop并在R7规则明确失败，证明连续交互链已跑通但策略能力未通过；确认能源房/若干房间程序缺失，以及研究从step034的1在step036回到0。
+- `2026-08-27_1722_ufs-v11-strong-full-game-playtest.md`: 强模型公开限定V11完整试玩；新seed `2026082711`，73条机器记录连续跑到规则明确loss（R7母舰到骷髅行），证据校验通过且无普通边界自停；暴露`A-upper-energy`脚本未完成、若干remembered room patch缺失和研究进度疑似回退。
+- `2026-08-27_1643_ufs-uncertainty-city-crossing-fix.md`: 修复V10暴露的两处系统缺口；通用天空困惑现会传入玩家后续observation并可在获知后清除，飞船越过城市行会在城市接触、只扣1点伤害并返回等待队列；V10 action 029复放恢复到下一choice，相关检查103/103通过。
+- `2026-08-25_1857_ufs-luna-v10-protocol-failure-audit.md`: `gpt-5.6-luna + low` V10审计；33步完成2回合进入R3，但四次在普通choice/拒绝后提前结束，判为协议失败而非完整试玩；新缺信息链现场完成一次定向查询和一次困惑继续，同时暴露通用天空困惑未传到玩家observation及越过城市行语义缺口。
+- `2026-08-25_ufs-attention-full-game-playtest-v10.md`: V10弱模型试玩原报告；经root多次续跑后最终停在R3非终局拒绝，明确无规则胜负且不是完整试玩。
+- `2026-08-25_1757_ufs-information-gap-recovery.md`: UFS缺信息恢复链；知识回答/定向单槽查看/一次有限目标探索/困惑继续四分支已接入放置、通用五槽和事件Q，V9原seed从母舰行缺失硬停止恢复为下一choice，相关完整回归97/97通过。
+- `2026-08-25_1719_ufs-luna-v8-v9-playtest-root-audit.md`: 低成本`gpt-5.6-luna + low`试玩审计；V8因Agent在普通choice自行停止判为协议失败，V9用自动记录器得到有效唯一Attempt，但首步注意到飞船及母舰下降图标、漏看母舰当前行，形成不完整Q并硬停止；公开证据验证通过。
+- `2026-08-25_ufs-attention-full-game-playtest-v9.md`: V9轻量Agent唯一Attempt；一步合法战斗机放置后公开返回`attention_stop/incomplete_event_q_attention`且无操作，未得到规则胜负。
+- `2026-08-25_ufs-attention-full-game-playtest-v8.md`: V8轻量Agent部分Attempt；完成一回合并进入R2后在普通choice自行结束且未完整保存stdout，因此不能作为完成试玩证据。
+- `2026-08-25_1658_ufs-compact-attention-player-view.md`: UFS玩家CLI改为双层输出；Agent只读精简决策视图，宿主私存完整注意审计，初始响应缩短69.6%，完整认知/会话回归86/86通过；当前子Agent接口尚未暴露GPT-5.3-Codex-Spark，暂用gpt-5.6-luna + low。
+- `2026-08-25_1635_ufs-v7-root-audit-full-game-gap-fixes.md`: 主Agent建立跨回合CLI并验收V7连续6回合；封存Attempt在R7空列放骰因错误要求同列飞船Q而attention_stop，现已修复空列可错推断与跨回合白船计数器，相关回归84/84通过，但尚无规则胜负样本。
+- `2026-08-25_1630_ufs-attention-full-game-playtest-v7.md`: 全新隔离玩家以固定注意seed在唯一Attempt中连续完成6回合并进入第7回合，公开接口随后以`attention_stop/no_complete_initial_q`且无可用操作终止；90步逐字证据、前置决策、5次原子拒绝与只读合同校验完整，未把空outcome误报为胜负。
+- `2026-08-25_1534_ufs-v6-root-audit-multiseed-rounds.md`: 主Agent验收三个不同注意seed独立整回合均完成且策略随注意漏看/随机结果变化；明确当前是3个独立episode而非同局连续3回合，证据测试7/7通过。
+- `2026-08-25_1532_ufs-attention-multiseed-three-rounds-v6.md`: 全新隔离玩家用三个不同注意 seed 在三个新 state 中完成三次唯一整回合；逐步决策、41份公开stdout/机器记录与SHA-256审计齐全，证据合同7/7通过。
+- `2026-08-24_2306_ufs-v5-root-audit-cli-contract.md`: 主Agent验收V5已亲自用研究推进并完成整回合；补齐`choose_spawn.dropPointId`公开合同和CLI实际seed读取/回显，诚实更正V5只注入但未消费新seed，相关回归110/110通过。
+- `2026-08-24_2253_ufs-attention-limited-live-playtest-v5.md`: 全新Agent只凭41/153+裁剪视图执行唯一Attempt，真实完成研究推进、母舰阶段与spawn并抵达`complete/new_round`；合同14/14通过，同时保留1次pay遗漏与9次spawn字段文档缺口的原子拒绝。
 - `2026-08-24_2120_ufs-v4-root-audit-and-omission-propagation.md`: 主Agent确认V4策略确受裁剪注意限制，修正“移动已想完但终点类型漏看”不应撤销动作；V4封存决定复放已进入房间并抵达研究推进选择（预算4、最多2格），相关+合同回归108/108通过。
 - `2026-08-24_2114_ufs-attention-limited-live-playtest-v4.md`: 全新Agent只凭41/153+裁剪视图执行唯一Attempt；自主提交研究、双格能源、防空和通道路线，最后白骰通道放置因`next_endpoint_not_noticed`封卷，未进入研究推进或真正触发母舰下降格，隔离/时序合同8/8通过。
 - `2026-08-24_2058_ufs-mothership-landing-trajectory-handoff.md`: 封卷审计确认V3并非漏看，而是旧天空层未识别母舰下降格；新增落点五槽路由并交给已有读规则轨迹和JSON程序，V3复放从错误unknown恢复为正确白骰随机边界，目标回归34/34通过。
@@ -10,6 +45,8 @@ Reports are append-only handoff records. Prefer the timestamped report path over
 
 ## 2026-08-24
 
+- `2026-08-24_2306_ufs-v5-root-audit-cli-contract.md`: 主Agent验收V5已亲自用研究推进并完成整回合；补齐`choose_spawn.dropPointId`公开合同和CLI实际seed读取/回显，诚实更正V5只注入但未消费新seed，相关回归110/110通过。
+- `2026-08-24_2253_ufs-attention-limited-live-playtest-v5.md`: 全新Agent只凭41/153+裁剪视图执行唯一Attempt，真实完成研究推进、母舰阶段与spawn并抵达`complete/new_round`；合同14/14通过，同时保留1次pay遗漏与9次spawn字段文档缺口的原子拒绝。
 - `2026-08-24_2120_ufs-v4-root-audit-and-omission-propagation.md`: 主Agent确认V4策略确受裁剪注意限制，修正“移动已想完但终点类型漏看”不应撤销动作；V4封存决定复放已进入房间并抵达研究推进选择（预算4、最多2格），相关+合同回归108/108通过。
 - `2026-08-24_2114_ufs-attention-limited-live-playtest-v4.md`: 全新Agent只凭41/153+裁剪视图执行唯一Attempt；自主提交研究、双格能源、防空和通道路线，最后白骰通道放置因`next_endpoint_not_noticed`封卷，未进入研究推进或真正触发母舰下降格，隔离/时序合同8/8通过。
 - `2026-08-24_2047_ufs-attention-limited-live-playtest-v3.md`: 全新Agent只读41/153+注意裁剪视图，以自身工作记忆连续完成两格能源房；第三步白5尝试研究房时在放置轨迹关系门返回unknown，未抵达新研究推进操作口并按唯一Attempt封卷，隔离/时序合同5/5通过。

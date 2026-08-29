@@ -1,0 +1,35 @@
+{
+  "type": "place_die",
+  "dieId": "r1-gray-1",
+  "cellId": "A-r1-c2",
+  "predictions": [
+    {
+      "because": "placing a low die on a visible AA cell should mark the die placed and create a later AA resolution option",
+      "expectations": [
+        {
+          "itemId": "die:r1-gray-1",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "room:A-aa-c2",
+          "field": "filled",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "visible ship purple-1 is in the selected column, so I expect it to descend by two rows",
+      "expectations": [
+        {
+          "itemId": "ship:purple-1",
+          "field": "row",
+          "change": "increase",
+          "value": 2
+        }
+      ]
+    }
+  ]
+}

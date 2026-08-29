@@ -4,6 +4,8 @@ const { UfsFirstActionImagination } = require("./ufs-first-action-imagination");
 const { UfsEventRuleImagination } = require("./ufs-event-rule-imagination");
 const { UfsFullAttentionProvider } = require("./ufs-full-attention-provider");
 
+const EXCAVATION_ENERGY_COST = 1;
+
 function clone(value) {
   return structuredClone(value);
 }
@@ -34,6 +36,68 @@ function roomSources(world, room) {
     sources.push({ kind: "robot", id: robot.id, value: robot.value });
   }
   return sources;
+}
+
+function roomActionCandidates(world, indexes, noticedRooms) {
+  const pendingExcavations = world.placements
+    .filter((row) => !row.resolved && row.excavationCandidate)
+    .map((row) => ({
+      id: row.id,
+      targetIndex: indexes.cellById.get(row.cellId)?.unlockIndex,
+    }));
+  const forwardExcavations = pendingExcavations
+    .filter((row) => Number.isInteger(row.targetIndex) && row.targetIndex > world.excavatorIndex)
+    .map((row) => row.id)
+    .sort();
+  const obsoleteExcavations = pendingExcavations
+    .filter((row) => !Number.isInteger(row.targetIndex) || row.targetIndex <= world.excavatorIndex)
+    .map((row) => row.id)
+    .sort();
+  const canAffordExcavation = Number.isFinite(world.energy)
+    && world.energy >= EXCAVATION_ENERGY_COST;
+  const result = {
+    resolvableRoomIds: [],
+    incompleteRoomIds: [],
+    noOutputRoomIds: [],
+    unrememberedRoomIds: [],
+    excavationEnergyCost: EXCAVATION_ENERGY_COST,
+    excavationPlacementIds: canAffordExcavation ? forwardExcavations : [],
+    unaffordableExcavationPlacementIds: canAffordExcavation ? [] : forwardExcavations,
+    obsoleteExcavationPlacementIds: obsoleteExcavations,
+    skippablePlacementIds: world.placements
+      .filter((row) => !row.resolved)
+      .map((row) => row.id)
+      .sort(),
+  };
+  for (const room of indexes.roomById.values()) {
+    const hasPendingSource = room.cellIds.some((cellId) => (
+      world.placements.some((row) => row.cellId === cellId && !row.resolved)
+      || world.robots.some((row) => row.cellId === cellId && !row.exhausted)
+    ));
+    if (!hasPendingSource) continue;
+    const remembered = noticedRooms.get(room.id);
+    if (!remembered) {
+      result.unrememberedRoomIds.push(room.id);
+      continue;
+    }
+    if (remembered.roomPhaseStatus === "no_room_phase_output") {
+      result.noOutputRoomIds.push(room.id);
+      continue;
+    }
+    if (!remembered.complete || !roomSources(world, room)) {
+      result.incompleteRoomIds.push(room.id);
+      continue;
+    }
+    if (!Number.isFinite(remembered.roomValue)) {
+      result.unrememberedRoomIds.push(room.id);
+      continue;
+    }
+    result.resolvableRoomIds.push(room.id);
+  }
+  for (const key of [
+    "resolvableRoomIds", "incompleteRoomIds", "noOutputRoomIds", "unrememberedRoomIds",
+  ]) result[key].sort();
+  return result;
 }
 
 function consumeSources(world, sources) {
@@ -174,8 +238,7 @@ function applyMothershipAction(world, publicMap, patch) {
       .filter((ship) => ship.color === "white").length;
     const amount = Math.min(patch.amount, Math.max(0, limit - active));
     for (let index = 0; index < amount; index += 1) {
-      world.waitingShips.push({ id: `white-${world.nextWhiteId}`, color: "white" });
-      world.nextWhiteId += 1;
+      world.waitingShips.push({ id: reserveImaginedShipId(world, "white"), color: "white" });
     }
   } else if (patch.actionType === "damage") {
     world.damage += patch.amount;
@@ -186,6 +249,20 @@ function applyMothershipAction(world, publicMap, patch) {
   } else {
     throw new Error(`unsupported imagined mothership action: ${patch.actionType}`);
   }
+}
+
+function reserveImaginedShipId(world, color) {
+  const counterKey = color === "white" ? "nextWhiteId" : `next${color[0].toUpperCase()}${color.slice(1)}Id`;
+  const occupied = new Set([
+    ...(world.ships || []),
+    ...(world.waitingShips || []),
+  ].map((ship) => ship.id));
+  let ordinal = Number.isInteger(world[counterKey]) && world[counterKey] >= 0
+    ? world[counterKey]
+    : 1;
+  while (occupied.has(`${color}-${ordinal}`)) ordinal += 1;
+  world[counterKey] = ordinal + 1;
+  return `${color}-${ordinal}`;
 }
 
 function suspended({ reason, status, world, trace, observedBefore, initialPublicState, pending }) {
@@ -226,6 +303,9 @@ class UfsOneRoundImagination {
     const observedBefore = clone(initialPublicState);
     this.attentionProvider.beginEpisode();
     const world = clone(initialPublicState);
+    if (!Number.isFinite(world.energy) || world.energy < 0) {
+      throw new Error(`invalid nonnegative energy invariant: ${world.energy}`);
+    }
     const indexes = mapIndexes(publicMap);
     const noticedRooms = new Map();
     const trace = {
@@ -255,12 +335,32 @@ class UfsOneRoundImagination {
         fullPerception,
       );
     };
-    if (world.phase !== "dice") throw new Error("one-round imagination must start in dice phase");
+    if (!["dice", "rooms"].includes(world.phase)) {
+      throw new Error(`one-round imagination must start at a player decision phase, got ${world.phase}`);
+    }
     if (!script || !Array.isArray(script.placements) || !Array.isArray(script.roomActions)) {
       throw new TypeError("one-round imagination needs a scripted placement and room sequence");
     }
 
-    for (const row of script.placements) {
+    if (world.phase === "rooms" && script.placements.length) {
+      throw new Error("room-phase imagination cannot replay new die placements");
+    }
+    if (world.phase === "rooms") {
+      for (const room of indexes.roomById.values()) {
+        const sources = roomSources(world, room);
+        if (!sources) continue;
+        noticedRooms.set(room.id, {
+          roomId: room.id,
+          complete: true,
+          roomValue: sources.reduce((sum, source) => sum + source.value, room.modifier),
+          roomType: room.type,
+          source: "rebased_player_belief",
+        });
+      }
+    }
+
+    if (world.phase === "dice") {
+      for (const row of script.placements) {
       const selectedAction = scriptedAction(row, world);
       const globalAttention = this.attentionProvider.noticePlacement({
         publicState: world,
@@ -345,39 +445,43 @@ class UfsOneRoundImagination {
           world.dice.find((die) => die.id === dieId).value = observation[dieId];
         }
       }
-    }
-
-    if (!world.dice.every((die) => die.placed)) {
-      if (allowPartialScript) {
-        return suspended({
-          status: "choice",
-          reason: "waiting_for_die_placement",
-          world,
-          trace,
-          observedBefore,
-          initialPublicState,
-          pending: { type: "place_die" },
-        });
       }
-      throw new Error("script ended before all five dice were placed");
+
+      if (!world.dice.every((die) => die.placed)) {
+        if (allowPartialScript) {
+          return suspended({
+            status: "choice",
+            reason: "waiting_for_die_placement",
+            world,
+            trace,
+            observedBefore,
+            initialPublicState,
+            pending: { type: "place_die" },
+          });
+        }
+        throw new Error("script ended before all five dice were placed");
+      }
+      world.phase = "rooms";
+      trace.administrativeTransitions.push({
+        from: "dice",
+        to: "rooms",
+        cause: "all_dice_placed",
+        trajectoryDriven: false,
+      });
     }
-    world.phase = "rooms";
-    trace.administrativeTransitions.push({
-      from: "dice",
-      to: "rooms",
-      cause: "all_dice_placed",
-      trajectoryDriven: false,
-    });
 
     for (const action of script.roomActions) {
       if (action.type === "resolve_room") {
         const room = indexes.roomById.get(action.roomId);
         if (!room) throw new Error(`unknown scripted room: ${action.roomId}`);
+        if (["aa", "tunnel"].includes(room.type)) {
+          throw new Error(`room_has_no_room_phase_effect:${room.id}`);
+        }
         const sources = roomSources(world, room);
-        if (!sources) throw new Error(`scripted room is incomplete: ${room.id}`);
+        if (!sources) throw new Error(`room_incomplete:${room.id}`);
         const noticedRoom = noticedRooms.get(room.id);
         if (!noticedRoom?.complete || !Number.isFinite(noticedRoom.roomValue)) {
-          throw new Error(`no complete remembered room patch for: ${room.id}`);
+          throw new Error(`room_state_not_remembered:${room.id}`);
         }
         const roomValue = noticedRoom.roomValue;
         const payment = runEvent(
@@ -407,6 +511,9 @@ class UfsOneRoundImagination {
         }
         if (!payment.patch.canPay) throw new Error(`script chose unaffordable room: ${room.id}`);
         world.energy -= payment.patch.energyCost;
+        if (!Number.isFinite(world.energy) || world.energy < 0) {
+          throw new Error(`room payment would make energy negative: ${room.id}`);
+        }
 
         let effectState;
         if (room.type === "energy") {
@@ -482,6 +589,9 @@ class UfsOneRoundImagination {
         }
         if (effect.patch.kind === "energy_room_result") {
           world.energy = effect.patch.energyAfter;
+          if (!Number.isFinite(world.energy) || world.energy < 0) {
+            throw new Error(`energy room produced invalid energy: ${world.energy}`);
+          }
         } else if (effect.patch.kind === "fighter_room_result") {
           for (const shipId of effect.patch.eligibleShipIds) {
             const ship = world.ships.find((candidate) => candidate.id === shipId);
@@ -518,6 +628,12 @@ class UfsOneRoundImagination {
         const placement = world.placements.find((row) => row.id === action.placementId && !row.resolved);
         if (!placement?.excavationCandidate) throw new Error(`invalid scripted excavation: ${action.placementId}`);
         const targetIndex = indexes.cellById.get(placement.cellId).unlockIndex;
+        if (targetIndex <= world.excavatorIndex) {
+          throw new Error(`excavation_target_not_ahead:${action.placementId}`);
+        }
+        if (world.energy < EXCAVATION_ENERGY_COST) {
+          throw new Error(`insufficient_energy_for_excavation:${action.placementId}`);
+        }
         const result = runEvent(
           { type: "excavation_selected", dieId: placement.dieId },
           {
@@ -535,7 +651,11 @@ class UfsOneRoundImagination {
         if (result.status !== "automatic") {
           return suspended({ status: result.status, reason: result.reason, world, trace, observedBefore, initialPublicState, pending: { type: "excavation" } });
         }
-        world.energy += result.patch.energyDelta;
+        const nextEnergy = world.energy + result.patch.energyDelta;
+        if (!Number.isFinite(nextEnergy) || nextEnergy < 0) {
+          throw new Error(`excavation_would_make_energy_negative:${action.placementId}`);
+        }
+        world.energy = nextEnergy;
         world.excavatorIndex = result.patch.excavatorTargetIndex;
         placement.resolved = true;
       } else if (action.type === "skip_worker") {
@@ -562,7 +682,10 @@ class UfsOneRoundImagination {
           trace,
           observedBefore,
           initialPublicState,
-          pending: { type: "room_action" },
+          pending: {
+            type: "room_action",
+            candidates: roomActionCandidates(world, indexes, noticedRooms),
+          },
         });
       }
       throw new Error("room script did not enter mothership phase");
@@ -657,8 +780,11 @@ class UfsOneRoundImagination {
 }
 
 module.exports = {
+  EXCAVATION_ENERGY_COST,
   UfsOneRoundImagination,
+  roomActionCandidates,
   roomSources,
   maximumResearchAdvance,
+  reserveImaginedShipId,
   spawnState,
 };

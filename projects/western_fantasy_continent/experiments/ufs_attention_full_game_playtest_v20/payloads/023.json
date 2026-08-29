@@ -1,0 +1,33 @@
+{
+  "type": "place_die",
+  "dieId": "r2-white-3",
+  "cellId": "A-r1-c3",
+  "predictions": [
+    {
+      "because": "placing the last white die should mark it placed and advance to room phase rather than another reroll",
+      "expectations": [
+        {
+          "itemId": "die:r2-white-3",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "phase:game",
+          "field": "phase",
+          "change": "changed"
+        }
+      ]
+    },
+    {
+      "because": "no visible ship remains in column two, so I expect visible ship rows to stay unchanged",
+      "expectations": [
+        {
+          "itemId": "ships:visible",
+          "field": "row",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

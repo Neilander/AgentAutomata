@@ -1,0 +1,34 @@
+{
+  "type": "place_die",
+  "dieId": "r4-gray-1",
+  "cellId": "A-r2-c2",
+  "predictions": [
+    {
+      "because": "placing gray three on research should make a research room candidate",
+      "expectations": [
+        {
+          "itemId": "die:r4-gray-1",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "room:A-upper-research",
+          "field": "filled",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "no visible ship is in column one, so visible ship rows should stay unchanged",
+      "expectations": [
+        {
+          "itemId": "ships:visible",
+          "field": "row",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

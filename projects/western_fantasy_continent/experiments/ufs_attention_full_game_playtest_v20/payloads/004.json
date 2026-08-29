@@ -1,0 +1,34 @@
+{
+  "type": "place_die",
+  "dieId": "r1-gray-0",
+  "cellId": "A-r2-c5",
+  "predictions": [
+    {
+      "because": "placing the die in the second energy cell should complete A-upper-energy for later room resolution",
+      "expectations": [
+        {
+          "itemId": "die:r1-gray-0",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "room:A-upper-energy",
+          "field": "filled",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "the selected column has no currently visible ship, so I expect no visible ship row change from this placement",
+      "expectations": [
+        {
+          "itemId": "ships:visible",
+          "field": "row",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

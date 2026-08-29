@@ -1,0 +1,26 @@
+{
+  "type": "end_rooms",
+  "predictions": [
+    {
+      "because": "all public room-action candidate lists are empty except end_rooms",
+      "expectations": [
+        {
+          "itemId": "phase:rooms",
+          "field": "active",
+          "change": "equals",
+          "value": false
+        }
+      ]
+    },
+    {
+      "because": "ending rooms should move the game toward the next round after automatic mothership/spawn handling",
+      "expectations": [
+        {
+          "itemId": "round:current",
+          "field": "value",
+          "change": "changed"
+        }
+      ]
+    }
+  ]
+}

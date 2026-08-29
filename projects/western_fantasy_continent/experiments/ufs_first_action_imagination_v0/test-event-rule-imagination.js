@@ -185,15 +185,30 @@ for (const row of CASES) {
   });
 }
 
-test("boundary: insufficient attention stops before Q activation", () => {
+test("insufficient initial attention queries the missing public facts before Q activation", () => {
   const result = new UfsEventRuleImagination().run({
     event: { type: "room_resolution", stage: "effect" },
     observedState: { room: { type: "fighter", value: 4 }, explosionShips: [{ id: "S1", threshold: 2 }] },
     perceptionBudget: 1,
   });
-  assert.equal(result.status, "attention_stop");
-  assert.equal(result.patch, null);
-  assert.equal(result.trace.q, null);
+  assert.equal(result.status, "automatic");
+  assert.equal(result.patch.kind, "fighter_room_result");
+  assert.equal(result.trace.informationRecovery.complete, true);
+  assert.ok(result.trace.attention.queryAcquired.length > 0);
+  assert.ok(result.trace.q);
+});
+
+test("an inaccessible missing fact becomes confusion but does not stop decision flow", () => {
+  const result = new UfsEventRuleImagination().run({
+    event: { type: "ship_landed", shipId: "S1" },
+    observedState: { tile: { kind: "mothership_down" }, mothership: { row: 3 } },
+    externalAttention: { noticedPaths: ["event.type", "event.shipId", "tile.kind"], queryablePaths: [] },
+  });
+  assert.equal(result.status, "automatic");
+  assert.equal(result.reason, "confusion_continued_without_missing_information");
+  assert.equal(result.patch.kind, "uncertain_event_effect");
+  assert.deepEqual(result.patch.missingSlots, ["mothership.row"]);
+  assert.equal(result.trace.informationRecovery.confusions[0].status, "confused");
 });
 
 test("boundary: relation gate rejects a high-scoring wrong event trajectory", () => {

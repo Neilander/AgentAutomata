@@ -1,0 +1,27 @@
+{
+  "type": "resolve_room",
+  "roomId": "A-upper-fighter",
+  "pay": true,
+  "predictions": [
+    {
+      "because": "fighter room has cost one, so energy should decrease",
+      "expectations": [
+        {
+          "itemId": "resource:energy",
+          "field": "amount",
+          "change": "decrease"
+        }
+      ]
+    },
+    {
+      "because": "fighter effect may remove or change visible ships, exact binding uncertain",
+      "expectations": [
+        {
+          "itemId": "ships:visible",
+          "field": "count",
+          "change": "changed"
+        }
+      ]
+    }
+  ]
+}

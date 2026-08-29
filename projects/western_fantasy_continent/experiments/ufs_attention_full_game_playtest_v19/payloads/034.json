@@ -1,0 +1,34 @@
+{
+  "type": "place_die",
+  "dieId": "r3-gray-1",
+  "cellId": "A-r1-c5",
+  "predictions": [
+    {
+      "because": "placing gray 6 should occupy AA-c5",
+      "expectations": [
+        {
+          "itemId": "die:r3-gray-1",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "cell:A-r1-c5",
+          "field": "occupied",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "a visible white ship is in column 4 and should descend by 6",
+      "expectations": [
+        {
+          "itemId": "ships:column:4",
+          "field": "row",
+          "change": "increase"
+        }
+      ]
+    }
+  ]
+}

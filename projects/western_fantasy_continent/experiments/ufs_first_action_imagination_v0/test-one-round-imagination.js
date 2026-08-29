@@ -14,7 +14,18 @@ const {
   ROUND_ONE_SCRIPT,
 } = require("./one-round-fixture");
 const { UfsFullAttentionProvider } = require("./ufs-full-attention-provider");
-const { UfsOneRoundImagination } = require("./ufs-one-round-imagination");
+const { UfsOneRoundImagination, reserveImaginedShipId } = require("./ufs-one-round-imagination");
+
+test("imagined white-ship ids skip already observed ids when the private counter is stale", () => {
+  const world = {
+    nextWhiteId: 1,
+    ships: [{ id: "white-1", color: "white", column: 4, row: 5 }],
+    waitingShips: [],
+  };
+
+  assert.equal(reserveImaginedShipId(world, "white"), "white-2");
+  assert.equal(world.nextWhiteId, 3);
+});
 
 function fullAttentionControl(options = {}) {
   return new UfsOneRoundImagination({
@@ -197,6 +208,38 @@ test("random reroll stops without an external observed value and invents nothing
   assert.equal(result.trace.placements.length, 4);
   assert.equal(result.imaginedWorld.dice.find((die) => die.id === "r1-white-4").value, 1);
   assert.deepEqual(initial, before);
+});
+
+test("research only moves back when the noticed mothership rail action says so", () => {
+  function runFrom(mothershipRow) {
+    const initial = engine.createGame(map, 1);
+    initial.researchIndex = 1;
+    initial.mothershipRow = mothershipRow;
+    return fullAttentionControl().run({
+      initialPublicState: initial,
+      publicMap: map,
+      script: ROUND_ONE_SCRIPT,
+      randomObservations: ROUND_ONE_RANDOM_OBSERVATIONS,
+    });
+  }
+
+  const researchBack = runFrom(5);
+  const otherRailAction = runFrom(4);
+  assert.equal(researchBack.imaginedWorld.mothershipRow, 6);
+  assert.equal(researchBack.imaginedWorld.researchIndex, 0);
+  const railStep = researchBack.trace.mothershipSteps.find((row) => row.stage === "row_action");
+  assert.deepEqual(railStep.patch, {
+    kind: "mothership_row_action",
+    actionType: "research_back",
+    amount: 1,
+    stopKind: "automatic",
+  });
+  assert.ok(railStep.cognitiveTrace.perception.noticedPaths.includes("mothership.rowAction.type"));
+  assert.ok(railStep.cognitiveTrace.perception.fullField.some((row) => (
+    row.itemId === "mothership_action:6:0" && row.noticed
+  )));
+  assert.equal(otherRailAction.imaginedWorld.mothershipRow, 5);
+  assert.equal(otherRailAction.imaginedWorld.researchIndex, 1);
 });
 
 test("phase changes and skip are visibly controller decisions, not disguised trajectories", () => {

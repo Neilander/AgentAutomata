@@ -1,0 +1,33 @@
+{
+  "type": "resolve_room",
+  "roomId": "A-aa-c1",
+  "pay": true,
+  "predictions": [
+    {
+      "because": "AA with value six in column zero should affect visible ships in that column if they are in range",
+      "expectations": [
+        {
+          "itemId": "ship:purple-0",
+          "field": "present",
+          "change": "changed"
+        },
+        {
+          "itemId": "ship:purple-1",
+          "field": "present",
+          "change": "changed"
+        }
+      ]
+    },
+    {
+      "because": "resolved AA worker should be marked resolved afterward",
+      "expectations": [
+        {
+          "itemId": "room:A-aa-c1",
+          "field": "resolved",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

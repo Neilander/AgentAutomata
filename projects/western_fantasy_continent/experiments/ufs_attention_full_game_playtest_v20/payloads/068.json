@@ -1,0 +1,33 @@
+{
+  "type": "place_die",
+  "dieId": "r5-white-3",
+  "cellId": "A-r2-c5",
+  "predictions": [
+    {
+      "because": "placing white three on visible energy should mark it placed and trigger reroll",
+      "expectations": [
+        {
+          "itemId": "die:r5-white-3",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "phase:game",
+          "field": "phase",
+          "change": "changed"
+        }
+      ]
+    },
+    {
+      "because": "no ship is visible in column four, so visible ship rows should be unchanged",
+      "expectations": [
+        {
+          "itemId": "ships:visible",
+          "field": "row",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

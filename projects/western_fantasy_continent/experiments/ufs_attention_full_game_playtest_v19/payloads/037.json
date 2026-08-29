@@ -1,0 +1,35 @@
+{
+  "type": "place_die",
+  "dieId": "r3-gray-2",
+  "cellId": "A-r2-c1",
+  "predictions": [
+    {
+      "because": "placing gray 5 should occupy the fighter cell",
+      "expectations": [
+        {
+          "itemId": "die:r3-gray-2",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "cell:A-r2-c1",
+          "field": "occupied",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "the fighter room should become resolvable later if energy is available",
+      "expectations": [
+        {
+          "itemId": "room:A-upper-fighter",
+          "field": "availableForResolution",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

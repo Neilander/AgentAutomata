@@ -1,0 +1,40 @@
+{
+  "type": "choose_spawn",
+  "shipId": "purple-1",
+  "dropPointId": "DP-C4",
+  "predictions": [
+    {
+      "because": "spawn should place purple-1 in sky",
+      "expectations": [
+        {
+          "itemId": "ship:purple-1",
+          "field": "present",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "purple-1 should leave waiting after spawn",
+      "expectations": [
+        {
+          "itemId": "ship:purple-1",
+          "field": "waiting",
+          "change": "equals",
+          "value": false
+        }
+      ]
+    },
+    {
+      "because": "DP-C4 likely maps to column 3 and splits pressure away from column 2",
+      "expectations": [
+        {
+          "itemId": "ship:purple-1",
+          "field": "column",
+          "change": "equals",
+          "value": 3
+        }
+      ]
+    }
+  ]
+}

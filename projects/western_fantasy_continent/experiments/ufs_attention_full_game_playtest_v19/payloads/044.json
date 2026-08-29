@@ -1,0 +1,26 @@
+{
+  "type": "end_rooms",
+  "predictions": [
+    {
+      "because": "all public room-action candidate lists are empty",
+      "expectations": [
+        {
+          "itemId": "phase:rooms",
+          "field": "active",
+          "change": "equals",
+          "value": false
+        }
+      ]
+    },
+    {
+      "because": "ending rooms after Round 3 should move toward completedRoundCount 3",
+      "expectations": [
+        {
+          "itemId": "game:completedRoundCount",
+          "field": "value",
+          "change": "increase"
+        }
+      ]
+    }
+  ]
+}

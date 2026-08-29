@@ -1,0 +1,33 @@
+{
+  "type": "place_die",
+  "dieId": "r5-gray-1",
+  "cellId": "A-r1-c1",
+  "predictions": [
+    {
+      "because": "final die placement should mark the die placed and move to room phase",
+      "expectations": [
+        {
+          "itemId": "die:r5-gray-1",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "phase:game",
+          "field": "phase",
+          "change": "changed"
+        }
+      ]
+    },
+    {
+      "because": "no visible ship is in column zero, so visible ship rows should remain unchanged",
+      "expectations": [
+        {
+          "itemId": "ships:visible",
+          "field": "row",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

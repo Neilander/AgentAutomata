@@ -1,0 +1,34 @@
+{
+  "type": "place_die",
+  "dieId": "r6-gray-1",
+  "cellId": "A-r2-c4",
+  "predictions": [
+    {
+      "because": "upper energy is a two-cell room; using a 5 keeps a strong value for later energy resolution",
+      "expectations": [
+        {
+          "itemId": "die:r6-gray-1",
+          "field": "placed",
+          "change": "equals",
+          "value": true
+        },
+        {
+          "itemId": "cell:A-r2-c4",
+          "field": "occupied",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    },
+    {
+      "because": "with one of two energy cells filled, energy should not resolve immediately during dice placement",
+      "expectations": [
+        {
+          "itemId": "resource:energy",
+          "field": "amount",
+          "change": "unchanged"
+        }
+      ]
+    }
+  ]
+}

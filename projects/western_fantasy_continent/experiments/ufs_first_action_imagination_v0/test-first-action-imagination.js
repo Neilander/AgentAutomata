@@ -276,7 +276,7 @@ test("a noticed mothership landing delegates to the rule-read trajectory and JSO
   );
 });
 
-test("an unnoticed mothership endpoint is omitted instead of leaking its hidden effect", () => {
+test("an initially unnoticed mothership endpoint is deliberately queried before its effect", () => {
   const selectedAction = {
     type: "place_die",
     dieId: "r1-white-3",
@@ -307,12 +307,105 @@ test("an unnoticed mothership endpoint is omitted instead of leaking its hidden 
   });
 
   assert.equal(result.status, "choice");
-  assert.equal(result.imaginedState.mothershipRow, -1);
-  assert.equal(result.trace.landingEvents.length, 0);
-  assert.ok(result.trace.sky.boundaries.some(
-    (row) => row.reason === "unnoticed_endpoint_effect_omitted_from_imagination",
-  ));
+  assert.equal(result.imaginedState.mothershipRow, 0);
+  assert.equal(result.trace.landingEvents.length, 1);
+  assert.equal(
+    result.trace.sky.informationRecoveries[0].resolved[0].source,
+    "knowledge_directed_lookup",
+  );
+  assert.equal(result.trace.landingEvents[0].patch.kind, "move_mothership");
 });
+
+test("an unfindable sky endpoint is preserved as player-visible uncertainty", () => {
+  const selectedAction = {
+    type: "place_die",
+    dieId: "r1-white-3",
+    dieColor: "white",
+    dieValue: 5,
+    cellId: "A-r2-c2",
+  };
+  const provider = new UfsFullAttentionProvider({ mode: "all" });
+  provider.beginEpisode();
+  const globalAttention = provider.noticePlacement({
+    publicState: structuredClone(liveInitialState),
+    publicMap: livePublicMap,
+    selectedAction,
+    randomSeed: 20260827,
+  });
+  globalAttention.noticedItemIds = globalAttention.noticedItemIds.filter(
+    (itemId) => itemId !== "sky_cell:5:1",
+  );
+  globalAttention.queryableAtomIds = [];
+
+  const result = new UfsFirstActionImagination().run({
+    publicState: structuredClone(liveInitialState),
+    publicMap: livePublicMap,
+    selectedAction,
+    globalAttention,
+  });
+  assert.equal(result.status, "choice");
+  assert.equal(result.imaginedState.uncertainties[0].slot, "tile:C2:5.kind");
+  const nextView = provider.noticeChoice({
+    fullWorld: result.imaginedState,
+    publicMap: livePublicMap,
+    pending: { type: "place_die" },
+    lastAction: selectedAction,
+    randomSeed: 20260828,
+  });
+  assert.equal(nextView.observation.uncertainties[0].slot, "tile:C2:5.kind");
+});
+
+for (const [label, startingRow] of [["lands exactly", 13], ["crosses", 14]]) {
+  test(`a ship that ${label} the city row deals one damage and returns to the queue`, () => {
+    const publicState = structuredClone(liveInitialState);
+    publicState.ships.find((ship) => ship.id === "purple-4").row = startingRow;
+    const selectedAction = {
+      type: "place_die",
+      dieId: "r1-gray-1",
+      dieColor: "gray",
+      dieValue: 3,
+      cellId: "A-r3-c5",
+    };
+    const provider = new UfsFullAttentionProvider({ mode: "all" });
+    provider.beginEpisode();
+    const globalAttention = provider.noticePlacement({
+      publicState,
+      publicMap: livePublicMap,
+      selectedAction,
+      randomSeed: 20260829,
+    });
+    const result = new UfsFirstActionImagination().run({
+      publicState,
+      publicMap: livePublicMap,
+      selectedAction,
+      globalAttention,
+    });
+
+    assert.equal(result.status, "choice");
+    assert.equal(result.imaginedState.damage, 1);
+    assert.equal(result.imaginedState.ships.some((ship) => ship.id === "purple-4"), false);
+    assert.deepEqual(
+      result.imaginedState.waitingShips.find((ship) => ship.id === "purple-4"),
+      { id: "purple-4", color: "purple" },
+    );
+    const cityEvent = result.trace.landingEvents.find(
+      (row) => row.shipId === "purple-4" && row.patch?.kind === "city_contact",
+    );
+    assert.ok(cityEvent);
+    assert.equal(cityEvent.damageApplication, "already_committed_by_landed_city_trajectory");
+    assert.equal(result.imaginedState.uncertainties.some(
+      (row) => row.slot === "tile:C5:17.kind",
+    ), false);
+    if (startingRow === 14) {
+      const movement = result.trace.sky.groundings.find(
+        (row) => row.trajectoryId === "RULE-PLACE-DIE-COLUMN-MOVE",
+      );
+      const patch = movement.patches.find((row) => row.objectId === "purple-4");
+      assert.equal(patch.intendedToRow, 17);
+      assert.equal(patch.toRow, livePublicMap.sky.cityRow);
+    }
+  });
+}
 
 test("repeated validation strengthens one GTE connection without duplicating its matrix row", () => {
   const memory = new PrecompiledGteTrajectoryMemory(PLACEMENT_TRAJECTORIES);
@@ -335,7 +428,7 @@ test("repeated validation strengthens one GTE connection without duplicating its
   assert.ok(Math.abs(after.activation - before.activation) < 1e-7);
 });
 
-test("without noticed room facts, room consequence is not produced", () => {
+test("missing selected-room facts are deliberately queried before placement grounding", () => {
   const scenario = buildPublicScenario("A");
   const selection = resolveSelectedAction({
     submissionText,
@@ -363,11 +456,48 @@ test("without noticed room facts, room consequence is not produced", () => {
     selectedAction: selection.action,
     globalAttention: allocation,
   });
-  assert.equal(result.status, "attention_stop");
-  assert.equal(result.reason, "no_complete_placement_q");
-  assert.equal(result.imaginedConsequences.room, null);
-  assert.equal(result.trace.sky, null);
-  assert.deepEqual(result.imaginedState, scenario.publicState);
+  assert.equal(result.status, "choice");
+  assert.ok(result.imaginedConsequences.room);
+  assert.ok(result.trace.sky);
+  assert.ok(result.trace.placementRules.attention.queryAcquired.some(
+    (row) => row.id === "room.type",
+  ));
+  assert.equal(result.trace.placementRules.confusions.length, 0);
+});
+
+test("an unfindable selected-room fact remains confusion and still reaches the next choice", () => {
+  const scenario = buildPublicScenario("A");
+  const selection = resolveSelectedAction({
+    submissionText,
+    scenarioLabel: "A",
+    publicState: scenario.publicState,
+  });
+  const allocation = new UfsFullAttentionProvider({ mode: "all" }).noticePlacement({
+    publicState: scenario.publicState,
+    publicMap: scenario.publicMap,
+    selectedAction: selection.action,
+    randomSeed: 1,
+  });
+  const targetRoomId = scenario.publicMap.base.cells.find(
+    (cell) => cell.id === selection.action.cellId,
+  ).roomId;
+  allocation.noticedItemIds = allocation.noticedItemIds.filter(
+    (id) => id !== `room:${targetRoomId}`,
+  );
+  allocation.queryableAtomIds = [];
+
+  const result = new UfsFirstActionImagination().run({
+    ...scenario,
+    selectedAction: selection.action,
+    globalAttention: allocation,
+  });
+  assert.equal(result.status, "choice");
+  assert.equal(result.reason, "next_player_decision_with_uncertain_automatic_consequence");
+  assert.equal(result.imaginedState.dice.find(
+    (die) => die.id === selection.action.dieId,
+  ).placed, true);
+  assert.ok(result.imaginedState.uncertainties.length > 0);
+  assert.equal(result.trace.boundary.reason, "confusion_did_not_end_decision_flow");
 });
 
 test("without placement-rule memory, adapter cannot calculate room truth directly", () => {

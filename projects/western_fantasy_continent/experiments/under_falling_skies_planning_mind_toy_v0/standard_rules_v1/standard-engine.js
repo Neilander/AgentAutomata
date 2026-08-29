@@ -129,7 +129,8 @@ function applyWorkerPlacement(map, input, requested, options = {}) {
   });
   if (state.outcome) return state;
 
-  if (die.color === "white" && state.dice.some((candidate) => !candidate.placed)) {
+  if (die.color === "white" && state.dice.some((candidate) => !candidate.placed)
+    && options.rerollMode !== "deferred") {
     rerollUnplaced(state, options.rerollMode || "actual");
   }
   if (state.dice.every((candidate) => candidate.placed)) state.phase = "rooms";
@@ -386,11 +387,76 @@ function resolveMothership(map, input, options = {}) {
     applyMothershipAction(map, state, action);
     if (state.outcome) return state;
   }
+  if (options.deferSpawns === true) {
+    state.phase = "spawning";
+    return state;
+  }
   spawnWaitingShips(map, state, options.spawnPolicy);
   state.history.push({ type: "mothership_phase_ended", round: state.round, mothershipRow: state.mothershipRow });
   if (!state.outcome && options.startNextRound !== false) return startRound(map, state);
   if (!state.outcome) state.phase = "new_round";
   return state;
+}
+
+function nextSpawnChoice(map, state) {
+  if (state.phase !== "spawning") return null;
+  const waiting = [...state.waitingShips]
+    .sort((a, b) => colorPriority(a.color) - colorPriority(b.color))[0];
+  if (!waiting) return null;
+  const openColumns = Array.from({ length: map.columns }, (_, column) => column)
+    .filter((column) => !state.ships.some((ship) => (
+      ship.column === column && ship.row === map.sky.dropRow
+    )));
+  if (!openColumns.length) return null;
+  const emptyColumns = openColumns.filter((column) => (
+    !state.ships.some((ship) => ship.column === column)
+  ));
+  let candidates = emptyColumns;
+  if (!candidates.length) {
+    const distances = openColumns.map((column) => ({
+      column,
+      distance: Math.min(...state.ships
+        .filter((ship) => ship.column === column)
+        .map((ship) => ship.row)) - map.sky.dropRow,
+    }));
+    const farthest = Math.max(...distances.map((row) => row.distance));
+    candidates = distances.filter((row) => row.distance === farthest).map((row) => row.column);
+  }
+  return { waiting: { ...waiting }, candidates };
+}
+
+function applySpawnChoice(map, input, requested) {
+  const state = cloneState(input);
+  const next = nextSpawnChoice(map, state);
+  if (!next) throw new Error("no spawn choice is pending");
+  if (requested.shipId !== next.waiting.id || !next.candidates.includes(requested.column)) {
+    throw new Error(`illegal spawn choice: ${requested.shipId}@${requested.column}`);
+  }
+  state.waitingShips = state.waitingShips.filter((ship) => ship.id !== requested.shipId);
+  state.ships.push({
+    id: next.waiting.id,
+    color: next.waiting.color,
+    column: requested.column,
+    row: map.sky.dropRow,
+  });
+  state.history.push({
+    type: "ship_spawned",
+    shipId: next.waiting.id,
+    column: requested.column,
+  });
+  return state;
+}
+
+function finishDeferredMothership(state) {
+  const next = cloneState(state);
+  if (next.phase !== "spawning") throw new Error(`cannot finish spawning during ${next.phase}`);
+  next.phase = next.outcome ? next.phase : "new_round";
+  next.history.push({
+    type: "mothership_phase_ended",
+    round: next.round,
+    mothershipRow: next.mothershipRow,
+  });
+  return next;
 }
 
 function moveMothershipOnly(map, state, source) {
@@ -534,12 +600,15 @@ module.exports = {
   SeededRng,
   allLegalWorkerPlacements,
   applyRoomAction,
+  applySpawnChoice,
   applyWorkerPlacement,
   cloneState,
   createGame,
   legalRoomActions,
   legalWorkerPlacements,
   maxResearchAdvance,
+  nextSpawnChoice,
+  finishDeferredMothership,
   resolveMothership,
   spawnWaitingShips,
   startRound,

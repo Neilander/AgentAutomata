@@ -1,0 +1,28 @@
+{
+  "type": "choose_research_advance",
+  "roomId": "A-upper-research",
+  "advanceSteps": 3,
+  "predictions": [
+    {
+      "because": "maxAdvanceSteps is 3 and victory needs research progress urgently",
+      "expectations": [
+        {
+          "itemId": "track:researchIndex",
+          "field": "value",
+          "change": "increase"
+        }
+      ]
+    },
+    {
+      "because": "after choosing advance the research room effect should finish",
+      "expectations": [
+        {
+          "itemId": "room:A-upper-research",
+          "field": "resolved",
+          "change": "equals",
+          "value": true
+        }
+      ]
+    }
+  ]
+}

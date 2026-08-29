@@ -54,8 +54,9 @@ const EAGLE_EYE = Object.freeze({
 });
 const CAVALRY_CHARGE = Object.freeze({
   distanceThreshold: 16,
+  continuityGrace: 0.4,
   readyPowerMult: 1.35,
-  readyMoveMult: 1.3,
+  readyMoveMult: 1.5,
   breakthroughDistance: 12,
   pathRadius: 4.5,
   flatDamage: 42,
@@ -140,20 +141,24 @@ class CombatSimulation {
       floater: () => {},
       enemiesOf: (unit) => this.enemiesOf(unit),
       alliesOf: (unit) => this.alliesOf(unit),
+      alliesInRange: (unit, range) => this.alliesInRange(unit, range),
       isAlive: (unit) => this.isAlive(unit),
       byDistance: (unit) => this.byDistance(unit),
       highestPowerEnemy: (unit) => this.highestPowerEnemy(unit),
       highestSkillHasteEnemy: (unit) => this.highestSkillHasteEnemy(unit),
       backlineLowestEnemy: (unit) => this.backlineLowestEnemy(unit),
-      highestStatusAlly: (unit, statusType) => this.highestStatusAlly(unit, statusType),
+      highestStatusAlly: (unit, statusType, range) => this.highestStatusAlly(unit, statusType, range),
       lowestEnemy: (unit) => this.lowestEnemy(unit),
-      lowestHpAlly: (unit) => this.lowestHpAlly(unit),
-      carryAlly: (unit) => this.carryAlly(unit),
+      lowestHpAlly: (unit, range) => this.lowestHpAlly(unit, range),
+      carryAlly: (unit, range) => this.carryAlly(unit, range),
       effectivePower: (unit, type) => this.effectivePower(unit, type),
       hpRatio: (unit) => this.hpRatio(unit),
       statusCount: (unit) => this.statusCount(unit),
       counterattack: (...args) => this.counterattack(...args),
       chargeToTarget: (...args) => this.chargeToTarget(...args),
+      cavalryDoubleLeap: (...args) => this.startCavalryDoubleLeap(...args),
+      cavalryRun: (...args) => this.startCavalryRun(...args),
+      cavalryWhirlwind: (...args) => this.startCavalryWhirlwind(...args),
       blinkBacklineStrike: (...args) => this.blinkBacklineStrike(...args),
       shadowStepStrike: (...args) => this.shadowStepStrike(...args),
       cleanseStatus: (...args) => this.cleanseStatus(...args),
@@ -294,6 +299,8 @@ class CombatSimulation {
         hpRatio: round(this.hpRatio(unit)),
         alive: this.isAlive(unit),
         damageDone: round(unit.damageDone),
+        kills: unit.kills || 0,
+        survivalTime: round(unit.deathTime ?? this.time),
       })),
       signals: this.signalBus.signals,
       summary: this.signalBus.summary(),
@@ -325,13 +332,15 @@ class CombatSimulation {
         maxHp,
         hp: maxHp,
         power: spec.power ?? role.power,
-        physicalPower: spec.physicalPower ?? spec.power ?? role.power,
-        magicPower: spec.magicPower ?? spec.power ?? role.power,
+        physicalPower: spec.physicalPower ?? spec.power ?? role.physicalPower ?? role.power,
+        magicPower: spec.magicPower ?? spec.power ?? role.magicPower ?? role.power,
         armor: spec.armor ?? role.armor,
         magicResist: spec.magicResist ?? role.magicResist ?? 0,
+        moveSpeed: spec.moveSpeed ?? role.moveSpeed ?? 7,
         range: spec.range ?? role.range,
-        attackSpeedMult: spec.attackSpeedMult ?? 1,
-        skillHasteMult: spec.skillHasteMult ?? 1,
+        supportRange: spec.supportRange ?? role.supportRange ?? Infinity,
+        attackSpeedMult: spec.attackSpeedMult ?? role.attackSpeedMult ?? 1,
+        skillHasteMult: spec.skillHasteMult ?? role.skillHasteMult ?? 1,
         effectPowerMult: spec.effectPowerMult ?? 1,
         effectResistPct: spec.effectResistPct ?? 0,
         receivedHealingMult: spec.receivedHealingMult ?? 1,
@@ -378,7 +387,14 @@ class CombatSimulation {
         eagleEyeControlLatched: false,
         cavalryDistance: 0,
         cavalryChargeReady: false,
+        cavalryChargeContinuityTimer: 0,
         cavalryMovingTimer: 0,
+        cavalryLeapState: null,
+        cavalryRunState: null,
+        cavalryWhirlwindState: null,
+        cavalryKillChargeTimer: 0,
+        cavalryKillChargeEffect: null,
+        cavalryKillChargeDashed: false,
         sighingWallCooldown: 0,
         stunTimer: 0,
         natureSeeds: {},
@@ -387,6 +403,8 @@ class CombatSimulation {
         hiddenRetaliateTimer: 2.2,
         counterCd: 0,
         damageDone: 0,
+        kills: 0,
+        deathTime: null,
         mark: 0,
         rageStacks: 0,
         icon: spec.icon?.startsWith?.("http") ? spec.icon : `${ICON_BASE}/${spec.icon || role.icon || "crossed-swords"}.svg`,
@@ -462,21 +480,38 @@ class CombatSimulation {
       this.tickEquipmentSetAuras(unit);
       this.handleEagleEyeControl(unit);
       if (unit.stunTimer > 0) continue;
+      this.tickCavalryActions(unit, dt);
       const target = this.chooseTarget(unit);
       if (!target) continue;
       this.emitTargetSignal(unit, target);
+      if (this.cavalryActionActive(unit)) {
+        if (!unit.cavalryWhirlwindState && unit.attackCd <= 0) {
+          const nearby = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy) && this.getDistance(unit, enemy) <= unit.range).sort(this.byDistance(unit))[0];
+          if (nearby) this.basicAttack(unit, nearby);
+        }
+        continue;
+      }
+      if (unit.cavalryKillChargeTimer > 0) {
+        this.tryCavalryKillChargeDash(unit, target);
+        if (this.getDistance(unit, target) <= unit.range && unit.attackCd <= 0) this.basicAttack(unit, target);
+        else if (this.getDistance(unit, target) > unit.range) this.moveToward(unit, target, dt);
+        continue;
+      }
       const distance = this.getDistance(unit, target);
       if (distance > unit.range) {
         if (unit.skillCd.ultimate <= 0 && this.skillHasEffect(unit.ultimate, "chargeToTarget")) this.castSlot(unit, "ultimate", target);
         else if (unit.skillCd.small1 <= 0 && this.skillHasEffect(unit.small1, "chargeToTarget")) this.castSlot(unit, "small1", target);
         else if (unit.skillCd.small2 <= 0 && this.skillHasEffect(unit.small2, "chargeToTarget")) this.castSlot(unit, "small2", target);
+        else if (unit.skillCd.small1 <= 0 && this.skillHasEffect(unit.small1, "cavalryDoubleLeap") && this.canCastSlot(unit, "small1", target)) this.castSlot(unit, "small1", target);
+        else if (unit.skillCd.small2 <= 0 && this.skillHasEffect(unit.small2, "cavalryRun") && this.canCastSlot(unit, "small2", target)) this.castSlot(unit, "small2", target);
+        if (this.cavalryActionActive(unit)) continue;
         if (this.getDistance(unit, target) <= unit.range) continue;
         this.moveToward(unit, target, dt);
         continue;
       }
-      if (unit.skillCd.ultimate <= 0 && unit.ultimate) this.castSlot(unit, "ultimate", target);
-      else if (unit.skillCd.small1 <= 0) this.castSlot(unit, "small1", target);
-      else if (unit.skillCd.small2 <= 0) this.castSlot(unit, "small2", target);
+      if (unit.skillCd.ultimate <= 0 && unit.ultimate && this.canCastSlot(unit, "ultimate", target)) this.castSlot(unit, "ultimate", target);
+      else if (unit.skillCd.small1 <= 0 && this.canCastSlot(unit, "small1", target)) this.castSlot(unit, "small1", target);
+      else if (unit.skillCd.small2 <= 0 && this.canCastSlot(unit, "small2", target)) this.castSlot(unit, "small2", target);
       else if (unit.attackCd <= 0) this.basicAttack(unit, target);
     }
     this.signalBus.emitHealthSnapshots(this.units, this.time);
@@ -494,12 +529,20 @@ class CombatSimulation {
   tickTimers(unit, dt) {
     for (const key of ["small1", "small2", "ultimate"]) unit.skillCd[key] = Math.max(0, unit.skillCd[key] - dt * (unit.skillHasteMult || 1));
     unit.attackCd -= dt * (unit.hasteTimer > 0 ? (unit.hasteMultiplier || 1.45) : 1) * (unit.attackSpeedMult || 1);
-    for (const key of ["slowTimer", "guardTimer", "hiddenTimer", "shadowBurstCd", "shieldVulnerableTimer", "tauntTimer", "duelTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer", "forcedTargetTimer", "verdantSpreadCd", "sighingWallCooldown", "stunTimer"]) {
+    for (const key of ["slowTimer", "guardTimer", "hiddenTimer", "shadowBurstCd", "shieldVulnerableTimer", "tauntTimer", "duelTimer", "hasteTimer", "dotResistTimer", "undyingTimer", "lifeStealTimer", "bonusPowerTimer", "bloodFuryTimer", "whirlwindTimer", "roarFuryTimer", "retaliationTimer", "forcedTargetTimer", "verdantSpreadCd", "sighingWallCooldown", "stunTimer", "cavalryKillChargeTimer"]) {
       unit[key] = Math.max(0, unit[key] - dt);
     }
     if (unit.forcedTargetTimer <= 0) unit.forcedTargetId = null;
     unit.counterCd = Math.max(0, (unit.counterCd || 0) - dt);
     unit.cavalryMovingTimer = Math.max(0, (unit.cavalryMovingTimer || 0) - dt);
+    unit.cavalryChargeContinuityTimer = Math.max(0, (unit.cavalryChargeContinuityTimer || 0) - dt);
+    if (!unit.cavalryChargeReady
+      && (unit.cavalryDistance || 0) > 0
+      && unit.cavalryChargeContinuityTimer <= 0
+      && !unit.cavalryLeapState
+      && !unit.cavalryRunState) {
+      this.resetCavalryChargeProgress(unit, "stopped");
+    }
   }
 
   tickStatuses(unit, dt) {
@@ -653,6 +696,229 @@ class CombatSimulation {
     if (slot === "ultimate") this.triggerEncore(unit);
   }
 
+  canCastSlot(unit, slot, target = null) {
+    const skillKey = unit?.[slot];
+    const effects = SKILL_DATA.skills[skillKey]?.effects || [];
+    const doubleLeap = effects.find((effect) => effect.kind === "cavalryDoubleLeap");
+    if (doubleLeap) {
+      if (!target || !this.isAlive(target) || target.hiddenTimer > 0) return false;
+      return this.getDistance(unit, target) <= (doubleLeap.triggerRange || ((doubleLeap.distance || 10) * 2 + (doubleLeap.radius || 11)));
+    }
+    const run = effects.find((effect) => effect.kind === "cavalryRun");
+    if (run) return Boolean(this.cavalryMovementTarget(unit, target));
+    const whirlwind = effects.find((effect) => effect.kind === "cavalryWhirlwind");
+    if (!whirlwind) return true;
+    const radius = whirlwind.radius || 14;
+    return this.enemiesOf(unit).some((enemy) => this.isAlive(enemy) && this.getDistance(unit, enemy) <= radius);
+  }
+
+  cavalryActionActive(unit) {
+    return Boolean(unit?.cavalryLeapState || unit?.cavalryRunState || unit?.cavalryWhirlwindState);
+  }
+
+  cavalryDirection(unit, target) {
+    const distance = target ? this.getDistance(unit, target) : 0;
+    if (distance > 0) return { x: (target.x - unit.x) / distance, y: (target.y - unit.y) / distance };
+    return { x: unit.side === "left" ? 1 : -1, y: 0 };
+  }
+
+  startCavalryDoubleLeap(unit, target, effect = {}) {
+    if (!unit || this.cavalryActionActive(unit)) return;
+    unit.cavalryLeapState = {
+      effect: structuredClone(effect),
+      direction: this.cavalryDirection(unit, target),
+      elapsed: 0,
+      landings: 0,
+    };
+  }
+
+  startCavalryRun(unit, target, effect = {}) {
+    if (!unit || this.cavalryActionActive(unit)) return;
+    const runTarget = this.cavalryMovementTarget(unit, target);
+    if (!runTarget) return;
+    unit.cavalryRunState = {
+      effect: structuredClone(effect),
+      targetId: runTarget.id,
+      direction: this.cavalryDirection(unit, runTarget),
+      enteredChargeState: false,
+      elapsed: 0,
+      pulseDistance: 0,
+      pulses: 0,
+      start: { x: unit.x, y: unit.y },
+    };
+  }
+
+  startCavalryWhirlwind(unit, _target, effect = {}) {
+    if (!unit || this.cavalryActionActive(unit)) return;
+    unit.cavalryWhirlwindState = {
+      effect: structuredClone(effect),
+      elapsed: 0,
+      nextTick: 0,
+      ticks: 0,
+    };
+  }
+
+  tickCavalryActions(unit, dt) {
+    if (unit.cavalryLeapState) this.tickCavalryDoubleLeap(unit, dt);
+    else if (unit.cavalryRunState) this.tickCavalryRun(unit, dt);
+    else if (unit.cavalryWhirlwindState) this.tickCavalryWhirlwind(unit, dt);
+  }
+
+  tickCavalryDoubleLeap(unit, dt) {
+    const state = unit.cavalryLeapState;
+    if (!state) return;
+    state.elapsed += dt;
+    const effect = state.effect;
+    const landingTimes = effect.landingTimes || [0.24, 1];
+    while (state.landings < 2 && state.elapsed + 1e-9 >= (landingTimes[state.landings] ?? state.landings * 0.75)) {
+      const before = { x: unit.x, y: unit.y };
+      unit.x = clamp(unit.x + state.direction.x * (effect.distance || 13), 7, 93);
+      unit.y = clamp(unit.y + state.direction.y * (effect.distance || 13), 12, 88);
+      this.recordCavalryMovement(unit, before, unit, "skillLeap");
+      state.landings += 1;
+      const targets = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy) && this.getDistance(unit, enemy) <= (effect.radius || 11));
+      this.withAction(unit, { tags: ["skill", "smallSkill", "cavalry", "leap", "movement", "physical", "area"], skillKey: unit.small1, skillName: effect.label || "铁蹄震地", meta: { landing: state.landings, radius: effect.radius || 11 } }, () => {
+        for (const enemy of targets) this.hit(unit, enemy, (effect.flat || 0) + this.effectivePower(unit, "physical") * (effect.power || 0), effect.type || "physical", effect.label || "铁蹄震地", false, "physical");
+      });
+      this.emitSignal({
+        kind: "movement",
+        tags: ["movement", "skill", "cavalry", "leap", `landing${state.landings}`],
+        source: SIGNALS.unitRef(unit),
+        target: SIGNALS.unitRef(unit),
+        amount: round(this.getDistance(before, unit)),
+        skillKey: unit.small1,
+        skillName: "二连跃",
+        meta: { before, after: { x: unit.x, y: unit.y }, landing: state.landings, targets: targets.map(SIGNALS.unitRef) },
+      });
+    }
+    if (state.elapsed >= (effect.duration || 1.6)) unit.cavalryLeapState = null;
+  }
+
+  tickCavalryRun(unit, dt) {
+    const state = unit.cavalryRunState;
+    if (!state) return;
+    state.elapsed += dt;
+    const before = { x: unit.x, y: unit.y };
+    const fieldMoveMult = this.runtimeField?.moveSpeedMult?.(unit) ?? 1;
+    const setMoveMult = unit.cavalryMoveSpeedMult || 1;
+    const slowMoveMult = unit.slowTimer > 0 && unit.roleName !== "刺客" ? 0.6 : 1;
+    const step = unit.moveSpeed * (state.effect.speedMult || 1) * setMoveMult * fieldMoveMult * slowMoveMult * dt;
+    const plannedEnd = {
+      x: clamp(unit.x + state.direction.x * step, 7, 93),
+      y: clamp(unit.y + state.direction.y * step, 12, 88),
+    };
+    const wall = this.findSighingWallInterceptor(unit, before, plannedEnd);
+    if (wall) {
+      unit.cavalryRunState = null;
+      this.interruptChargeAtWall(unit, wall, "skillRun", before, plannedEnd);
+      return;
+    }
+    unit.x = plannedEnd.x;
+    unit.y = plannedEnd.y;
+    const moved = this.getDistance(before, unit);
+    const wasChargeReady = unit.cavalryChargeReady;
+    this.recordCavalryMovement(unit, before, unit, "skillRun");
+    const enteredChargeStateDuringMovement = !wasChargeReady && unit.cavalryChargeReady;
+    state.enteredChargeState = state.enteredChargeState || enteredChargeStateDuringMovement;
+    state.pulseDistance += moved;
+    const pulseThreshold = Math.max(0.1, Number(state.effect.pulseDistance) || 3);
+    while (state.pulseDistance + 1e-9 >= pulseThreshold) {
+      state.pulseDistance -= pulseThreshold;
+      state.pulses += 1;
+      this.triggerCavalryRunPulse(unit, state.effect, state.pulses);
+    }
+    if (state.elapsed >= (state.effect.duration || 1.2)) {
+      this.emitSignal({
+        kind: "movement",
+        tags: ["movement", "skill", "cavalry", "run"],
+        source: SIGNALS.unitRef(unit),
+        target: SIGNALS.unitRef(unit),
+        amount: round(this.getDistance(state.start, unit)),
+        skillKey: unit.small2,
+        skillName: state.effect.label || "奔跑",
+        meta: { before: state.start, after: { x: unit.x, y: unit.y }, duration: state.elapsed, enteredChargeState: state.enteredChargeState, pulses: state.pulses },
+      });
+      unit.cavalryRunState = null;
+    }
+  }
+
+  triggerCavalryRunPulse(unit, effect = {}, pulse = 1) {
+    const radius = Math.max(0, Number(effect.radius) || 8);
+    const targets = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy) && this.getDistance(unit, enemy) <= radius);
+    const label = effect.pulseLabel || "奔踏震击";
+    this.emitSignal({
+      kind: "status",
+      tags: ["status", "skill", "cavalry", "runPulse", "area"],
+      source: SIGNALS.unitRef(unit),
+      target: SIGNALS.unitRef(unit),
+      amount: targets.length,
+      skillKey: unit.small2,
+      skillName: label,
+      meta: { pulse, radius, targets: targets.map(SIGNALS.unitRef) },
+    });
+    this.withAction(unit, { tags: ["skill", "smallSkill", "cavalry", "runPulse", "physical", "area"], skillKey: unit.small2, skillName: label, meta: { pulse, radius } }, () => {
+      for (const enemy of targets) {
+        this.hit(unit, enemy, (effect.flat || 0) + this.effectivePower(unit, "physical") * (effect.power || 0), "physical", label, false, "physical");
+        if (!this.isAlive(enemy) || this.rng() >= (Number(effect.stunChance) || 0)) continue;
+        const duration = Math.max(0, Number(effect.stunDuration) || 0);
+        enemy.stunTimer = Math.max(enemy.stunTimer || 0, duration);
+        this.emitSignal({
+          kind: "status",
+          tags: ["status", "debuff", "stun", "skill", "cavalry", "runPulse"],
+          source: SIGNALS.unitRef(unit),
+          target: SIGNALS.unitRef(enemy),
+          amount: duration,
+          skillKey: unit.small2,
+          skillName: label,
+          meta: { pulse, chance: effect.stunChance || 0, duration },
+        });
+      }
+    });
+  }
+
+  tickCavalryWhirlwind(unit, dt) {
+    const state = unit.cavalryWhirlwindState;
+    if (!state) return;
+    state.elapsed += dt;
+    const effect = state.effect;
+    while (state.elapsed + 1e-9 >= state.nextTick && state.nextTick < (effect.duration || 4.8)) {
+      const targets = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy) && this.getDistance(unit, enemy) <= (effect.radius || 14));
+      this.withAction(unit, { tags: ["skill", "ultimate", "cavalry", "whirlwind", "physical", "area"], skillKey: unit.ultimate, skillName: effect.label || "风卷残云", meta: { tick: state.ticks + 1, radius: effect.radius || 14 } }, () => {
+        for (const enemy of targets) this.hit(unit, enemy, (effect.flat || 0) + this.effectivePower(unit, "physical") * (effect.power || 0), effect.type || "physical", effect.label || "风卷残云", false, "physical");
+      });
+      state.ticks += 1;
+      state.nextTick += effect.interval || 0.6;
+    }
+    if (state.elapsed >= (effect.duration || 4.8)) unit.cavalryWhirlwindState = null;
+  }
+
+  tryCavalryKillChargeDash(unit, target) {
+    const effect = unit?.cavalryKillChargeEffect;
+    target = this.cavalryMovementTarget(unit, target);
+    if (!effect || unit.cavalryKillChargeDashed || !target || !this.isAlive(target)) return false;
+    const distance = this.getDistance(unit, target);
+    if (distance <= unit.range) return false;
+    const direction = this.cavalryDirection(unit, target);
+    const move = Math.min(effect.dashDistance || 24, Math.max(0, distance - unit.range * 0.82));
+    const before = { x: unit.x, y: unit.y };
+    unit.x = clamp(unit.x + direction.x * move, 7, 93);
+    unit.y = clamp(unit.y + direction.y * move, 12, 88);
+    unit.cavalryKillChargeDashed = true;
+    unit.attackCd = Math.min(unit.attackCd, 0.12);
+    this.recordCavalryMovement(unit, before, unit, "passiveCharge");
+    this.emitSignal({
+      kind: "movement",
+      tags: ["movement", "passive", "cavalry", "charge"],
+      source: SIGNALS.unitRef(unit),
+      target: SIGNALS.unitRef(target),
+      amount: round(this.getDistance(before, unit)),
+      skillKey: unit.passive,
+      skillName: effect.label || "乘胜冲锋",
+      meta: { before, after: { x: unit.x, y: unit.y } },
+    });
+    return true;
+  }
+
   basicAttack(unit, target) {
     const isBerserker = this.isBerserkerUnit(unit);
     const rageEffects = this.passiveEffects(unit, "basicAttackRage");
@@ -680,6 +946,14 @@ class CombatSimulation {
     if (isBerserker && unit.roarFuryTimer > 0) {
       amount += power * (BERSERKER_RATIOS.roar ?? 0.35);
       label = "战吼普攻";
+    }
+    if (unit.cavalryKillChargeTimer > 0 && unit.cavalryKillChargeEffect) {
+      const effect = unit.cavalryKillChargeEffect;
+      amount += (effect.bonusFlat || 0) + power * (effect.bonusPower || 0);
+      label = effect.label || "乘胜冲锋";
+      unit.cavalryKillChargeTimer = 0;
+      unit.cavalryKillChargeEffect = null;
+      unit.cavalryKillChargeDashed = false;
     }
     this.withAction(unit, { tags: ["basic", "attack"], skillName: label, meta: { windows: this.activeWindows(unit) } }, () => {
       this.hit(unit, target, amount, attackType, label);
@@ -843,6 +1117,21 @@ class CombatSimulation {
     const natureAction = type === "nature" || type === "poison" || source?._actionSignal?.tags?.includes("nature");
     if (natureAction && source?.mechanicModifiers?.["set:verdantCircle:propagation"] && !source?._actionSignal?.tags?.includes("equipmentSet")) {
       amount *= VERDANT_CIRCLE.sixPieceNatureOutputMult;
+    }
+    if (target.cavalryLeapState) {
+      const reduction = clamp(Number(target.cavalryLeapState.effect?.damageReduction) || 0, 0, 0.8);
+      const prevented = amount * reduction;
+      amount -= prevented;
+      if (prevented > 0) this.emitSignal({
+        kind: "status",
+        tags: ["status", "skill", "cavalry", "leap", "damageReduction"],
+        source: SIGNALS.unitRef(target),
+        target: SIGNALS.unitRef(target),
+        amount: prevented,
+        skillKey: target.small1,
+        skillName: "二连跃",
+        meta: { reduction },
+      });
     }
     if (target.cavalryMovingTimer > 0 && target.mechanicModifiers?.["set:cavalryCharge:foundation"]) {
       const prevented = amount * (target.cavalryMovingDamageReduction || 0);
@@ -1313,6 +1602,8 @@ class CombatSimulation {
   }
 
   onDeath(unit, killer) {
+    if (unit.deathTime === null) unit.deathTime = this.time;
+    if (killer && killer.id !== unit.id) killer.kills = (killer.kills || 0) + 1;
     this.emitSignal({
       kind: "death",
       tags: ["death"],
@@ -1328,6 +1619,24 @@ class CombatSimulation {
       },
     });
     this.runtimeField?.afterDeath?.(unit, killer);
+    if (killer && this.isAlive(killer)) {
+      const chargeEffect = this.passiveEffects(killer, "cavalryKillCharge")[0];
+      if (chargeEffect) {
+        killer.cavalryKillChargeTimer = chargeEffect.duration || 6;
+        killer.cavalryKillChargeEffect = structuredClone(chargeEffect);
+        killer.cavalryKillChargeDashed = false;
+        this.emitSignal({
+          kind: "status",
+          tags: ["status", "buff", "passive", "cavalry", "chargeReady"],
+          source: SIGNALS.unitRef(killer),
+          target: SIGNALS.unitRef(killer),
+          amount: killer.cavalryKillChargeTimer,
+          skillKey: killer.passive,
+          skillName: chargeEffect.label || "乘胜冲锋",
+          meta: { victim: SIGNALS.unitRef(unit), duration: killer.cavalryKillChargeTimer },
+        });
+      }
+    }
     this.tryShadowKillReset(killer, unit);
     if (unit.poison.stacks > 0) {
       this.alliesOf(killer || unit).filter((ally) => ally.passive === "hotbedPact" && this.isAlive(ally)).slice(0, 1).forEach((source) => {
@@ -1449,13 +1758,22 @@ class CombatSimulation {
     }
     const taunter = this.tauntTarget(unit, enemies);
     if (taunter) return taunter;
-    if (unit.role === "assassin") return this.lowestEnemy(unit) || enemies[0];
-    if (unit.roleName === "刺客") return this.lowestEnemy(unit) || enemies[0];
     const visibleEnemies = enemies.filter((enemy) => !(enemy.hiddenTimer > 0));
     const targetPool = visibleEnemies.length ? visibleEnemies : enemies;
-    const front = targetPool.filter((enemy) => enemy.line === "前排");
-    const candidates = front.length && unit.range < 30 ? front : targetPool;
-    return candidates.sort(this.byDistance(unit))[0];
+    return targetPool.sort(this.byDistance(unit))[0];
+  }
+
+  nearestVisibleEnemy(unit) {
+    return this.enemiesOf(unit)
+      .filter((enemy) => this.isAlive(enemy) && !(enemy.hiddenTimer > 0))
+      .sort(this.byDistance(unit))[0] || null;
+  }
+
+  cavalryMovementTarget(unit, fallback = null) {
+    const forced = fallback && unit.forcedTargetId === fallback.id && unit.forcedTargetTimer > 0;
+    const taunted = fallback && fallback.tauntTimer > 0 && unit.range < 20;
+    if (forced || taunted) return fallback;
+    return this.nearestVisibleEnemy(unit);
   }
 
   emitTargetSignal(unit, target) {
@@ -1489,7 +1807,9 @@ class CombatSimulation {
     if (distance <= unit.range * 0.92) return;
     const fieldMoveMult = this.runtimeField?.moveSpeedMult?.(unit) ?? 1;
     const cavalryMove = (unit.cavalryMoveSpeedMult || 1) * (unit.cavalryChargeReady ? CAVALRY_CHARGE.readyMoveMult : 1);
-    const step = dt * (unit.roleName === "刺客" ? 10 : unit.slowTimer > 0 ? 4.2 : 7) * fieldMoveMult * cavalryMove;
+    const baseMoveSpeed = Math.max(0, Number(unit.moveSpeed) || 0);
+    const slowMoveMult = unit.slowTimer > 0 && unit.roleName !== "刺客" ? 0.6 : 1;
+    const step = dt * baseMoveSpeed * slowMoveMult * fieldMoveMult * cavalryMove;
     const dx = target.x - unit.x;
     const dy = target.y - unit.y;
     const move = Math.min(step, Math.max(0, distance - unit.range * 0.9));
@@ -1566,18 +1886,43 @@ class CombatSimulation {
     if (!(distance > 0)) return;
     unit.cavalryMovingTimer = Math.max(unit.cavalryMovingTimer || 0, 0.3);
     if (!unit.mechanicModifiers?.["set:cavalryCharge:breakthrough"] || unit.cavalryChargeReady) return;
+    unit.cavalryChargeContinuityTimer = CAVALRY_CHARGE.continuityGrace;
     unit.cavalryDistance = (unit.cavalryDistance || 0) + distance;
     if (unit.cavalryDistance < CAVALRY_CHARGE.distanceThreshold) return;
+    this.enterCavalryChargeState(unit, movementKind, unit.cavalryDistance);
+  }
+
+  resetCavalryChargeProgress(unit, reason = "stopped") {
+    const previousDistance = unit?.cavalryDistance || 0;
+    if (!(previousDistance > 0) || unit.cavalryChargeReady) return false;
+    unit.cavalryDistance = 0;
+    unit.cavalryChargeContinuityTimer = 0;
+    this.emitSignal({
+      kind: "status",
+      tags: ["status", "equipmentSet", "cavalryCharge", "chargeProgressReset"],
+      source: SIGNALS.unitRef(unit),
+      target: SIGNALS.unitRef(unit),
+      amount: round(previousDistance),
+      skillName: "冲锋蓄势中断",
+      meta: { reason, continuityGrace: CAVALRY_CHARGE.continuityGrace },
+    });
+    return true;
+  }
+
+  enterCavalryChargeState(unit, movementKind = "move", amount = 0, extraMeta = {}) {
+    if (!unit?.mechanicModifiers?.["set:cavalryCharge:foundation"] || !unit.mechanicModifiers?.["set:cavalryCharge:breakthrough"] || unit.cavalryChargeReady) return false;
+    unit.cavalryDistance = Math.max(unit.cavalryDistance || 0, CAVALRY_CHARGE.distanceThreshold);
     unit.cavalryChargeReady = true;
     this.emitSignal({
       kind: "status",
       tags: ["status", "equipmentSet", "cavalryCharge", "chargeReady"],
       source: SIGNALS.unitRef(unit),
       target: SIGNALS.unitRef(unit),
-      amount: round(unit.cavalryDistance),
+      amount: round(amount || unit.cavalryDistance),
       skillName: "冲锋",
-      meta: { movementKind, threshold: CAVALRY_CHARGE.distanceThreshold },
+      meta: { movementKind, threshold: CAVALRY_CHARGE.distanceThreshold, ...extraMeta },
     });
+    return true;
   }
 
   tryCavalryBreakthrough(unit, target) {
@@ -1594,6 +1939,7 @@ class CombatSimulation {
     if (wall) {
       unit.cavalryChargeReady = false;
       unit.cavalryDistance = 0;
+      unit.cavalryChargeContinuityTimer = 0;
       this.interruptChargeAtWall(unit, wall, "setBreakthrough", start, end);
       return false;
     }
@@ -1601,6 +1947,7 @@ class CombatSimulation {
     if (obstacle) {
       unit.cavalryChargeReady = false;
       unit.cavalryDistance = 0;
+      unit.cavalryChargeContinuityTimer = 0;
       unit.attackCd = Math.max(unit.attackCd, CAVALRY_CHARGE.blockedDelay);
       this.emitSignal({
         kind: "status",
@@ -1618,6 +1965,7 @@ class CombatSimulation {
     unit.y = end.y;
     unit.cavalryChargeReady = false;
     unit.cavalryDistance = 0;
+    unit.cavalryChargeContinuityTimer = 0;
     this.withAction(unit, { tags: ["equipmentSet", "cavalryCharge", "breakthrough", "movement", "physical", "area"], skillName: "冲锋突破", meta: { start, end } }, () => {
       for (const enemy of hitTargets) this.hit(unit, enemy, CAVALRY_CHARGE.flatDamage + this.effectivePower(unit, "physical") * CAVALRY_CHARGE.powerRatio, "physical", "冲锋突破", false, "physical");
     });
@@ -1765,9 +2113,9 @@ class CombatSimulation {
     return (base + myriadGain + (unit.bonusPowerTimer > 0 ? unit.bonusPower || 14 : 0)) * cavalryPowerMult;
   }
   statusCount(unit) { return unit.poison.stacks + unit.burn.stacks + (unit.slowTimer > 0 ? 2 : 0) + (unit.mark || 0); }
-  carryAlly(unit) {
+  carryAlly(unit, range = Infinity) {
     const carryScore = (ally) => Math.max(this.effectivePower(ally, "physical"), this.effectivePower(ally, "magic"));
-    return this.alliesOf(unit).filter((ally) => this.isAlive(ally)).sort((a, b) => carryScore(b) - carryScore(a))[0];
+    return this.alliesInRange(unit, range).sort((a, b) => carryScore(b) - carryScore(a))[0];
   }
   lowestEnemy(unit) {
     const enemies = this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy));
@@ -1775,7 +2123,11 @@ class CombatSimulation {
   }
   enemiesOf(unit) { return this.units.filter((item) => item.side !== unit.side); }
   alliesOf(unit) { return this.units.filter((item) => item.side === unit.side); }
-  lowestHpAlly(unit) { return this.alliesOf(unit).filter((ally) => this.isAlive(ally)).sort((a, b) => this.hpRatio(a) - this.hpRatio(b))[0]; }
+  alliesInRange(unit, range = Infinity) {
+    const maxRange = Number.isFinite(range) ? Math.max(0, range) : Infinity;
+    return this.alliesOf(unit).filter((ally) => this.isAlive(ally) && this.getDistance(unit, ally) <= maxRange);
+  }
+  lowestHpAlly(unit, range = Infinity) { return this.alliesInRange(unit, range).sort((a, b) => this.hpRatio(a) - this.hpRatio(b))[0]; }
   highestPowerEnemy(unit) {
     return this.enemiesOf(unit).filter((enemy) => this.isAlive(enemy)).sort((a, b) => (
       (this.effectivePower(b, "physical") + this.effectivePower(b, "magic"))
@@ -1795,9 +2147,9 @@ class CombatSimulation {
     const backline = enemies.filter((enemy) => enemy.line === "后排");
     return (backline.length ? backline : enemies).sort((a, b) => this.hpRatio(a) - this.hpRatio(b))[0];
   }
-  highestStatusAlly(unit, statusType) {
+  highestStatusAlly(unit, statusType, range = Infinity) {
     const statusValue = (ally) => (statusType === "burn" ? ally.burn?.stacks : ally.poison?.stacks) || 0;
-    return this.alliesOf(unit).filter((ally) => this.isAlive(ally)).sort((a, b) => statusValue(b) - statusValue(a) || this.hpRatio(a) - this.hpRatio(b))[0];
+    return this.alliesInRange(unit, range).sort((a, b) => statusValue(b) - statusValue(a) || this.hpRatio(a) - this.hpRatio(b))[0];
   }
   isAlive(unit) { return unit && unit.hp > 0; }
   hpRatio(unit) { return unit.hp / unit.maxHp; }

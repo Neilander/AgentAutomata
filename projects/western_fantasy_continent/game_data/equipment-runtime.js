@@ -155,9 +155,9 @@
   }
 
   function statWeight(stat, role) {
-    const physical = ["warrior", "knight", "berserker", "assassin", "ranger"].includes(role) ? 1 : 0.25;
+    const physical = ["warrior", "knight", "berserker", "assassin", "ranger", "cavalry"].includes(role) ? 1 : 0.25;
     const magic = ["mage", "priest", "warlock", "bard", "alchemist"].includes(role) ? 1 : 0.25;
-    const front = ["warrior", "knight", "berserker"].includes(role) ? 1 : 0.45;
+    const front = ["warrior", "knight", "berserker", "cavalry"].includes(role) ? 1 : 0.45;
     const map = {
       physicalPower: 8 * physical, magicPower: 8 * magic, maxHp: 0.55 * front, armor: 12 * front, magicResist: 12 * front,
       might: 7 * physical, agility: 7 * physical, arcana: 7 * magic, rhythm: 6 * magic,

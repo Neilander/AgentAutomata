@@ -14,7 +14,10 @@ const GEAR_RULES = typeof module !== "undefined" && module.exports ? require("..
 const VERSION = "border_village_war_v3";
 const FINAL_DAY = 7;
 const INVENTORY_LIMIT = 200;
-const GRIND_DIFFICULTY_COUNT = 5;
+const GRIND_DIFFICULTY_COUNT = 6;
+const GRIND_SET_CONVERSION_CHANCE = .20;
+const GRIND_SET_IDS = Object.freeze(Object.keys(EQUIPMENT_SETS.SETS));
+const DEFAULT_GRIND_SET_CHOICES = Object.freeze(GRIND_SET_IDS.slice(0, 3));
 const SLOT_DATA = GEAR_RULES.SLOT_DATA;
 const RARITY_DATA = [
   ...GEAR_RULES.RARITY_DATA.map((row) => ({ ...row })),
@@ -35,6 +38,7 @@ const HEROES = {
   sellsword: { name: "流民佣兵·赤犬", role: "近战爆发", combatRole: "berserker", base: 54, preferredAffixes: ["武力", "暴击伤害"] },
   witch: { name: "边林女巫·盐枝", role: "持续削弱", combatRole: "warlock", base: 58, preferredAffixes: ["奥术", "效果强度"] },
   hunter: { name: "山地猎人·苔牙", role: "猎杀大型敌人", combatRole: "ranger", base: 57, preferredAffixes: ["敏捷", "暴击率"] },
+  rider: { name: "边境骑手·罗文", role: "机动突阵", combatRole: "cavalry", base: 57, preferredAffixes: ["武力", "敏捷"] },
   alchemist: { name: "旅行炼金师·罗莎", role: "范围破阵", combatRole: "alchemist", base: 58, preferredAffixes: ["奥术", "节律"] },
   heiress: { name: "探险家小姐·薇奥拉", role: "遗迹学识与机关破解", combatRole: "alchemist", base: 55, preferredAffixes: ["奥术", "效果强度"] },
   mentor: { name: "魔剑导师·艾琳", role: "护卫与魔法反击", combatRole: "mage", base: 64, preferredAffixes: ["奥术", "坚韧"] },
@@ -83,6 +87,12 @@ const EVENTS = {
       { id: "fighter", label: "优先留下佣兵和他的五名家人", description: "获得一名战斗角色，并增加少量实际人口。" },
     ],
   },
+  strandedRider: {
+    day: 3, title: "冲出旧驿道的骑手", scene: "一名浑身带伤的边境骑手从兽人斥候的包围中冲出，战马也已经力竭。他不求报酬，只想在灰谷村换到一处马厩和一次反击的机会。",
+    options: [
+      { id: "recruit", label: "打开村门，让骑手和战马留下", description: "边境骑手罗文加入队伍，成为一名马骑兵。" },
+    ],
+  },
   witch: {
     day: 4, title: "圣殿火堆旁的女巫", scene: "盐枝知道兽人血鼓的位置。伊莎贝拉承认她的情报可能救人，但圣殿戒律不允许女巫进入营地。",
     options: [
@@ -111,7 +121,8 @@ const GRIND_DIFFICULTIES = {
   2: { name: "兽径", threat: "危险", unlockScoreToNext: 20, winsAtCurrentDifficultyToNext: 10, lootTier: 2, lootCountTable: [[1, 1]], lootCountLabel: "必定1件", rarityTable: [["普通", .75], ["稀有", .25]], rarityLabel: "普通75% · 稀有25%", enemyTier: 2, scale: { hp: 1.08, power: 1.03, armor: 1.0 }, enemies: [["knight", "披甲魔物"], ["warrior", "林地魔物"], ["ranger", "投矛魔物"], ["priest", "魔物祭徒"]] },
   3: { name: "腐沼", threat: "凶险", unlockScoreToNext: 90, winsAtCurrentDifficultyToNext: 30, lootTier: 3, lootCountTable: [[1, .25], [2, .75]], lootCountLabel: "25%掉1件 · 75%掉2件", rarityTable: [["普通", .70], ["稀有", .25], ["史诗", .05]], rarityLabel: "普通70% · 稀有25% · 史诗5%", enemyTier: 3, scale: { hp: 1.06, power: 1.02, armor: 1.04 }, enemies: [["knight", "腐沼甲兽"], ["warrior", "噬人魔"], ["ranger", "毒矢魔物"], ["assassin", "潜沼猎手"], ["warlock", "沼泽咒师"], ["priest", "魔物祭徒"]] },
   4: { name: "血林", threat: "致命", unlockScoreToNext: 200, winsAtCurrentDifficultyToNext: 50, lootTier: 4, lootCountTable: [[2, .75], [3, .25]], lootCountLabel: "75%掉2件 · 25%掉3件", rarityTable: [["普通", .50], ["稀有", .30], ["史诗", .19], ["传说", .01]], rarityLabel: "普通50% · 稀有30% · 史诗19% · 传说1%", enemyTier: 4, scale: { hp: .93, power: .92, armor: 1.0 }, enemies: [["knight", "血林巨怪"], ["berserker", "狂化战兽"], ["warrior", "血林屠夫"], ["ranger", "血羽猎手"], ["assassin", "血影猎手"], ["alchemist", "腐血投手"], ["warlock", "血咒魔物"], ["priest", "血祭司"]] },
-  5: { name: "魔潮腹地", threat: "绝境", unlockScoreToNext: null, winsAtCurrentDifficultyToNext: null, lootTier: 5, lootCountTable: [[3, 1]], lootCountLabel: "必定3件", rarityTable: [["普通", .30], ["稀有", .45], ["史诗", .20], ["传说", .05]], rarityLabel: "普通30% · 稀有45% · 史诗20% · 传说5%", enemyTier: 5, scale: { hp: 1.175, power: 1.125, armor: 1.115 }, enemies: [["knight", "魔潮重甲兽"], ["knight", "深林铁卫"], ["berserker", "魔潮撕裂者"], ["warrior", "魔潮战士"], ["ranger", "腐箭猎手"], ["ranger", "夜羽猎手"], ["assassin", "无光伏击者"], ["alchemist", "腐浆投手"], ["warlock", "深林咒师"], ["priest", "魔潮祭司"]] },
+  5: { name: "魔潮腹地", threat: "绝境", unlockScoreToNext: 450, winsAtCurrentDifficultyToNext: 50, lootTier: 5, lootCountTable: [[3, 1]], lootCountLabel: "必定3件", rarityTable: [["普通", .30], ["稀有", .45], ["史诗", .20], ["传说", .05]], rarityLabel: "普通30% · 稀有45% · 史诗20% · 传说5%", enemyTier: 5, scale: { hp: 1.175, power: 1.125, armor: 1.115 }, enemies: [["knight", "魔潮重甲兽"], ["knight", "深林铁卫"], ["berserker", "魔潮撕裂者"], ["warrior", "魔潮战士"], ["ranger", "腐箭猎手"], ["ranger", "夜羽猎手"], ["assassin", "无光伏击者"], ["alchemist", "腐浆投手"], ["warlock", "深林咒师"], ["priest", "魔潮祭司"]] },
+  6: { name: "魔潮源心", threat: "灾厄", unlockScoreToNext: null, winsAtCurrentDifficultyToNext: null, lootTier: 6, lootCountTable: [[3, 1]], lootCountLabel: "必定3件", rarityTable: [["普通", .20], ["稀有", .42], ["史诗", .30], ["传说", .08]], rarityLabel: "普通20% · 稀有42% · 史诗30% · 传说8%", recommendedGear: "推荐全队8部位史诗；套装不是必需。", encounterIntel: "敌方固定为盾法牧阵：2名骑士保护4名法师和2名牧师。高法抗的骑兵、狂战士、炼金师和术士可形成克制。", enemyTier: 6, scale: { hp: 4.5, power: 2.8, armor: 2.0 }, enemies: [["knight", "源心法阵守卫"], ["knight", "灾厄法阵守卫"], ["mage", "腐星秘法师"], ["mage", "源心秘法师"], ["mage", "灾星秘法师"], ["mage", "无光秘法师"], ["priest", "魔潮大祭司"], ["priest", "源心祭司"]] },
 };
 
 function clone(value) { return structuredClone(value); }
@@ -152,7 +163,7 @@ function createInitialState(seed = "border-village-war") {
     ],
     market: { day: 0, sellRemaining: 5, stock: [] },
     economy: { dailyGearDrops: 0, smithGoldPaid: 0 },
-    grind: { selectedDifficulty: 1, unlockedDifficulty: 1, winsByDifficulty: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } },
+    grind: { selectedDifficulty: 1, unlockedDifficulty: 1, winsByDifficulty: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }, setChoices: [...DEFAULT_GRIND_SET_CHOICES] },
     army: { trainedUnits: 0 },
     roster: ["player"], activeParty: ["player"], selectedHeroId: "player", equipment: {}, inventory: [],
     flags: {}, resolvedEvents: {}, resolvedRaids: {}, enemy: { orcUnits: 20, bosses: 3 },
@@ -285,7 +296,9 @@ function grindProgress(state) {
   const unlockScore = Object.entries(winsByDifficulty).reduce((sum, [difficulty, wins]) => sum + Number(difficulty) * wins, 0);
   const unlockedDifficulty = unlockedGrindDifficulty(unlockScore);
   const selectedDifficulty = Math.max(1, Math.min(unlockedDifficulty, Number(raw.selectedDifficulty) || 1));
-  return { selectedDifficulty, unlockedDifficulty, totalWins, unlockScore, winsByDifficulty };
+  const requestedSetChoices = Array.isArray(raw.setChoices) ? raw.setChoices.filter((setId) => GRIND_SET_IDS.includes(setId)) : [];
+  const setChoices = [...new Set([...requestedSetChoices, ...DEFAULT_GRIND_SET_CHOICES, ...GRIND_SET_IDS])].slice(0, 3);
+  return { selectedDifficulty, unlockedDifficulty, totalWins, unlockScore, winsByDifficulty, setChoices };
 }
 function ensureGrindProgress(state) { state.grind = grindProgress(state); return state.grind; }
 function buildingRows(state, type) { return state.buildings.filter((row) => row.unlocked !== false && row.type === type && row.complete); }
@@ -386,6 +399,21 @@ function generateItem(state, source = "border", tier = 1, forcedRarity = null, f
   const score = Math.max(1, Math.round((Object.values(baseStats).reduce((sum, value) => sum + value, 0) * .25 + affixes.reduce((sum, row) => sum + row.value, 0)) * rarity.value));
   const name = `${rarity.label}${slot.label} Lv.${equipmentLevel}`;
   return { id: `item_${state.day}_${state.stats.grindAttempts}_${state.inventory.length}_${hash(`${state.rngState}|${source}|${name}`)}`, name, slot: slotKey, slotLabel: slot.label, rarity: rarity.label, rarityId: rarity.id, equipmentLevel, power: score, baseStats, affixes, identityTags: [], source };
+}
+
+function maybeConvertGrindItemToSet(state, item, difficulty) {
+  if (!item || rarityIndex(item.rarity) < rarityIndex("史诗") || rand(state) >= GRIND_SET_CONVERSION_CHANCE) return item;
+  const grind = ensureGrindProgress(state);
+  const pool = difficulty === 6 ? grind.setChoices : GRIND_SET_IDS;
+  const setId = weightedPick(state, pool.map((id) => [id, 1]));
+  const set = EQUIPMENT_SETS.SETS[setId];
+  if (!set) return item;
+  item.setId = setId;
+  item.setName = set.name;
+  item.setRank = set.rarity || "传说";
+  item.identityTags = [...new Set([...(item.identityTags || []), `套装:${set.name}`])];
+  item.name = `${set.name}·${item.slotLabel} Lv.${item.equipmentLevel}`;
+  return item;
 }
 
 function roleSpec(role, name, slotIndex, scales = {}) {
@@ -666,7 +694,9 @@ function natureSetMockPlan(variant = "set") {
   return {
     kind: "mock",
     mock: true,
+    mockKind: "verdant",
     mockVariant: setEnabled ? "set" : "baseline",
+    mockReturnNodeId: "mock:training-ground",
     title: setEnabled ? "繁生之环 · 六件套演武" : "繁生之环 · 无套装对照",
     seed: "verdant-circle-ab-v2",
     leftTeam: [guardian, healer, warlock],
@@ -674,6 +704,222 @@ function natureSetMockPlan(variant = "set") {
     maxTime: 40,
     foodCommitted: 0,
     fullFood: 0,
+  };
+}
+
+function cavalryMockPlan(size = 4, loadout = "noSets") {
+  const scale = [4, 8, 20].includes(Number(size)) ? Number(size) : 4;
+  const fullSets = loadout === "fullSets";
+  const roleSetIds = { cavalry: "cavalryCharge", mage: "meteorFireRain", priest: "guardianEcho", warrior: "myriadValor" };
+  const mockSpec = (role, index, side) => {
+    const spec = {
+      role,
+      name: `${side === "left" ? "灰谷" : "演武傀儡"}${SKILLS.roleKits[role].role}-${index + 1}`,
+      ...clone(SKILLS.roleKits[role].kit),
+      unitKind: "mock",
+    };
+    return fullSets ? BUILD_LAYERS.applyBuildLayers(spec, { equipmentItems: EQUIPMENT_SETS.mockSetItems(roleSetIds[role], 6), tags: ["mock", "fullSets", roleSetIds[role]] }) : spec;
+  };
+  const leftTeam = [];
+  const rightTeam = [];
+  for (let index = 0; index < scale / 4; index += 1) {
+    leftTeam.push(mockSpec("warrior", index, "left"), mockSpec("cavalry", index, "left"), mockSpec("mage", index, "left"), mockSpec("priest", index, "left"));
+    rightTeam.push(mockSpec("warrior", index * 2, "right"), mockSpec("warrior", index * 2 + 1, "right"), mockSpec("mage", index, "right"), mockSpec("priest", index, "right"));
+  }
+  return {
+    kind: "mock",
+    mock: true,
+    mockKind: "cavalry",
+    mockScale: scale,
+    mockLoadout: fullSets ? "fullSets" : "noSets",
+    mockReturnNodeId: "mock:training-ground",
+    title: `马骑兵 · ${scale}v${scale}${fullSets ? "全员六件套" : "无套装"}演武`,
+    seed: `cavalry-web-${fullSets ? "full-sets" : "no-set"}|${scale}`,
+    leftTeam,
+    rightTeam,
+    maxTime: 75,
+    foodCommitted: 0,
+    fullFood: 0,
+  };
+}
+
+function cavalryChargeDemoPlan() {
+  const rider = BUILD_LAYERS.applyBuildLayers({
+    role: "cavalry",
+    name: "六件套马骑兵",
+    ...clone(SKILLS.roleKits.cavalry.kit),
+    unitKind: "mock",
+    small1: null,
+    small2: null,
+    passive: null,
+    ultimate: null,
+    x: 18,
+    y: 50,
+  }, {
+    equipmentItems: EQUIPMENT_SETS.mockSetItems("cavalryCharge", 6),
+    tags: ["mock", "fullSets", "cavalryCharge", "distanceDemo"],
+  });
+  const dummy = {
+    role: "warrior",
+    roleName: "训练木桩",
+    name: "冲锋木桩",
+    unitKind: "trainingDummy",
+    iconText: "🪵",
+    maxHp: 50000,
+    physicalPower: 0,
+    magicPower: 0,
+    power: 0,
+    armor: 0,
+    magicResist: 0,
+    moveSpeed: 0,
+    range: 0,
+    attackSpeedMult: 0,
+    skillHasteMult: 0,
+    small1: null,
+    small2: null,
+    passive: null,
+    ultimate: null,
+    x: 82,
+    y: 50,
+  };
+  return {
+    kind: "mock",
+    mock: true,
+    mockKind: "cavalryChargeDemo",
+    mockScale: 1,
+    mockLoadout: "fullSets",
+    mockReturnNodeId: "mock:training-ground",
+    title: "马骑兵 · 冲锋距离演示",
+    seed: "cavalry-charge-distance-demo-v1",
+    leftTeam: [rider],
+    rightTeam: [dummy],
+    maxTime: 10,
+    distanceRuler: {
+      originX: 18,
+      maxDistance: 64,
+      step: 4,
+      labelStep: 8,
+      threshold: 16,
+      trackedRole: "cavalry",
+    },
+    foodCommitted: 0,
+    fullFood: 0,
+  };
+}
+
+function combatVfxDemoPlan(role = "cavalry") {
+  const demoRole = ["cavalry", "mage", "priest"].includes(role) ? role : "cavalry";
+  const idleUnit = (unitRole, name, x, y, overrides = {}) => ({
+    role: unitRole,
+    name,
+    ...clone(SKILLS.roleKits[unitRole].kit),
+    unitKind: "trainingDummy",
+    maxHp: 20000,
+    power: 0,
+    physicalPower: 0,
+    magicPower: 0,
+    armor: 0,
+    magicResist: 0,
+    moveSpeed: 0,
+    attackSpeedMult: 0,
+    skillHasteMult: 0,
+    small1: null,
+    small2: null,
+    passive: null,
+    ultimate: null,
+    x,
+    y,
+    ...overrides,
+  });
+  const base = {
+    kind: "mock",
+    mock: true,
+    mockKind: "vfxDemo",
+    mockRole: demoRole,
+    mockReturnNodeId: "mock:training-ground",
+    seed: `combat-vfx-demo-${demoRole}-v1`,
+    foodCommitted: 0,
+    fullFood: 0,
+  };
+
+  if (demoRole === "mage") {
+    const mage = {
+      role: "mage",
+      name: "烬火法师·样片",
+      ...clone(SKILLS.roleKits.mage.kit),
+      unitKind: "mock",
+      small1: null,
+      small2: null,
+      passive: null,
+      skillHasteMult: 4,
+      x: 20,
+      y: 50,
+    };
+    return {
+      ...base,
+      title: "职业表现样片 · 流星火雨",
+      leftTeam: [mage],
+      rightTeam: [
+        idleUnit("warrior", "火雨木桩·一", 61, 34),
+        idleUnit("warrior", "火雨木桩·二", 61, 50),
+        idleUnit("warrior", "火雨木桩·三", 61, 66),
+      ],
+      maxTime: 6.5,
+    };
+  }
+
+  if (demoRole === "priest") {
+    const priest = {
+      role: "priest",
+      name: "银誓牧师·样片",
+      ...clone(SKILLS.roleKits.priest.kit),
+      unitKind: "mock",
+      small1: null,
+      small2: null,
+      passive: null,
+      skillHasteMult: 5,
+      x: 20,
+      y: 50,
+    };
+    const leftTeam = [
+      priest,
+      idleUnit("warrior", "受训前卫·一", 34, 38, { maxHp: 1400, armor: 5 }),
+      idleUnit("warrior", "受训前卫·二", 34, 62, { maxHp: 1400, armor: 5 }),
+    ];
+    const rightTeam = [
+      idleUnit("ranger", "演武弩机·一", 67, 38, { power: 62, physicalPower: 62, range: 42, attackSpeedMult: 1.1 }),
+      idleUnit("ranger", "演武弩机·二", 67, 62, { power: 62, physicalPower: 62, range: 42, attackSpeedMult: 1.1 }),
+    ];
+    return {
+      ...base,
+      title: "职业表现样片 · 神圣庇护",
+      leftTeam,
+      rightTeam,
+      maxTime: 8,
+    };
+  }
+
+  const cavalry = {
+    role: "cavalry",
+    name: "铁蹄马骑兵·样片",
+    ...clone(SKILLS.roleKits.cavalry.kit),
+    unitKind: "mock",
+    small2: null,
+    passive: null,
+    ultimate: null,
+    x: 20,
+    y: 50,
+  };
+  return {
+    ...base,
+    title: "职业表现样片 · 二连跃",
+    leftTeam: [cavalry],
+    rightTeam: [
+      idleUnit("warrior", "落点木桩·一", 39, 39),
+      idleUnit("warrior", "落点木桩·二", 39, 50),
+      idleUnit("warrior", "落点木桩·三", 39, 61),
+    ],
+    maxTime: 4.5,
   };
 }
 function combatWon(result) { return result?.metrics?.leftAlive > 0 && result?.metrics?.rightAlive === 0; }
@@ -738,12 +984,18 @@ function internalActions(state) {
 
   const grind = grindProgress(state);
   const selectedConfig = GRIND_DIFFICULTIES[grind.selectedDifficulty];
-  const rows = [{ id: "combat:hunt", label: `挑战难度${grind.selectedDifficulty}「${selectedConfig.name}」`, kind: "grind", actionPointCost: 0, description: `胜利掉落：${selectedConfig.lootCountLabel}；${selectedConfig.rarityLabel}。` }];
+  const rows = [{ id: "combat:hunt", label: `挑战难度${grind.selectedDifficulty}「${selectedConfig.name}」`, kind: "grind", actionPointCost: 0, description: `胜利掉落：${selectedConfig.lootCountLabel}；${selectedConfig.rarityLabel}。${selectedConfig.recommendedGear ? ` ${selectedConfig.recommendedGear}` : ""}${selectedConfig.encounterIntel ? ` ${selectedConfig.encounterIntel}` : ""}` }];
   for (let difficulty = 1; difficulty <= GRIND_DIFFICULTY_COUNT; difficulty += 1) {
     const config = GRIND_DIFFICULTIES[difficulty];
     const previousTarget = difficulty > 1 ? GRIND_DIFFICULTIES[difficulty - 1].unlockScoreToNext : 0;
     const lockedReason = difficulty > grind.unlockedDifficulty ? `累计讨伐积分达到${previousTarget}后解锁（当前${Math.min(grind.unlockScore, previousTarget)}/${previousTarget}；难度N胜利获得N积分）` : "";
-    rows.push(withAvailability({ id: `grind:select:${difficulty}`, label: difficulty === grind.selectedDifficulty ? `难度${difficulty}「${config.name}」· 当前` : `切换难度${difficulty}「${config.name}」`, kind: "grind_setting", operation: "select_grind_difficulty", actionPointCost: 0, targetDifficulty: difficulty, description: `${config.threat} · ${config.lootCountLabel} · ${config.rarityLabel}` }, lockedReason));
+    rows.push(withAvailability({ id: `grind:select:${difficulty}`, label: difficulty === grind.selectedDifficulty ? `难度${difficulty}「${config.name}」· 当前` : `切换难度${difficulty}「${config.name}」`, kind: "grind_setting", operation: "select_grind_difficulty", actionPointCost: 0, targetDifficulty: difficulty, description: `${config.threat} · ${config.lootCountLabel} · ${config.rarityLabel}${config.recommendedGear ? ` · ${config.recommendedGear}` : ""}${config.encounterIntel ? ` · ${config.encounterIntel}` : ""}` }, lockedReason));
+  }
+  for (let slotIndex = 0; slotIndex < 3; slotIndex += 1) {
+    for (const setId of GRIND_SET_IDS) {
+      const set = EQUIPMENT_SETS.SETS[setId];
+      rows.push(withAvailability({ id: `grind:set:${slotIndex}:${setId}`, label: `套装池${slotIndex + 1}：${set.name}`, kind: "grind_set_setting", operation: "select_grind_set", actionPointCost: 0, targetSetSlot: slotIndex, targetSetId: setId, description: "难度6的史诗及以上装备只会转化为三个已选套装之一。" }, grind.unlockedDifficulty >= 6 ? "" : "累计讨伐450积分后解锁难度6与定向套装池。"));
+    }
   }
   const apReason = actionPointReason(state);
   for (const slot of state.buildings.filter((row) => row.unlocked !== false && !row.type)) {
@@ -956,6 +1208,18 @@ function applyInternalAction(state, id) {
     grind.selectedDifficulty = difficulty;
     addLog(state, `边林讨伐已切换到难度${difficulty}「${GRIND_DIFFICULTIES[difficulty].name}」。`, "grind"); return;
   }
+  if (id.startsWith("grind:set:")) {
+    const [, , rawSlot, setId] = id.split(":");
+    const slotIndex = Number(rawSlot);
+    const grind = ensureGrindProgress(state);
+    if (grind.unlockedDifficulty < 6) throw new Error("累计讨伐450积分后才能选择难度6套装池。");
+    if (!Number.isInteger(slotIndex) || slotIndex < 0 || slotIndex >= 3 || !GRIND_SET_IDS.includes(setId)) throw new Error("这个套装选择已经不存在。");
+    const previousSetId = grind.setChoices[slotIndex];
+    const otherIndex = grind.setChoices.findIndex((id, index) => index !== slotIndex && id === setId);
+    grind.setChoices[slotIndex] = setId;
+    if (otherIndex >= 0) grind.setChoices[otherIndex] = previousSetId;
+    addLog(state, `难度6套装池已调整为：${grind.setChoices.map((id) => EQUIPMENT_SETS.SETS[id].name).join("、")}。`, "grind"); return;
+  }
   if (id === "time:end") { endDay(state); return; }
   throw new Error(`未知行动：${id}`);
 }
@@ -970,6 +1234,9 @@ function applyEvent(state, eventId, optionId) {
   if (eventId === "refugees") {
     if (optionId === "people") { const joined = Math.min(22, state.resources.populationCap - state.resources.population); state.resources.population += joined; addLog(state, `村庄尽量挤出住处，${joined}名流民实际加入。`, "event"); }
     else { recruitHero(state, "sellsword"); const joined = Math.min(5, state.resources.populationCap - state.resources.population); state.resources.population += joined; addLog(state, `赤犬和${joined}名家人留在村庄。`, "recruit"); }
+  } else if (eventId === "strandedRider") {
+    recruitHero(state, "rider");
+    addLog(state, "罗文牵着疲惫的战马进了村。他答应养好伤后，从正面撕开兽人的阵线。", "recruit");
   } else if (eventId === "witch") {
     if (optionId === "shelter") { recruitHero(state, "witch"); state.flags.shamanIntel = true; state.flags.captainTrustLow = true; addLog(state, "盐枝加入队伍，并在地图上标出血鼓萨满祭坛。伊莎贝拉没有阻止，但此后不再主动与你谈论圣殿戒律。", "recruit"); }
     else { state.flags.captainBlessed = true; addLog(state, "盐枝离开了。伊莎贝拉重新加固盾甲，并把圣殿骑士组织成更稳固的防线。", "event"); }
@@ -1043,9 +1310,10 @@ function applyPlayerCombatResult(stateInput, publicId, result, deployment = null
       const config = GRIND_DIFFICULTIES[difficulty];
       grind.unlockedDifficulty = unlockedGrindDifficulty(grind.unlockScore);
       const lootCount = weightedPick(state, config.lootCountTable);
-      const items = Array.from({ length: lootCount }, () => generateItem(state, `边林难度${difficulty}`, plan.lootTier || difficulty, weightedPick(state, config.rarityTable)));
+      const items = Array.from({ length: lootCount }, () => maybeConvertGrindItemToSet(state, generateItem(state, `边林难度${difficulty}`, plan.lootTier || difficulty, weightedPick(state, config.rarityTable)), difficulty));
       state.inventory.push(...items); const gold = registerGearDrops(state, items.length);
-      addLog(state, `难度${difficulty}讨伐获胜（军粮${plan.foodCommitted}/${plan.fullFood || 0}，发挥${plan.performancePct || 100}%；本场+${difficulty}积分，累计${grind.unlockScore}积分，本档${grind.winsByDifficulty[difficulty]}胜），得到${items.map((item) => item.name).join("、")}；今日新装备${state.economy.dailyGearDrops}件${gold ? `，铁匠铺新增${gold}金币收入` : ""}。`, "loot");
+      const setCount = items.filter((item) => item.setId).length;
+      addLog(state, `难度${difficulty}讨伐获胜（军粮${plan.foodCommitted}/${plan.fullFood || 0}，发挥${plan.performancePct || 100}%；本场+${difficulty}积分，累计${grind.unlockScore}积分，本档${grind.winsByDifficulty[difficulty]}胜），得到${items.map((item) => item.name).join("、")}${setCount ? `，其中${setCount}件转化为套装` : ""}；今日新装备${state.economy.dailyGearDrops}件${gold ? `，铁匠铺新增${gold}金币收入` : ""}。`, "loot");
       if (grind.unlockedDifficulty > previousUnlocked) addLog(state, `累计讨伐${grind.unlockScore}积分，难度${grind.unlockedDifficulty}「${GRIND_DIFFICULTIES[grind.unlockedDifficulty].name}」已经解锁。难度N胜利会获得N积分。`, "grind_unlock");
     } else addLog(state, `难度${difficulty}讨伐失败，讨伐积分不增加；可以立即重试或切回已解锁的低难度。`, "combat_loss");
   } else if (plan.kind === "training") {
@@ -1101,7 +1369,7 @@ function applyPlayerCombatResult(stateInput, publicId, result, deployment = null
 
 function enforceInventoryLimit(state) {
   const excess = Math.max(0, state.inventory.length - INVENTORY_LIMIT); if (!excess) return [];
-  const equipped = equippedIds(state); const removable = state.inventory.filter((item) => !equipped.has(item.id)).sort((a, b) => rarityIndex(a.rarity) - rarityIndex(b.rarity) || a.power - b.power); const removed = removable.slice(0, excess); const ids = new Set(removed.map((item) => item.id)); state.inventory = state.inventory.filter((item) => !ids.has(item.id)); state.stats.autoDiscarded = Number(state.stats.autoDiscarded || 0) + removed.length; return removed;
+  const equipped = equippedIds(state); const removable = state.inventory.filter((item) => !equipped.has(item.id)).sort((a, b) => Number(Boolean(a.setId)) - Number(Boolean(b.setId)) || rarityIndex(a.rarity) - rarityIndex(b.rarity) || a.power - b.power); const removed = removable.slice(0, excess); const ids = new Set(removed.map((item) => item.id)); state.inventory = state.inventory.filter((item) => !ids.has(item.id)); state.stats.autoDiscarded = Number(state.stats.autoDiscarded || 0) + removed.length; return removed;
 }
 
 const SKILL_DAMAGE_LABELS = { physical: "物理", fire: "火焰", poison: "毒素", arcane: "奥术", blood: "直接" };
@@ -1192,6 +1460,7 @@ function combatProfileVisible(spec) {
       magicPower: spec.magicPower,
       armor: spec.armor,
       magicResist: spec.magicResist,
+      moveSpeed: spec.moveSpeed,
       attackSpeedPct: Math.round(((spec.attackSpeedMult || 1) - 1) * 100),
       skillHastePct: Math.round(((spec.skillHasteMult || 1) - 1) * 100),
     },
@@ -1274,13 +1543,17 @@ function getPlayerObservation(state) {
       selectedWinScore: grind.selectedDifficulty,
       nextUnlockDifficulty: grind.unlockedDifficulty < GRIND_DIFFICULTY_COUNT ? grind.unlockedDifficulty + 1 : null,
       nextUnlockScore: grind.unlockedDifficulty < GRIND_DIFFICULTY_COUNT ? GRIND_DIFFICULTIES[grind.unlockedDifficulty].unlockScoreToNext : null,
+      setConversionChance: GRIND_SET_CONVERSION_CHANCE,
+      setConversionMinimumRarity: "史诗",
+      setChoices: grind.setChoices.map((setId, slotIndex) => ({ slotIndex, id: setId, name: EQUIPMENT_SETS.SETS[setId].name })),
+      setOptions: GRIND_SET_IDS.map((setId) => ({ id: setId, name: EQUIPMENT_SETS.SETS[setId].name })),
       levels: Array.from({ length: GRIND_DIFFICULTY_COUNT }, (_, index) => {
         const difficulty = index + 1;
         const config = GRIND_DIFFICULTIES[difficulty];
         const wins = grind.winsByDifficulty[difficulty];
         const unlocked = difficulty <= grind.unlockedDifficulty;
         const unlockAtScore = difficulty > 1 ? GRIND_DIFFICULTIES[difficulty - 1].unlockScoreToNext : 0;
-        return { difficulty, name: config.name, threat: config.threat, wins, winScore: difficulty, unlockAtScore, winsAtPreviousDifficulty: difficulty > 1 ? GRIND_DIFFICULTIES[difficulty - 1].winsAtCurrentDifficultyToNext : 0, lootCountLabel: config.lootCountLabel, rarityLabel: config.rarityLabel, lootCountChances: config.lootCountTable.map(([count, chance]) => ({ count, chance })), rarityChances: config.rarityTable.map(([rarity, chance]) => ({ rarity, chance })), unlocked, selected: difficulty === grind.selectedDifficulty, lockedReason: unlocked ? "" : `累计讨伐积分${unlockAtScore}后解锁；难度N胜利获得N积分` };
+        return { difficulty, name: config.name, threat: config.threat, wins, winScore: difficulty, unlockAtScore, winsAtPreviousDifficulty: difficulty > 1 ? GRIND_DIFFICULTIES[difficulty - 1].winsAtCurrentDifficultyToNext : 0, lootCountLabel: config.lootCountLabel, rarityLabel: config.rarityLabel, recommendedGear: config.recommendedGear || "", encounterIntel: config.encounterIntel || "", lootCountChances: config.lootCountTable.map(([count, chance]) => ({ count, chance })), rarityChances: config.rarityTable.map(([rarity, chance]) => ({ rarity, chance })), unlocked, selected: difficulty === grind.selectedDifficulty, lockedReason: unlocked ? "" : `累计讨伐积分${unlockAtScore}后解锁；难度N胜利获得N积分` };
       }),
     },
     market: { sellRemaining: state.market.sellRemaining, priceRule: "每天刷新3件装备；每天最多出售5件未穿戴装备", stock: state.market.stock.filter((row) => row.count > 0).map((row) => ({ id: row.id, label: row.label, type: row.type, price: row.price, count: row.count, item: row.item ? clone(row.item) : null })) },
@@ -1292,13 +1565,13 @@ function getPlayerObservation(state) {
     event: event ? { id: event[0], title: event[1].title, scene: event[1].scene } : null,
     recentSignals: state.recent.slice(0, 10).map((row) => ({ day: row.day, kind: row.kind, text: row.text })),
     lastCombat: clone(state.lastCombat), result: clone(state.result),
-    actions: catalog.map((row) => ({ id: row.publicId, label: row.label, kind: row.kind, available: row.available, disabledReason: row.disabledReason, actionPointCost: row.actionPointCost || 0, knownCost: clone(row.knownCost || {}), knownGain: clone(row.knownGain || {}), description: row.description || row.knownResult || "", foodCost: row.foodCost || 0, fullFood: row.fullFood || 0, targetSlot: Number.isInteger(row.targetSlot) ? row.targetSlot : null, targetHeroId: row.targetHeroId || null, targetItemId: row.targetItemId || null, targetStockId: row.targetStockId || null, targetEquipmentSlot: row.targetEquipmentSlot || null, targetDifficulty: Number.isInteger(row.targetDifficulty) ? row.targetDifficulty : null, targetChallengeId: row.targetChallengeId || null, targetChallengeStage: row.targetChallengeStage || null, operation: row.operation || null })),
+    actions: catalog.map((row) => ({ id: row.publicId, label: row.label, kind: row.kind, available: row.available, disabledReason: row.disabledReason, actionPointCost: row.actionPointCost || 0, knownCost: clone(row.knownCost || {}), knownGain: clone(row.knownGain || {}), description: row.description || row.knownResult || "", foodCost: row.foodCost || 0, fullFood: row.fullFood || 0, targetSlot: Number.isInteger(row.targetSlot) ? row.targetSlot : null, targetHeroId: row.targetHeroId || null, targetItemId: row.targetItemId || null, targetStockId: row.targetStockId || null, targetEquipmentSlot: row.targetEquipmentSlot || null, targetDifficulty: Number.isInteger(row.targetDifficulty) ? row.targetDifficulty : null, targetSetSlot: Number.isInteger(row.targetSetSlot) ? row.targetSetSlot : null, targetSetId: row.targetSetId || null, targetChallengeId: row.targetChallengeId || null, targetChallengeStage: row.targetChallengeStage || null, operation: row.operation || null })),
   };
 }
 
 return {
-  VERSION, FINAL_DAY, INVENTORY_LIMIT, HEROES, BUILDINGS, RAIDS, ANCIENT_RUINS, EVENTS, SLOT_DATA, RARITY_DATA, GRIND_DIFFICULTIES, PROSPERITY_LEVELS, POPULATION_UNIT_MILESTONES,
-  createInitialState, getPlayerObservation, actionPointsForPopulation, townProsperity, militiaUnits, trainedUnits, smithUtilization, internalActions,
-  applyPlayerAction, preparePlayerCombat, applyPlayerCombatResult, simulatePlan, combatResultFingerprint, huntPlan, trainingPlan, raidPlan, ancientRuinsPlan, finalBattlePlan, natureSetMockPlan,
+  VERSION, FINAL_DAY, INVENTORY_LIMIT, HEROES, BUILDINGS, RAIDS, ANCIENT_RUINS, EVENTS, SLOT_DATA, RARITY_DATA, GRIND_DIFFICULTIES, GRIND_SET_CONVERSION_CHANCE, PROSPERITY_LEVELS, POPULATION_UNIT_MILESTONES,
+  createInitialState, getPlayerObservation, actionPointsForPopulation, townProsperity, militiaUnits, trainedUnits, smithUtilization, generateItem, internalActions,
+  applyPlayerAction, preparePlayerCombat, applyPlayerCombatResult, simulatePlan, combatResultFingerprint, huntPlan, trainingPlan, raidPlan, ancientRuinsPlan, finalBattlePlan, natureSetMockPlan, cavalryMockPlan, cavalryChargeDemoPlan, combatVfxDemoPlan,
 };
 });

@@ -86,6 +86,30 @@ assert.deepEqual({ x: skillRider.x, y: skillRider.y }, skillStart, "Existing cha
 assert(skillRider.stunTimer > 0, "Intercepted existing charge was not stunned");
 assert(skillChargeSim.signalBus.signals.some((signal) => signal.tags?.includes("chargeIntercept") && signal.meta?.chargeKind === "skillCharge"), "Existing charge interception was not signaled");
 
+const runSim = new COMBAT.CombatSimulation({ randomizeStats: false, seed: "wall-cavalry-run", maxTime: 5 });
+runSim.units = [
+  ...runSim.makeTeam("left", [roleSpec("cavalry", { name: "奔跑骑兵", x: 20, y: 50 })]),
+  ...runSim.makeTeam("right", [{ ...six, name: "奔跑截断盾兵", x: 40, y: 50 }]),
+];
+const [runRider, runWall] = runSim.units;
+runSim.startCavalryRun(runRider, runWall, SKILLS.skills.cavalryRun.effects[0]);
+for (let tick = 0; tick < 30 && runRider.cavalryRunState; tick += 1) runSim.tickCavalryRun(runRider, 0.04);
+assert(runRider.x < runWall.x, "Cavalry run crossed the wall boundary");
+assert.equal(runRider.cavalryRunState, null, "Intercepted cavalry run kept moving");
+assert(runRider.stunTimer > 0, "Intercepted cavalry run was not stunned");
+assert(runSim.signalBus.signals.some((signal) => signal.tags?.includes("chargeIntercept") && signal.meta?.chargeKind === "skillRun"), "Cavalry run interception was not signaled");
+
+const leapSim = new COMBAT.CombatSimulation({ randomizeStats: false, seed: "wall-cavalry-leap", maxTime: 5 });
+leapSim.units = [
+  ...leapSim.makeTeam("left", [roleSpec("cavalry", { name: "跃墙骑兵", x: 20, y: 50 })]),
+  ...leapSim.makeTeam("right", [{ ...six, name: "不能截跳盾兵", x: 35, y: 50, maxHp: 5000 }]),
+];
+const [leapRider, leapWall] = leapSim.units;
+leapSim.startCavalryDoubleLeap(leapRider, leapWall, SKILLS.skills.cavalryDoubleLeap.effects[0]);
+for (let tick = 0; tick < 45 && leapRider.cavalryLeapState; tick += 1) leapSim.tickCavalryDoubleLeap(leapRider, 0.04);
+assert(leapRider.x > leapWall.x, "Double leap failed to pass through the wall boundary");
+assert(!leapSim.signalBus.signals.some((signal) => signal.tags?.includes("chargeIntercept")), "Double leap was incorrectly intercepted by the wall");
+
 const setChargeSim = new COMBAT.CombatSimulation({ randomizeStats: false, seed: "wall-set-charge", maxTime: 5 });
 setChargeSim.units = [
   ...setChargeSim.makeTeam("left", [{ ...equippedCavalry(6), name: "套装冲锋骑兵", x: 20, y: 50 }]),
@@ -112,6 +136,6 @@ assert(!baseline.signals.some((signal) => signal.tags?.includes("sighingWall")),
 console.log(JSON.stringify({
   ok: true,
   thresholds: { twoHp: two.maxHp, threeHp: three.maxHp, shieldPower: three.mechanicModifiers.shieldPower, sixPieceActive: true },
-  direct: { openingPulse: true, intervalPulse: true, normalWalkingPasses: true, skillChargeBlocked: true, setBreakthroughBlocked: true },
+  direct: { openingPulse: true, intervalPulse: true, normalWalkingPasses: true, skillChargeBlocked: true, cavalryRunBlocked: true, doubleLeapPasses: true, setBreakthroughBlocked: true },
   integration: { baselineShield: baseline.metrics.leftShield, setShield: setResult.metrics.leftShield, pulses: pulses.length },
 }, null, 2));

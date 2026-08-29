@@ -29,7 +29,7 @@
   const RARITY_ORDER = { "炼狱": 8, "黑金": 7, "永恒": 6, "神话": 5, "传说": 4, "史诗": 3, "稀有": 2, "普通": 1 };
   const SLOT_ICONS = { "武器": "⚔", "头盔": "⌃", "胸甲": "⬡", "护手": "✦", "腿甲": "▥", "靴子": "⌄", "戒指": "○", "护符": "◇" };
   const RESOURCE_LABELS = { gold: "金币", food: "粮食", population: "实际人口", populationCap: "人口上限" };
-  const STAT_LABELS = { physicalPower: "物理威力", magicPower: "魔法威力", maxHp: "生命", armor: "护甲", magicResist: "魔抗", attackSpeedPct: "攻击速度", skillHastePct: "技能急速" };
+  const STAT_LABELS = { physicalPower: "物理威力", magicPower: "魔法威力", maxHp: "生命", armor: "护甲", magicResist: "魔抗", moveSpeed: "移动速度", attackSpeedPct: "攻击速度", skillHastePct: "技能急速" };
   const PLOT_POSITIONS = [[430, 520], [295, 650], [570, 690], [835, 680], [1060, 560], [1020, 405], [865, 300]];
   const RAID_POSITIONS = { foragers: [245, 240], beastPen: [620, 125], shaman: [1100, 225] };
   const CHALLENGE_POSITION = [1240, 690];
@@ -62,7 +62,7 @@
   ];
   const BUILDING_SIGILS = { house: "舍", farm: "田", conscription: "征", smithy: "锻", market: "市" };
   const UNIT_GLYPHS = { player: "我", captain: "伊", scout: "莱", guard: "马", sellsword: "犬", witch: "盐", hunter: "苔", alchemist: "莎", heiress: "薇", mentor: "艾" };
-  const ROLE_ICONS = { knight: "🛡️", warrior: "⚔️", berserker: "🪓", assassin: "🗡️", ranger: "🏹", mage: "🔥", priest: "✨", warlock: "☠️", bard: "🎵", alchemist: "⚗️" };
+  const ROLE_ICONS = { knight: "🛡️", cavalry: "🐎", warrior: "⚔️", berserker: "🪓", assassin: "🗡️", ranger: "🏹", mage: "🔥", priest: "✨", warlock: "☠️", bard: "🎵", alchemist: "⚗️" };
 
   let state = loadState();
   let formationState = loadFormationState();
@@ -78,6 +78,7 @@
   let pendingCombatResult = null;
   const mockResults = {};
   let battleView = null;
+  let combatEffectRoles = null;
   let grindSession = null;
   let toastTimer = null;
   let mapCamera = null;
@@ -181,6 +182,58 @@
     return [...costs, ...gains].join(" · ") || "不消耗行动";
   }
 
+  function combatEffectRoleEntries() {
+    const seen = new Set();
+    const rows = [];
+    for (const unit of [...(pendingCombat?.leftTeam || []), ...(pendingCombat?.rightTeam || [])]) {
+      const key = unit.roleKey || unit.role;
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      const kit = window.GAME_SKILL_DATA?.roleKits?.[key];
+      rows.push({ key, label: kit?.role || unit.roleName || key, icon: ROLE_ICONS[key] || "◆" });
+    }
+    return rows.sort((a, b) => Number(b.key === "cavalry") - Number(a.key === "cavalry"));
+  }
+
+  function effectFilterLabel(entries) {
+    if (combatEffectRoles === null) return "全部";
+    if (!combatEffectRoles.size) return "已关闭";
+    const chosen = entries.filter((entry) => combatEffectRoles.has(entry.key));
+    return chosen.length === 1 ? chosen[0].label : `${chosen.length}职业`;
+  }
+
+  function applyCombatEffectRoles() {
+    battleView?.setEffectRoles?.(combatEffectRoles === null ? null : [...combatEffectRoles]);
+  }
+
+  function renderCombatEffectFilter() {
+    const filter = document.querySelector("#combat-effect-filter");
+    if (!filter) return;
+    const entries = combatEffectRoleEntries();
+    filter.hidden = mode !== "combat" || !pendingCombat || !entries.length;
+    if (filter.hidden) return;
+    const wasOpen = filter.open;
+    const roleButtons = entries.map((entry) => {
+      const selected = combatEffectRoles === null || combatEffectRoles.has(entry.key);
+      return `<button type="button" class="effect-role-chip ${selected ? "selected" : ""}" data-effect-role="${esc(entry.key)}" aria-pressed="${selected}"><i>${entry.icon}</i>${esc(entry.label)}</button>`;
+    }).join("");
+    filter.innerHTML = `<summary title="只过滤特效，不影响战斗数值">特效 <b>${esc(effectFilterLabel(entries))}</b></summary><div class="effect-role-menu" role="group" aria-label="按职业显示战斗特效"><div class="effect-filter-presets"><button type="button" data-effect-preset="all" class="${combatEffectRoles === null ? "selected" : ""}">全部</button><button type="button" data-effect-preset="none" class="${combatEffectRoles instanceof Set && !combatEffectRoles.size ? "selected" : ""}">关闭</button></div><div class="effect-role-list">${roleButtons}</div><small>只影响飘字、技能名与光效</small></div>`;
+    filter.open = wasOpen;
+    filter.querySelectorAll("[data-effect-preset]").forEach((button) => button.addEventListener("click", () => {
+      combatEffectRoles = button.dataset.effectPreset === "all" ? null : new Set();
+      applyCombatEffectRoles();
+      renderCombatEffectFilter();
+    }));
+    filter.querySelectorAll("[data-effect-role]").forEach((button) => button.addEventListener("click", () => {
+      const role = button.dataset.effectRole;
+      if (combatEffectRoles === null) combatEffectRoles = new Set([role]);
+      else if (combatEffectRoles.has(role)) combatEffectRoles.delete(role);
+      else combatEffectRoles.add(role);
+      applyCombatEffectRoles();
+      renderCombatEffectFilter();
+    }));
+  }
+
   function applyVisibleAction(action, options = {}) {
     if (!action) return;
     if (action.available === false) return showToast(action.disabledReason || "当前无法执行这个行动。");
@@ -213,7 +266,16 @@
   function runAction(action) {
     if (!action) return;
     if (action.available === false) return showToast(action.disabledReason || "当前无法执行这个行动。");
-    if (action.kind === "mock_battle") return startCombat(GAME.natureSetMockPlan(action.mockVariant || "set"));
+    if (action.kind === "mock_battle") {
+      const plan = action.mockKind === "cavalry"
+        ? GAME.cavalryMockPlan(action.mockScale || 4, action.mockLoadout || "noSets")
+        : action.mockKind === "cavalryChargeDemo"
+        ? GAME.cavalryChargeDemoPlan()
+        : action.mockKind === "vfxDemo"
+        ? GAME.combatVfxDemoPlan(action.mockRole || "cavalry")
+        : GAME.natureSetMockPlan(action.mockVariant || "set");
+      return startCombat(plan);
+    }
     if (["combat", "grind"].includes(action.kind)) {
       const plan = GAME.preparePlayerCombat(state, action.id);
       if (!plan) return showToast("这个战斗入口已经失效。");
@@ -381,6 +443,7 @@
   function startCombat(plan) {
     pendingCombat = plan;
     pendingCombatResult = null;
+    combatEffectRoles = plan.mockKind === "vfxDemo" ? new Set([plan.mockRole]) : plan.mockKind === "cavalry" ? new Set(["cavalry"]) : plan.mockKind === "cavalryChargeDemo" ? new Set(["cavalry"]) : null;
     mode = "combat";
     render();
     const mount = document.querySelector("#battle-mount");
@@ -389,10 +452,10 @@
       try {
         if (!window.GAME_BATTLE_VIEW?.mount) throw new Error("共享战斗视图没有加载");
         battleView?.destroy?.();
-        battleView = window.GAME_BATTLE_VIEW.mount({ container: mount, maxTime: plan.maxTime || 150, speed: plan.mock ? 3 : 2.5, camera: false, gameTime: false, postProcessing: false, onFinish: finishCombat });
+        battleView = window.GAME_BATTLE_VIEW.mount({ container: mount, maxTime: plan.maxTime || 150, speed: plan.mock ? 1 : 2.5, camera: false, gameTime: false, postProcessing: false, manualStart: true, focusSkillFeed: true, initialFocusRole: plan.mockKind === "vfxDemo" ? plan.mockRole : null, effectRoles: combatEffectRoles === null ? null : [...combatEffectRoles], distanceRuler: plan.distanceRuler || null, onFinish: finishCombat });
         battleView.start({ leftTeam: structuredClone(plan.leftTeam), rightTeam: structuredClone(plan.rightTeam), seed: plan.seed, title: plan.title, randomizeStats: false });
       } catch (error) {
-        battleView?.destroy?.(); battleView = null; pendingCombat = null; mode = "campaign"; render(); showToast(`战斗无法启动：${error.message || String(error)}`);
+        battleView?.destroy?.(); battleView = null; pendingCombat = null; combatEffectRoles = null; mode = "campaign"; render(); showToast(`战斗无法启动：${error.message || String(error)}`);
       }
     });
   }
@@ -405,7 +468,7 @@
     const box = document.querySelector("#combat-result");
     box.hidden = false;
     box.classList.toggle("loss", !win && !pendingCombat.mock);
-    const setSignals = pendingCombat.mock ? { plant: 0, grow: 0, bloom: 0, spread: 0 } : null;
+    const setSignals = pendingCombat.mockKind === "verdant" ? { plant: 0, grow: 0, bloom: 0, spread: 0 } : null;
     if (setSignals) for (const signal of (result.signals || []).filter((row) => row.kind === "status")) {
       if (signal.tags?.includes("seedPlant")) setSignals.plant += 1;
       if (signal.tags?.includes("seedGrow")) setSignals.grow += 1;
@@ -413,7 +476,7 @@
       if (signal.tags?.includes("seedSpread")) setSignals.spread += 1;
     }
     let comparisonHtml = "";
-    if (pendingCombat.mock) {
+    if (pendingCombat.mockKind === "verdant") {
       const variant = pendingCombat.mockVariant || "set";
       const adaptedUnit = (result.units || []).find((unit) => unit.name === "自然术士·盐枝");
       const adaptedDps = Number(adaptedUnit?.damageDone || 0) / Math.max(0.01, Number(result.duration || 0));
@@ -423,18 +486,53 @@
         comparisonHtml = `<p class="mock-comparison"><strong>六件套相对无套装</strong><span>盐枝输出速度 ×${delta.adaptedDpsMultiplier.toFixed(2)}</span><span>伤害 ${delta.damage >= 0 ? "+" : ""}${delta.damage}</span><span>治疗 ${delta.healing >= 0 ? "+" : ""}${delta.healing}</span><span>击倒 ${delta.defeated >= 0 ? "+" : ""}${delta.defeated}</span><span>用时 ${delta.duration >= 0 ? "+" : ""}${delta.duration.toFixed(1)}s</span></p>`;
       }
     }
+    let cavalrySummary = null;
+    if (["cavalry", "cavalryChargeDemo"].includes(pendingCombat.mockKind)) {
+      const allies = result.units.filter((unit) => unit.side === "left");
+      const cavalry = allies.filter((unit) => unit.role === "cavalry");
+      const cavalryDamage = cavalry.reduce((sum, unit) => sum + Number(unit.damageDone || 0), 0);
+      const cavalryKills = cavalry.reduce((sum, unit) => sum + Number(unit.kills || 0), 0);
+      const averageSurvival = cavalry.reduce((sum, unit) => sum + Number(unit.survivalTime || 0), 0) / Math.max(1, cavalry.length);
+      const alive = cavalry.filter((unit) => unit.alive).length;
+      const cavalryIds = new Set(cavalry.map((unit) => unit.id));
+      const chargeReady = result.signals.filter((signal) => cavalryIds.has(signal.source?.id) && signal.tags?.includes("equipmentSet") && signal.tags?.includes("cavalryCharge") && signal.tags?.includes("chargeReady")).length;
+      const breakthroughs = result.signals.filter((signal) => cavalryIds.has(signal.source?.id) && signal.kind === "movement" && signal.tags?.includes("cavalryCharge") && signal.tags?.includes("breakthrough")).length;
+      const chargeHits = result.signals.filter((signal) => cavalryIds.has(signal.source?.id) && signal.kind === "damage" && signal.tags?.includes("cavalryCharge") && signal.tags?.includes("breakthrough"));
+      const intercepted = result.signals.filter((signal) => cavalryIds.has(signal.target?.id) && signal.tags?.includes("chargeIntercept")).length;
+      const blocked = result.signals.filter((signal) => cavalryIds.has(signal.source?.id) && signal.tags?.includes("chargeBlocked")).length;
+      const charge = { ready: chargeReady, breakthroughs, hits: chargeHits.length, damage: chargeHits.reduce((sum, signal) => sum + Number(signal.amount || 0), 0), interrupted: intercepted + blocked };
+      cavalrySummary = { damageShare: cavalryDamage / Math.max(1, Number(result.metrics.leftDamage || 0)) * 100, kills: cavalryKills, averageSurvival, alive, total: cavalry.length, charge };
+      if (pendingCombat.mockKind === "cavalry") mockResults[`cavalry:${pendingCombat.mockLoadout || "noSets"}:${pendingCombat.mockScale}`] = cavalrySummary;
+    }
     const combatMetrics = `<div class="combat-result-metrics"><span>总伤害<b>${Math.round(result.metrics.leftDamage || 0)}</b></span><span>总治疗<b>${Math.round(result.metrics.leftHealing || 0)}</b></span><span>击倒<b>${pendingCombat.rightTeam.length - result.metrics.rightAlive}/${pendingCombat.rightTeam.length}</b></span><span>用时<b>${Number(result.duration || 0).toFixed(1)}s</b></span></div>`;
-    const metrics = setSignals
+    const metrics = cavalrySummary
+      ? `<div class="combat-result-metrics"><span>骑兵输出占比<b>${cavalrySummary.damageShare.toFixed(1)}%</b></span><span>平均生存<b>${cavalrySummary.averageSurvival.toFixed(1)}s</b></span><span>亲手击杀<b>${cavalrySummary.kills}</b></span><span>结束存活<b>${cavalrySummary.alive}/${cavalrySummary.total}</b></span></div>${pendingCombat.mockLoadout === "fullSets" ? `<div class="combat-result-metrics charge-metrics"><span>冲锋蓄势<b>${cavalrySummary.charge.ready}</b></span><span>实际突破<b>${cavalrySummary.charge.breakthroughs}</b></span><span>突破命中<b>${cavalrySummary.charge.hits}</b></span><span>突破伤害<b>${Math.round(cavalrySummary.charge.damage)}</b></span></div>` : ""}`
+      : setSignals
       ? `${combatMetrics}${pendingCombat.mockVariant === "set" ? `<div class="combat-result-metrics set-metrics"><span>播种<b>${setSignals.plant}</b></span><span>生长<b>${setSignals.grow}</b></span><span>绽放<b>${setSignals.bloom}</b></span><span>传播<b>${setSignals.spread}</b></span></div>` : ""}`
       : `<div class="combat-result-metrics"><span>我方存活<b>${result.metrics.leftAlive}/${pendingCombat.leftTeam.length}</b></span><span>敌方存活<b>${result.metrics.rightAlive}/${pendingCombat.rightTeam.length}</b></span><span>伤害<b>${Math.round(result.metrics.leftDamage || 0)}</b></span><span>用时<b>${Number(result.duration || 0).toFixed(1)}s</b></span></div>`;
-    box.innerHTML = `<h3>${pendingCombat.mock ? pendingCombat.mockVariant === "baseline" ? "无套装对照结束" : "六件套演武结束" : win ? "我方获胜" : "我方失利"}</h3>${metrics}${comparisonHtml}<p>${fallen.length ? `倒下：${esc(fallen.join("、"))}<br>` : ""}主要输出：${top.map((unit) => `${esc(unit.name)} ${Math.round(unit.damageDone || 0)}`).join(" · ") || "暂无"}${pendingCombat.mock ? `<br><strong>${mockResults.baseline && mockResults.set ? "已完成同条件对比。" : "返回演武场再运行另一组，即可显示同条件差值。"}</strong>` : win ? "" : "<br><strong>失败不消耗行动力或粮食，可以立即重试。</strong>"}</p><button id="commit-combat" class="button ${win || pendingCombat.mock ? "primary" : "danger"}">${pendingCombat.mock ? "返回演武场" : win ? "查看战后变化" : "返回地图并重试"}</button>`;
+    const mockResultNote = pendingCombat.mockKind === "cavalryChargeDemo"
+      ? `<br><strong>标尺以骑兵出生点为0；六件套门槛16，二连跃总位移20，冲锋突破位移12。</strong>`
+      : pendingCombat.mockKind === "vfxDemo"
+      ? `<br><strong>这是职业表现样片，只改变播放方式，不改变技能伤害、冷却或目标选择。</strong>`
+      : pendingCombat.mockKind === "cavalry"
+      ? `<br><strong>${pendingCombat.mockScale}v${pendingCombat.mockScale}为单次${pendingCombat.mockLoadout === "fullSets" ? `全员六件套样本；冲锋被截断${cavalrySummary?.charge?.interrupted || 0}次` : "无套装样本"}；可返回演武台重复观察。</strong>`
+      : pendingCombat.mock ? `<br><strong>${mockResults.baseline && mockResults.set ? "已完成同条件对比。" : "返回演武台再运行另一组，即可显示同条件差值。"}</strong>` : "";
+    const resultTitle = pendingCombat.mockKind === "cavalryChargeDemo"
+      ? "马骑兵 · 冲锋距离演示结束"
+      : pendingCombat.mockKind === "vfxDemo"
+      ? `${pendingCombat.title}结束`
+      : pendingCombat.mockKind === "cavalry"
+      ? `马骑兵 ${pendingCombat.mockScale}v${pendingCombat.mockScale}${pendingCombat.mockLoadout === "fullSets" ? " · 全员六件套" : " · 无套装"}演武结束`
+      : pendingCombat.mock ? pendingCombat.mockVariant === "baseline" ? "无套装对照结束" : "六件套演武结束" : win ? "我方获胜" : "我方失利";
+    box.innerHTML = `<h3>${resultTitle}</h3>${metrics}${comparisonHtml}<p>${fallen.length ? `倒下：${esc(fallen.join("、"))}<br>` : ""}主要输出：${top.map((unit) => `${esc(unit.name)} ${Math.round(unit.damageDone || 0)}`).join(" · ") || "暂无"}${mockResultNote || (win ? "" : "<br><strong>失败不消耗行动力或粮食，可以立即重试。</strong>")}</p><button id="commit-combat" class="button ${win || pendingCombat.mock ? "primary" : "danger"}">${pendingCombat.mock ? "返回演武台" : win ? "查看战后变化" : "返回地图并重试"}</button>`;
     document.querySelector("#commit-combat").addEventListener("click", commitCombat);
   }
 
   function commitCombat() {
     if (!pendingCombat || !pendingCombatResult) return;
     if (pendingCombat.mock) {
-      battleView?.destroy?.(); battleView = null; pendingCombat = null; pendingCombatResult = null; mode = "campaign"; selectedNodeId = "mock:verdant-circle"; render();
+      const returnNodeId = pendingCombat.mockReturnNodeId || "mock:training-ground";
+      battleView?.destroy?.(); battleView = null; pendingCombat = null; pendingCombatResult = null; combatEffectRoles = null; mode = "campaign"; selectedNodeId = returnNodeId; render();
       return;
     }
     try {
@@ -444,7 +542,7 @@
       const plan = pendingCombat;
       state = GAME.applyPlayerCombatResult(state, plan.publicActionId, pendingCombatResult, plan.deployment);
       saveState();
-      battleView?.destroy?.(); battleView = null; pendingCombat = null; pendingCombatResult = null; mode = "campaign";
+      battleView?.destroy?.(); battleView = null; pendingCombat = null; pendingCombatResult = null; combatEffectRoles = null; mode = "campaign";
       const after = view();
       const unlocked = after.raids.filter((raid) => !beforeRaids.has(raid.title));
       const captured = after.outposts.filter((outpost) => !beforeOutposts.has(outpost.id));
@@ -534,7 +632,7 @@
     const unlockText = current.grind.nextUnlockScore ? ` · 当前难度每胜+${current.grind.selectedWinScore}积分；${current.grind.unlockScore}/${current.grind.nextUnlockScore}解锁难度${current.grind.nextUnlockDifficulty}` : " · 已解锁全部难度";
     document.querySelector("#grind-status").textContent = (grindSession.fighting ? "当前轮战斗中" : grindSession.lastWin === false ? (grindSession.auto ? "本轮战败，没有掉落；下一批敌人正在接近" : "本轮战败，没有掉落") : grindSession.auto ? "下一批敌人正在接近" : "连续讨伐已经停止") + unlockText;
     document.querySelector("#grind-loot-count").textContent = `${grindSession.loot.length}件`;
-    document.querySelector("#grind-loot-shelf").innerHTML = grindSession.loot.length ? grindSession.loot.map((item) => `<div class="loot-cell rarity-${esc(item.rarity)}"><i>${SLOT_ICONS[item.slotLabel] || "◆"}</i><b>+${item.power}</b><small>${esc(item.rarity)}${esc(item.slotLabel)}</small></div>`).join("") : `<div class="empty-actions">战胜敌人后，掉落会陈列在这里。</div>`;
+    document.querySelector("#grind-loot-shelf").innerHTML = grindSession.loot.length ? grindSession.loot.map((item) => `<div class="loot-cell rarity-${esc(item.rarity)} ${item.setId ? "set-piece" : ""}">${item.setName ? `<em>${esc(item.setName)}</em>` : ""}<i>${SLOT_ICONS[item.slotLabel] || "◆"}</i><b>+${item.power}</b><small>${esc(item.rarity)}${esc(item.slotLabel)}</small></div>`).join("") : `<div class="empty-actions">战胜敌人后，掉落会陈列在这里。</div>`;
     const stop = document.querySelector("#stop-grind");
     stop.textContent = grindSession.auto ? "本轮后停止" : grindSession.fighting ? "等待本轮结束" : "返回地图";
     document.querySelector("#grind-actions").innerHTML = !grindSession.fighting && !grindSession.auto ? `<button class="mini-button" data-grind-retry>再刷一轮</button><button class="mini-button" data-grind-leave>返回地图</button>` : "";
@@ -555,13 +653,25 @@
     }
 
     const grindBattles = current.actions.filter((action) => action.kind === "grind");
-    const grindSettings = current.actions.filter((action) => action.kind === "grind_setting");
+    const grindSettings = current.actions.filter((action) => ["grind_setting", "grind_set_setting"].includes(action.kind));
     const visibleGrind = grindBattles.length ? [...grindSettings, ...grindBattles] : [{ id: "ui:grind-unavailable", label: "前往边林免费讨伐魔物", kind: "grind", available: false, disabledReason: current.result ? "本轮战争已经结束；重开后可以再次刷装。" : "当前阶段暂时无法离开这里刷装。", actionPointCost: 0, knownCost: {}, description: "刷怪地点始终保留在地图上。" }];
     const grindLocked = grindBattles.length === 0 || grindBattles.every((action) => action.available === false);
     const selectedGrind = current.grind.levels.find((row) => row.selected);
-    rows.push({ id: "grind", title: "边林讨伐", kicker: "五档无限刷装", description: "难度N获胜一次增加N点讨伐积分；累计5/20/90/200积分依次解锁新难度。解锁后不会自动切换。", status: grindLocked ? "地点已知 · 暂时不能出发" : `讨伐积分${current.grind.unlockScore} · 总胜场${current.grind.totalWins} · 当前难度${selectedGrind.difficulty}「${selectedGrind.name}」`, actions: visibleGrind, grind: current.grind, x: 1190, y: 275, sigil: "猎", type: grindLocked ? "grind locked" : "grind" });
+    rows.push({ id: "grind", title: "边林讨伐", kicker: "六层无限刷装", description: "难度N获胜一次增加N点讨伐积分；累计5/20/90/200/450积分依次解锁新难度。史诗及以上装备有20%概率转化为套装。", status: grindLocked ? "地点已知 · 暂时不能出发" : `讨伐积分${current.grind.unlockScore} · 总胜场${current.grind.totalWins} · 当前难度${selectedGrind.difficulty}「${selectedGrind.name}」`, actions: visibleGrind, grind: current.grind, x: 1190, y: 275, sigil: "猎", type: grindLocked ? "grind locked" : "grind" });
 
-    rows.push({ id: "mock:verdant-circle", title: "繁生之环演武场", kicker: "同条件 A/B 测试", description: "两场使用完全相同的角色、自然技能、敌人和随机种子；唯一差别是是否穿着繁生之环六件套。建议先跑无套装，再跑六件套。", status: mockResults.baseline && mockResults.set ? "两组已完成 · 战后可查看差值" : "不消耗行动力或粮食 · 不改变存档", yieldLabel: "A/B", actions: [{ id: "mock:verdant-circle:baseline", label: "A · 无套装对照", kind: "mock_battle", mockVariant: "baseline", available: true, actionPointCost: 0, knownCost: {}, description: "自然技能照常施放，但没有播种、绽放与传播。" }, { id: "mock:verdant-circle:set", label: "B · 繁生之环六件套", kind: "mock_battle", mockVariant: "set", available: true, actionPointCost: 0, knownCost: {}, description: "除套装外与A组完全相同；战后显示相对差值。" }], x: 1060, y: 760, sigil: "芽", type: "mock" });
+    const cavalryScales = [4, 8, 20];
+    const noSetDone = cavalryScales.filter((size) => mockResults[`cavalry:noSets:${size}`]).length;
+    const fullSetDone = cavalryScales.filter((size) => mockResults[`cavalry:fullSets:${size}`]).length;
+    rows.push({ id: "mock:training-ground", title: "灰谷演武台", kicker: "职业、表现与套装测试", description: "不消耗行动力、粮食，也不改变存档。顶部三场是短时职业表现样片；其余入口保留数值、冲锋与套装验证。", status: `表现样片 3场 · 无套装 ${noSetDone}/3 · 全套装 ${fullSetDone}/3${mockResults.baseline && mockResults.set ? " · 繁生A/B已完成" : ""}`, yieldLabel: "演武", actions: [
+      { id: "mock:vfx:cavalry", label: "表现样片 · 骑兵「二连跃」", kind: "mock_battle", mockKind: "vfxDemo", mockRole: "cavalry", available: true, actionPointCost: 0, knownCost: {}, description: "只保留二连跃：蓄力方向、两段高速拖影、两次马蹄落地冲击；第二次落地给出更强的屏幕节拍。" },
+      { id: "mock:vfx:mage", label: "表现样片 · 法师「流星火雨」", kind: "mock_battle", mockKind: "vfxDemo", mockRole: "mage", available: true, actionPointCost: 0, knownCost: {}, description: "只保留流星火雨：施法阵短暂聚焦，随后三个落点分别出现下坠火核、爆心和地面余焰。" },
+      { id: "mock:vfx:priest", label: "表现样片 · 牧师「神圣庇护」", kind: "mock_battle", mockKind: "vfxDemo", mockRole: "priest", available: true, actionPointCost: 0, knownCost: {}, description: "前卫先承受攻击，牧师随后展开圣域；治疗与护盾通过连线和独立光柱落到每名友军身上。" },
+      { id: "mock:cavalry:charge-demo", label: "冲锋距离演示 · 骑兵对木桩", kind: "mock_battle", mockKind: "cavalryChargeDemo", available: true, actionPointCost: 0, knownCost: {}, description: "一名六件套马骑兵对静止木桩；暂时关闭主动技能以隔离观察走路蓄势和套装突破，战场显示从出生点起算的距离标尺与实时连续移动进度。" },
+      ...cavalryScales.map((size) => ({ id: `mock:cavalry:no-sets:${size}`, label: `无套装 · ${size}v${size}`, kind: "mock_battle", mockKind: "cavalry", mockLoadout: "noSets", mockScale: size, available: true, actionPointCost: 0, knownCost: {}, description: `双方均无骑士；我方每4人为马骑兵、战士、法师、牧师，敌方以第二名战士替换马骑兵。` })),
+      ...cavalryScales.map((size) => ({ id: `mock:cavalry:full-sets:${size}`, label: `全员六件套 · ${size}v${size}`, kind: "mock_battle", mockKind: "cavalry", mockLoadout: "fullSets", mockScale: size, available: true, actionPointCost: 0, knownCost: {}, description: `同样双方无骑士；所有单位穿对应职业六件套，战后额外显示骑兵冲锋蓄势、突破、命中和伤害。` })),
+      { id: "mock:verdant-circle:baseline", label: "繁生之环 A · 无套装", kind: "mock_battle", mockKind: "verdant", mockVariant: "baseline", available: true, actionPointCost: 0, knownCost: {}, description: "自然技能照常施放，但没有播种、绽放与传播。" },
+      { id: "mock:verdant-circle:set", label: "繁生之环 B · 六件套", kind: "mock_battle", mockKind: "verdant", mockVariant: "set", available: true, actionPointCost: 0, knownCost: {}, description: "除套装外与A组完全相同；战后显示相对差值。" },
+    ], x: 1060, y: 760, sigil: "武", type: "mock" });
 
     current.raids.forEach((raid) => {
       const raidActions = current.actions.filter((action) => action.kind === "combat" && action.label.includes(raid.title));
@@ -870,7 +980,7 @@
     document.querySelector("#node-title").textContent = location.title;
     document.querySelector("#node-description").textContent = location.description;
     document.querySelector("#node-status").textContent = location.status;
-    const normalActions = location.actions.filter((action) => action.kind !== "grind_setting");
+    const normalActions = location.actions.filter((action) => !["grind_setting", "grind_set_setting"].includes(action.kind));
     document.querySelector("#node-action-count").textContent = `${normalActions.filter((action) => action.available !== false).length}/${normalActions.length}`;
     const grindHtml = location.grind ? renderGrindDifficultyPanel(location) : "";
     const actionHtml = normalActions.map((action) => `<button class="action-card ${action.available === false ? "unavailable" : ""}" data-action-id="${esc(action.id)}" ${action.available === false ? "disabled" : ""}><strong>${esc(action.label)}</strong><em>${esc(costText(action))}</em>${action.description ? `<small>${esc(action.description)}</small>` : ""}${action.disabledReason ? `<small class="disabled-reason">${esc(action.disabledReason)}</small>` : ""}</button>`).join("");
@@ -879,6 +989,10 @@
       const actionId = button.dataset.actionId;
       const action = view().actions.find((row) => row.id === actionId) || location.actions.find((row) => row.id === actionId);
       runAction(action);
+    }));
+    document.querySelectorAll("#node-actions [data-grind-set-slot]").forEach((select) => select.addEventListener("change", () => {
+      const action = view().actions.find((row) => row.operation === "select_grind_set" && row.targetSetSlot === Number(select.dataset.grindSetSlot) && row.targetSetId === select.value);
+      if (action) runAction(action);
     }));
     requestAnimationFrame(positionPopover);
   }
@@ -890,14 +1004,19 @@
       const action = location.actions.find((row) => row.operation === "select_grind_difficulty" && row.targetDifficulty === level.difficulty);
       const cls = level.selected ? "selected" : level.unlocked ? "" : "locked";
       const interactive = Boolean(action && action.available !== false);
-      return `<button class="grind-level ${cls}" ${interactive ? `data-action-id="${esc(action.id)}"` : "disabled"} title="${esc(action?.disabledReason || `${level.threat} · ${level.lootCountLabel} · ${level.rarityLabel}`)}"><b>${level.difficulty}</b><span>${level.unlocked ? level.name : "未解锁"}</span></button>`;
+      return `<button class="grind-level ${cls}" ${interactive ? `data-action-id="${esc(action.id)}"` : "disabled"} title="${esc(action?.disabledReason || `${level.threat} · ${level.lootCountLabel} · ${level.rarityLabel}${level.recommendedGear ? ` · ${level.recommendedGear}` : ""}${level.encounterIntel ? ` · ${level.encounterIntel}` : ""}`)}"><b>${level.difficulty}</b><span>${level.unlocked ? level.name : "未解锁"}</span></button>`;
     }).join("");
     const remainingScore = grind.nextUnlockScore ? Math.max(0, grind.nextUnlockScore - grind.unlockScore) : 0;
     const pct = grind.nextUnlockScore ? Math.min(100, Math.round(grind.unlockScore / grind.nextUnlockScore * 100)) : 100;
     const nextText = grind.nextUnlockScore ? `还差${remainingScore}积分；按当前难度约${Math.ceil(remainingScore / selected.winScore)}胜解锁难度${grind.nextUnlockDifficulty}` : "全部难度已解锁";
     const progressLabel = grind.nextUnlockScore ? `讨伐积分 ${grind.unlockScore}/${grind.nextUnlockScore}` : `讨伐积分 ${grind.unlockScore}`;
     const progressBar = grind.nextUnlockScore ? `<div class="grind-progress"><i style="width:${pct}%"></i></div>` : "";
-    return `<section class="grind-difficulty-panel"><div class="grind-levels">${selector}</div><div class="grind-progress-copy"><strong>${progressLabel}</strong><span>${esc(nextText)}</span></div>${progressBar}<small>难度N胜利一次获得N积分；当前难度每胜+${selected.winScore}<br>当前难度：${esc(selected.threat)} · ${esc(selected.lootCountLabel)}<br>${esc(selected.rarityLabel)}</small></section>`;
+    const setPoolUnlocked = grind.unlockedDifficulty >= 6;
+    const setSelectors = grind.setChoices.map((choice) => `<label><span>定向${choice.slotIndex + 1}</span><select data-grind-set-slot="${choice.slotIndex}" ${setPoolUnlocked ? "" : "disabled"}>${grind.setOptions.map((set) => `<option value="${esc(set.id)}" ${set.id === choice.id ? "selected" : ""}>${esc(set.name)}</option>`).join("")}</select></label>`).join("");
+    const setPool = `<div class="grind-set-pool ${setPoolUnlocked ? "unlocked" : "locked"}"><header><strong>难度6定向套装池</strong><small>${setPoolUnlocked ? "史诗及以上只会转化为以下三套之一" : "450积分解锁"}</small></header><div>${setSelectors}</div></div>`;
+    const gearRecommendation = selected.recommendedGear ? `<br><b>${esc(selected.recommendedGear)}</b>` : "";
+    const encounterIntel = selected.encounterIntel ? `<br><span>${esc(selected.encounterIntel)}</span>` : "";
+    return `<section class="grind-difficulty-panel"><div class="grind-levels">${selector}</div><div class="grind-progress-copy"><strong>${progressLabel}</strong><span>${esc(nextText)}</span></div>${progressBar}<small>难度N胜利一次获得N积分；当前难度每胜+${selected.winScore}<br>当前难度：${esc(selected.threat)} · ${esc(selected.lootCountLabel)}<br>${esc(selected.rarityLabel)}${gearRecommendation}${encounterIntel}<br>史诗及以上：每件20%概率转化为套装</small>${setPool}</section>`;
   }
 
   function ensureSelections(current) {
@@ -1220,7 +1339,7 @@
       const item = slot.item;
       const base = item ? Object.entries(item.baseStats || {}).map(([key, value]) => `${STAT_LABELS[key] || key}+${value}`).join(" · ") : "";
       const affixes = item ? item.affixes.map((affix) => `${affix.label}+${affix.value}${affix.percent ? "%" : ""}`).join(" · ") : "";
-      const tooltip = item ? `<div class="equipment-slot-tooltip"><span>${esc(slot.slotLabel)} · ${esc(item.rarity)}</span><strong class="rarity-${esc(item.rarity)}">${esc(item.name)}</strong><p>显示评分 +${item.power}</p><p>${esc(base || "无基础属性")}</p><p>${esc(affixes || "无额外词条")}</p></div>` : `<div class="equipment-slot-tooltip"><span>${esc(slot.slotLabel)}</span><strong>空装备槽</strong><p>从右侧背包选择一件${esc(slot.slotLabel)}进行装备。</p></div>`;
+      const tooltip = item ? `<div class="equipment-slot-tooltip"><span>${esc(slot.slotLabel)} · ${esc(item.rarity)}</span><strong class="rarity-${esc(item.rarity)}">${esc(item.name)}</strong>${item.setName ? `<p class="set-item-note">套装 · ${esc(item.setName)}</p>` : ""}<p>显示评分 +${item.power}</p><p>${esc(base || "无基础属性")}</p><p>${esc(affixes || "无额外词条")}</p></div>` : `<div class="equipment-slot-tooltip"><span>${esc(slot.slotLabel)}</span><strong>空装备槽</strong><p>从右侧背包选择一件${esc(slot.slotLabel)}进行装备。</p></div>`;
       return `<button type="button" class="portrait-equipment-slot ${item ? `filled rarity-border-${esc(item.rarity)}` : "empty"}" ${item ? `data-equipment-item="${esc(item.id)}"` : ""} aria-label="${esc(slot.slotLabel)}：${item ? esc(item.name) : "空"}"><i>${SLOT_ICONS[slot.slotLabel] || "◆"}</i>${tooltip}</button>`;
     };
     const leftSlots = hero.equipment.slice(0, 4).map(slotHtml).join("");
@@ -1238,7 +1357,7 @@
     const statNote = hero.equipmentLocked ? "这是该民兵当前的基础战斗数值；装备栏尚未开放。" : "数值已经包含当前穿戴装备；这里只展示玩家可见的结果，不显示内部胜率。";
     document.querySelector("#equipment-character-panel").innerHTML = `<header class="character-page-nav"><button type="button" class="character-page-arrow" data-character-page="${previousHero ? esc(previousHero.id) : ""}" ${previousHero ? "" : "disabled"} aria-label="上一个人物">‹</button><div><span>${heroIndex + 1}/${targets.length} · ${esc(stateLabel)}</span><strong>${esc(hero.name)}</strong></div><button type="button" class="character-page-arrow" data-character-page="${nextHero ? esc(nextHero.id) : ""}" ${nextHero ? "" : "disabled"} aria-label="下一个人物">›</button></header><div class="character-stage ${hero.equipmentLocked ? "equipment-locked" : ""}"><div class="portrait-slots left">${leftSlots}</div><div class="character-portrait"><span class="portrait-placeholder" aria-hidden="true"></span><h3>${esc(hero.name)}</h3><p>${esc(hero.role)}</p><div class="affix-tags">${affixTags}</div><strong class="portrait-power ${hero.equipmentLocked ? "locked" : ""}">${esc(powerLabel)}</strong></div><div class="portrait-slots right">${rightSlots}</div></div><div class="character-skills"><header><span>技能</span><div><button type="button" class="mini-button ${hero.equipmentLocked ? "equipment-locked" : ""}" id="modal-auto-equip" ${!autoEquipAction || autoEquipAction.available === false ? "disabled" : ""} title="${hero.equipmentLocked ? esc(hero.equipmentLockReason) : "一键为当前单位配装"}">${hero.equipmentLocked ? "装备锁定" : "一键当前"}</button><button type="button" class="mini-button" id="modal-auto-equip-all" ${!autoEquipAllAction || autoEquipAllAction.available === false ? "disabled" : ""}>一键全队</button><button type="button" class="mini-button character-stat-toggle" aria-label="悬停查看完整数值">数值</button><aside class="character-stat-overlay"><span class="eyebrow">当前战斗数值</span><h3>${esc(hero.name)}</h3><div class="character-stat-grid">${stats}</div><p>${esc(statNote)}</p></aside></div></header><div class="character-skill-grid">${skills}</div></div>`;
 
-    const itemCells = items.map((item) => { const owner = owners.get(item.id); const ownerState = owner?.id === hero.id ? "current" : owner ? "other" : "free"; const ownerLabel = owner?.id === hero.id ? "当前" : owner ? "他人" : ""; return `<button type="button" class="equipment-item-cell ${item.id === selectedItem?.id ? "selected" : ""} ${ownerState} rarity-border-${esc(item.rarity)}" data-backpack-item="${esc(item.id)}" title="${esc(item.name)}｜${esc(item.rarity)}｜评分+${item.power}${owner ? `｜${esc(owner.name)}已装备` : ""}"><i>${SLOT_ICONS[item.slotLabel] || "◆"}</i><strong class="rarity-${esc(item.rarity)}">${esc(item.name)}</strong><small>${esc(item.slotLabel)} · +${item.power}</small>${ownerLabel ? `<em>${ownerLabel}</em>` : ""}</button>`; }).join("");
+    const itemCells = items.map((item) => { const owner = owners.get(item.id); const ownerState = owner?.id === hero.id ? "current" : owner ? "other" : "free"; const ownerLabel = owner?.id === hero.id ? "当前" : owner ? "他人" : ""; return `<button type="button" class="equipment-item-cell ${item.id === selectedItem?.id ? "selected" : ""} ${ownerState} ${item.setId ? "set-piece" : ""} rarity-border-${esc(item.rarity)}" data-backpack-item="${esc(item.id)}" title="${esc(item.name)}｜${esc(item.rarity)}｜评分+${item.power}${owner ? `｜${esc(owner.name)}已装备` : ""}">${item.setName ? `<span class="set-badge">套</span>` : ""}<i>${SLOT_ICONS[item.slotLabel] || "◆"}</i><strong class="rarity-${esc(item.rarity)}">${esc(item.name)}</strong><small>${esc(item.slotLabel)} · +${item.power}</small>${ownerLabel ? `<em>${ownerLabel}</em>` : ""}</button>`; }).join("");
     let detailHtml = `<div class="equipment-item-detail empty">背包是空的。</div>`;
     if (selectedItem) {
       const equippedBy = owners.get(selectedItem.id);
@@ -1247,7 +1366,7 @@
       const itemStats = Object.entries(selectedItem.baseStats || {}).map(([key, value]) => `${STAT_LABELS[key] || key}+${value}`).join(" · ");
       const itemAffixes = selectedItem.affixes.map((affix) => `${affix.label}+${affix.value}${affix.percent ? "%" : ""}`).join(" · ");
       const transfer = equippedBy && equippedBy.id !== hero.id ? `由${equippedBy.name}穿戴；需要先由该单位卸下。` : equippedBy ? `当前由${hero.name}穿戴。` : "当前未被任何单位穿戴。";
-      detailHtml = `<div class="equipment-item-detail"><div><span class="eyebrow">${esc(selectedItem.slotLabel)} · ${esc(selectedItem.rarity)}</span><h3 class="rarity-${esc(selectedItem.rarity)}">${esc(selectedItem.name)}</h3><p>评分+${selectedItem.power} · ${esc(itemStats || "无基础属性")}</p><p>${esc(itemAffixes || "无额外词条")}</p><small class="${equippedBy && equippedBy.id !== hero.id ? "disabled-reason" : ""}">${esc(transfer)}</small></div><div class="equipment-item-actions">${equipAction ? `<button type="button" class="button primary" data-modal-equip="${esc(equipAction.id)}">装备</button>` : ""}${unequipAction ? `<button type="button" class="button quiet" data-modal-unequip="${esc(unequipAction.id)}">卸下</button>` : ""}</div></div>`;
+      detailHtml = `<div class="equipment-item-detail"><div><span class="eyebrow">${esc(selectedItem.slotLabel)} · ${esc(selectedItem.rarity)}</span><h3 class="rarity-${esc(selectedItem.rarity)}">${esc(selectedItem.name)}</h3>${selectedItem.setName ? `<p class="set-item-note">${esc(selectedItem.setRank || "套装")}套装 · ${esc(selectedItem.setName)} · 3/6件激活</p>` : ""}<p>评分+${selectedItem.power} · ${esc(itemStats || "无基础属性")}</p><p>${esc(itemAffixes || "无额外词条")}</p><small class="${equippedBy && equippedBy.id !== hero.id ? "disabled-reason" : ""}">${esc(transfer)}</small></div><div class="equipment-item-actions">${equipAction ? `<button type="button" class="button primary" data-modal-equip="${esc(equipAction.id)}">装备</button>` : ""}${unequipAction ? `<button type="button" class="button quiet" data-modal-unequip="${esc(unequipAction.id)}">卸下</button>` : ""}</div></div>`;
     }
     const backpackNote = hero.equipmentLocked ? `<p class="equipment-lock-note">装备未开放 · 这里只能查看物品</p>` : `<p><i class="current"></i>当前穿戴在前　<i class="free"></i>未穿戴居中　<i class="other"></i>他人穿戴在后</p>`;
     document.querySelector("#equipment-backpack-panel").innerHTML = `<header><div><span class="eyebrow">背包</span><strong>${items.length}/200</strong></div>${backpackNote}</header><div class="equipment-backpack-grid">${itemCells || `<div class="empty-actions">还没有装备。</div>`}</div>${detailHtml}`;
@@ -1371,6 +1490,7 @@
     if (mode === "combat") {
       document.querySelector("#combat-title").textContent = pendingCombat?.title || "战斗";
       document.querySelector("#combat-supply").innerHTML = pendingCombat?.mock ? `<span>演武测试 <b>不改存档</b></span><span>共享战斗 <b>完整运行</b></span>` : pendingCombat ? `<span>粮食消耗 <b>${pendingCombat.foodCommitted || 0}</b></span>${pendingCombat.totalArmy != null ? `<span>军队出战 <b>${pendingCombat.deployedArmy}/${pendingCombat.totalArmy}</b></span>` : ""}` : "";
+      renderCombatEffectFilter();
       document.querySelector("#combat-result").hidden = !pendingCombatResult;
     }
     if (mode === "grind") renderGrindHud();
@@ -1501,7 +1621,7 @@
     document.querySelector("#stop-grind").addEventListener("click", stopGrind);
     document.querySelector("#recruit-confirm").addEventListener("click", () => { document.querySelector("#recruit-overlay").hidden = true; });
     document.querySelector("#restart-open").addEventListener("click", () => document.querySelector("#restart-dialog").showModal());
-    document.querySelector("#restart-confirm").addEventListener("click", () => { const seed = document.querySelector("#restart-seed").value.trim() || "browser-border-village"; battleView?.destroy?.(); battleView = null; clearTimeout(grindSession?.timer); grindSession = null; pendingCombat = null; pendingCombatResult = null; delete mockResults.baseline; delete mockResults.set; document.querySelector("#equipment-dialog")?.close(); mode = "campaign"; state = GAME.createInitialState(seed); formationState = defaultFormationState(); equipmentMode = "character"; formationCityFilter = false; formationPositioning = false; selectedFormationPositionMemberId = null; selectedNodeId = "command"; selectedHeroId = "player"; selectedItemId = null; partyScrollLeft = 0; partyRosterScrollTop = 0; partyDetailScrollTop = 0; equipmentBackpackScrollTop = 0; newlyUnlocked.clear(); saveState(); saveFormationState(); render(); });
+    document.querySelector("#restart-confirm").addEventListener("click", () => { const seed = document.querySelector("#restart-seed").value.trim() || "browser-border-village"; battleView?.destroy?.(); battleView = null; clearTimeout(grindSession?.timer); grindSession = null; pendingCombat = null; pendingCombatResult = null; Object.keys(mockResults).forEach((key) => delete mockResults[key]); document.querySelector("#equipment-dialog")?.close(); mode = "campaign"; state = GAME.createInitialState(seed); formationState = defaultFormationState(); equipmentMode = "character"; formationCityFilter = false; formationPositioning = false; selectedFormationPositionMemberId = null; selectedNodeId = "command"; selectedHeroId = "player"; selectedItemId = null; partyScrollLeft = 0; partyRosterScrollTop = 0; partyDetailScrollTop = 0; equipmentBackpackScrollTop = 0; newlyUnlocked.clear(); saveState(); saveFormationState(); render(); });
     window.addEventListener("keydown", (event) => { if (event.key !== "Escape" || mode !== "campaign") return; if (dockExpanded) { setDockExpanded(false); return; } if (selectedNodeId) { selectedNodeId = null; renderMap(view()); } });
   }
 

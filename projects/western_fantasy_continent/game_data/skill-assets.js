@@ -14,7 +14,8 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 285,
         "power": 46,
         "armor": 7,
-        "magicResist": 4,
+        "magicResist": 9,
+        "moveSpeed": 7,
         "range": 35,
         "icon": "fizzing-flask",
         "kit": {
@@ -31,7 +32,8 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 282,
         "power": 57,
         "armor": 7,
-        "magicResist": 4,
+        "magicResist": 0,
+        "moveSpeed": 10,
         "range": 12,
         "icon": "daggers",
         "kit": {
@@ -48,7 +50,8 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 285,
         "power": 45,
         "armor": 7,
-        "magicResist": 4,
+        "magicResist": 3,
+        "moveSpeed": 7,
         "range": 36,
         "icon": "guitar",
         "kit": {
@@ -65,7 +68,8 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 330,
         "power": 58,
         "armor": 7,
-        "magicResist": 4,
+        "magicResist": 9,
+        "moveSpeed": 7,
         "range": 12,
         "icon": "axe-swing",
         "kit": {
@@ -75,6 +79,28 @@ const GAME_SKILL_ASSETS = (() => {
           "ultimate": "undyingRoar"
         }
       },
+      "cavalry": {
+        "name": "铁蹄马骑兵",
+        "role": "马骑兵",
+        "fantasy": "低频重招，在驰骋与腾跃中穿过敌阵，靠击杀接续冲锋",
+        "hp": 320,
+        "power": 50,
+        "physicalPower": 50,
+        "magicPower": 0,
+        "armor": 9,
+        "magicResist": 9,
+        "moveSpeed": 12,
+        "range": 13,
+        "attackSpeedMult": 0.8,
+        "skillHasteMult": 0.85,
+        "icon": "mounted-knight",
+        "kit": {
+          "small1": "cavalryDoubleLeap",
+          "small2": "cavalryRun",
+          "passive": "cavalryKillCharge",
+          "ultimate": "cavalryWhirlwind"
+        }
+      },
       "knight": {
         "name": "铁壁骑士",
         "role": "骑士",
@@ -82,7 +108,8 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 350,
         "power": 34,
         "armor": 13,
-        "magicResist": 7,
+        "magicResist": 3,
+        "moveSpeed": 7,
         "range": 11,
         "icon": "checked-shield",
         "kit": {
@@ -99,7 +126,8 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 225,
         "power": 50,
         "armor": 4,
-        "magicResist": 2,
+        "magicResist": 6,
+        "moveSpeed": 7,
         "range": 38,
         "icon": "fireball",
         "kit": {
@@ -116,8 +144,10 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 285,
         "power": 30,
         "armor": 6,
-        "magicResist": 3,
+        "magicResist": 6,
+        "moveSpeed": 7,
         "range": 35,
+        "supportRange": 42,
         "icon": "checked-shield",
         "kit": {
           "small1": "heal",
@@ -133,7 +163,8 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 285,
         "power": 58,
         "armor": 7,
-        "magicResist": 4,
+        "magicResist": 0,
+        "moveSpeed": 7,
         "range": 38,
         "icon": "arrow-flights",
         "kit": {
@@ -150,7 +181,8 @@ const GAME_SKILL_ASSETS = (() => {
         "hp": 320,
         "power": 61,
         "armor": 8,
-        "magicResist": 4,
+        "magicResist": 6,
+        "moveSpeed": 7,
         "range": 34,
         "icon": "poison-bottle",
         "kit": {
@@ -168,6 +200,7 @@ const GAME_SKILL_ASSETS = (() => {
         "power": 53,
         "armor": 11,
         "magicResist": 6,
+        "moveSpeed": 7,
         "range": 13,
         "icon": "hammer-drop",
         "kit": {
@@ -590,6 +623,100 @@ const GAME_SKILL_ASSETS = (() => {
         "desc": "异常状态伤害小幅提高。",
         "passive": true,
         "effects": []
+      },
+      "cavalryDoubleLeap": {
+        "name": "二连跃",
+        "type": "小技能",
+        "role": "马骑兵",
+        "cooldown": 18,
+        "openingCooldown": 1,
+        "icon": "jump-across",
+        "desc": "发现前方31距离内的敌人后，连续向前腾跃两次，每次落地对周围造成物理伤害。1.6秒过程中减伤80%，可以普攻但不能释放其他技能。",
+        "effects": [
+          {
+            "kind": "cavalryDoubleLeap",
+            "duration": 1.6,
+            "landingTimes": [
+              0.24,
+              1
+            ],
+            "distance": 10,
+            "radius": 11,
+            "triggerRange": 31,
+            "damageReduction": 0.8,
+            "flat": 32,
+            "power": 0.95,
+            "type": "physical",
+            "label": "铁蹄震地"
+          }
+        ]
+      },
+      "cavalryKillCharge": {
+        "name": "乘胜冲锋",
+        "type": "被动",
+        "role": "马骑兵",
+        "roleKeys": [
+          "cavalry"
+        ],
+        "cooldown": 0,
+        "icon": "cavalry",
+        "desc": "每次亲手击杀后进入6秒冲锋状态；自动冲向下一名敌人，下一次普攻造成额外物理伤害。",
+        "passive": true,
+        "effects": [
+          {
+            "kind": "cavalryKillCharge",
+            "duration": 6,
+            "dashDistance": 24,
+            "bonusFlat": 18,
+            "bonusPower": 0.8,
+            "label": "乘胜冲锋"
+          }
+        ]
+      },
+      "cavalryRun": {
+        "name": "奔跑",
+        "type": "小技能",
+        "role": "马骑兵",
+        "cooldown": 10,
+        "openingCooldown": 1.4,
+        "icon": "wingfoot",
+        "desc": "锁定最近可见敌人的方向冲刺1.2秒，速度提高25%；每移动3距离对周围敌人造成物理伤害，并有20%概率眩晕0.6秒。期间可以普攻，但不能释放其他技能。这段真实位移会正常计入奔袭铁骑六件套的累计移动距离。",
+        "effects": [
+          {
+            "kind": "cavalryRun",
+            "duration": 1.2,
+            "speedMult": 1.25,
+            "pulseDistance": 3,
+            "radius": 8,
+            "flat": 12,
+            "power": 0.3,
+            "stunChance": 0.2,
+            "stunDuration": 0.6,
+            "pulseLabel": "奔踏震击",
+            "label": "奔跑"
+          }
+        ]
+      },
+      "cavalryWhirlwind": {
+        "name": "风卷残云",
+        "type": "大招",
+        "role": "马骑兵",
+        "cooldown": 35,
+        "openingCooldown": 6.5,
+        "icon": "tornado",
+        "desc": "周围有敌人时才会释放；持续4.8秒，每0.6秒对自身周围中等范围内所有敌人造成物理伤害。",
+        "effects": [
+          {
+            "kind": "cavalryWhirlwind",
+            "duration": 4.8,
+            "interval": 0.6,
+            "radius": 14,
+            "flat": 10,
+            "power": 0.24,
+            "type": "physical",
+            "label": "风卷残云"
+          }
+        ]
       },
       "chainReaction": {
         "name": "连锁反应",

@@ -5,6 +5,22 @@ const BUILD = require("./build-layers");
 const COMBAT = require("./combat-sim");
 const SKILLS = require("./skill-data");
 
+const EXPECTED_ROLE_MAGIC_RESIST = {
+  warrior: 6,
+  knight: 3,
+  berserker: 9,
+  ranger: 0,
+  assassin: 0,
+  warlock: 6,
+  alchemist: 9,
+  priest: 6,
+  bard: 3,
+  mage: 6,
+};
+for (const [role, expected] of Object.entries(EXPECTED_ROLE_MAGIC_RESIST)) {
+  assert.equal(SKILLS.roleKits[role].magicResist, expected, `${role} base magic resistance tier is incorrect`);
+}
+
 const baseKnight = BUILD.applyBuildLayers({ role: "knight", ...SKILLS.roleKits.knight.kit });
 const wardedKnight = BUILD.applyBuildLayers(
   { role: "knight", ...SKILLS.roleKits.knight.kit },

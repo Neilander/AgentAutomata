@@ -171,7 +171,7 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 .action-heading { display: flex; justify-content: space-between; margin: 13px 0 7px; padding-top: 9px; border-top: 1px solid #514b3b; color: #c0aa74; font-size: 10px; letter-spacing: .08em; }
 .node-actions { display: grid; gap: 6px; }
 .grind-difficulty-panel { display: grid; gap: 7px; margin-bottom: 5px; padding: 10px; border: 1px solid #62583f; background: #191c17; }
-.grind-levels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.grind-levels { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
 .grind-level { min-width: 0; height: 45px; display: grid; place-content: center; gap: 1px; border: 1px solid #5c5747; color: #b9b09b; background: #242720; cursor: pointer; }
 .grind-level:hover { border-color: #b39753; }
 .grind-level b { color: #e7d59d; font-size: 14px; }
@@ -185,6 +185,13 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 .grind-progress i { display: block; height: 100%; background: linear-gradient(90deg, #80662e, #d0aa53); }
 .grind-progress b { position: absolute; top: -3px; width: 2px; height: 12px; transform: translateX(-1px); background: #f0ded0; box-shadow: 0 0 5px #fff8; }
 .grind-difficulty-panel > small { color: #9f9886; font-size: 9px; }
+.grind-set-pool { display: grid; gap: 6px; padding-top: 7px; border-top: 1px solid #4f4939; }
+.grind-set-pool header { display: flex; justify-content: space-between; gap: 8px; color: #c7b47d; font-size: 9px; }
+.grind-set-pool header small { color: #8f8979; }
+.grind-set-pool > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.grind-set-pool label { display: grid; gap: 2px; min-width: 0; color: #938b79; font-size: 8px; }
+.grind-set-pool select { min-width: 0; padding: 4px 3px; border: 1px solid #665a3e; color: #ead9a6; background: #242116; font-size: 9px; }
+.grind-set-pool.locked { opacity: .62; }
 .action-card { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 4px 9px; padding: 9px 10px; border: 1px solid #514d3d; border-radius: 4px; text-align: left; color: #e5dcc7; background: #242720; cursor: pointer; }
 .action-card:hover { border-color: #a78b4e; background: #303126; }
 .action-card.unavailable, .action-card.unavailable:hover { border-color: #85483f; color: #c89389; background: #30201e; cursor: not-allowed; opacity: 1; filter: none; }
@@ -207,11 +214,25 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 
 .combat-view, .grind-view { display: grid; grid-template-rows: 58px minmax(0, 1fr); background: #11130f; }
 .grind-view { grid-template-rows: 58px minmax(0, 1fr) 132px; }
-.combat-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 14px; border-bottom: 1px solid #504a3a; background: linear-gradient(180deg, #292b25, #191b17); }
+.combat-heading { position: relative; z-index: 22; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 14px; border-bottom: 1px solid #504a3a; background: linear-gradient(180deg, #292b25, #191b17); }
 .combat-heading h2 { margin: 2px 0 0; font: 700 19px Georgia, serif; }
+.combat-heading-tools { display: flex; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; }
 .combat-supply, .grind-stats { display: flex; gap: 8px; }
 .combat-supply span, .grind-stats span { padding: 6px 9px; border: 1px solid #554f3f; color: #aaa38f; background: #1a1c18; font-size: 10px; }
 .combat-supply b, .grind-stats b { color: #ead690; }
+.combat-effect-filter { position: relative; flex: none; color: #bdb59e; font-size: 10px; }
+.combat-effect-filter summary { min-width: 96px; padding: 6px 9px; border: 1px solid #6b6045; color: #bdb59e; background: #1a1c18; cursor: pointer; list-style: none; user-select: none; }
+.combat-effect-filter summary::-webkit-details-marker { display: none; }
+.combat-effect-filter summary::after { content: "▾"; float: right; margin-left: 8px; color: #8b826c; }
+.combat-effect-filter[open] summary { border-color: #b4934f; color: #ead690; background: #242319; }
+.combat-effect-filter summary b { margin-left: 4px; color: #ead690; }
+.effect-role-menu { position: absolute; top: calc(100% + 6px); right: 0; width: 238px; padding: 9px; border: 1px solid #776845; background: #1b1d19f7; box-shadow: 0 14px 32px #050605cc; }
+.effect-filter-presets, .effect-role-list { display: flex; flex-wrap: wrap; gap: 5px; }
+.effect-filter-presets { margin-bottom: 7px; padding-bottom: 7px; border-bottom: 1px solid #3f3d32; }
+.effect-filter-presets button, .effect-role-chip { min-height: 28px; padding: 5px 8px; border: 1px solid #4b493d; color: #938d7c; background: #20221d; cursor: pointer; font-size: 10px; }
+.effect-role-chip i { margin-right: 4px; font-style: normal; }
+.effect-filter-presets button.selected, .effect-role-chip.selected { border-color: #b4934f; color: #f0d98d; background: #37301f; box-shadow: inset 0 0 0 1px #e6c76a18; }
+.effect-role-menu small { display: block; margin-top: 8px; color: #716d61; }
 .battle-mount { min-height: 0; height: 100%; overflow: hidden; }
 .battle-mount .battle-view { height: 100%; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
 .battle-mount .battle-view-field { min-height: 320px; }
@@ -224,6 +245,8 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 .combat-result-metrics b { display: block; color: #ead9a6; font-size: 14px; }
 .combat-result-metrics.set-metrics span { border-color: #527b57; background: #18301d; color: #9cc7a0; }
 .combat-result-metrics.set-metrics b { color: #bff2b8; }
+.combat-result-metrics.charge-metrics span { border-color: #876e3d; background: #302719; color: #c8ae73; }
+.combat-result-metrics.charge-metrics b { color: #f0ce72; }
 .mock-comparison { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 5px; align-items: center; margin: 8px 0; padding: 7px 8px; border: 1px solid #5d8b60; background: #152a19; color: #b8d6b7; }
 .mock-comparison strong { color: #d8f4c8; font-size: 11px; }
 .mock-comparison span { text-align: center; color: #aee6aa; font-weight: 700; font-size: 10px; }
@@ -232,6 +255,8 @@ button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px s
 .loot-shelf-head strong { display: block; margin-top: 4px; font-size: 12px; }
 .loot-shelf { min-width: 0; display: flex; gap: 5px; overflow-x: auto; padding: 4px; }
 .loot-cell { flex: 0 0 64px; height: 72px; display: grid; place-content: center; gap: 1px; border: 1px solid #555043; text-align: center; background: #262820; }
+.loot-cell.set-piece { position: relative; box-shadow: inset 0 0 0 1px #d9b85a, 0 0 10px #c69a3844; }
+.loot-cell.set-piece > em { position: absolute; z-index: 2; top: 2px; left: 2px; right: 2px; overflow: hidden; color: #f1d687; text-overflow: ellipsis; white-space: nowrap; font-size: 7px; font-style: normal; text-shadow: 0 1px 3px #000; }
 .loot-cell i { font-style: normal; font-size: 18px; }
 .loot-cell b { font-size: 11px; }
 .loot-cell small { font-size: 8px; }
@@ -582,6 +607,9 @@ button.formation-row { cursor: pointer; }
 .equipment-item-cell small { color: #9f9886; font-size: 7px; }
 .equipment-item-cell em { position: absolute; right: 2px; top: 2px; padding: 1px 3px; color: #efe2bc; background: #5c4b2f; font-size: 7px; font-style: normal; }
 .equipment-item-cell.other em { background: #5a3d39; }
+.equipment-item-cell.set-piece { box-shadow: inset 0 0 0 1px #d3ad4d99; }
+.equipment-item-cell .set-badge { position: absolute; z-index: 3; left: 2px; top: 2px; width: 13px; height: 13px; display: grid; place-items: center; border-radius: 50%; color: #241c0c; background: #e1bd5e; font-size: 7px; font-weight: 800; }
+.set-item-note { color: #d9b85a !important; }
 .equipment-item-detail { min-height: 112px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: end; padding: 9px; border-top: 1px solid #4e493a; background: #20231d; }
 .equipment-item-detail h3 { margin: 2px 0; font: 700 14px Georgia, serif; }
 .equipment-item-detail p { margin: 2px 0; overflow: hidden; color: #aaa28f; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }

@@ -42,7 +42,7 @@
     return sharedPresentationPromise;
   }
   const ROLE_ICONS = {
-    knight: "🛡️", warrior: "⚔️", berserker: "🪓", assassin: "🗡️", ranger: "🏹",
+    knight: "🛡️", cavalry: "🐎", warrior: "⚔️", berserker: "🪓", assassin: "🗡️", ranger: "🏹",
     mage: "🔥", priest: "✨", warlock: "☠️", bard: "🎵", alchemist: "⚗️",
     enemy_bone_ogre: "👁️", enemy_ember_idol: "🔥", enemy_plague_totem: "☠️",
     enemy_stone_golem: "🪨", enemy_mirror_executioner: "🗡️", enemy_frost_pylon: "❄️",
@@ -88,6 +88,11 @@
       this.onFinish = options.onFinish || (() => {});
       this.maxTime = options.maxTime || 70;
       this.speed = options.speed || 1;
+      this.manualStart = options.manualStart === true;
+      this.focusSkillFeed = options.focusSkillFeed === true;
+      this.initialFocusRole = options.initialFocusRole || null;
+      this.effectRoleFilter = Array.isArray(options.effectRoles) ? new Set(options.effectRoles.filter(Boolean)) : null;
+      this.distanceRuler = options.distanceRuler || null;
       this.presentationOptions = {
         camera: options.camera !== false,
         gameTime: options.gameTime !== false,
@@ -110,6 +115,9 @@
         gameTime: null,
         postStack: null,
         unifiedAccumulator: 0,
+        pendingStart: false,
+        focusedUnitId: null,
+        focusNoticeTimers: [],
       };
       this.sharedSkills = SKILLS.createSkillLibrary ? SKILLS.createSkillLibrary(this.skillApi()) : {};
       this.mount();
@@ -120,15 +128,20 @@
       this.container.__battleView = this;
       window.__latestBattleView = this;
       this.container.innerHTML = `
-        <section class="battle-view">
+        <section class="battle-view ${this.focusSkillFeed ? "battle-focus-enabled" : ""}">
           <div class="battle-view-scoreboard">
             <div><span>我方存活</span><strong data-battle-left>0</strong></div>
-            <div><span data-battle-state>待命</span><strong data-battle-time>0.0s</strong></div>
+            <div class="battle-score-center">
+              <span data-battle-state>待命</span><strong data-battle-time>0.0s</strong>
+              <button type="button" class="battle-start-button" data-battle-start hidden>开始战斗</button>
+            </div>
             <div><span>敌方存活</span><strong data-battle-right>0</strong></div>
           </div>
           <div class="battle-view-field" data-battle-field>
             <span class="battle-side-label left">我方阵线</span>
             <span class="battle-side-label right">敌方阵线</span>
+            ${this.focusSkillFeed ? '<div class="battle-focus-hint" data-battle-focus-hint>点击任意单位关注技能</div><div class="battle-focus-feed" data-battle-focus-feed aria-live="polite" aria-label="关注单位技能提示"></div>' : ""}
+            ${this.distanceRulerHtml()}
             <div class="battle-camera-world" data-battle-world>
               <div class="battle-fx-layer" data-battle-fx></div>
               <div class="battle-unit-layer" data-battle-units></div>
@@ -142,14 +155,62 @@
         right: this.container.querySelector("[data-battle-right]"),
         state: this.container.querySelector("[data-battle-state]"),
         time: this.container.querySelector("[data-battle-time]"),
+        startButton: this.container.querySelector("[data-battle-start]"),
         field: this.container.querySelector("[data-battle-field]"),
         worldLayer: this.container.querySelector("[data-battle-world]"),
         unitLayer: this.container.querySelector("[data-battle-units]"),
         fxLayer: this.container.querySelector("[data-battle-fx]"),
         log: this.container.querySelector("[data-battle-log]"),
+        distanceStatus: this.container.querySelector("[data-distance-status]"),
+        distanceProgress: this.container.querySelector("[data-distance-progress]"),
+        focusHint: this.container.querySelector("[data-battle-focus-hint]"),
+        focusFeed: this.container.querySelector("[data-battle-focus-feed]"),
       };
+      this.els.startButton?.addEventListener("click", () => this.beginManualBattle());
+      this.els.unitLayer?.addEventListener("pointerdown", (event) => {
+        const unitNode = event.target.closest?.("[data-battle-unit-id]");
+        if (unitNode) this.setFocusedUnit(unitNode.dataset.battleUnitId);
+      });
+      this.els.unitLayer?.addEventListener("keydown", (event) => {
+        if (!['Enter', ' '].includes(event.key)) return;
+        const unitNode = event.target.closest?.("[data-battle-unit-id]");
+        if (!unitNode) return;
+        event.preventDefault();
+        this.setFocusedUnit(unitNode.dataset.battleUnitId);
+      });
       this.setupPresentationRuntime();
       this.render();
+    }
+
+    distanceRulerHtml() {
+      if (!this.distanceRuler) return "";
+      const originX = Math.max(0, Math.min(100, Number(this.distanceRuler.originX) || 0));
+      const maxDistance = Math.max(1, Math.min(100 - originX, Number(this.distanceRuler.maxDistance) || (100 - originX)));
+      const step = Math.max(1, Number(this.distanceRuler.step) || 4);
+      const labelStep = Math.max(step, Number(this.distanceRuler.labelStep) || 8);
+      const threshold = Math.max(0, Number(this.distanceRuler.threshold) || 0);
+      const ticks = [];
+      for (let distance = 0; distance <= maxDistance + 1e-9; distance += step) {
+        const major = distance % labelStep === 0;
+        const thresholdTick = Math.abs(distance - threshold) < 1e-9;
+        ticks.push(`<span class="battle-distance-tick ${major ? "major" : ""} ${thresholdTick ? "threshold" : ""}" style="left:${distance / maxDistance * 100}%">${major ? `<b>${distance}</b>` : ""}${thresholdTick ? `<em>六件套门槛</em>` : ""}</span>`);
+      }
+      if (maxDistance % labelStep !== 0) ticks.push(`<span class="battle-distance-tick major" style="left:100%"><b>${maxDistance}</b></span>`);
+      return `<div class="battle-distance-status" data-distance-status>连续移动 0.0 / ${threshold}</div><div class="battle-distance-ruler" style="--ruler-left:${originX}%;--ruler-width:${maxDistance}%"><span class="battle-distance-progress" data-distance-progress></span>${ticks.join("")}</div>`;
+    }
+
+    renderDistanceRuler() {
+      if (!this.distanceRuler || !this.els?.distanceStatus || !this.els?.distanceProgress) return;
+      const trackedRole = this.distanceRuler.trackedRole || "cavalry";
+      const unit = this.state.units.find((entry) => entry.side === "ally" && entry.roleKey === trackedRole);
+      const threshold = Math.max(1, Number(this.distanceRuler.threshold) || 16);
+      const maxDistance = Math.max(threshold, Number(this.distanceRuler.maxDistance) || threshold);
+      const progress = Math.max(0, Number(unit?.cavalryDistance) || 0);
+      const ready = Boolean(unit?.cavalryChargeReady);
+      this.els.distanceStatus.textContent = ready ? `冲锋就绪 · 连续移动 ${progress.toFixed(1)}` : `连续移动 ${Math.min(progress, threshold).toFixed(1)} / ${threshold}`;
+      this.els.distanceStatus.classList.toggle("ready", ready);
+      this.els.distanceProgress.style.width = `${Math.min(100, progress / maxDistance * 100)}%`;
+      this.els.distanceProgress.classList.toggle("ready", ready);
     }
 
     setupPresentationRuntime() {
@@ -410,7 +471,7 @@
 
       this.state.time = 0;
       this.state.result = null;
-      this.state.logs = [`${title}\u5f00\u59cb\u3002`];
+      this.state.logs = [this.manualStart ? `${title}已就绪。选择关注单位后开始战斗。` : `${title}\u5f00\u59cb\u3002`];
       this.state.signalBus?.clear();
       this.state.units = [
         ...this.makeUnits("ally", leftTeam),
@@ -419,12 +480,32 @@
       this.state.unifiedSim = sim;
       this.state.unifiedAccumulator = 0;
       this.state.lastSignalIndex = 0;
-      this.state.running = true;
-      this.resetPresentationClock(performance.now());
+      this.state.pendingStart = this.manualStart;
+      this.state.running = !this.manualStart;
+      this.state.battleTitle = title;
+      this.state.focusedUnitId = null;
       this.state.seed = seed;
       this.syncUnifiedUnits();
+      if (this.focusSkillFeed && this.initialFocusRole) {
+        const initialFocus = this.state.units.find((unit) => unit.side === "ally" && (unit.roleKey || unit.role) === this.initialFocusRole);
+        if (initialFocus) this.state.focusedUnitId = initialFocus.unitId;
+      }
       this.render();
+      if (this.state.running) {
+        this.resetPresentationClock(performance.now());
+        this.state.raf = setInterval(() => this.tickUnified(performance.now()), 33);
+      }
+    }
+
+    beginManualBattle() {
+      if (!this.state.pendingStart || !this.state.unifiedSim) return false;
+      this.state.pendingStart = false;
+      this.state.running = true;
+      this.state.logs.unshift(`${this.state.battleTitle || "战斗"}开始。`);
+      this.resetPresentationClock(performance.now());
       this.state.raf = setInterval(() => this.tickUnified(performance.now()), 33);
+      this.render();
+      return true;
     }
 
     addUnifiedReinforcements(side, specs = [], title = "增援") {
@@ -451,7 +532,7 @@
       this.state.units.push(...displayUnits);
       this.state.result = null;
       this.state.logs.unshift(`${title}进场。`);
-      if (!this.state.running && sim.units.some((unit) => unit.side !== side && sim.isAlive(unit))) {
+      if (!this.state.running && !this.state.pendingStart && sim.units.some((unit) => unit.side !== side && sim.isAlive(unit))) {
         this.state.running = true;
         this.resetPresentationClock(performance.now());
         this.state.raf = setInterval(() => this.tickUnified(performance.now()), 33);
@@ -505,6 +586,8 @@
         unit.guardTimer = combatUnit.guardTimer || 0;
         unit.forcedTargetId = combatUnit.forcedTargetId || null;
         unit.natureSeeds = structuredClone(combatUnit.natureSeeds || {});
+        unit.cavalryDistance = combatUnit.cavalryDistance || 0;
+        unit.cavalryChargeReady = Boolean(combatUnit.cavalryChargeReady);
       }
     }
 
@@ -518,11 +601,13 @@
     }
 
     playUnifiedSignal(signal) {
+      const source = this.displayUnitForRef(signal.source);
+      const target = this.displayUnitForRef(signal.target);
+      this.queueFocusedSignal(signal, source, target);
       const presentation = SIGNALS.describePresentation?.(signal);
       if (presentation && !presentation.visible) return;
       if (!presentation && signal.kind === "health") return;
-      const source = this.displayUnitForRef(signal.source);
-      const target = this.displayUnitForRef(signal.target);
+      if (!this.effectVisibleForSignal(signal, source, target)) return;
       const tags = signal.tags || [];
       const amount = Math.round(signal.amount || 0);
       if (signal.kind === "skill") {
@@ -535,7 +620,11 @@
           const cls = tags.includes("burn") || tags.includes("fire") ? "fire" : tags.includes("poison") ? "poison" : "";
           const prefix = tags.includes("burn") ? "\u71c3\u70e7-" : tags.includes("poison") ? "\u5267\u6bd2-" : "-";
           this.floater(target, `${prefix}${amount}`, cls);
-          if (this.isResidualFireSignal(signal)) {
+          if (signal.skillKey === "meteorRain" || signal.skillName === "流星") {
+            this.meteorImpactFx(target);
+          } else if (tags.includes("cavalry") && tags.includes("leap")) {
+            // The landing signal owns the impact silhouette; damage only supplies the number.
+          } else if (this.isResidualFireSignal(signal)) {
             this.ring(target, "fire");
           } else if (source && !tags.includes("dot") && !tags.includes("selfCost")) {
             this.slash(source, target, cls === "poison" ? "poison" : cls === "fire" ? "fire" : "gold");
@@ -546,20 +635,28 @@
       if (signal.kind === "heal") {
         if (target && amount > 0) {
           this.floater(target, `\u6cbb\u7597+${amount}`, "heal");
-          this.ring(target, "green");
+          if (signal.skillKey !== "sanctuary") this.ring(target, "green");
         }
         return;
       }
       if (signal.kind === "shield") {
         if (target && amount > 0) {
           this.floater(target, `\u62a4\u76fe+${amount}`, "shield");
-          this.ring(target, "blue");
+          if (signal.skillKey === "sanctuary") this.priestBlessingFx(source, target);
+          else this.ring(target, "blue");
         }
         return;
       }
       if (signal.kind === "movement") {
         if (!source) return;
-        if (tags.includes("shadowReset")) {
+        if (tags.includes("cavalry") && tags.includes("leap")) {
+          this.cavalryLeapFx(signal.meta?.before, source, signal.meta?.landing || 1);
+        } else if (tags.includes("cavalryCharge") && tags.includes("breakthrough")) {
+          this.afterimage(signal.meta?.start || signal.meta?.before, source, "gold");
+          this.floater(source, "冲锋突破", "");
+          this.ring(source, "gold");
+          if (target) this.slash(source, target, "gold");
+        } else if (tags.includes("shadowReset")) {
           this.afterimage(signal.meta?.before, source, "purple");
           this.floater(source, "转火", "purple");
           this.ring(source, "purple");
@@ -577,7 +674,10 @@
       }
       if (signal.kind === "status") {
         if (!target) return;
-        if (tags.includes("natureSeed")) {
+        if (tags.includes("cavalryCharge") && tags.includes("chargeReady")) {
+          this.floater(target, "冲锋就绪", "");
+          this.ring(target, "gold");
+        } else if (tags.includes("natureSeed")) {
           const action = tags.includes("seedPlant") ? "plant" : tags.includes("seedGrow") ? "grow" : tags.includes("seedSpread") ? "spread" : "bloom";
           const labels = { plant: "播种", grow: `生长 ${amount}/3`, spread: "传播", bloom: "绽放" };
           this.floater(target, labels[action], "nature");
@@ -588,7 +688,7 @@
           }
         } else if (tags.includes("burn")) {
           this.floater(target, `\u71c3\u70e7+${amount}`, "fire");
-          this.ring(target, "fire");
+          if (signal.skillKey !== "meteorRain") this.ring(target, "fire");
         } else if (tags.includes("poison")) {
           this.floater(target, `\u5267\u6bd2+${amount}`, "poison");
           this.ring(target, "poison");
@@ -613,10 +713,127 @@
       if (signal.kind === "death" && target) this.floater(target, "\u5012\u4e0b", "");
     }
 
+    focusedUnit() {
+      return this.state.units.find((unit) => unit.unitId === this.state.focusedUnitId) || null;
+    }
+
+    setFocusedUnit(unitId) {
+      if (!this.focusSkillFeed) return false;
+      const unit = this.state.units.find((entry) => entry.unitId === unitId);
+      if (!unit) return false;
+      if (this.state.focusedUnitId === unit.unitId) {
+        this.state.focusedUnitId = null;
+        this.clearFocusNotices();
+        this.render();
+        return true;
+      }
+      if (this.state.focusedUnitId !== unit.unitId) this.clearFocusNotices();
+      this.state.focusedUnitId = unit.unitId;
+      this.render();
+      return true;
+    }
+
+    focusedNoticeForSignal(signal, source, target) {
+      const focused = this.focusedUnit();
+      if (!focused) return null;
+      const tags = signal.tags || [];
+      const sourceFocused = source?.unitId === focused.unitId;
+      const targetFocused = target?.unitId === focused.unitId;
+      if (signal.kind === "skill" && sourceFocused) {
+        return {
+          title: signal.skillName || signal.skillKey || "技能",
+          type: tags.includes("ultimate") ? "大招" : "小技能",
+          tone: tags.includes("ultimate") ? "ultimate" : "skill",
+        };
+      }
+      if (!sourceFocused && !(targetFocused && (tags.includes("chargeIntercept") || tags.includes("deathPrevent")))) return null;
+      if (tags.includes("chargeIntercept")) return { title: targetFocused ? "冲锋被截断" : (signal.skillName || "叹息之墙·截断"), type: "关键效果", tone: "danger" };
+      if (tags.includes("deathPrevent")) return { title: signal.skillName || "濒死保命", type: "关键效果", tone: "danger" };
+      if (tags.includes("chargeReady")) return { title: signal.skillName || "冲锋就绪", type: tags.includes("passive") ? "被动" : "套装效果", tone: "effect" };
+      if (tags.includes("breakthrough")) return { title: signal.skillName || "冲锋突破", type: "套装效果", tone: "effect" };
+      if (tags.includes("shadowReset")) return { title: signal.skillName || "击杀转火", type: "被动", tone: "effect" };
+      if (tags.includes("seedBloom") || tags.includes("seedSpread")) return { title: signal.skillName || (tags.includes("seedBloom") ? "繁生绽放" : "繁生传播"), type: "套装效果", tone: "effect" };
+      if (tags.includes("guardianEcho") && tags.includes("echoProc")) return { title: signal.skillName || "护佑回响", type: "套装效果", tone: "effect" };
+      if (tags.includes("sighingWall") && tags.includes("wallPulse")) return { title: signal.skillName || "叹息之墙", type: "套装效果", tone: "effect" };
+      if (tags.includes("meteorWarning") && Number(signal.meta?.index || 1) === 1) return { title: "流星火雨", type: "套装效果", tone: "ultimate" };
+      if (tags.includes("skyArrowWarning")) return { title: "天穹之箭·锁定", type: "套装效果", tone: "ultimate" };
+      return null;
+    }
+
+    queueFocusedSignal(signal, source, target) {
+      if (!this.focusSkillFeed || !this.els?.focusFeed) return;
+      const notice = this.focusedNoticeForSignal(signal, source, target);
+      const focused = this.focusedUnit();
+      if (!notice || !focused) return;
+      this.els.focusFeed.classList.toggle("side-left", focused.side === "ally");
+      this.els.focusFeed.classList.toggle("side-right", focused.side === "enemy");
+      const node = document.createElement("article");
+      node.className = `battle-focus-notice tone-${notice.tone}`;
+      const meta = document.createElement("small");
+      meta.textContent = `${focused.name} · ${notice.type}`;
+      const title = document.createElement("strong");
+      title.textContent = notice.title;
+      node.append(meta, title);
+      this.els.focusFeed.prepend(node);
+      [...this.els.focusFeed.children].slice(4).forEach((entry) => this.dismissFocusNotice(entry));
+      this.scheduleFocusNotice(() => this.dismissFocusNotice(node), notice.tone === "ultimate" ? 2800 : 2200);
+    }
+
+    scheduleFocusNotice(callback, delay) {
+      const timer = window.setTimeout(() => {
+        this.state.focusNoticeTimers = this.state.focusNoticeTimers.filter((entry) => entry !== timer);
+        callback();
+      }, delay);
+      this.state.focusNoticeTimers.push(timer);
+    }
+
+    dismissFocusNotice(node) {
+      if (!node?.isConnected || node.classList.contains("leaving")) return;
+      node.classList.add("leaving");
+      this.scheduleFocusNotice(() => node.remove(), 260);
+    }
+
+    clearFocusNotices() {
+      this.state.focusNoticeTimers.forEach((timer) => window.clearTimeout(timer));
+      this.state.focusNoticeTimers = [];
+      this.els?.focusFeed?.replaceChildren();
+    }
+
+    effectVisibleForSignal(signal, source, target) {
+      if (this.effectRoleFilter === null) return true;
+      const owner = source || target;
+      if (!owner) return false;
+      return this.effectRoleFilter.has(owner.roleKey || owner.role || "");
+    }
+
+    setEffectRoles(roleKeys = null) {
+      this.effectRoleFilter = Array.isArray(roleKeys) ? new Set(roleKeys.filter(Boolean)) : null;
+      this.state.vfxNodes.forEach((item) => item.node?.remove?.());
+      this.state.vfxNodes = [];
+      this.els?.fxLayer?.replaceChildren();
+      return this.getEffectRoles();
+    }
+
+    getEffectRoles() {
+      return this.effectRoleFilter === null ? null : [...this.effectRoleFilter];
+    }
+
     playSkillFx(signal, source, target) {
       if (!source) return;
       const key = signal.skillKey || "";
       const tags = signal.tags || [];
+      if (key === "cavalryDoubleLeap") {
+        this.cavalryWindupFx(source, target);
+        return;
+      }
+      if (key === "meteorRain") {
+        this.meteorCastFx(source);
+        return;
+      }
+      if (key === "sanctuary") {
+        this.sanctuaryCastFx(source);
+        return;
+      }
       if (tags.includes("ultimate")) this.ring(source, "gold");
       if (!target) {
         this.ring(source, tags.includes("ultimate") ? "gold" : "blue");
@@ -653,6 +870,7 @@
       const rightAlive = sim.units.some((unit) => unit.side === "right" && sim.isAlive(unit));
       if (leftAlive && rightAlive && sim.time < this.maxTime) return;
       this.state.running = false;
+      this.state.pendingStart = false;
       if (this.state.raf) clearInterval(this.state.raf);
       this.state.raf = 0;
       const authoritativeResult = sim.buildResult();
@@ -665,10 +883,13 @@
       if (this.state.raf) clearInterval(this.state.raf);
       this.state.raf = 0;
       this.state.running = false;
+      this.state.pendingStart = false;
       this.state.unifiedSim = null;
       this.state.unifiedAccumulator = 0;
       this.state.vfxNodes.forEach((item) => item.node?.remove?.());
       this.state.vfxNodes = [];
+      this.state.focusedUnitId = null;
+      this.clearFocusNotices();
       if (render) this.render();
     }
 
@@ -1122,15 +1343,26 @@
 
     render() {
       if (!this.els) return;
-      this.els.state.textContent = this.state.running ? "交战中" : this.state.result ? (this.state.result.passed ? "胜利" : "失败") : "待命";
+      this.els.state.textContent = this.state.pendingStart ? "战斗准备" : this.state.running ? "交战中" : this.state.result ? (this.state.result.passed ? "胜利" : "失败") : "待命";
       this.els.time.textContent = `${this.state.time.toFixed(1)}s`;
+      if (this.els.startButton) this.els.startButton.hidden = !this.state.pendingStart;
       this.els.left.textContent = String(this.state.units.filter((unit) => unit.side === "ally" && this.alive(unit)).length);
       this.els.right.textContent = String(this.state.units.filter((unit) => unit.side === "enemy" && this.alive(unit)).length);
+      const focused = this.focusedUnit();
+      if (this.els.focusHint) {
+        this.els.focusHint.textContent = focused ? `正在关注：${focused.name} · 再点取消，点其他单位切换` : "点击任意单位关注技能";
+        this.els.focusHint.classList.toggle("has-focus", Boolean(focused));
+      }
+      if (this.els.focusFeed) {
+        this.els.focusFeed.classList.toggle("side-left", focused?.side === "ally");
+        this.els.focusFeed.classList.toggle("side-right", focused?.side === "enemy");
+      }
+      this.renderDistanceRuler();
       this.els.unitLayer.innerHTML = this.state.units.map((unit) => {
         const seed = Object.values(unit.natureSeeds || {}).sort((a, b) => (b.growth || 0) - (a.growth || 0))[0];
         const seedHtml = seed ? `<span class="battle-nature-seed growth-${Math.max(1, Math.min(3, seed.growth || 1))}"><img src="${NATURE_SEED_ICON}" alt=""><b>${"●".repeat(Math.max(1, Math.min(3, seed.growth || 1)))}</b><small>${Math.max(0, seed.time || 0).toFixed(1)}s</small></span>` : "";
         return `
-        <div class="battle-unit ${unit.side === "enemy" ? "enemy" : ""} ${unit.unitKind === "militia" ? "militia-unit" : ""} ${unit.hiddenTimer > 0 ? "hidden" : ""} ${unit.guardTimer > 0 ? "guarded" : ""} ${this.alive(unit) ? "" : "dead"}" style="${this.pointStyle(unit)}">
+        <div class="battle-unit ${unit.side === "enemy" ? "enemy" : ""} ${unit.unitKind === "militia" ? "militia-unit" : ""} ${unit.hiddenTimer > 0 ? "hidden" : ""} ${unit.guardTimer > 0 ? "guarded" : ""} ${focused?.unitId === unit.unitId ? "focused" : ""} ${this.alive(unit) ? "" : "dead"}" style="${this.pointStyle(unit)}" data-battle-unit-id="${unit.unitId}" role="button" tabindex="0" aria-pressed="${focused?.unitId === unit.unitId ? "true" : "false"}" aria-label="关注${unit.name}">
           ${seedHtml}
           <div class="battle-avatar">${unit.icon}</div>
           <div class="battle-unit-name">${unit.name}</div>
@@ -1169,6 +1401,105 @@
       node.style.setProperty("--scale", this.effectCameraScale().toFixed(3));
       this.els.fxLayer.appendChild(node);
       this.removeNodeLater(node, 720);
+    }
+
+    screenBeat(tone = "gold") {
+      if (!this.els?.fxLayer) return;
+      const node = document.createElement("div");
+      node.className = `battle-vfx-screen-beat tone-${tone}`;
+      this.els.fxLayer.appendChild(node);
+      this.removeNodeLater(node, 620);
+    }
+
+    motionStreak(from, to, tone = "gold") {
+      if (!from || !to || !this.els?.fxLayer) return;
+      const node = document.createElement("div");
+      node.className = `battle-vfx-motion-streak tone-${tone}`;
+      const length = this.nodeDistance(from, to);
+      this.placeNode(node, from);
+      node.style.width = this.state.camera ? `${length}px` : `${length}%`;
+      node.style.transform = `translateY(-50%) rotate(${this.nodeAngle(from, to)}rad)`;
+      this.els.fxLayer.appendChild(node);
+      this.removeNodeLater(node, 520);
+    }
+
+    cavalryWindupFx(source, target) {
+      if (!source || !this.els?.fxLayer) return;
+      const node = document.createElement("div");
+      node.className = "battle-vfx-cavalry-windup";
+      node.innerHTML = "<i></i><i></i><i></i>";
+      if (target) node.style.setProperty("--angle", `${this.nodeAngle(source, target)}rad`);
+      this.placeNode(node, source);
+      this.els.fxLayer.appendChild(node);
+      this.screenBeat("earth");
+      this.removeNodeLater(node, 760);
+    }
+
+    cavalryLeapFx(before, source, landing = 1) {
+      if (!source || !this.els?.fxLayer) return;
+      if (before) {
+        this.afterimage(before, source, "gold");
+        this.motionStreak(before, source, "earth");
+      }
+      const node = document.createElement("div");
+      node.className = `battle-vfx-hoof-impact landing-${Math.max(1, Math.min(2, landing))}`;
+      node.innerHTML = "<i></i><i></i><i></i><i></i><i></i><i></i>";
+      this.placeNode(node, source);
+      this.els.fxLayer.appendChild(node);
+      if (landing >= 2) this.screenBeat("earth");
+      this.removeNodeLater(node, 820);
+    }
+
+    meteorCastFx(source) {
+      if (!source || !this.els?.fxLayer) return;
+      const node = document.createElement("div");
+      node.className = "battle-vfx-meteor-cast";
+      node.innerHTML = "<i></i><i></i><i></i>";
+      this.placeNode(node, source);
+      this.els.fxLayer.appendChild(node);
+      this.screenBeat("fire");
+      this.removeNodeLater(node, 1180);
+    }
+
+    meteorImpactFx(target) {
+      if (!target || !this.els?.fxLayer) return;
+      const node = document.createElement("div");
+      node.className = "battle-vfx-meteor-impact";
+      node.innerHTML = "<i class=\"meteor-tail\"></i><i class=\"meteor-core\"></i><i class=\"meteor-crater\"></i><b></b><b></b><b></b><b></b>";
+      this.placeNode(node, target);
+      this.els.fxLayer.appendChild(node);
+      this.removeNodeLater(node, 980);
+    }
+
+    sanctuaryCastFx(source) {
+      if (!source || !this.els?.fxLayer) return;
+      const node = document.createElement("div");
+      node.className = "battle-vfx-sanctuary";
+      node.innerHTML = "<i></i><i></i><i></i><b>✦</b>";
+      this.placeNode(node, source);
+      this.els.fxLayer.appendChild(node);
+      this.screenBeat("holy");
+      this.removeNodeLater(node, 1380);
+    }
+
+    priestBlessingFx(source, target) {
+      if (!target || !this.els?.fxLayer) return;
+      if (source && source.unitId !== target.unitId) {
+        const tether = document.createElement("div");
+        tether.className = "battle-vfx-holy-tether";
+        const length = this.nodeDistance(source, target);
+        this.placeNode(tether, source);
+        tether.style.width = this.state.camera ? `${length}px` : `${length}%`;
+        tether.style.transform = `translateY(-50%) rotate(${this.nodeAngle(source, target)}rad)`;
+        this.els.fxLayer.appendChild(tether);
+        this.removeNodeLater(tether, 760);
+      }
+      const node = document.createElement("div");
+      node.className = "battle-vfx-blessing";
+      node.innerHTML = "<i></i><i></i><b>✦</b>";
+      this.placeNode(node, target);
+      this.els.fxLayer.appendChild(node);
+      this.removeNodeLater(node, 1120);
     }
 
     natureSeedFx(unit, action = "plant") {

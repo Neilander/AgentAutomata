@@ -72,6 +72,8 @@ const GAME_SKILL_DATA = (() => {
     const scaleType = () => effect.scaleWith || effect.type;
     const enemies = (count, anchor = unit) => api.enemiesOf(unit).filter(api.isAlive).sort(api.byDistance(anchor)).slice(0, count ?? Infinity);
     const allies = () => api.alliesOf(unit).filter(api.isAlive);
+    const supportRange = Number.isFinite(effect.range) ? effect.range : unit.supportRange;
+    const supportAllies = () => api.alliesInRange ? api.alliesInRange(unit, supportRange) : allies();
     const setTimer = (owner, timerName, duration) => {
       const key = api.timerAliases?.[timerName] || timerName;
       owner[key] = Math.max(owner[key] || 0, duration);
@@ -90,6 +92,12 @@ const GAME_SKILL_DATA = (() => {
       if (effect.label) api.floater(unit, effect.label, effect.tone || "heal");
     } else if (effect.kind === "chargeToTarget" && target) {
       api.chargeToTarget?.(unit, target, effect);
+    } else if (effect.kind === "cavalryDoubleLeap") {
+      api.cavalryDoubleLeap?.(unit, target, effect);
+    } else if (effect.kind === "cavalryRun") {
+      api.cavalryRun?.(unit, target, effect);
+    } else if (effect.kind === "cavalryWhirlwind") {
+      api.cavalryWhirlwind?.(unit, target, effect);
     } else if (effect.kind === "blinkBacklineStrike") {
       api.blinkBacklineStrike?.(unit, effect, visual);
     } else if (effect.kind === "shadowStepStrike") {
@@ -169,7 +177,7 @@ const GAME_SKILL_DATA = (() => {
         }
       }
     } else if (effect.kind === "cleanseStatusAlly") {
-      const ally = api.highestStatusAlly?.(unit, effect.statusType);
+      const ally = api.highestStatusAlly?.(unit, effect.statusType, supportRange);
       if (ally) {
         const cleared = api.cleanseStatus?.(unit, ally, effect.statusType, effect.amount || 1, effect.healPerStack || 0, effect.label || "Cleanse") || 0;
         if (cleared <= 0 && effect.fallbackHeal) api.healUnit(ally, effect.fallbackHeal, effect.label, unit);
@@ -188,23 +196,23 @@ const GAME_SKILL_DATA = (() => {
       });
     } else if (effect.kind === "healLowestAlly") {
       const power = powerFor("heal");
-      api.healUnit(api.lowestHpAlly(unit), effect.flat + power * effect.power, effect.label, visual);
+      api.healUnit(api.lowestHpAlly(unit, supportRange), effect.flat + power * effect.power, effect.label, visual);
     } else if (effect.kind === "shieldLowestAlly") {
       const power = powerFor("shield");
-      api.shield(api.lowestHpAlly(unit), effect.flat + power * effect.power, effect.label, visual);
+      api.shield(api.lowestHpAlly(unit, supportRange), effect.flat + power * effect.power, effect.label, visual);
     } else if (effect.kind === "shieldCarryAlly") {
       const power = powerFor("shield");
-      api.shield(api.carryAlly(unit), effect.flat + power * effect.power, effect.label, visual);
+      api.shield(api.carryAlly(unit, supportRange), effect.flat + power * effect.power, effect.label, visual);
     } else if (effect.kind === "lowestAllyTimer") {
-      const ally = api.lowestHpAlly(unit);
+      const ally = api.lowestHpAlly(unit, supportRange);
       if (ally) setTimer(ally, effect.timer, effect.duration);
     } else if (effect.kind === "carryTimer") {
-      const ally = api.carryAlly(unit);
+      const ally = api.carryAlly(unit, supportRange);
       if (ally) setTimer(ally, effect.timer, effect.duration);
     } else if (effect.kind === "selfRawDamage") {
       api.takeRaw(unit, unit.maxHp * effect.maxHp, unit, effect.type);
     } else if (effect.kind === "buffCarryPower") {
-      const ally = api.carryAlly(unit);
+      const ally = api.carryAlly(unit, supportRange);
       if (ally) {
         ally.bonusPowerTimer = effect.duration;
         ally.bonusPower = Math.max(ally.bonusPower || 0, effect.amount);
@@ -219,7 +227,7 @@ const GAME_SKILL_DATA = (() => {
         api.floater(ally, effect.label, "heal");
       }
     } else if (effect.kind === "teamTimer") {
-      allies().forEach((ally) => {
+      supportAllies().forEach((ally) => {
         setTimer(ally, effect.timer, effect.duration);
         api.emitEffectSignal?.({
           kind: "status",
@@ -232,7 +240,7 @@ const GAME_SKILL_DATA = (() => {
         if (effect.label) api.floater(ally, effect.label, effect.tone || "heal");
       });
     } else if (effect.kind === "teamRetaliation") {
-      allies().forEach((ally) => {
+      supportAllies().forEach((ally) => {
         setTimer(ally, "retaliationTimer", effect.duration);
         ally.retaliationEffect = effect;
         api.emitEffectSignal?.({
@@ -263,11 +271,11 @@ const GAME_SKILL_DATA = (() => {
       });
     } else if (effect.kind === "teamShield") {
       const power = powerFor("shield");
-      const targets = effect.selfOnly ? [unit] : allies();
+      const targets = effect.selfOnly ? [unit] : supportAllies();
       targets.forEach((ally) => api.shield(ally, effect.flat + power * effect.power, effect.label, visual));
     } else if (effect.kind === "teamHeal") {
       const power = powerFor("heal");
-      allies().forEach((ally) => api.healUnit(ally, effect.flat + power * effect.power, effect.label, visual));
+      supportAllies().forEach((ally) => api.healUnit(ally, effect.flat + power * effect.power, effect.label, visual));
     } else if (effect.kind === "berserkerRoar") {
       setTimer(unit, "undyingTimer", berserkerModel.durations.immortal);
       setTimer(unit, "hasteTimer", berserkerModel.durations.haste);
@@ -364,7 +372,7 @@ const GAME_SKILL_DATA = (() => {
         fantasy: "普攻狂暴",
         arenaFantasy: roleKits.berserker.fantasy,
         icon: roleKits.berserker.icon,
-        stats: { hp: roleKits.berserker.hp, power: roleKits.berserker.power, armor: roleKits.berserker.armor, magicResist: roleKits.berserker.magicResist, range: roleKits.berserker.range },
+        stats: { hp: roleKits.berserker.hp, power: roleKits.berserker.power, armor: roleKits.berserker.armor, magicResist: roleKits.berserker.magicResist, moveSpeed: roleKits.berserker.moveSpeed, range: roleKits.berserker.range },
         kit: { small: [roleKits.berserker.kit.small1, roleKits.berserker.kit.small2], passive: roleKits.berserker.kit.passive, ultimate: roleKits.berserker.kit.ultimate },
       },
     },

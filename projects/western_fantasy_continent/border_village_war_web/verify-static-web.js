@@ -14,6 +14,7 @@ const web = fs.readFileSync(path.join(root, "border-village-web.js"), "utf8");
 const server = fs.readFileSync(path.join(root, "..", "app", "server", "server.js"), "utf8");
 const workbench = fs.readFileSync(path.join(root, "..", "workbench", "index.html"), "utf8");
 const battleViewSource = fs.readFileSync(path.join(root, "..", "battle_view", "battle-view.js"), "utf8");
+const battleViewCss = fs.readFileSync(path.join(root, "..", "battle_view", "battle-view.css"), "utf8");
 
 for (const source of [...html.matchAll(/<(?:script|link)[^>]+(?:src|href)="([^"]+)"/g)].map((match) => match[1]).filter((source) => !source.startsWith("http"))) {
   assert(fs.existsSync(path.resolve(root, source)), `Missing static dependency: ${source}`);
@@ -21,7 +22,7 @@ for (const source of [...html.matchAll(/<(?:script|link)[^>]+(?:src|href)="([^"]
 
 for (const id of [
   "day-rail", "town-status-open", "town-name", "town-prosperity", "population-value", "ap-value", "ap-capacity", "town-prosperity-fill", "prosperity-dialog", "prosperity-viewport", "prosperity-track", "prosperity-growth-caption", "prosperity-level-burst", "prosperity-growth-return", "end-day-button", "map-view", "map-viewport", "map-world", "map-node-layer", "map-unit-layer",
-  "node-popover", "node-actions", "combat-view", "battle-mount", "combat-result", "grind-view",
+  "node-popover", "node-actions", "combat-view", "battle-mount", "combat-result", "combat-effect-filter", "grind-view",
   "grind-battle-mount", "grind-loot-shelf", "stop-grind", "command-dock", "dock-toggle", "dock-drawer", "dock-content", "combat-preview-dialog",
   "unit-roster-rail", "equipment-dialog", "equipment-character-panel", "equipment-backpack-panel", "equipment-close", "preview-slide-track", "preview-battle-rule", "preview-formations", "preview-teams", "preview-to-supply", "preview-supply-pot", "preview-supply-fraction", "preview-supply-percent", "preview-back", "preview-supply-reset", "preview-confirm", "result-dialog", "recruit-overlay", "restart-dialog",
 ]) assert(html.includes(`id="${id}"`), `Missing required UI element #${id}`);
@@ -30,13 +31,83 @@ assert(html.includes("../../../shared/game_camera_2d/camera-core.js"), "Shared c
 assert(html.indexOf("../game_data/equipment-sets.js") < html.indexOf("../game_data/build-layers.js"), "Equipment sets must load before shared build layers");
 assert(html.indexOf("../fifteen_day_demo/fifteen-day-core.js") < html.indexOf("../border_village_war/border-village-core.js"), "Gear rule dependency must load before border village core");
 assert(web.includes("AgentAutomataCamera2D.createCamera2D") && web.includes("fitBounds") && web.includes("panByScreen"), "Map does not use the shared camera");
-assert(web.includes('id: "mock:verdant-circle"') && web.includes('kind: "mock_battle"') && web.includes('GAME.natureSetMockPlan(action.mockVariant || "set")'), "Initial village lacks the repeatable Verdant Circle mock battle");
+assert(web.includes('id: "mock:training-ground"') && web.includes('kind: "mock_battle"') && web.includes('GAME.natureSetMockPlan(action.mockVariant || "set")'), "Initial village lacks the repeatable training-ground mock battles");
 assert(web.includes('mockVariant: "baseline"') && web.includes('mockVariant: "set"') && web.includes("六件套相对无套装") && web.includes("mockResults.baseline") && web.includes("mockResults.set"), "Verdant Circle mock lacks a same-seed baseline/set comparison or visible deltas");
+assert(web.includes('mockKind: "cavalry"') && web.includes('GAME.cavalryMockPlan(action.mockScale || 4, action.mockLoadout || "noSets")') && web.includes("cavalryScales = [4, 8, 20]") && web.includes("骑兵输出占比") && web.includes("平均生存") && web.includes("亲手击杀"), "Training ground lacks the 4v4/8v8/20v20 cavalry tests or their focused result metrics");
+assert(web.includes('mockLoadout: "fullSets"') && web.includes("全员六件套") && web.includes("冲锋蓄势") && web.includes("实际突破") && web.includes("突破命中") && web.includes("突破伤害") && web.includes("chargeIntercept"), "Training ground lacks full-set cavalry variants or charge-focused result metrics");
+const chargeDemo = GAME.cavalryChargeDemoPlan();
+assert.equal(chargeDemo.leftTeam.length, 1, "Charge demo does not contain exactly one cavalry");
+assert.equal(chargeDemo.rightTeam.length, 1, "Charge demo does not contain exactly one dummy");
+assert.equal(chargeDemo.leftTeam[0].role, "cavalry", "Charge demo actor is not cavalry");
+assert.equal(chargeDemo.leftTeam[0].mechanicModifiers["set:cavalryCharge:pieces"], 6, "Charge demo cavalry lacks the six-piece set");
+assert.equal(chargeDemo.rightTeam[0].unitKind, "trainingDummy", "Charge demo target is not a training dummy");
+assert.equal(chargeDemo.rightTeam[0].moveSpeed, 0, "Charge demo dummy can move");
+assert.equal(chargeDemo.rightTeam[0].physicalPower, 0, "Charge demo dummy can deal physical damage");
+assert.equal(chargeDemo.distanceRuler.threshold, 16, "Charge demo ruler does not mark the live six-piece threshold");
+const chargeDemoResult = COMBAT.simulateTeams(chargeDemo.leftTeam, chargeDemo.rightTeam, { seed: chargeDemo.seed, randomizeStats: false, maxTime: chargeDemo.maxTime });
+assert.equal(chargeDemoResult.metrics.rightDamage, 0, "Charge demo dummy dealt damage");
+assert(chargeDemoResult.signals.some((signal) => signal.tags?.includes("chargeReady")), "Charge demo never reached charge-ready state");
+assert(chargeDemoResult.signals.some((signal) => signal.tags?.includes("breakthrough")), "Charge demo never demonstrated breakthrough");
+assert(web.includes('mockKind: "cavalryChargeDemo"') && web.includes("GAME.cavalryChargeDemoPlan()") && web.includes("distanceRuler: plan.distanceRuler || null"), "Training ground does not expose the dedicated charge-distance demo");
+assert(battleViewSource.includes("distanceRulerHtml") && battleViewSource.includes("renderDistanceRuler") && battleViewSource.includes("cavalryChargeReady") && battleViewCss.includes(".battle-distance-ruler") && battleViewCss.includes(".battle-distance-status.ready"), "Charge demo lacks a live distance ruler or ready-state feedback");
+const vfxDemos = {
+  cavalry: "cavalryDoubleLeap",
+  mage: "meteorRain",
+  priest: "sanctuary",
+};
+for (const [role, skillKey] of Object.entries(vfxDemos)) {
+  const plan = GAME.combatVfxDemoPlan(role);
+  assert.equal(plan.mockKind, "vfxDemo", `${role} presentation sample is not marked as a VFX demo`);
+  assert.equal(plan.mockRole, role, `${role} presentation sample exposes the wrong focus role`);
+  assert(plan.leftTeam.some((unit) => unit.role === role), `${role} presentation sample lacks its featured unit`);
+  const result = COMBAT.simulateTeams(plan.leftTeam, plan.rightTeam, { seed: plan.seed, randomizeStats: false, maxTime: plan.maxTime });
+  assert(result.signals.some((signal) => signal.kind === "skill" && signal.skillKey === skillKey), `${role} presentation sample never casts ${skillKey}`);
+}
+assert(web.includes('mockKind: "vfxDemo"') && web.includes("GAME.combatVfxDemoPlan(action.mockRole") && web.includes('initialFocusRole: plan.mockKind === "vfxDemo" ? plan.mockRole : null'), "Training ground does not expose or auto-focus the three profession presentation samples");
+assert(battleViewSource.includes("cavalryLeapFx") && battleViewSource.includes("meteorImpactFx") && battleViewSource.includes("sanctuaryCastFx") && battleViewSource.includes("priestBlessingFx"), "Profession presentation samples are missing their distinct signal-driven effects");
+assert(battleViewCss.includes(".battle-vfx-hoof-impact") && battleViewCss.includes(".battle-vfx-meteor-impact") && battleViewCss.includes(".battle-vfx-sanctuary") && battleViewCss.includes(".battle-vfx-blessing"), "Profession presentation samples are missing their visual silhouettes");
+const cavalryRoleSets = {
+  cavalry: ["cavalryCharge", "set:cavalryCharge:breakthrough"],
+  mage: ["meteorFireRain", "set:meteorFireRain:skyfall"],
+  priest: ["guardianEcho", "set:guardianEcho:resonance"],
+  warrior: ["myriadValor", "set:myriadValor:battleGrowth"],
+};
+for (const size of [4, 8, 20]) {
+  const plan = GAME.cavalryMockPlan(size);
+  const fullSetPlan = GAME.cavalryMockPlan(size, "fullSets");
+  assert.equal(plan.leftTeam.length, size, `Cavalry ${size}v${size} left side has the wrong size`);
+  assert.equal(plan.rightTeam.length, size, `Cavalry ${size}v${size} right side has the wrong size`);
+  assert.equal(plan.leftTeam.filter((unit) => unit.role === "cavalry").length, size / 4, `Cavalry ${size}v${size} uses the wrong cavalry share`);
+  assert.equal(plan.leftTeam.filter((unit) => unit.role === "warrior").length, size / 4, `Cavalry ${size}v${size} left side lacks its warrior slots`);
+  assert.equal(plan.rightTeam.filter((unit) => unit.role === "warrior").length, size / 2, `Cavalry ${size}v${size} lacks the matching double-warrior control slots`);
+  assert.equal([...plan.leftTeam, ...plan.rightTeam].filter((unit) => unit.role === "knight").length, 0, `Cavalry ${size}v${size} still contains taunting knights`);
+  assert.equal(plan.mockKind, "cavalry", `Cavalry ${size}v${size} is not marked as a cavalry mock`);
+  assert.equal(plan.mockLoadout, "noSets", `Cavalry ${size}v${size} baseline is not marked as no-sets`);
+  assert.equal(fullSetPlan.mockLoadout, "fullSets", `Cavalry ${size}v${size} full-set plan is not marked as full-sets`);
+  assert.equal(fullSetPlan.leftTeam.length, size, `Full-set cavalry ${size}v${size} left side has the wrong size`);
+  assert.equal(fullSetPlan.rightTeam.length, size, `Full-set cavalry ${size}v${size} right side has the wrong size`);
+  assert.equal([...fullSetPlan.leftTeam, ...fullSetPlan.rightTeam].filter((unit) => unit.role === "knight").length, 0, `Full-set cavalry ${size}v${size} still contains Sighing Wall knights`);
+  for (const unit of [...fullSetPlan.leftTeam, ...fullSetPlan.rightTeam]) {
+    const [setId, sixPieceKey] = cavalryRoleSets[unit.role] || [];
+    assert(setId, `Full-set cavalry plan contains an unmapped role: ${unit.role}`);
+    assert.equal(unit.mechanicModifiers[`set:${setId}:pieces`], 6, `${unit.name} does not wear six ${setId} pieces`);
+    assert.equal(unit.mechanicModifiers[sixPieceKey], 1, `${unit.name} lacks the ${setId} six-piece mechanic`);
+  }
+}
 assert(web.includes("盐枝输出速度") && web.includes("adaptedDpsMultiplier"), "Verdant Circle comparison hides the adapted damage dealer's output-rate multiplier");
 assert(battleViewSource.includes("battle-vfx-bloom-burst") && css.includes(".mock-comparison"), "Verdant comparison or bloom feedback is not visibly emphasized");
 assert(web.includes("view().actions.find((row) => row.id === actionId) || location.actions.find((row) => row.id === actionId)"), "Node-local mock actions render but cannot be resolved when clicked");
 assert(web.includes("setSignals.plant") && web.includes("setSignals.grow") && web.includes("setSignals.bloom") && web.includes("setSignals.spread"), "Mock battle result does not report real set trigger counts");
 assert(battleViewSource.includes("共享战斗模拟器没有加载，已拒绝启动旧备用战斗"), "Battle view can still silently fall back to a divergent simulator");
+assert(battleViewSource.includes("effectRoleFilter") && battleViewSource.includes("effectVisibleForSignal") && battleViewSource.includes("setEffectRoles(roleKeys = null)") && battleViewSource.includes("getEffectRoles()"), "Shared battle view lacks a runtime profession VFX filter");
+assert(web.includes('plan.mockKind === "vfxDemo" ? new Set([plan.mockRole])') && web.includes('plan.mockKind === "cavalry" ? new Set(["cavalry"])') && web.includes("data-effect-role") && web.includes("data-effect-preset") && web.includes("只影响飘字、技能名与光效"), "Presentation samples or cavalry demos do not default to role-only VFX, or the combat HUD lacks profession controls");
+assert(web.includes("speed: plan.mock ? 1 : 2.5"), "Mock battles are not running at normal 1x presentation speed");
+assert(web.includes("manualStart: true") && web.includes("focusSkillFeed: true"), "Campaign battles do not enable the manual start and focused-unit skill feed");
+assert(battleViewSource.includes("beginManualBattle()") && battleViewSource.includes("setFocusedUnit(unitId)") && battleViewSource.includes("queueFocusedSignal(signal, source, target)"), "Battle view lacks manual start or focused-signal routing");
+assert(battleViewSource.includes("data-battle-start") && battleViewSource.includes("data-battle-unit-id") && battleViewSource.includes("chargeReady") && battleViewSource.includes("guardianEcho"), "Battle focus UI lacks its start/select controls or key-effect allowlist");
+assert(battleViewCss.includes(".battle-focus-notice") && battleViewCss.includes(".battle-unit.focused") && battleViewCss.includes("battleFocusOutRight"), "Battle focus UI lacks selection or side-drawer presentation states");
+assert(css.includes(".combat-effect-filter") && css.includes(".effect-role-menu") && css.includes(".effect-role-chip.selected"), "Profession VFX filter lacks compact selected-state styling");
+assert(css.includes(".charge-metrics") && battleViewSource.includes("冲锋就绪") && battleViewSource.includes("冲锋突破"), "Cavalry six-piece charge lacks visible battle or result feedback");
 assert(!html.includes('class="village-ground"') && !html.includes('class="decorative-cottage"') && !css.includes(".map-building-art"), "Rejected detailed town scenery or physical building art still clutters the simplified map");
 assert(web.includes("function renderWorldUnits") && web.includes("current.party.heroes.map") && web.includes("current.party.militiaUnits.map") && web.includes("BUILDING_PATROL_ROUTES") && !web.includes("TRAINED_WORLD_POSITIONS"), "Simplified world layer should show owned heroes and militia without duplicating trained-unit scenery");
 assert(web.includes('class="world-unit hero ${hero.kind}"') && web.includes('class="world-unit militia"') && web.includes('data-equipment-target="${esc(unit.id)}"') && web.includes("ROLE_ICONS[unit.roleKey]") && css.includes(".map-unit-layer") && css.includes(".world-unit-avatar") && css.includes("@keyframes world-unit-idle"), "Map heroes or militia lack compact clickable battle-style avatars");
@@ -64,6 +135,7 @@ assert(/\.prosperity-dialog\.growth-mode::backdrop\s*\{[^}]*rgba\(0,\s*0,\s*0,\s
 assert(/\.prosperity-dialog\.growth-mode\s*\{[^}]*border:\s*0[^}]*background:\s*transparent[^}]*box-shadow:\s*none/.test(css) && css.includes(".prosperity-dialog.growth-mode .prosperity-window-head") && css.includes(".prosperity-dialog.growth-mode .prosperity-current-summary") && /\.prosperity-dialog\.growth-mode \.prosperity-viewport\s*\{[^}]*border:\s*0[^}]*background:\s*transparent/.test(css), "Recruitment growth still opens the full framed prosperity window instead of the isolated population axis");
 assert(web.includes("MAP_PAN_MARGIN_X = 520") && web.includes("MAP_PAN_MARGIN_Y = 340") && web.includes("event.preventDefault()"), "Map drag bounds or pointer handling are missing");
 assert(web.includes("GAME.preparePlayerCombat") && web.includes("GAME_BATTLE_VIEW.mount") && web.includes("battleView.start"), "Real combat view integration is incomplete");
+assert(web.includes("selected.recommendedGear") && web.includes("gearRecommendation") && web.includes("selected.encounterIntel"), "Difficulty-six gear recommendation or fixed-formation counter clue is not rendered in the grind panel");
 assert(web.includes("GAME.applyPlayerCombatResult") && web.includes("commitCombat"), "Battle result is not committed through the game core");
 assert(web.includes("COMBAT_FORMATION_RULES") && web.includes('hunt: { label: "小队讨伐", capacity: 4') && web.includes('raid: { label: "据点突袭", capacity: 8') && web.includes('final: { label: "村庄决战", capacity: 20'), "Combat types do not expose their required formation capacities");
 assert(web.includes("combatFormationEntries") && web.includes("formation.capacity <= rule.capacity") && web.includes("matches && legal ? 0 : matches ? 1 : 2") && web.includes('["容量兼容且合法", "容量兼容但不合法", "超过人数上限"]'), "Combat formations are not downward-compatible or sorted into the three requested eligibility groups");
@@ -96,8 +168,10 @@ assert(css.includes("#4f9ec8 51%") && css.includes("animation: eternal-cell-swee
 assert(css.includes(".portrait-equipment-slot.rarity-border-永恒 > i") && css.includes(".portrait-equipment-slot.rarity-border-黑金 > i") && css.includes(".portrait-equipment-slot.rarity-border-炼狱 > i") && !web.includes('<small>${esc(slot.slotLabel)}</small>') && !css.includes(".portrait-equipment-slot > small"), "Portrait equipment slots still render permanent text instead of icon-only slots with hover details");
 assert(web.includes("yield-badge") && css.includes(".map-node .yield-badge"), "Resource buildings lack compact on-map yield signals");
 assert(web.includes("visibleGrind") && web.includes("ui:grind-unavailable") && web.includes("地点已知 · 暂时不能出发"), "Known grind location can disappear when its action is temporarily unavailable");
-assert(web.includes("renderGrindDifficultyPanel") && web.includes("select_grind_difficulty") && web.includes("全部难度已解锁"), "Grind node lacks the visible manual five-difficulty progression panel");
-assert(web.includes("lootCountLabel") && web.includes("rarityLabel") && web.includes("grind.nextUnlockScore") && web.includes("难度N胜利一次获得N积分") && web.includes("5/20/90/200积分"), "Grind panel does not expose exact drop odds and weighted shared unlock score");
+assert(web.includes("renderGrindDifficultyPanel") && web.includes("select_grind_difficulty") && web.includes("全部难度已解锁"), "Grind node lacks the visible manual six-difficulty progression panel");
+assert(web.includes("lootCountLabel") && web.includes("rarityLabel") && web.includes("grind.nextUnlockScore") && web.includes("难度N胜利一次获得N积分") && web.includes("5/20/90/200/450积分"), "Grind panel does not expose exact drop odds and weighted shared unlock score");
+assert(web.includes("data-grind-set-slot") && web.includes("select_grind_set") && web.includes("难度6定向套装池") && css.includes(".grind-set-pool"), "Difficulty-six three-set directed pool is missing from the grind panel");
+assert(web.includes('item.setId ? "set-piece"') && web.includes("set-item-note") && css.includes(".set-badge"), "Set drops lack compact loot, backpack, or detail identification");
 assert(css.includes(".grind-level.locked") && css.includes(".grind-progress") && css.includes("#78463e"), "Locked grind difficulties or their progress bar lack persistent visual treatment");
 assert(web.includes("今日装备") && web.includes("铁匠收入") && web.includes("current.economy.dailyGearDrops"), "Continuous equipment combat does not show its smithy gold loop nearby");
 assert(!html.includes('id="iron-value"') && !html.includes('id="steel-value"'), "Removed material resources remain in the top-level UI");
@@ -124,7 +198,7 @@ assert(formationCardSource.includes("member.name") && formationCardSource.includ
 assert(formationCardSource.includes('class="formation-member-art" aria-hidden="true"></span>') && formationCardSource.includes('class="formation-member-role"'), "Formation cards do not keep the portrait area empty while placing the profession icon at the information boundary");
 assert(formationSlotSource.includes("member.name") && formationSlotSource.includes("member.roleIcon") && formationSlotSource.includes("member.city") && formationSlotSource.includes("formatCombatPower(member.combatPower)"), "Position slots do not preserve the same profession icon, name, city, and combat-power hierarchy");
 assert(!formationCardSource.includes("member.glyph") && !formationSlotSource.includes("member.glyph"), "Formation cards or position slots still use the old identity glyphs");
-assert(web.includes('const ROLE_ICONS = { knight: "🛡️", warrior: "⚔️"') && web.includes('roleIcon: ROLE_ICONS[unit.roleKey]') && web.includes('toLocaleString("zh-CN")'), "Formation cards do not reuse canonical role icons or support full million-scale combat-power formatting");
+assert(web.includes('const ROLE_ICONS = { knight: "🛡️", cavalry: "🐎", warrior: "⚔️"') && web.includes('roleIcon: ROLE_ICONS[unit.roleKey]') && web.includes('toLocaleString("zh-CN")'), "Formation cards do not reuse canonical role icons or support full million-scale combat-power formatting");
 assert(/\.formation-member-strip\s*\{[^}]*grid-auto-columns:\s*162px/.test(css) && css.includes(".formation-member-summary") && css.includes(".formation-member-power") && css.includes("border-top: 1px solid #4e493a"), "Formation cards are not wide portrait-and-summary rectangles with a separated information footer");
 assert(/\.formation-member\s*\{[^}]*grid-template-rows:\s*minmax\(56px,\s*1fr\)\s+60px/.test(css) && css.includes(".formation-member-art > img"), "Formation cards do not preserve a dedicated empty upper portrait layer for future artwork");
 assert(/\.formation-member-role\s*\{[^}]*left:\s*50%[^}]*top:\s*0[^}]*border:\s*0[^}]*font-size:\s*17px[^}]*translate\(-50%,\s*-52%\)/.test(css), "Profession icon is not a small unframed bridge centered on the portrait-information boundary");
@@ -211,8 +285,9 @@ assert.equal(observation.buildings.filter((building) => !building.type).length, 
 assert(observation.actions.some((action) => action.kind === "build" && Number.isInteger(action.targetSlot)), "Build action lacks safe plot metadata");
 assert(observation.buildings.filter((building) => ["house", "farm", "smithy"].includes(building.type)).every((building) => building.yieldLabel), "Base resource building lacks a visible yield label");
 assert(observation.actions.some((action) => action.kind === "grind"));
-assert.equal(observation.grind.levels.length, 5);
-assert.equal(observation.actions.filter((action) => action.kind === "grind_setting").length, 5);
+assert.equal(observation.grind.levels.length, 6);
+assert.equal(observation.actions.filter((action) => action.kind === "grind_setting").length, 6);
+assert.equal(observation.actions.filter((action) => action.kind === "grind_set_setting").length, 21);
 assert(observation.actions.some((action) => action.kind === "grind_setting" && action.available === false && action.disabledReason), "Locked difficulty controls are hidden or unexplained");
 assert(observation.actions.some((action) => action.kind === "combat"));
 assert(observation.actions.some((action) => action.kind === "event"));

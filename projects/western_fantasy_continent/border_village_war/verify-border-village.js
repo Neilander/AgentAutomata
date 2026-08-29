@@ -107,12 +107,26 @@ function verifyImmediateConstructionAndYieldSignals() {
   assert(state.resources.food - beforeResources.food >= 16 && state.resources.food - beforeResources.food <= 24, "Two farms did not produce their visible combined range");
 }
 
+function verifyCavalryRecruitEvent() {
+  let state = reachManagement("cavalry-recruit-event-v3");
+  assert.equal(view(state).event?.id, "refugees", "Day-three refugee event should remain first");
+  state = take(state, (row) => row.kind === "event" && row.label.includes("尽量安置"), "resolve refugee event before rider");
+  let current = view(state);
+  assert.equal(current.event?.id, "strandedRider", "Cavalry recruit event did not follow the first day-three event");
+  state = take(state, (row) => row.kind === "event" && row.label.includes("骑手和战马"), "recruit cavalry hero");
+  current = view(state);
+  const rider = current.party.heroes.find((hero) => hero.id === "rider");
+  assert(rider, "Cavalry event did not add the rider to the roster");
+  assert.equal(rider.roleKey, "cavalry", "Recruited rider does not use the cavalry combat role");
+  assert(state.activeParty.includes("rider"), "Recruited rider did not fill the available active-party slot");
+}
+
 function verifyGrindDifficultyLadder() {
   let state = reachManagement("grind-ladder-v3");
   let current = view(state);
   assert.equal(current.grind.selectedDifficulty, 1);
   assert.equal(current.grind.unlockedDifficulty, 1);
-  assert.equal(current.grind.levels.length, 5, "All five difficulty slots must remain visible");
+  assert.equal(current.grind.levels.length, 6, "All six difficulty slots must remain visible");
   const lockedTwo = current.actions.find((row) => row.operation === "select_grind_difficulty" && row.targetDifficulty === 2);
   assert(lockedTwo && lockedTwo.available === false && lockedTwo.disabledReason.includes("5") && lockedTwo.disabledReason.includes("积分") && lockedTwo.disabledReason.includes("难度N"), "Difficulty 2 must visibly explain its shared weighted-score requirement");
   assert.throws(() => GAME.applyPlayerAction(state, lockedTwo.id), /积分达到5|无法执行|尚未解锁/);
@@ -127,12 +141,13 @@ function verifyGrindDifficultyLadder() {
   assert.equal(current.grind.selectedDifficulty, 1, "Unlocking a difficulty must not auto-select it");
   assert.equal(current.grind.unlockScore, 5, "Difficulty 1 victories should contribute one unlock point each");
   assert.equal(current.grind.levels[0].wins, 5);
-  assert.deepEqual(current.grind.levels.map((row) => row.unlockAtScore), [0, 5, 20, 90, 200]);
-  assert.deepEqual(current.grind.levels.map((row) => row.winScore), [1, 2, 3, 4, 5]);
+  assert.deepEqual(current.grind.levels.map((row) => row.unlockAtScore), [0, 5, 20, 90, 200, 450]);
+  assert.deepEqual(current.grind.levels.map((row) => row.winScore), [1, 2, 3, 4, 5, 6]);
   assert.deepEqual(current.grind.levels[0].rarityChances, [{ rarity: "普通", chance: .9 }, { rarity: "稀有", chance: .1 }]);
   assert.deepEqual(current.grind.levels[2].lootCountChances, [{ count: 1, chance: .25 }, { count: 2, chance: .75 }]);
   assert.deepEqual(current.grind.levels[3].rarityChances, [{ rarity: "普通", chance: .5 }, { rarity: "稀有", chance: .3 }, { rarity: "史诗", chance: .19 }, { rarity: "传说", chance: .01 }]);
   assert.deepEqual(current.grind.levels[4].rarityChances, [{ rarity: "普通", chance: .3 }, { rarity: "稀有", chance: .45 }, { rarity: "史诗", chance: .2 }, { rarity: "传说", chance: .05 }]);
+  assert.deepEqual(current.grind.levels[5].rarityChances, [{ rarity: "普通", chance: .2 }, { rarity: "稀有", chance: .42 }, { rarity: "史诗", chance: .3 }, { rarity: "传说", chance: .08 }]);
   for (const level of current.grind.levels) {
     assert(Math.abs(level.lootCountChances.reduce((sum, row) => sum + row.chance, 0) - 1) < 1e-9, `Difficulty ${level.difficulty} loot-count chances do not sum to 100%`);
     assert(Math.abs(level.rarityChances.reduce((sum, row) => sum + row.chance, 0) - 1) < 1e-9, `Difficulty ${level.difficulty} rarity chances do not sum to 100%`);
@@ -180,13 +195,27 @@ function verifyGrindDifficultyLadder() {
   assert.equal(current.grind.unlockScore, 200, "Weighted unlock score was not derived from per-difficulty wins");
   assert.equal(current.grind.unlockedDifficulty, 5, "Staying on difficulty 1 did not eventually unlock difficulty 5 at 200 points");
   assert.equal(current.grind.levels[4].wins, 0, "Global unlock test unexpectedly required wins on difficulty 5");
+  state.grind.winsByDifficulty = { 1: 450, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+  state.stats.grindWins = 450;
+  current = view(state);
+  assert.equal(current.grind.unlockedDifficulty, 6, "Difficulty 6 did not unlock at 450 weighted points");
+  assert(current.grind.levels[5].recommendedGear.includes("全队8部位史诗") && current.grind.levels[5].recommendedGear.includes("套装不是必需"), "Difficulty 6 does not expose its composition-first gear recommendation");
+  assert(current.grind.levels[5].encounterIntel.includes("固定为盾法牧阵") && current.grind.levels[5].encounterIntel.includes("高法抗"), "Difficulty 6 does not expose its focused fixed formation and counter clue");
+  assert.equal(current.grind.setChoices.length, 3, "Difficulty 6 does not expose exactly three directed set slots");
+  assert.equal(new Set(current.grind.setChoices.map((row) => row.id)).size, 3, "Difficulty 6 directed set slots are not unique");
+  const setChoice = current.actions.find((row) => row.operation === "select_grind_set" && row.targetSetSlot === 0 && row.targetSetId === "cavalryCharge");
+  assert(setChoice?.available, "Unlocked difficulty 6 does not expose its set-pool choices");
+  state = GAME.applyPlayerAction(state, setChoice.id);
+  current = view(state);
+  assert.equal(current.grind.setChoices[0].id, "cavalryCharge", "Difficulty 6 set-pool selection did not persist");
+  assert.equal(new Set(current.grind.setChoices.map((row) => row.id)).size, 3, "Selecting an already-used set failed to keep all three slots unique");
   for (const [score, expectedDifficulty] of [[4, 1], [5, 2], [19, 2], [20, 3], [89, 3], [90, 4], [199, 4], [200, 5]]) {
     const boundaryState = reachManagement(`weighted-boundary-${score}`);
     boundaryState.grind.winsByDifficulty = { 1: score, 2: 0, 3: 0, 4: 0, 5: 0 };
     boundaryState.stats.grindWins = score;
     assert.equal(view(boundaryState).grind.unlockedDifficulty, expectedDifficulty, `Weighted score ${score} unlocked the wrong difficulty`);
   }
-  assert(GAME.GRIND_DIFFICULTIES[5].lootTier > GAME.GRIND_DIFFICULTIES[1].lootTier && GAME.GRIND_DIFFICULTIES[5].lootCountTable[0][0] > GAME.GRIND_DIFFICULTIES[1].lootCountTable[0][0], "Higher difficulties do not improve loot quality and quantity");
+  assert(GAME.GRIND_DIFFICULTIES[6].lootTier > GAME.GRIND_DIFFICULTIES[1].lootTier && GAME.GRIND_DIFFICULTIES[6].lootCountTable[0][0] > GAME.GRIND_DIFFICULTIES[1].lootCountTable[0][0], "Higher difficulties do not improve loot quality and quantity");
 }
 
 function verifySmithLoopAndSimpleMarket() {
@@ -510,6 +539,7 @@ function verifyAncientRuinsChallengeStory() {
 
 verifyIntroAndInformationBoundary();
 verifyImmediateConstructionAndYieldSignals();
+verifyCavalryRecruitEvent();
 verifyGrindDifficultyLadder();
 verifySmithLoopAndSimpleMarket();
 verifyTrainingAndFoodGradient();
@@ -532,7 +562,9 @@ console.log(JSON.stringify({
     "permanent grind location with visible prologue lock reason",
     "wounded starter guard uses the shared knight kit at reduced stats without a hidden captain buff",
     "immediate AP-only construction with yield badges",
-    "five visible manual grind difficulties unlocked by weighted score at 5/20/90/200 points",
+    "day-three follow-up event recruits a cavalry hero into the available party slot",
+    "six visible manual grind difficulties unlocked by weighted score at 5/20/90/200/450 points",
+    "difficulty-six three-set directed conversion pool",
     "equipment drops drive capped smithy gold",
     "three-item market and five-sale daily limit",
     "real training battle upgrades militia to individually equipable eight-slot warriors",

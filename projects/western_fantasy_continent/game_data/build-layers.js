@@ -288,10 +288,11 @@ function applyCombatModifiers(baseSpec, bundle) {
   const roleBase = SKILL_DATA.roleKits[next.role] || {};
   const baseHp = next.maxHp ?? next.hp ?? roleBase.hp ?? 0;
   const basePower = next.power ?? roleBase.power ?? 0;
-  const basePhysical = next.physicalPower ?? basePower;
-  const baseMagic = next.magicPower ?? basePower;
+  const basePhysical = next.physicalPower ?? roleBase.physicalPower ?? basePower;
+  const baseMagic = next.magicPower ?? roleBase.magicPower ?? basePower;
   const baseArmor = next.armor ?? roleBase.armor ?? 0;
   const baseMagicResist = next.magicResist ?? roleBase.magicResist ?? 0;
+  const baseMoveSpeed = next.moveSpeed ?? roleBase.moveSpeed ?? 7;
 
   next.maxHp = Math.max(1, Math.round(baseHp + (bundle.maxHpAdd || 0)));
   next.hp = next.maxHp;
@@ -300,9 +301,10 @@ function applyCombatModifiers(baseSpec, bundle) {
   next.power = Math.round(Math.max(next.power || basePower, next.physicalPower, next.magicPower));
   next.armor = round(baseArmor + (bundle.armorAdd || 0), 2);
   next.magicResist = round(baseMagicResist + (bundle.magicResistAdd || 0), 2);
+  next.moveSpeed = round(baseMoveSpeed, 2);
   next.range = round((next.range ?? roleBase.range ?? 0) + (bundle.rangeAdd || 0), 2);
-  next.attackSpeedMult = round((next.attackSpeedMult || 1) * (bundle.attackSpeedMult || 1), 3);
-  next.skillHasteMult = round((next.skillHasteMult || 1) * (bundle.skillHasteMult || 1), 3);
+  next.attackSpeedMult = round((next.attackSpeedMult ?? roleBase.attackSpeedMult ?? 1) * (bundle.attackSpeedMult || 1), 3);
+  next.skillHasteMult = round((next.skillHasteMult ?? roleBase.skillHasteMult ?? 1) * (bundle.skillHasteMult || 1), 3);
   next.effectPowerMult = round((next.effectPowerMult || 1) * (bundle.effectPowerMult || 1), 3);
   next.effectResistPct = round(clamp((next.effectResistPct || 0) + (bundle.effectResistPct || 0), 0, 0.5), 3);
   next.receivedHealingMult = round((next.receivedHealingMult || 1) * (bundle.receivedHealingMult || 1), 3);

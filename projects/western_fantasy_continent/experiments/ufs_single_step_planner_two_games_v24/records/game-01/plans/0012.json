@@ -1,0 +1,163 @@
+{
+  "schema": "ufs_prechoice_plan_v1",
+  "status": "planned",
+  "boundary": {
+    "type": "room_action",
+    "candidates": {
+      "resolvableRoomIds": [
+        "A-aa-c1"
+      ],
+      "unaffordableRoomIds": [],
+      "excavationPlacementIds": [],
+      "unaffordableExcavationPlacementIds": [],
+      "skippablePlacementIds": [
+        "r1-white-4@A-r1-c1"
+      ]
+    }
+  },
+  "attemptedCount": 3,
+  "legalCandidateCount": 2,
+  "rejectedCandidateCount": 1,
+  "recommendedPayload": {
+    "type": "skip_worker",
+    "placementId": "r1-white-4@A-r1-c1",
+    "predictions": [
+      {
+        "because": "候选试演：在rooms阶段比较type=skip_worker|placementId=r1-white-4@A-r1-c1的下一稳定边界后果",
+        "expectations": [
+          {
+            "itemId": "track:energy",
+            "change": "unchanged"
+          }
+        ]
+      }
+    ]
+  },
+  "ranking": [
+    {
+      "payload": {
+        "type": "skip_worker",
+        "placementId": "r1-white-4@A-r1-c1"
+      },
+      "imaginedStatus": "choice",
+      "imaginedReason": "waiting_for_room_action",
+      "queryQ": {
+        "affected_object": "track:energy",
+        "change_trend": "准备执行skip_worker，结果尚未发生",
+        "cause_relation": "候选试演：在rooms阶段比较type=skip_worker|placementId=r1-white-4@A-r1-c1的下一稳定边界后果",
+        "temporal_state": "行动提交前",
+        "context": "rooms阶段执行skip_worker前的明确预测"
+      },
+      "baselineScore": 0,
+      "baselineContributions": {
+        "energy": 0,
+        "damage": 0,
+        "researchIndex": 0,
+        "excavatorIndex": 0,
+        "mothershipRow": 0
+      },
+      "feedbackAdjustment": {
+        "trajectoryId": "feedback-trajectory-00366",
+        "activation": 0.999329,
+        "auditedExpectations": [
+          {
+            "itemId": "track:energy",
+            "change": "equals",
+            "value": 2
+          }
+        ],
+        "learnedOutcomeScore": 0,
+        "replacedBaselineByConfidence": 0
+      },
+      "recalledFeedback": [
+        {
+          "trajectoryId": "feedback-trajectory-00366",
+          "activation": 0.999329,
+          "followingQ": {
+            "affected_object": "track:energy",
+            "change_trend": "track:energy保持不变",
+            "cause_relation": "skip_worker：候选试演：在rooms阶段比较type=skip_worker|placementId=r1-white-3@A-r2-c5的下一稳定边界后果",
+            "temporal_state": "本次正式结算到达稳定边界后",
+            "context": "行动前明确写下的预测票据"
+          }
+        },
+        {
+          "trajectoryId": "feedback-trajectory-00362",
+          "activation": 0.999196,
+          "followingQ": {
+            "affected_object": "track:energy",
+            "change_trend": "track:energy保持不变",
+            "cause_relation": "skip_worker：候选试演：在rooms阶段比较type=skip_worker|placementId=r1-gray-1@A-r1-c4的下一稳定边界后果",
+            "temporal_state": "本次正式结算到达稳定边界后",
+            "context": "行动前明确写下的预测票据"
+          }
+        },
+        {
+          "trajectoryId": "feedback-trajectory-00360",
+          "activation": 0.999026,
+          "followingQ": {
+            "affected_object": "track:energy",
+            "change_trend": "track:energy保持不变",
+            "cause_relation": "skip_worker：候选试演：在rooms阶段比较type=skip_worker|placementId=r1-gray-0@A-r1-c2的下一稳定边界后果",
+            "temporal_state": "本次正式结算到达稳定边界后",
+            "context": "行动前明确写下的预测票据"
+          }
+        }
+      ],
+      "finalScore": 0,
+      "imaginedState": {
+        "phase": "rooms",
+        "energy": 2,
+        "damage": 0,
+        "researchIndex": 0,
+        "excavatorIndex": 0,
+        "mothershipRow": 0,
+        "outcome": null
+      }
+    },
+    {
+      "payload": {
+        "type": "end_rooms"
+      },
+      "imaginedStatus": "complete",
+      "imaginedReason": "one_round_imagined_to_next_round_boundary",
+      "queryQ": {
+        "affected_object": "track:mothershipRow",
+        "change_trend": "准备执行end_rooms，结果尚未发生",
+        "cause_relation": "候选试演：在rooms阶段比较type=end_rooms的下一稳定边界后果",
+        "temporal_state": "行动提交前",
+        "context": "rooms阶段执行end_rooms前的明确预测"
+      },
+      "baselineScore": -18,
+      "baselineContributions": {
+        "energy": 0,
+        "damage": 0,
+        "researchIndex": 0,
+        "excavatorIndex": 0,
+        "mothershipRow": -18
+      },
+      "feedbackAdjustment": null,
+      "recalledFeedback": [],
+      "finalScore": -18,
+      "imaginedState": {
+        "phase": "new_round",
+        "energy": 2,
+        "damage": 0,
+        "researchIndex": 0,
+        "excavatorIndex": 0,
+        "mothershipRow": 1,
+        "outcome": null
+      }
+    }
+  ],
+  "rejected": [
+    {
+      "payload": {
+        "type": "resolve_room",
+        "roomId": "A-aa-c1",
+        "pay": true
+      },
+      "reason": "invalid_action:room_has_no_room_phase_effect:A-aa-c1"
+    }
+  ]
+}

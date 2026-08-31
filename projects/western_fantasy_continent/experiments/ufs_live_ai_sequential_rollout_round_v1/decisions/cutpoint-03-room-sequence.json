@@ -1,0 +1,37 @@
+{
+  "schema": "ufs_live_ai_sequential_decision_v1",
+  "decisionId": "cutpoint-03-room-sequence",
+  "sources": [
+    "state/rolling/current-player-view.json at actionCount 6",
+    "state/static/current-player-view.json at actionCount 6"
+  ],
+  "q0": {"energy":2,"researchIndex":0},
+  "steps": [
+    {
+      "id":"energy-first",
+      "operation":{"type":"resolve_room","roomId":"A-upper-energy","pay":true},
+      "predictedQAfter":{"energy":4,"researchIndex":0,"nextAnchor":"research-affordable"}
+    },
+    {
+      "id":"research-second",
+      "operation":{"type":"resolve_room","roomId":"A-upper-research","pay":true},
+      "predictedQAfter":{"energy":4,"researchIndex":0,"nextAnchor":"choose-up-to-2-research"}
+    },
+    {
+      "id":"research-plus-2",
+      "operation":{"type":"choose_research_advance","roomId":"A-upper-research","advanceSteps":2},
+      "predictedQAfter":{"energy":2,"researchIndex":2,"nextAnchor":"fighter-affordable"}
+    },
+    {
+      "id":"fighter-fourth",
+      "operation":{"type":"resolve_room","roomId":"A-upper-fighter","pay":true},
+      "predictedQAfter":{"energy":1,"researchIndex":2,"nextAnchor":"safe-to-end"}
+    },
+    {
+      "id":"end",
+      "operation":{"type":"end_rooms"},
+      "predictedQAfter":{"energy":1,"researchIndex":2,"nextAnchor":"spawn"}
+    }
+  ],
+  "policy": "Before each operation, require the corresponding public contract or room candidate to still be present; otherwise stop and replan."
+}

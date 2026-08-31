@@ -1,0 +1,61 @@
+{
+  "schema": "ufs_live_ai_multistep_decision_v1",
+  "decisionId": "cutpoint-01-opening",
+  "source": "state/rolling/current-player-view.json",
+  "informationBoundary": "compact player view plus known public UFS rules only",
+  "cutIns": [
+    {
+      "kind": "result_led",
+      "cue": "researchIndex is 0",
+      "intent": "gain research this round"
+    },
+    {
+      "kind": "environment_led",
+      "cue": "energy is 2; the visible research room costs 2; the visible two-cell energy room costs 0",
+      "intent": "create an energy buffer before resolving research"
+    }
+  ],
+  "plan": [
+    {
+      "step": 1,
+      "action": "place r1-gray-0 at A-r2-c4",
+      "role": "first half of energy support anchor"
+    },
+    {
+      "step": 2,
+      "action": "place r1-gray-1 at A-r2-c5",
+      "role": "complete energy support anchor"
+    },
+    {
+      "step": 3,
+      "action": "place r1-gray-2 at A-r2-c2",
+      "role": "research anchor"
+    },
+    {
+      "step": 4,
+      "action": "place r1-white-3 at A-r2-c1",
+      "role": "fighter anchor and public reroll boundary"
+    },
+    {
+      "step": 5,
+      "action": "provisionally place the remaining white die at A-r2-c3",
+      "role": "legal no-cost completion; static branch freezes this step"
+    }
+  ],
+  "resolutionPlan": [
+    "resolve A-upper-energy first",
+    "resolve A-upper-research second and take the largest affordable advance",
+    "resolve A-upper-fighter third if still affordable",
+    "end rooms"
+  ],
+  "rollingPolicy": "After the white reroll, inspect the new public state. The rolling branch may replace only the provisional fifth placement if another visible anchor has better full-round expected benefit; the static branch may not revise it.",
+  "expectedBenefit": {
+    "research": "increase",
+    "energy": "remain above zero after research",
+    "threat": "fighter may reduce a visible/remembered threat, but ships are omitted at this cutpoint so this is uncertain"
+  },
+  "uncertainties": [
+    "No ships are present in the compact visible observation, so the exact threat benefit cannot be evaluated yet.",
+    "The remaining white die value is not known until the public reroll."
+  ]
+}

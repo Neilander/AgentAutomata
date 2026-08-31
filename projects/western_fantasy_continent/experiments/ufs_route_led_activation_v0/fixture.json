@@ -1,0 +1,154 @@
+{
+  "schema": "ufs_route_led_activation_fixture_v0",
+  "candidates": [
+    {
+      "id": "research-advance-two-cost-two",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "resolve_room", "roomType": "research", "energyCost": 2 },
+        { "type": "choose_research_advance", "advanceSteps": 2 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 2 },
+      "beforeQ": {
+        "affected_object": "可结算的研究房、两点能源和位于零的研究标记",
+        "change_trend": "研究房等待结算",
+        "cause_relation": "房间阶段允许玩家处理这间研究房",
+        "temporal_state": "研究房操作以前",
+        "context": "房间阶段的研究机会"
+      },
+      "afterQ": {
+        "affected_object": "研究标记与能源",
+        "change_trend": "研究从零增加到二，能源从二减少到零",
+        "cause_relation": "支付两点能源并选择推进两格",
+        "temporal_state": "研究房两步操作完成后",
+        "context": "研究增加并消耗能源"
+      }
+    },
+    {
+      "id": "research-advance-one-cost-three",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 3, "research": 2 },
+      "operations": [
+        { "type": "resolve_room", "roomType": "research", "energyCost": 3 },
+        { "type": "choose_research_advance", "advanceSteps": 1 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 3 },
+      "beforeQ": {
+        "affected_object": "另一间可结算研究房、三点能源和位于二的研究标记",
+        "change_trend": "研究房准备消耗较多能源进行结算",
+        "cause_relation": "房间阶段允许处理不同数值的研究房",
+        "temporal_state": "另一种研究房操作以前",
+        "context": "不同成本的研究机会"
+      },
+      "afterQ": {
+        "affected_object": "研究标记与能源",
+        "change_trend": "研究从二增加到三，能源从三减少到零",
+        "cause_relation": "支付三点能源并选择推进一格",
+        "temporal_state": "另一种研究房两步操作完成后",
+        "context": "研究增加一格并承受更高能源成本"
+      }
+    },
+    {
+      "id": "research-zero-advance",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "resolve_room", "roomType": "research", "energyCost": 2 },
+        { "type": "choose_research_advance", "advanceSteps": 0 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 0 },
+      "beforeQ": {
+        "affected_object": "可结算的研究房、两点能源和位于零的研究标记",
+        "change_trend": "研究房等待结算但推进可能为零",
+        "cause_relation": "房间阶段仍允许处理这间研究房",
+        "temporal_state": "零推进研究操作以前",
+        "context": "可能没有研究收益的研究机会"
+      },
+      "afterQ": {
+        "affected_object": "研究标记与能源",
+        "change_trend": "研究保持为零，能源从二减少到零",
+        "cause_relation": "支付能源后选择推进零格",
+        "temporal_state": "零推进研究操作完成后",
+        "context": "研究没有增加但能源被消耗"
+      }
+    },
+    {
+      "id": "research-reversed-same-result",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "choose_research_advance", "advanceSteps": 2 },
+        { "type": "resolve_room", "roomType": "research", "energyCost": 2 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 2 },
+      "beforeQ": {
+        "affected_object": "可结算的研究房、两点能源和位于零的研究标记",
+        "change_trend": "研究与房间等待反向处理",
+        "cause_relation": "相同起点曾与另一种操作顺序关联",
+        "temporal_state": "反向研究操作以前",
+        "context": "研究房相似起点"
+      },
+      "afterQ": {
+        "affected_object": "研究标记与能源",
+        "change_trend": "研究从零增加到二，能源从二减少到零",
+        "cause_relation": "反向顺序最后仍记录到相同端点",
+        "temporal_state": "反向研究操作完成后",
+        "context": "研究增加并消耗能源"
+      }
+    },
+    {
+      "id": "energy-room-gain",
+      "before": { "objectType": "energy_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "resolve_room", "roomType": "energy", "energyGain": 2 }
+      ],
+      "after": { "objectType": "energy_room", "objectState": "resolved", "phase": "rooms", "energy": 4, "research": 0 },
+      "beforeQ": {
+        "affected_object": "可结算的能源房和两点能源",
+        "change_trend": "能源房等待结算",
+        "cause_relation": "房间阶段允许处理能源房",
+        "temporal_state": "能源房操作以前",
+        "context": "获得能源的房间机会"
+      },
+      "afterQ": {
+        "affected_object": "能源与研究标记",
+        "change_trend": "能源从二增加到四，研究保持为零",
+        "cause_relation": "结算能源房获得两点能源",
+        "temporal_state": "能源房操作完成后",
+        "context": "能源增加而研究不变"
+      }
+    }
+  ],
+  "routeQueries": {
+    "q_after": {
+      "triggerQ": {
+        "affected_object": "研究进度",
+        "change_trend": "研究标记比原来更高，具体增加量不限",
+        "cause_relation": "某种方法成功带来研究增长",
+        "temporal_state": "方法产生结果以后",
+        "context": "希望研究增加，允许同时发生能源消耗或其他副作用"
+      },
+      "desiredEffect": { "track": "research", "direction": "increase" },
+      "decoyBefore": { "objectType": "energy_room", "phase": "dice", "energy": 0, "research": 9 },
+      "decoyOperations": [{ "type": "resolve_room", "roomType": "energy" }]
+    },
+    "q_before": {
+      "triggerQ": {
+        "affected_object": "房间阶段中一间可结算的研究房",
+        "change_trend": "研究房正在等待处理",
+        "cause_relation": "当前可见状态提供一个研究房操作起点",
+        "temporal_state": "任何研究房操作以前",
+        "context": "研究房起始场景，具体能源和研究数值可以不同"
+      },
+      "requiredStart": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms" },
+      "decoyOperations": [{ "type": "resolve_room", "roomType": "energy" }],
+      "decoyAfter": { "objectType": "energy_room", "energy": 99, "research": 0 }
+    },
+    "operation": {
+      "triggerOperations": [
+        { "type": "resolve_room", "roomType": "research" },
+        { "type": "choose_research_advance" }
+      ],
+      "decoyBefore": { "objectType": "energy_room", "phase": "dice" },
+      "decoyAfter": { "objectType": "energy_room", "energy": 99, "research": 0 }
+    }
+  }
+}
+

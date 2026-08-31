@@ -1,0 +1,59 @@
+{
+  "schema": "ufs_cognitive_field_knowledge_ablation_v0",
+  "scene": {
+    "phase": "rooms",
+    "energy": 2,
+    "researchIndex": 0,
+    "researchTopIndex": 11,
+    "researchCostsAhead": [3, 1, 3, 1],
+    "cityDestroyed": false,
+    "visible": {
+      "resolvableRoomIds": ["A-upper-research"],
+      "rooms": [
+        {
+          "roomId": "A-upper-research",
+          "type": "research",
+          "roomValue": 6,
+          "energyCost": 2
+        }
+      ]
+    },
+    "legalOperations": [
+      { "type": "resolve_room", "roomId": "A-upper-research", "pay": true },
+      { "type": "end_rooms" }
+    ]
+  },
+  "knowledgeBases": [
+    {
+      "knowledgeBaseId": "full-research-rules",
+      "facts": [
+        {
+          "knowledgeId": "K-WIN-RESEARCH",
+          "text": "城市尚未被摧毁时，研究标记到达研究轨道顶部会立即获胜。"
+        },
+        {
+          "knowledgeId": "K-ROOM-RESEARCH",
+          "text": "结算研究房时先支付房间能源费用，随后必须单独选择连续推进多少格；经过与到达格成本总和不能超过房间值。"
+        }
+      ]
+    },
+    {
+      "knowledgeBaseId": "win-condition-only",
+      "facts": [
+        {
+          "knowledgeId": "K-WIN-RESEARCH",
+          "text": "城市尚未被摧毁时，研究标记到达研究轨道顶部会立即获胜。"
+        }
+      ]
+    },
+    {
+      "knowledgeBaseId": "room-method-only",
+      "facts": [
+        {
+          "knowledgeId": "K-ROOM-RESEARCH",
+          "text": "结算研究房时先支付房间能源费用，随后必须单独选择连续推进多少格；经过与到达格成本总和不能超过房间值。"
+        }
+      ]
+    }
+  ]
+}

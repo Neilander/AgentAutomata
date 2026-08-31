@@ -1,0 +1,1488 @@
+{
+  "schema": "ufs_live_ai_sequential_rollout_round_result_v1",
+  "comparison": {
+    "attentionSeed": 2026082504,
+    "sharedRandomObservation": {
+      "type": "submit_random_observation",
+      "values": {
+        "r1-gray-2": 5,
+        "r1-white-4": 6
+      }
+    },
+    "treatment": {
+      "static": [
+        "gray-5 -> research",
+        "white-6 -> tunnel"
+      ],
+      "rolling": [
+        "gray-5 -> AA",
+        "white-6 -> research"
+      ]
+    },
+    "sameResourceOutcome": true,
+    "rollingDelta": {
+      "mothershipRowsAvoided": 1,
+      "maxShipRowReduction": 0,
+      "totalShipRowsReduction": 1,
+      "activeShipCountReduction": -1,
+      "whiteShipCountReduction": -1
+    },
+    "sequentialRepairCheck": {
+      "aaTargetPresentImmediatelyBeforeAa": true,
+      "aaChangedFormalShips": true,
+      "predictedAaTargetEndpointMatchedFormal": true,
+      "researchAnchorRevalidatedAfterRealAa": "supported",
+      "researchExecutedOnlyAfterRevalidation": true,
+      "staleSnapshotBenefitClaim": false
+    }
+  },
+  "rolling": {
+    "arm": "rolling",
+    "boundary": {
+      "status": "random",
+      "reason": "waiting_for_next_round_roll",
+      "pending": "next_round_roll"
+    },
+    "formalOutcome": {
+      "energy": 1,
+      "damage": 0,
+      "researchIndex": 2,
+      "excavatorIndex": 0,
+      "mothershipRow": 0,
+      "outcome": null,
+      "shipRows": [
+        {
+          "id": "purple-0",
+          "color": "purple",
+          "column": 0,
+          "row": 5
+        },
+        {
+          "id": "purple-1",
+          "color": "purple",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "purple-2",
+          "color": "purple",
+          "column": 2,
+          "row": 4
+        },
+        {
+          "id": "purple-3",
+          "color": "purple",
+          "column": 3,
+          "row": 2
+        },
+        {
+          "id": "purple-4",
+          "color": "purple",
+          "column": 4,
+          "row": 0
+        },
+        {
+          "id": "white-1",
+          "color": "white",
+          "column": 0,
+          "row": 0
+        }
+      ],
+      "maxShipRow": 5,
+      "totalShipRows": 11,
+      "activeShipCount": 6,
+      "purpleShipCount": 5,
+      "whiteShipCount": 1
+    },
+    "actionCount": 14,
+    "rejectedOperations": 0,
+    "actionHistory": [
+      {
+        "type": "place_die",
+        "dieId": "r1-gray-0",
+        "cellId": "A-r2-c4"
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-gray-1",
+        "cellId": "A-r2-c5"
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-white-3",
+        "cellId": "A-r2-c1"
+      },
+      {
+        "type": "submit_random_observation",
+        "values": {
+          "r1-gray-2": 5,
+          "r1-white-4": 6
+        }
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-gray-2",
+        "cellId": "A-r1-c3"
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-white-4",
+        "cellId": "A-r2-c2"
+      },
+      {
+        "type": "resolve_room",
+        "roomId": "A-upper-energy",
+        "pay": true
+      },
+      {
+        "type": "resolve_room",
+        "roomId": "A-upper-research",
+        "pay": true
+      },
+      {
+        "type": "choose_research_advance",
+        "roomId": "A-upper-research",
+        "advanceSteps": 2
+      },
+      {
+        "type": "resolve_room",
+        "roomId": "A-upper-fighter",
+        "pay": true
+      },
+      {
+        "type": "end_rooms"
+      },
+      {
+        "type": "choose_spawn",
+        "shipId": "purple-1",
+        "dropPointId": "DP-C2"
+      },
+      {
+        "type": "choose_spawn",
+        "shipId": "purple-4",
+        "dropPointId": "DP-C5"
+      },
+      {
+        "type": "choose_spawn",
+        "shipId": "white-1",
+        "dropPointId": "DP-C1"
+      }
+    ],
+    "formalTimeline": [
+      {
+        "step": 1,
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-gray-0",
+          "cellId": "A-r2-c4"
+        },
+        "after": {
+          "phase": "dice",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 0
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 0
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 0
+            }
+          ]
+        }
+      },
+      {
+        "step": 2,
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-gray-1",
+          "cellId": "A-r2-c5"
+        },
+        "after": {
+          "phase": "dice",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 0
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 0
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 3,
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-white-3",
+          "cellId": "A-r2-c1"
+        },
+        "after": {
+          "phase": "dice",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 0
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 4,
+        "operation": {
+          "type": "submit_random_observation",
+          "values": {
+            "r1-gray-2": 5,
+            "r1-white-4": 6
+          }
+        },
+        "after": {
+          "phase": "dice",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 0
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 5,
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-gray-2",
+          "cellId": "A-r1-c3"
+        },
+        "after": {
+          "phase": "dice",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 4
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 6,
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-white-4",
+          "cellId": "A-r2-c2"
+        },
+        "after": {
+          "phase": "rooms",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 6
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 4
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 7,
+        "operation": {
+          "type": "resolve_room",
+          "roomId": "A-upper-energy",
+          "pay": true
+        },
+        "after": {
+          "phase": "rooms",
+          "energy": 4,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 6
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 4
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 8,
+        "operation": {
+          "type": "resolve_room",
+          "roomId": "A-upper-research",
+          "pay": true
+        },
+        "after": {
+          "phase": "rooms",
+          "energy": 4,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 6
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 4
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 9,
+        "operation": {
+          "type": "choose_research_advance",
+          "roomId": "A-upper-research",
+          "advanceSteps": 2
+        },
+        "after": {
+          "phase": "rooms",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 2,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 6
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 4
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 10,
+        "operation": {
+          "type": "resolve_room",
+          "roomId": "A-upper-fighter",
+          "pay": true
+        },
+        "after": {
+          "phase": "rooms",
+          "energy": 1,
+          "damage": 0,
+          "researchIndex": 2,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 4
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            }
+          ]
+        }
+      },
+      {
+        "step": 11,
+        "operation": {
+          "type": "end_rooms"
+        },
+        "after": {
+          "phase": "spawning",
+          "energy": 1,
+          "damage": 0,
+          "researchIndex": 2,
+          "mothershipRow": 0,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 4
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            }
+          ]
+        }
+      },
+      {
+        "step": 12,
+        "operation": {
+          "type": "choose_spawn",
+          "shipId": "purple-1",
+          "dropPointId": "DP-C2"
+        },
+        "after": {
+          "phase": "spawning",
+          "energy": 1,
+          "damage": 0,
+          "researchIndex": 2,
+          "mothershipRow": 0,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 4
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            }
+          ]
+        }
+      },
+      {
+        "step": 13,
+        "operation": {
+          "type": "choose_spawn",
+          "shipId": "purple-4",
+          "dropPointId": "DP-C5"
+        },
+        "after": {
+          "phase": "spawning",
+          "energy": 1,
+          "damage": 0,
+          "researchIndex": 2,
+          "mothershipRow": 0,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 4
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 0
+            }
+          ]
+        }
+      },
+      {
+        "step": 14,
+        "operation": {
+          "type": "choose_spawn",
+          "shipId": "white-1",
+          "dropPointId": "DP-C1"
+        },
+        "after": {
+          "phase": "new_round",
+          "energy": 1,
+          "damage": 0,
+          "researchIndex": 2,
+          "mothershipRow": 0,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 4
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 0
+            },
+            {
+              "id": "white-1",
+              "color": "white",
+              "column": 0,
+              "row": 0
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "static": {
+    "arm": "static",
+    "boundary": {
+      "status": "random",
+      "reason": "waiting_for_next_round_roll",
+      "pending": "next_round_roll"
+    },
+    "formalOutcome": {
+      "energy": 1,
+      "damage": 0,
+      "researchIndex": 2,
+      "excavatorIndex": 0,
+      "mothershipRow": 1,
+      "outcome": null,
+      "shipRows": [
+        {
+          "id": "purple-0",
+          "color": "purple",
+          "column": 0,
+          "row": 5
+        },
+        {
+          "id": "purple-1",
+          "color": "purple",
+          "column": 1,
+          "row": 5
+        },
+        {
+          "id": "purple-2",
+          "color": "purple",
+          "column": 2,
+          "row": 0
+        },
+        {
+          "id": "purple-3",
+          "color": "purple",
+          "column": 3,
+          "row": 2
+        },
+        {
+          "id": "purple-4",
+          "color": "purple",
+          "column": 4,
+          "row": 0
+        }
+      ],
+      "maxShipRow": 5,
+      "totalShipRows": 12,
+      "activeShipCount": 5,
+      "purpleShipCount": 5,
+      "whiteShipCount": 0
+    },
+    "actionCount": 13,
+    "rejectedOperations": 0,
+    "actionHistory": [
+      {
+        "type": "place_die",
+        "dieId": "r1-gray-0",
+        "cellId": "A-r2-c4"
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-gray-1",
+        "cellId": "A-r2-c5"
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-white-3",
+        "cellId": "A-r2-c1"
+      },
+      {
+        "type": "submit_random_observation",
+        "values": {
+          "r1-gray-2": 5,
+          "r1-white-4": 6
+        }
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-gray-2",
+        "cellId": "A-r2-c2"
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-white-4",
+        "cellId": "A-r2-c3"
+      },
+      {
+        "type": "resolve_room",
+        "roomId": "A-upper-energy",
+        "pay": true
+      },
+      {
+        "type": "resolve_room",
+        "roomId": "A-upper-research",
+        "pay": true
+      },
+      {
+        "type": "choose_research_advance",
+        "roomId": "A-upper-research",
+        "advanceSteps": 2
+      },
+      {
+        "type": "resolve_room",
+        "roomId": "A-upper-fighter",
+        "pay": true
+      },
+      {
+        "type": "end_rooms"
+      },
+      {
+        "type": "choose_spawn",
+        "shipId": "purple-2",
+        "dropPointId": "DP-C3"
+      },
+      {
+        "type": "choose_spawn",
+        "shipId": "purple-4",
+        "dropPointId": "DP-C5"
+      }
+    ],
+    "formalTimeline": [
+      {
+        "step": 1,
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-gray-0",
+          "cellId": "A-r2-c4"
+        },
+        "after": {
+          "phase": "dice",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 0
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 0
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 0
+            }
+          ]
+        }
+      },
+      {
+        "step": 2,
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-gray-1",
+          "cellId": "A-r2-c5"
+        },
+        "after": {
+          "phase": "dice",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 0
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 0
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 3,
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-white-3",
+          "cellId": "A-r2-c1"
+        },
+        "after": {
+          "phase": "dice",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 0
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 4,
+        "operation": {
+          "type": "submit_random_observation",
+          "values": {
+            "r1-gray-2": 5,
+            "r1-white-4": 6
+          }
+        },
+        "after": {
+          "phase": "dice",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": -1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 0
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 0
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 5,
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-gray-2",
+          "cellId": "A-r2-c2"
+        },
+        "after": {
+          "phase": "dice",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": 0,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 5
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 6,
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-white-4",
+          "cellId": "A-r2-c3"
+        },
+        "after": {
+          "phase": "rooms",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": 0,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 5
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 7,
+        "operation": {
+          "type": "resolve_room",
+          "roomId": "A-upper-energy",
+          "pay": true
+        },
+        "after": {
+          "phase": "rooms",
+          "energy": 4,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": 0,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 5
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 8,
+        "operation": {
+          "type": "resolve_room",
+          "roomId": "A-upper-research",
+          "pay": true
+        },
+        "after": {
+          "phase": "rooms",
+          "energy": 4,
+          "damage": 0,
+          "researchIndex": 0,
+          "mothershipRow": 0,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 5
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 9,
+        "operation": {
+          "type": "choose_research_advance",
+          "roomId": "A-upper-research",
+          "advanceSteps": 2
+        },
+        "after": {
+          "phase": "rooms",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 2,
+          "mothershipRow": 0,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 5
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 3
+            }
+          ]
+        }
+      },
+      {
+        "step": 10,
+        "operation": {
+          "type": "resolve_room",
+          "roomId": "A-upper-fighter",
+          "pay": true
+        },
+        "after": {
+          "phase": "rooms",
+          "energy": 1,
+          "damage": 0,
+          "researchIndex": 2,
+          "mothershipRow": 0,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 5
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            }
+          ]
+        }
+      },
+      {
+        "step": 11,
+        "operation": {
+          "type": "end_rooms"
+        },
+        "after": {
+          "phase": "spawning",
+          "energy": 1,
+          "damage": 0,
+          "researchIndex": 2,
+          "mothershipRow": 1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 5
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            }
+          ]
+        }
+      },
+      {
+        "step": 12,
+        "operation": {
+          "type": "choose_spawn",
+          "shipId": "purple-2",
+          "dropPointId": "DP-C3"
+        },
+        "after": {
+          "phase": "spawning",
+          "energy": 1,
+          "damage": 0,
+          "researchIndex": 2,
+          "mothershipRow": 1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 5
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 0
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            }
+          ]
+        }
+      },
+      {
+        "step": 13,
+        "operation": {
+          "type": "choose_spawn",
+          "shipId": "purple-4",
+          "dropPointId": "DP-C5"
+        },
+        "after": {
+          "phase": "new_round",
+          "energy": 1,
+          "damage": 0,
+          "researchIndex": 2,
+          "mothershipRow": 1,
+          "ships": [
+            {
+              "id": "purple-0",
+              "color": "purple",
+              "column": 0,
+              "row": 5
+            },
+            {
+              "id": "purple-1",
+              "color": "purple",
+              "column": 1,
+              "row": 5
+            },
+            {
+              "id": "purple-2",
+              "color": "purple",
+              "column": 2,
+              "row": 0
+            },
+            {
+              "id": "purple-3",
+              "color": "purple",
+              "column": 3,
+              "row": 2
+            },
+            {
+              "id": "purple-4",
+              "color": "purple",
+              "column": 4,
+              "row": 0
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "limits": [
+    "This is one paired round and does not estimate win rate.",
+    "Formal checkpoints were opened only after both branches reached the next-round-roll boundary.",
+    "The result contains a mothership benefit and an extra active white ship, so it is a trade-off rather than a scalar win unless a later utility policy resolves it."
+  ]
+}

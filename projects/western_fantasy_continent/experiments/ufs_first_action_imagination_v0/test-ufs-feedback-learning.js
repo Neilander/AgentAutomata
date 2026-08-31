@@ -60,6 +60,8 @@ test("normal visible transition is created, then reinforced instead of duplicate
   assert.equal(first.learned, true);
   assert.equal(second.trajectory.trajectoryId, first.trajectory.trajectoryId);
   assert.equal(learner.exportState().trajectories.length, 1);
+  assert.equal(learner.exportState().memories.length, 2);
+  assert.equal(second.trajectory.supportingMemoryIds.length, 2);
   assert.equal(second.trajectory.observations, 2);
   assert.equal(second.trajectory.support, 2);
   assert.ok(second.trajectory.lastSeenAt > second.trajectory.firstSeenAt);
@@ -72,6 +74,86 @@ test("normal visible transition is created, then reinforced instead of duplicate
   assert.equal(learner.pendingMatrixRecords().length, 0);
   const restored = new UfsFeedbackLearner({ state: learner.exportState(), now: clock() });
   assert.equal(restored.recall(currentQ).candidates[0].compileStatus, "compiled_matrix");
+});
+
+test("Q-before and Q-after trace back to every explicit supporting memory", () => {
+  const learner = new UfsFeedbackLearner({ now: clock() });
+  const currentQ = q("closed metal box", "opening attempt pending");
+  const followingQ = q("metal box", "opens after repeated strikes");
+  const operations = [
+    { type: "strike", tool: "hammer", target: "box" },
+    { type: "strike", tool: "hammer", target: "box" },
+  ];
+  for (const evidenceId of ["box-attempt-1", "box-attempt-2"]) {
+    learner.learnObservedTransition({
+      evidence: { ...VALID, evidenceId },
+      currentQ,
+      actualFollowingQ: followingQ,
+      operations,
+      source: { kind: "single_experience", ref: evidenceId },
+      applicability: { location: "workshop" },
+    });
+  }
+  const traced = learner.traceTransition(currentQ, followingQ, {
+    operations,
+    context: { location: "workshop" },
+  });
+  assert.equal(traced.trajectories.length, 1);
+  assert.equal(traced.memoryIds.length, 2);
+  assert.deepEqual(
+    traced.memories.map((row) => row.evidence.evidenceId),
+    ["box-attempt-1", "box-attempt-2"],
+  );
+  assert.deepEqual(
+    learner.recallMemory(traced.memoryIds[0]).operations,
+    operations,
+  );
+});
+
+test("ordered operation sequences remain distinct for the same Q pair", () => {
+  const learner = new UfsFeedbackLearner({ now: clock() });
+  const currentQ = q("locked door", "two controls available");
+  const followingQ = q("door", "opens");
+  const insertThenTurn = [{ type: "insert_key" }, { type: "turn_key" }];
+  const turnThenInsert = [{ type: "turn_key" }, { type: "insert_key" }];
+  learner.learnObservedTransition({
+    evidence: { ...VALID, evidenceId: "ordered-1" },
+    currentQ,
+    actualFollowingQ: followingQ,
+    operations: insertThenTurn,
+    source: { kind: "single_experience", ref: "ordered-1" },
+  });
+  learner.learnObservedTransition({
+    evidence: { ...VALID, evidenceId: "ordered-2" },
+    currentQ,
+    actualFollowingQ: followingQ,
+    operations: turnThenInsert,
+    source: { kind: "single_experience", ref: "ordered-2" },
+  });
+  const state = learner.exportState();
+  assert.equal(state.trajectories.length, 2);
+  assert.notEqual(state.trajectories[0].operationSequenceKey, state.trajectories[1].operationSequenceKey);
+  assert.equal(learner.recall(currentQ, { operations: insertThenTurn }).candidates.length, 1);
+  assert.equal(learner.traceTransition(currentQ, followingQ, {
+    operations: turnThenInsert,
+  }).memoryIds.length, 1);
+});
+
+test("the same audited evidence is idempotent and cannot create duplicate memory", () => {
+  const learner = new UfsFeedbackLearner({ now: clock() });
+  const input = {
+    evidence: VALID,
+    currentQ: q("jar", "strike pending"),
+    actualFollowingQ: q("jar", "broken"),
+    operations: [{ type: "strike", tool: "machete" }],
+    source: SOURCE,
+  };
+  const first = learner.learnObservedTransition(input);
+  const second = learner.learnObservedTransition(input);
+  assert.equal(first.learned, true);
+  assert.equal(second.duplicate, true);
+  assert.equal(learner.exportState().memories.length, 1);
+  assert.equal(learner.exportState().trajectories[0].supportingMemoryIds.length, 1);
 });
 
 test("a confirmed precompiled trajectory updates its connection overlay without a duplicate edge", () => {
@@ -91,10 +173,16 @@ test("a confirmed precompiled trajectory updates its connection overlay without 
   });
   const state = learner.exportState();
   assert.equal(result.trajectory, null);
+  assert.match(result.memory.memoryId, /^memory-/u);
   assert.equal(state.trajectories.length, 0);
+  assert.equal(state.memories.length, 1);
   assert.equal(state.connectionUpdates.length, 1);
   assert.equal(state.connectionUpdates[0].addedSupport, 1);
   assert.equal(state.connectionUpdates[0].addedObservations, 1);
+  assert.deepEqual(state.connectionUpdates[0].supportingMemoryIds, [result.memory.memoryId]);
+  const traced = learner.traceTransition(currentQ, followingQ);
+  assert.deepEqual(traced.trajectoryIds, ["read-rule-place-die-to-same-column-descent"]);
+  assert.deepEqual(traced.memoryIds, [result.memory.memoryId]);
 });
 
 test("high-activation error keeps old trajectory and adds a contextual correction", () => {

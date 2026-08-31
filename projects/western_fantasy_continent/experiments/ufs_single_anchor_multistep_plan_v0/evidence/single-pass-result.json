@@ -1,0 +1,1142 @@
+{
+  "schema": "ufs_single_anchor_multistep_plan_result_v0",
+  "input": {
+    "kind": "formal_initial_checkpoint_full_public_attention",
+    "attentionSeed": 2026082504,
+    "visibleInputHash": "cc86fc5871b002b272faf3937729ffd33622445a9f634b2a1aa129e237b0de85",
+    "diceCount": 5,
+    "hiddenStateUsedForIntentOrPlanning": false
+  },
+  "intent": {
+    "schema": "ufs_agent_macro_intent_v0",
+    "source": "one_shot_agent_summary_of_attention_visible_scene",
+    "inputScope": "current player response plus owned rule knowledge; no formal hidden state",
+    "primary": {
+      "id": "increase_research",
+      "desiredTrack": "researchIndex",
+      "direction": "increase",
+      "reason": "研究位于0，而完成研究是获胜路径；当前公开地图中存在研究房。"
+    },
+    "constraints": [
+      {
+        "id": "avoid_zero_energy",
+        "track": "energy",
+        "minimumAfterPlannedRoomEffects": 1,
+        "reason": "当前只有2能源，直接支付上层研究房会落入零能源。"
+      }
+    ],
+    "secondaryRoleOrder": [
+      "fighter",
+      "tunnel",
+      "aa"
+    ],
+    "summary": "优先取得研究进展，但先补足能源以避免研究支付后归零；剩余骰子再处理可见飞船威胁和无成本房间。"
+  },
+  "activation": {
+    "encoder": "gte-multilingual-base:D:\\GithubDesktop\\AgentAutomata\\logs\\shared_models\\gte-multilingual-base",
+    "querySpecs": [
+      {
+        "key": "intent",
+        "route": "q_after",
+        "q": {
+          "affected_object": "研究进度与本局胜利目标",
+          "change_trend": "研究从当前较低位置明显增加",
+          "cause_relation": "寻找能够取得研究进展的方法",
+          "temporal_state": "规划本轮结果时",
+          "context": "优先取得研究进展，但先补足能源以避免研究支付后归零；剩余骰子再处理可见飞船威胁和无成本房间。"
+        }
+      },
+      {
+        "key": "environment:aa",
+        "route": "q_before",
+        "roomType": "aa",
+        "q": {
+          "affected_object": "当前可见的防空房和五颗待放置骰子",
+          "change_trend": "存在5个这种房间，可考虑如何投入和结算",
+          "cause_relation": "玩家在正式骰子放置边界看到了这些地图对象",
+          "temporal_state": "本轮骰子尚未放置时",
+          "context": "从当前环境寻找可用方法，不预设结果"
+        }
+      },
+      {
+        "key": "environment:energy",
+        "route": "q_before",
+        "roomType": "energy",
+        "q": {
+          "affected_object": "当前可见的能源房和五颗待放置骰子",
+          "change_trend": "存在3个这种房间，可考虑如何投入和结算",
+          "cause_relation": "玩家在正式骰子放置边界看到了这些地图对象",
+          "temporal_state": "本轮骰子尚未放置时",
+          "context": "从当前环境寻找可用方法，不预设结果"
+        }
+      },
+      {
+        "key": "environment:fighter",
+        "route": "q_before",
+        "roomType": "fighter",
+        "q": {
+          "affected_object": "当前可见的战斗机房和五颗待放置骰子",
+          "change_trend": "存在5个这种房间，可考虑如何投入和结算",
+          "cause_relation": "玩家在正式骰子放置边界看到了这些地图对象",
+          "temporal_state": "本轮骰子尚未放置时",
+          "context": "从当前环境寻找可用方法，不预设结果"
+        }
+      },
+      {
+        "key": "environment:research",
+        "route": "q_before",
+        "roomType": "research",
+        "q": {
+          "affected_object": "当前可见的研究房和五颗待放置骰子",
+          "change_trend": "存在6个这种房间，可考虑如何投入和结算",
+          "cause_relation": "玩家在正式骰子放置边界看到了这些地图对象",
+          "temporal_state": "本轮骰子尚未放置时",
+          "context": "从当前环境寻找可用方法，不预设结果"
+        }
+      },
+      {
+        "key": "environment:tunnel",
+        "route": "q_before",
+        "roomType": "tunnel",
+        "q": {
+          "affected_object": "当前可见的隧道房和五颗待放置骰子",
+          "change_trend": "存在6个这种房间，可考虑如何投入和结算",
+          "cause_relation": "玩家在正式骰子放置边界看到了这些地图对象",
+          "temporal_state": "本轮骰子尚未放置时",
+          "context": "从当前环境寻找可用方法，不预设结果"
+        }
+      }
+    ],
+    "intent": [
+      {
+        "memoryId": "read-rule-research-room-to-track-advance",
+        "sourceRuleId": "research_room_advances_track",
+        "triggeredBy": "q_after",
+        "triggerSimilarity": 0.589079,
+        "triggerSideAccepted": true,
+        "capability": {
+          "id": "research_room_advances_track",
+          "roomType": "research",
+          "outputTrack": "researchIndex"
+        }
+      },
+      {
+        "memoryId": "read-rule-final-research-to-lower-multi-room-requirement",
+        "sourceRuleId": "final_research_requires_lower_multi_room",
+        "triggeredBy": "q_after",
+        "triggerSimilarity": 0.581468,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-research-track-top-to-immediate-win",
+        "sourceRuleId": "research_top_is_immediate_win",
+        "triggeredBy": "q_after",
+        "triggerSimilarity": 0.571017,
+        "triggerSideAccepted": true,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-pay-energy-to-excavate",
+        "sourceRuleId": "excavate_cost_and_result",
+        "triggeredBy": "q_after",
+        "triggerSimilarity": 0.549684,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-complete-research-before-destruction-to-win",
+        "sourceRuleId": "win_by_research_before_destruction",
+        "triggeredBy": "q_after",
+        "triggerSimilarity": 0.541204,
+        "triggerSideAccepted": true,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-research-room-order-to-different-reach",
+        "sourceRuleId": "research_order_changes_usefulness",
+        "triggeredBy": "q_after",
+        "triggerSimilarity": 0.535374,
+        "triggerSideAccepted": false,
+        "capability": null
+      }
+    ],
+    "environment": [
+      {
+        "memoryId": "read-rule-unexcavated-placement-to-legal-excavation-candidate",
+        "sourceRuleId": "excavation_placement_requirement",
+        "cueRoomType": "aa",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.679676,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-pay-energy-to-excavate",
+        "sourceRuleId": "excavate_cost_and_result",
+        "cueRoomType": "aa",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.674914,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-place-white-die-to-reroll",
+        "sourceRuleId": "white_die_rerolls_remaining",
+        "cueRoomType": "aa",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.658316,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-energy-room-to-energy-gain",
+        "sourceRuleId": "energy_room_generates_energy",
+        "cueRoomType": "aa",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.638067,
+        "triggerSideAccepted": false,
+        "capability": {
+          "id": "energy_room_generates_energy",
+          "roomType": "energy",
+          "outputTrack": "energy"
+        }
+      },
+      {
+        "memoryId": "read-rule-fighter-room-to-eligible-destruction",
+        "sourceRuleId": "fighter_room_destroys_eligible_ships",
+        "cueRoomType": "aa",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.630855,
+        "triggerSideAccepted": false,
+        "capability": {
+          "id": "fighter_room_destroys_eligible_ships",
+          "roomType": "fighter",
+          "outputTrack": "ships"
+        }
+      },
+      {
+        "memoryId": "read-rule-room-cost-to-effect-or-failure",
+        "sourceRuleId": "room_requires_energy",
+        "cueRoomType": "aa",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.626801,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-pay-energy-to-excavate",
+        "sourceRuleId": "excavate_cost_and_result",
+        "cueRoomType": "energy",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.694272,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-unexcavated-placement-to-legal-excavation-candidate",
+        "sourceRuleId": "excavation_placement_requirement",
+        "cueRoomType": "energy",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.678368,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-energy-room-to-energy-gain",
+        "sourceRuleId": "energy_room_generates_energy",
+        "cueRoomType": "energy",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.666162,
+        "triggerSideAccepted": true,
+        "capability": {
+          "id": "energy_room_generates_energy",
+          "roomType": "energy",
+          "outputTrack": "energy"
+        }
+      },
+      {
+        "memoryId": "read-rule-room-cost-to-effect-or-failure",
+        "sourceRuleId": "room_requires_energy",
+        "cueRoomType": "energy",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.658539,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-place-white-die-to-reroll",
+        "sourceRuleId": "white_die_rerolls_remaining",
+        "cueRoomType": "energy",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.651398,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-research-room-to-track-advance",
+        "sourceRuleId": "research_room_advances_track",
+        "cueRoomType": "energy",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.630842,
+        "triggerSideAccepted": false,
+        "capability": {
+          "id": "research_room_advances_track",
+          "roomType": "research",
+          "outputTrack": "researchIndex"
+        }
+      },
+      {
+        "memoryId": "read-rule-unexcavated-placement-to-legal-excavation-candidate",
+        "sourceRuleId": "excavation_placement_requirement",
+        "cueRoomType": "fighter",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.680701,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-pay-energy-to-excavate",
+        "sourceRuleId": "excavate_cost_and_result",
+        "cueRoomType": "fighter",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.678714,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-place-white-die-to-reroll",
+        "sourceRuleId": "white_die_rerolls_remaining",
+        "cueRoomType": "fighter",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.652527,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-fighter-room-to-eligible-destruction",
+        "sourceRuleId": "fighter_room_destroys_eligible_ships",
+        "cueRoomType": "fighter",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.649766,
+        "triggerSideAccepted": true,
+        "capability": {
+          "id": "fighter_room_destroys_eligible_ships",
+          "roomType": "fighter",
+          "outputTrack": "ships"
+        }
+      },
+      {
+        "memoryId": "read-rule-energy-room-to-energy-gain",
+        "sourceRuleId": "energy_room_generates_energy",
+        "cueRoomType": "fighter",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.638464,
+        "triggerSideAccepted": false,
+        "capability": {
+          "id": "energy_room_generates_energy",
+          "roomType": "energy",
+          "outputTrack": "energy"
+        }
+      },
+      {
+        "memoryId": "read-rule-room-cost-to-effect-or-failure",
+        "sourceRuleId": "room_requires_energy",
+        "cueRoomType": "fighter",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.632236,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-unexcavated-placement-to-legal-excavation-candidate",
+        "sourceRuleId": "excavation_placement_requirement",
+        "cueRoomType": "research",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.673079,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-pay-energy-to-excavate",
+        "sourceRuleId": "excavate_cost_and_result",
+        "cueRoomType": "research",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.67305,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-place-white-die-to-reroll",
+        "sourceRuleId": "white_die_rerolls_remaining",
+        "cueRoomType": "research",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.655166,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-energy-room-to-energy-gain",
+        "sourceRuleId": "energy_room_generates_energy",
+        "cueRoomType": "research",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.644161,
+        "triggerSideAccepted": false,
+        "capability": {
+          "id": "energy_room_generates_energy",
+          "roomType": "energy",
+          "outputTrack": "energy"
+        }
+      },
+      {
+        "memoryId": "read-rule-research-room-to-track-advance",
+        "sourceRuleId": "research_room_advances_track",
+        "cueRoomType": "research",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.642692,
+        "triggerSideAccepted": true,
+        "capability": {
+          "id": "research_room_advances_track",
+          "roomType": "research",
+          "outputTrack": "researchIndex"
+        }
+      },
+      {
+        "memoryId": "read-rule-research-room-order-to-different-reach",
+        "sourceRuleId": "research_order_changes_usefulness",
+        "cueRoomType": "research",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.639469,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-pay-energy-to-excavate",
+        "sourceRuleId": "excavate_cost_and_result",
+        "cueRoomType": "tunnel",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.678273,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-unexcavated-placement-to-legal-excavation-candidate",
+        "sourceRuleId": "excavation_placement_requirement",
+        "cueRoomType": "tunnel",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.677599,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-place-white-die-to-reroll",
+        "sourceRuleId": "white_die_rerolls_remaining",
+        "cueRoomType": "tunnel",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.654396,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-energy-room-to-energy-gain",
+        "sourceRuleId": "energy_room_generates_energy",
+        "cueRoomType": "tunnel",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.640974,
+        "triggerSideAccepted": false,
+        "capability": {
+          "id": "energy_room_generates_energy",
+          "roomType": "energy",
+          "outputTrack": "energy"
+        }
+      },
+      {
+        "memoryId": "read-rule-room-cost-to-effect-or-failure",
+        "sourceRuleId": "room_requires_energy",
+        "cueRoomType": "tunnel",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.62962,
+        "triggerSideAccepted": false,
+        "capability": null
+      },
+      {
+        "memoryId": "read-rule-research-room-to-track-advance",
+        "sourceRuleId": "research_room_advances_track",
+        "cueRoomType": "tunnel",
+        "triggeredBy": "q_before",
+        "triggerSimilarity": 0.625159,
+        "triggerSideAccepted": false,
+        "capability": {
+          "id": "research_room_advances_track",
+          "roomType": "research",
+          "outputTrack": "researchIndex"
+        }
+      }
+    ]
+  },
+  "plan": {
+    "schema": "ufs_single_anchor_multistep_plan_v0",
+    "status": "planned",
+    "macroIntent": {
+      "schema": "ufs_agent_macro_intent_v0",
+      "source": "one_shot_agent_summary_of_attention_visible_scene",
+      "inputScope": "current player response plus owned rule knowledge; no formal hidden state",
+      "primary": {
+        "id": "increase_research",
+        "desiredTrack": "researchIndex",
+        "direction": "increase",
+        "reason": "研究位于0，而完成研究是获胜路径；当前公开地图中存在研究房。"
+      },
+      "constraints": [
+        {
+          "id": "avoid_zero_energy",
+          "track": "energy",
+          "minimumAfterPlannedRoomEffects": 1,
+          "reason": "当前只有2能源，直接支付上层研究房会落入零能源。"
+        }
+      ],
+      "secondaryRoleOrder": [
+        "fighter",
+        "tunnel",
+        "aa"
+      ],
+      "summary": "优先取得研究进展，但先补足能源以避免研究支付后归零；剩余骰子再处理可见飞船威胁和无成本房间。"
+    },
+    "activationGroups": {
+      "intent": [
+        {
+          "memoryId": "read-rule-research-room-to-track-advance",
+          "sourceRuleId": "research_room_advances_track",
+          "triggeredBy": "q_after",
+          "triggerSimilarity": 0.589079,
+          "triggerSideAccepted": true,
+          "capability": {
+            "id": "research_room_advances_track",
+            "roomType": "research",
+            "outputTrack": "researchIndex"
+          }
+        },
+        {
+          "memoryId": "read-rule-final-research-to-lower-multi-room-requirement",
+          "sourceRuleId": "final_research_requires_lower_multi_room",
+          "triggeredBy": "q_after",
+          "triggerSimilarity": 0.581468,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-research-track-top-to-immediate-win",
+          "sourceRuleId": "research_top_is_immediate_win",
+          "triggeredBy": "q_after",
+          "triggerSimilarity": 0.571017,
+          "triggerSideAccepted": true,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-pay-energy-to-excavate",
+          "sourceRuleId": "excavate_cost_and_result",
+          "triggeredBy": "q_after",
+          "triggerSimilarity": 0.549684,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-complete-research-before-destruction-to-win",
+          "sourceRuleId": "win_by_research_before_destruction",
+          "triggeredBy": "q_after",
+          "triggerSimilarity": 0.541204,
+          "triggerSideAccepted": true,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-research-room-order-to-different-reach",
+          "sourceRuleId": "research_order_changes_usefulness",
+          "triggeredBy": "q_after",
+          "triggerSimilarity": 0.535374,
+          "triggerSideAccepted": false,
+          "capability": null
+        }
+      ],
+      "environment": [
+        {
+          "memoryId": "read-rule-unexcavated-placement-to-legal-excavation-candidate",
+          "sourceRuleId": "excavation_placement_requirement",
+          "cueRoomType": "aa",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.679676,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-pay-energy-to-excavate",
+          "sourceRuleId": "excavate_cost_and_result",
+          "cueRoomType": "aa",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.674914,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-place-white-die-to-reroll",
+          "sourceRuleId": "white_die_rerolls_remaining",
+          "cueRoomType": "aa",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.658316,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-energy-room-to-energy-gain",
+          "sourceRuleId": "energy_room_generates_energy",
+          "cueRoomType": "aa",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.638067,
+          "triggerSideAccepted": false,
+          "capability": {
+            "id": "energy_room_generates_energy",
+            "roomType": "energy",
+            "outputTrack": "energy"
+          }
+        },
+        {
+          "memoryId": "read-rule-fighter-room-to-eligible-destruction",
+          "sourceRuleId": "fighter_room_destroys_eligible_ships",
+          "cueRoomType": "aa",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.630855,
+          "triggerSideAccepted": false,
+          "capability": {
+            "id": "fighter_room_destroys_eligible_ships",
+            "roomType": "fighter",
+            "outputTrack": "ships"
+          }
+        },
+        {
+          "memoryId": "read-rule-room-cost-to-effect-or-failure",
+          "sourceRuleId": "room_requires_energy",
+          "cueRoomType": "aa",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.626801,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-pay-energy-to-excavate",
+          "sourceRuleId": "excavate_cost_and_result",
+          "cueRoomType": "energy",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.694272,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-unexcavated-placement-to-legal-excavation-candidate",
+          "sourceRuleId": "excavation_placement_requirement",
+          "cueRoomType": "energy",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.678368,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-energy-room-to-energy-gain",
+          "sourceRuleId": "energy_room_generates_energy",
+          "cueRoomType": "energy",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.666162,
+          "triggerSideAccepted": true,
+          "capability": {
+            "id": "energy_room_generates_energy",
+            "roomType": "energy",
+            "outputTrack": "energy"
+          }
+        },
+        {
+          "memoryId": "read-rule-room-cost-to-effect-or-failure",
+          "sourceRuleId": "room_requires_energy",
+          "cueRoomType": "energy",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.658539,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-place-white-die-to-reroll",
+          "sourceRuleId": "white_die_rerolls_remaining",
+          "cueRoomType": "energy",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.651398,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-research-room-to-track-advance",
+          "sourceRuleId": "research_room_advances_track",
+          "cueRoomType": "energy",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.630842,
+          "triggerSideAccepted": false,
+          "capability": {
+            "id": "research_room_advances_track",
+            "roomType": "research",
+            "outputTrack": "researchIndex"
+          }
+        },
+        {
+          "memoryId": "read-rule-unexcavated-placement-to-legal-excavation-candidate",
+          "sourceRuleId": "excavation_placement_requirement",
+          "cueRoomType": "fighter",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.680701,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-pay-energy-to-excavate",
+          "sourceRuleId": "excavate_cost_and_result",
+          "cueRoomType": "fighter",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.678714,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-place-white-die-to-reroll",
+          "sourceRuleId": "white_die_rerolls_remaining",
+          "cueRoomType": "fighter",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.652527,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-fighter-room-to-eligible-destruction",
+          "sourceRuleId": "fighter_room_destroys_eligible_ships",
+          "cueRoomType": "fighter",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.649766,
+          "triggerSideAccepted": true,
+          "capability": {
+            "id": "fighter_room_destroys_eligible_ships",
+            "roomType": "fighter",
+            "outputTrack": "ships"
+          }
+        },
+        {
+          "memoryId": "read-rule-energy-room-to-energy-gain",
+          "sourceRuleId": "energy_room_generates_energy",
+          "cueRoomType": "fighter",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.638464,
+          "triggerSideAccepted": false,
+          "capability": {
+            "id": "energy_room_generates_energy",
+            "roomType": "energy",
+            "outputTrack": "energy"
+          }
+        },
+        {
+          "memoryId": "read-rule-room-cost-to-effect-or-failure",
+          "sourceRuleId": "room_requires_energy",
+          "cueRoomType": "fighter",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.632236,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-unexcavated-placement-to-legal-excavation-candidate",
+          "sourceRuleId": "excavation_placement_requirement",
+          "cueRoomType": "research",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.673079,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-pay-energy-to-excavate",
+          "sourceRuleId": "excavate_cost_and_result",
+          "cueRoomType": "research",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.67305,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-place-white-die-to-reroll",
+          "sourceRuleId": "white_die_rerolls_remaining",
+          "cueRoomType": "research",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.655166,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-energy-room-to-energy-gain",
+          "sourceRuleId": "energy_room_generates_energy",
+          "cueRoomType": "research",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.644161,
+          "triggerSideAccepted": false,
+          "capability": {
+            "id": "energy_room_generates_energy",
+            "roomType": "energy",
+            "outputTrack": "energy"
+          }
+        },
+        {
+          "memoryId": "read-rule-research-room-to-track-advance",
+          "sourceRuleId": "research_room_advances_track",
+          "cueRoomType": "research",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.642692,
+          "triggerSideAccepted": true,
+          "capability": {
+            "id": "research_room_advances_track",
+            "roomType": "research",
+            "outputTrack": "researchIndex"
+          }
+        },
+        {
+          "memoryId": "read-rule-research-room-order-to-different-reach",
+          "sourceRuleId": "research_order_changes_usefulness",
+          "cueRoomType": "research",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.639469,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-pay-energy-to-excavate",
+          "sourceRuleId": "excavate_cost_and_result",
+          "cueRoomType": "tunnel",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.678273,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-unexcavated-placement-to-legal-excavation-candidate",
+          "sourceRuleId": "excavation_placement_requirement",
+          "cueRoomType": "tunnel",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.677599,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-place-white-die-to-reroll",
+          "sourceRuleId": "white_die_rerolls_remaining",
+          "cueRoomType": "tunnel",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.654396,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-energy-room-to-energy-gain",
+          "sourceRuleId": "energy_room_generates_energy",
+          "cueRoomType": "tunnel",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.640974,
+          "triggerSideAccepted": false,
+          "capability": {
+            "id": "energy_room_generates_energy",
+            "roomType": "energy",
+            "outputTrack": "energy"
+          }
+        },
+        {
+          "memoryId": "read-rule-room-cost-to-effect-or-failure",
+          "sourceRuleId": "room_requires_energy",
+          "cueRoomType": "tunnel",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.62962,
+          "triggerSideAccepted": false,
+          "capability": null
+        },
+        {
+          "memoryId": "read-rule-research-room-to-track-advance",
+          "sourceRuleId": "research_room_advances_track",
+          "cueRoomType": "tunnel",
+          "triggeredBy": "q_before",
+          "triggerSimilarity": 0.625159,
+          "triggerSideAccepted": false,
+          "capability": {
+            "id": "research_room_advances_track",
+            "roomType": "research",
+            "outputTrack": "researchIndex"
+          }
+        }
+      ]
+    },
+    "anchorPackage": {
+      "primary": {
+        "kind": "research_progress",
+        "roomId": "A-upper-research",
+        "dieId": "r1-gray-2",
+        "expectedRoomValue": 4
+      },
+      "support": {
+        "kind": "energy_before_research",
+        "roomId": "A-upper-energy",
+        "dieIds": [
+          "r1-gray-0",
+          "r1-gray-1"
+        ],
+        "expectedEnergyGain": 2
+      },
+      "reason": "direct research would violate the nonzero-energy constraint, so energy is an enabling anchor"
+    },
+    "placements": [
+      {
+        "type": "place_die",
+        "dieId": "r1-gray-0",
+        "cellId": "A-r2-c4"
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-gray-1",
+        "cellId": "A-r2-c5"
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-gray-2",
+        "cellId": "A-r2-c2"
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-white-3",
+        "cellId": "A-r2-c1"
+      },
+      {
+        "type": "place_die",
+        "dieId": "r1-white-4",
+        "cellId": "A-r2-c3"
+      }
+    ],
+    "publicRandomContingency": {
+      "trigger": "placing a white die while another die remains",
+      "policy": "keep the remaining die's assigned room role; obtain its value only from the public random boundary"
+    },
+    "roomActions": [
+      {
+        "type": "resolve_room",
+        "roomId": "A-upper-energy",
+        "pay": true
+      },
+      {
+        "type": "resolve_room",
+        "roomId": "A-upper-research",
+        "pay": true
+      },
+      {
+        "type": "choose_research_advance",
+        "roomId": "A-upper-research",
+        "advanceSteps": "maximum_available"
+      },
+      {
+        "type": "resolve_room",
+        "roomId": "A-upper-fighter",
+        "pay": true
+      },
+      {
+        "type": "end_rooms"
+      }
+    ],
+    "expectedBeforeRandom": {
+      "energyAfterPrimaryAndSupport": 2,
+      "researchDirection": "increase"
+    },
+    "searchAudit": {
+      "strategy": "intent_and_environment_activation_then_anchor_completion",
+      "cartesianPlacementCandidatesGenerated": 0,
+      "accessibleRoomCount": 10,
+      "awakenedCapabilityCount": 3,
+      "anchorCandidateCount": 2,
+      "completePlansGenerated": 1
+    }
+  },
+  "singleStepBaseline": {
+    "attemptedCount": 150,
+    "legalCandidateCount": 88,
+    "recommendedPayload": {
+      "type": "place_die",
+      "dieId": "r1-gray-0",
+      "cellId": "A-r1-c1",
+      "cognitiveUnit": {
+        "schema": "ufs_temporal_cognitive_unit_v1",
+        "status": "completed",
+        "objective": {
+          "kind": "room_investment",
+          "roomId": "A-aa-c1",
+          "roomType": "aa",
+          "requiredCellIds": [
+            "A-r1-c1"
+          ]
+        },
+        "operationCount": 1,
+        "operations": [
+          {
+            "type": "place_die",
+            "dieId": "r1-gray-0",
+            "cellId": "A-r1-c1"
+          }
+        ],
+        "completionReason": "room_investment_ready",
+        "nextOperationIndex": 0
+      },
+      "predictions": [
+        {
+          "because": "复合候选试演：从dice阶段执行type=place_die|dieId=r1-gray-0|cellId=A-r1-c1，比较整个认知单元完成后的后果",
+          "expectations": [
+            {
+              "itemId": "track:energy",
+              "change": "unchanged"
+            }
+          ],
+          "verifyBy": "认知单元完成后（1个操作；room_investment_ready）"
+        }
+      ]
+    }
+  },
+  "evaluation": {
+    "randomTapeDisclosure": "the value 3 is supplied only after the formal public random boundary and was not planner input",
+    "trace": [
+      {
+        "source": "planned_placement",
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-gray-0",
+          "cellId": "A-r2-c4"
+        },
+        "status": "choice",
+        "reason": "waiting_for_die_placement"
+      },
+      {
+        "source": "planned_placement",
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-gray-1",
+          "cellId": "A-r2-c5"
+        },
+        "status": "choice",
+        "reason": "waiting_for_die_placement"
+      },
+      {
+        "source": "planned_placement",
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-gray-2",
+          "cellId": "A-r2-c2"
+        },
+        "status": "choice",
+        "reason": "waiting_for_die_placement"
+      },
+      {
+        "source": "planned_placement",
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-white-3",
+          "cellId": "A-r2-c1"
+        },
+        "status": "random",
+        "reason": "waiting_for_actual_reroll"
+      },
+      {
+        "source": "evaluation_random_tape_not_planner_input",
+        "operation": {
+          "type": "submit_random_observation",
+          "values": {
+            "r1-white-4": 3
+          }
+        },
+        "status": "choice",
+        "reason": "waiting_for_die_placement"
+      },
+      {
+        "source": "planned_placement",
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-white-4",
+          "cellId": "A-r2-c3"
+        },
+        "status": "choice",
+        "reason": "waiting_for_room_action"
+      },
+      {
+        "source": "planned_room_action",
+        "operation": {
+          "type": "resolve_room",
+          "roomId": "A-upper-energy",
+          "pay": true
+        },
+        "status": "choice",
+        "reason": "waiting_for_room_action"
+      },
+      {
+        "source": "planned_room_action",
+        "operation": {
+          "type": "resolve_room",
+          "roomId": "A-upper-research",
+          "pay": true
+        },
+        "status": "choice",
+        "reason": "waiting_for_research_advance_choice"
+      },
+      {
+        "source": "planned_room_action",
+        "operation": {
+          "type": "choose_research_advance",
+          "roomId": "A-upper-research",
+          "advanceSteps": 2
+        },
+        "status": "choice",
+        "reason": "waiting_for_room_action"
+      },
+      {
+        "source": "planned_room_action",
+        "operation": {
+          "type": "resolve_room",
+          "roomId": "A-upper-fighter",
+          "pay": true
+        },
+        "status": "choice",
+        "reason": "waiting_for_room_action"
+      },
+      {
+        "source": "planned_room_action",
+        "operation": {
+          "type": "end_rooms"
+        },
+        "status": "choice",
+        "reason": "waiting_for_spawn_choice"
+      }
+    ],
+    "final": {
+      "status": "choice",
+      "reason": "waiting_for_spawn_choice",
+      "energy": 1,
+      "damage": 0,
+      "researchIndex": 2,
+      "mothershipRow": 0
+    }
+  },
+  "checks": {
+    "realFormalCheckpointUsed": true,
+    "exactlyFiveDicePlanned": true,
+    "everyDieUsedOnce": true,
+    "everyColumnUsedOnce": true,
+    "intentAndEnvironmentGroupsBothExist": true,
+    "researchMethodAwakened": true,
+    "energySupportAwakened": true,
+    "anchorHasPrimaryAndSupport": true,
+    "noCartesianPlacementEnumeration": true,
+    "planningWasReadOnly": true,
+    "baselineStillChoosesImmediateAa": true,
+    "formalExecutionReachedResearchTwo": true,
+    "zeroEnergyTrapAvoided": true,
+    "noFormalRejection": true
+  },
+  "allChecksPassed": true
+}

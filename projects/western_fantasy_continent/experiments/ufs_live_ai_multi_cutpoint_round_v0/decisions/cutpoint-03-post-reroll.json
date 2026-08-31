@@ -1,0 +1,61 @@
+{
+  "schema": "ufs_live_ai_multistep_decision_v1",
+  "decisionId": "cutpoint-03-post-reroll",
+  "source": "evidence/cutpoint-03-post-reroll-player-view.json",
+  "informationBoundary": "compact player view plus prior public history only",
+  "newPublicInformation": {
+    "dice": [
+      "r1-gray-2 is now 5",
+      "r1-white-4 is now 6"
+    ],
+    "ships": [
+      "purple-1 is visible at row 0, column 1",
+      "purple-2 is visible at row 0, column 2"
+    ],
+    "callableCells": [
+      "A-r2-c2 research",
+      "A-r1-c3 anti-air",
+      "A-r2-c3 tunnel"
+    ]
+  },
+  "cutIns": [
+    {
+      "kind": "result_led",
+      "cue": "research remains 0 and A-r2-c2 is callable again",
+      "anchor": "place one remaining die in the research room"
+    },
+    {
+      "kind": "environment_led",
+      "cue": "a ship is visible in column 2 and both column-2 anti-air and tunnel placements are callable",
+      "anchor": "compare anti-air against the provisional tunnel for the other die"
+    }
+  ],
+  "candidateContinuations": [
+    {
+      "name": "static-continuation",
+      "placements": [
+        "r1-gray-2 -> A-r2-c2",
+        "r1-white-4 -> A-r2-c3"
+      ],
+      "resourceExpectation": "keeps the research anchor; tunnel has no visible resource gain",
+      "threatExpectation": "does not apply visible same-column anti-air reduction"
+    },
+    {
+      "name": "rolling-continuation",
+      "placements": [
+        "r1-gray-2 -> A-r2-c2",
+        "r1-white-4 -> A-r1-c3"
+      ],
+      "resourceExpectation": "keeps the same research anchor",
+      "threatExpectation": "uses the visible same-column anti-air method against purple-2"
+    }
+  ],
+  "choice": "rolling-continuation",
+  "reason": "Both continuations preserve the planned resource package. Only anti-air has a visible positive threat effect; the tunnel offers no visible compensating benefit at this cutpoint.",
+  "remainingPlan": [
+    "place gray-5 in research",
+    "place white-6 in column-2 anti-air",
+    "at room phase, resolve energy before research before optional fighter",
+    "use the same spawn preference in both paired branches"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "ufs_live_ai_multistep_decision_v1",
+  "decisionId": "cutpoint-02-attention-reorder",
+  "source": "evidence/cutpoint-02-attention-omission-player-view.json",
+  "informationBoundary": "compact player view plus prior public history only",
+  "trigger": "The research room is still listed, but its planned cell A-r2-c2 is absent from the current callable baseCells. A-r2-c1 and the unplaced white-5 die remain visible.",
+  "decision": "Reorder the still-planned fighter placement ahead of research. Do not abandon either the research or energy anchors.",
+  "nextAction": "place r1-white-3 at A-r2-c1",
+  "remainingPlan": [
+    "observe the public reroll of r1-white-4",
+    "regenerate candidate anchors from the refreshed visible state",
+    "place gray-4 into research if its cell becomes callable",
+    "choose the last-white placement by comparing its complete remaining-round effect",
+    "resolve energy before research before any optional fighter payment"
+  ],
+  "classification": "execution-order repair caused by attention omission, not a claimed strategic benefit"
+}

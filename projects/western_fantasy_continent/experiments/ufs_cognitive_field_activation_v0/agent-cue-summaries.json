@@ -1,0 +1,146 @@
+{
+  "schema": "ufs_agent_cue_summaries_v0",
+  "producer": "root-codex-agent-controlled-single-pass",
+  "note": "Same scene, separate knowledge-bounded passes using CUE_SUMMARIZER_CONTRACT.md. This is a feasibility sample, not a multi-model accuracy estimate.",
+  "runs": [
+    {
+      "knowledgeBaseId": "full-research-rules",
+      "cues": [
+        {
+          "cueId": "full-visible-ready-research-room",
+          "kind": "attended_object",
+          "channel": "before",
+          "statement": "一个房间值为6、能源费用为2的研究房现在可以结算。",
+          "statePaths": ["phase", "energy", "researchCostsAhead", "visible.resolvableRoomIds", "visible.rooms[0]"],
+          "knowledgeIds": ["K-ROOM-RESEARCH"],
+          "q": {
+            "affected_object": "可结算的研究房、当前能源与研究轨道",
+            "change_trend": "研究房已经准备结算，连续研究推进尚未选择",
+            "cause_relation": "玩家看见可结算研究房，并知道结算后还要选择推进格数",
+            "temporal_state": "两步研究操作开始前",
+            "context": "当前公开房间状态与规则书研究方法"
+          }
+        },
+        {
+          "cueId": "full-research-win-need",
+          "kind": "active_need",
+          "channel": "after",
+          "statement": "研究仍在起点，而到达顶部能在城市存续时获胜，因此增加研究进度与当前目标相关。",
+          "statePaths": ["researchIndex", "researchTopIndex", "cityDestroyed"],
+          "knowledgeIds": ["K-WIN-RESEARCH"],
+          "q": {
+            "affected_object": "研究标记与仍然存在的城市",
+            "change_trend": "研究标记需要从起点向研究轨道顶部推进",
+            "cause_relation": "研究到达顶部能在城市毁灭前形成胜利",
+            "temporal_state": "当前房间阶段之后的目标结果",
+            "context": "研究进度增加与本局胜利目标"
+          }
+        },
+        {
+          "cueId": "full-two-step-affordability",
+          "kind": "constraint",
+          "channel": "before",
+          "statement": "当前能源恰好能支付研究房；支付后仍需完成第二个推进选择，不能只评价支付动作。",
+          "statePaths": ["energy", "researchCostsAhead", "visible.rooms[0].roomValue", "visible.rooms[0].energyCost", "legalOperations"],
+          "knowledgeIds": ["K-ROOM-RESEARCH"],
+          "q": {
+            "affected_object": "研究房能源支付与后续研究选择",
+            "change_trend": "能源足够完成第一步，第二步推进选择等待发生",
+            "cause_relation": "研究房规则把支付和选择推进连接成一个两步方法",
+            "temporal_state": "支付研究房之前",
+            "context": "两步研究候选的完整性与可执行性"
+          }
+        }
+      ],
+      "operationHints": [
+        {
+          "knowledgeIds": ["K-ROOM-RESEARCH"],
+          "statePaths": ["researchCostsAhead", "visible.rooms[0].roomValue", "legalOperations"],
+          "operations": [
+            { "type": "resolve_room", "roomId": "A-upper-research", "pay": true },
+            { "type": "choose_research_advance", "roomId": "A-upper-research", "advanceSteps": 2 }
+          ]
+        }
+      ],
+      "unknowns": []
+    },
+    {
+      "knowledgeBaseId": "win-condition-only",
+      "cues": [
+        {
+          "cueId": "win-only-research-win-need",
+          "kind": "active_need",
+          "channel": "after",
+          "statement": "研究仍在起点，而到达顶部能在城市存续时获胜，因此增加研究进度与当前目标相关。",
+          "statePaths": ["researchIndex", "researchTopIndex", "cityDestroyed"],
+          "knowledgeIds": ["K-WIN-RESEARCH"],
+          "q": {
+            "affected_object": "研究标记与仍然存在的城市",
+            "change_trend": "研究标记需要从起点向研究轨道顶部推进",
+            "cause_relation": "研究到达顶部能在城市毁灭前形成胜利",
+            "temporal_state": "当前房间阶段之后的目标结果",
+            "context": "研究进度增加与本局胜利目标"
+          }
+        }
+      ],
+      "operationHints": [],
+      "unknowns": [
+        {
+          "statePaths": ["visible.rooms[0]", "legalOperations[0]"],
+          "statement": "能看见一个名为研究房的可结算对象，但现有知识没有说明它如何工作，也不能推出两步研究方法。"
+        }
+      ]
+    },
+    {
+      "knowledgeBaseId": "room-method-only",
+      "cues": [
+        {
+          "cueId": "room-only-visible-ready-research-room",
+          "kind": "attended_object",
+          "channel": "before",
+          "statement": "一个房间值为6、能源费用为2的研究房现在可以结算。",
+          "statePaths": ["phase", "energy", "researchCostsAhead", "visible.resolvableRoomIds", "visible.rooms[0]"],
+          "knowledgeIds": ["K-ROOM-RESEARCH"],
+          "q": {
+            "affected_object": "可结算的研究房、当前能源与研究轨道",
+            "change_trend": "研究房已经准备结算，连续研究推进尚未选择",
+            "cause_relation": "玩家看见可结算研究房，并知道结算后还要选择推进格数",
+            "temporal_state": "两步研究操作开始前",
+            "context": "当前公开房间状态与规则书研究方法"
+          }
+        },
+        {
+          "cueId": "room-only-two-step-affordability",
+          "kind": "constraint",
+          "channel": "before",
+          "statement": "当前能源恰好能支付研究房；支付后仍需完成第二个推进选择。",
+          "statePaths": ["energy", "researchCostsAhead", "visible.rooms[0].roomValue", "visible.rooms[0].energyCost", "legalOperations"],
+          "knowledgeIds": ["K-ROOM-RESEARCH"],
+          "q": {
+            "affected_object": "研究房能源支付与后续研究选择",
+            "change_trend": "能源足够完成第一步，第二步推进选择等待发生",
+            "cause_relation": "研究房规则把支付和选择推进连接成一个两步方法",
+            "temporal_state": "支付研究房之前",
+            "context": "两步研究候选的完整性与可执行性"
+          }
+        }
+      ],
+      "operationHints": [
+        {
+          "knowledgeIds": ["K-ROOM-RESEARCH"],
+          "statePaths": ["researchCostsAhead", "visible.rooms[0].roomValue", "legalOperations"],
+          "operations": [
+            { "type": "resolve_room", "roomId": "A-upper-research", "pay": true },
+            { "type": "choose_research_advance", "roomId": "A-upper-research", "advanceSteps": 2 }
+          ]
+        }
+      ],
+      "unknowns": [
+        {
+          "statePaths": ["researchIndex", "researchTopIndex", "cityDestroyed"],
+          "statement": "现有知识没有说明研究进度为什么重要，因此不能把研究低自动总结为当前需求。"
+        }
+      ]
+    }
+  ]
+}

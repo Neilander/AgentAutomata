@@ -191,7 +191,13 @@ q当前 → q实际后续
 - 教程、查规则、单次经历、多次经历和玩家猜测分别记录来源，可信度随来源和重复验证更新。
 - 只有“玩家可见 + 已提交或知识查询 + 系统完整性通过”的证据可以学习。非法操作、隐藏信息、未审计结果和已知系统bug进入隔离记录，不修改轨迹或注意力。
 
-新轨迹会先标为`pending_matrix_compile`，同一五槽与上下文可以立即由反馈层精确召回；批量GTE编译后用`markMatrixCompiled`记录矩阵版本。模糊语义召回仍以已编译矩阵为准，不能把尚未编译的新经历冒充已经进入真实GTE矩阵。
+新轨迹只会短暂标为`pending_matrix_compile`：玩家会话在本步正式反馈形成后、返回下一选择前，立即把本步所有新增反馈批量送入仓库既有的离线`gte-multilingual-base`，生成与规则记忆一致的3840维float32起点/后继矩阵并写进私有checkpoint；成功后才用`markMatrixCompiled`改成`compiled_matrix`并重装当前内存。因此同一episode后面的选择已经能查询刚学到的行，`player-capture`只做最终完整性闸门和档案持久化，不再是首次编译点。若编码器失败，当前已结算的正式动作会保留，但下一动作会明确拒绝为`feedback_gte_compile_pending`，不能静默带着未编译学习继续。下一次跨进程恢复和下一episode都从该玩家checkpoint/档案加载个人矩阵。反馈桥以当前Q对应的已编译查询行做矩阵点积和Top-K，并把已学习的连续轨迹`chainingStrength`加入候选排序，再从玩家可见、正式审计过的预测账本重建机器可验证结果，签发`gte_feedback_trajectory`票据。旧档案可以用`ufs-player-cli.js compile-feedback`单独升级，不伪造episode，也不覆盖输入档案。
+
+Node端现在除了已编译Q之间的Top-K，也支持在选择前把本次所有候选五槽Q一次性送进同一个本地`gte-multilingual-base`，得到真实查询向量后再检索个人矩阵；不会退回字符串近似或哈希向量冒充GTE。fresh初始化模板本身完全不带个人矩阵、个人轨迹或账本，因此不会产生个人反馈激活。当前离线编码器仍会为每次决策启动一次模型，正确性已接通，但长局性能仍需要常驻服务或内容寻址缓存。
+
+`ufs-prechoice-planner.js`把这条记忆链提前到动作提交之前：从公开operation contract枚举候选，逐个克隆当前玩家认知checkpoint并运行到下一选择/随机/稳定边界，比较能源、研究、挖掘、伤害、母舰与终局差值；命中的个人GTE轨迹只有能从正式审计账本恢复出机器可验证后果时才修正候选分数。`full-game-attention-player-cli.js plan <state-dir>`是只读接口，返回可直接提交且附带预测票据的`recommendedPayload`，不会推进正式host或污染当前checkpoint。V22自动玩家入口已改为调用该规划器；旧`choose()`只保留为历史结果复现接口，不再用于新的`run()`。
+
+历史控制器曾把标量track写成`{itemId:"track:energy", field:"energy"}`。票据读取器现在兼容这个冗余field并直接保留标量值；旧档案里已经审计成`undefined`的结果不会被猜测性修复，新产生的反馈会记录真实数值并可进入候选打分。
 
 研究房零收益的测试案例现在明确要求行动前预测“能源减少、研究不前进”；正式结果可见且与票据匹配后才记录新轨迹。相同结果若事前没有预测，则不会创建学习记录。下次召回这个后果以后，原有成本—条件—收益判断自然会排除它；没有额外的`candidateValue=-3`之类分数。
 
@@ -224,7 +230,7 @@ q当前 → q实际后续
 └─ 尚未到截止点的预测票据
 ```
 
-冻结模板会对规则、五槽轨迹、GTE矩阵和程序库7份资产计算SHA-256总指纹；资产改变后旧玩家档案不会静默加载。`fresh`只复制冻结初始知识，个人学习为空；`continue`必须同时匹配玩家ID、模板指纹和档案revision；`fork`复制父玩家某一明确revision的个人学习，但之后双方各自更新。每次`player-capture`只把个人认知写回玩家档案，不把正式棋盘混入；有尚未完成的预测票据时拒绝capture。capture后该state目录封存，同一玩家用更新后的档案在新目录开始下一episode。
+冻结模板会对规则、五槽轨迹、GTE矩阵和程序库7份资产计算SHA-256总指纹；JSON资产先统一换行为LF，因此同一认知资产不会因Windows worktree的LF/CRLF组合而变成不同玩家模板。旧的原始字节指纹只有在能由当前完全相同资产的换行组合严格复现时才兼容，并在episode基线中归一到规范指纹；资产内容改变后旧玩家档案仍不会静默加载。`fresh`只复制冻结初始知识，个人学习为空；`continue`必须同时匹配玩家ID、模板指纹和档案revision；`fork`复制父玩家某一明确revision的个人学习，但之后双方各自更新。个人反馈矩阵随当前游戏checkpoint即时更新；每次`player-capture`只把已经编译完成的个人认知写回玩家档案，不把正式棋盘混入。有尚未完成的预测票据或无法编译的pending反馈时拒绝capture。capture后该state目录封存，同一玩家用更新后的档案在新目录开始下一episode。
 
 ```powershell
 # 创建两个互不共享学习的新玩家
@@ -235,12 +241,40 @@ node ufs-player-cli.js fresh players/bob.json bob 20260831
 node full-game-attention-player-cli.js player-start runs/alice-001 players/alice.json
 node full-game-attention-player-cli.js advance runs/alice-001 choice.json
 
+# 成对实验可提交预先冻结的外部随机观测；CLI会严格校验边界类型、公开骰子ID和值域
+node full-game-attention-player-cli.js random runs/alice-001 paired-random-observation.json
+
 # 把本局学习写回alice并封存该局
 node full-game-attention-player-cli.js player-capture runs/alice-001 players/alice.json
 
 # 从alice当前学习快照创建独立对照玩家
 node ufs-player-cli.js fork players/alice.json players/alice-control.json alice-control
 ```
+
+## 跨操作认知单元
+
+规划停止边界不再强制等于一次正式操作。`ufs_temporal_cognitive_unit_v1`把一个起始Q、2—4个有因果依赖的操作和一个完成后的followingQ绑定在一起；session在checkpoint中保存当前操作下标，下一次规划优先续接同一个单元。公开随机值仍是硬暂停边界，不会被认知分支编造。
+
+当前先接通两类可审计单元：
+
+- 多格房投资：第一颗骰子放入房间后，继续设想第二颗骰子；若这使房间完整且进入房间阶段，再继续到房间效果结算。
+- 研究房结算：`resolve_room`支付能源后不立即停止，继续枚举合法`choose_research_advance`，因此同一个followingQ同时包含能源成本与研究收益。
+
+复合预测票据保存在独立的pending队列里；中间操作即使已经到达普通稳定边界，也不会提前把Q截断。只有认知单元完成后才用起始belief和最终正式状态核验并写入学习。受控真实状态已验证“两颗骰子投入→能源房结算”三操作Q把能源2→4作为一个后果，“研究支付→推进2格”两操作Q把能源2→0、研究0→2作为一个后果。
+
+## 显式经历记忆与双向来源查询
+
+个人反馈现在不再只有不可逆的GTE行和文字`provenance`。每次通过“玩家可见、正式提交、系统完整性”闸门的结果都会先形成一条`ufs_explicit_transition_memory_v1`：保存独立`memoryId`、Q前、准确有序的`operations[]`、Q后、适用上下文、证据ID、episode/票据定位和它所支持的轨迹ID。相似的Q前—操作—Q后可以汇聚为同一`trajectoryId`，但每次具体经历仍保留独立memory；轨迹用`supportingMemoryIds[]`一对多指回所有事实来源。同一个`evidenceId`重复提交是幂等的，不能重复增加记忆或支持。
+
+GTE仍是模糊索引而不是事实存储。新轨迹把`Q前 + 有序操作序列`联合编成current矩阵行，并把Q后编成paired following行；原始三个字段继续分别保存在显式记忆里。`PlayerFeedbackGteMemory.query()`支持`Q前 + operations[] → Q后 + trajectoryId + supportingMemoryIds`，`queryPair()`同时比较current/following矩阵，支持`Q前 + Q后 (+可选operations[]) → trajectoryId + supportingMemoryIds`。会话公开只读认知接口`predictLearnedTransition()`、`traceLearnedTransition()`和`recallExplicitMemory()`分别完成正向预测、成对来源追溯和按ID还原原始经历。顺序是轨迹身份的一部分，`[A,B]`与`[B,A]`不会互相召回。
+
+旧玩家档案继续兼容：历史轨迹没有被伪造成从未保存过的显式经历，原`provenance`仍保留；只有本次升级后真实通过反馈闸门的经历获得memory记录。fresh模板指纹和初始化内容保持不变，空`memories`集合在会话启动时惰性建立；capture、checkpoint、continue和fork都随各自玩家私有学习状态保存它，不能跨玩家激活。
+
+## 认知场多路线索激活原型
+
+`ufs-cognitive-field-activation.js`提供尚未接入正式控制器的只读V0入口：同一个当前认知场可以同时携带`before`线索（当前状态、注意对象、约束）和`after`线索（需求、希望或担忧的结果）。每条线索分别用真实GTE查询轨迹起点或后继端，随后按`trajectoryId`汇合，并保留线索陈述、公开状态路径、知识条目ID、通道、activation和具体memory来源。`recallActivation`只表示回忆相关性，不是行动效用。
+
+隔离实验`../ufs_cognitive_field_activation_v0/`把同一研究局面分别交给“完整研究规则”“只有研究胜利条件”“只有研究房方法”三种知识输入。完整知识产生当前研究房、研究目标、两步可执行性三类线索；只有胜利条件时不编造研究房用法；只有房间方法时不擅自把低研究解释为目标。真实`gte-multilingual-base`中，Q前房间线索以`0.888920`、Q后研究需求以`0.644991`命中同一条`[resolve_room, choose_research_advance]`轨迹，完整三路线索都追溯到`memory-00001`。这证明多路召回机制可行，但尚未证明AI线索总结的稳定准确率，也尚未接入正式多步规划。
 
 ## 文件
 
@@ -260,13 +294,21 @@ node ufs-player-cli.js fork players/alice.json players/alice-control.json alice-
 - `attention-player-cli.js`：封卷Agent逐步试玩入口；宿主checkpoint和完整注意审计留在state目录，标准输出只返回精简的注意裁剪玩家视图。
 - `full-game-attention-player-cli.js`：跨回合逐步试玩入口；沿用同一精简玩家视图与私有完整注意审计合同。
 - `ufs-feedback-learning.js`：反馈有效性闸门、五槽后果学习、多后续统计、区分性纠错、查询出口、轨迹粘连、来源可信度与情境注意修正。
+- `ufs-transition-memory.js`：有序操作序列规范化、稳定序列身份，以及Q前与行为联合GTE查询Q的生成。
+- `compile-player-feedback-gte.py`、`run-player-feedback-gte-compile.ps1`：用本地真实GTE把玩家新增反馈编成3840维起点/后继矩阵。
+- `player-feedback-gte.js`：增量矩阵封装、档案完整性校验、正向current查询、current/following成对来源查询与玩家情境过滤。
+- `ufs-cognitive-field-activation.js`：Q前/Q后多路线索的真实GTE查询、按轨迹汇合及逐线索来源解释。
+- `ufs-prechoice-planner.js`：选择前候选枚举、隔离认知试演、短期效用比较和已审计个人GTE后果修正。
+- `ufs-temporal-cognitive-unit.js`：从公开房间结构形成2—4操作因果单元，管理房间投资、研究续步、随机暂停和结果完成边界。
+- `test-prechoice-planner.js`：规划不改live checkpoint、两/三操作Q持久续接与跨稳定边界学习、compiled feedback改变动作、CLI只读规划，以及标量track兼容回归。
+- `test-cognitive-field-activation.js`：Q前单路召回、Q前/Q后汇合、记忆来源与无关线索不伪造候选回归。
 - `test-ufs-feedback-learning.js`：原7项反馈需求、系统bug隔离、研究零收益区分轨迹和完整注意场接入回归。
 - `ufs-formal-feedback-oracle.js`：认知核心之外的权威正式游戏会话；生成合法操作与下一环境，管理随机、研究和生成边界，并保存checkpoint。
 - `ufs-full-game-feedback-bridge.js`：本步预测提取、正式结果可见性门、确认/纠错/注意更新和重复轨迹去重。
 - `ufs-prediction-ticket.js`：行动前0—3条显式/自动预测票据、验证目标、跨边界截止和逐项配对。
 - `test-prediction-ticket.js`：正确、错误、漏看、重叠歧义、随机延期、checkpoint与原子拒绝回归。
 - `ufs-player-generator.js`：冻结初始模板指纹、独立玩家档案，以及fresh/continue/fork/capture接口。
-- `ufs-player-cli.js`：创建、分叉和检查玩家档案；不覆盖已有新档案。
+- `ufs-player-cli.js`：创建、分叉、检查玩家档案，以及把旧学习档案编译为新revision；不覆盖输入或已有输出档案。
 - `test-player-generator.js`：玩家间学习隔离、同玩家续玩、分叉独立、revision/模板闸门和真实CLI回归。
 - `test-full-game-feedback-bridge.js`：完整会话连接强化、研究零收益、单一错误注意修正及多因果歧义拒绝。
 - `compact-attention-response.js`：删除玩家视图中与`observation / mapView`重复的noticed清单和内部注意痕迹，保留决策事实与注意预算摘要。

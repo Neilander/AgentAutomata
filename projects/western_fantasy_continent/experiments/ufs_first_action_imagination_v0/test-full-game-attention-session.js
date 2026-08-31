@@ -64,7 +64,7 @@ test("public operation contracts expose every required research-choice field inc
       roomId: { kind: "fixed", value: "A-upper-research" },
       advanceSteps: { kind: "integer", minimum: 0, maximum: 0 },
     },
-    optionalFields: ["predictions"],
+    optionalFields: ["predictions", "cognitiveUnit"],
   }]);
 });
 
@@ -110,6 +110,10 @@ test("an external round roll preserves tracks and starts the next cognitive roun
   assert.equal(after.nextRobotId, before.nextRobotId);
   assert.deepEqual(after.placements, []);
   assert.deepEqual(after.dice.map((die) => die.value), [1, 2, 3, 4, 5]);
+  const mentalAfter = session.inspectMentalState().observation;
+  assert.deepEqual(mentalAfter.placements, []);
+  assert.deepEqual(mentalAfter.dice.map((die) => die.id), boundary.pending.dieIds);
+  assert.deepEqual(mentalAfter.dice.map((die) => die.value), [1, 2, 3, 4, 5]);
   assert.equal(response.game.roundAttentionSeed, roundAttentionSeed(2026082504, 2));
   assert.equal(response.actionCount, boundary.actionCount + 1);
   assert.equal(response.roundActionCount, 0);

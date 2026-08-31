@@ -1,0 +1,25 @@
+{
+  "schema": "ufs_agent_macro_intent_v0",
+  "source": "one_shot_agent_summary_of_attention_visible_scene",
+  "inputScope": "current player response plus owned rule knowledge; no formal hidden state",
+  "primary": {
+    "id": "increase_research",
+    "desiredTrack": "researchIndex",
+    "direction": "increase",
+    "reason": "研究位于0，而完成研究是获胜路径；当前公开地图中存在研究房。"
+  },
+  "constraints": [
+    {
+      "id": "avoid_zero_energy",
+      "track": "energy",
+      "minimumAfterPlannedRoomEffects": 1,
+      "reason": "当前只有2能源，直接支付上层研究房会落入零能源。"
+    }
+  ],
+  "secondaryRoleOrder": [
+    "fighter",
+    "tunnel",
+    "aa"
+  ],
+  "summary": "优先取得研究进展，但先补足能源以避免研究支付后归零；剩余骰子再处理可见飞船威胁和无成本房间。"
+}

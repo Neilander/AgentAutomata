@@ -6,6 +6,11 @@ const path = require("node:path");
 const { UfsFeedbackLearner } = require("./ufs-feedback-learning");
 const { UfsFullGameFeedbackBridge } = require("./ufs-full-game-feedback-bridge");
 const { UfsFullGameAttentionSession } = require("./ufs-full-game-attention-session");
+const {
+  compileFeedbackGteForLearner,
+  compileRowsWithLocalGte,
+  validateFeedbackGteOverlay,
+} = require("./player-feedback-gte");
 
 const TEMPLATE_SCHEMA = "ufs_initial_player_template_v1";
 const PROFILE_SCHEMA = "ufs_player_profile_v1";
@@ -38,6 +43,56 @@ function sha256(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
+function canonicalAssetBytes(relativePath, bytes) {
+  if (!relativePath.endsWith(".json")) return bytes;
+  return Buffer.from(bytes.toString("utf8").replace(/\r\n?/gu, "\n"), "utf8");
+}
+
+function assetRecord(relativePath, bytes) {
+  return {
+    path: relativePath.replaceAll("\\", "/"),
+    bytes: bytes.length,
+    sha256: sha256(bytes),
+  };
+}
+
+function templateBody({ knowledgeAssets, initialLearningState }) {
+  return {
+    templateId: TEMPLATE_ID,
+    knowledgeAssets,
+    attentionPolicy: {
+      schema: "ufs_full_attention_161_plus_v1",
+      defaultCapacity: 41,
+      backgroundAttentionRequired: true,
+    },
+    initialPersonalState: {
+      feedbackLearningState: initialLearningState,
+      predictionLedger: [],
+      nextEvidenceId: 1,
+      nextTicketId: 1,
+    },
+  };
+}
+
+function lineEndingCompatibleFingerprints(assetSources, initialLearningState) {
+  let combinations = [[]];
+  for (const source of assetSources) {
+    const variants = [source.canonical];
+    if (source.relativePath.endsWith(".json")) {
+      const crlf = Buffer.from(source.canonical.toString("utf8").replace(/\n/gu, "\r\n"), "utf8");
+      if (!crlf.equals(source.canonical)) variants.push(crlf);
+    }
+    combinations = combinations.flatMap((prefix) => variants.map((bytes) => [
+      ...prefix,
+      assetRecord(source.relativePath, bytes),
+    ]));
+  }
+  return [...new Set(combinations.map((knowledgeAssets) => sha256(stable(templateBody({
+    knowledgeAssets,
+    initialLearningState,
+  })))))];
+}
+
 function assertPlayerId(playerId, label = "playerId") {
   if (typeof playerId !== "string" || !PLAYER_ID.test(playerId)) {
     throw new TypeError(`${label} must use 1-64 letters, digits, dot, underscore, or hyphen`);
@@ -51,36 +106,32 @@ function assertSeed(seed) {
 }
 
 function buildInitialPlayerTemplate() {
-  const assets = FROZEN_ASSET_PATHS.map((relativePath) => {
+  const assetSources = FROZEN_ASSET_PATHS.map((relativePath) => {
     const absolutePath = path.resolve(__dirname, relativePath);
-    const bytes = fs.readFileSync(absolutePath);
+    const raw = fs.readFileSync(absolutePath);
     return {
-      path: relativePath.replaceAll("\\", "/"),
-      bytes: bytes.length,
-      sha256: sha256(bytes),
+      relativePath,
+      canonical: canonicalAssetBytes(relativePath, raw),
     };
   });
+  const assets = assetSources.map(({ relativePath, canonical }) => assetRecord(relativePath, canonical));
   const initialLearningState = new UfsFeedbackLearner().exportState();
-  const templateBody = {
-    templateId: TEMPLATE_ID,
-    knowledgeAssets: assets,
-    attentionPolicy: {
-      schema: "ufs_full_attention_161_plus_v1",
-      defaultCapacity: 41,
-      backgroundAttentionRequired: true,
-    },
-    initialPersonalState: {
-      feedbackLearningState: initialLearningState,
-      predictionLedger: [],
-      nextEvidenceId: 1,
-      nextTicketId: 1,
-    },
-  };
-  return {
+  // Keep the frozen fresh-player template byte-compatible with the existing
+  // V20+ lineage. The learner adds the empty explicit-memory collection lazily
+  // when a session starts, so fresh players still begin with no personal memory.
+  delete initialLearningState.memories;
+  delete initialLearningState.nextMemoryId;
+  const body = templateBody({ knowledgeAssets: assets, initialLearningState });
+  const template = {
     schema: TEMPLATE_SCHEMA,
-    ...templateBody,
-    templateFingerprint: sha256(stable(templateBody)),
+    ...body,
+    templateFingerprint: sha256(stable(body)),
   };
+  Object.defineProperty(template, "compatibleTemplateFingerprints", {
+    value: lineEndingCompatibleFingerprints(assetSources, initialLearningState),
+    enumerable: false,
+  });
+  return template;
 }
 
 function templateRef(template = buildInitialPlayerTemplate()) {
@@ -127,8 +178,14 @@ function createFreshPlayer({
 function validatePlayerProfile(profile, { template = buildInitialPlayerTemplate() } = {}) {
   if (profile?.schema !== PROFILE_SCHEMA) throw new TypeError("invalid UFS player profile");
   assertPlayerId(profile.playerId);
+  const compatibleFingerprints = new Set([template.templateFingerprint]);
+  if (template.compatibleTemplateFingerprints?.includes(template.templateFingerprint)) {
+    for (const fingerprint of template.compatibleTemplateFingerprints) {
+      compatibleFingerprints.add(fingerprint);
+    }
+  }
   if (profile.template?.templateId !== template.templateId
-    || profile.template?.templateFingerprint !== template.templateFingerprint) {
+    || !compatibleFingerprints.has(profile.template?.templateFingerprint)) {
     throw new Error("player template fingerprint does not match the current frozen cognitive assets");
   }
   assertSeed(profile.attention?.baseSeed);
@@ -141,7 +198,15 @@ function validatePlayerProfile(profile, { template = buildInitialPlayerTemplate(
   if (!Array.isArray(profile.cognition?.predictionLedger)) {
     throw new TypeError("player profile predictionLedger must be an array");
   }
-  return clone(profile);
+  if (profile.cognition.feedbackGteOverlay != null) {
+    validateFeedbackGteOverlay(
+      profile.cognition.feedbackGteOverlay,
+      profile.cognition.feedbackLearningState.trajectories,
+    );
+  }
+  const normalized = clone(profile);
+  normalized.template = templateRef(template);
+  return normalized;
 }
 
 function forkPlayer({
@@ -179,6 +244,7 @@ function forkPlayer({
       parentPlayerId: parent.playerId,
       parentRevision: parent.progress.revision,
       learnedTrajectoryCount: parent.cognition.feedbackLearningState.trajectories.length,
+      explicitMemoryCount: parent.cognition.feedbackLearningState.memories?.length || 0,
       reinforcedConnectionCount: parent.cognition.feedbackLearningState.connectionUpdates.length,
       predictionLedgerCount: parent.cognition.predictionLedger.length,
       at,
@@ -208,6 +274,7 @@ function createSessionForPlayer({
   publicMap,
   initialPublicState,
   sessionOptions = {},
+  feedbackGteCompiler = compileRowsWithLocalGte,
   now = () => new Date().toISOString(),
   template = buildInitialPlayerTemplate(),
 } = {}) {
@@ -219,6 +286,7 @@ function createSessionForPlayer({
   const learner = new UfsFeedbackLearner({ state: profile.cognition.feedbackLearningState });
   const bridge = new UfsFullGameFeedbackBridge({
     learner,
+    episodeId,
     predictionLedger: profile.cognition.predictionLedger,
     nextEvidenceId: profile.cognition.nextEvidenceId,
     nextTicketId: profile.cognition.nextTicketId,
@@ -228,6 +296,8 @@ function createSessionForPlayer({
     publicMap,
     feedbackLearner: learner,
     feedbackBridge: bridge,
+    feedbackGteOverlay: profile.cognition.feedbackGteOverlay || null,
+    feedbackGteCompiler,
     playerIdentity: playerIdentity(profile, episodeId),
   });
   const response = session.start({
@@ -250,6 +320,7 @@ function restoreSessionForPlayer({
   playerProfile,
   checkpoint,
   template = buildInitialPlayerTemplate(),
+  feedbackGteCompiler = compileRowsWithLocalGte,
 } = {}) {
   const profile = validatePlayerProfile(playerProfile, { template });
   const identity = checkpoint?.playerIdentity;
@@ -261,7 +332,10 @@ function restoreSessionForPlayer({
     || identity.baseProfileRevision !== profile.progress.revision) {
     throw new Error("checkpoint belongs to a different player or profile revision");
   }
-  return UfsFullGameAttentionSession.restore(checkpoint);
+  return UfsFullGameAttentionSession.restore(checkpoint, {
+    feedbackGteOverlay: profile.cognition.feedbackGteOverlay || null,
+    feedbackGteCompiler,
+  });
 }
 
 function capturePlayerProfile({
@@ -269,6 +343,7 @@ function capturePlayerProfile({
   session,
   now = () => new Date().toISOString(),
   template = buildInitialPlayerTemplate(),
+  feedbackGteCompiler = compileRowsWithLocalGte,
 } = {}) {
   const profile = validatePlayerProfile(playerProfile, { template });
   const identity = session?.inspectPlayerIdentity?.();
@@ -278,15 +353,19 @@ function capturePlayerProfile({
     throw new Error("session does not belong to this player profile revision");
   }
   const bridge = session.feedbackBridge.exportCheckpoint();
-  if (bridge.pendingPredictionTickets.length > 0) {
+  if (bridge.pendingPredictionTickets.length > 0
+    || (bridge.pendingCognitiveUnitTickets || []).length > 0) {
     throw new Error("cannot capture player learning while prediction tickets are still pending");
   }
+  session.ensureFeedbackGteCompiled({ compiler: feedbackGteCompiler });
+  const feedbackGteOverlay = session.exportFeedbackGteOverlay();
   const learning = session.feedbackLearner.exportState();
   const formal = session.inspectHostState().observation;
   const at = now();
   const next = clone(profile);
   next.cognition = {
     feedbackLearningState: learning,
+    ...(feedbackGteOverlay ? { feedbackGteOverlay } : {}),
     predictionLedger: bridge.predictionLedger,
     nextEvidenceId: bridge.nextEvidenceId,
     nextTicketId: bridge.nextTicketId,
@@ -302,9 +381,47 @@ function capturePlayerProfile({
     completedRoundCount: session.completedRounds.length,
     outcome: clone(formal.outcome),
     learnedTrajectoryCount: learning.trajectories.length,
+    explicitMemoryCount: learning.memories.length,
     reinforcedConnectionCount: learning.connectionUpdates.length,
     predictionLedgerCount: bridge.predictionLedger.length,
+    compiledFeedbackTrajectoryCount: feedbackGteOverlay?.recordIds.length || 0,
     capturedAt: at,
+  });
+  next.updatedAt = at;
+  return next;
+}
+
+function compilePlayerFeedbackProfile({
+  playerProfile,
+  now = () => new Date().toISOString(),
+  template = buildInitialPlayerTemplate(),
+  feedbackGteCompiler = compileRowsWithLocalGte,
+} = {}) {
+  const profile = validatePlayerProfile(playerProfile, { template });
+  const learner = new UfsFeedbackLearner({ state: profile.cognition.feedbackLearningState, now });
+  const pendingBefore = learner.pendingMatrixRecords().length;
+  if (pendingBefore === 0 && profile.cognition.feedbackGteOverlay) {
+    throw new Error("player profile has no pending feedback trajectories to compile");
+  }
+  const feedbackGteOverlay = compileFeedbackGteForLearner({
+    learner,
+    previousOverlay: profile.cognition.feedbackGteOverlay || null,
+    compiler: feedbackGteCompiler,
+  });
+  if (!feedbackGteOverlay) throw new Error("player profile has no feedback trajectories to compile");
+  const at = now();
+  const next = clone(profile);
+  next.cognition.feedbackLearningState = learner.exportState();
+  next.cognition.feedbackGteOverlay = feedbackGteOverlay;
+  next.progress.revision += 1;
+  next.maintenanceHistory = clone(next.maintenanceHistory || []);
+  next.maintenanceHistory.push({
+    kind: "compile_player_feedback_gte",
+    fromRevision: profile.progress.revision,
+    pendingTrajectoriesCompiled: pendingBefore,
+    matrixRecords: feedbackGteOverlay.recordIds.length,
+    matrixFingerprint: feedbackGteOverlay.fingerprint,
+    at,
   });
   next.updatedAt = at;
   return next;
@@ -321,9 +438,12 @@ function summarizePlayerProfile(playerProfile, options = {}) {
     episodesCaptured: profile.progress.episodesCaptured,
     operationsExperienced: profile.progress.operationsExperienced,
     learnedTrajectories: profile.cognition.feedbackLearningState.trajectories.length,
+    explicitMemories: profile.cognition.feedbackLearningState.memories?.length || 0,
     reinforcedConnections: profile.cognition.feedbackLearningState.connectionUpdates.length,
     attentionAdjustments: profile.cognition.feedbackLearningState.attentionAdjustments.length,
     predictionLedgerEntries: profile.cognition.predictionLedger.length,
+    compiledFeedbackTrajectories: profile.cognition.feedbackGteOverlay?.recordIds.length || 0,
+    feedbackGteFingerprint: profile.cognition.feedbackGteOverlay?.fingerprint || null,
   };
 }
 
@@ -332,6 +452,7 @@ module.exports = {
   TEMPLATE_SCHEMA,
   buildInitialPlayerTemplate,
   capturePlayerProfile,
+  compilePlayerFeedbackProfile,
   createFreshPlayer,
   createSessionForPlayer,
   forkPlayer,

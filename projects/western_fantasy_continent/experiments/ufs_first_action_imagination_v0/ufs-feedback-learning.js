@@ -4,6 +4,11 @@ const {
   SLOT_KEYS,
   assertFiveSlotQ,
 } = require("../imagination_pipeline_v0/five-slot-activation");
+const {
+  jointTransitionQ,
+  normalizeOperationSequence,
+  operationSequenceKey,
+} = require("./ufs-transition-memory");
 
 const SCHEMA = "ufs_feedback_learning_state_v0";
 const HIGH_ACTIVATION = 0.75;
@@ -89,6 +94,8 @@ function emptyState() {
   return {
     schema: SCHEMA,
     nextId: 1,
+    nextMemoryId: 1,
+    memories: [],
     trajectories: [],
     connectionUpdates: [],
     randomModels: [],
@@ -103,13 +110,34 @@ function normalizeState(state) {
   const next = state == null ? emptyState() : clone(state);
   if (next.schema !== SCHEMA) throw new Error(`unsupported feedback state: ${next.schema}`);
   for (const key of [
-    "trajectories", "connectionUpdates", "randomModels", "chains", "attentionAdjustments", "unresolved",
+    "memories", "trajectories", "connectionUpdates", "randomModels", "chains", "attentionAdjustments", "unresolved",
     "quarantinedFeedback",
   ]) {
     if (next[key] == null) next[key] = [];
     if (!Array.isArray(next[key])) throw new TypeError(`feedback state ${key} must be an array`);
   }
   if (!Number.isInteger(next.nextId) || next.nextId < 1) throw new TypeError("invalid nextId");
+  if (next.nextMemoryId == null) {
+    next.nextMemoryId = next.memories.reduce((highest, row) => {
+      const parsed = Number(String(row.memoryId || "").match(/(\d+)$/u)?.[1] || 0);
+      return Math.max(highest, parsed + 1);
+    }, 1);
+  }
+  if (!Number.isInteger(next.nextMemoryId) || next.nextMemoryId < 1) {
+    throw new TypeError("invalid nextMemoryId");
+  }
+  for (const row of next.trajectories) {
+    if (row.supportingMemoryIds == null) row.supportingMemoryIds = [];
+    if (!Array.isArray(row.supportingMemoryIds)) {
+      throw new TypeError("trajectory supportingMemoryIds must be an array");
+    }
+  }
+  for (const row of next.connectionUpdates) {
+    if (row.supportingMemoryIds == null) row.supportingMemoryIds = [];
+    if (!Array.isArray(row.supportingMemoryIds)) {
+      throw new TypeError("connection update supportingMemoryIds must be an array");
+    }
+  }
   return next;
 }
 
@@ -122,6 +150,12 @@ class UfsFeedbackLearner {
   _id(prefix) {
     const id = `${prefix}-${String(this.state.nextId).padStart(5, "0")}`;
     this.state.nextId += 1;
+    return id;
+  }
+
+  _memoryId() {
+    const id = `memory-${String(this.state.nextMemoryId).padStart(5, "0")}`;
+    this.state.nextMemoryId += 1;
     return id;
   }
 
@@ -139,14 +173,34 @@ class UfsFeedbackLearner {
     return { accepted: false, learned: false, reason, quarantine: clone(row) };
   }
 
-  _remember({ currentQ, followingQ, source, applicability = {}, correction = null, unresolved = false }) {
+  _remember({
+    currentQ,
+    followingQ,
+    operations,
+    source,
+    applicability = {},
+    correction = null,
+    unresolved = false,
+    memoryId = null,
+  }) {
     assertFiveSlotQ(currentQ, "currentQ");
     assertFiveSlotQ(followingQ, "followingQ");
     assertSource(source);
+    const operationSequenceExplicit = operations != null;
+    const normalizedOperations = normalizeOperationSequence(operations, {
+      fallbackType: applicability.operationType || "unspecified_operation",
+    });
+    const sequenceKey = operationSequenceKey(normalizedOperations);
     const applicabilityKey = stable(applicability || {});
     let row = this.state.trajectories.find((candidate) => (
       sameQ(candidate.currentQ, currentQ)
       && sameQ(candidate.followingQ, followingQ)
+      && (!operationSequenceExplicit || candidate.operationSequenceExplicit === false
+        || candidate.operationSequenceExplicit == null
+        || (candidate.operationSequenceKey || operationSequenceKey(normalizeOperationSequence(
+        candidate.operations,
+        { fallbackType: candidate.applicability?.operationType || "unspecified_operation" },
+      ))) === sequenceKey)
       && stable(candidate.applicability) === applicabilityKey
       && candidate.unresolved === unresolved
     ));
@@ -156,12 +210,20 @@ class UfsFeedbackLearner {
       row.support = Number((row.support + 1).toFixed(6));
       row.lastSeenAt = at;
       row.provenance.push({ kind: source.kind, ref: source.ref, at });
+      if (memoryId) row.supportingMemoryIds = [...new Set([...row.supportingMemoryIds, memoryId])];
     } else {
       row = {
         trajectoryId: this._id("feedback-trajectory"),
         currentQ: clone(currentQ),
+        activationQ: operationSequenceExplicit
+          ? jointTransitionQ(currentQ, normalizedOperations)
+          : clone(currentQ),
+        operations: clone(normalizedOperations),
+        operationSequenceKey: sequenceKey,
+        operationSequenceExplicit,
         followingQ: clone(followingQ),
         applicability: clone(applicability || {}),
+        supportingMemoryIds: memoryId ? [memoryId] : [],
         support: 1,
         observations: 1,
         firstSeenAt: at,
@@ -186,7 +248,7 @@ class UfsFeedbackLearner {
     return row;
   }
 
-  _reinforceExisting(candidate, source) {
+  _reinforceExisting(candidate, source, memoryId = null) {
     assertSource(source);
     let row = this.state.connectionUpdates.find((entry) => entry.trajectoryId === candidate.trajectoryId);
     const at = this.now();
@@ -197,6 +259,7 @@ class UfsFeedbackLearner {
         addedObservations: 0,
         lastSeenAt: at,
         provenance: [],
+        supportingMemoryIds: [],
         confidence: 0,
       };
       this.state.connectionUpdates.push(row);
@@ -205,6 +268,16 @@ class UfsFeedbackLearner {
     row.addedObservations += 1;
     row.lastSeenAt = at;
     row.provenance.push({ kind: source.kind, ref: source.ref, at });
+    if (memoryId) row.supportingMemoryIds = [...new Set([...row.supportingMemoryIds, memoryId])];
+    const personalTrajectory = this.state.trajectories.find((entry) => (
+      entry.trajectoryId === candidate.trajectoryId
+    ));
+    if (personalTrajectory && memoryId) {
+      personalTrajectory.supportingMemoryIds = [...new Set([
+        ...personalTrajectory.supportingMemoryIds,
+        memoryId,
+      ])];
+    }
     row.confidence = confidenceFor({
       observations: row.addedObservations,
       provenance: row.provenance,
@@ -331,6 +404,8 @@ class UfsFeedbackLearner {
     currentQ,
     actualFollowingQ,
     source,
+    operations = null,
+    experienceContext = {},
     applicability = {},
     predictionCandidates = [],
     previousTrajectoryId = null,
@@ -343,6 +418,49 @@ class UfsFeedbackLearner {
     assertFiveSlotQ(currentQ, "currentQ");
     assertFiveSlotQ(actualFollowingQ, "actualFollowingQ");
     assertSource(source);
+    const operationSequenceExplicit = operations != null;
+    const normalizedOperations = normalizeOperationSequence(operations, {
+      fallbackType: applicability.operationType || "unspecified_operation",
+    });
+    const duplicateMemory = this.state.memories.find((row) => (
+      row.evidence.evidenceId === evidence.evidenceId
+    ));
+    if (duplicateMemory) {
+      const sameTransition = sameQ(duplicateMemory.currentQ, currentQ)
+        && sameQ(duplicateMemory.followingQ, actualFollowingQ)
+        && duplicateMemory.operationSequenceKey === operationSequenceKey(normalizedOperations);
+      if (!sameTransition) throw new Error(`evidence ${evidence.evidenceId} conflicts with an existing memory`);
+      return {
+        accepted: true,
+        learned: false,
+        duplicate: true,
+        memory: clone(duplicateMemory),
+        trajectory: duplicateMemory.trajectoryIds.length === 1
+          ? clone(this.state.trajectories.find((row) => row.trajectoryId === duplicateMemory.trajectoryIds[0]) || null)
+          : null,
+        existingTrajectoryUpdates: [],
+        corrections: [],
+        randomModel: null,
+        chain: null,
+        attentionAdjustments: [],
+      };
+    }
+    const at = this.now();
+    const memory = {
+      memoryId: this._memoryId(),
+      schema: "ufs_explicit_transition_memory_v1",
+      currentQ: clone(currentQ),
+      operations: clone(normalizedOperations),
+      operationSequenceKey: operationSequenceKey(normalizedOperations),
+      operationSequenceExplicit,
+      followingQ: clone(actualFollowingQ),
+      applicability: clone(applicability || {}),
+      evidence: clone(evidence),
+      source: clone(source),
+      experienceContext: clone(experienceContext || {}),
+      trajectoryIds: [],
+      createdAt: at,
+    };
     const corrections = predictionCandidates
       .filter((candidate) => Number(candidate.activation) >= HIGH_ACTIVATION)
       .filter((candidate) => !sameQ(candidate.predictedFollowingQ, actualFollowingQ))
@@ -360,16 +478,18 @@ class UfsFeedbackLearner {
       throw new Error("a distinguishing context is required for a high-activation correction");
     }
     const existingTrajectoryUpdates = confirmations.map((candidate) => (
-      this._reinforceExisting(candidate, source)
+      this._reinforceExisting(candidate, source, memory.memoryId)
     ));
     let trajectory = null;
     if (confirmations.length === 0 || corrections.length > 0) {
       trajectory = this._remember({
         currentQ,
         followingQ: actualFollowingQ,
+        operations: normalizedOperations,
         source,
         applicability: correctionApplicability,
         correction: corrections[0] || null,
+        memoryId: memory.memoryId,
       });
       for (const correction of corrections.slice(1)) {
         trajectory.correctsTrajectoryIds = [...new Set([
@@ -382,7 +502,6 @@ class UfsFeedbackLearner {
         ])];
       }
     }
-    const at = this.now();
     const randomModel = randomOutcome
       ? this._updateRandomModel({
         currentQ,
@@ -393,6 +512,11 @@ class UfsFeedbackLearner {
       })
       : null;
     const learnedTrajectoryId = trajectory?.trajectoryId || confirmations[0]?.trajectoryId || null;
+    memory.trajectoryIds = [...new Set([
+      ...(trajectory ? [trajectory.trajectoryId] : []),
+      ...confirmations.map((candidate) => candidate.trajectoryId),
+    ])];
+    this.state.memories.push(memory);
     const chain = learnedTrajectoryId
       ? this._updateChain(previousTrajectoryId, learnedTrajectoryId, at)
       : null;
@@ -418,6 +542,7 @@ class UfsFeedbackLearner {
     return {
       accepted: true,
       learned: true,
+      memory: clone(memory),
       trajectory: trajectory ? clone(trajectory) : null,
       existingTrajectoryUpdates: clone(existingTrajectoryUpdates),
       corrections: clone(corrections),
@@ -431,7 +556,9 @@ class UfsFeedbackLearner {
     const gate = this._accept(evidence, "unresolved_query");
     if (!gate.accepted) return gate;
     const trajectory = this._remember({
-      currentQ, followingQ: queryQ, source, applicability, unresolved: true,
+      currentQ, followingQ: queryQ,
+      operations: [{ type: applicability.operationType || "query_unknown_rule" }],
+      source, applicability, unresolved: true,
     });
     let unresolved = this.state.unresolved.find((row) => row.trajectoryId === trajectory.trajectoryId);
     if (!unresolved) {
@@ -455,7 +582,9 @@ class UfsFeedbackLearner {
     const unresolved = this.state.unresolved.find((row) => row.unresolvedId === unresolvedId);
     if (!unresolved) throw new Error(`unknown unresolved record: ${unresolvedId}`);
     const trajectory = this._remember({
-      currentQ, followingQ: resolvedFollowingQ, source, applicability,
+      currentQ, followingQ: resolvedFollowingQ,
+      operations: [{ type: applicability.operationType || "resolve_unknown_rule" }],
+      source, applicability,
     });
     unresolved.status = "resolved_but_query_exit_retained";
     unresolved.resolutions.push(trajectory.trajectoryId);
@@ -463,13 +592,20 @@ class UfsFeedbackLearner {
     return { accepted: true, learned: true, trajectory: clone(trajectory), unresolved: clone(unresolved) };
   }
 
-  recall(currentQ, { context = {}, previousTrajectoryId = null, topK = 8 } = {}) {
+  recall(currentQ, {
+    context = {}, operations = null, previousTrajectoryId = null, topK = 8,
+  } = {}) {
     assertFiveSlotQ(currentQ, "currentQ");
+    const sequenceKey = operations == null ? null : operationSequenceKey(operations);
     const chainByTarget = new Map(this.state.chains
       .filter((row) => row.fromTrajectoryId === previousTrajectoryId)
       .map((row) => [row.toTrajectoryId, row]));
     const candidates = this.state.trajectories
       .filter((row) => sameQ(row.currentQ, currentQ))
+      .filter((row) => sequenceKey == null
+        || row.operationSequenceExplicit === false
+        || row.operationSequenceExplicit == null
+        || row.operationSequenceKey === sequenceKey)
       .filter((row) => contextMatches(row.applicability, context))
       .map((row) => {
         const specificity = stable(row.applicability) === "{}"
@@ -496,6 +632,69 @@ class UfsFeedbackLearner {
       sameQ(row.currentQ, currentQ) && contextMatches(row.applicability, context)
     ));
     return { candidates, randomModel: randomModel ? clone(randomModel) : null };
+  }
+
+  traceTransition(currentQ, followingQ, { operations = null, context = null, topK = 8 } = {}) {
+    assertFiveSlotQ(currentQ, "currentQ");
+    assertFiveSlotQ(followingQ, "followingQ");
+    const sequenceKey = operations == null ? null : operationSequenceKey(operations);
+    const trajectories = this.state.trajectories
+      .filter((row) => sameQ(row.currentQ, currentQ) && sameQ(row.followingQ, followingQ))
+      .filter((row) => sequenceKey == null
+        || row.operationSequenceExplicit === false
+        || row.operationSequenceExplicit == null
+        || row.operationSequenceKey === sequenceKey)
+      .filter((row) => context == null || contextMatches(row.applicability, context))
+      .sort((left, right) => right.confidence - left.confidence
+        || right.support - left.support
+        || left.trajectoryId.localeCompare(right.trajectoryId))
+      .slice(0, topK)
+      .map((row) => clone(row));
+    const memoriesById = new Map(this.state.memories.map((row) => [row.memoryId, row]));
+    const directMemories = this.state.memories
+      .filter((row) => sameQ(row.currentQ, currentQ) && sameQ(row.followingQ, followingQ))
+      .filter((row) => sequenceKey == null
+        || row.operationSequenceExplicit === false
+        || row.operationSequenceExplicit == null
+        || row.operationSequenceKey === sequenceKey)
+      .filter((row) => context == null || contextMatches(row.applicability, context));
+    const memoryIds = [...new Set([
+      ...trajectories.flatMap((row) => row.supportingMemoryIds || []),
+      ...directMemories.map((row) => row.memoryId),
+    ])];
+    return {
+      trajectories,
+      trajectoryIds: [...new Set([
+        ...trajectories.map((row) => row.trajectoryId),
+        ...directMemories.flatMap((row) => row.trajectoryIds || []),
+      ])],
+      memoryIds,
+      memories: memoryIds.map((id) => clone(memoriesById.get(id))).filter(Boolean),
+    };
+  }
+
+  recallExperiences(currentQ, { operations = null, context = null, topK = 16 } = {}) {
+    assertFiveSlotQ(currentQ, "currentQ");
+    const sequenceKey = operations == null ? null : operationSequenceKey(operations);
+    return this.state.memories
+      .filter((row) => sameQ(row.currentQ, currentQ))
+      .filter((row) => sequenceKey == null
+        || row.operationSequenceExplicit === false
+        || row.operationSequenceExplicit == null
+        || row.operationSequenceKey === sequenceKey)
+      .filter((row) => context == null || contextMatches(row.applicability, context))
+      .sort((left, right) => right.createdAt.localeCompare(left.createdAt)
+        || left.memoryId.localeCompare(right.memoryId))
+      .slice(0, topK)
+      .map((row) => clone(row));
+  }
+
+  recallMemory(memoryId) {
+    if (typeof memoryId !== "string" || memoryId.trim() === "") {
+      throw new TypeError("memoryId is required");
+    }
+    const memory = this.state.memories.find((row) => row.memoryId === memoryId);
+    return memory ? clone(memory) : null;
   }
 
   exportState() {

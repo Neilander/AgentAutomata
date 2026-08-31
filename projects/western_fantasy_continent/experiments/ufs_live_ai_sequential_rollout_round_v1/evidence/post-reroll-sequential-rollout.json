@@ -1,0 +1,192 @@
+{
+  "decisionId": "cutpoint-02-post-reroll-sequential",
+  "result": {
+    "schema": "ufs_sequential_q_rollout_v1",
+    "status": "complete",
+    "stoppedBeforeStep": null,
+    "stopReason": null,
+    "trace": [
+      {
+        "index": 0,
+        "stepId": "aa-first",
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-gray-2",
+          "cellId": "A-r1-c3"
+        },
+        "qBefore": {
+          "world": {
+            "ships": [
+              {
+                "id": "purple-1",
+                "column": 1,
+                "row": 0
+              },
+              {
+                "id": "purple-2",
+                "column": 2,
+                "row": 0
+              }
+            ],
+            "anchors": [
+              {
+                "id": "aa-purple-2-c3",
+                "supportedBy": "visible purple-2 plus A-r1-c3"
+              },
+              {
+                "id": "research-white-6-c2",
+                "supportedBy": "visible unplaced white-6 plus A-r2-c2"
+              }
+            ]
+          },
+          "epistemic": {
+            "source": "observed",
+            "omittedCollections": [
+              "unseenShips",
+              "unseenSkyCells"
+            ]
+          }
+        },
+        "anchor": {
+          "status": "supported",
+          "reason": "matching_entity_present",
+          "evidence": {
+            "id": "aa-purple-2-c3",
+            "supportedBy": "visible purple-2 plus A-r1-c3"
+          }
+        },
+        "qAfter": {
+          "world": {
+            "ships": [
+              {
+                "id": "purple-1",
+                "column": 1,
+                "row": 0
+              },
+              {
+                "id": "purple-2",
+                "column": 2,
+                "row": 4
+              }
+            ],
+            "anchors": [
+              {
+                "id": "research-white-6-c2",
+                "supportedBy": "white-6 remains unplaced and A-r2-c2 remains the research target"
+              }
+            ]
+          },
+          "epistemic": {
+            "source": "imagined",
+            "uncertainties": [
+              "unnoticed intermediate sky effects may change the exact purple-2 endpoint"
+            ]
+          }
+        },
+        "imaginationEvidence": [
+          "read-rule-place-die-to-same-column-descent",
+          "read-rule-aa-placement-to-reduced-descent"
+        ],
+        "imagined": true
+      },
+      {
+        "index": 1,
+        "stepId": "research-second",
+        "operation": {
+          "type": "place_die",
+          "dieId": "r1-white-4",
+          "cellId": "A-r2-c2"
+        },
+        "qBefore": {
+          "world": {
+            "ships": [
+              {
+                "id": "purple-1",
+                "column": 1,
+                "row": 0
+              },
+              {
+                "id": "purple-2",
+                "column": 2,
+                "row": 4
+              }
+            ],
+            "anchors": [
+              {
+                "id": "research-white-6-c2",
+                "supportedBy": "white-6 remains unplaced and A-r2-c2 remains the research target"
+              }
+            ]
+          },
+          "epistemic": {
+            "source": "imagined",
+            "uncertainties": [
+              "unnoticed intermediate sky effects may change the exact purple-2 endpoint"
+            ]
+          }
+        },
+        "anchor": {
+          "status": "supported",
+          "reason": "matching_entity_present",
+          "evidence": {
+            "id": "research-white-6-c2",
+            "supportedBy": "white-6 remains unplaced and A-r2-c2 remains the research target"
+          }
+        },
+        "qAfter": {
+          "world": {
+            "ships": [
+              {
+                "id": "purple-2",
+                "column": 2,
+                "row": 4
+              }
+            ],
+            "anchors": [
+              {
+                "id": "resolve-energy-before-research",
+                "supportedBy": "energy and research rooms are complete"
+              }
+            ]
+          },
+          "epistemic": {
+            "source": "imagined",
+            "uncertainties": [
+              "purple-1 may be removed by the research-column placement or an intermediate sky effect"
+            ]
+          }
+        },
+        "imaginationEvidence": [
+          "read-rule-place-die-to-same-column-descent",
+          "read-rule-research-room-to-track-choice"
+        ],
+        "imagined": true
+      }
+    ],
+    "finalQ": {
+      "world": {
+        "ships": [
+          {
+            "id": "purple-2",
+            "column": 2,
+            "row": 4
+          }
+        ],
+        "anchors": [
+          {
+            "id": "resolve-energy-before-research",
+            "supportedBy": "energy and research rooms are complete"
+          }
+        ]
+      },
+      "epistemic": {
+        "source": "imagined",
+        "uncertainties": [
+          "purple-1 may be removed by the research-column placement or an intermediate sky effect"
+        ]
+      }
+    },
+    "deterministicBenefitClaimAllowed": true
+  },
+  "staleSnapshotPrevented": true
+}

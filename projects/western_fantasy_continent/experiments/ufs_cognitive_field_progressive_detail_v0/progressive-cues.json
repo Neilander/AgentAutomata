@@ -1,0 +1,132 @@
+{
+  "schema": "ufs_progressive_detail_cues_v0",
+  "scenarioId": "complete-energy-second-cell",
+  "publicFacts": {
+    "phase": "dice",
+    "energy": 1,
+    "dieId": "r2-gray-0",
+    "cellId": "A-r2-c4",
+    "roomId": "A-upper-energy",
+    "roomType": "energy",
+    "cellCount": 2,
+    "occupiedCellCountBefore": 1,
+    "occupiedCellCountAfter": 2
+  },
+  "channels": {
+    "before": [
+      {
+        "level": 1,
+        "addedDetail": "generic event family",
+        "q": {
+          "affected_object": "一颗未放置骰子和能源房",
+          "change_trend": "准备把骰子放进能源房",
+          "cause_relation": "放置骰子会推进能源房占用",
+          "temporal_state": "放置之前",
+          "context": "能源房放置"
+        }
+      },
+      {
+        "level": 2,
+        "addedDetail": "two-cell structure",
+        "q": {
+          "affected_object": "一颗未放置灰骰和一个两格能源房",
+          "change_trend": "准备把灰骰放入两格能源房的空格",
+          "cause_relation": "放置骰子会推进这个总共两格的能源房占用",
+          "temporal_state": "能源房放置之前",
+          "context": "两格能源房放置"
+        }
+      },
+      {
+        "level": 3,
+        "addedDetail": "second investment and occupancy 1 to 2",
+        "q": {
+          "affected_object": "一颗未放置灰骰和已经占一格的两格能源房",
+          "change_trend": "准备把第二颗骰子放入最后空格，使占用从一格变为两格",
+          "cause_relation": "本次第二份投入会补齐两格能源房唯一缺口",
+          "temporal_state": "能源房完成占用之前",
+          "context": "两格能源房的第二次投入"
+        }
+      },
+      {
+        "level": 4,
+        "addedDetail": "reward is delayed after occupancy completes",
+        "q": {
+          "affected_object": "一颗未放置灰骰和已经占一格的两格能源房",
+          "change_trend": "准备把第二颗骰子放入最后空格，使占用从一格变为两格并完成房间",
+          "cause_relation": "本次投入补齐唯一缺口，但能源收益不会在放置瞬间增加而要等待房间阶段",
+          "temporal_state": "完成房间占用之前、能源结算之前",
+          "context": "两格能源房第二次投入与延迟收益"
+        }
+      },
+      {
+        "level": 5,
+        "addedDetail": "visible identifiers, operation and phase",
+        "q": {
+          "affected_object": "未放置的die:r2-gray-0和A-upper-energy两格能源房的A-r2-c4最后空格",
+          "change_trend": "在dice阶段准备执行place_die，把第二颗骰子放入最后空格并使占用从一格变为两格",
+          "cause_relation": "place_die补齐A-upper-energy唯一缺口并完成当前计划占格，但能源1不会在放置瞬间增加而要等待房间阶段",
+          "temporal_state": "dice阶段行动提交前、房间完成与能源结算之前",
+          "context": "A-r2-c4上的两格能源房第二次投入"
+        }
+      }
+    ],
+    "after": [
+      {
+        "level": 1,
+        "addedDetail": "generic event family",
+        "q": {
+          "affected_object": "骰子和能源房",
+          "change_trend": "骰子已经放入能源房",
+          "cause_relation": "一次放置改变了房间占用",
+          "temporal_state": "放置以后",
+          "context": "能源房放置结果"
+        }
+      },
+      {
+        "level": 2,
+        "addedDetail": "two-cell structure",
+        "q": {
+          "affected_object": "已放置灰骰和两格能源房",
+          "change_trend": "灰骰已经占据两格能源房中的一个格子",
+          "cause_relation": "一次放置改变了两格能源房占用",
+          "temporal_state": "能源房放置以后",
+          "context": "两格能源房放置结果"
+        }
+      },
+      {
+        "level": 3,
+        "addedDetail": "second investment and occupancy 1 to 2",
+        "q": {
+          "affected_object": "第二颗已放置灰骰和刚刚完整的两格能源房",
+          "change_trend": "第二颗骰子占据最后空格，房间占用从一格变为两格",
+          "cause_relation": "第二次投入补齐两格能源房唯一缺口并满足完整条件",
+          "temporal_state": "第二颗骰子放置后的稳定边界",
+          "context": "两格能源房完成占用"
+        }
+      },
+      {
+        "level": 4,
+        "addedDetail": "reward remains delayed",
+        "q": {
+          "affected_object": "第二颗已放置灰骰、完整的两格能源房和仍为1的能源",
+          "change_trend": "占用从一格变为两格并完成房间，但能源没有在放置瞬间增加",
+          "cause_relation": "第二次投入满足完整条件，真正能源收益仍要等待房间阶段",
+          "temporal_state": "放置完成以后、房间结算以前",
+          "context": "两格能源房完整但回报延迟"
+        }
+      },
+      {
+        "level": 5,
+        "addedDetail": "visible identifiers, operation and phase",
+        "q": {
+          "affected_object": "已放置的die:r2-gray-0和A-upper-energy两格能源房",
+          "change_trend": "place_die后die:r2-gray-0.placed变为true，占用从一格变为两格，能源仍为1",
+          "cause_relation": "在A-r2-c4放置第二颗骰子补齐房间，收益仍要等待后续房间阶段",
+          "temporal_state": "dice阶段本次正式放置到达稳定边界后、房间结算前",
+          "context": "A-r2-c4上的两格能源房第二次投入结果"
+        }
+      }
+    ]
+  }
+}
+

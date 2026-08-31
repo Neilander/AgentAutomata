@@ -1,0 +1,219 @@
+{
+  "schema": "ufs_structured_relation_activation_fixture_v0",
+  "candidates": [
+    {
+      "id": "research-two-step-target",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "resolve_room", "roomType": "research", "energyCost": 2 },
+        { "type": "choose_research_advance", "advanceSteps": 2 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 2 },
+      "semanticBeforeQ": {
+        "affected_object": "可结算的研究房、当前能源与研究轨道",
+        "change_trend": "研究房等待支付，研究推进尚未选择",
+        "cause_relation": "玩家可以先支付研究房费用，再另外选择推进两格",
+        "temporal_state": "两步研究操作开始前",
+        "context": "研究房提供研究进度"
+      },
+      "semanticFollowingQ": {
+        "affected_object": "研究标记与玩家能源",
+        "change_trend": "研究标记推进两格，能源从二降低到零",
+        "cause_relation": "支付研究房能源后选择连续推进两格",
+        "temporal_state": "两步研究操作全部完成后",
+        "context": "研究房产生研究进度"
+      }
+    },
+    {
+      "id": "research-zero-advance-confuser",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "resolve_room", "roomType": "research", "energyCost": 2 },
+        { "type": "choose_research_advance", "advanceSteps": 0 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 0 },
+      "semanticBeforeQ": {
+        "affected_object": "可结算的研究房、当前能源与研究轨道",
+        "change_trend": "研究房等待支付，但合法研究推进为零",
+        "cause_relation": "玩家先支付研究房费用，再单独选择不推进",
+        "temporal_state": "两步零收益研究操作开始前",
+        "context": "研究房无法提供研究进度"
+      },
+      "semanticFollowingQ": {
+        "affected_object": "研究标记与玩家能源",
+        "change_trend": "能源从二降低到零，研究仍然为零",
+        "cause_relation": "支付研究房能源后选择推进零格",
+        "temporal_state": "两步零收益研究操作完成后",
+        "context": "研究没有增加"
+      }
+    },
+    {
+      "id": "research-reversed-order-confuser",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "choose_research_advance", "advanceSteps": 2 },
+        { "type": "resolve_room", "roomType": "research", "energyCost": 2 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 2 },
+      "semanticBeforeQ": {
+        "affected_object": "可结算的研究房、当前能源与研究轨道",
+        "change_trend": "研究推进和房间支付等待处理",
+        "cause_relation": "先选择推进两格，然后才支付并结算研究房",
+        "temporal_state": "反向两步操作开始前",
+        "context": "顺序相反的研究操作"
+      },
+      "semanticFollowingQ": {
+        "affected_object": "研究标记与玩家能源",
+        "change_trend": "研究标记推进两格，能源从二降低到零",
+        "cause_relation": "先推进两格，随后支付研究房能源",
+        "temporal_state": "反向两步操作完成后",
+        "context": "顺序相反但端点相同"
+      }
+    },
+    {
+      "id": "energy-room-confuser",
+      "before": { "objectType": "energy_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "resolve_room", "roomType": "energy", "energyGain": 2 }
+      ],
+      "after": { "objectType": "energy_room", "objectState": "resolved", "phase": "rooms", "energy": 4, "research": 0 },
+      "semanticBeforeQ": {
+        "affected_object": "可结算的能源房和当前能源",
+        "change_trend": "能源房等待结算",
+        "cause_relation": "玩家可以结算能源房获得能源",
+        "temporal_state": "能源房操作开始前",
+        "context": "能源房提供能源"
+      },
+      "semanticFollowingQ": {
+        "affected_object": "玩家能源和能源房",
+        "change_trend": "能源从二增加到四，研究保持为零",
+        "cause_relation": "结算能源房获得两点能源",
+        "temporal_state": "能源房操作完成后",
+        "context": "能源增加"
+      }
+    }
+  ],
+  "queries": [
+    {
+      "id": "target-paraphrase-1",
+      "expectedId": "research-two-step-target",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "resolve_room", "roomType": "research", "energyCost": 2 },
+        { "type": "choose_research_advance", "advanceSteps": 2 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 2 },
+      "semanticBeforeQ": {
+        "affected_object": "一个准备好的研究设施和两点能源",
+        "change_trend": "准备使用设施并决定研究前进量",
+        "cause_relation": "先结算房间费用，随后把研究推进两格",
+        "temporal_state": "连续两个选择以前",
+        "context": "通过研究设施增加研究"
+      },
+      "semanticFollowingQ": {
+        "affected_object": "能源和研究位置",
+        "change_trend": "花掉两点能源并获得两格研究",
+        "cause_relation": "研究房支付之后完成两格推进",
+        "temporal_state": "两个步骤结束以后",
+        "context": "研究从零到二"
+      }
+    },
+    {
+      "id": "target-paraphrase-2",
+      "expectedId": "research-two-step-target",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "resolve_room", "roomType": "research", "energyCost": 2 },
+        { "type": "choose_research_advance", "advanceSteps": 2 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 2 },
+      "semanticBeforeQ": {
+        "affected_object": "房间阶段中的研究房",
+        "change_trend": "当前资源足够启动一次研究结算",
+        "cause_relation": "房间结算和推进选择组成有顺序的两个动作",
+        "temporal_state": "方法尚未执行",
+        "context": "用二点能源换取二格研究"
+      },
+      "semanticFollowingQ": {
+        "affected_object": "资源轨和科研轨",
+        "change_trend": "资源耗尽而科研上升二格",
+        "cause_relation": "完成支付再完成推进",
+        "temporal_state": "方法执行完成",
+        "context": "二换二的研究结果"
+      }
+    },
+    {
+      "id": "target-paraphrase-3",
+      "expectedId": "research-two-step-target",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "resolve_room", "roomType": "research", "energyCost": 2 },
+        { "type": "choose_research_advance", "advanceSteps": 2 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 2 },
+      "semanticBeforeQ": {
+        "affected_object": "待处理科研房与现有资源",
+        "change_trend": "即将支付并作出后续推进选择",
+        "cause_relation": "房间处理之后紧接科研前进二",
+        "temporal_state": "复合操作起点",
+        "context": "研究提升方法"
+      },
+      "semanticFollowingQ": {
+        "affected_object": "处理后的资源与科研",
+        "change_trend": "资源二变零，科研零变二",
+        "cause_relation": "按先支付后推进的顺序完成",
+        "temporal_state": "复合操作终点",
+        "context": "研究提升结果"
+      }
+    },
+    {
+      "id": "reversed-order-query",
+      "expectedId": "research-reversed-order-confuser",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "choose_research_advance", "advanceSteps": 2 },
+        { "type": "resolve_room", "roomType": "research", "energyCost": 2 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 2 },
+      "semanticBeforeQ": {
+        "affected_object": "研究房、能源与研究轨",
+        "change_trend": "准备先推进研究再处理房间费用",
+        "cause_relation": "动作顺序是推进两格然后结算研究房",
+        "temporal_state": "反向复合操作前",
+        "context": "顺序反转"
+      },
+      "semanticFollowingQ": {
+        "affected_object": "研究和能源",
+        "change_trend": "研究增加二且能源减少二",
+        "cause_relation": "先推进然后支付",
+        "temporal_state": "反向复合操作后",
+        "context": "端点相同但顺序相反"
+      }
+    },
+    {
+      "id": "zero-advance-query",
+      "expectedId": "research-zero-advance-confuser",
+      "before": { "objectType": "research_room", "objectState": "resolvable", "phase": "rooms", "energy": 2, "research": 0 },
+      "operations": [
+        { "type": "resolve_room", "roomType": "research", "energyCost": 2 },
+        { "type": "choose_research_advance", "advanceSteps": 0 }
+      ],
+      "after": { "objectType": "research_room", "objectState": "resolved", "phase": "rooms", "energy": 0, "research": 0 },
+      "semanticBeforeQ": {
+        "affected_object": "研究房和无法推进的研究轨",
+        "change_trend": "准备支付但可选择的推进量是零",
+        "cause_relation": "先支付研究房，再确认零格推进",
+        "temporal_state": "零收益复合操作前",
+        "context": "研究不会增加"
+      },
+      "semanticFollowingQ": {
+        "affected_object": "能源和没有移动的研究",
+        "change_trend": "能源二变零而研究仍是零",
+        "cause_relation": "支付完成但选择推进零格",
+        "temporal_state": "零收益复合操作后",
+        "context": "研究保持不变"
+      }
+    }
+  ]
+}
+

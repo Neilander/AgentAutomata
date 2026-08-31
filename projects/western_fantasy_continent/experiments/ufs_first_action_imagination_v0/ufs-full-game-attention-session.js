@@ -7,7 +7,12 @@ const { UfsOneRoundSession } = require("./ufs-one-round-session");
 const { UfsFeedbackLearner } = require("./ufs-feedback-learning");
 const { UfsFormalFeedbackOracle } = require("./ufs-formal-feedback-oracle");
 const { UfsFullGameFeedbackBridge } = require("./ufs-full-game-feedback-bridge");
+const {
+  PlayerFeedbackGteMemory,
+  compileFeedbackGteForLearner,
+} = require("./player-feedback-gte");
 const { splitOperationAndPredictionDeclarations } = require("./ufs-prediction-ticket");
+const { planPrechoice } = require("./ufs-prechoice-planner");
 
 const ROUND_DICE = Object.freeze([
   Object.freeze({ color: "gray", ordinal: 0 }),
@@ -19,6 +24,10 @@ const ROUND_DICE = Object.freeze([
 
 function clone(value) {
   return structuredClone(value);
+}
+
+function sameOperation(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 function roundAttentionSeed(gameSeed, round) {
@@ -100,7 +109,7 @@ function buildOperationContracts({ availableOperations = [], pending = null } = 
         values: clone(pending?.candidates || []),
       }));
     }
-    contract.optionalFields = ["predictions"];
+    contract.optionalFields = ["predictions", "cognitiveUnit"];
     return contract;
   });
 }
@@ -111,6 +120,8 @@ class UfsFullGameAttentionSession {
     feedbackLearner = new UfsFeedbackLearner(),
     formalFeedbackOracle = null,
     feedbackBridge = null,
+    feedbackGteOverlay = null,
+    feedbackGteCompiler = null,
     choiceAttentionProvider = null,
     playerIdentity = null,
   } = {}) {
@@ -119,6 +130,9 @@ class UfsFullGameAttentionSession {
     this.feedbackLearner = feedbackLearner;
     this.formalFeedbackOracle = formalFeedbackOracle || new UfsFormalFeedbackOracle({ map: publicMap });
     this.feedbackBridge = feedbackBridge || new UfsFullGameFeedbackBridge({ learner: feedbackLearner });
+    this.feedbackGteOverlay = clone(feedbackGteOverlay);
+    this.feedbackGteCompiler = feedbackGteCompiler;
+    this.lastFeedbackGteCompile = null;
     this.choiceAttentionProvider = choiceAttentionProvider || new UfsFullAttentionProvider({
       learnedAttentionAdjustments: feedbackLearner.exportAttentionAdjustments(),
     });
@@ -133,7 +147,10 @@ class UfsFullGameAttentionSession {
     this.lastPlayerResponse = null;
     this.lastFeedbackAudit = null;
     this.lastCognitiveTrial = null;
+    this.activeCognitiveUnit = null;
+    this.lastCognitiveUnitTransition = null;
     this.appliedConnectionSupport = {};
+    this._refreshFeedbackGteMemory();
   }
 
   start({ initialPublicState, attentionSeed = 20260825 }) {
@@ -143,6 +160,7 @@ class UfsFullGameAttentionSession {
     this.actionHistory = [];
     this.completedRounds = [];
     this.roundActionCount = 0;
+    this.lastFeedbackGteCompile = this._compilePendingFeedbackGte({ throwOnFailure: true });
     this.choiceAttentionProvider.beginEpisode();
     const formalDecision = this.formalFeedbackOracle.start(initialPublicState);
     this._startCognitiveRound(formalDecision.observation);
@@ -154,15 +172,52 @@ class UfsFullGameAttentionSession {
     if (!action || typeof action.type !== "string") {
       throw new TypeError("advance requires an action with type");
     }
+    if (this.feedbackLearner.pendingMatrixRecords().length > 0 && this.feedbackGteCompiler) {
+      const retry = this._compilePendingFeedbackGte();
+      if (retry.status === "failed") {
+        return this._rejected(action, `feedback_gte_compile_pending:${retry.error}`);
+      }
+    }
     let prepared;
     try {
       prepared = splitOperationAndPredictionDeclarations(action);
     } catch (error) {
       return this._rejected(action, `invalid_prediction_ticket:${error.message}`);
     }
-    const { operation, declarations: predictionDeclarations } = prepared;
+    const {
+      operation,
+      declarations: predictionDeclarations,
+      cognitiveUnit,
+    } = prepared;
     if (!this.lastPlayerResponse.availableOperations.includes(operation.type)) {
       return this._rejected(action, `operation_not_available:${action.type}`);
+    }
+    let cognitiveUnitCommit = null;
+    if (cognitiveUnit) {
+      const expected = cognitiveUnit.operations[cognitiveUnit.nextOperationIndex];
+      if (!sameOperation(expected, operation)) {
+        return this._rejected(action, "cognitive_unit_operation_does_not_match_sequence");
+      }
+      if (this.activeCognitiveUnit) {
+        if (JSON.stringify(this.activeCognitiveUnit.operations) !== JSON.stringify(cognitiveUnit.operations)
+          || cognitiveUnit.nextOperationIndex !== this.activeCognitiveUnit.nextOperationIndex) {
+          return this._rejected(action, "cognitive_unit_continuation_does_not_match_active_unit");
+        }
+      } else if (cognitiveUnit.nextOperationIndex !== 0) {
+        return this._rejected(action, "cognitive_unit_must_start_at_operation_zero");
+      }
+      cognitiveUnitCommit = clone(cognitiveUnit);
+    } else if (this.activeCognitiveUnit) {
+      const expected = this.activeCognitiveUnit.operations[this.activeCognitiveUnit.nextOperationIndex];
+      if (sameOperation(expected, operation)) cognitiveUnitCommit = clone(this.activeCognitiveUnit);
+      else {
+        this.lastCognitiveUnitTransition = {
+          status: "abandoned",
+          reason: "submitted_operation_left_active_cognitive_unit",
+          unit: clone(this.activeCognitiveUnit),
+        };
+        this.activeCognitiveUnit = null;
+      }
     }
 
     const cognitiveCheckpoint = this.roundSession?.exportCheckpoint() || null;
@@ -189,6 +244,24 @@ class UfsFullGameAttentionSession {
 
     this.actionHistory.push(clone(operation));
     this.lastCognitiveTrial = clone(cognitiveTrial);
+    if (cognitiveUnitCommit) {
+      const nextOperationIndex = cognitiveUnitCommit.nextOperationIndex + 1;
+      if (nextOperationIndex >= cognitiveUnitCommit.operations.length) {
+        this.lastCognitiveUnitTransition = {
+          status: "completed",
+          reason: cognitiveUnitCommit.completionReason,
+          unit: { ...clone(cognitiveUnitCommit), nextOperationIndex },
+        };
+        this.activeCognitiveUnit = null;
+      } else {
+        this.activeCognitiveUnit = { ...clone(cognitiveUnitCommit), nextOperationIndex };
+        this.lastCognitiveUnitTransition = {
+          status: "in_progress",
+          reason: "awaiting_next_planned_operation",
+          unit: clone(this.activeCognitiveUnit),
+        };
+      }
+    }
     if (operation.type === "submit_round_roll") {
       this.roundActionCount = 0;
       this._startCognitiveRound(formalStep.after);
@@ -205,10 +278,18 @@ class UfsFullGameAttentionSession {
       mentalBefore,
       predictedWorld,
       predictionDeclarations,
+      cognitiveUnitEvent: cognitiveUnitCommit ? {
+        operationIndex: cognitiveUnitCommit.nextOperationIndex,
+        status: this.lastCognitiveUnitTransition?.status || "in_progress",
+        unit: clone(cognitiveUnitCommit),
+      } : null,
     });
+    this.lastFeedbackGteCompile = this._compilePendingFeedbackGte();
+    this.lastFeedbackAudit.feedbackGteCompile = clone(this.lastFeedbackGteCompile);
     this.lastFeedbackAudit.formalStep = clone(formalStep);
     this._applyLearningToRuntime();
-    if (formalStep.stable && ["dice", "rooms"].includes(formalStep.after.phase)) {
+    if (operation.type !== "submit_round_roll"
+      && formalStep.stable && ["dice", "rooms"].includes(formalStep.after.phase)) {
       const rebasedBelief = this._mergeObservedFormalFeedback({
         predictedWorld,
         formalWorld: formalStep.after,
@@ -234,14 +315,18 @@ class UfsFullGameAttentionSession {
       lastPlayerResponse: clone(this.lastPlayerResponse),
       feedbackLearningState: this.feedbackLearner.exportState(),
       feedbackBridge: this.feedbackBridge.exportCheckpoint(),
+      feedbackGteOverlay: clone(this.feedbackGteOverlay),
+      lastFeedbackGteCompile: clone(this.lastFeedbackGteCompile),
       formalFeedbackOracle: this.formalFeedbackOracle.exportCheckpoint(),
       lastFeedbackAudit: clone(this.lastFeedbackAudit),
       lastCognitiveTrial: clone(this.lastCognitiveTrial),
+      activeCognitiveUnit: clone(this.activeCognitiveUnit),
+      lastCognitiveUnitTransition: clone(this.lastCognitiveUnitTransition),
       playerIdentity: clone(this.playerIdentity),
     };
   }
 
-  static restore(checkpoint) {
+  static restore(checkpoint, { feedbackGteOverlay = null, feedbackGteCompiler = null } = {}) {
     if (!["ufs_full_game_attention_checkpoint_v0", "ufs_full_game_attention_checkpoint_v1",
       "ufs_full_game_attention_checkpoint_v2"]
       .includes(checkpoint?.schema)) {
@@ -251,10 +336,20 @@ class UfsFullGameAttentionSession {
     const bridgeState = checkpoint.feedbackBridge || {
       pendingPredictions: [], previousTrajectoryId: null, nextEvidenceId: 1,
     };
+    const restoredFeedbackGteOverlay = checkpoint.feedbackGteOverlay || feedbackGteOverlay;
     const feedbackBridge = new UfsFullGameFeedbackBridge({
       learner: feedbackLearner,
+      feedbackGteMemory: restoredFeedbackGteOverlay == null ? null : new PlayerFeedbackGteMemory({
+        overlay: restoredFeedbackGteOverlay,
+        trajectories: feedbackLearner.exportState().trajectories,
+        memories: feedbackLearner.exportState().memories,
+        chains: feedbackLearner.exportState().chains,
+      }),
       pendingPredictions: bridgeState.pendingPredictions,
       pendingPredictionTickets: bridgeState.pendingPredictionTickets || [],
+      pendingCognitiveUnitTickets: bridgeState.pendingCognitiveUnitTickets || [],
+      completedCognitiveUnitPending: bridgeState.completedCognitiveUnitPending || false,
+      episodeId: bridgeState.episodeId || null,
       previousTrajectoryId: bridgeState.previousTrajectoryId,
       nextEvidenceId: bridgeState.nextEvidenceId,
       nextTicketId: bridgeState.nextTicketId || 1,
@@ -275,6 +370,8 @@ class UfsFullGameAttentionSession {
       feedbackLearner,
       formalFeedbackOracle,
       feedbackBridge,
+      feedbackGteOverlay: restoredFeedbackGteOverlay,
+      feedbackGteCompiler,
       choiceAttentionProvider,
       playerIdentity: checkpoint.playerIdentity || null,
     });
@@ -293,6 +390,9 @@ class UfsFullGameAttentionSession {
     session.lastPlayerResponse = clone(checkpoint.lastPlayerResponse);
     session.lastFeedbackAudit = clone(checkpoint.lastFeedbackAudit || null);
     session.lastCognitiveTrial = clone(checkpoint.lastCognitiveTrial || null);
+    session.activeCognitiveUnit = clone(checkpoint.activeCognitiveUnit || null);
+    session.lastCognitiveUnitTransition = clone(checkpoint.lastCognitiveUnitTransition || null);
+    session.lastFeedbackGteCompile = clone(checkpoint.lastFeedbackGteCompile || null);
     session.appliedConnectionSupport = {};
     session._applyLearningToRuntime();
     return session;
@@ -327,7 +427,247 @@ class UfsFullGameAttentionSession {
       mentalState: this._mentalObservation(),
       lastAudit: clone(this.lastFeedbackAudit),
       predictionLedger: this.feedbackBridge.exportPredictionLedger(),
+      feedbackGte: {
+        matrixRecords: this.feedbackGteOverlay?.recordIds.length || 0,
+        fingerprint: this.feedbackGteOverlay?.fingerprint || null,
+        pendingRecords: this.feedbackLearner.pendingMatrixRecords().length,
+        lastCompile: clone(this.lastFeedbackGteCompile),
+      },
     };
+  }
+
+  predictLearnedTransition(currentQ, operations, options = {}) {
+    if (!Array.isArray(operations) || operations.length === 0) {
+      throw new TypeError("predictLearnedTransition requires an operation sequence");
+    }
+    const matrix = this.feedbackBridge.feedbackGteMemory;
+    const experiences = this.feedbackLearner.recallExperiences(currentQ, {
+      operations,
+      context: options.context ?? null,
+      topK: options.topK,
+    });
+    if (matrix) {
+      return {
+        mode: "gte_joint_current_operation",
+        matches: matrix.query(currentQ, { ...options, operations }),
+        memoryIds: experiences.map((row) => row.memoryId),
+        memories: experiences,
+      };
+    }
+    const recalled = this.feedbackLearner.recall(currentQ, { ...options, operations });
+    return {
+      mode: "exact_uncompiled_transition",
+      matches: recalled.candidates.map((trajectory) => ({
+        activation: 1,
+        trajectory,
+        supportingMemoryIds: clone(trajectory.supportingMemoryIds || []),
+        supportingMemories: (trajectory.supportingMemoryIds || [])
+          .map((id) => this.feedbackLearner.recallMemory(id))
+          .filter(Boolean),
+      })),
+      memoryIds: experiences.map((row) => row.memoryId),
+      memories: experiences,
+    };
+  }
+
+  traceLearnedTransition(currentQ, followingQ, options = {}) {
+    const exact = this.feedbackLearner.traceTransition(currentQ, followingQ, options);
+    const matrix = this.feedbackBridge.feedbackGteMemory;
+    if (matrix) {
+      return {
+        mode: "gte_paired_transition",
+        matches: matrix.queryPair(currentQ, followingQ, options),
+        trajectoryIds: exact.trajectoryIds,
+        memoryIds: exact.memoryIds,
+        memories: exact.memories,
+      };
+    }
+    return {
+      mode: "exact_uncompiled_transition",
+      matches: exact.trajectories.map((trajectory) => ({
+        activation: 1,
+        trajectory,
+        supportingMemoryIds: clone(trajectory.supportingMemoryIds || []),
+        supportingMemories: (trajectory.supportingMemoryIds || [])
+          .map((id) => this.feedbackLearner.recallMemory(id))
+          .filter(Boolean),
+      })),
+      trajectoryIds: exact.trajectoryIds,
+      memoryIds: exact.memoryIds,
+      memories: exact.memories,
+    };
+  }
+
+  recallExplicitMemory(memoryId) {
+    return this.feedbackLearner.recallMemory(memoryId);
+  }
+
+  exportFeedbackGteOverlay() {
+    return clone(this.feedbackGteOverlay);
+  }
+
+  ensureFeedbackGteCompiled({ compiler = this.feedbackGteCompiler } = {}) {
+    return this._compilePendingFeedbackGte({ compiler, throwOnFailure: true });
+  }
+
+  planCurrentChoice({
+    queryCompiler = this.feedbackGteCompiler,
+    maxUnitOperations = 4,
+  } = {}) {
+    if (!this.started) throw new Error("full-game session must be started before planning");
+    if (this.lastPlayerResponse?.status !== "choice") {
+      throw new Error(`planning requires a choice boundary, got ${this.lastPlayerResponse?.status}`);
+    }
+    if (this.activeCognitiveUnit) {
+      const index = this.activeCognitiveUnit.nextOperationIndex;
+      const operation = this.activeCognitiveUnit.operations[index];
+      if (this.lastPlayerResponse.availableOperations.includes(operation.type)) {
+        return {
+          schema: "ufs_temporal_cognitive_unit_continuation_plan_v1",
+          status: "planned_continuation",
+          boundary: clone(this.lastPlayerResponse.pending),
+          recommendedPayload: {
+            ...clone(operation),
+            cognitiveUnit: clone(this.activeCognitiveUnit),
+          },
+          cognitiveUnit: clone(this.activeCognitiveUnit),
+        };
+      }
+      this.lastCognitiveUnitTransition = {
+        status: "suspended",
+        reason: "next_planned_operation_not_available_at_current_boundary",
+        unit: clone(this.activeCognitiveUnit),
+      };
+    }
+    const cognitiveCheckpoint = this.roundSession.exportCheckpoint();
+    const mentalBefore = this._mentalObservation();
+    return planPrechoice({
+      playerResponse: clone(this.lastPlayerResponse),
+      mentalBefore,
+      feedbackMemory: this.feedbackBridge.feedbackGteMemory,
+      predictionLedger: this.feedbackBridge.exportPredictionLedger(),
+      previousTrajectoryId: this.feedbackBridge.previousTrajectoryId,
+      queryCompiler,
+      publicMap: this.publicMap,
+      maxUnitOperations,
+      simulateSequence: (operations) => {
+        const fork = this._forkCognitiveRound(cognitiveCheckpoint);
+        let response = null;
+        for (const operation of operations) {
+          if (!fork.lastPlayerResponse?.availableOperations?.includes(operation.type)) {
+            return {
+              status: "rejected",
+              reason: `cognitive_unit_operation_unavailable:${operation.type}`,
+              imaginedWorld: mentalBefore,
+            };
+          }
+          response = fork.advance(operation);
+          if (response.status === "rejected") {
+            return {
+              status: "rejected",
+              reason: response.reason,
+              imaginedWorld: mentalBefore,
+            };
+          }
+        }
+        return {
+          status: response?.status || "rejected",
+          reason: response?.reason || "empty_cognitive_unit",
+          pending: clone(response?.pending || null),
+          imaginedWorld: response?.status === "rejected"
+            ? mentalBefore
+            : fork.coreSession.inspectRuntimeResult().imaginedWorld,
+          simulationReliability: "cognitive_trial_completed",
+        };
+      },
+      simulate: (operation) => {
+        const fork = this._forkCognitiveRound(cognitiveCheckpoint);
+        if (!fork.lastPlayerResponse?.availableOperations?.includes(operation.type)) {
+          return {
+            status: "choice",
+            reason: "cognitive_trial_operation_unavailable_at_formal_choice",
+            imaginedWorld: mentalBefore,
+            simulationReliability: "unavailable_use_neutral_baseline",
+          };
+        }
+        const response = fork.advance(operation);
+        if (response.status === "rejected" && operation.type !== "place_die") {
+          return {
+            status: "choice",
+            reason: `cognitive_trial_rejected_at_formal_choice:${response.reason}`,
+            imaginedWorld: mentalBefore,
+            simulationReliability: "unavailable_use_neutral_baseline",
+          };
+        }
+        return {
+          status: response.status,
+          reason: response.reason,
+          imaginedWorld: response.status === "rejected"
+            ? mentalBefore
+            : fork.coreSession.inspectRuntimeResult().imaginedWorld,
+          simulationReliability: "cognitive_trial_completed",
+        };
+      },
+    });
+  }
+
+  _refreshFeedbackGteMemory() {
+    if (!this.feedbackGteOverlay) {
+      this.feedbackBridge.feedbackGteMemory = null;
+      return;
+    }
+    const learning = this.feedbackLearner.exportState();
+    this.feedbackBridge.feedbackGteMemory = new PlayerFeedbackGteMemory({
+      overlay: this.feedbackGteOverlay,
+      trajectories: learning.trajectories,
+      memories: learning.memories,
+      chains: learning.chains,
+    });
+  }
+
+  _compilePendingFeedbackGte({
+    compiler = this.feedbackGteCompiler,
+    throwOnFailure = false,
+  } = {}) {
+    const pendingBefore = this.feedbackLearner.pendingMatrixRecords().length;
+    if (pendingBefore === 0) {
+      this._refreshFeedbackGteMemory();
+      return {
+        status: "up_to_date",
+        compiledNow: 0,
+        matrixRecords: this.feedbackGteOverlay?.recordIds.length || 0,
+      };
+    }
+    if (!compiler) {
+      return {
+        status: "not_configured",
+        compiledNow: 0,
+        pendingRecords: pendingBefore,
+      };
+    }
+    try {
+      this.feedbackGteOverlay = compileFeedbackGteForLearner({
+        learner: this.feedbackLearner,
+        previousOverlay: this.feedbackGteOverlay,
+        compiler,
+      });
+      this._refreshFeedbackGteMemory();
+      return {
+        status: "compiled",
+        compiledNow: pendingBefore,
+        matrixRecords: this.feedbackGteOverlay?.recordIds.length || 0,
+        fingerprint: this.feedbackGteOverlay?.fingerprint || null,
+      };
+    } catch (error) {
+      const failure = {
+        status: "failed",
+        compiledNow: 0,
+        pendingRecords: pendingBefore,
+        error: String(error.message),
+      };
+      if (throwOnFailure) throw new Error(`feedback GTE compile failed: ${failure.error}`);
+      return failure;
+    }
   }
 
   _newRuntime() {
@@ -364,6 +704,14 @@ class UfsFullGameAttentionSession {
     });
     this.appliedConnectionSupport = {};
     this._applyLearningToRuntime();
+  }
+
+  _forkCognitiveRound(checkpoint) {
+    const learned = this.feedbackLearner.exportAttentionAdjustments();
+    return UfsAttentionPlayerSession.restore(clone(checkpoint), {
+      runtime: this._newRuntime(),
+      attentionProvider: new UfsFullAttentionProvider({ learnedAttentionAdjustments: learned }),
+    });
   }
 
   _runtimeMemories() {
@@ -497,6 +845,10 @@ class UfsFullGameAttentionSession {
           playerProfileRevision: this.playerIdentity.baseProfileRevision,
         } : {}),
         ...(formalWorld.outcome ? { outcome: clone(formalWorld.outcome) } : {}),
+      },
+      cognitiveUnit: {
+        active: clone(this.activeCognitiveUnit),
+        lastTransition: clone(this.lastCognitiveUnitTransition),
       },
     };
     this.lastPlayerResponse = clone(response);

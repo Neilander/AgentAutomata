@@ -1,0 +1,23 @@
+{
+  "schema": "ufs_live_ai_multistep_decision_v1",
+  "decisionId": "cutpoint-04-room-order",
+  "sources": [
+    "evidence/cutpoint-04-room-order-rolling-player-view.json",
+    "evidence/cutpoint-04-room-order-static-player-view.json"
+  ],
+  "informationBoundary": "the two compact player views plus their prior public histories only",
+  "cutIn": {
+    "kind": "operation_led",
+    "cue": "energy, research and fighter rooms are all callable; current energy is 2; research costs 2 and fighter costs 1",
+    "dependency": "energy must precede research, and research should precede the optional fighter payment"
+  },
+  "sharedPlan": [
+    "resolve A-upper-energy",
+    "resolve A-upper-research",
+    "choose research advanceSteps 2 if the public contract permits it",
+    "resolve A-upper-fighter if still publicly callable and affordable",
+    "end rooms"
+  ],
+  "reason": "Paying research first would spend all current energy and threaten the fighter step. Resolving the free energy room first preserves both intended benefits.",
+  "comparisonPolicy": "Use the same room and spawn policy in both branches so the placement replan is the only strategic difference."
+}

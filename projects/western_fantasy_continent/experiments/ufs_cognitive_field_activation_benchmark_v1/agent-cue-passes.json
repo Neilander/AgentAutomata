@@ -1,0 +1,667 @@
+{
+  "schema": "ufs_cognitive_field_agent_cue_passes_v1",
+  "producer": "root-codex-agent-three-controlled-passes",
+  "note": "Each pass used only the matching agent-inputs situation. Oracle trajectory IDs were not included in the cue objects. These are controlled same-agent passes, not independent blind agents.",
+  "runs": [
+    {
+      "scenarioId": "incomplete-energy-first-cell",
+      "passes": [
+        {
+          "pass": 1,
+          "cues": [
+            {
+              "cueId": "ie-p1-before",
+              "kind": "attended_object",
+              "channel": "before",
+              "statement": "两格能源房目前全空，这次只会把灰骰放入第一格。",
+              "statePaths": ["phase", "die", "contemplatedPlacement", "room.occupiedCellCountBefore", "room.occupiedCellCountAfter"],
+              "knowledgeIds": ["K-PLACE", "K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "未放置灰骰与两格能源房的第一格",
+                "change_trend": "准备放入一颗骰子，但房间仍会缺少另一格",
+                "cause_relation": "本次放置只占据能源房两格中的第一格",
+                "temporal_state": "骰子提交之前",
+                "context": "未完成多格能源房的当前放置机会"
+              }
+            },
+            {
+              "cueId": "ie-p1-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "放置后骰子会占格，但能源房仍不完整，所以不会立即增加能源。",
+              "statePaths": ["energy", "die", "room.occupiedCellCountAfter"],
+              "knowledgeIds": ["K-PLACE", "K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "灰骰、能源房占格与当前能源",
+                "change_trend": "骰子变为已放置，能源暂时保持，房间收益尚未产生",
+                "cause_relation": "只填满第一格不足以启动两格能源房",
+                "temporal_state": "本次放置到达下一稳定边界后",
+                "context": "不完整能源房的延迟收益"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 2,
+          "cues": [
+            {
+              "cueId": "ie-p2-before",
+              "kind": "affordance",
+              "channel": "before",
+              "statement": "现在能把未使用的灰骰投入双格能源设施，但投入后只完成一半。",
+              "statePaths": ["die.placed", "contemplatedPlacement", "room.cellCount", "room.occupiedCellCountAfter"],
+              "knowledgeIds": ["K-PLACE", "K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "可用灰骰和双格能源设施",
+                "change_trend": "一次投入将设施从空置变为半完成",
+                "cause_relation": "玩家考虑把骰子放进能源设施的一个空位",
+                "temporal_state": "第一份房间投资发生前",
+                "context": "需要后续第二次投入的能源方案"
+              }
+            },
+            {
+              "cueId": "ie-p2-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "这一动作的直接结果只是占住一个格子，不是领取能源。",
+              "statePaths": ["energy", "room.occupiedCellCountAfter"],
+              "knowledgeIds": ["K-PLACE", "K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "能源房第一格和玩家能源",
+                "change_trend": "第一格被占据而能源数值没有立即上升",
+                "cause_relation": "多格房尚未完整，收益延后到完整结算",
+                "temporal_state": "单次放置完成以后",
+                "context": "半成品房间的无即时回报"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 3,
+          "cues": [
+            {
+              "cueId": "ie-p3-before",
+              "kind": "constraint",
+              "channel": "before",
+              "statement": "目标房间有两个位置，而这颗骰子只能把占用数从0提高到1。",
+              "statePaths": ["room.cellCount", "room.occupiedCellCountBefore", "room.occupiedCellCountAfter", "contemplatedPlacement.cellId"],
+              "knowledgeIds": ["K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "两格能源房的完成度",
+                "change_trend": "占用数量将由零变为一，仍未达到两格完整",
+                "cause_relation": "单颗骰子不能独自满足双格房的完整条件",
+                "temporal_state": "决定是否进行第一次放置时",
+                "context": "多步投资的第一步"
+              }
+            },
+            {
+              "cueId": "ie-p3-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "预期只留下一个已放置骰子和一个尚未结算的能源房。",
+              "statePaths": ["die", "room.occupiedCellCountAfter", "energy"],
+              "knowledgeIds": ["K-PLACE", "K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "已投入骰子与尚未完成的能源房",
+                "change_trend": "骰子占位成功，能源收益仍等待另一格",
+                "cause_relation": "第一次占格只建立后续结算条件的一部分",
+                "temporal_state": "第一步投资结束后",
+                "context": "能源房仍需继续投入"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "complete-energy-second-cell",
+      "passes": [
+        {
+          "pass": 1,
+          "cues": [
+            {
+              "cueId": "ce-p1-before",
+              "kind": "attended_object",
+              "channel": "before",
+              "statement": "两格能源房已经占了一格，现在可把灰骰放进最后空格。",
+              "statePaths": ["phase", "die", "contemplatedPlacement", "room.occupiedCellCountBefore", "room.occupiedCellCountAfter"],
+              "knowledgeIds": ["K-PLACE", "K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "未放置灰骰与只差最后一格的能源房",
+                "change_trend": "准备放入第二颗骰子，使两格房达到完整占用",
+                "cause_relation": "本次放置填补能源房最后一个空位",
+                "temporal_state": "完成房间占格之前",
+                "context": "双格能源房的第二次投入"
+              }
+            },
+            {
+              "cueId": "ce-p1-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "第二颗骰子会占格并完成房间，但能源收益仍要等房间阶段。",
+              "statePaths": ["energy", "die", "room.occupiedCellCountAfter"],
+              "knowledgeIds": ["K-PLACE", "K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "第二颗灰骰和完整的两格能源房",
+                "change_trend": "骰子变为已放置，房间占格完整，能源暂未结算",
+                "cause_relation": "第二次放置完成条件但收益发生在后续房间阶段",
+                "temporal_state": "最后一格放置后的稳定边界",
+                "context": "房间完整但回报延迟"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 2,
+          "cues": [
+            {
+              "cueId": "ce-p2-before",
+              "kind": "affordance",
+              "channel": "before",
+              "statement": "能源设施已经半满，当前骰子可以补齐剩余位置。",
+              "statePaths": ["die.placed", "contemplatedPlacement", "room.cellCount", "room.occupiedCellCountBefore"],
+              "knowledgeIds": ["K-PLACE", "K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "半完成能源设施与可用灰骰",
+                "change_trend": "一次补位将设施从一半完成推进到全部占满",
+                "cause_relation": "玩家考虑使用当前骰子完成多格房投入",
+                "temporal_state": "第二份房间投资提交前",
+                "context": "延迟收益方案的完成步骤"
+              }
+            },
+            {
+              "cueId": "ce-p2-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "直接结果是两格都被占住；真正的能源增加不在放置瞬间发生。",
+              "statePaths": ["energy", "room.occupiedCellCountAfter"],
+              "knowledgeIds": ["K-PLACE", "K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "完整占用的能源房和当前能源",
+                "change_trend": "房间条件完成而能源仍等待结算",
+                "cause_relation": "补齐最后一格只让房间进入可结算状态",
+                "temporal_state": "第二次占格结束以后",
+                "context": "完整房间的延迟回报"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 3,
+          "cues": [
+            {
+              "cueId": "ce-p3-before",
+              "kind": "constraint",
+              "channel": "before",
+              "statement": "占用数会从1变为2，恰好满足双格房完整条件。",
+              "statePaths": ["room.cellCount", "room.occupiedCellCountBefore", "room.occupiedCellCountAfter", "contemplatedPlacement.cellId"],
+              "knowledgeIds": ["K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "两格能源房的最后缺口",
+                "change_trend": "占用数量由一升到二并满足完整条件",
+                "cause_relation": "第二颗骰子补上唯一缺失的房间格",
+                "temporal_state": "决定是否完成房间时",
+                "context": "多步投资的完成一步"
+              }
+            },
+            {
+              "cueId": "ce-p3-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "预期看到骰子成功放置、能源房完整，但收益尚待结算。",
+              "statePaths": ["die", "room.occupiedCellCountAfter", "energy"],
+              "knowledgeIds": ["K-PLACE", "K-MULTI-ROOM"],
+              "q": {
+                "affected_object": "已放置骰子与刚刚完整的能源房",
+                "change_trend": "第二格占位成功，房间回报尚未写入能源",
+                "cause_relation": "完整条件和房间效果位于两个不同时间边界",
+                "temporal_state": "完成投入后、房间结算前",
+                "context": "能源房已经可以在后续产生收益"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "research-zero-budget",
+      "passes": [
+        {
+          "pass": 1,
+          "cues": [
+            {
+              "cueId": "rz-p1-before",
+              "kind": "constraint",
+              "channel": "before",
+              "statement": "研究选择合同的合法范围只有0到0，当前不能选择前进一步。",
+              "statePaths": ["phase", "researchIndex", "pending.minimum", "pending.maximum", "pending.roomId"],
+              "knowledgeIds": ["K-RESEARCH-CONTRACT"],
+              "q": {
+                "affected_object": "研究轨道与零步推进合同",
+                "change_trend": "准备提交研究推进选择，但最大合法步数为零",
+                "cause_relation": "公开研究预算不允许任何正数推进",
+                "temporal_state": "研究步数选择提交前",
+                "context": "研究房本次没有可用推进距离"
+              }
+            },
+            {
+              "cueId": "rz-p1-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "合法选择只能是0，因此研究标记会停在2。",
+              "statePaths": ["researchIndex", "pending.maximum"],
+              "knowledgeIds": ["K-RESEARCH-CONTRACT"],
+              "q": {
+                "affected_object": "研究标记",
+                "change_trend": "研究进度保持在当前位置不变",
+                "cause_relation": "零步是唯一合法研究选择",
+                "temporal_state": "研究选择完成后",
+                "context": "零预算研究没有产出"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 2,
+          "cues": [
+            {
+              "cueId": "rz-p2-before",
+              "kind": "affordance",
+              "channel": "before",
+              "statement": "界面要求回答研究推进数，但可选集合只有数字0。",
+              "statePaths": ["pending.type", "pending.minimum", "pending.maximum", "researchIndex"],
+              "knowledgeIds": ["K-RESEARCH-CONTRACT"],
+              "q": {
+                "affected_object": "研究推进选择口",
+                "change_trend": "选择口开放但没有正向推进选项",
+                "cause_relation": "最小值和最大值都等于零",
+                "temporal_state": "研究房效果等待玩家选择时",
+                "context": "形式上有选择、实际上不能前进"
+              }
+            },
+            {
+              "cueId": "rz-p2-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "提交唯一选项后研究数值不会改变。",
+              "statePaths": ["researchIndex", "pending.minimum", "pending.maximum"],
+              "knowledgeIds": ["K-RESEARCH-CONTRACT"],
+              "q": {
+                "affected_object": "玩家研究进度",
+                "change_trend": "研究没有增加也没有减少",
+                "cause_relation": "允许推进的格数为零",
+                "temporal_state": "零步选择结算以后",
+                "context": "无研究收益的房间结果"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 3,
+          "cues": [
+            {
+              "cueId": "rz-p3-before",
+              "kind": "constraint",
+              "channel": "before",
+              "statement": "虽然能源为5，但当前研究合同明确封住了所有正推进。",
+              "statePaths": ["energy", "pending.maximum", "researchIndex"],
+              "knowledgeIds": ["K-RESEARCH-CONTRACT"],
+              "q": {
+                "affected_object": "研究资源条件和合法推进上限",
+                "change_trend": "资源存在但合法推进上限仍固定为零",
+                "cause_relation": "实际选择受公开合同而不是能源数量决定",
+                "temporal_state": "判断本次研究是否有效时",
+                "context": "研究回退为零步的约束"
+              }
+            },
+            {
+              "cueId": "rz-p3-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "本次研究操作结束后，轨道仍处于索引2。",
+              "statePaths": ["researchIndex", "pending.maximum"],
+              "knowledgeIds": ["K-RESEARCH-CONTRACT"],
+              "q": {
+                "affected_object": "研究轨道索引",
+                "change_trend": "索引维持为二，没有发生推进",
+                "cause_relation": "玩家只能确认零步研究",
+                "temporal_state": "研究边界稳定以后",
+                "context": "投入研究流程却没有进度变化"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "end-rooms-mothership-five",
+      "passes": [
+        {
+          "pass": 1,
+          "cues": [
+            {
+              "cueId": "mr-p1-before",
+              "kind": "danger",
+              "channel": "before",
+              "statement": "母舰位于第5行，当前考虑结束房间阶段。",
+              "statePaths": ["phase", "mothershipRow", "contemplatedOperation.type"],
+              "knowledgeIds": ["K-END-ROOMS", "K-MOTHERSHIP-DESCENT"],
+              "q": {
+                "affected_object": "母舰轨道和结束房间阶段操作",
+                "change_trend": "准备结束房间处理并触发母舰阶段",
+                "cause_relation": "玩家提交结束房间会让母舰继续下降",
+                "temporal_state": "end_rooms提交之前",
+                "context": "母舰当前位于第5行"
+              }
+            },
+            {
+              "cueId": "mr-p1-after",
+              "kind": "feared_result",
+              "channel": "after",
+              "statement": "结束房间后母舰预计从第5行下降到第6行。",
+              "statePaths": ["mothershipRow", "contemplatedOperation.type"],
+              "knowledgeIds": ["K-END-ROOMS", "K-MOTHERSHIP-DESCENT"],
+              "q": {
+                "affected_object": "母舰位置",
+                "change_trend": "母舰行数由五增加到六",
+                "cause_relation": "房间阶段结束后执行一次母舰下降",
+                "temporal_state": "母舰阶段到达稳定边界后",
+                "context": "结束房间带来的下一格危险"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 2,
+          "cues": [
+            {
+              "cueId": "mr-p2-before",
+              "kind": "transition",
+              "channel": "before",
+              "statement": "当前没有继续处理房间，而是准备切换到会移动母舰的阶段。",
+              "statePaths": ["phase", "contemplatedOperation", "mothershipRow"],
+              "knowledgeIds": ["K-END-ROOMS", "K-MOTHERSHIP-DESCENT"],
+              "q": {
+                "affected_object": "房间阶段与母舰阶段边界",
+                "change_trend": "阶段即将从房间处理转入母舰下降",
+                "cause_relation": "结束房间操作触发下一阶段",
+                "temporal_state": "阶段切换前",
+                "context": "母舰从第五轨道位置继续接近城市"
+              }
+            },
+            {
+              "cueId": "mr-p2-after",
+              "kind": "feared_result",
+              "channel": "after",
+              "statement": "下一稳定状态中母舰会比现在更靠近城市一格。",
+              "statePaths": ["mothershipRow"],
+              "knowledgeIds": ["K-MOTHERSHIP-DESCENT"],
+              "q": {
+                "affected_object": "母舰与城市的距离",
+                "change_trend": "距离缩短一格，轨道位置从五推进到六",
+                "cause_relation": "母舰阶段固定下降一次",
+                "temporal_state": "本轮母舰移动完成后",
+                "context": "母舰危险上升"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 3,
+          "cues": [
+            {
+              "cueId": "mr-p3-before",
+              "kind": "danger",
+              "channel": "before",
+              "statement": "在母舰已经走到5的情况下，end_rooms并不是无后果的跳过。",
+              "statePaths": ["mothershipRow", "contemplatedOperation.type", "phase"],
+              "knowledgeIds": ["K-END-ROOMS", "K-MOTHERSHIP-DESCENT"],
+              "q": {
+                "affected_object": "第5行母舰和结束房间决定",
+                "change_trend": "结束当前阶段将继续累积母舰进度",
+                "cause_relation": "end_rooms连接到母舰下一次下降",
+                "temporal_state": "选择是否结束房间时",
+                "context": "不能忽略的母舰推进后果"
+              }
+            },
+            {
+              "cueId": "mr-p3-after",
+              "kind": "feared_result",
+              "channel": "after",
+              "statement": "预测母舰轨道读数会变成6。",
+              "statePaths": ["mothershipRow"],
+              "knowledgeIds": ["K-MOTHERSHIP-DESCENT"],
+              "q": {
+                "affected_object": "母舰轨道读数",
+                "change_trend": "读数更新为六",
+                "cause_relation": "从五开始下降一格",
+                "temporal_state": "房间阶段结束并完成母舰移动后",
+                "context": "母舰推进的确定结果"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "column-placement-damage-three",
+      "passes": [
+        {
+          "pass": 1,
+          "cues": [
+            {
+              "cueId": "d3-p1-before",
+              "kind": "danger",
+              "channel": "before",
+              "statement": "准备在第1列放白骰，而同列飞船距城市只剩1格，当前伤害为2。",
+              "statePaths": ["phase", "damage", "die", "contemplatedPlacement", "visibleShip"],
+              "knowledgeIds": ["K-COLUMN-MOVE", "K-CITY-HIT"],
+              "q": {
+                "affected_object": "第1列飞船、白骰放置与城市伤害",
+                "change_trend": "准备在危险列放骰，飞船可能立即抵达城市",
+                "cause_relation": "同列放置会推动仅剩一格距离的飞船",
+                "temporal_state": "白骰提交之前",
+                "context": "城市当前伤害为2的列移动风险"
+              }
+            },
+            {
+              "cueId": "d3-p1-after",
+              "kind": "feared_result",
+              "channel": "after",
+              "statement": "飞船撞城后伤害会从2增加到3。",
+              "statePaths": ["damage", "visibleShip.distanceToCity"],
+              "knowledgeIds": ["K-COLUMN-MOVE", "K-CITY-HIT"],
+              "q": {
+                "affected_object": "城市伤害轨道",
+                "change_trend": "伤害数值由二上升到三",
+                "cause_relation": "同列飞船被放骰推动并接触城市",
+                "temporal_state": "该次列移动结算后",
+                "context": "放置动作造成的一点城市伤害"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 2,
+          "cues": [
+            {
+              "cueId": "d3-p2-before",
+              "kind": "constraint",
+              "channel": "before",
+              "statement": "目标格所在列已有一架临城飞船，不能把这次放置只看成占格。",
+              "statePaths": ["contemplatedPlacement.column", "visibleShip.column", "visibleShip.distanceToCity", "damage"],
+              "knowledgeIds": ["K-COLUMN-MOVE", "K-CITY-HIT"],
+              "q": {
+                "affected_object": "所选基地列和临近城市的飞船",
+                "change_trend": "放骰会同时改变格子占用与飞船位置",
+                "cause_relation": "目标列与危险飞船处于同一列",
+                "temporal_state": "评估白骰放置后果时",
+                "context": "列移动包含城市受击风险"
+              }
+            },
+            {
+              "cueId": "d3-p2-after",
+              "kind": "feared_result",
+              "channel": "after",
+              "statement": "这一步的额外后果是一点城市伤害，结算后总伤害3。",
+              "statePaths": ["damage", "visibleShip.distanceToCity"],
+              "knowledgeIds": ["K-CITY-HIT"],
+              "q": {
+                "affected_object": "城市累计伤害",
+                "change_trend": "累计伤害增加一点并达到三",
+                "cause_relation": "飞船完成最后一格移动后撞击城市",
+                "temporal_state": "飞船移动和撞击完成以后",
+                "context": "危险列放置的实际代价"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 3,
+          "cues": [
+            {
+              "cueId": "d3-p3-before",
+              "kind": "danger",
+              "channel": "before",
+              "statement": "白骰、目标格和威胁飞船都在第1列，飞船下一格就是城市。",
+              "statePaths": ["die.id", "contemplatedPlacement.cellId", "contemplatedPlacement.column", "visibleShip"],
+              "knowledgeIds": ["K-COLUMN-MOVE", "K-CITY-HIT"],
+              "q": {
+                "affected_object": "同列的白骰目标与城市前飞船",
+                "change_trend": "即将触发一次到达城市的列推进",
+                "cause_relation": "骰子放置列和飞船列完全一致",
+                "temporal_state": "放置确认之前",
+                "context": "飞船距城市一格的即时危险"
+              }
+            },
+            {
+              "cueId": "d3-p3-after",
+              "kind": "feared_result",
+              "channel": "after",
+              "statement": "预期城市伤害标记落在3，而不是继续停在2。",
+              "statePaths": ["damage", "visibleShip.distanceToCity"],
+              "knowledgeIds": ["K-CITY-HIT"],
+              "q": {
+                "affected_object": "伤害标记",
+                "change_trend": "标记从二移动到三",
+                "cause_relation": "一架飞船被推入城市",
+                "temporal_state": "本次骰子放置的自动后果完成后",
+                "context": "城市受到新的撞击"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "free-tunnel-energy-one",
+      "passes": [
+        {
+          "pass": 1,
+          "cues": [
+            {
+              "cueId": "ft-p1-before",
+              "kind": "affordance",
+              "channel": "before",
+              "statement": "当前只有1能源，但可结算的上层通道房费用为0。",
+              "statePaths": ["phase", "energy", "resolvableRoom"],
+              "knowledgeIds": ["K-ROOM-COST", "K-TUNNEL-WORKER"],
+              "q": {
+                "affected_object": "玩家能源与零费用通道房",
+                "change_trend": "准备结算通道房而不消耗现有能源",
+                "cause_relation": "房间公开费用为零",
+                "temporal_state": "通道房结算之前",
+                "context": "低能源状态下的免费房间操作"
+              }
+            },
+            {
+              "cueId": "ft-p1-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "结算后能源仍为1，工人进入挖掘或跳过选择。",
+              "statePaths": ["energy", "resolvableRoom.energyCost", "workerAfterResolution"],
+              "knowledgeIds": ["K-ROOM-COST", "K-TUNNEL-WORKER"],
+              "q": {
+                "affected_object": "玩家能源与通道房工人",
+                "change_trend": "能源保持一，工人转入挖掘或跳过候选",
+                "cause_relation": "免费通道房不扣能源并开放后续工人选择",
+                "temporal_state": "通道房效果完成后",
+                "context": "零成本房间的无能源损失结果"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 2,
+          "cues": [
+            {
+              "cueId": "ft-p2-before",
+              "kind": "constraint",
+              "channel": "before",
+              "statement": "能源处于安全线1，而这个房间不会再扣能源。",
+              "statePaths": ["energy", "resolvableRoom.type", "resolvableRoom.energyCost"],
+              "knowledgeIds": ["K-ROOM-COST"],
+              "q": {
+                "affected_object": "能源安全线和可结算通道",
+                "change_trend": "可以执行房间结算且不跌破一能源",
+                "cause_relation": "通道房的费用数值是零",
+                "temporal_state": "决定是否支付房间时",
+                "context": "资源很少但操作免费"
+              }
+            },
+            {
+              "cueId": "ft-p2-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "房间处理不会改变能源计数，下一步转向工人处理。",
+              "statePaths": ["energy", "workerAfterResolution.canExcavateOrSkip"],
+              "knowledgeIds": ["K-ROOM-COST", "K-TUNNEL-WORKER"],
+              "q": {
+                "affected_object": "能源计数与通道工人状态",
+                "change_trend": "能源数值不变，工人状态进入可处理阶段",
+                "cause_relation": "零费用结算只推进房间流程",
+                "temporal_state": "免费房间结算稳定以后",
+                "context": "保留能源的通道结果"
+              }
+            }
+          ]
+        },
+        {
+          "pass": 3,
+          "cues": [
+            {
+              "cueId": "ft-p3-before",
+              "kind": "affordance",
+              "channel": "before",
+              "statement": "A-upper-tunnel现在可结算，标价0，不受仅剩1能源限制。",
+              "statePaths": ["resolvableRoom.roomId", "resolvableRoom.energyCost", "energy"],
+              "knowledgeIds": ["K-ROOM-COST"],
+              "q": {
+                "affected_object": "A-upper-tunnel和剩余一点能源",
+                "change_trend": "房间可以被免费处理",
+                "cause_relation": "公开能源成本为零所以当前可承担",
+                "temporal_state": "上层通道结算前",
+                "context": "不消耗最后能源的房间选择"
+              }
+            },
+            {
+              "cueId": "ft-p3-after",
+              "kind": "expected_result",
+              "channel": "after",
+              "statement": "预期能源轨道继续显示1，并出现该工人的挖掘/跳过后续。",
+              "statePaths": ["energy", "workerAfterResolution"],
+              "knowledgeIds": ["K-ROOM-COST", "K-TUNNEL-WORKER"],
+              "q": {
+                "affected_object": "能源轨道和待处理工人",
+                "change_trend": "能源维持一，新的工人后续选择出现",
+                "cause_relation": "通道房零成本结算完成",
+                "temporal_state": "通道房离开待结算状态后",
+                "context": "免费结算保住最后能源"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

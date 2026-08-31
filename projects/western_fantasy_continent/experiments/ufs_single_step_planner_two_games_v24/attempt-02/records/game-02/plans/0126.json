@@ -1,0 +1,94 @@
+{
+  "schema": "ufs_prechoice_plan_v1",
+  "status": "planned",
+  "boundary": {
+    "type": "spawn",
+    "shipId": "white-3",
+    "candidates": [
+      "DP-C4"
+    ]
+  },
+  "attemptedCount": 1,
+  "legalCandidateCount": 1,
+  "rejectedCandidateCount": 0,
+  "recommendedPayload": {
+    "type": "choose_spawn",
+    "shipId": "white-3",
+    "dropPointId": "DP-C4",
+    "predictions": [
+      {
+        "because": "候选试演：在new_round阶段比较type=choose_spawn|shipId=white-3|dropPointId=DP-C4的下一稳定边界后果",
+        "expectations": [
+          {
+            "itemId": "track:energy",
+            "change": "unchanged"
+          }
+        ]
+      }
+    ]
+  },
+  "ranking": [
+    {
+      "payload": {
+        "type": "choose_spawn",
+        "shipId": "white-3",
+        "dropPointId": "DP-C4"
+      },
+      "imaginedStatus": "choice",
+      "imaginedReason": "cognitive_trial_operation_unavailable_at_formal_choice",
+      "simulationReliability": "unavailable_use_neutral_baseline",
+      "queryQ": {
+        "affected_object": "track:energy",
+        "change_trend": "准备执行choose_spawn，结果尚未发生",
+        "cause_relation": "候选试演：在new_round阶段比较type=choose_spawn|shipId=white-3|dropPointId=DP-C4的下一稳定边界后果",
+        "temporal_state": "行动提交前",
+        "context": "new_round阶段执行choose_spawn前的明确预测"
+      },
+      "baselineScore": 0,
+      "baselineContributions": {
+        "energy": 0,
+        "damage": 0,
+        "researchIndex": 0,
+        "excavatorIndex": 0,
+        "mothershipRow": 0
+      },
+      "feedbackAdjustment": {
+        "trajectoryId": "feedback-trajectory-00604",
+        "activation": 0.9787,
+        "auditedExpectations": [
+          {
+            "itemId": "track:energy",
+            "change": "equals",
+            "value": 2
+          }
+        ],
+        "learnedOutcomeScore": 0,
+        "replacedBaselineByConfidence": 0
+      },
+      "recalledFeedback": [
+        {
+          "trajectoryId": "feedback-trajectory-00604",
+          "activation": 0.9787,
+          "followingQ": {
+            "affected_object": "track:energy",
+            "change_trend": "track:energy保持不变",
+            "cause_relation": "choose_spawn：候选试演：在new_round阶段比较type=choose_spawn|shipId=white-3|dropPointId=DP-C4的下一稳定边界后果",
+            "temporal_state": "本次正式结算到达稳定边界后",
+            "context": "行动前明确写下的预测票据"
+          }
+        }
+      ],
+      "finalScore": 0,
+      "imaginedState": {
+        "phase": "new_round",
+        "energy": 2,
+        "damage": 4,
+        "researchIndex": 0,
+        "excavatorIndex": 0,
+        "mothershipRow": 9,
+        "outcome": null
+      }
+    }
+  ],
+  "rejected": []
+}

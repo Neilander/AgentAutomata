@@ -1,0 +1,89 @@
+{
+  "schema": "ufs_cognitive_field_agent_inputs_v1",
+  "situations": [
+    {
+      "scenarioId": "incomplete-energy-first-cell",
+      "publicState": {
+        "phase": "dice",
+        "energy": 2,
+        "die": { "id": "r1-gray-1", "placed": false },
+        "contemplatedPlacement": { "cellId": "A-r2-c5", "roomId": "A-upper-energy" },
+        "room": { "type": "energy", "cellCount": 2, "occupiedCellCountBefore": 0, "occupiedCellCountAfter": 1 }
+      },
+      "knowledge": [
+        { "knowledgeId": "K-PLACE", "text": "放置骰子会先让该骰子占据所选格。" },
+        { "knowledgeId": "K-MULTI-ROOM", "text": "多格房必须所有格都被占据后，房间收益才会在房间阶段结算。" }
+      ]
+    },
+    {
+      "scenarioId": "complete-energy-second-cell",
+      "publicState": {
+        "phase": "dice",
+        "energy": 1,
+        "die": { "id": "r2-gray-0", "placed": false },
+        "contemplatedPlacement": { "cellId": "A-r2-c4", "roomId": "A-upper-energy" },
+        "room": { "type": "energy", "cellCount": 2, "occupiedCellCountBefore": 1, "occupiedCellCountAfter": 2 }
+      },
+      "knowledge": [
+        { "knowledgeId": "K-PLACE", "text": "放置骰子会先让该骰子占据所选格。" },
+        { "knowledgeId": "K-MULTI-ROOM", "text": "多格房必须所有格都被占据后，房间收益才会在房间阶段结算。" }
+      ]
+    },
+    {
+      "scenarioId": "research-zero-budget",
+      "publicState": {
+        "phase": "rooms",
+        "energy": 5,
+        "researchIndex": 2,
+        "pending": { "type": "research_advance", "roomId": "A-upper-research", "minimum": 0, "maximum": 0 }
+      },
+      "knowledge": [
+        { "knowledgeId": "K-RESEARCH-CONTRACT", "text": "研究推进必须选择公开合同允许的整数步数；最大值为0时研究不会前进。" }
+      ]
+    },
+    {
+      "scenarioId": "end-rooms-mothership-five",
+      "publicState": {
+        "phase": "rooms",
+        "energy": 2,
+        "researchIndex": 0,
+        "mothershipRow": 5,
+        "contemplatedOperation": { "type": "end_rooms" }
+      },
+      "knowledge": [
+        { "knowledgeId": "K-END-ROOMS", "text": "结束房间阶段会进入母舰阶段。" },
+        { "knowledgeId": "K-MOTHERSHIP-DESCENT", "text": "母舰阶段母舰向城市方向下降一格。" }
+      ]
+    },
+    {
+      "scenarioId": "column-placement-damage-three",
+      "publicState": {
+        "phase": "dice",
+        "energy": 2,
+        "damage": 2,
+        "mothershipRow": 6,
+        "die": { "id": "r7-white-3", "placed": false },
+        "contemplatedPlacement": { "cellId": "A-r1-c2", "column": 1 },
+        "visibleShip": { "column": 1, "distanceToCity": 1 }
+      },
+      "knowledge": [
+        { "knowledgeId": "K-COLUMN-MOVE", "text": "向某列放骰会推动同列飞船向城市移动。" },
+        { "knowledgeId": "K-CITY-HIT", "text": "飞船抵达城市会让城市伤害增加1。" }
+      ]
+    },
+    {
+      "scenarioId": "free-tunnel-energy-one",
+      "publicState": {
+        "phase": "rooms",
+        "energy": 1,
+        "researchIndex": 2,
+        "resolvableRoom": { "roomId": "A-upper-tunnel", "type": "tunnel", "energyCost": 0 },
+        "workerAfterResolution": { "canExcavateOrSkip": true }
+      },
+      "knowledge": [
+        { "knowledgeId": "K-ROOM-COST", "text": "结算房间会支付其公开能源费用；费用为0时能源保持不变。" },
+        { "knowledgeId": "K-TUNNEL-WORKER", "text": "通道房结算后，该工人进入挖掘或跳过选择。" }
+      ]
+    }
+  ]
+}

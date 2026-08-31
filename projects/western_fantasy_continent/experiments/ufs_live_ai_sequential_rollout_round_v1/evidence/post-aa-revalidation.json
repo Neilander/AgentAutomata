@@ -1,0 +1,80 @@
+{
+  "schema": "ufs_live_step_revalidation_v1",
+  "decisionId": "cutpoint-02-post-reroll-sequential",
+  "completedStep": "aa-first",
+  "predictedQ1": {
+    "world": {
+      "ships": [
+        {
+          "id": "purple-1",
+          "column": 1,
+          "row": 0
+        },
+        {
+          "id": "purple-2",
+          "column": 2,
+          "row": 4
+        }
+      ],
+      "anchors": [
+        {
+          "id": "research-white-6-c2",
+          "supportedBy": "white-6 remains unplaced and A-r2-c2 remains the research target"
+        }
+      ]
+    },
+    "epistemic": {
+      "source": "imagined",
+      "uncertainties": [
+        "unnoticed intermediate sky effects may change the exact purple-2 endpoint"
+      ]
+    }
+  },
+  "actualQ1": {
+    "world": {
+      "ships": [
+        {
+          "id": "purple-0",
+          "color": "purple",
+          "column": 0,
+          "row": 5
+        },
+        {
+          "id": "purple-3",
+          "color": "purple",
+          "column": 3,
+          "row": 2
+        }
+      ],
+      "anchors": [
+        {
+          "id": "research-white-6-c2",
+          "supportedBy": "current player view exposes unplaced white-6 and callable A-r2-c2"
+        }
+      ]
+    },
+    "epistemic": {
+      "source": "observed_after_real_aa_step",
+      "omittedCollections": [
+        "ships"
+      ]
+    }
+  },
+  "predictedAaTargetObservation": "uncertain_due_to_probabilistic_omission",
+  "nextStep": "research-second",
+  "revalidation": {
+    "schema": "ufs_sequential_q_revalidation_v1",
+    "stepId": "research-second",
+    "anchor": {
+      "status": "supported",
+      "reason": "matching_entity_present",
+      "evidence": {
+        "id": "research-white-6-c2",
+        "supportedBy": "current player view exposes unplaced white-6 and callable A-r2-c2"
+      }
+    },
+    "mayExecute": true,
+    "mayClaimDeterministicBenefit": true,
+    "requiresReplan": false
+  }
+}

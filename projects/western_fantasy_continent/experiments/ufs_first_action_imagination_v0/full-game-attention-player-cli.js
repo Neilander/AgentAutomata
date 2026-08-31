@@ -6,6 +6,7 @@ const path = require("node:path");
 const initialPublicState = require("./public_initial_state.json");
 const publicMap = require("./public-map");
 const { compactAttentionResponse } = require("./compact-attention-response");
+const { buildRandomObservation } = require("./replayable-random-observation");
 const { UfsFullGameAttentionSession } = require("./ufs-full-game-attention-session");
 const {
   capturePlayerProfile,
@@ -18,8 +19,9 @@ const {
 const HELP = `Usage:
   node full-game-attention-player-cli.js start <state-dir>
   node full-game-attention-player-cli.js player-start <state-dir> <player-profile.json>
+  node full-game-attention-player-cli.js plan <state-dir>
   node full-game-attention-player-cli.js advance <state-dir> <choice.json>
-  node full-game-attention-player-cli.js random <state-dir>
+  node full-game-attention-player-cli.js random <state-dir> [random-observation.json]
   node full-game-attention-player-cli.js player-capture <state-dir> <player-profile.json>
   node full-game-attention-player-cli.js help
 
@@ -41,14 +43,17 @@ Optional prediction tickets:
   - change: increase | decrease | changed | unchanged | equals | present | absent
   - A result is learned only when its ticket existed before the action and every target was noticed.
 
-Use the random command at both white-reroll and next-round-roll boundaries. Never invent dice values.
+Use the random command at both white-reroll and next-round-roll boundaries. With no file it draws
+fresh values. A supplied observation file is strictly validated against the public pending die IDs,
+which allows paired experiments to replay a precommitted external random sequence.
 Only use IDs and operations exposed by the current public attention-limited response.
 Stdout and current-player-view.json contain the compact player view. Full noticed-item and
 attention-trace evidence is private host audit data in attention-audit-transcript.jsonl.
 
 Use player-start for isolated learning experiments. advance/random automatically continue the exact
-same identified player checkpoint. player-capture writes learned trajectories, connection updates,
-attention adjustments and the prediction ledger back to that player's profile once per episode.
+same identified player checkpoint. player-capture compiles newly learned feedback with the local
+real GTE model, then writes its private matrices, trajectories, connection updates, attention
+adjustments and prediction ledger back to that player's profile once per episode.
 Capturing seals that state directory. Start a new player-start directory with the updated profile to
 run the same learned player in its next episode.
 `;
@@ -204,29 +209,16 @@ function advance(stateDir, choiceFile) {
   persist(paths, "advance", operation, session, response);
 }
 
-function observeRandom(stateDir) {
+function plan(stateDir) {
+  const { session } = load(stateDir);
+  process.stdout.write(`${JSON.stringify(session.planCurrentChoice(), null, 2)}\n`);
+}
+
+function observeRandom(stateDir, observationFile = null) {
   const { paths, session } = load(stateDir);
   const current = readJson(paths.view);
-  let operation;
-  if (current.pending?.type === "white_reroll") {
-    if (!current.availableOperations?.includes("submit_random_observation")) {
-      throw new Error("white reroll is not available at the current boundary");
-    }
-    operation = {
-      type: "submit_random_observation",
-      values: Object.fromEntries(current.pending.dieIds.map((dieId) => [dieId, crypto.randomInt(1, 7)])),
-    };
-  } else if (current.pending?.type === "next_round_roll") {
-    if (!current.availableOperations?.includes("submit_round_roll")) {
-      throw new Error("next-round roll is not available at the current boundary");
-    }
-    operation = {
-      type: "submit_round_roll",
-      values: Object.fromEntries(current.pending.dieIds.map((dieId) => [dieId, crypto.randomInt(1, 7)])),
-    };
-  } else {
-    throw new Error(`random is not available for pending boundary: ${current.pending?.type}`);
-  }
+  const supplied = observationFile == null ? null : readJson(observationFile);
+  const operation = buildRandomObservation(current, supplied, crypto.randomInt);
   const response = session.advance(operation);
   persist(paths, "external_random_observation", operation, session, response);
 }
@@ -240,7 +232,11 @@ if (!stateDirArg) throw new Error(HELP);
 const stateDir = path.resolve(stateDirArg);
 if (command === "start") start(stateDir);
 else if (command === "player-start" && choiceFileArg) startPlayer(stateDir, path.resolve(choiceFileArg));
+else if (command === "plan") plan(stateDir);
 else if (command === "advance" && choiceFileArg) advance(stateDir, path.resolve(choiceFileArg));
-else if (command === "random") observeRandom(stateDir);
+else if (command === "random") observeRandom(
+  stateDir,
+  choiceFileArg ? path.resolve(choiceFileArg) : null,
+);
 else if (command === "player-capture" && choiceFileArg) capturePlayer(stateDir, path.resolve(choiceFileArg));
 else throw new Error(HELP);

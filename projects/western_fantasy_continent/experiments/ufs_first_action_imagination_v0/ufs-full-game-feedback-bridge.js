@@ -159,6 +159,36 @@ function feedbackApplicability(operation, formalStep) {
   };
 }
 
+function recalledExpectations(candidate, predictionLedger) {
+  const evidenceIds = new Set((candidate.provenance || []).map((row) => row.ref));
+  const ledgerEntry = [...predictionLedger].reverse().find((entry) => (
+    evidenceIds.has(entry.evidenceId)
+      && entry.ticket?.evaluation?.evaluations?.some((row) => row.observed)
+  ));
+  if (!ledgerEntry) return [];
+  return ledgerEntry.ticket.evaluation.evaluations
+    .filter((row) => row.observed)
+    .map((row) => {
+      const expectation = clone(row.expectation);
+      delete expectation.baselineValue;
+      const prefix = expectation.itemId.split(":", 1)[0];
+      if (prefix === "track") delete expectation.field;
+      if (row.afterValue === undefined) {
+        return prefix === "track" || expectation.field ? null : {
+          itemId: expectation.itemId,
+          change: "absent",
+        };
+      }
+      return {
+        itemId: expectation.itemId,
+        ...(expectation.field ? { field: expectation.field } : {}),
+        change: "equals",
+        value: clone(row.afterValue),
+      };
+    })
+    .filter(Boolean);
+}
+
 function ticketActualFollowingQ(ticket, evaluation, operation) {
   const observed = evaluation.evaluations.filter((row) => row.observed);
   const changes = observed.map((row) => {
@@ -179,8 +209,12 @@ function ticketActualFollowingQ(ticket, evaluation, operation) {
 class UfsFullGameFeedbackBridge {
   constructor({
     learner,
+    feedbackGteMemory = null,
     pendingPredictions = [],
     pendingPredictionTickets = [],
+    pendingCognitiveUnitTickets = [],
+    completedCognitiveUnitPending = false,
+    episodeId = null,
     previousTrajectoryId = null,
     nextEvidenceId = 1,
     nextTicketId = 1,
@@ -189,8 +223,12 @@ class UfsFullGameFeedbackBridge {
   } = {}) {
     if (!learner) throw new TypeError("full-game feedback bridge requires a learner");
     this.learner = learner;
+    this.feedbackGteMemory = feedbackGteMemory;
     this.pendingPredictions = clone(pendingPredictions);
     this.pendingPredictionTickets = clone(pendingPredictionTickets);
+    this.pendingCognitiveUnitTickets = clone(pendingCognitiveUnitTickets);
+    this.completedCognitiveUnitPending = Boolean(completedCognitiveUnitPending);
+    this.episodeId = episodeId;
     this.previousTrajectoryId = previousTrajectoryId;
     this.nextEvidenceId = nextEvidenceId;
     this.nextTicketId = nextTicketId;
@@ -203,6 +241,9 @@ class UfsFullGameFeedbackBridge {
       schema: "ufs_full_game_feedback_bridge_checkpoint_v1",
       pendingPredictions: clone(this.pendingPredictions),
       pendingPredictionTickets: clone(this.pendingPredictionTickets),
+      pendingCognitiveUnitTickets: clone(this.pendingCognitiveUnitTickets),
+      completedCognitiveUnitPending: this.completedCognitiveUnitPending,
+      episodeId: this.episodeId,
       previousTrajectoryId: this.previousTrajectoryId,
       nextEvidenceId: this.nextEvidenceId,
       nextTicketId: this.nextTicketId,
@@ -215,6 +256,62 @@ class UfsFullGameFeedbackBridge {
     return clone(this.predictionLedger);
   }
 
+  _gteFeedbackTickets({ seedTickets, operation, allocateTicketId }) {
+    if (!this.feedbackGteMemory) return [];
+    const recalledTrajectoryIds = new Set();
+    const output = [];
+    for (const seed of seedTickets) {
+      const context = {
+        ...seed.applicability,
+        predictionSource: seed.source,
+      };
+      const recalled = this.feedbackGteMemory.query(seed.currentQ, {
+        context,
+        operations: seed.operations || [operation],
+        previousTrajectoryId: this.previousTrajectoryId,
+        topK: 3,
+      });
+      let candidate = null;
+      let expectations = [];
+      for (const row of recalled) {
+        const trajectory = row.trajectory;
+        if (!String(trajectory.trajectoryId).startsWith("feedback-")
+          || recalledTrajectoryIds.has(trajectory.trajectoryId)) continue;
+        const contract = recalledExpectations(trajectory, this.predictionLedger);
+        if (contract.length === 0) continue;
+        candidate = { ...trajectory, activation: row.activation, matrixKind: row.matrixKind };
+        expectations = contract;
+        break;
+      }
+      if (!candidate) continue;
+      recalledTrajectoryIds.add(candidate.trajectoryId);
+      output.push({
+        schema: "ufs_prediction_ticket_v1",
+        ticketId: allocateTicketId(),
+        source: "gte_feedback_trajectory",
+        issuedForOperation: operation.type,
+        trajectoryId: candidate.trajectoryId,
+        activation: Number(Math.min(1, Math.max(0, candidate.activation)).toFixed(6)),
+        operations: clone(candidate.operations || seed.operations || [operation]),
+        currentQ: clone(candidate.currentQ),
+        predictedFollowingQ: clone(candidate.followingQ),
+        expectations,
+        deadline: "stable_boundary",
+        rationale: "player_feedback_real_gte_top_k",
+        supportingMemoryIds: clone(candidate.supportingMemoryIds || []),
+        applicability: clone(candidate.applicability),
+        recalledFrom: {
+          seedTicketId: seed.ticketId,
+          trajectoryId: candidate.trajectoryId,
+          compileStatus: candidate.compileStatus,
+          matrixKind: candidate.matrixKind,
+          originalPredictionSource: candidate.applicability?.predictionSource || null,
+        },
+      });
+    }
+    return output;
+  }
+
   process({
     operation,
     traceDelta,
@@ -223,6 +320,7 @@ class UfsFullGameFeedbackBridge {
     mentalBefore = null,
     predictedWorld = null,
     predictionDeclarations = null,
+    cognitiveUnitEvent = null,
   }) {
     if (mentalBefore && predictedWorld && Array.isArray(predictionDeclarations)) {
       return this._processPredictionTickets({
@@ -233,6 +331,7 @@ class UfsFullGameFeedbackBridge {
         mentalBefore,
         predictedWorld,
         predictionDeclarations,
+        cognitiveUnitEvent,
       });
     }
     return this._processLegacy({ operation, traceDelta, formalStep, playerResponse });
@@ -246,6 +345,7 @@ class UfsFullGameFeedbackBridge {
     mentalBefore,
     predictedWorld,
     predictionDeclarations,
+    cognitiveUnitEvent,
   }) {
     const envelopes = collectPredictionEnvelopes(traceDelta)
       .filter((row) => !this.seenPredictionKeys.has(row.occurrenceKey));
@@ -256,13 +356,30 @@ class UfsFullGameFeedbackBridge {
       return ticketId;
     };
     const issuedApplicability = feedbackApplicability(operation, { before: mentalBefore });
-    const deliberate = compileDeclaredPredictionTickets({
-      operation,
+    const unitStart = cognitiveUnitEvent?.operationIndex === 0;
+    const deliberateOperation = unitStart ? { type: "cognitive_unit" } : operation;
+    const compiledDeliberate = compileDeclaredPredictionTickets({
+      operation: deliberateOperation,
       declarations: predictionDeclarations,
       formalBefore: formalStep.before,
       beliefBefore: mentalBefore,
       nextTicketId: allocateTicketId,
-    }).map((ticket) => ({ ...ticket, applicability: clone(issuedApplicability) }));
+    }).map((ticket) => ({
+      ...ticket,
+      applicability: {
+        ...clone(issuedApplicability),
+        ...(unitStart ? {
+          cognitiveUnitObjective: clone(cognitiveUnitEvent.unit.objective),
+          cognitiveUnitOperationCount: cognitiveUnitEvent.unit.operations.length,
+        } : {}),
+      },
+      ...(unitStart ? {
+        issuedForOperation: "cognitive_unit",
+        operations: clone(cognitiveUnitEvent.unit.operations),
+        cognitiveUnit: clone(cognitiveUnitEvent.unit),
+      } : {}),
+    }));
+    const deliberate = unitStart ? [] : compiledDeliberate;
     const automatic = compileAutomaticPredictionTickets({
       envelopes,
       operation,
@@ -271,7 +388,25 @@ class UfsFullGameFeedbackBridge {
       nextTicketId: allocateTicketId,
     }).filter((ticket) => ticket.expectations.length > 0)
       .map((ticket) => ({ ...ticket, applicability: clone(issuedApplicability) }));
-    this.pendingPredictionTickets.push(...deliberate, ...automatic);
+    const recalled = this._gteFeedbackTickets({
+      seedTickets: [...compiledDeliberate, ...automatic],
+      operation,
+      allocateTicketId,
+    });
+    const unitTicketIds = new Set(compiledDeliberate.map((ticket) => ticket.ticketId));
+    const unitRecalled = unitStart
+      ? recalled.filter((ticket) => unitTicketIds.has(ticket.recalledFrom?.seedTicketId))
+      : [];
+    const immediateRecalled = unitStart
+      ? recalled.filter((ticket) => !unitTicketIds.has(ticket.recalledFrom?.seedTicketId))
+      : recalled;
+    if (unitStart) {
+      this.pendingCognitiveUnitTickets.push(...compiledDeliberate, ...unitRecalled);
+    }
+    if (cognitiveUnitEvent?.status === "completed") {
+      this.completedCognitiveUnitPending = true;
+    }
+    this.pendingPredictionTickets.push(...deliberate, ...automatic, ...immediateRecalled);
 
     if (!formalStep.accepted) {
       return {
@@ -288,13 +423,18 @@ class UfsFullGameFeedbackBridge {
         reason: formalStep.deferredReason,
         learned: [],
         predictionCount: this.pendingPredictionTickets.length,
-        newlyIssuedTicketCount: deliberate.length + automatic.length,
+        newlyIssuedTicketCount: deliberate.length + automatic.length + recalled.length,
         tickets: clone(this.pendingPredictionTickets),
       };
     }
 
     const tickets = this.pendingPredictionTickets;
     this.pendingPredictionTickets = [];
+    if (this.completedCognitiveUnitPending) {
+      tickets.push(...this.pendingCognitiveUnitTickets);
+      this.pendingCognitiveUnitTickets = [];
+      this.completedCognitiveUnitPending = false;
+    }
     if (tickets.length === 0) {
       return {
         status: "no_prediction",
@@ -348,10 +488,18 @@ class UfsFullGameFeedbackBridge {
         },
         currentQ: ticket.currentQ,
         actualFollowingQ: actualQ,
+        operations: ticket.operations || [operation],
+        experienceContext: {
+          episodeId: this.episodeId,
+          ticketId: ticket.ticketId,
+          issuedForOperation: ticket.issuedForOperation,
+          round: formalStep.before.round,
+          phase: formalStep.before.phase,
+        },
         source: { kind: "single_experience", ref: evidenceId },
         applicability: {
           ...ticket.applicability,
-          predictionSource: ticket.source,
+          predictionSource: ticket.recalledFrom?.originalPredictionSource || ticket.source,
         },
         predictionCandidates,
         previousTrajectoryId: this.previousTrajectoryId,
@@ -475,6 +623,14 @@ class UfsFullGameFeedbackBridge {
         },
         currentQ: prediction.currentQ,
         actualFollowingQ: actualQ,
+        operations: prediction.operations || [operation],
+        experienceContext: {
+          episodeId: this.episodeId,
+          trajectoryId: prediction.trajectoryId,
+          operationType: operation.type,
+          round: formalStep.before.round,
+          phase: formalStep.before.phase,
+        },
         source: { kind: "single_experience", ref: evidenceId },
         applicability: feedbackApplicability(operation, formalStep),
         predictionCandidates: [{
@@ -515,6 +671,14 @@ class UfsFullGameFeedbackBridge {
           },
           currentQ: researchPrediction.currentQ,
           actualFollowingQ: concreteFollowingQ,
+          operations: researchPrediction.operations || [operation],
+          experienceContext: {
+            episodeId: this.episodeId,
+            trajectoryId: researchPrediction.trajectoryId,
+            operationType: operation.type,
+            round: formalStep.before.round,
+            phase: formalStep.before.phase,
+          },
           source: { kind: "single_experience", ref: evidenceId },
           applicability: {
             operationType: operation.type,
@@ -552,5 +716,6 @@ module.exports = {
   collectPredictionEnvelopes,
   feedbackApplicability,
   itemIdsForSection,
+  recalledExpectations,
   visibleChangedItemIds,
 };

@@ -1,6 +1,7 @@
 "use strict";
 
 const { assertFiveSlotQ } = require("../imagination_pipeline_v0/five-slot-activation");
+const { normalizeOperationSequence } = require("./ufs-transition-memory");
 
 const MAX_DECLARED_PREDICTIONS = 3;
 const VALID_CHANGES = new Set([
@@ -88,7 +89,9 @@ function assertExpectation(expectation, label = "prediction expectation") {
 function splitOperationAndPredictionDeclarations(action) {
   const operation = clone(action);
   const declarations = clone(operation.predictions || []);
+  const cognitiveUnit = clone(operation.cognitiveUnit || null);
   delete operation.predictions;
+  delete operation.cognitiveUnit;
   if (!Array.isArray(declarations)) throw new TypeError("action.predictions must be an array");
   if (declarations.length > MAX_DECLARED_PREDICTIONS) {
     throw new RangeError(`action.predictions supports at most ${MAX_DECLARED_PREDICTIONS} tickets`);
@@ -107,11 +110,29 @@ function splitOperationAndPredictionDeclarations(action) {
       throw new TypeError(`action.predictions[${index}].because must be a string`);
     }
   });
-  return { operation, declarations };
+  if (cognitiveUnit != null) {
+    if (cognitiveUnit.schema !== "ufs_temporal_cognitive_unit_v1") {
+      throw new TypeError("action.cognitiveUnit must use ufs_temporal_cognitive_unit_v1");
+    }
+    if (!Array.isArray(cognitiveUnit.operations) || cognitiveUnit.operations.length === 0) {
+      throw new TypeError("action.cognitiveUnit.operations must be a non-empty array");
+    }
+    cognitiveUnit.operations.forEach((row, index) => {
+      if (!row || typeof row.type !== "string") {
+        throw new TypeError(`action.cognitiveUnit.operations[${index}] must have a type`);
+      }
+    });
+    if (!Number.isInteger(cognitiveUnit.nextOperationIndex)
+      || cognitiveUnit.nextOperationIndex < 0
+      || cognitiveUnit.nextOperationIndex >= cognitiveUnit.operations.length) {
+      throw new RangeError("action.cognitiveUnit.nextOperationIndex is outside the operation sequence");
+    }
+  }
+  return { operation, declarations, cognitiveUnit };
 }
 
 function describeExpectation(expectation) {
-  const target = expectation.field
+  const target = expectation.field && !expectation.itemId.startsWith("track:")
     ? `${expectation.itemId}.${expectation.field}`
     : expectation.itemId;
   const descriptions = {
@@ -157,6 +178,9 @@ function compileDeclaredPredictionTickets({
 }) {
   return declarations.map((declaration, index) => {
     const q = declaredTicketQ(operation, declaration, formalBefore);
+    const operations = operation.type === "cognitive_unit" && Array.isArray(operation.operations)
+      ? normalizeOperationSequence(operation.operations)
+      : normalizeOperationSequence([operation]);
     return {
       schema: "ufs_prediction_ticket_v1",
       ticketId: nextTicketId(index),
@@ -164,6 +188,7 @@ function compileDeclaredPredictionTickets({
       issuedForOperation: operation.type,
       trajectoryId: null,
       activation: Number(declaration.confidence ?? 0.75),
+      operations,
       currentQ: q.currentQ,
       predictedFollowingQ: q.predictedFollowingQ,
       expectations: declaration.expectations.map((expectation) => ({
@@ -186,6 +211,11 @@ function itemValue(state, itemId, field = null) {
     const collection = COLLECTIONS[prefix];
     value = collection ? (state?.[collection] || []).find((row) => row.id === id) : undefined;
   }
+  // Public controller payloads historically included a redundant field such as
+  // { itemId: "track:energy", field: "energy" }. Tracks are scalar values, not
+  // entity objects; treating that legacy field as a property erased the audited
+  // result to undefined and made the learned consequence unusable for choice.
+  if (prefix === "track") return clone(value);
   if (field == null) return clone(value);
   return clone(value?.[field]);
 }
@@ -280,6 +310,7 @@ function compileAutomaticPredictionTickets({
     issuedForOperation: operation.type,
     trajectoryId: envelope.trajectoryId,
     activation: envelope.activation,
+    operations: normalizeOperationSequence([operation]),
     currentQ: clone(envelope.currentQ),
     predictedFollowingQ: clone(envelope.predictedFollowingQ),
     expectations: automaticExpectations({ envelope, mentalBefore, predictedWorld }),
@@ -303,6 +334,7 @@ module.exports = {
   MAX_DECLARED_PREDICTIONS,
   compileAutomaticPredictionTickets,
   compileDeclaredPredictionTickets,
+  declaredTicketQ,
   evaluatePredictionTicket,
   itemValue,
   splitOperationAndPredictionDeclarations,

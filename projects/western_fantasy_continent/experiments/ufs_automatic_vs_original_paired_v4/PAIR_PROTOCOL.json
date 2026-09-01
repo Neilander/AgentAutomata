@@ -1,0 +1,63 @@
+{
+  "schema": "ufs_automatic_vs_original_paired_v4_protocol",
+  "frozenAt": "2026-09-01T13:10:00+08:00",
+  "supersedes": {
+    "experiment": "ufs_automatic_vs_original_paired_v3",
+    "reason": "V3 is invalid for comparison because its old-arm shell required status choice at a real status random waiting_for_next_round_roll boundary. All V3 failure evidence remains retained and must not be reused as V4 evidence."
+  },
+  "roundsToComplete": 3,
+  "attentionSeed": 2026090104,
+  "random": {
+    "algorithm": "xorshift32",
+    "initialSeedHex": "0x243f6a88",
+    "initialSeedUnsigned": 608135816,
+    "consumption": "For every public pending random contract, consume exactly one fresh stream draw per public ID, strictly in the public ID order. Record ordinal, raw unsigned xorshift32 state, derived die value, bound ID, full public contract snapshot, round, and public reason. Never preview, retry, skip, reorder, or consume an extra draw."
+  },
+  "assets": {
+    "publicInitialState": {
+      "path": "../ufs_first_action_imagination_v0/public_initial_state.json",
+      "sha256": "584765c4b0e4a6a2e802ddfd6f7838c444a082eedf67fcaeba6ea62b4b23e8bd"
+    },
+    "publicMap": {
+      "path": "../ufs_first_action_imagination_v0/public-map.js",
+      "sha256": "a8d20066fc2f74aa3a94f08ba762f539231daaf4095f8b0388aae138340dc7c4"
+    }
+  },
+  "safetyBoundary": {
+    "predicate": "response.status === random && response.reason === waiting_for_next_round_roll && response.availableOperations.includes(submit_round_roll)",
+    "helper": "./safety-boundary.js",
+    "helperSha256": "116d5e26d78533e24e06515fb6cf76fa916935cdfa032d75c75abf2d51af2e45",
+    "contractTest": "./test-safety-boundary.js",
+    "contractTestSha256": "e34b4144b24c5c742873c7c281a63672cc77642c5e99166fb91bceb92c0ae214",
+    "preRunEvidence": "./safety-boundary-test-results.json",
+    "preRunEvidenceSha256": "3748951dc0298be30b2a3e8afca0162616c8c18f880d3db8011e9952b31c2296",
+    "requiredCases": {
+      "realRandomWaitingForRoundRoll": true,
+      "v3WrongChoiceShape": false,
+      "otherRandomBoundary": false
+    },
+    "armRequirement": "Both arms must import this exact shared helper and verify all three frozen hashes before session construction or random consumption. An arm may not write its own boundary condition."
+  },
+  "arms": {
+    "new": {
+      "controller": "../ufs_live_ai_automatic_multicutpoint_three_round_v2/automatic-multicutpoint-controller.js",
+      "controllerSha256": "7ca4533e4fd4a69e649585e3dd7ec0deb760d7eb62942f3328eabeeac4cdef85",
+      "requiredPlanner": "UfsFullGameAttentionSession.imagineSequentialPlan",
+      "policy": "current sealed V2 automatic multi-cutpoint controller; execute only step 0 from the selected candidate imagined from the newest public Q; after a random pause, obtain external draws, discard the old suffix, and replan from the new Q"
+    },
+    "old": {
+      "policy": "the original pre-automatic-multicutpoint default single-step planner selected and sealed without reading new-arm results"
+    }
+  },
+  "hostAudit": "Formal host state may be inspected only after the shared helper returns true. The audit is post-hoc and must never feed later planning.",
+  "isolation": "Each arm starts one fresh isolated UFS session from the frozen public state and runs continuously until exactly three completed-round boundaries, using only its own arm files.",
+  "antiTuning": "After this protocol freeze and before either arm starts, neither arm may modify its controller, scoring, core runtime, initializer, shared helper/test, frozen assets, seeds, random algorithm, or consumption order in response to V3 or V4 outcomes.",
+  "comparisonBoundary": "This new-arm task makes no old-arm comparison and no advantage claim. The old arm must use this exact PAIR_PROTOCOL and shared helper/hash, and must not inspect new-arm RESULTS, evidence, random tape, or checkpoint before sealing its own run.",
+  "requiredOutputs": [
+    "machine evidence",
+    "random draw tape",
+    "final checkpoint",
+    "focused verifier",
+    "arm-local RESULTS"
+  ]
+}

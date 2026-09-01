@@ -120,6 +120,21 @@ function skyCellAt(publicMap, rowIndex, column) {
   return publicMap.sky.rows.find((row) => row.index === rowIndex)?.cells?.[column] || null;
 }
 
+function collectShipsAtMothershipRow(imaginedState) {
+  const collected = imaginedState.ships
+    .filter((ship) => ship.row === imaginedState.mothershipRow);
+  if (collected.length === 0) return [];
+  const collectedIds = new Set(collected.map((ship) => ship.id));
+  imaginedState.ships = imaginedState.ships
+    .filter((ship) => !collectedIds.has(ship.id));
+  imaginedState.waitingShips ||= [];
+  imaginedState.waitingShips.push(...collected.map((ship) => ({
+    id: ship.id,
+    color: ship.color,
+  })));
+  return collected.map((ship) => ship.id);
+}
+
 function movedShips(before, after) {
   return after.ships.filter((ship) => {
     const prior = before.ships.find((candidate) => candidate.id === ship.id);
@@ -333,6 +348,9 @@ class UfsFirstActionImagination {
             break;
           }
           imaginedState.mothershipRow = result.patch.toRow;
+          landingEvents.at(-1).transitionConsequences = {
+            collectedShipIds: collectShipsAtMothershipRow(imaginedState),
+          };
         }
       }
     }

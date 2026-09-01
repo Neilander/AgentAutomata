@@ -1,0 +1,59 @@
+{
+  "schema": "ufs_paired_v4_safety_boundary_contract_test_v1",
+  "completedAt": "2026-09-01T05:09:02.621Z",
+  "hostRuntimeImported": false,
+  "randomDrawsConsumed": 0,
+  "helperSha256": "116d5e26d78533e24e06515fb6cf76fa916935cdfa032d75c75abf2d51af2e45",
+  "testSourceSha256": "e34b4144b24c5c742873c7c281a63672cc77642c5e99166fb91bceb92c0ae214",
+  "cases": [
+    {
+      "id": "real-public-shape",
+      "response": {
+        "status": "random",
+        "reason": "waiting_for_next_round_roll",
+        "availableOperations": [
+          "submit_round_roll"
+        ],
+        "pending": {
+          "dice": [
+            {
+              "id": "gray-1"
+            }
+          ]
+        }
+      },
+      "expected": true,
+      "actual": true
+    },
+    {
+      "id": "v3-wrong-choice-shape",
+      "response": {
+        "status": "choice",
+        "reason": "waiting_for_next_round_roll",
+        "availableOperations": [
+          "submit_round_roll"
+        ]
+      },
+      "expected": false,
+      "actual": false
+    },
+    {
+      "id": "other-random-boundary",
+      "response": {
+        "status": "random",
+        "reason": "waiting_for_random_observation",
+        "availableOperations": [
+          "submit_random_observation"
+        ],
+        "pending": {
+          "dieIds": [
+            "white-1"
+          ]
+        }
+      },
+      "expected": false,
+      "actual": false
+    }
+  ],
+  "passed": true
+}

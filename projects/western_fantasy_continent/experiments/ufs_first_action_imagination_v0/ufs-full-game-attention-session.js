@@ -13,6 +13,7 @@ const {
 } = require("./player-feedback-gte");
 const { splitOperationAndPredictionDeclarations } = require("./ufs-prediction-ticket");
 const { planPrechoice } = require("./ufs-prechoice-planner");
+const { imagineAutomaticSequentialPlan } = require("./ufs-automatic-sequential-imagination");
 
 const ROUND_DICE = Object.freeze([
   Object.freeze({ color: "gray", ordinal: 0 }),
@@ -288,8 +289,9 @@ class UfsFullGameAttentionSession {
     this.lastFeedbackAudit.feedbackGteCompile = clone(this.lastFeedbackGteCompile);
     this.lastFeedbackAudit.formalStep = clone(formalStep);
     this._applyLearningToRuntime();
-    if (operation.type !== "submit_round_roll"
-      && formalStep.stable && ["dice", "rooms"].includes(formalStep.after.phase)) {
+    const shouldRebaseAtPublicBoundary = formalStep.after.phase === "spawning"
+      || (formalStep.stable && ["dice", "rooms"].includes(formalStep.after.phase));
+    if (operation.type !== "submit_round_roll" && shouldRebaseAtPublicBoundary) {
       const rebasedBelief = this._mergeObservedFormalFeedback({
         predictedWorld,
         formalWorld: formalStep.after,
@@ -508,6 +510,14 @@ class UfsFullGameAttentionSession {
 
   ensureFeedbackGteCompiled({ compiler = this.feedbackGteCompiler } = {}) {
     return this._compilePendingFeedbackGte({ compiler, throwOnFailure: true });
+  }
+
+  imagineSequentialPlan({ steps } = {}) {
+    if (!this.started) throw new Error("full-game session must be started before imagination");
+    if (!this.roundSession) throw new Error("no cognitive round is available for imagination");
+    const cognitiveCheckpoint = this.roundSession.exportCheckpoint();
+    const fork = this._forkCognitiveRound(cognitiveCheckpoint);
+    return imagineAutomaticSequentialPlan({ cognitiveFork: fork, steps });
   }
 
   planCurrentChoice({
@@ -765,6 +775,16 @@ class UfsFullGameAttentionSession {
     belief.round = formalWorld.round;
     belief.phase = formalWorld.phase;
     belief.outcome = clone(formalWorld.outcome);
+    if (playerResponse.pending?.type === "spawn" && playerResponse.pending.shipId) {
+      const shipId = playerResponse.pending.shipId;
+      const publicWaitingShip = {
+        id: shipId,
+        color: String(shipId).split("-")[0],
+      };
+      belief.ships = (belief.ships || []).filter((row) => row.id !== shipId);
+      belief.waitingShips = (belief.waitingShips || []).filter((row) => row.id !== shipId);
+      belief.waitingShips.push(publicWaitingShip);
+    }
     const collections = {
       die: "dice",
       ship: "ships",

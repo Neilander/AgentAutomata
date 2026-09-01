@@ -1,0 +1,72 @@
+{
+  "schema": "ufs_paired_v4_old_arm_preflight_v1",
+  "completedAt": "2026-09-01T05:23:22.191Z",
+  "hostRuntimeImported": false,
+  "sessionConstructed": false,
+  "randomDrawsConsumed": 0,
+  "sharedHelperImported": true,
+  "frozenHashes": {
+    "protocol": "e431142225927a24cf868174a98975f926399a6731177e223f871b2b5f7b4177",
+    "helper": "116d5e26d78533e24e06515fb6cf76fa916935cdfa032d75c75abf2d51af2e45",
+    "contractTest": "e34b4144b24c5c742873c7c281a63672cc77642c5e99166fb91bceb92c0ae214",
+    "sealedTestResult": "3748951dc0298be30b2a3e8afca0162616c8c18f880d3db8011e9952b31c2296",
+    "publicInitialState": "584765c4b0e4a6a2e802ddfd6f7838c444a082eedf67fcaeba6ea62b4b23e8bd",
+    "publicMap": "a8d20066fc2f74aa3a94f08ba762f539231daaf4095f8b0388aae138340dc7c4"
+  },
+  "sealedStructuralEvidence": {
+    "schema": "ufs_paired_v4_safety_boundary_contract_test_v1",
+    "completedAt": "2026-09-01T05:09:02.621Z",
+    "passed": true
+  },
+  "hostFreeCases": [
+    {
+      "id": "real-public-shape",
+      "response": {
+        "status": "random",
+        "reason": "waiting_for_next_round_roll",
+        "availableOperations": [
+          "submit_round_roll"
+        ],
+        "pending": {
+          "dice": [
+            {
+              "id": "gray-1"
+            }
+          ]
+        }
+      },
+      "expected": true,
+      "actual": true
+    },
+    {
+      "id": "v3-wrong-choice-shape",
+      "response": {
+        "status": "choice",
+        "reason": "waiting_for_next_round_roll",
+        "availableOperations": [
+          "submit_round_roll"
+        ]
+      },
+      "expected": false,
+      "actual": false
+    },
+    {
+      "id": "other-random-boundary",
+      "response": {
+        "status": "random",
+        "reason": "waiting_for_random_observation",
+        "availableOperations": [
+          "submit_random_observation"
+        ],
+        "pending": {
+          "dieIds": [
+            "white-1"
+          ]
+        }
+      },
+      "expected": false,
+      "actual": false
+    }
+  ],
+  "passed": true
+}

@@ -50,30 +50,29 @@ test("a matching formal step reinforces live rule connections and survives check
   assert.equal(restoredMovement.addedObservations, 1);
 });
 
-test("a mixed formal mismatch confirms only independently verified prediction tickets", () => {
+test("mothership landing collection now matches the formal transition", () => {
   const session = begin();
   session.advance({ type: "place_die", dieId: "r1-gray-0", cellId: "A-r2-c1" });
   const feedback = session.inspectFeedbackState();
   assert.equal(feedback.lastAudit.status, "learned_confirmations");
   assert.deepEqual(feedback.lastAudit.ticketCounts, {
-    confirmed: 2,
+    confirmed: 1,
     contradicted: 0,
-    unresolved: 1,
+    unresolved: 2,
   });
-  assert.equal(feedback.lastAudit.formalStep.cognitiveMatch, false);
-  assert.deepEqual(feedback.lastAudit.formalStep.differingSections, ["ships", "waitingShips"]);
+  assert.equal(feedback.lastAudit.formalStep.cognitiveMatch, true);
+  assert.deepEqual(feedback.lastAudit.formalStep.differingSections, []);
   assert.deepEqual(
     feedback.formalState.waitingShips.map((row) => row.id),
     ["purple-1", "purple-2", "purple-3", "purple-4"],
   );
   assert.equal(feedback.learning.trajectories.length, 0);
-  assert.deepEqual(feedback.learning.connectionUpdates.map((row) => row.trajectoryId).sort(), [
+  assert.deepEqual(feedback.learning.connectionUpdates.map((row) => row.trajectoryId), [
     "read-rule-mothership-space-to-mothership-descent",
-    "read-rule-place-die-to-same-column-descent",
   ]);
 });
 
-test("a wrong cognitive consequence cannot mutate the authoritative game state", () => {
+test("mothership landing collection is present in both cognitive and authoritative state", () => {
   const session = begin();
   const response = session.advance({
     type: "place_die",
@@ -87,8 +86,8 @@ test("a wrong cognitive consequence cannot mutate the authoritative game state",
   assert.deepEqual(host.waitingShips.map((row) => row.id), [
     "purple-1", "purple-2", "purple-3", "purple-4",
   ]);
-  assert.deepEqual(mental.waitingShips, []);
-  assert.notDeepEqual(mental.ships, host.ships);
+  assert.deepEqual(mental.waitingShips, host.waitingShips);
+  assert.deepEqual(mental.ships, host.ships);
   assert.equal(response.status, "choice");
   assert.deepEqual(response.availableOperations, ["place_die"]);
 });

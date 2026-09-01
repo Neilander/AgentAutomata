@@ -1,0 +1,130 @@
+{
+  "schema": "ufs_original_default_planner_paired_v3_verification",
+  "arm": "old",
+  "pass": false,
+  "passed": 14,
+  "total": 19,
+  "checks": [
+    {
+      "name": "protocol hash matches frozen sidecar",
+      "pass": true,
+      "details": "5b84f209dd3704044bbbdf326d9ad35f2a70ecdf4e5a45b287d6b2b258f4a8eb"
+    },
+    {
+      "name": "protocol hash recorded by run",
+      "pass": true,
+      "details": "5b84f209dd3704044bbbdf326d9ad35f2a70ecdf4e5a45b287d6b2b258f4a8eb"
+    },
+    {
+      "name": "run completed",
+      "pass": false,
+      "details": "unexpected_public_status:complete:maximum_damage"
+    },
+    {
+      "name": "exactly three public safe boundaries and execution stopped there",
+      "pass": false,
+      "details": {
+        "observed": 9,
+        "finalReason": "maximum_damage"
+      }
+    },
+    {
+      "name": "exactly three formal safe-boundary audits",
+      "pass": false,
+      "details": []
+    },
+    {
+      "name": "every audit is waiting_for_next_round_roll",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "non-random action count equals plan invocation count",
+      "pass": true,
+      "details": {
+        "deliberate": 116,
+        "plans": 116
+      }
+    },
+    {
+      "name": "every non-random action is exactly the selected operation",
+      "pass": true,
+      "details": 116
+    },
+    {
+      "name": "no default-planner failure event",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "zero rejected live responses",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "zero manual rescue",
+      "pass": true,
+      "details": 0
+    },
+    {
+      "name": "zero external policy action",
+      "pass": true,
+      "details": 0
+    },
+    {
+      "name": "no sequential imagination or automatic controller calls",
+      "pass": true,
+      "details": {
+        "imagineSequentialPlanCalls": 0,
+        "automaticMulticutpointControllerCalls": 0
+      }
+    },
+    {
+      "name": "random contracts all come from provider events",
+      "pass": true,
+      "details": {
+        "events": 18,
+        "counter": 18
+      }
+    },
+    {
+      "name": "random draw tape is contiguous and bound in public ID order",
+      "pass": true,
+      "details": {
+        "verified": 57,
+        "draws": 57
+      }
+    },
+    {
+      "name": "random draw values are 1..6",
+      "pass": true,
+      "details": 57
+    },
+    {
+      "name": "final checkpoint exists",
+      "pass": false,
+      "details": "C:\\Users\\WYZ\\.codex\\worktrees\\6396\\AgentAutomata\\projects\\western_fantasy_continent\\experiments\\ufs_automatic_vs_original_paired_v3\\old-arm\\final-checkpoint.json"
+    },
+    {
+      "name": "final checkpoint is the third safe-boundary checkpoint",
+      "pass": false,
+      "details": {
+        "completedRounds": null,
+        "phase": null
+      }
+    },
+    {
+      "name": "frozen attention and random seeds recorded",
+      "pass": true,
+      "details": {
+        "attentionSeed": 2026090102,
+        "randomInitialSeedHex": "0x5f3759df"
+      }
+    }
+  ],
+  "evidenceHashes": {
+    "machineEvidence": "18826a6df8ff0994547018f5f354d41e97a31cadc118dc4f2540855a6b966f20",
+    "randomDrawTape": "850241f157eb580a8c0bb5d8ef235a659501d3987556ab2d47b8bc56ed94b198",
+    "finalCheckpoint": null
+  }
+}

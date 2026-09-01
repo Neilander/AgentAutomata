@@ -739,3 +739,87 @@ UFS现场AI逐步Q滚动修复更新：针对上一轮“在同一Q0里同时看
 对应交接报告：
 
 [`reports/2026-08-31_2348_ufs-live-ai-sequential-q-rollout-fix.md`](reports/2026-08-31_2348_ufs-live-ai-sequential-q-rollout-fix.md)
+
+UFS自动逐步Q轨迹接入更新：此前现场V1虽然强制`Q0→A1→Q1→A2`，但Q1仍由AI手工写入。现在真实认知会话新增只读`imagineSequentialPlan()`及CLI `imagine-sequence`：在隔离认知checkpoint fork中逐步执行候选操作，每步自动唤醒真实GTE五槽轨迹与JSON认知程序，自动生成新Q并作为下一步唯一输入；live checkpoint保持不变，正式oracle不进入设想。接入时发现并修复即时母舰下降只改行号、不收回新行飞船的认知状态缺口。真实post-reroll检查点、同seed `2026082504`和灰5/白6下，`研究→防空`自动预测`purple-2`进入等待区并在第二步前将防空锚点判为失效；`防空→研究`自动预测紫船到第4行并在Q1上继续研究。两路预测均逐步与正式host一致，完整相关回归182/182通过。当前自动的是Q链与轨迹生成，候选`steps[]`仍需上层Agent/规划器给出，尚未替换默认`planCurrentChoice()`或证明整局收益。
+
+对应交接报告：
+
+[`reports/2026-09-01_0050_ufs-automatic-sequential-imagination-integration.md`](reports/2026-09-01_0050_ufs-automatic-sequential-imagination-integration.md)
+
+UFS多步设想随机边界标记更新：自动逐步Q规划现在把白骰重投提升为一等停止状态。任一步认知响应为随机边界时立即返回`paused_random`，记录`stoppedAfterStep`、可能的`stoppedBeforeStep`和公开pending合同，并禁止确定性收益声明；后续计划动作不会被设想。即使候选序列恰好结束在重投处也不会误报`complete`。规划输入中的`submit_random_observation`被明确拒绝，随机值只能由live环境实际观察；观察完成后从新Q重新规划。真实白骰检查点、序列末尾边界和预填随机值三类新增测试均通过，完整相关回归185/185通过。当前仍未展开概率分支树，采取的是保守暂停—观察—重规划策略。
+
+对应交接报告：
+
+[`reports/2026-09-01_0105_ufs-sequential-random-boundary-marker.md`](reports/2026-09-01_0105_ufs-sequential-random-boundary-marker.md)
+
+UFS自动多切入口真实三回合闸门更新：隔离实验控制器现在从当前玩家可见Q形成宏观意图和最多3个候选，所有候选调用真实`imagineSequentialPlan()`自动生成逐步Q/GTE轨迹；每次只执行最新Q下刚设想的第0步。单回合闸门先PASS后，才在同一玩家/host继续到3个完成回合。三回合共30个规划切点、72个候选、6次白骰`paused_random→live观察→丢弃后缀→新Q重规划`，0手写中间Q、0计划内随机、0live拒绝，完整相关回归188/188。正式安全边界结果为能源`5/2/1`、研究`1/4/4`、伤害全0、飞船总行`7/19/37`；机制可用，但单流无对照且威胁累积，不能声称胜率或净收益改善。实验还补齐了公开单候选spawn边界的认知恢复，不替换默认planner或玩家初始化器。
+
+对应实验结果：
+
+[`../projects/western_fantasy_continent/experiments/ufs_live_ai_automatic_multicutpoint_three_round_v2/RESULTS.md`](../projects/western_fantasy_continent/experiments/ufs_live_ai_automatic_multicutpoint_three_round_v2/RESULTS.md)
+
+对应交接报告：
+
+[`reports/2026-09-01_1227_ufs-automatic-multicutpoint-live-three-round-gate.md`](reports/2026-09-01_1227_ufs-automatic-multicutpoint-live-three-round-gate.md)
+
+UFS自动版对原版配对V3新臂更新：共享协议已冻结公开初态/地图、注意seed `2026090102`、xorshift32和initial seed `0x5f3759df`，协议hash为`5b84f209...f4a8eb`；新臂控制器hash为`7ca4533e...cdef85`。现有V2自动多切入口玩家从fresh隔离session连续完成3回合，30次规划、72个自动设想候选、30个最新Q动作、6次随机暂停后重规划、31个带公开pending ID绑定的draw，0手写Q、0规划内随机、0 live拒绝，3/3安全边界。本文仅封存新臂，不作相对优势判断；旧臂必须只读冻结PAIR_PROTOCOL选择原策略，禁止读取new-arm结果后调参。
+
+对应新臂结果：
+
+[`../projects/western_fantasy_continent/experiments/ufs_automatic_vs_original_paired_v3/new-arm/RESULTS.md`](../projects/western_fantasy_continent/experiments/ufs_automatic_vs_original_paired_v3/new-arm/RESULTS.md)
+
+对应交接报告：
+
+[`reports/2026-09-01_1250_ufs-paired-v3-sealed-new-arm.md`](reports/2026-09-01_1250_ufs-paired-v3-sealed-new-arm.md)
+
+UFS自动版对原版配对V3旧臂更新：旧策略已锁为每个非随机公开choice恰调用一次默认`planCurrentChoice()`并原样执行其`recommendedPayload`；实际116/116次动作均满足，0拒绝、0手写救场、0外部策略动作、0自动连续设想/多切控制器调用，57个xorshift32 draw也全部按公开ID顺序绑定。但本次旧臂**无效**：runner错误要求`waiting_for_next_round_roll`同时为`status: choice`，而真实公开状态是`random`，导致看见9个公开回合边界却0次正式host审计、未在第3回合停止，最终R10 `maximum_damage`。因已消费并观察随机流，遵守no-preview/no-retry约束未再运行；正式三边界指标与final checkpoint均缺失，聚焦验证14/19、总闸门FAIL。不得据此做两臂比较。
+
+对应旧臂结果：
+
+[`../projects/western_fantasy_continent/experiments/ufs_automatic_vs_original_paired_v3/old-arm/RESULTS.md`](../projects/western_fantasy_continent/experiments/ufs_automatic_vs_original_paired_v3/old-arm/RESULTS.md)
+
+对应交接报告：
+
+[`reports/2026-09-01_1303_ufs-paired-v3-old-arm-invalid-boundary-audit.md`](reports/2026-09-01_1303_ufs-paired-v3-old-arm-invalid-boundary-audit.md)
+
+UFS自动版对原版配对V4新臂更新：V3因旧臂测试壳错误要求`status: choice`而错过真实`status: random`回合边界，整体继续保留但不得比较。全新V4已在任何arm运行前冻结公开初态/地图、注意seed `2026090104`、fresh xorshift32 seed `0x243f6a88`和3回合合同；共享边界helper只接受`random + waiting_for_next_round_roll + submit_round_roll`。不接触host的三形状结构测试先于正式run通过并哈希封存。现有sealed V2自动多切入口新臂随后在fresh隔离session连续完成3回合：41次规划、94个自动设想候选、41个最新Q step0策略动作、6次随机暂停后丢弃旧后缀并从新Q重规划、31个逐ordinal/raw/value/公开ID/完整合同/round/reason绑定draw；0手写Q、0计划内随机、0拒绝，每个策略动作都有自动轨迹，3/3共享谓词边界，聚焦验证11/11通过。本文不读取或比较旧臂、不声称优势。后续旧臂必须使用同一`PAIR_PROTOCOL`与共享helper/hash，禁止自写另一套边界条件，也不得在封存前读取new-arm输出。
+
+对应新臂结果：
+
+[`../projects/western_fantasy_continent/experiments/ufs_automatic_vs_original_paired_v4/new-arm/RESULTS.md`](../projects/western_fantasy_continent/experiments/ufs_automatic_vs_original_paired_v4/new-arm/RESULTS.md)
+
+对应交接报告：
+
+[`reports/2026-09-01_1316_ufs-paired-v4-sealed-new-arm.md`](reports/2026-09-01_1316_ufs-paired-v4-sealed-new-arm.md)
+
+UFS自动版对原版配对V4旧臂更新：冻结旧策略仅在每个非随机公开choice调用一次现有默认`planCurrentChoice()`并逐字提交该次`recommendedPayload`。旧臂在fresh隔离session中连续抵达并精确停在3个共享helper回合边界：36次默认规划对应36次原样动作，5个公开随机合同共13个draw严格按ordinal/raw/value/ID/完整合同/round/reason绑定；0拒绝、0手写救场、0外部策略动作、0逐步设想、0自动控制器调用或加载。formal host只在helper true后事后审计3次且不反馈规划，最终checkpoint与第3边界canonical hash一致，聚焦验证19/19通过。本文只陈述旧臂，不作两臂比较。由于AGENTS要求读取LATEST而暴露了新臂摘要，不能声称完全盲；但父任务已预先冻结旧策略且全程禁止调参，未读取V4新臂目录或专属报告。
+
+对应旧臂结果：
+
+[`../projects/western_fantasy_continent/experiments/ufs_automatic_vs_original_paired_v4/old-arm/RESULTS.md`](../projects/western_fantasy_continent/experiments/ufs_automatic_vs_original_paired_v4/old-arm/RESULTS.md)
+
+对应交接报告：
+
+[`reports/2026-09-01_1324_ufs-paired-v4-old-arm.md`](reports/2026-09-01_1324_ufs-paired-v4-old-arm.md)
+
+UFS自动版对原版配对V4主审更新：V3旧臂因错误回合边界测试壳无效，正式结论只使用全新V4。两臂共享公开初态/地图、注意seed `2026090104`、xorshift32初始seed `0x243f6a88`、冻结协议和同一安全边界helper，并在fresh隔离session连续完成3回合。第三回合新版对原版为：能源`3/2`、研究`4/0`、伤害`0/0`、母舰行`4/2`、最高飞船行`11/14`、飞船总行`13/50`。因此单样本支持自动逐Q多步规划能完成原版未完成的研究组合并显著压低飞船威胁，但母舰危险更高，不是全面占优，也不能推出长期胜率。新版进行了94次候选设想，原版为36次单步规划，故不是等算力比较。两臂前13个原始随机draw完全相同，但新版触发更多白骰重投，事件绑定随策略路径分叉；应称同PRNG流与消费规则，而非逐事件随机观察相同。新旧聚焦验证分别11/11与19/19通过。
+
+对应主审报告：
+
+[`reports/2026-09-01_1328_ufs-paired-v4-root-comparison.md`](reports/2026-09-01_1328_ufs-paired-v4-root-comparison.md)
+
+UFS记忆驱动房间多步绑定V3更新：真实环境公开操作保持为原子`place_die(type, dieId, cellId)`，公开房间只显示可见格子身份，不暴露`requiredDiceCount/requiresAllCells`。V4 sealed控制器与证据保留不动；新V3使用真实GTE分别从Q后目标唤醒能源等结果方法、从Q前场景唤醒“多格房全部格子占据后才完整”，再把记忆中的`each_unoccupied_visible_cell_in_same_room`动态绑定到当前格子。同一记忆在真实两格能源房生成2个原子放置，在三格变体自动生成3个；删除Q前完整房间记忆后明确拒绝绑定，不会仅凭`room.cellIds.length`偷推出规则。真实两步候选的自动逐Q设想依次得到不完整/完整，聚焦7/7、完整相关回归195/195通过。当前规划affordance仍是既有规则轨迹的人工结构化投影，尚未自动来自反馈学习`operations[]`；未替换默认planner/初始化器，也未开始长局。
+
+对应实验结果：
+
+[`../projects/western_fantasy_continent/experiments/ufs_memory_led_multicutpoint_v3/RESULTS.md`](../projects/western_fantasy_continent/experiments/ufs_memory_led_multicutpoint_v3/RESULTS.md)
+
+对应交接报告：
+
+[`reports/2026-09-01_1402_ufs-memory-led-room-completion-grounding.md`](reports/2026-09-01_1402_ufs-memory-led-room-completion-grounding.md)
+
+UFS反馈学习到记忆驱动多步规划阶段总览：反馈轨迹已经从“只保存”补成每个稳定步骤后即时真实GTE编译、失败则阻止下一动作的闭环；显式经历记忆保存Q前、有序`operations[]`、Q后和一对多memory来源，并支持正向预测与Q前/Q后反查。单步真实两场证明反馈会改变候选预测却未改变胜者，导出多步规划需求。自动规划现已实现`Q0→A1→Q1→A2`、随机暂停—live观察—重规划及三回合闭环；V4单seed配对第三回合新版/原版为研究`4/0`、飞船总行`13/50`，但母舰`4/2`更危险且非等算力。最新V3不再由程序暴露“能源房需要两骰”，而是从Q后结果记忆与Q前完整房间关系召回后动态绑定2/3个原子放置，相关回归195/195。关键未闭环项是：V3 affordance仍为规则轨迹的人工结构化投影，真实个人多步反馈记忆的自然Top-K唤醒、唤醒后筛选和规划收益仍待fresh单回合真实验收；默认planner和初始化器未替换，未开始长局。
+
+对应阶段总览报告：
+
+[`reports/2026-09-01_1440_ufs-learning-to-memory-led-multistep-stage-handoff.md`](reports/2026-09-01_1440_ufs-learning-to-memory-led-multistep-stage-handoff.md)

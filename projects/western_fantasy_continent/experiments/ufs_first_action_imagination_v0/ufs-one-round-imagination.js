@@ -335,7 +335,7 @@ class UfsOneRoundImagination {
         fullPerception,
       );
     };
-    if (!["dice", "rooms"].includes(world.phase)) {
+    if (!["dice", "rooms", "spawning"].includes(world.phase)) {
       throw new Error(`one-round imagination must start at a player decision phase, got ${world.phase}`);
     }
     if (!script || !Array.isArray(script.placements) || !Array.isArray(script.roomActions)) {
@@ -673,7 +673,7 @@ class UfsOneRoundImagination {
       }
     }
 
-    if (world.phase !== "mothership") {
+    if (!["mothership", "spawning"].includes(world.phase)) {
       if (allowPartialScript) {
         return suspended({
           status: "choice",
@@ -690,46 +690,48 @@ class UfsOneRoundImagination {
       }
       throw new Error("room script did not enter mothership phase");
     }
-    const descent = runEvent(
-      { type: "phase_started" },
-      { phase: "mothership", mothership: { row: world.mothershipRow }, sky: { shipsByRow: shipsByRow(world) } },
-      { phase: "mothership", stage: "descent" },
-    );
-    trace.mothershipSteps.push({ stage: "descent", status: descent.status, patch: descent.patch, cognitiveTrace: descent.trace });
-    if (descent.status !== "automatic") {
-      return suspended({ status: descent.status, reason: descent.reason, world, trace, observedBefore, initialPublicState, pending: { type: "mothership_descent" } });
-    }
-    world.mothershipRow = descent.patch.toRow;
-    for (const shipId of descent.patch.collectedShipIds) {
-      const ship = world.ships.find((row) => row.id === shipId);
-      world.ships = world.ships.filter((row) => row.id !== shipId);
-      if (ship) world.waitingShips.push({ id: ship.id, color: ship.color });
-    }
-
-    const threshold = runEvent(
-      { type: "mothership_threshold_check" },
-      { mothership: { onSkullRow: world.mothershipRow >= publicMap.sky.skullRow } },
-      { phase: "mothership", stage: "threshold" },
-    );
-    trace.mothershipSteps.push({ stage: "threshold", status: threshold.status, patch: threshold.patch, cognitiveTrace: threshold.trace });
-    if (threshold.patch.terminal) {
-      world.outcome = { result: threshold.patch.result, reason: threshold.patch.reason, round: world.round };
-      world.phase = threshold.patch.result === "win" ? "won" : "lost";
-      return suspended({ status: "complete", reason: threshold.patch.reason, world, trace, observedBefore, initialPublicState, pending: null });
-    }
-
-    const row = indexes.skyRowByIndex.get(world.mothershipRow);
-    for (const action of row?.mothershipActions || []) {
-      const result = runEvent(
-        { type: "mothership_descent_completed" },
-        { mothership: { rowAction: { type: action.type, value: action.amount } } },
-        { phase: "mothership", stage: "row_action", actionType: action.type },
+    if (world.phase === "mothership") {
+      const descent = runEvent(
+        { type: "phase_started" },
+        { phase: "mothership", mothership: { row: world.mothershipRow }, sky: { shipsByRow: shipsByRow(world) } },
+        { phase: "mothership", stage: "descent" },
       );
-      trace.mothershipSteps.push({ stage: "row_action", status: result.status, patch: result.patch, cognitiveTrace: result.trace });
-      if (result.status !== "automatic") {
-        return suspended({ status: result.status, reason: result.reason, world, trace, observedBefore, initialPublicState, pending: { type: "mothership_row_action" } });
+      trace.mothershipSteps.push({ stage: "descent", status: descent.status, patch: descent.patch, cognitiveTrace: descent.trace });
+      if (descent.status !== "automatic") {
+        return suspended({ status: descent.status, reason: descent.reason, world, trace, observedBefore, initialPublicState, pending: { type: "mothership_descent" } });
       }
-      applyMothershipAction(world, publicMap, result.patch);
+      world.mothershipRow = descent.patch.toRow;
+      for (const shipId of descent.patch.collectedShipIds) {
+        const ship = world.ships.find((row) => row.id === shipId);
+        world.ships = world.ships.filter((row) => row.id !== shipId);
+        if (ship) world.waitingShips.push({ id: ship.id, color: ship.color });
+      }
+
+      const threshold = runEvent(
+        { type: "mothership_threshold_check" },
+        { mothership: { onSkullRow: world.mothershipRow >= publicMap.sky.skullRow } },
+        { phase: "mothership", stage: "threshold" },
+      );
+      trace.mothershipSteps.push({ stage: "threshold", status: threshold.status, patch: threshold.patch, cognitiveTrace: threshold.trace });
+      if (threshold.patch.terminal) {
+        world.outcome = { result: threshold.patch.result, reason: threshold.patch.reason, round: world.round };
+        world.phase = threshold.patch.result === "win" ? "won" : "lost";
+        return suspended({ status: "complete", reason: threshold.patch.reason, world, trace, observedBefore, initialPublicState, pending: null });
+      }
+
+      const row = indexes.skyRowByIndex.get(world.mothershipRow);
+      for (const action of row?.mothershipActions || []) {
+        const result = runEvent(
+          { type: "mothership_descent_completed" },
+          { mothership: { rowAction: { type: action.type, value: action.amount } } },
+          { phase: "mothership", stage: "row_action", actionType: action.type },
+        );
+        trace.mothershipSteps.push({ stage: "row_action", status: result.status, patch: result.patch, cognitiveTrace: result.trace });
+        if (result.status !== "automatic") {
+          return suspended({ status: result.status, reason: result.reason, world, trace, observedBefore, initialPublicState, pending: { type: "mothership_row_action" } });
+        }
+        applyMothershipAction(world, publicMap, result.patch);
+      }
     }
 
     const orderedWaiting = [...world.waitingShips]
@@ -744,7 +746,10 @@ class UfsOneRoundImagination {
       );
       const requested = script.spawnChoices?.[waiting.id] || null;
       const candidates = result.patch?.candidateDropPointIds || [];
-      const chosen = candidates.length === 1 ? candidates[0] : requested;
+      const explicitObservedSpawnBoundary = initialPublicState.phase === "spawning";
+      const chosen = candidates.length === 1 && !explicitObservedSpawnBoundary
+        ? candidates[0]
+        : requested;
       trace.mothershipSteps.push({
         stage: "spawn", shipId: waiting.id, status: result.status,
         patch: result.patch, cognitiveTrace: result.trace,
@@ -753,7 +758,15 @@ class UfsOneRoundImagination {
       });
       if (!chosen) {
         world.waitingShips.push(waiting);
-        return suspended({ status: result.status, reason: "waiting_for_spawn_choice", world, trace, observedBefore, initialPublicState, pending: { type: "spawn", shipId: waiting.id, candidates } });
+        return suspended({
+          status: explicitObservedSpawnBoundary ? "choice" : result.status,
+          reason: "waiting_for_spawn_choice",
+          world,
+          trace,
+          observedBefore,
+          initialPublicState,
+          pending: { type: "spawn", shipId: waiting.id, candidates },
+        });
       }
       if (!candidates.includes(chosen)) throw new Error(`script chose illegal spawn point ${chosen} for ${waiting.id}`);
       world.ships.push({

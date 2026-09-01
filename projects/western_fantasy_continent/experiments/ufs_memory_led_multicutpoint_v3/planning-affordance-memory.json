@@ -1,0 +1,84 @@
+{
+  "schema": "ufs_rule_planning_affordance_memory_v1",
+  "source": "structured_projection_of_existing_ufs_rule_reading_trajectories",
+  "records": [
+    {
+      "memoryId": "planning-rule:complete-all-visible-room-cells",
+      "sourceTrajectoryId": "read-rule-multi-room-placement-to-completeness",
+      "sourceRuleId": "multi_room_requires_all_spaces",
+      "triggeredBy": "q_before",
+      "applicability": {
+        "objectKind": "visible_room",
+        "minimumVisibleCellCount": 2
+      },
+      "operationPattern": {
+        "type": "place_die",
+        "repeat": "each_unoccupied_visible_cell_in_same_room",
+        "bindings": [
+          "dieId",
+          "cellId"
+        ]
+      },
+      "followingRelation": "room_becomes_complete_only_when_every_visible_cell_is_occupied"
+    },
+    {
+      "memoryId": "planning-rule:energy-room-increases-energy",
+      "sourceTrajectoryId": "read-rule-energy-room-to-energy-gain",
+      "sourceRuleId": "energy_room_generates_energy",
+      "triggeredBy": "q_after",
+      "desiredRole": "energy",
+      "roomType": "energy",
+      "resultRelation": "energy_increases"
+    },
+    {
+      "memoryId": "planning-rule:research-room-advances-research",
+      "sourceTrajectoryId": "read-rule-research-room-to-track-advance",
+      "sourceRuleId": "research_room_advances_track",
+      "triggeredBy": "q_after",
+      "desiredRole": "research",
+      "roomType": "research",
+      "resultRelation": "research_increases"
+    },
+    {
+      "memoryId": "planning-rule:fighter-room-reduces-visible-threat",
+      "sourceTrajectoryId": "read-rule-fighter-room-to-eligible-destruction",
+      "sourceRuleId": "fighter_room_destroys_eligible_ships",
+      "triggeredBy": "q_after",
+      "desiredRole": "fighter",
+      "roomType": "fighter",
+      "resultRelation": "eligible_ship_threat_decreases"
+    }
+  ],
+  "queries": {
+    "q_before": {
+      "affected_object": "当前可见房间的多个空格与待放置骰子",
+      "change_trend": "房间仍有多个可见格子空着，玩家考虑如何放置",
+      "cause_relation": "玩家在骰子阶段观察房间与可用位置",
+      "temporal_state": "执行放置之前",
+      "context": "从当前场景回忆相关的多步放置方法"
+    },
+    "q_after": {
+      "energy": {
+        "affected_object": "玩家能源",
+        "change_trend": "能源从当前值增加",
+        "cause_relation": "寻找能够产生能源收益的方法",
+        "temporal_state": "规划本轮结果时",
+        "context": "宏观目标需要补充能源"
+      },
+      "research": {
+        "affected_object": "玩家研究进度",
+        "change_trend": "研究从当前位置增加",
+        "cause_relation": "寻找能够推进研究的方法",
+        "temporal_state": "规划本轮结果时",
+        "context": "宏观目标需要取得研究进展"
+      },
+      "fighter": {
+        "affected_object": "当前可见的高位飞船威胁",
+        "change_trend": "符合条件的飞船被消灭且威胁下降",
+        "cause_relation": "寻找能够直接处理飞船的方法",
+        "temporal_state": "规划本轮结果时",
+        "context": "宏观目标需要控制可见威胁"
+      }
+    }
+  }
+}

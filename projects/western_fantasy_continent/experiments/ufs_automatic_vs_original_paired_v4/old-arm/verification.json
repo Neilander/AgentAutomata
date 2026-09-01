@@ -1,0 +1,213 @@
+{
+  "schema": "ufs_original_default_planner_paired_v4_verification",
+  "arm": "old",
+  "pass": true,
+  "passed": 19,
+  "total": 19,
+  "checks": [
+    {
+      "name": "host-free preflight passed before runtime construction",
+      "pass": true,
+      "details": [
+        {
+          "id": "real-public-shape",
+          "expected": true,
+          "actual": true
+        },
+        {
+          "id": "v3-wrong-choice-shape",
+          "expected": false,
+          "actual": false
+        },
+        {
+          "id": "other-random-boundary",
+          "expected": false,
+          "actual": false
+        }
+      ]
+    },
+    {
+      "name": "protocol/helper/test/result and public assets match frozen hashes",
+      "pass": true,
+      "details": {
+        "protocol": "e431142225927a24cf868174a98975f926399a6731177e223f871b2b5f7b4177",
+        "helper": "116d5e26d78533e24e06515fb6cf76fa916935cdfa032d75c75abf2d51af2e45",
+        "contractTest": "e34b4144b24c5c742873c7c281a63672cc77642c5e99166fb91bceb92c0ae214",
+        "sealedTestResult": "3748951dc0298be30b2a3e8afca0162616c8c18f880d3db8011e9952b31c2296",
+        "publicInitialState": "584765c4b0e4a6a2e802ddfd6f7838c444a082eedf67fcaeba6ea62b4b23e8bd",
+        "publicMap": "a8d20066fc2f74aa3a94f08ba762f539231daaf4095f8b0388aae138340dc7c4"
+      }
+    },
+    {
+      "name": "run completed",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "exactly three imported-helper boundaries and stopped at third",
+      "pass": true,
+      "details": {
+        "boundaries": 3,
+        "finalEvent": 42
+      }
+    },
+    {
+      "name": "exactly three post-hoc host audits, all helper-approved",
+      "pass": true,
+      "details": [
+        {
+          "round": 1,
+          "phase": "new_round",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "excavatorIndex": 0,
+          "mothershipRow": 0,
+          "shipCount": 6,
+          "waitingShipCount": 0,
+          "shipRowSum": 15,
+          "maxShipRow": 5,
+          "outcome": null
+        },
+        {
+          "round": 2,
+          "phase": "new_round",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "excavatorIndex": 0,
+          "mothershipRow": 1,
+          "shipCount": 6,
+          "waitingShipCount": 0,
+          "shipRowSum": 32,
+          "maxShipRow": 9,
+          "outcome": null
+        },
+        {
+          "round": 3,
+          "phase": "new_round",
+          "energy": 2,
+          "damage": 0,
+          "researchIndex": 0,
+          "excavatorIndex": 0,
+          "mothershipRow": 2,
+          "shipCount": 7,
+          "waitingShipCount": 0,
+          "shipRowSum": 50,
+          "maxShipRow": 14,
+          "outcome": null
+        }
+      ]
+    },
+    {
+      "name": "non-random action count equals unique one-call planner ordinals",
+      "pass": true,
+      "details": {
+        "deliberate": 36,
+        "plans": 36
+      }
+    },
+    {
+      "name": "every non-random action is byte-for-byte the unique default recommendation",
+      "pass": true,
+      "details": 36
+    },
+    {
+      "name": "no default-planner failure event",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "zero rejected live responses",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "zero manual rescue and external policy action",
+      "pass": true,
+      "details": {
+        "manual": 0,
+        "external": 0
+      }
+    },
+    {
+      "name": "zero sequential imagination and automatic controller use",
+      "pass": true,
+      "details": {
+        "sequential": 0,
+        "automatic": 0,
+        "moduleLoaded": false
+      }
+    },
+    {
+      "name": "planner source identities stayed stable during verification",
+      "pass": true,
+      "details": {
+        "ufs-full-game-attention-session.js": "b1eea527956f69791f5b960ae479b0e493f3ba553a1a4fd2f143b9ca99178f36",
+        "ufs-prechoice-planner.js": "5d64d36a29ef9adca7adcc90b6fdd719e48a709b100fe258ae170bc5cd2b9c44",
+        "ufs-temporal-cognitive-unit.js": "31f565afa5bace113369be0993ea1026999e14c5ecf0cfaaa5c16c9642210b28"
+      }
+    },
+    {
+      "name": "random contracts all come from provider events",
+      "pass": true,
+      "details": {
+        "events": 5,
+        "counter": 5
+      }
+    },
+    {
+      "name": "random tape is exact xorshift32 stream with full contract and public ID binding",
+      "pass": true,
+      "details": {
+        "checked": 18,
+        "failed": 0,
+        "draws": 13
+      }
+    },
+    {
+      "name": "random draw values are 1..6",
+      "pass": true,
+      "details": 13
+    },
+    {
+      "name": "final checkpoint exists",
+      "pass": true,
+      "details": "C:\\Users\\WYZ\\.codex\\worktrees\\6396\\AgentAutomata\\projects\\western_fantasy_continent\\experiments\\ufs_automatic_vs_original_paired_v4\\old-arm\\final-checkpoint.json"
+    },
+    {
+      "name": "final checkpoint is exactly the third boundary checkpoint",
+      "pass": true,
+      "details": {
+        "hash": "958fbb726971a82e6ac10d5fe51af484b1577d4ff0a746eea08127573db5e2cb",
+        "auditHash": "958fbb726971a82e6ac10d5fe51af484b1577d4ff0a746eea08127573db5e2cb",
+        "completedRounds": 3,
+        "phase": "new_round"
+      }
+    },
+    {
+      "name": "frozen attention and random seeds recorded",
+      "pass": true,
+      "details": {
+        "attentionSeed": 2026090104,
+        "randomInitialSeedHex": "0x243f6a88"
+      }
+    },
+    {
+      "name": "manifest hashes bind all evidence outputs",
+      "pass": true,
+      "details": {
+        "preflight-validation.json": "f69b089ffa12699b57bce663a0e36ff32ea5d22bf80a87e212f4a2046753b4bf",
+        "machine-evidence.json": "a4146529ced786b950afcea7cbee1b7945dcaf64f8013e5fb1127aaf50da874e",
+        "random-draw-tape.json": "389bffaf023aa707482aefc02e9f51aebcf919faeec1576f3627f3935b03e42d",
+        "final-checkpoint.json": "15abb22c42193c3d2c1e776952b36c98f9caad2ab47878d82b6462dbddef75dc"
+      }
+    }
+  ],
+  "evidenceHashes": {
+    "preflight": "f69b089ffa12699b57bce663a0e36ff32ea5d22bf80a87e212f4a2046753b4bf",
+    "machineEvidence": "a4146529ced786b950afcea7cbee1b7945dcaf64f8013e5fb1127aaf50da874e",
+    "randomDrawTape": "389bffaf023aa707482aefc02e9f51aebcf919faeec1576f3627f3935b03e42d",
+    "finalCheckpoint": "15abb22c42193c3d2c1e776952b36c98f9caad2ab47878d82b6462dbddef75dc"
+  }
+}

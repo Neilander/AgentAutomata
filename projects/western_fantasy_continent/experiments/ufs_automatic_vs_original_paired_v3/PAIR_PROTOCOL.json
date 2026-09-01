@@ -1,0 +1,44 @@
+{
+  "schema": "ufs_automatic_vs_original_paired_v3_protocol",
+  "frozenAt": "2026-09-01T12:46:00+08:00",
+  "roundsToComplete": 3,
+  "attentionSeed": 2026090102,
+  "random": {
+    "algorithm": "xorshift32",
+    "initialSeedHex": "0x5f3759df",
+    "initialSeedUnsigned": 1597463007,
+    "consumption": "For every public pending random contract, consume one stream value per listed ID, strictly in the public ID order. Record global draw ordinal, bound ID, value, contract type, round and public reason. No arm may skip, reorder, retry, preview, or privately consume a draw."
+  },
+  "assets": {
+    "publicInitialState": {
+      "path": "../ufs_first_action_imagination_v0/public_initial_state.json",
+      "sha256": "584765c4b0e4a6a2e802ddfd6f7838c444a082eedf67fcaeba6ea62b4b23e8bd"
+    },
+    "publicMap": {
+      "path": "../ufs_first_action_imagination_v0/public-map.js",
+      "sha256": "a8d20066fc2f74aa3a94f08ba762f539231daaf4095f8b0388aae138340dc7c4"
+    }
+  },
+  "arms": {
+    "new": {
+      "controller": "../ufs_live_ai_automatic_multicutpoint_three_round_v2/automatic-multicutpoint-controller.js",
+      "controllerSha256": "7ca4533e4fd4a69e649585e3dd7ec0deb760d7eb62942f3328eabeeac4cdef85",
+      "requiredPlanner": "UfsFullGameAttentionSession.imagineSequentialPlan",
+      "policy": "current sealed V2 automatic multi-cutpoint controller"
+    },
+    "old": {
+      "policy": "the original pre-automatic-multicutpoint version selected before reading new-arm results"
+    }
+  },
+  "hostAudit": "Formal host state may be inspected only at each completed round's waiting_for_next_round_roll boundary. It must never feed later planning.",
+  "isolation": "Each arm starts a fresh UFS session from the frozen public state and uses only its own player/session/checkpoint files.",
+  "antiTuning": "After an arm begins, it may not modify its controller, scoring, core runtime, initializer, frozen assets, attention seed, random algorithm, seed, or consumption order in response to outcomes.",
+  "comparisonBoundary": "New-arm evidence is not available for old-arm strategy tuning. The old arm must read this protocol and frozen asset/controller identities, but must not read new-arm RESULTS, machine evidence, random tape or final checkpoint before sealing its own run.",
+  "requiredOutputs": [
+    "machine evidence",
+    "random draw tape",
+    "final checkpoint",
+    "focused verifier",
+    "arm-local RESULTS"
+  ]
+}

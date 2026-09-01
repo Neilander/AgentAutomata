@@ -20,6 +20,7 @@ const HELP = `Usage:
   node full-game-attention-player-cli.js start <state-dir>
   node full-game-attention-player-cli.js player-start <state-dir> <player-profile.json>
   node full-game-attention-player-cli.js plan <state-dir>
+  node full-game-attention-player-cli.js imagine-sequence <state-dir> <sequence.json>
   node full-game-attention-player-cli.js advance <state-dir> <choice.json>
   node full-game-attention-player-cli.js random <state-dir> [random-observation.json]
   node full-game-attention-player-cli.js player-capture <state-dir> <player-profile.json>
@@ -214,6 +215,17 @@ function plan(stateDir) {
   process.stdout.write(`${JSON.stringify(session.planCurrentChoice(), null, 2)}\n`);
 }
 
+function imagineSequence(stateDir, sequenceFile) {
+  const { session } = load(stateDir);
+  const request = readJson(sequenceFile);
+  const checkpointBefore = JSON.stringify(session.exportCheckpoint());
+  const result = session.imagineSequentialPlan(request);
+  if (JSON.stringify(session.exportCheckpoint()) !== checkpointBefore) {
+    throw new Error("sequential imagination mutated the live session");
+  }
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+}
+
 function observeRandom(stateDir, observationFile = null) {
   const { paths, session } = load(stateDir);
   const current = readJson(paths.view);
@@ -233,6 +245,9 @@ const stateDir = path.resolve(stateDirArg);
 if (command === "start") start(stateDir);
 else if (command === "player-start" && choiceFileArg) startPlayer(stateDir, path.resolve(choiceFileArg));
 else if (command === "plan") plan(stateDir);
+else if (command === "imagine-sequence" && choiceFileArg) {
+  imagineSequence(stateDir, path.resolve(choiceFileArg));
+}
 else if (command === "advance" && choiceFileArg) advance(stateDir, path.resolve(choiceFileArg));
 else if (command === "random") observeRandom(
   stateDir,
